@@ -1,7 +1,7 @@
 ---
 doc_id: component_contract_registry
-version: 1.2.0
-updated: 2026-07-18
+version: 1.3.0
+updated: 2026-07-19
 owner: ui_elevation_initiative
 status: active
 ---
@@ -44,6 +44,16 @@ variants, concept-qualified names for public members, and explicit adapter or
 recipe qualifiers when a standalone class solves a real API problem without
 creating another concept. Feature compositions normally keep feature names and
 do not count as concepts.
+
+Concept boundaries follow semantic responsibility, not a shared circumstance
+or visual shape. If one contract contains independently configurable behavior
+with different usage rules, split its concept identity even when stable Dart
+class names do not need to change. The loading family is the reference case:
+`catch.skeleton`, `catch.loading_indicator`, and `catch.async_value` are three
+concepts, while `catch.startup_loading_screen` is a composition over the
+indicator. Conversely, feature adapters that only retain semantics, pending
+state, or stable test keys should configure an existing renderer rather than
+claim another core concept.
 
 Figma mappings start as `unmapped`. The registry's `componentName` is the stable
 join key. A library-publish snapshot supplies the file key and node id, and the

@@ -2018,8 +2018,8 @@ must not attempt it.
 
 ## WO-024 — Deterministic widget concept identity and design sync
 
-Status: implementation complete; verification and owner gates in progress
-(2026-07-18).
+Status: local semantic implementation complete; live design-tool gates deferred
+by the owner (2026-07-19).
 
 Objective: replace top-level-contract counting and ad hoc standalone-widget
 judgment with a generated concept/member/composition/screen model, reconcile
@@ -2036,9 +2036,11 @@ Implemented scope:
    member-set reconciliation, role-derived review obligations, and known-bad
    failures.
 3. The calibration slice records one-concept/many-member, false-positive
-   separation, feature composition/recipe, and decompression outcomes without
-   requiring Dart API churn.
-4. All 45 current structural clusters now resolve to an exact normalized
+   separation, feature composition/recipe, and decompression outcomes. The
+   former loading family now exposes skeleton, loading-indicator, and
+   async-value concepts plus a startup-screen composition without unnecessary
+   Dart API churn.
+4. All 43 current structural clusters now resolve to an exact normalized
    member-set ledger decision. Fifteen regenerated clusters were reconciled to
    prior reviewed decisions or fresh K2–K5 evidence; two real boundaries were
    promoted to owner-review families rather than guessed.
@@ -2054,30 +2056,40 @@ Implemented scope:
 6. `widget_concept_metrics.json` and `widget_concept_report.md` separately
    report concept count, class count, members/concept, unclassified entries,
    unresolved collision families, ledger coverage, Widgetbook evidence,
-   Figma health, per-family concept/class deltas, and the owner queue.
+   Figma health, per-family concept/class deltas, and the owner/live gate queue.
+7. The event-aware Hosts `HostBroadcastComposerSheet` owns the canonical
+   namespace, the eventless Chats preview is explicitly
+   `ChatBlastComposerSheet`, and the Catches pass/reaction adapters now render
+   through `CatchIconButton` while retaining feature behavior.
 
 Current quantified result:
 
-- 65 top-level handoff contracts represent 60 independent concepts, 118 member
-  APIs, 2 contracted compositions, and 1 contracted screen boundary.
-- The former 64-entry top-level proxy becomes 60 concepts (delta -4) with no
-  Dart class deletion in the calibrated families.
+- 68 top-level handoff contracts represent 62 independent concepts, 115 member
+  APIs, 3 top-level compositions, and 1 contracted screen boundary.
+- The former 64-entry top-level proxy becomes 62 concepts (delta -2); the
+  decompressed loading family increases concept accuracy without changing its
+  eight stable public Dart classes.
 - 1,094 generated widget/state classifications contain zero unclassified
-  entries; 59/59 instantiated concept primaries and 116/116 member classes have
+  entries; 61/61 instantiated concept primaries and 113/113 member classes have
   role-derived Widgetbook evidence.
-- Similarity reconciliation is 45/45 exact clusters with zero unresolved
+- Similarity reconciliation is 43/43 exact clusters with zero unresolved
   collision families; ranked-pair discovery remains a separately reported
   bounded queue and is not treated as merge authorization.
-- Claude context is current; Figma is honestly 0 current, 0 stale, and 65
+- Claude context is current; Figma is honestly 0 current, 0 stale, and 68
   missing until the live file is approved and published.
 
-Owner gates (also generated in `widget_concept_metrics.json`):
+Owner-approved defaults implemented on 2026-07-19:
 
-- loading decompression into skeleton, loading-indicator, and async-value
-  concepts;
-- the duplicate public `HostBroadcastComposerSheet` workflow namespace;
-- shared rendering for `CatchesPassButton` and `ReactionControlButton`;
-- approval to create or identify the live Catch Design System Figma file;
+- decompressed loading into skeleton, loading-indicator, and async-value
+  concepts, with startup loading classified as composition;
+- retained the event-aware Hosts composer as canonical and renamed the
+  eventless Chats preview; and
+- shared `CatchIconButton` rendering for pass and reaction controls while
+  retaining behavior-bearing feature adapters.
+
+Deferred live gates (also generated in `widget_concept_metrics.json`):
+
+- creation or identification of the live Catch Design System Figma file;
 - Organization/Enterprise Code Connect access, or an explicit revision of the
   live exit gate for Starter; and
 - execution of the generated Badge + Field request through Claude Design, with
@@ -2086,8 +2098,9 @@ Owner gates (also generated in `widget_concept_metrics.json`):
 Interim receipt: `2026-07-18-widget-concept-system-local` (`partial`) records
 the green local enforcement loop and the original five generated review/live
 gates. The subsequent live-gate hardening receipt records the explicit Claude
-Design receipt as a sixth gate. A final clean receipt is stamped only after
-those decisions and the live Badge + Field round trip complete.
+Design receipt as a sixth gate. The local semantic-default implementation has
+its own bounded receipt; the proposal remains open until the three deferred
+live Badge + Field gates complete.
 
 ## Completed
 

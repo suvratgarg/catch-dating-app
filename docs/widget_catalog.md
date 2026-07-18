@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.652
-updated: 2026-07-18
+version: 2.5.653
+updated: 2026-07-19
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,19 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.653
+
+- Decompressed the former `catch.loading` registry family into three semantic
+  concepts—`catch.skeleton`, `catch.loading_indicator`, and
+  `catch.async_value`—plus the `catch.startup_loading_screen` composition,
+  without renaming the stable Dart APIs.
+- Kept the event-aware Hosts `HostBroadcastComposerSheet` canonical and
+  extracted the eventless Chats review surface as
+  `ChatBlastComposerSheet`, eliminating the duplicate public namespace.
+- Routed `CatchesPassButton` and `ReactionControlButton` through the canonical
+  `CatchIconButton` renderer while retaining feature-owned semantics, pending
+  state, palettes, geometry, and the stable pass test key.
 
 ### 2.5.652
 
@@ -6368,7 +6381,7 @@ Generated 2026-05-06.
 |---|---|---|
 | `AppShellActiveTab` | `lib/core/presentation/app_shell_active_tab.dart:10` | Inherited lifecycle and obstruction signal for indexed-stack tabs. Lets retained tab branches detect whether they are selected and consume `bottomOverlayInset` / safe-area-adjusted `bottomOverlayClearanceOf` without coupling feature screens to `StatefulNavigationShell` or recomputing shell geometry. The shells publish zero obstruction while software keyboards are visible. |
 | `AppShellNavigationBar` / `AppShellNavigationItem` | `lib/core/presentation/app_shell.dart:240` | Destination-driven shell adapter with stable key, platform icon mapping, and unread badge counts passed into `CatchTabBar`. Consumer uses Home / Explore / Chats / You; `HostAppShell` supplies Today / Events / Inbox / Organizer through the same primitive. |
-| `CatchStartupLoadingScreen` | `lib/core/widgets/catch_startup_loading_screen.dart:8` | Boot-only loading surface used by the force-update gate while the native splash is preserved. Matches the native splash background, keeps the Catch mark centered, and delays the spinner so fast boots do not flash Flutter loading chrome. |
+| `CatchStartupLoadingScreen` | `lib/core/widgets/catch_startup_loading_screen.dart:8` | Boot-only loading composition used by the force-update gate while the native splash is preserved. Matches the native splash background, keeps the Catch mark centered, and delays the canonical `CatchLoadingIndicator` so fast boots do not flash Flutter loading chrome. It is registered as `catch.startup_loading_screen`, not as an independent loading concept. |
 
 ---
 
@@ -6487,8 +6500,8 @@ Widgetbook callers.
 | `CatchSkeletonChips` | `lib/core/widgets/catch_skeleton_layouts.dart:126` | Jittered pill skeleton wrap for loading chip/tag rows. Owns stable widths, spacing, run spacing, and pill radius while callers choose compact/default height. |
 | `CatchHorizontalRail` | `lib/core/widgets/catch_horizontal_rail.dart:13` | Section with a `CatchSectionHeader` title and a horizontally-scrolling rail of items. Embedded/chromeless by default so section containers own gutters and dividers; page-level rails opt into screen gutters and the section divider with `fullBleed: true`. Supports optional trailing content and explicit padding/divider overrides for reviewed exceptions. |
 | `CatchVerticalSection` | `lib/core/widgets/catch_vertical_section.dart:25` | Section with a `CatchSectionHeader` title and a vertical `ListView.separated` of items (non-scrollable, meant for embedding in a parent scroll view). |
-| `CatchLoadingIndicator` | `lib/core/widgets/catch_loading_indicator.dart:3` | Simple centered `CircularProgressIndicator` for use during async loading states. |
-| `CatchStartupLoadingScreen` | `lib/core/widgets/catch_startup_loading_screen.dart:8` | Boot-only startup scaffold used by the force-update gate. It renders the native-splash background/mark continuation and only mounts the spinner after `CatchMotion.startupIndicatorDelay`, so route and feature loading states must use content-shaped skeletons instead. |
+| `CatchLoadingIndicator` | `lib/core/widgets/catch_loading_indicator.dart:3` | Canonical `catch.loading_indicator` concept: a centered indeterminate `CircularProgressIndicator` for compact or unknown work where a content-shaped skeleton is not useful. |
+| `CatchStartupLoadingScreen` | `lib/core/widgets/catch_startup_loading_screen.dart:8` | Boot-only startup composition used by the force-update gate. It renders the native-splash background/mark continuation and only mounts `CatchLoadingIndicator` after `CatchMotion.startupIndicatorDelay`, so route and feature loading states must use content-shaped skeletons instead. Its formal contract is `catch.startup_loading_screen`. |
 | `CatchFrameworkErrorView` | `lib/core/widgets/catch_framework_error_view.dart:11` | Branded fallback view used by `ErrorWidget.builder` for Flutter framework/build errors. Shows user-safe recovery copy and keeps debug exception details behind a tokenized `CatchSurface` disclosure in debug builds rather than Material expansion chrome. Keep separate from app-facing error surfaces because the normal widget tree may already be unstable. |
 | `CatchFrameworkErrorDebugDetails` | `lib/core/widgets/catch_framework_error_view.dart:86` | Direct debug disclosure renderer used by `CatchFrameworkErrorView`. Owns collapsed/expanded state, tokenized developer-detail chrome, and mono debug text while keeping framework-crash recovery separate from app-facing error surfaces. |
 | `CatchErrorIcon` | `lib/core/widgets/catch_error_icon.dart:7` | Shared branded error medallion used by framework and app-facing error surfaces. Treat as an atom composed by error surfaces, not a separate product component to review in Widgetbook. |
@@ -6499,7 +6512,7 @@ Widgetbook callers.
 | `CatchSliverStateViewport` / `CatchSliverEmptyState` | `lib/core/widgets/catch_empty_state.dart` | Canonical sliver placement for terminal empty/error content. The viewport preserves a tight remaining region for responsive child overflow and delegates floating-shell optical-center correction to `CatchStateViewport`; `CatchSliverEmptyState` supplies the standard cardless empty renderer. Presentation code must not recreate this with raw `SliverFillRemaining`. |
 | `CatchSliverErrorState` | `lib/core/widgets/catch_error_state.dart:341` | Sliver-native placement adapter for branded load failures. Reuses `CatchSliverStateViewport`, supports retry callbacks for provider invalidation, and therefore shares the same shell-aware optical center as empty states. |
 | `CatchInlineErrorState` | `lib/core/widgets/catch_error_state.dart:437` | Section/card placement adapter for branded load failures. Reuses `CatchErrorBody` in inline or compact mode when the rest of the screen remains usable. |
-| `CatchAsyncValueView<T>` | `lib/core/widgets/catch_async_value_view.dart:26` | Generic widget handling `AsyncValue` states for route and section bodies. Requires the context-aware `builder` callback and supports optional context-aware `loadingBuilder`/`errorBuilder` callbacks, Riverpod skip flags, branded `CatchErrorState.fromError` defaults, and retry callbacks for provider invalidation. Empty success states stay in the data builder. |
+| `CatchAsyncValueView<T>` | `lib/core/widgets/catch_async_value_view.dart:26` | Primary `catch.async_value` concept for handling `AsyncValue` states in route and section bodies. Requires the context-aware `builder` callback and supports optional context-aware `loadingBuilder`/`errorBuilder` callbacks, Riverpod skip flags, branded `CatchErrorState.fromError` defaults, and retry callbacks for provider invalidation. Empty success states stay in the data builder. |
 | `CatchAsyncValueSliver<T>` | `lib/core/widgets/catch_async_value_view.dart:71` | Sliver equivalent of `CatchAsyncValueView`. Supports sliver-native data, loading, and error builders plus branded `CatchSliverErrorState.fromError` defaults for scroll-owned surfaces. |
 | `CatchAsyncScreenLoading` | `lib/core/widgets/catch_async_value_view.dart:133` | Route/body loading placement helper that wraps `CatchSkeletonList` in `CatchScreenBody` so async screen loading states use the shared gutter and scroll safely on compact surfaces. |
 | `CatchAsyncSliverLoading` | `lib/core/widgets/catch_async_value_view.dart:157` | Sliver loading placement helper that wraps `CatchSkeletonList` in `CatchSliverPageBody` for `CustomScrollView` screens. |
@@ -6808,9 +6821,9 @@ Widgetbook callers.
 | `ProfileMatchSignalsSection` | `lib/swipes/presentation/widgets/profile_match_signals_section.dart:9` | Contextual signals section near the top of the shared profile surface. Shows profile confidence pills and viewer-aware "Why you might click" reasons, and exposes the section as one reactionable `compatibility` target. |
 | `ProfileLifestyleSection` | `lib/swipes/presentation/widgets/profile_lifestyle_section.dart:6` | Lifestyle section (occupation, education, drinking, smoking, etc.). |
 | `ProfileInfoChip` | `lib/swipes/presentation/widgets/profile_info_chip.dart:3` | Single compact info chip on the profile surface — muted icon + label. |
-| `CatchesPassButton` | `lib/swipes/presentation/widgets/catches_pass_button.dart:6` | Floating lower-left pass button used on the Catches decision screen after removing generic deck action buttons. Uses the shared pass key, tooltip, semantic label, disabled opacity, and pending spinner state supplied by the route-owned action state. |
+| `CatchesPassButton` | `lib/swipes/presentation/widgets/catches_pass_button.dart:8` | Floating lower-left pass adapter used on the Catches decision screen. Retains the shared pass key, localized tooltip and semantic label, disabled opacity, pending spinner, palette, and 56 px geometry while delegating circular rendering and floating elevation to `CatchIconButton`. |
 | `ProfileReactionControls` | `lib/swipes/presentation/widgets/profile_reaction_controls.dart:22` | Shared like/comment controls for reactable profile sections. Catches uses surface, overlay, vertical, disabled, and pending variants; the comment action opens the shared reaction comment sheet. |
-| `ReactionControlButton` | `lib/swipes/presentation/widgets/profile_reaction_controls.dart:198` | Single circular like/comment button used by `ProfileReactionControls`. Receives tooltip, icon, enabled callback, surface/overlay style, and pending state explicitly, then renders semantics, tokenized circular chrome, disabled opacity, and pending spinner without owning reaction submission. |
+| `ReactionControlButton` | `lib/swipes/shared/profile_surface/profile_reaction_controls.dart:220` | Single like/comment behavior adapter used by `ProfileReactionControls`. Receives tooltip, icon, enabled callback, surface/overlay style, and pending state explicitly; retains feature semantics, palette, opacity, and spinner state while delegating circular rendering to `CatchIconButton`. |
 | `ProfileReactionCommentSheet` | `lib/swipes/presentation/widgets/profile_reaction_controls.dart:100` | Shared reaction-comment bottom sheet used by `ProfileReactionControls`. Keeps comment entry provider-free, uses canonical `CatchBottomSheetScaffold`/`CatchField` chrome, supports empty and prefilled draft review states, and is cataloged directly for exact Widgetbook review. |
 | `SwipeEmptyState` | `lib/swipes/presentation/widgets/swipe_empty_state.dart:7` | Provider-free deck empty/access state. Renders copy from `buildSwipeEmptyContent` for empty queue, event missing, sign-in required, event in progress, did-not-attend, and closed-window branches. |
 | `AttendedEventTile` | `lib/swipes/presentation/widgets/attended_event_tile.dart:11` | Provider-free row tile for an attended event in the catches hub list. Renders `CatchesHubEventRow` title, date/attendance label, countdown label, recap CTA, and catch badge; catch and recap navigation callbacks are supplied by `SwipeHubScreen`. |
@@ -6850,6 +6863,7 @@ Widgetbook callers.
 | `ChatsListBody` | `lib/chats/presentation/inbox/widgets/chats_list_body.dart:10` | Body wrapper for the chats list. Folds `viewModel.newMatches` and `viewModel.conversations` into one contiguous row list, renders `HostInboxBroadcastCard` as the host populated-state lead-in, keeps the consumer `CONVERSATIONS` section label, and delegates row rendering plus parent-supplied callbacks to `ChatConversationsList` without rendering the old new-match rail. |
 | `HostInboxBroadcastCard` | `lib/chats/presentation/inbox/widgets/chats_list_body.dart:55` | Provider-free dark broadcast lead-in. Receives roster audience count/label, lifecycle or rollout subtitle, and a parent-owned callback; it remains visible for a nonempty roster even when no personal inquiry threads exist. |
 | `HostBroadcastComposerSheet` | `lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart:56` | Host event broadcast mutation sheet. Selects Booked, Prospective, or Everyone; applies templates; edits a 500-character body; rotates request ids only when payload changes; preserves an id across retries; renders pending/error/disabled states; and submits through `HostInboxBroadcastController`. |
+| `ChatBlastComposerSheet` | `lib/chats/presentation/inbox/chat_blast_composer_sheet.dart:10` | Eventless Chats blast review composition. It retains the non-sending template preview formerly embedded in `ChatInboxScreen`, but its explicit name prevents collision with the canonical event-aware Hosts broadcast workflow. |
 | `HostInboxScopeSelector` | `lib/hosts/presentation/inbox/host_inbox_screen.dart` | Provider-free compact sliver selector for ordered operated-event scopes plus explicit General inquiries. Its activity-colored mono label opens the canonical `CatchMenu`; the route owns selection and URL synchronization. |
 | `HostInboxAudienceRail` | `lib/hosts/presentation/inbox/host_inbox_screen.dart` | Provider-free compact mono Booked/Prospective `CatchOptionGroup`. Its labels count personal inquiry threads; the separate broadcast card intentionally counts eligible roster recipients. |
 | `HostInboxWorkspaceSliver` | `lib/hosts/presentation/inbox/host_inbox_screen.dart` | Provider-free selected-scope workspace. Composes the roster-backed broadcast action, audience-filtered personal inquiry rows, search/General/segment empty states, and lifecycle or rollout availability copy without owning navigation or mutation state. |

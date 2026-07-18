@@ -62,6 +62,7 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
+import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
@@ -81,6 +82,7 @@ import 'package:catch_dating_app/locations/shared/catch_map_preview.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 @widgetbook.UseCase(
@@ -633,12 +635,10 @@ Widget catchErrorIconContractStates(BuildContext context) {
   type: CatchSkeleton,
   path: '[Core primitives]/Loading',
 )
-Widget catchLoadingContractStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-
+Widget catchSkeletonContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchLoading',
-    contractId: 'catch.loading',
+    title: 'CatchSkeleton',
+    contractId: 'catch.skeleton',
     states: const [
       'card',
       'box',
@@ -647,7 +647,6 @@ Widget catchLoadingContractStates(BuildContext context) {
       'circle',
       'custom',
       'list',
-      'spinner',
       'async-screen',
       'async-sliver',
     ],
@@ -680,25 +679,6 @@ Widget catchLoadingContractStates(BuildContext context) {
         label: 'list',
         child: CatchSkeletonList(count: 3, height: 72),
       ),
-      _StateCard(
-        label: 'spinner',
-        child: _InlineWrap(
-          children: [
-            const SizedBox.square(
-              dimension: 48,
-              child: CatchLoadingIndicator(),
-            ),
-            const SizedBox.square(
-              dimension: 32,
-              child: CatchLoadingIndicator(strokeWidth: 2),
-            ),
-            SizedBox.square(
-              dimension: 48,
-              child: CatchLoadingIndicator(color: t.primary),
-            ),
-          ],
-        ),
-      ),
       const _StateCard(
         label: 'async-screen',
         child: SizedBox(
@@ -714,6 +694,141 @@ Widget catchLoadingContractStates(BuildContext context) {
             slivers: [CatchAsyncSliverLoading(count: 2, itemHeight: 72)],
           ),
         ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchLoadingIndicator,
+  path: '[Core primitives]/Loading',
+)
+Widget catchLoadingIndicatorContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _ContractScreen(
+    title: 'CatchLoadingIndicator',
+    contractId: 'catch.loading_indicator',
+    states: const ['default', 'small', 'tinted'],
+    children: [
+      const _StateCard(
+        label: 'default',
+        child: SizedBox.square(dimension: 48, child: CatchLoadingIndicator()),
+      ),
+      const _StateCard(
+        label: 'small',
+        child: SizedBox.square(
+          dimension: 32,
+          child: CatchLoadingIndicator(strokeWidth: 2),
+        ),
+      ),
+      _StateCard(
+        label: 'tinted',
+        child: SizedBox.square(
+          dimension: 48,
+          child: CatchLoadingIndicator(color: t.primary),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchAsyncValueView,
+  path: '[Core primitives]/Loading',
+)
+Widget catchAsyncValueContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchAsyncValueView',
+    contractId: 'catch.async_value',
+    states: const [
+      'data',
+      'loading',
+      'error',
+      'skip-loading-on-refresh',
+      'custom-builders',
+    ],
+    children: [
+      _StateCard(
+        label: 'data',
+        child: CatchAsyncValueView<String>(
+          value: const AsyncValue.data('3 events ready'),
+          builder: (context, value) => CatchSurface.card(child: Text(value)),
+        ),
+      ),
+      _StateCard(
+        label: 'loading',
+        child: SizedBox(
+          height: 80,
+          child: CatchAsyncValueView<String>(
+            value: const AsyncValue.loading(),
+            builder: (context, value) => Text(value),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'error',
+        child: SizedBox(
+          height: 220,
+          child: CatchAsyncValueView<String>(
+            value: AsyncValue.error(
+              Exception('Could not load events'),
+              StackTrace.current,
+            ),
+            builder: (context, value) => Text(value),
+            onRetry: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'skip-loading-on-refresh',
+        child: CatchAsyncValueView<String>(
+          value: const AsyncValue.data('Existing data remains visible'),
+          builder: (context, value) => CatchSurface.card(child: Text(value)),
+          skipLoadingOnRefresh: true,
+        ),
+      ),
+      _StateCard(
+        label: 'custom-builders',
+        child: CatchAsyncValueView<String>(
+          value: const AsyncValue.loading(),
+          builder: (context, value) => Text(value),
+          loadingBuilder: (context) =>
+              const CatchInlineStatus(label: 'Custom loading state'),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchStartupLoadingScreen,
+  path: '[Core primitives]/Loading',
+)
+Widget catchStartupLoadingScreenContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchStartupLoadingScreen',
+    contractId: 'catch.startup_loading_screen',
+    states: const ['startup', 'safe-area', 'primary-fill', 'bounded-spinner'],
+    children: const [
+      _StateCard(
+        label: 'startup',
+        child: SizedBox(height: 360, child: CatchStartupLoadingScreen()),
+      ),
+      _StateCard(
+        label: 'safe-area',
+        child: SizedBox(height: 360, child: CatchStartupLoadingScreen()),
+      ),
+      _StateCard(
+        label: 'primary-fill',
+        child: SizedBox(height: 360, child: CatchStartupLoadingScreen()),
+      ),
+      _StateCard(
+        label: 'bounded-spinner',
+        child: SizedBox(height: 360, child: CatchStartupLoadingScreen()),
       ),
     ],
   );

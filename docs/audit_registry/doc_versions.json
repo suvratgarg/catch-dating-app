@@ -22,8 +22,8 @@
   },
   "widget_consolidation_receipts": {
     "path": "docs/audit_registry/widget_consolidation_receipts.md",
-    "version": "0.2.3",
-    "updated": "2026-07-16",
+    "version": "0.2.4",
+    "updated": "2026-07-19",
     "status": "active",
     "read_policy": "Use for widget-consolidation pipeline commands, spot-check receipts, generated counts, calibration notes, and known limitations before review-packet generation."
   },
@@ -254,8 +254,8 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.652",
-    "updated": "2026-07-18",
+    "version": "2.5.653",
+    "updated": "2026-07-19",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, reusable design-system roles, action-effect/state adapters, or provider-free section boundaries materially change."
   },

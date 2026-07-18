@@ -19,6 +19,10 @@ const loading = patterns.families.find((family) => family.id === "loading-concep
 const ownerReviewQueue = buildOwnerReviewQueue(patterns.families);
 const familyDeltas = buildFamilyDeltas();
 const widgetbookCoverage = classification.summary.widgetbookCoverage;
+const semanticReceiptId = "widget-concept-owner-decisions-2026-07-19";
+const semanticReceiptRecorded = fs
+  .readFileSync(fromRepo("docs/audit_registry/widget_consolidation_receipts.md"), "utf8")
+  .includes(semanticReceiptId);
 const completionAudit = buildCompletionAudit();
 
 const metricsDocument = {
@@ -109,7 +113,7 @@ design-sync manifest. Do not edit it by hand. The machine-readable companion is
 | Unclassified public widgets | — | ${classification.summary.unclassifiedCount} | Must remain zero. |
 | Widgetbook-complete concept primaries | — | ${widgetbookCoverage.conceptPrimariesCataloged}/${widgetbookCoverage.conceptPrimaries} | Evidence is role-derived. |
 | Widgetbook-covered member classes | — | ${widgetbookCoverage.memberClassesCataloged}/${widgetbookCoverage.memberClasses} | Reviewed directly or under the parent family. |
-| Owner-review queue | — | ${ownerReviewQueue.length} | Only unresolved semantic decisions appear here. |
+| Owner/live gate queue | — | ${ownerReviewQueue.length} | Unresolved semantic decisions and externally gated design-tool proof appear here. |
 
 ## Collision and ledger coverage
 
@@ -133,9 +137,9 @@ candidate for review, never permission to merge.
 |---|---:|---:|---:|---:|---:|---:|---:|
 ${familyDeltas.map((family) => `| ${family.family} | ${family.baselineConcepts} | ${family.currentConcepts} | ${signed(family.conceptDelta)} | ${family.proposedConcepts ?? "—"} | ${family.baselineClasses} | ${family.currentClasses} | ${signed(family.classDelta)} |`).join("\n")}
 
-Concept identity and Dart class count are deliberately independent. The
-accepted changes are classification-only, so no family claims class deletion
-as an architectural improvement.
+Concept identity and Dart class count are deliberately independent. The loading
+decompression changes contract identity without unnecessary Dart API churn;
+renderer consolidations are measured separately from concept count.
 
 ## Four-outcome calibration
 
@@ -144,7 +148,7 @@ as an architectural improvement.
 | Error and person rows | one concept, multiple members | Placement and layout APIs remain public while sharing one concept id. |
 | CatchMetaRow vs StageSectionLabel | concept vs feature composition | Metadata and structural hierarchy remain separate despite visual similarity. |
 | NotificationRow and CatchPrivacyBadge | composition and recipe member | Notification composes CatchField; privacy composes CatchBadge.privacy. |
-| Loading | ${loading?.status ?? "missing"} | Owner review is required before decompression is finalized. |
+| Loading | ${loading?.status ?? "missing"} | Three concepts now own skeletons, indeterminate progress, and async-value boundaries; CatchStartupLoadingScreen is a composition. |
 
 ## Design-tool readiness
 
@@ -166,10 +170,10 @@ The Badge + Field spike is ${sync.spike.status}. Code Connect is
 ${sync.spike.codeConnectStatus}; the live gate remains red until the Figma
 publish snapshot, plan tier, and generated mappings satisfy the prerequisites.
 
-## Owner review queue
+## Remaining owner/live gate queue
 
 ${ownerReviewQueue.length === 0
-    ? "No owner decisions remain."
+    ? "No owner decisions or live design-tool gates remain."
     : ownerReviewQueue.map((item) => `- \`${item.familyId}/${item.questionId}\`: ${item.prompt} Recommended: ${item.recommendation}`).join("\n")}
 
 ## Completion audit
@@ -178,9 +182,9 @@ ${ownerReviewQueue.length === 0
 |---|---|---|
 ${completionAudit.map((item) => `| ${item.requirement} | ${item.status} | ${item.evidence} |`).join("\n")}
 
-The proposal is not complete while any row is \`pending\`. Passing local gates
-does not substitute for the three semantic owner decisions or the live,
-published Badge + Field evidence.
+The proposal is not complete while any row is \`pending\`. The local semantic
+implementation and the live, published Badge + Field evidence are independent
+proof obligations.
 
 ## Reproduce
 
@@ -312,9 +316,11 @@ function buildCompletionAudit() {
     },
     {
       requirement: "4. Verify accepted changes and stamp receipts",
-      status: semanticQueue.length === 0 ? "proven" : "pending",
-      evidence: semanticQueue.length === 0
-        ? "Focused checks, generated artifacts, and final clean receipt required"
+      status: semanticQueue.length === 0 && semanticReceiptRecorded ? "proven" : "pending",
+      evidence: semanticQueue.length === 0 && semanticReceiptRecorded
+        ? `Focused checks and audit receipt ${semanticReceiptId} are recorded`
+        : semanticQueue.length === 0
+          ? `Focused checks and audit receipt ${semanticReceiptId} are still required`
         : "Local partial receipt is green; final code scope and clean receipt depend on owner decisions",
     },
     {
@@ -349,7 +355,7 @@ function buildFamilyDeltas() {
     family("option-group-tab-rail", "Option group + tab rail", ["catch.option_group", "catch.tab_rail"], ["CatchOptionGroup", "CatchTabRail"], 2, 2),
     family("club-dock", "Club dock", ["catch.club_dock"], ["ClubDetailDock"], 1, 1),
     family("event-detail-screen", "Event detail screen body", ["catch.event_detail_sections"], ["EventDetailBody"], 1, 1),
-    {...family("loading", "Loading", ["catch.loading"], ["CatchAsyncScreenLoading", "CatchAsyncSliverLoading", "CatchAsyncValueSliver", "CatchAsyncValueView", "CatchLoadingIndicator", "CatchSkeleton", "CatchSkeletonList", "CatchStartupLoadingScreen"], 1, 8), proposedConcepts: 3},
+    {...family("loading", "Loading", ["catch.skeleton", "catch.loading_indicator", "catch.async_value", "catch.startup_loading_screen"], ["CatchAsyncScreenLoading", "CatchAsyncSliverLoading", "CatchAsyncValueSliver", "CatchAsyncValueView", "CatchLoadingIndicator", "CatchSkeleton", "CatchSkeletonList", "CatchStartupLoadingScreen"], 1, 8), proposedConcepts: 3},
   ];
   const liveNames = new Set(classification.widgets.map((entry) => entry.name));
   const componentsById = new Map(components.components.map((component) => [component.id, component]));

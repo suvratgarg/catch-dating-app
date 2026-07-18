@@ -6318,6 +6318,52 @@
       "decidedBy": "codex-rule:K5",
       "date": "2026-07-18",
       "status": "recorded-concept-reconciliation"
+    },
+    {
+      "clusterId": "concept-boundary:loading-concept-decompression",
+      "decision": "split-contract-concepts",
+      "canonicalSymbol": "CatchSkeleton + CatchLoadingIndicator + CatchAsyncValueView",
+      "members": [
+        {"name": "CatchSkeleton", "action": "canonical-concept"},
+        {"name": "CatchSkeletonList", "action": "register-member", "note": "catch.skeleton"},
+        {"name": "CatchAsyncScreenLoading", "action": "register-member", "note": "catch.skeleton"},
+        {"name": "CatchAsyncSliverLoading", "action": "register-member", "note": "catch.skeleton"},
+        {"name": "CatchLoadingIndicator", "action": "canonical-concept"},
+        {"name": "CatchAsyncValueView", "action": "canonical-concept"},
+        {"name": "CatchAsyncValueSliver", "action": "register-member", "note": "catch.async_value"},
+        {"name": "CatchStartupLoadingScreen", "action": "register-composition"}
+      ],
+      "rationale": "Owner approval establishes three independent concepts based on semantic responsibility rather than the shared circumstance of waiting: content-shaped skeletons, indeterminate progress, and async data-state boundaries. The branded startup surface is a composition over the indicator. Stable Dart class names remain unchanged; the contract registry and formal previews now expose the actual concept boundaries.",
+      "decidedBy": "owner-approved -> codex",
+      "date": "2026-07-19",
+      "status": "recorded-concept-reconciliation"
+    },
+    {
+      "clusterId": "concept-boundary:host-broadcast-composer-namespace",
+      "decision": "qualify-distinct-compositions",
+      "canonicalSymbol": "HostBroadcastComposerSheet",
+      "members": [
+        {"name": "HostBroadcastComposerSheet", "action": "canonical"},
+        {"name": "ChatBlastComposerSheet", "action": "rename-and-keep"}
+      ],
+      "rationale": "The event-aware Hosts sheet owns the canonical host-broadcast workflow. The eventless Chats review surface remains useful but is explicitly named ChatBlastComposerSheet, eliminating the deterministic namespace collision without merging distinct workflow behavior.",
+      "decidedBy": "owner-approved -> codex",
+      "date": "2026-07-19",
+      "status": "recorded-concept-reconciliation"
+    },
+    {
+      "clusterId": "concept-boundary:swipe-reaction-icon-rendering",
+      "decision": "unify-renderer-keep-adapters",
+      "canonicalSymbol": "CatchIconButton",
+      "members": [
+        {"name": "CatchIconButton", "action": "canonical"},
+        {"name": "CatchesPassButton", "action": "unify", "note": "retain pass semantics and SwipeKeys.passButton"},
+        {"name": "ReactionControlButton", "action": "unify", "note": "retain reaction palette and pending semantics"}
+      ],
+      "rationale": "Both feature controls now delegate circular icon-action rendering to CatchIconButton while retaining behavior-bearing adapters. This removes duplicate renderer ownership without promoting pass or reaction behavior into a new core concept.",
+      "decidedBy": "owner-approved -> codex",
+      "date": "2026-07-19",
+      "status": "recorded-concept-reconciliation"
     }
   ]
 }

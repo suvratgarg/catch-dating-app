@@ -2351,13 +2351,46 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Loading',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchAsyncValueView',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchAsyncValueContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchLoadingIndicator',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchLoadingIndicatorContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchSkeleton',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchLoadingContractStates,
+                        .catchSkeletonContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchStartupLoadingScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchStartupLoadingScreenContractStates,
               ),
             ],
           ),
@@ -9483,22 +9516,22 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Matches and chat',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'ChatBlastComposerSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Eventless blast review',
+                builder: _widgetbook_workspace_matches_matches_chat_use_cases
+                    .chatBlastComposerSheetStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ChatsListScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Legacy shared Host list states',
                 builder: _widgetbook_workspace_matches_matches_chat_use_cases
                     .matchesListHostInboxStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostBroadcastComposerSheet',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Legacy review sheet',
-                builder: _widgetbook_workspace_matches_matches_chat_use_cases
-                    .hostBroadcastComposerSheetStates,
               ),
             ],
           ),

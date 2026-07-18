@@ -13,15 +13,15 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "ae3c17e78844d026401dacbc15bcc97a2beb66f20fd52012255b76878c4b010a",
+  "sourceDigest": "3850a12f1c85d7e411dad9ea981a25f929e16a34f77fdf33fb7535ec624e440b",
   "claudeContext": {
     "status": "current",
-    "digest": "ae3c17e78844d026401dacbc15bcc97a2beb66f20fd52012255b76878c4b010a",
-    "contractDigest": "ae3c17e78844d026401dacbc15bcc97a2beb66f20fd52012255b76878c4b010a"
+    "digest": "3850a12f1c85d7e411dad9ea981a25f929e16a34f77fdf33fb7535ec624e440b",
+    "contractDigest": "3850a12f1c85d7e411dad9ea981a25f929e16a34f77fdf33fb7535ec624e440b"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "8ed95e7aab4f5eb1fcde44b0dffcfc92d37a1a601c870f7ebc24f75777d4b29c",
+    "handoffRequestDigest": "f2b4dde7d12e989595eec7b361b800bcf2c264c16e764022c1c417e898c3d869",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -53,20 +53,27 @@
     }
   },
   "metrics": {
-    "contractCount": 65,
+    "contractCount": 68,
     "publicClassCount": 194,
-    "conceptCount": 60,
-    "memberCount": 118,
-    "membersPerConcept": 1.97,
+    "conceptCount": 62,
+    "memberCount": 115,
+    "membersPerConcept": 1.85,
     "unclassifiedCount": 0,
     "byConceptRole": {
-      "composition": 2,
-      "concept": 60,
-      "member": 118,
+      "composition": 3,
+      "concept": 62,
+      "member": 115,
       "screen": 14
     },
-    "collisionCount": 31,
+    "collisionCount": 32,
     "collisions": [
+      {
+        "key": "catch.async_value",
+        "symbols": [
+          "CatchAsyncValueSliver",
+          "CatchAsyncValueView"
+        ]
+      },
       {
         "key": "catch.badge",
         "symbols": [
@@ -203,19 +210,6 @@
         ]
       },
       {
-        "key": "catch.loading",
-        "symbols": [
-          "CatchAsyncScreenLoading",
-          "CatchAsyncSliverLoading",
-          "CatchAsyncValueSliver",
-          "CatchAsyncValueView",
-          "CatchLoadingIndicator",
-          "CatchSkeleton",
-          "CatchSkeletonList",
-          "CatchStartupLoadingScreen"
-        ]
-      },
-      {
         "key": "catch.menu",
         "symbols": [
           "CatchActionMenu",
@@ -323,6 +317,15 @@
         ]
       },
       {
+        "key": "catch.skeleton",
+        "symbols": [
+          "CatchAsyncScreenLoading",
+          "CatchAsyncSliverLoading",
+          "CatchSkeleton",
+          "CatchSkeletonList"
+        ]
+      },
+      {
         "key": "catch.step_header",
         "symbols": [
           "CatchStepHeader",
@@ -373,20 +376,20 @@
       }
     ],
     "naming": {
-      "canonicalConceptNames": 59,
+      "canonicalConceptNames": 61,
       "documentedConceptNameExceptions": 1,
       "undocumentedConceptNameExceptions": 0
     },
     "figmaMappingStates": {
-      "missing": 65
+      "missing": 68
     },
     "figmaPropertyDriftCount": 0,
     "figmaVariableBoundMappings": 0,
     "figmaReviewSnapshotMappings": 0,
     "codeConnectMappingStates": {
-      "planned": 65
+      "planned": 68
     },
-    "claudeAllowed": 65,
+    "claudeAllowed": 68,
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
     "figmaMappedConcepts": 0
@@ -682,12 +685,12 @@
       "contractDigest": "dfe5a9b091faa65c35d1d58b01325eadc5d1ea7b4917f8635e74d568ab2323a4"
     },
     {
-      "contractId": "catch.loading",
+      "contractId": "catch.skeleton",
       "conceptRole": "concept",
-      "conceptId": "catch.loading",
+      "conceptId": "catch.skeleton",
       "dartSymbol": "CatchSkeleton",
       "dartFile": "lib/core/widgets/catch_skeleton.dart",
-      "figmaName": "Catch/Loading",
+      "figmaName": "Catch/Skeleton",
       "figmaDeclaredStatus": "unmapped",
       "figmaDeclaredUrl": null,
       "figmaStatus": "missing",
@@ -698,15 +701,96 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 6,
-      "figmaExpectedPropertyDigest": "fcccf1712fddbfe6b4a0f00fa0ef87dd743813a71bb92109cf0ae4ff2c57b230",
+      "figmaExpectedPropertyDigest": "708db51f80ffb8cf11fde07f0bb556860da569b5c8cb6d7cf186c3c3e2fbcb6b",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
       "codeConnectStatus": "planned",
       "codeConnectTemplate": null,
-      "claudeHandoffName": "Loading",
+      "claudeHandoffName": "Skeleton",
       "claudeAllowed": true,
-      "contractDigest": "c2492ea4accfa1454d94243dea04b04beea753a88c7d1a4c933c52c190660eaa"
+      "contractDigest": "b108a85d9b9e09934cdd6c8f88b65fd7adcd7908314ec4b4ed10ad60ffdd2050"
+    },
+    {
+      "contractId": "catch.loading_indicator",
+      "conceptRole": "concept",
+      "conceptId": "catch.loading_indicator",
+      "dartSymbol": "CatchLoadingIndicator",
+      "dartFile": "lib/core/widgets/catch_loading_indicator.dart",
+      "figmaName": "Catch/LoadingIndicator",
+      "figmaDeclaredStatus": "unmapped",
+      "figmaDeclaredUrl": null,
+      "figmaStatus": "missing",
+      "figmaUrl": null,
+      "figmaNodeId": null,
+      "figmaComponentKey": null,
+      "figmaVariableBindingCount": 0,
+      "figmaVariableBindingDigest": null,
+      "figmaReviewSnapshot": null,
+      "figmaExpectedPropertyCount": 2,
+      "figmaExpectedPropertyDigest": "fc3ec318198d9ed1791fc66ef6592a8145a067d7a6db8c9ec79b9c48e18c598b",
+      "figmaActualPropertyCount": 0,
+      "figmaActualPropertyDigest": null,
+      "figmaDrift": [],
+      "codeConnectStatus": "planned",
+      "codeConnectTemplate": null,
+      "claudeHandoffName": "LoadingIndicator",
+      "claudeAllowed": true,
+      "contractDigest": "9c67053d84383ce5d973d3e225834e09907f7fa2e6f85d342a08cdf520d16389"
+    },
+    {
+      "contractId": "catch.async_value",
+      "conceptRole": "concept",
+      "conceptId": "catch.async_value",
+      "dartSymbol": "CatchAsyncValueView",
+      "dartFile": "lib/core/widgets/catch_async_value_view.dart",
+      "figmaName": "Catch/AsyncValue",
+      "figmaDeclaredStatus": "unmapped",
+      "figmaDeclaredUrl": null,
+      "figmaStatus": "missing",
+      "figmaUrl": null,
+      "figmaNodeId": null,
+      "figmaComponentKey": null,
+      "figmaVariableBindingCount": 0,
+      "figmaVariableBindingDigest": null,
+      "figmaReviewSnapshot": null,
+      "figmaExpectedPropertyCount": 4,
+      "figmaExpectedPropertyDigest": "c9a4654f117c77c0ea0f4b625cdff98fc0f9fdd65f131db110f663ba521d9912",
+      "figmaActualPropertyCount": 0,
+      "figmaActualPropertyDigest": null,
+      "figmaDrift": [],
+      "codeConnectStatus": "planned",
+      "codeConnectTemplate": null,
+      "claudeHandoffName": "AsyncValue",
+      "claudeAllowed": true,
+      "contractDigest": "eb1e26934fdbeb68385da62b87b25c20acdc8eb60fddeb9db55b089d9ca8fc5d"
+    },
+    {
+      "contractId": "catch.startup_loading_screen",
+      "conceptRole": "composition",
+      "conceptId": null,
+      "dartSymbol": "CatchStartupLoadingScreen",
+      "dartFile": "lib/core/widgets/catch_startup_loading_screen.dart",
+      "figmaName": "Catch/StartupLoadingScreen",
+      "figmaDeclaredStatus": "unmapped",
+      "figmaDeclaredUrl": null,
+      "figmaStatus": "missing",
+      "figmaUrl": null,
+      "figmaNodeId": null,
+      "figmaComponentKey": null,
+      "figmaVariableBindingCount": 0,
+      "figmaVariableBindingDigest": null,
+      "figmaReviewSnapshot": null,
+      "figmaExpectedPropertyCount": 1,
+      "figmaExpectedPropertyDigest": "5ba3982185614f69fb979bde63660b2ac2ac5863fb0cbd9cf8b56293ddfd14ef",
+      "figmaActualPropertyCount": 0,
+      "figmaActualPropertyDigest": null,
+      "figmaDrift": [],
+      "codeConnectStatus": "planned",
+      "codeConnectTemplate": null,
+      "claudeHandoffName": "StartupLoadingScreen",
+      "claudeAllowed": true,
+      "contractDigest": "f30ffbcfe3b6edd263210a85bf3db49202d95f778823c8f267730421938b0ee4"
     },
     {
       "contractId": "catch.typography",

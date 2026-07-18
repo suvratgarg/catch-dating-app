@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-18T13:19:13.476Z",
+  "generatedAt": "2026-07-18T19:55:57.287Z",
   "baseRef": "HEAD^",
   "baseStatus": "git-ref",
   "baseWarning": null,
@@ -28,12 +28,12 @@
   "movedWidgetHelpers": [],
   "addedWidgets": [
     {
-      "name": "CatchStateViewport",
+      "name": "ChatBlastComposerSheet",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 92,
-      "file": "lib/core/widgets/catch_empty_state.dart",
-      "library": "lib/core/widgets/catch_empty_state.dart",
+      "line": 10,
+      "file": "lib/chats/presentation/inbox/chat_blast_composer_sheet.dart",
+      "library": "lib/chats/presentation/inbox/chat_blast_composer_sheet.dart",
       "widgetbookCovered": true,
       "catalogMentioned": true,
       "status": "covered",

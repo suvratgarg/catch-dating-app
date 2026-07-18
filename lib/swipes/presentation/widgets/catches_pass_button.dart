@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:flutter/material.dart';
@@ -33,38 +34,28 @@ class CatchesPassButton extends StatelessWidget {
         child: AnimatedOpacity(
           opacity: isEnabled || isPending ? 1 : CatchOpacity.disabledControl,
           duration: const Duration(milliseconds: 120),
-          child: Material(
+          child: CatchIconButton(
             key: SwipeKeys.passButton,
-            color: t.surface.withValues(alpha: CatchOpacity.passButtonFill),
-            shape: CircleBorder(side: BorderSide(color: t.line)),
-            elevation: CatchElevation.physicalPassControl,
-            shadowColor: CatchTokens.editorialBlack.withValues(
-              alpha: CatchOpacity.passButtonShadow,
+            onTap: isEnabled ? onPressed : null,
+            variant: CatchIconButtonVariant.float,
+            background: t.surface.withValues(
+              alpha: CatchOpacity.passButtonFill,
             ),
-            child: InkWell(
-              customBorder: const CircleBorder(),
-              onTap: isEnabled ? onPressed : null,
-              child: SizedBox.square(
-                dimension: CatchLayout.passButtonExtent,
-                child: Center(
-                  child: isPending
-                      ? SizedBox.square(
-                          dimension: CatchIcon.passButton,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.6,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              passColor,
-                            ),
-                          ),
-                        )
-                      : Icon(
-                          CatchIcons.closeRounded,
-                          color: passColor,
-                          size: CatchIcon.passButton,
-                        ),
-                ),
-              ),
-            ),
+            borderColor: t.line,
+            size: CatchLayout.passButtonExtent,
+            child: isPending
+                ? SizedBox.square(
+                    dimension: CatchIcon.passButton,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.6,
+                      valueColor: AlwaysStoppedAnimation<Color>(passColor),
+                    ),
+                  )
+                : Icon(
+                    CatchIcons.closeRounded,
+                    color: passColor,
+                    size: CatchIcon.passButton,
+                  ),
           ),
         ),
       ),

@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-07-18T13:18:57.015Z",
+  "generatedAt": "2026-07-18T19:50:50.961Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 861,
-    "components": 813,
-    "stateCards": 1765,
-    "reviewCandidates": 42,
+    "useCases": 865,
+    "components": 814,
+    "stateCards": 1780,
+    "reviewCandidates": 44,
     "oversizedUseCases": 42,
-    "multiUseCaseComponents": 42
+    "multiUseCaseComponents": 45
   },
   "reviewCandidates": [
     {
@@ -3949,6 +3949,75 @@
       ]
     },
     {
+      "component": "CatchAsyncValueView",
+      "useCaseCount": 2,
+      "stateCardCount": 6,
+      "paths": [
+        "[Core catalog]/Loading",
+        "[Core primitives]/Loading"
+      ],
+      "labels": [
+        "custom-builders",
+        "data",
+        "data / loading / error",
+        "error",
+        "loading",
+        "skip-loading-on-refresh"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Catalog states",
+          "functionName": "catchAsyncValueViewCatalogStates",
+          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
+          "path": "[Core catalog]/Loading",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "data / loading / error",
+              "normalizedLabel": "data loading error"
+            }
+          ]
+        },
+        {
+          "name": "Contract states",
+          "functionName": "catchAsyncValueContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Loading",
+          "stateCardCount": 5,
+          "stateCards": [
+            {
+              "label": "data",
+              "normalizedLabel": "data"
+            },
+            {
+              "label": "loading",
+              "normalizedLabel": "loading"
+            },
+            {
+              "label": "error",
+              "normalizedLabel": "error"
+            },
+            {
+              "label": "skip-loading-on-refresh",
+              "normalizedLabel": "skip loading on refresh"
+            },
+            {
+              "label": "custom-builders",
+              "normalizedLabel": "custom builders"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchBottomAction",
       "useCaseCount": 2,
       "stateCardCount": 6,
@@ -4081,6 +4150,75 @@
             {
               "label": "selected disabled",
               "normalizedLabel": "selected disabled"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchMetaRow",
+      "useCaseCount": 2,
+      "stateCardCount": 6,
+      "paths": [
+        "[Club Detail]/Cards",
+        "[Core primitives]/Metadata"
+      ],
+      "labels": [
+        "default",
+        "location",
+        "member count",
+        "semantic-icon",
+        "semantic-label",
+        "truncated"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Share meta row states",
+          "functionName": "clubShareMetaRowStates",
+          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
+          "path": "[Club Detail]/Cards",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "location",
+              "normalizedLabel": "location"
+            },
+            {
+              "label": "member count",
+              "normalizedLabel": "member count"
+            }
+          ]
+        },
+        {
+          "name": "Contract states",
+          "functionName": "catchMetaRowContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Metadata",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "default",
+              "normalizedLabel": "default"
+            },
+            {
+              "label": "semantic-icon",
+              "normalizedLabel": "semantic icon"
+            },
+            {
+              "label": "semantic-label",
+              "normalizedLabel": "semantic label"
+            },
+            {
+              "label": "truncated",
+              "normalizedLabel": "truncated"
             }
           ]
         }
@@ -8093,6 +8231,75 @@
       ]
     },
     {
+      "component": "CatchAsyncValueView",
+      "useCaseCount": 2,
+      "stateCardCount": 6,
+      "paths": [
+        "[Core catalog]/Loading",
+        "[Core primitives]/Loading"
+      ],
+      "labels": [
+        "custom-builders",
+        "data",
+        "data / loading / error",
+        "error",
+        "loading",
+        "skip-loading-on-refresh"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Catalog states",
+          "functionName": "catchAsyncValueViewCatalogStates",
+          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
+          "path": "[Core catalog]/Loading",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "data / loading / error",
+              "normalizedLabel": "data loading error"
+            }
+          ]
+        },
+        {
+          "name": "Contract states",
+          "functionName": "catchAsyncValueContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Loading",
+          "stateCardCount": 5,
+          "stateCards": [
+            {
+              "label": "data",
+              "normalizedLabel": "data"
+            },
+            {
+              "label": "loading",
+              "normalizedLabel": "loading"
+            },
+            {
+              "label": "error",
+              "normalizedLabel": "error"
+            },
+            {
+              "label": "skip-loading-on-refresh",
+              "normalizedLabel": "skip loading on refresh"
+            },
+            {
+              "label": "custom-builders",
+              "normalizedLabel": "custom builders"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchBottomAction",
       "useCaseCount": 2,
       "stateCardCount": 6,
@@ -8231,6 +8438,75 @@
       ]
     },
     {
+      "component": "CatchMetaRow",
+      "useCaseCount": 2,
+      "stateCardCount": 6,
+      "paths": [
+        "[Club Detail]/Cards",
+        "[Core primitives]/Metadata"
+      ],
+      "labels": [
+        "default",
+        "location",
+        "member count",
+        "semantic-icon",
+        "semantic-label",
+        "truncated"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "split-across-use-cases"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Share meta row states",
+          "functionName": "clubShareMetaRowStates",
+          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
+          "path": "[Club Detail]/Cards",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "location",
+              "normalizedLabel": "location"
+            },
+            {
+              "label": "member count",
+              "normalizedLabel": "member count"
+            }
+          ]
+        },
+        {
+          "name": "Contract states",
+          "functionName": "catchMetaRowContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Metadata",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "default",
+              "normalizedLabel": "default"
+            },
+            {
+              "label": "semantic-icon",
+              "normalizedLabel": "semantic icon"
+            },
+            {
+              "label": "semantic-label",
+              "normalizedLabel": "semantic label"
+            },
+            {
+              "label": "truncated",
+              "normalizedLabel": "truncated"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchSectionLabel",
       "useCaseCount": 2,
       "stateCardCount": 6,
@@ -8294,87 +8570,6 @@
             {
               "label": "truncated",
               "normalizedLabel": "truncated"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchSkeleton",
-      "useCaseCount": 1,
-      "stateCardCount": 10,
-      "paths": [
-        "[Core primitives]/Loading"
-      ],
-      "labels": [
-        "async-screen",
-        "async-sliver",
-        "box",
-        "card",
-        "circle",
-        "custom",
-        "list",
-        "spinner",
-        "text",
-        "text-block"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [
-          "canonical-contract-matrix"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "catchLoadingContractStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "catchLoadingContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Loading",
-          "stateCardCount": 10,
-          "stateCards": [
-            {
-              "label": "card",
-              "normalizedLabel": "card"
-            },
-            {
-              "label": "box",
-              "normalizedLabel": "box"
-            },
-            {
-              "label": "text",
-              "normalizedLabel": "text"
-            },
-            {
-              "label": "text-block",
-              "normalizedLabel": "text block"
-            },
-            {
-              "label": "circle",
-              "normalizedLabel": "circle"
-            },
-            {
-              "label": "custom",
-              "normalizedLabel": "custom"
-            },
-            {
-              "label": "list",
-              "normalizedLabel": "list"
-            },
-            {
-              "label": "spinner",
-              "normalizedLabel": "spinner"
-            },
-            {
-              "label": "async-screen",
-              "normalizedLabel": "async screen"
-            },
-            {
-              "label": "async-sliver",
-              "normalizedLabel": "async sliver"
             }
           ]
         }
@@ -8527,6 +8722,82 @@
             {
               "label": "count",
               "normalizedLabel": "count"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchSkeleton",
+      "useCaseCount": 1,
+      "stateCardCount": 9,
+      "paths": [
+        "[Core primitives]/Loading"
+      ],
+      "labels": [
+        "async-screen",
+        "async-sliver",
+        "box",
+        "card",
+        "circle",
+        "custom",
+        "list",
+        "text",
+        "text-block"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [
+          "canonical-contract-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "catchSkeletonContractStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchSkeletonContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Loading",
+          "stateCardCount": 9,
+          "stateCards": [
+            {
+              "label": "card",
+              "normalizedLabel": "card"
+            },
+            {
+              "label": "box",
+              "normalizedLabel": "box"
+            },
+            {
+              "label": "text",
+              "normalizedLabel": "text"
+            },
+            {
+              "label": "text-block",
+              "normalizedLabel": "text block"
+            },
+            {
+              "label": "circle",
+              "normalizedLabel": "circle"
+            },
+            {
+              "label": "custom",
+              "normalizedLabel": "custom"
+            },
+            {
+              "label": "list",
+              "normalizedLabel": "list"
+            },
+            {
+              "label": "async-screen",
+              "normalizedLabel": "async screen"
+            },
+            {
+              "label": "async-sliver",
+              "normalizedLabel": "async sliver"
             }
           ]
         }
@@ -10597,6 +10868,68 @@
       ]
     },
     {
+      "component": "CatchStartupLoadingScreen",
+      "useCaseCount": 2,
+      "stateCardCount": 5,
+      "paths": [
+        "[Core catalog]/Loading",
+        "[Core primitives]/Loading"
+      ],
+      "labels": [
+        "boot surface before delayed spinner",
+        "bounded-spinner",
+        "primary-fill",
+        "safe-area",
+        "startup"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Catalog states",
+          "functionName": "catchStartupLoadingScreenCatalogStates",
+          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
+          "path": "[Core catalog]/Loading",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "boot surface before delayed spinner",
+              "normalizedLabel": "boot surface before delayed spinner"
+            }
+          ]
+        },
+        {
+          "name": "Contract states",
+          "functionName": "catchStartupLoadingScreenContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Loading",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "startup",
+              "normalizedLabel": "startup"
+            },
+            {
+              "label": "safe-area",
+              "normalizedLabel": "safe area"
+            },
+            {
+              "label": "primary-fill",
+              "normalizedLabel": "primary fill"
+            },
+            {
+              "label": "bounded-spinner",
+              "normalizedLabel": "bounded spinner"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "EventDetailBody",
       "useCaseCount": 2,
       "stateCardCount": 5,
@@ -10652,68 +10985,6 @@
             {
               "label": "invite loop available",
               "normalizedLabel": "invite loop available"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "HostBroadcastComposerSheet",
-      "useCaseCount": 2,
-      "stateCardCount": 5,
-      "paths": [
-        "[P1 product surfaces]/Host/Inbox",
-        "[P2 supporting surfaces]/Matches and chat"
-      ],
-      "labels": [
-        "production preflight disabled",
-        "prospective audience",
-        "ready with template selected",
-        "template review surface",
-        "zero audience"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Lifecycle states",
-          "functionName": "hostBroadcastComposerLifecycleStates",
-          "file": "widgetbook/lib/hosts/host_inbox_use_cases.dart",
-          "path": "[P1 product surfaces]/Host/Inbox",
-          "stateCardCount": 4,
-          "stateCards": [
-            {
-              "label": "ready with template selected",
-              "normalizedLabel": "ready with template selected"
-            },
-            {
-              "label": "prospective audience",
-              "normalizedLabel": "prospective audience"
-            },
-            {
-              "label": "zero audience",
-              "normalizedLabel": "zero audience"
-            },
-            {
-              "label": "production preflight disabled",
-              "normalizedLabel": "production preflight disabled"
-            }
-          ]
-        },
-        {
-          "name": "Legacy review sheet",
-          "functionName": "hostBroadcastComposerSheetStates",
-          "file": "widgetbook/lib/matches/matches_chat_use_cases.dart",
-          "path": "[P2 supporting surfaces]/Matches and chat",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "template review surface",
-              "normalizedLabel": "template review surface"
             }
           ]
         }
@@ -12106,6 +12377,63 @@
       ]
     },
     {
+      "component": "CatchLoadingIndicator",
+      "useCaseCount": 2,
+      "stateCardCount": 4,
+      "paths": [
+        "[Core catalog]/Loading",
+        "[Core primitives]/Loading"
+      ],
+      "labels": [
+        "default",
+        "default / small / tinted",
+        "small",
+        "tinted"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Catalog states",
+          "functionName": "catchLoadingIndicatorCatalogStates",
+          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
+          "path": "[Core catalog]/Loading",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "default / small / tinted",
+              "normalizedLabel": "default small tinted"
+            }
+          ]
+        },
+        {
+          "name": "Contract states",
+          "functionName": "catchLoadingIndicatorContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Loading",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "default",
+              "normalizedLabel": "default"
+            },
+            {
+              "label": "small",
+              "normalizedLabel": "small"
+            },
+            {
+              "label": "tinted",
+              "normalizedLabel": "tinted"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "EventActivityStamp",
       "useCaseCount": 2,
       "stateCardCount": 4,
@@ -13473,6 +13801,53 @@
             {
               "label": "app content allowed",
               "normalizedLabel": "app content allowed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "HostBroadcastComposerSheet",
+      "useCaseCount": 1,
+      "stateCardCount": 4,
+      "paths": [
+        "[P1 product surfaces]/Host/Inbox"
+      ],
+      "labels": [
+        "production preflight disabled",
+        "prospective audience",
+        "ready with template selected",
+        "zero audience"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Lifecycle states",
+          "functionName": "hostBroadcastComposerLifecycleStates",
+          "file": "widgetbook/lib/hosts/host_inbox_use_cases.dart",
+          "path": "[P1 product surfaces]/Host/Inbox",
+          "stateCardCount": 4,
+          "stateCards": [
+            {
+              "label": "ready with template selected",
+              "normalizedLabel": "ready with template selected"
+            },
+            {
+              "label": "prospective audience",
+              "normalizedLabel": "prospective audience"
+            },
+            {
+              "label": "zero audience",
+              "normalizedLabel": "zero audience"
+            },
+            {
+              "label": "production preflight disabled",
+              "normalizedLabel": "production preflight disabled"
             }
           ]
         }
@@ -17699,43 +18074,6 @@
             {
               "label": "missing-coordinate",
               "normalizedLabel": "missing coordinate"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchMetaRow",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[Club Detail]/Cards"
-      ],
-      "labels": [
-        "location",
-        "member count"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Share meta row states",
-          "functionName": "clubShareMetaRowStates",
-          "file": "widgetbook/lib/clubs/club_detail_use_cases.dart",
-          "path": "[Club Detail]/Cards",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "location",
-              "normalizedLabel": "location"
-            },
-            {
-              "label": "member count",
-              "normalizedLabel": "member count"
             }
           ]
         }
@@ -22971,38 +23309,6 @@
       ]
     },
     {
-      "component": "CatchAsyncValueView",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[Core catalog]/Loading"
-      ],
-      "labels": [
-        "data / loading / error"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Catalog states",
-          "functionName": "catchAsyncValueViewCatalogStates",
-          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
-          "path": "[Core catalog]/Loading",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "data / loading / error",
-              "normalizedLabel": "data loading error"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "CatchBottomSheetGrabber",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -23797,38 +24103,6 @@
             {
               "label": "node colors",
               "normalizedLabel": "node colors"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchLoadingIndicator",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[Core catalog]/Loading"
-      ],
-      "labels": [
-        "default / small / tinted"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Catalog states",
-          "functionName": "catchLoadingIndicatorCatalogStates",
-          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
-          "path": "[Core catalog]/Loading",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "default / small / tinted",
-              "normalizedLabel": "default small tinted"
             }
           ]
         }
@@ -24635,38 +24909,6 @@
       ]
     },
     {
-      "component": "CatchStartupLoadingScreen",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[Core catalog]/Loading"
-      ],
-      "labels": [
-        "boot surface before delayed spinner"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Catalog states",
-          "functionName": "catchStartupLoadingScreenCatalogStates",
-          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
-          "path": "[Core catalog]/Loading",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "boot surface before delayed spinner",
-              "normalizedLabel": "boot surface before delayed spinner"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "CatchStateViewport",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -25109,6 +25351,38 @@
             {
               "label": "supporting note",
               "normalizedLabel": "supporting note"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "ChatBlastComposerSheet",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[P2 supporting surfaces]/Matches and chat"
+      ],
+      "labels": [
+        "template review surface"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Eventless blast review",
+          "functionName": "chatBlastComposerSheetStates",
+          "file": "widgetbook/lib/matches/matches_chat_use_cases.dart",
+          "path": "[P2 supporting surfaces]/Matches and chat",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "template review surface",
+              "normalizedLabel": "template review surface"
             }
           ]
         }

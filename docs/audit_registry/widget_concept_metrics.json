@@ -11,49 +11,49 @@
   },
   "totals": {
     "baselineTopLevelConceptProxy": 64,
-    "topLevelContracts": 65,
-    "concepts": 60,
-    "conceptDelta": -4,
+    "topLevelContracts": 68,
+    "concepts": 62,
+    "conceptDelta": -2,
     "publicContractClasses": 194,
     "productionWidgetAndStateClasses": 1094,
-    "members": 118,
-    "membersPerConcept": 1.97,
+    "members": 115,
+    "membersPerConcept": 1.85,
     "unclassifiedContractEntries": 0,
     "unclassifiedProductionEntries": 0,
     "unresolvedCollisionFamilies": 0,
-    "ownerReviewQueueSize": 6
+    "ownerReviewQueueSize": 3
   },
   "ledgerCoverage": {
-    "normalizedMemberSetCoveredClusters": 45,
-    "totalClusters": 45,
+    "normalizedMemberSetCoveredClusters": 43,
+    "totalClusters": 43,
     "unresolvedClusters": 0,
-    "rankedPairsCovered": 147,
+    "rankedPairsCovered": 146,
     "totalRankedPairs": 200,
-    "unresolvedRankedPairs": 53,
-    "decisionsIndexed": 311
+    "unresolvedRankedPairs": 54,
+    "decisionsIndexed": 314
   },
   "widgetbookEvidence": {
-    "completeConcepts": 59,
-    "totalInstantiatedConcepts": 59,
-    "coveredMembers": 116,
-    "totalMembers": 116
+    "completeConcepts": 61,
+    "totalInstantiatedConcepts": 61,
+    "coveredMembers": 113,
+    "totalMembers": 113
   },
   "figmaMappings": {
     "current": 0,
     "stale": 0,
-    "missing": 65,
+    "missing": 68,
     "propertyDrift": 0,
     "variableBound": 0,
     "reviewSnapshots": 0
   },
   "claudeContext": {
     "status": "current",
-    "digest": "ae3c17e78844d026401dacbc15bcc97a2beb66f20fd52012255b76878c4b010a",
-    "contractDigest": "ae3c17e78844d026401dacbc15bcc97a2beb66f20fd52012255b76878c4b010a"
+    "digest": "3850a12f1c85d7e411dad9ea981a25f929e16a34f77fdf33fb7535ec624e440b",
+    "contractDigest": "3850a12f1c85d7e411dad9ea981a25f929e16a34f77fdf33fb7535ec624e440b"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "8ed95e7aab4f5eb1fcde44b0dffcfc92d37a1a601c870f7ebc24f75777d4b29c",
+    "handoffRequestDigest": "f2b4dde7d12e989595eec7b361b800bcf2c264c16e764022c1c417e898c3d869",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -211,7 +211,10 @@
       "id": "loading",
       "family": "Loading",
       "contractIds": [
-        "catch.loading"
+        "catch.skeleton",
+        "catch.loading_indicator",
+        "catch.async_value",
+        "catch.startup_loading_screen"
       ],
       "classSymbols": [
         "CatchAsyncScreenLoading",
@@ -226,9 +229,9 @@
       "baselineConcepts": 1,
       "baselineClasses": 8,
       "proposedConcepts": 3,
-      "currentConcepts": 1,
-      "conceptDelta": 0,
-      "proposedConceptDelta": 2,
+      "currentConcepts": 3,
+      "conceptDelta": 2,
+      "proposedConceptDelta": 0,
       "currentClasses": 8,
       "classDelta": 0
     }
@@ -266,47 +269,13 @@
         "Approve creation of the dedicated Catch Design System file.",
         "Provide an existing editable Figma design-system file URL instead."
       ]
-    },
-    {
-      "familyId": "host-broadcast-composer-namespace-collision",
-      "familyStatus": "review",
-      "questionId": "HBC1",
-      "prompt": "Should the parameterless Chats blast sheet be replaced by the event-aware Host broadcast workflow, or remain a separately named composition?",
-      "recommendation": "Use the event-aware Host workflow as the canonical broadcast composer; if Chats must retain eventless blasts, rename that composition to ChatBlastComposerSheet so the workflow boundary is explicit.",
-      "options": [
-        "Canonicalize the Host workflow and explicitly rename any retained eventless Chats composition.",
-        "Keep both public classes with the same HostBroadcastComposerSheet name in separate libraries."
-      ]
-    },
-    {
-      "familyId": "loading-concept-decompression",
-      "familyStatus": "review",
-      "questionId": "L1",
-      "prompt": "How many independent concepts does the current catch.loading contract contain?",
-      "recommendation": "Use three concepts: skeleton placeholders, indeterminate loading indicator, and async-value boundary; classify the startup screen as composition.",
-      "options": [
-        "Use three concepts and classify startup as composition.",
-        "Keep one loading concept with all members.",
-        "Use two concepts: loading visuals and async boundaries."
-      ]
-    },
-    {
-      "familyId": "swipe-reaction-control-boundary",
-      "familyStatus": "review",
-      "questionId": "SRC1",
-      "prompt": "Should pass and reaction controls keep two renderers, or share CatchIconButton with feature-owned semantics?",
-      "recommendation": "Share CatchIconButton rendering and retain small feature adapters only where pending-state semantics or stable test keys require them; do not create another core concept.",
-      "options": [
-        "Share CatchIconButton rendering and keep only behavior-bearing feature adapters.",
-        "Keep independent CatchesPassButton and ReactionControlButton renderers."
-      ]
     }
   ],
   "completionAudit": [
     {
       "requirement": "1. Reconcile the existing decision ledger",
       "status": "proven",
-      "evidence": "45/45 exact normalized-member-set cluster decisions"
+      "evidence": "43/43 exact normalized-member-set cluster decisions"
     },
     {
       "requirement": "2. Prove all four vertical-slice outcomes",
@@ -315,13 +284,13 @@
     },
     {
       "requirement": "3. Resolve owner-gated semantic decisions",
-      "status": "pending",
-      "evidence": "3 unresolved semantic owner question(s)"
+      "status": "proven",
+      "evidence": "0 unresolved semantic owner question(s)"
     },
     {
       "requirement": "4. Verify accepted changes and stamp receipts",
-      "status": "pending",
-      "evidence": "Local partial receipt is green; final code scope and clean receipt depend on owner decisions"
+      "status": "proven",
+      "evidence": "Focused checks and audit receipt widget-concept-owner-decisions-2026-07-19 are recorded"
     },
     {
       "requirement": "5. Give every cataloged entry exactly one governed role",
@@ -331,7 +300,7 @@
     {
       "requirement": "6. Report concept and class counts separately",
       "status": "proven",
-      "evidence": "60 concepts, 194 contracted public classes, 1094 production widget/state classes"
+      "evidence": "62 concepts, 194 contracted public classes, 1094 production widget/state classes"
     },
     {
       "requirement": "7. Complete live Figma/Claude Badge + Field round trip",
@@ -341,7 +310,7 @@
     {
       "requirement": "8. Reduce remaining work to a bounded queue",
       "status": "proven",
-      "evidence": "6 generated owner/live gates and 53 advisory ranked-pair candidates"
+      "evidence": "3 generated owner/live gates and 54 advisory ranked-pair candidates"
     }
   ]
 }
