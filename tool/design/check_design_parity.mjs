@@ -17,8 +17,13 @@ if (command === "--help" || command === "-h" || command === "help") {
 
 function runGate() {
   const blocking = [
+    "node --test tool/design/component_concepts.test.mjs",
     "node tool/design/check_component_contracts.mjs",
     "node tool/design/check_widget_classification.mjs",
+    "node tool/design/build_widget_similarity.mjs --check",
+    "node tool/design/check_widget_pattern_families.mjs --check",
+    "node tool/design/build_design_sync_manifest.mjs --check",
+    "node tool/design/build_widget_concept_report.mjs --check",
     "node tool/ui_capture/check_route_inventory.mjs --check",
     "node tool/ui_capture/check_capture_coverage.mjs --check --summary",
     "node tool/design/check_design_parity_matrix.mjs --check",
@@ -66,8 +71,10 @@ function printHelp() {
   node tool/design/check_design_parity.mjs --check
 
 Runs the standard local design parity gate. Blocking checks validate component
-contracts, widget classification, route inventory, capture coverage, screen
-coverage, screen contracts, screen-chrome ownership, state matrix,
-comprehensive todo summaries, and Widgetbook references. Advisory checks print
+concept topology, contracts, classification, normalized-member-set decision
+coverage, pattern-family decisions, Figma/Claude sync drift, quantitative
+report drift, route inventory, capture coverage, screen coverage, screen
+contracts, screen-chrome ownership, state matrix, comprehensive todo summaries,
+and Widgetbook references. Advisory checks print
 known screen-contract migration debt without failing the gate.`);
 }

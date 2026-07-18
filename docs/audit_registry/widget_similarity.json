@@ -2560,7 +2560,7 @@
       "simhash128": "25c3bb9fd1f93fba3ecbad347da9f1b5",
       "tokenStreamLength": 15,
       "coarseTokenStreamLength": 15,
-      "usageCountRaw": 12,
+      "usageCountRaw": 18,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -12916,35 +12916,9 @@
       "decisionRef": "c001-error-state"
     },
     {
-      "id": "c002-layout",
+      "id": "c002-catch-meta-row",
       "rank": 2,
-      "score": 44.4138,
-      "cohesion": 0.7931,
-      "absorbCandidate": true,
-      "nameSignal": "Layout",
-      "detectors": [
-        "structural",
-        "name"
-      ],
-      "members": [
-        "CatchPersonChatLayout",
-        "CatchPersonRosterLayout"
-      ],
-      "paramCompatibility": {
-        "min": 1,
-        "mean": 1
-      },
-      "structuralSignals": [
-        "structural"
-      ],
-      "visualBridges": [],
-      "scope": "widget",
-      "decisionRef": "c004-layout"
-    },
-    {
-      "id": "c003-catch-meta-row",
-      "rank": 3,
-      "score": 42,
+      "score": 54,
       "cohesion": 1,
       "absorbCandidate": true,
       "nameSignal": null,
@@ -12967,6 +12941,32 @@
       "visualBridges": [],
       "scope": "widget",
       "decisionRef": "c003-catch-meta-row"
+    },
+    {
+      "id": "c003-layout",
+      "rank": 3,
+      "score": 44.4138,
+      "cohesion": 0.7931,
+      "absorbCandidate": true,
+      "nameSignal": "Layout",
+      "detectors": [
+        "structural",
+        "name"
+      ],
+      "members": [
+        "CatchPersonChatLayout",
+        "CatchPersonRosterLayout"
+      ],
+      "paramCompatibility": {
+        "min": 1,
+        "mean": 1
+      },
+      "structuralSignals": [
+        "structural"
+      ],
+      "visualBridges": [],
+      "scope": "widget",
+      "decisionRef": "c004-layout"
     },
     {
       "id": "c004-host-broadcast-composer-sheet",
@@ -20526,7 +20526,18 @@
       "scope": "screen"
     },
     {
-      "id": "n088-section-label",
+      "id": "n088-meta-row",
+      "stem": "MetaRow",
+      "stemType": "final-two",
+      "members": [
+        "CatchMetaRow",
+        "HostManageMetaRow"
+      ],
+      "usageSum": 21,
+      "scope": "mixed"
+    },
+    {
+      "id": "n089-section-label",
       "stem": "SectionLabel",
       "stemType": "final-two",
       "members": [
@@ -20537,7 +20548,7 @@
       "scope": "widget"
     },
     {
-      "id": "n089-composer-sheet",
+      "id": "n090-composer-sheet",
       "stem": "ComposerSheet",
       "stemType": "final-two",
       "members": [
@@ -20548,7 +20559,7 @@
       "scope": "mixed"
     },
     {
-      "id": "n090-field-row",
+      "id": "n091-field-row",
       "stem": "FieldRow",
       "stemType": "outer",
       "members": [
@@ -20559,7 +20570,7 @@
       "scope": "widget"
     },
     {
-      "id": "n091-section-header",
+      "id": "n092-section-header",
       "stem": "SectionHeader",
       "stemType": "final-two",
       "members": [
@@ -20570,7 +20581,7 @@
       "scope": "widget"
     },
     {
-      "id": "n092-detail-body",
+      "id": "n093-detail-body",
       "stem": "DetailBody",
       "stemType": "final-two",
       "members": [
@@ -20581,7 +20592,7 @@
       "scope": "widget"
     },
     {
-      "id": "n093-map-screen",
+      "id": "n094-map-screen",
       "stem": "MapScreen",
       "stemType": "final-two",
       "members": [
@@ -20590,17 +20601,6 @@
       ],
       "usageSum": 15,
       "scope": "screen"
-    },
-    {
-      "id": "n094-meta-row",
-      "stem": "MetaRow",
-      "stemType": "final-two",
-      "members": [
-        "CatchMetaRow",
-        "HostManageMetaRow"
-      ],
-      "usageSum": 15,
-      "scope": "mixed"
     },
     {
       "id": "n095-top-action",
