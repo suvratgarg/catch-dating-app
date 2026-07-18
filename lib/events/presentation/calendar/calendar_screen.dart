@@ -300,32 +300,30 @@ class CalendarAgendaSliverSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (state) {
-      CalendarAgendaEmptyState() => SliverFillRemaining(
-        child: Center(
-          child: CatchEmptyState(
-            icon: CatchIcons.calendarMonthOutlined,
-            title: const CalendarAgendaEmptyState().title(context.l10n),
-            message: const CalendarAgendaEmptyState().body(context.l10n),
-            iconSize: CatchLayout.calendarEmptyIconSize,
-            padding: CatchInsets.contentSpacious,
-            titleStyle: CatchTextStyles.titleL(context),
-            messageStyle: CatchTextStyles.proseM(
-              context,
-              color: CatchTokens.of(context).ink2,
-            ),
-          ),
+      CalendarAgendaEmptyState() => CatchSliverEmptyState(
+        icon: CatchIcons.calendarMonthOutlined,
+        title: const CalendarAgendaEmptyState().title(context.l10n),
+        message: const CalendarAgendaEmptyState().body(context.l10n),
+        iconSize: CatchLayout.calendarEmptyIconSize,
+        padding: CatchInsets.contentSpacious,
+        titleStyle: CatchTextStyles.titleL(context),
+        messageStyle: CatchTextStyles.proseM(
+          context,
+          color: CatchTokens.of(context).ink2,
         ),
+        accountForBottomOverlay: false,
       ),
       CalendarAgendaClubNamesLoadingState(:final skeletonCount) =>
         EventAgendaSliverSkeleton(count: skeletonCount),
-      CalendarAgendaClubNamesErrorState(:final error) => SliverFillRemaining(
-        hasScrollBody: false,
-        child: CatchErrorState.fromError(
-          error,
-          context: AppErrorContext.event,
-          onRetry: onRetryClubNames,
+      CalendarAgendaClubNamesErrorState(:final error) =>
+        CatchSliverStateViewport(
+          accountForBottomOverlay: false,
+          child: CatchErrorState.fromError(
+            error,
+            context: AppErrorContext.event,
+            onRetry: onRetryClubNames,
+          ),
         ),
-      ),
       CalendarAgendaReadyState(:final rows, :final today) =>
         EventAgendaSliverList(
           agendaRows: [

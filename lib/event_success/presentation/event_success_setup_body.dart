@@ -333,7 +333,7 @@ class EventSuccessModuleRows extends StatelessWidget {
             onChanged: _editable ? _onModuleChanged : null,
           ),
         if (questionnaire && _draft.isModuleSelected(module.id))
-          CatchSection.containedFieldRows(
+          KeyedSubtree(
             key: const ValueKey('eventSuccessQuestionnaireConfig'),
             child: EventSuccessQuestionnaireConfigEditor(
               value: _draft.questionnaireConfig,

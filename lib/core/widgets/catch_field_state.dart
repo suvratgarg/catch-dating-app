@@ -567,6 +567,10 @@ class _CatchFieldState extends State<CatchField>
       !(widget.valid && !_hasError);
   bool get _hasLeadingSlot =>
       widget.leading != null || widget.icon != null || _usesRowPrefixIcon;
+  double get _leadingTextLaneInset => widget.leading != null
+      ? (widget.leadingExtent ?? CatchFieldTokens.leadingIconExtent) +
+            CatchFieldTokens.leadingGap
+      : CatchFieldRow.textLaneInset;
   String? get _title => widget.title;
   String? get _body => widget.body;
   Widget? get _action => widget.action;
@@ -669,7 +673,7 @@ class _CatchFieldState extends State<CatchField>
             top: 0,
             left:
                 _rowPadding.left +
-                (_hasLeadingSlot ? CatchFieldRow.textLaneInset : 0),
+                (_hasLeadingSlot ? _leadingTextLaneInset : 0),
             right: _rowPadding.right,
             child: ColoredBox(
               color: CatchDivider.colorFor(t, CatchDividerRole.fieldRow),

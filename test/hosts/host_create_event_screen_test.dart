@@ -3,10 +3,10 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
@@ -67,6 +67,55 @@ void main() {
       expect(find.text('Required'), findsOneWidget);
       expect(find.text('Select a pace'), findsOneWidget);
     });
+
+    testWidgets(
+      'basics disclosures start collapsed, share one accordion, and color activity chips',
+      (tester) async {
+        await _pumpCreateEventFlow(tester);
+        await _openCreateEventFlow(tester);
+
+        expect(find.byType(CatchFieldChoiceChip), findsNothing);
+
+        await _openCatchField(tester, 'Activity type');
+        final walking = tester.widget<CatchFieldChoiceChip>(
+          find.byWidgetPredicate(
+            (widget) =>
+                widget is CatchFieldChoiceChip && widget.label == 'Walking',
+          ),
+        );
+        final socialRun = tester.widget<CatchFieldChoiceChip>(
+          find.byWidgetPredicate(
+            (widget) =>
+                widget is CatchFieldChoiceChip && widget.label == 'Social run',
+          ),
+        );
+        final context = tester.element(find.text('Activity type'));
+        expect(
+          walking.accent,
+          ActivityPalette.resolve(context, ActivityKind.walking).accent,
+        );
+        expect(
+          socialRun.accent,
+          ActivityPalette.resolve(context, ActivityKind.socialRun).accent,
+        );
+
+        await _openCatchField(tester, 'Pace level');
+        expect(
+          find.byWidgetPredicate(
+            (widget) =>
+                widget is CatchFieldChoiceChip && widget.label == 'Walking',
+          ),
+          findsNothing,
+        );
+        expect(
+          find.byWidgetPredicate(
+            (widget) =>
+                widget is CatchFieldChoiceChip && widget.label == 'Moderate',
+          ),
+          findsOneWidget,
+        );
+      },
+    );
 
     testWidgets('route blocks users outside the club host team', (
       tester,
@@ -150,7 +199,7 @@ void main() {
         await _openCreateEventFlow(tester);
 
         expect(find.byType(CatchSection), findsWidgets);
-        expect(find.byType(CatchFieldChoiceChip), findsWidgets);
+        expect(find.byType(CatchFieldChoiceChip), findsNothing);
         await _fillBasicsStep(tester);
         expect(
           find.byWidgetPredicate(
@@ -371,6 +420,7 @@ void main() {
         CreateEventFormKeys.customActivityLabel,
         'Salsa night',
       );
+      await _openCatchField(tester, 'Format structure');
       final pairedRotationsChip = find.byWidgetPredicate(
         (widget) =>
             widget is CatchFieldChoiceChip &&
@@ -528,6 +578,7 @@ void main() {
         await _tapPrimaryButton(tester, 'Next');
         await _pumpTestAnimation(tester);
 
+        await _openCatchField(tester, 'Duration');
         await tester.tap(find.byTooltip('Increase duration'));
         await tester.tap(find.byTooltip('Increase duration'));
         await tester.pump();
@@ -1462,6 +1513,7 @@ Future<void> _pickMapPoint(WidgetTester tester) async {
 
 Future<void> _fillBasicsStep(WidgetTester tester) async {
   await _enterCreateEventText(tester, CreateEventFormKeys.distance, '7.5');
+  await _openCatchField(tester, 'Pace level');
   await _tapCreateEventChip(tester, 'Moderate');
   await _enterCreateEventText(
     tester,
@@ -1493,6 +1545,7 @@ Future<void> _enterCreateEventText(
 }
 
 Future<void> _tapActivityKind(WidgetTester tester, String label) async {
+  await _openCatchField(tester, 'Activity type');
   await _tapCreateEventChip(tester, label);
 }
 
@@ -1507,12 +1560,12 @@ Future<void> _openCatchField(WidgetTester tester, String title) async {
 }
 
 Future<void> _tapCreateEventChip(WidgetTester tester, String label) async {
-  final finder = find.byWidgetPredicate(
-    (widget) =>
-        (widget is CatchFieldChoiceChip && widget.label == label) ||
-        (widget is CatchChip && widget.label == label),
-    description: 'selectable chip labeled $label',
-  );
+  final finder = find
+      .byWidgetPredicate(
+        (widget) => widget is CatchFieldChoiceChip && widget.label == label,
+        description: 'selectable chip labeled $label',
+      )
+      .hitTestable();
   await Scrollable.ensureVisible(tester.element(finder), alignment: 0.25);
   await tester.pump();
   await tester.tap(finder);

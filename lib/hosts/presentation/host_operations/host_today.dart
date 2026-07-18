@@ -85,54 +85,65 @@ class HostTodayDashboardSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        HostTodayHeader(
-          club: club,
-          currentUid: currentUid,
-          clubs: clubs,
-          showClubPicker: showClubPicker,
-          onSwitchClubIndex: onSwitchClubIndex,
-          now: now,
-        ),
-        Padding(
-          padding: CatchInsets.pageHorizontal,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              gapH6,
-              switch (state.status) {
-                HostHomeTodayStatus.loading => const HostTodayLoadingBody(),
-                HostHomeTodayStatus.error => CatchInlineErrorState.fromError(
-                  state.error!,
-                  context: AppErrorContext.event,
-                  onRetry: onRetryEvents,
-                ),
-                HostHomeTodayStatus.empty => HostEmptyActionCard(
-                  title: context.l10n.hostsHostTodayTitleNoActiveEventsYet,
-                  body: context.l10n.hostsHostTodayBodyCreateAnEventFor(
-                    name: club.name,
-                  ),
-                  actions: [
-                    CatchButton(
-                      label: context.l10n.hostsHostTodayLabelNewEvent,
-                      icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
-                      onPressed: () => onCreateEvent(club),
-                    ),
-                    CatchButton(
-                      label: context.l10n.hostsHostTodayLabelEvents,
-                      variant: CatchButtonVariant.secondary,
-                      size: CatchButtonSize.sm,
-                      onPressed: onViewEvents,
-                    ),
-                  ],
-                ),
-                HostHomeTodayStatus.content => _buildContent(context),
-              },
-            ],
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: HostTodayHeader(
+            club: club,
+            currentUid: currentUid,
+            clubs: clubs,
+            showClubPicker: showClubPicker,
+            onSwitchClubIndex: onSwitchClubIndex,
+            now: now,
           ),
         ),
+        switch (state.status) {
+          HostHomeTodayStatus.loading => const SliverPadding(
+            padding: CatchInsets.pageHorizontal,
+            sliver: SliverToBoxAdapter(child: HostTodayLoadingBody()),
+          ),
+          HostHomeTodayStatus.error => SliverPadding(
+            padding: CatchInsets.pageHorizontal,
+            sliver: SliverToBoxAdapter(
+              child: CatchInlineErrorState.fromError(
+                state.error!,
+                context: AppErrorContext.event,
+                onRetry: onRetryEvents,
+              ),
+            ),
+          ),
+          HostHomeTodayStatus.empty => CatchSliverEmptyState(
+            icon: CatchIcons.eventBusy,
+            title: context.l10n.hostsHostTodayTitleNoActiveEventsYet,
+            message: context.l10n.hostsHostTodayBodyCreateAnEventFor(
+              name: club.name,
+            ),
+            action: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
+              children: [
+                CatchButton(
+                  label: context.l10n.hostsHostTodayLabelNewEvent,
+                  icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
+                  size: CatchButtonSize.sm,
+                  onPressed: () => onCreateEvent(club),
+                ),
+                CatchButton(
+                  label: context.l10n.hostsHostTodayLabelEvents,
+                  variant: CatchButtonVariant.secondary,
+                  size: CatchButtonSize.sm,
+                  onPressed: onViewEvents,
+                ),
+              ],
+            ),
+          ),
+          HostHomeTodayStatus.content => SliverPadding(
+            padding: CatchInsets.pageHorizontal,
+            sliver: SliverToBoxAdapter(child: _buildContent(context)),
+          ),
+        },
+        const CatchSliverTerminalPadding(),
       ],
     );
   }

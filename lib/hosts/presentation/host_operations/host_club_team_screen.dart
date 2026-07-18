@@ -11,7 +11,6 @@ class HostClubTeamScreen extends ConsumerStatefulWidget {
 
 class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen> {
   var _selectedTab = HostTeamMode.edit;
-  final _profileFormKey = GlobalKey<FormState>();
   final _displayNameController = TextEditingController();
   final _roleTitleController = TextEditingController();
   final _bioController = TextEditingController();
@@ -148,14 +147,13 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen> {
                           onCreateProfile: actions.canCreateProfile
                               ? () => unawaited(_createHostProfile())
                               : null,
-                          formKey: _profileFormKey,
                           displayNameController: _displayNameController,
                           roleTitleController: _roleTitleController,
                           bioController: _bioController,
                           savingProfile: saveMutation.isPending,
                           onSaveProfile:
                               actions.canEditProfile && !saveMutation.isPending
-                              ? () => unawaited(_saveProfile())
+                              ? _saveProfile
                               : null,
                         ),
                         HostTeamManagementSection(
@@ -222,8 +220,11 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen> {
     _bioController.text = profile.bio ?? '';
   }
 
-  Future<void> _saveProfile() async {
-    if (_profileFormKey.currentState?.validate() != true) return;
+  Future<bool> _saveProfile() async {
+    if (_requiredDisplayName(_displayNameController.text, context.l10n) !=
+        null) {
+      return false;
+    }
     try {
       await HostProfileController.saveProfileMutation.run(
         ref,
@@ -237,13 +238,14 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen> {
       );
     } catch (_) {
       // CatchMutationErrorListener owns user-facing error display.
-      return;
+      return false;
     }
-    if (!mounted) return;
+    if (!mounted) return true;
     showCatchSnackBar(
       context,
       context.l10n.hostsHostClubTeamScreenVisiblecopyHostProfileSaved,
     );
+    return true;
   }
 
   Future<void> _createHostProfile() async {
@@ -317,7 +319,6 @@ class HostTeamProfileSection extends StatelessWidget {
     this.creatingProfile = false,
     required this.onRetry,
     required this.onCreateProfile,
-    required this.formKey,
     required this.displayNameController,
     required this.roleTitleController,
     required this.bioController,
@@ -330,12 +331,11 @@ class HostTeamProfileSection extends StatelessWidget {
   final bool creatingProfile;
   final VoidCallback? onRetry;
   final VoidCallback? onCreateProfile;
-  final GlobalKey<FormState> formKey;
   final TextEditingController displayNameController;
   final TextEditingController roleTitleController;
   final TextEditingController bioController;
   final bool savingProfile;
-  final VoidCallback? onSaveProfile;
+  final Future<bool> Function()? onSaveProfile;
 
   @override
   Widget build(BuildContext context) {
@@ -376,7 +376,6 @@ class HostTeamProfileSection extends StatelessWidget {
       HostTeamProfileContent(:final profile) => HostTeamProfileRows(
         profile: profile,
         editMode: editMode,
-        formKey: formKey,
         displayNameController: displayNameController,
         roleTitleController: roleTitleController,
         bioController: bioController,
@@ -387,12 +386,11 @@ class HostTeamProfileSection extends StatelessWidget {
   }
 }
 
-class HostTeamProfileRows extends StatelessWidget {
+class HostTeamProfileRows extends StatefulWidget {
   const HostTeamProfileRows({
     super.key,
     required this.profile,
     required this.editMode,
-    required this.formKey,
     required this.displayNameController,
     required this.roleTitleController,
     required this.bioController,
@@ -402,16 +400,46 @@ class HostTeamProfileRows extends StatelessWidget {
 
   final HostProfile profile;
   final bool editMode;
-  final GlobalKey<FormState> formKey;
   final TextEditingController displayNameController;
   final TextEditingController roleTitleController;
   final TextEditingController bioController;
   final bool savingProfile;
-  final VoidCallback? onSaveProfile;
+  final Future<bool> Function()? onSaveProfile;
+
+  @override
+  State<HostTeamProfileRows> createState() => _HostTeamProfileRowsState();
+}
+
+class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
+  static const _displayNameField = 'displayName';
+  static const _roleTitleField = 'roleTitle';
+  static const _bioField = 'bio';
+
+  final CatchFieldAccordion _accordion = CatchFieldAccordion();
+  String? _displayNameError;
+
+  @override
+  void initState() {
+    super.initState();
+    _accordion.addListener(_handleAccordionChanged);
+  }
+
+  @override
+  void dispose() {
+    _accordion
+      ..removeListener(_handleAccordionChanged)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _handleAccordionChanged() {
+    if (mounted) setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (!editMode) {
+    final profile = widget.profile;
+    if (!widget.editMode) {
       return CatchSection.fieldRows(
         title: context.l10n.hostsHostClubTeamScreenTitleProfile,
         first: true,
@@ -445,52 +473,130 @@ class HostTeamProfileRows extends StatelessWidget {
       );
     }
 
-    return Form(
-      key: formKey,
-      child: CatchSection.fieldRows(
-        title: context.l10n.hostsHostClubTeamScreenTitleProfile,
-        first: true,
-        footer: CatchButton(
-          label: context.l10n.hostsHostClubTeamScreenLabelSaveProfile,
-          icon: Icon(CatchIcons.checkRounded, size: CatchIcon.md),
-          isLoading: savingProfile,
-          fullWidth: true,
-          onPressed: onSaveProfile,
+    return CatchSection.fieldRows(
+      title: context.l10n.hostsHostClubTeamScreenTitleProfile,
+      first: true,
+      children: [
+        CatchField.inputActions(
+          key: const ValueKey('host-team-profile-display-name'),
+          title: context.l10n.hostsHostClubTeamScreenTitleDisplayName,
+          controller: widget.displayNameController,
+          open: _accordion.isExpanded(_displayNameField),
+          onOpenChanged: (open) => _setOpen(_displayNameField, open),
+          onCancel: () => _cancelField(
+            _displayNameField,
+            widget.displayNameController,
+            profile.displayName,
+          ),
+          onSubmit: () => unawaited(_submitField(_displayNameField)),
+          isLoading:
+              widget.savingProfile && _accordion.isExpanded(_displayNameField),
+          enabled: !widget.savingProfile && widget.onSaveProfile != null,
+          icon: CatchIcons.personOutlineRounded,
+          textInputAction: TextInputAction.done,
+          textCapitalization: TextCapitalization.words,
+          error: _displayNameError,
+          onChanged: (_) {
+            if (_displayNameError != null) {
+              setState(() => _displayNameError = null);
+            }
+          },
         ),
-        children: [
-          CatchField.input(
-            title: context.l10n.hostsHostClubTeamScreenTitleDisplayName,
-            controller: displayNameController,
-            icon: CatchIcons.personOutlineRounded,
-            textInputAction: TextInputAction.next,
-            textCapitalization: TextCapitalization.words,
-            validator: (value) => _requiredDisplayName(value, context.l10n),
+        CatchField.inputActions(
+          key: const ValueKey('host-team-profile-role-title'),
+          title: context.l10n.hostsHostClubTeamScreenTitleRoleTitle,
+          controller: widget.roleTitleController,
+          open: _accordion.isExpanded(_roleTitleField),
+          onOpenChanged: (open) => _setOpen(_roleTitleField, open),
+          onCancel: () => _cancelField(
+            _roleTitleField,
+            widget.roleTitleController,
+            profile.roleTitle ?? '',
           ),
-          CatchField.input(
-            title: context.l10n.hostsHostClubTeamScreenTitleRoleTitle,
-            isOptional: true,
-            controller: roleTitleController,
-            icon: CatchIcons.cardMembershipOutlined,
-            textInputAction: TextInputAction.next,
-            textCapitalization: TextCapitalization.words,
-          ),
-          CatchField.read(
-            title: context.l10n.hostsHostClubTeamScreenTitleStatus,
-            valueText: hostProfileStatusLabel(profile.status, context.l10n),
-            icon: CatchIcons.checkCircleOutlineRounded,
-          ),
-          CatchField.input(
-            title: context.l10n.hostsHostClubTeamScreenTitleAboutYouAsA,
-            isOptional: true,
-            controller: bioController,
-            icon: CatchIcons.chatBubbleOutlineRounded,
-            minLines: 2,
-            maxLines: 4,
-            textCapitalization: TextCapitalization.sentences,
-          ),
-        ],
-      ),
+          onSubmit: () => unawaited(_submitField(_roleTitleField)),
+          isLoading:
+              widget.savingProfile && _accordion.isExpanded(_roleTitleField),
+          enabled: !widget.savingProfile && widget.onSaveProfile != null,
+          icon: CatchIcons.cardMembershipOutlined,
+          textInputAction: TextInputAction.done,
+          textCapitalization: TextCapitalization.words,
+        ),
+        CatchField.read(
+          title: context.l10n.hostsHostClubTeamScreenTitleStatus,
+          valueText: hostProfileStatusLabel(profile.status, context.l10n),
+          icon: CatchIcons.checkCircleOutlineRounded,
+        ),
+        CatchField.inputActions(
+          key: const ValueKey('host-team-profile-bio'),
+          title: context.l10n.hostsHostClubTeamScreenTitleAboutYouAsA,
+          controller: widget.bioController,
+          open: _accordion.isExpanded(_bioField),
+          onOpenChanged: (open) => _setOpen(_bioField, open),
+          onCancel: () =>
+              _cancelField(_bioField, widget.bioController, profile.bio ?? ''),
+          onSubmit: () => unawaited(_submitField(_bioField)),
+          isLoading: widget.savingProfile && _accordion.isExpanded(_bioField),
+          enabled: !widget.savingProfile && widget.onSaveProfile != null,
+          icon: CatchIcons.chatBubbleOutlineRounded,
+          minLines: 2,
+          maxLines: 4,
+          textInputAction: TextInputAction.newline,
+        ),
+      ],
     );
+  }
+
+  void _setOpen(String field, bool open) {
+    if (open) {
+      final previous = _accordion.expanded;
+      if (previous != null && previous != field) _restoreField(previous);
+      if (!_accordion.isExpanded(field)) _accordion.toggle(field);
+      return;
+    }
+    if (_accordion.isExpanded(field)) _accordion.collapse();
+  }
+
+  void _cancelField(
+    String field,
+    TextEditingController controller,
+    String persisted,
+  ) {
+    controller.text = persisted;
+    if (field == _displayNameField) _displayNameError = null;
+    _accordion.collapse();
+  }
+
+  void _restoreField(String field) {
+    switch (field) {
+      case _displayNameField:
+        widget.displayNameController.text = widget.profile.displayName;
+        _displayNameError = null;
+        return;
+      case _roleTitleField:
+        widget.roleTitleController.text = widget.profile.roleTitle ?? '';
+        return;
+      case _bioField:
+        widget.bioController.text = widget.profile.bio ?? '';
+        return;
+    }
+  }
+
+  Future<void> _submitField(String field) async {
+    if (field == _displayNameField) {
+      final error = _requiredDisplayName(
+        widget.displayNameController.text,
+        context.l10n,
+      );
+      if (error != null) {
+        setState(() => _displayNameError = error);
+        return;
+      }
+    }
+    final save = widget.onSaveProfile;
+    if (save == null) return;
+    final saved = await save();
+    if (!mounted || !saved) return;
+    _accordion.collapse();
   }
 }
 

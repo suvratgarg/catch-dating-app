@@ -129,7 +129,7 @@ class HostClubSpokeScaffold extends StatelessWidget {
         top: false,
         bottom: false,
         child: ListView(
-          padding: CatchInsets.pageBodyUnderHeader.copyWith(bottom: 0),
+          padding: CatchInsets.pageBody.copyWith(bottom: 0),
           children: [
             Center(
               child: ConstrainedBox(

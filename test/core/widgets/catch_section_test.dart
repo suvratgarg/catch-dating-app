@@ -62,6 +62,56 @@ void main() {
     },
   );
 
+  testWidgets('CatchSection aligns dividers to caller-owned leading extents', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const SizedBox(
+          width: 360,
+          child: CatchSection.fieldRows(
+            title: 'Events',
+            children: [
+              CatchField.read(
+                title: 'First',
+                leading: SizedBox(
+                  key: ValueKey('first-leading'),
+                  width: 48,
+                  height: 32,
+                ),
+                leadingExtent: 48,
+              ),
+              CatchField.read(
+                title: 'Second',
+                leading: SizedBox(width: 48, height: 32),
+                leadingExtent: 48,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final sectionRect = tester.getRect(find.byType(CatchSection));
+    final leadingRect = tester.getRect(
+      find.byKey(const ValueKey('first-leading')),
+    );
+    final dividerRect = tester.getRect(
+      find
+          .byWidgetPredicate(
+            (widget) => widget is Positioned && widget.child is CatchDivider,
+          )
+          .first,
+    );
+
+    expect(leadingRect.left, sectionRect.left);
+    expect(
+      dividerRect.left - sectionRect.left,
+      48 + CatchFieldTokens.leadingGap,
+    );
+    expect(dividerRect.right, sectionRect.right);
+  });
+
   testWidgets(
     'CatchSection.fieldRows paints dividers from the preceding row layer',
     (tester) async {

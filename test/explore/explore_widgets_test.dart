@@ -37,6 +37,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -4811,7 +4812,9 @@ void main() {
 
         expect(find.text('DEFAULT EVENT POLICY'), findsOneWidget);
         expect(_field('Cohort caps'), findsOneWidget);
-        expect(_fieldChoice('OPEN', selected: true), findsOneWidget);
+        await tester.tap(_field('Admission format'));
+        await _pumpClubUi(tester);
+        expect(_fieldOptionCard('OPEN', selected: true), findsOneWidget);
 
         await tester.tap(find.text('Next'));
         await _pumpClubUi(tester);
@@ -4897,6 +4900,15 @@ Finder _fieldChoice(String label, {bool? selected}) {
     (widget) =>
         widget is CatchFieldChoiceChip &&
         widget.label == label &&
+        (selected == null || widget.selected == selected),
+  );
+}
+
+Finder _fieldOptionCard(String title, {bool? selected}) {
+  return find.byWidgetPredicate(
+    (widget) =>
+        widget is CatchOptionCard &&
+        widget.title == title &&
         (selected == null || widget.selected == selected),
   );
 }

@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -464,7 +465,6 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                               duration.round(),
                             ),
                           ),
-                          initiallyOpen: true,
                           icon: CatchIcons.timerOutlined,
                         ),
                       ],
@@ -587,6 +587,10 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                           body: detailsFields.selectedPace.label,
                           values: PaceLevel.values,
                           itemLabel: (pace) => pace.label,
+                          itemAccent: (_) => ActivityPalette.resolve(
+                            context,
+                            widget.event.eventFormat.activityKind,
+                          ).accent,
                           selected: <PaceLevel>{detailsFields.selectedPace},
                           onSelectionChanged: screenState.canEdit
                               ? (selection) => _handleIntent(
@@ -595,7 +599,6 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                                   ),
                                 )
                               : null,
-                          initiallyOpen: true,
                           enabled: screenState.canEdit,
                           icon: CatchIcons.speedOutlined,
                         ),

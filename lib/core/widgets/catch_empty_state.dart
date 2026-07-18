@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -79,6 +80,92 @@ class CatchEmptyState extends StatelessWidget {
     }
 
     return CatchSurface(padding: padding, borderColor: t.line, child: content);
+  }
+}
+
+/// Sliver-native viewport for terminal empty and error states.
+///
+/// A floating app-shell tab bar overlays the scaffold body instead of reducing
+/// its constraints. Centering directly in [SliverFillRemaining] therefore
+/// lands below the optical center of the visible region. This primitive owns
+/// that shell geometry once for both empty and error content.
+class CatchSliverStateViewport extends StatelessWidget {
+  const CatchSliverStateViewport({
+    super.key,
+    required this.child,
+    this.accountForBottomOverlay = true,
+  });
+
+  final Widget child;
+  final bool accountForBottomOverlay;
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomOverlayInset = accountForBottomOverlay
+        ? AppShellActiveTab.bottomOverlayInsetOf(context)
+        : 0.0;
+    return SliverFillRemaining(
+      // This must stay true: CatchEmptyState uses LayoutBuilder and cannot
+      // participate in SliverFillRemaining's intrinsic-height pass.
+      // ignore: avoid_redundant_argument_values
+      hasScrollBody: true,
+      child: Padding(
+        padding: EdgeInsets.only(bottom: bottomOverlayInset),
+        child: child,
+      ),
+    );
+  }
+}
+
+/// Canonical sliver placement for a full-region empty success state.
+class CatchSliverEmptyState extends StatelessWidget {
+  const CatchSliverEmptyState({
+    super.key,
+    this.icon,
+    this.title,
+    this.message,
+    this.action,
+    this.iconStyle = CatchEmptyStateIconStyle.plain,
+    this.layout = CatchEmptyStateLayout.stacked,
+    this.iconSize,
+    this.iconContainerSize,
+    this.padding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s6),
+    this.titleStyle,
+    this.messageStyle,
+    this.accountForBottomOverlay = true,
+  });
+
+  final IconData? icon;
+  final String? title;
+  final String? message;
+  final Widget? action;
+  final CatchEmptyStateIconStyle iconStyle;
+  final CatchEmptyStateLayout layout;
+  final double? iconSize;
+  final double? iconContainerSize;
+  final EdgeInsetsGeometry padding;
+  final TextStyle? titleStyle;
+  final TextStyle? messageStyle;
+  final bool accountForBottomOverlay;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchSliverStateViewport(
+      accountForBottomOverlay: accountForBottomOverlay,
+      child: CatchEmptyState(
+        icon: icon,
+        title: title,
+        message: message,
+        action: action,
+        iconStyle: iconStyle,
+        layout: layout,
+        iconSize: iconSize,
+        iconContainerSize: iconContainerSize,
+        padding: padding,
+        titleStyle: titleStyle,
+        messageStyle: messageStyle,
+      ),
+    );
   }
 }
 

@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_icon.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -387,7 +388,7 @@ class CatchSliverErrorState extends StatelessWidget {
     );
 
     if (fillRemaining) {
-      return SliverFillRemaining(hasScrollBody: false, child: child);
+      return CatchSliverStateViewport(child: child);
     }
 
     return SliverToBoxAdapter(child: child);
@@ -429,7 +430,7 @@ class _LocalizedCatchSliverErrorState extends CatchSliverErrorState {
       retryLabel: spec.retryLabel,
     );
     return fillRemaining
-        ? SliverFillRemaining(hasScrollBody: false, child: child)
+        ? CatchSliverStateViewport(child: child)
         : SliverToBoxAdapter(child: child);
   }
 }

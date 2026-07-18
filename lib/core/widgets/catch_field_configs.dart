@@ -16,6 +16,7 @@ sealed class _CatchFieldConfig extends CatchField {
     IconData? icon,
     Color? iconColor,
     Widget? leading,
+    double? leadingExtent,
     bool divider = false,
     bool enabled = true,
     CatchFieldStatus status = CatchFieldStatus.idle,
@@ -30,6 +31,7 @@ sealed class _CatchFieldConfig extends CatchField {
          icon: icon,
          iconColor: iconColor,
          leading: leading,
+         leadingExtent: leadingExtent,
          divider: divider,
          enabled: enabled,
          status: status,
@@ -49,6 +51,7 @@ final class _RowConfig extends _CatchFieldConfig {
     IconData? icon,
     Color? iconColor,
     Widget? leading,
+    double? leadingExtent,
     this.valueText,
     this.valueMaxLines = 1,
     this.placeholder,
@@ -67,6 +70,10 @@ final class _RowConfig extends _CatchFieldConfig {
          leading == null || icon == null,
          'Use either CatchField.leading or CatchField.icon, not both.',
        ),
+       assert(
+         leadingExtent == null || (leading != null && leadingExtent > 0),
+         'CatchField.leadingExtent requires non-null leading content.',
+       ),
        super(
          key: key,
          title: title,
@@ -77,6 +84,7 @@ final class _RowConfig extends _CatchFieldConfig {
          icon: icon,
          iconColor: iconColor,
          leading: leading,
+         leadingExtent: leadingExtent,
          status: status,
          divider: divider,
        );
@@ -94,6 +102,7 @@ final class _RowConfig extends _CatchFieldConfig {
     IconData? icon,
     Color? iconColor,
     Widget? leading,
+    double? leadingExtent,
     this.valueText,
     this.valueMaxLines = 1,
     this.showChevron,
@@ -111,6 +120,10 @@ final class _RowConfig extends _CatchFieldConfig {
          leading == null || icon == null,
          'Use either CatchField.leading or CatchField.icon, not both.',
        ),
+       assert(
+         leadingExtent == null || (leading != null && leadingExtent > 0),
+         'CatchField.leadingExtent requires non-null leading content.',
+       ),
        super(
          key: key,
          title: title,
@@ -121,6 +134,7 @@ final class _RowConfig extends _CatchFieldConfig {
          icon: icon,
          iconColor: iconColor,
          leading: leading,
+         leadingExtent: leadingExtent,
          status: status,
          divider: divider,
        );
@@ -138,6 +152,7 @@ final class _RowConfig extends _CatchFieldConfig {
     IconData? icon,
     Color? iconColor,
     Widget? leading,
+    double? leadingExtent,
     this.valueText,
     this.valueMaxLines = 1,
     this.showChevron,
@@ -155,6 +170,10 @@ final class _RowConfig extends _CatchFieldConfig {
          leading == null || icon == null,
          'Use either CatchField.leading or CatchField.icon, not both.',
        ),
+       assert(
+         leadingExtent == null || (leading != null && leadingExtent > 0),
+         'CatchField.leadingExtent requires non-null leading content.',
+       ),
        super(
          key: key,
          title: title,
@@ -165,6 +184,7 @@ final class _RowConfig extends _CatchFieldConfig {
          icon: icon,
          iconColor: iconColor,
          leading: leading,
+         leadingExtent: leadingExtent,
          status: status,
          divider: divider,
        );
@@ -182,6 +202,7 @@ final class _RowConfig extends _CatchFieldConfig {
     IconData? icon,
     Color? iconColor,
     Widget? leading,
+    double? leadingExtent,
     this.valueText,
     this.valueMaxLines = 1,
     this.placeholder,
@@ -199,6 +220,10 @@ final class _RowConfig extends _CatchFieldConfig {
          leading == null || icon == null,
          'Use either CatchField.leading or CatchField.icon, not both.',
        ),
+       assert(
+         leadingExtent == null || (leading != null && leadingExtent > 0),
+         'CatchField.leadingExtent requires non-null leading content.',
+       ),
        super(
          key: key,
          title: title,
@@ -209,6 +234,7 @@ final class _RowConfig extends _CatchFieldConfig {
          icon: icon,
          iconColor: iconColor,
          leading: leading,
+         leadingExtent: leadingExtent,
          status: status,
          divider: divider,
        );

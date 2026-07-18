@@ -318,6 +318,10 @@ void main() {
     expect(find.byType(HostLoadingScreen), findsOneWidget);
     expect(find.text('Clubs'), findsOneWidget);
     expect(find.text('Sign in required'), findsNothing);
+    expect(
+      tester.widget<CatchSectionStack>(find.byType(CatchSectionStack)).padding,
+      CatchInsets.pageBody,
+    );
   });
 
   testWidgets('Host team shows loading while uid resolves', (tester) async {
@@ -832,6 +836,7 @@ void main() {
     expect(find.text('No upcoming events'), findsOneWidget);
     final emptyState = find.byType(CatchEmptyState);
     final content = find.byType(CatchEmptyStateContent);
+    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
     expect(
       find.ancestor(of: emptyState, matching: find.byType(Center)),
       findsNothing,
@@ -965,6 +970,31 @@ void main() {
       tokens.line.withValues(
         alpha: tokens.line.a * CatchOpacity.fieldRowDivider,
       ),
+    );
+    final mayDateBlock = find
+        .descendant(
+          of: maySection,
+          matching: find.byType(HostEventLifecycleDateBlock),
+        )
+        .first;
+    final mayRowDivider = find.descendant(
+      of: maySection,
+      matching: find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchDivider && widget.role == CatchDividerRole.fieldRow,
+      ),
+    );
+    expect(
+      tester.getTopLeft(mayDateBlock).dx,
+      closeTo(tester.getTopLeft(maySection).dx, 0.5),
+    );
+    expect(
+      tester.getTopLeft(mayRowDivider).dx,
+      closeTo(tester.getTopLeft(find.text(oldestPast.title)).dx, 0.5),
+    );
+    expect(
+      tester.getTopRight(mayRowDivider).dx,
+      closeTo(tester.getTopRight(maySection).dx, 0.5),
     );
 
     await tester.tap(find.text('Repeat ‘Social run’'));
@@ -1210,6 +1240,18 @@ void main() {
     }
 
     expectSharedChrome();
+    final editBodyPadding = tester
+        .widgetList<Padding>(
+          find.ancestor(
+            of: find.byType(HostClubEditTab),
+            matching: find.byType(Padding),
+          ),
+        )
+        .where(
+          (padding) =>
+              padding.padding == CatchInsets.pageBody.copyWith(bottom: 0),
+        );
+    expect(editBodyPadding, hasLength(1));
     final loadedHeader = tester.widget<CatchScreenHeaderTitle>(
       find.byWidgetPredicate(
         (widget) =>
@@ -1258,6 +1300,18 @@ void main() {
 
     expectSharedChrome(switcherVisible: false);
     expect(find.byType(HostClubInsightsPane), findsOneWidget);
+    final insightsBodyPadding = tester
+        .widgetList<SliverPadding>(
+          find.ancestor(
+            of: find.byType(HostClubInsightsPane),
+            matching: find.byType(SliverPadding),
+          ),
+        )
+        .where(
+          (padding) =>
+              padding.padding == CatchInsets.pageBody.copyWith(bottom: 0),
+        );
+    expect(insightsBodyPadding, hasLength(1));
     expect(find.byType(HostAnalyticsTrendPanel), findsOneWidget);
     expect(find.text('SAKET · INDORE'), findsNothing);
     expect(find.byTooltip('Back to Organizer'), findsNothing);
@@ -1935,6 +1989,11 @@ void main() {
       (widget) => widget is CatchField && widget.title == 'Live event guide',
     );
     expect(guideField, findsOneWidget);
+    expect(
+      find.ancestor(of: guideField, matching: find.byType(CatchSection)),
+      findsNothing,
+      reason: 'The first guide toggle must not synthesize a section divider.',
+    );
     tester
         .widget<CatchFieldToggle>(
           find.descendant(
@@ -2144,13 +2203,11 @@ void main() {
       expect(find.text('Suvrat'), findsWidgets);
       expect(find.text('Create host profile'), findsNothing);
 
-      final displayNameField = find.widgetWithText(CatchField, 'Display name');
-      await tester.enterText(
-        find.descendant(of: displayNameField, matching: find.byType(TextField)),
-        'Updated Host',
+      await _editHostTeamProfileField(
+        tester,
+        title: 'Display name',
+        value: 'Updated Host',
       );
-      await tester.tap(find.text('Save profile'));
-      await pumpFeatureUi(tester);
 
       expect(repository.savedUid, _hostUid);
       expect(repository.savedDisplayName, 'Updated Host');
@@ -2202,7 +2259,6 @@ void main() {
                 creatingProfile: true,
                 onRetry: () {},
                 onCreateProfile: () {},
-                formKey: GlobalKey<FormState>(),
                 displayNameController: displayNameController,
                 roleTitleController: roleTitleController,
                 bioController: bioController,
@@ -2279,13 +2335,12 @@ void main() {
     expect(find.byType(CatchBottomSheetScaffold), findsNothing);
     expect(find.text('BIO'), findsNothing);
 
-    final displayNameField = find.widgetWithText(CatchField, 'Display name');
-    await tester.enterText(
-      find.descendant(of: displayNameField, matching: find.byType(TextField)),
-      'Updated Host',
+    expect(find.text('Save profile'), findsNothing);
+    await _editHostTeamProfileField(
+      tester,
+      title: 'Display name',
+      value: 'Updated Host',
     );
-    await tester.tap(find.text('Save profile'));
-    await pumpFeatureUi(tester);
 
     expect(find.byType(CatchBottomSheetScaffold), findsNothing);
     expect(repository.savedDisplayName, 'Updated Host');
@@ -2323,8 +2378,11 @@ void main() {
         ],
       );
 
-      await tester.tap(find.text('Save profile'));
-      await pumpFeatureUi(tester);
+      await _editHostTeamProfileField(
+        tester,
+        title: 'Display name',
+        value: 'Updated Host',
+      );
 
       expect(find.byType(CatchBottomSheetScaffold), findsNothing);
       expect(find.widgetWithText(CatchField, 'Display name'), findsOneWidget);
@@ -2485,17 +2543,29 @@ void main() {
       ],
     );
 
-    final displayNameField = find.descendant(
-      of: find.widgetWithText(CatchField, 'Display name'),
-      matching: find.byType(TextField),
-    );
-    await tester.enterText(displayNameField, '');
-    await tester.tap(find.text('Save profile'));
-    await pumpFeatureUi(tester);
+    await _editHostTeamProfileField(tester, title: 'Display name', value: '');
 
     expect(find.text('Enter a display name.'), findsOneWidget);
     expect(repository.savedUid, isNull);
   });
+}
+
+Future<void> _editHostTeamProfileField(
+  WidgetTester tester, {
+  required String title,
+  required String value,
+}) async {
+  final field = find.byWidgetPredicate(
+    (widget) => widget is CatchField && widget.title == title,
+  );
+  await tester.ensureVisible(field);
+  await tester.tap(field);
+  await pumpFeatureUi(tester);
+  final input = find.descendant(of: field, matching: find.byType(TextField));
+  expect(input, findsOneWidget);
+  await tester.enterText(input, value);
+  await tester.tap(find.byKey(const ValueKey('catch-field-done')));
+  await pumpFeatureUi(tester);
 }
 
 Club _hostTeamClub() => buildClub(

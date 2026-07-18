@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_divider.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
@@ -76,7 +77,7 @@ class ChatsList extends ConsumerWidget {
         onThreadSelected: onThreadSelected ?? (_) {},
         onHostBroadcastSelected: onHostBroadcastSelected,
       ),
-      ChatsListEmpty(:final kind) => SliverFillRemaining(
+      ChatsListEmpty(:final kind) => CatchSliverStateViewport(
         child: switch (kind) {
           ChatsListEmptyKind.noSearchResults =>
             const ChatsEmptyState.noSearchResults(),

@@ -46,20 +46,12 @@ class ChatsEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     final resolvedTitle = title ?? _variant.title(context.l10n);
     final resolvedMessage = message ?? _variant.message(context.l10n);
-    return Padding(
+    return CatchEmptyState(
+      icon: _iconRole.icon,
+      title: resolvedTitle,
+      message: resolvedMessage,
       padding: CatchInsets.contentRelaxed,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: CatchSpacing.s10),
-          CatchEmptyState(
-            icon: _iconRole.icon,
-            title: resolvedTitle,
-            message: resolvedMessage,
-            titleStyle: CatchTextStyles.headlineS(context),
-          ),
-        ],
-      ),
+      titleStyle: CatchTextStyles.headlineS(context),
     );
   }
 }

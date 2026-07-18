@@ -257,6 +257,8 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                 context.l10n.hostsClubHostDefaultsStepTextNewEventsStartFrom,
             values: ActivityKind.eventCreationDefaults,
             itemLabel: (value) => value.label,
+            itemAccent: (value) =>
+                ActivityPalette.resolve(context, value).accent,
             selected: {activityKind},
             onSelectionChanged: (selection) =>
                 widget.onActivityChanged!(selection.single),

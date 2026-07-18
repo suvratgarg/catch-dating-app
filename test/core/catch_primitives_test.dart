@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/motion/catch_transitions.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -2319,6 +2320,53 @@ void main() {
     expect(find.text('Unable to load messages.'), findsOneWidget);
     expect(find.byType(CatchErrorBody), findsOneWidget);
   });
+
+  testWidgets(
+    'sliver empty and error states center in the visible floating-shell region',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(400, 800);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      Future<double> pumpState(Widget sliver, Finder content) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.light,
+            home: AppShellActiveTab(
+              index: 1,
+              bottomBarPlacement: AppShellBottomBarPlacement.floating,
+              bottomOverlayInset: 100,
+              child: Scaffold(
+                key: const ValueKey('state-scaffold'),
+                body: CustomScrollView(slivers: [sliver]),
+              ),
+            ),
+          ),
+        );
+        final viewport = find.descendant(
+          of: find.byKey(const ValueKey('state-scaffold')),
+          matching: find.byType(CustomScrollView),
+        );
+        return tester.getCenter(content).dy - tester.getCenter(viewport).dy;
+      }
+
+      final emptyOffset = await pumpState(
+        const CatchSliverEmptyState(title: 'Nothing here'),
+        find.byType(CatchEmptyStateContent),
+      );
+      expect(emptyOffset, closeTo(-50, 1));
+
+      final errorOffset = await pumpState(
+        const CatchSliverErrorState(
+          title: 'Unavailable',
+          message: 'Try again later.',
+        ),
+        find.byType(CatchErrorBody),
+      );
+      expect(errorOffset, closeTo(-50, 1));
+    },
+  );
 
   testWidgets('CatchAsyncValueView uses branded default error state', (
     tester,

@@ -4272,7 +4272,7 @@
       "command": "node tool/design/check_tab_root_scroll_contracts.mjs --check",
       "safety": "local",
       "status": "active",
-      "description": "Requires every consumer and host StatefulShellBranch to declare semantic shell-aware terminal clearance at each real or shared tabbed-page scroll owner.",
+      "description": "Requires every consumer and host StatefulShellBranch to declare semantic shell-aware terminal clearance and rejects raw empty/error SliverFillRemaining composition that bypasses optical shell geometry.",
       "checks": [
         "node --check tool/design/check_tab_root_scroll_contracts.mjs",
         "node --test tool/design/check_tab_root_scroll_contracts.test.mjs",
@@ -4287,7 +4287,8 @@
         "path": "tool/design/check_tab_root_scroll_contracts.test.mjs",
         "contains": [
           "flags the known-bad tab root fixture when terminal padding is missing",
-          "flags a new StatefulShellBranch until it is registered"
+          "flags a new StatefulShellBranch until it is registered",
+          "flags a raw SliverFillRemaining empty state in presentation code"
         ]
       }
     },

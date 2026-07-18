@@ -936,12 +936,32 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchSliverEmptyState',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchSliverEmptyStateCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchSliverErrorState',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchSliverErrorStateCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSliverStateViewport',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchSliverStateViewportCatalogStates,
               ),
             ],
           ),
@@ -7055,17 +7075,6 @@ final directories = <_widgetbook.WidgetbookNode>[
           _widgetbook.WidgetbookFolder(
             name: 'Questionnaire editor folded states',
             children: [
-              _widgetbook.WidgetbookComponent(
-                name: 'CustomQuestionFields',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'CustomQuestionFields',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictCustomQuestionFields,
-                  ),
-                ],
-              ),
               _widgetbook.WidgetbookComponent(
                 name: 'CustomQuestionnaireFields',
                 useCases: [

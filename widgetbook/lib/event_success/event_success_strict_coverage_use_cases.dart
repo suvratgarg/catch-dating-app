@@ -2343,20 +2343,6 @@ Widget eventSuccessStrictQaDeviceFrame(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "CustomQuestionFields",
-  type: CustomQuestionFields,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Questionnaire editor folded states",
-)
-Widget eventSuccessStrictCustomQuestionFields(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.questionnaire,
-    componentName: "CustomQuestionFields",
-  );
-}
-
-@widgetbook.UseCase(
   name: "CustomQuestionnaireFields",
   type: CustomQuestionnaireFields,
   path:

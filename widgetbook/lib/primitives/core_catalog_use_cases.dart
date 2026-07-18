@@ -27,6 +27,7 @@ import 'package:catch_dating_app/core/widgets/catch_day_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
 import 'package:catch_dating_app/core/widgets/catch_distance_ring.dart';
 import 'package:catch_dating_app/core/widgets/catch_draggable_sheet_shell.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -1502,6 +1503,72 @@ Widget catchSliverErrorStateCatalogStates(BuildContext context) {
               const CatchSliverErrorState(
                 title: 'No connection',
                 message: 'Reconnect to keep browsing.',
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchSliverStateViewport,
+  path: '[Core catalog]/Feedback',
+)
+Widget catchSliverStateViewportCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CatchSliverStateViewport',
+    catalogId: 'core.widgets.catch_sliver_state_viewport',
+    children: [
+      _StateCard(
+        label: 'floating-shell optical center',
+        child: SizedBox(
+          height: 420,
+          child: AppShellActiveTab(
+            index: appShellHomeTabIndex,
+            bottomOverlayInset: 88,
+            bottomBarPlacement: AppShellBottomBarPlacement.floating,
+            child: CustomScrollView(
+              slivers: [
+                CatchSliverStateViewport(
+                  child: CatchEmptyState(
+                    icon: CatchIcons.calendarTodayOutlined,
+                    title: 'No upcoming events',
+                    message: 'The optical center excludes floating chrome.',
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchSliverEmptyState,
+  path: '[Core catalog]/Feedback',
+)
+Widget catchSliverEmptyStateCatalogStates(BuildContext context) {
+  return _CatalogScreen(
+    title: 'CatchSliverEmptyState',
+    catalogId: 'core.widgets.catch_sliver_empty_state',
+    children: [
+      _StateCard(
+        label: 'cardless terminal empty state',
+        child: SizedBox(
+          height: 420,
+          child: CustomScrollView(
+            slivers: [
+              CatchSliverEmptyState(
+                icon: CatchIcons.eventBusyOutlined,
+                title: 'Nothing scheduled',
+                message: 'Create an event to start filling this list.',
+                action: CatchButton(label: 'New event', onPressed: _noop),
               ),
             ],
           ),

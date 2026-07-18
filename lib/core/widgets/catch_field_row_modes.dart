@@ -191,7 +191,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
           );
     final rowPadding = _rowPadding;
     final disclosureStartPadding =
-        rowPadding.left + (_hasLeadingSlot ? CatchFieldRow.textLaneInset : 0.0);
+        rowPadding.left + (_hasLeadingSlot ? _leadingTextLaneInset : 0.0);
     final disclosureControl = widget._explicitSaveInput
         ? CatchFieldExplicitSaveControl(
             supporting: widget._supporting,
@@ -287,7 +287,12 @@ extension _CatchFieldRowModes on _CatchFieldState {
   }
 
   Widget? _buildLeadingSlot(CatchTokens t) {
-    if (widget.leading != null) return widget.leading;
+    if (widget.leading != null) {
+      final extent = widget.leadingExtent;
+      return extent == null
+          ? widget.leading
+          : SizedBox(width: extent, child: widget.leading);
+    }
 
     if (widget.icon != null) {
       return Icon(

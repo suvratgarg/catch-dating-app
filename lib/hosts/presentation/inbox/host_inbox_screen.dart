@@ -509,7 +509,7 @@ class HostInboxWorkspaceSliver extends StatelessWidget {
             onThreadSelected: onThreadSelected,
           )
         else
-          SliverFillRemaining(
+          CatchSliverStateViewport(
             child: workspace.query.isNotEmpty && workspace.hasUnfilteredThreads
                 ? const ChatsEmptyState.noHostSearchResults()
                 : workspace.isGeneral

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
@@ -854,20 +856,23 @@ class CatchSection extends StatelessWidget {
     // preserve the pre-migration text-lane default unless their caller opts
     // into an explicit zero inset.
     final canInferEveryRow = directFields.length == sectionChildren.length;
-    final hasLeadingIcon = directFields.any(
-      (field) =>
-          !field.add &&
-          (field.leading != null ||
-              field.icon != null ||
-              field.prefixIcon != null),
-    );
+    final leadingTextLaneInset = directFields.fold<double>(0, (inset, field) {
+      if (field.add) return inset;
+      final fieldInset = field.leading != null
+          ? (field.leadingExtent ?? CatchFieldTokens.leadingIconExtent) +
+                CatchFieldTokens.leadingGap
+          : field.icon != null || field.prefixIcon != null
+          ? CatchFieldTokens.textLaneInset
+          : 0.0;
+      return math.max(inset, fieldInset);
+    });
     final rowEdgeInset = _variant == _CatchSectionVariant.contained
         ? CatchFieldTokens.rowHorizontalPadding
         : 0.0;
     return rowEdgeInset +
-        (hasLeadingIcon || !canInferEveryRow
+        (!canInferEveryRow
             ? CatchFieldTokens.textLaneInset
-            : 0.0);
+            : leadingTextLaneInset);
   }
 }
 

@@ -70,6 +70,7 @@ abstract class CatchField extends StatefulWidget {
     this.icon,
     this.iconColor,
     this.leading,
+    this.leadingExtent,
     this.divider = false,
     this.enabled = true,
     this.status = CatchFieldStatus.idle,
@@ -87,6 +88,7 @@ abstract class CatchField extends StatefulWidget {
     IconData? icon,
     Color? iconColor,
     Widget? leading,
+    double? leadingExtent,
     String? valueText,
     int valueMaxLines,
     String? placeholder,
@@ -114,6 +116,7 @@ abstract class CatchField extends StatefulWidget {
     IconData? icon,
     Color? iconColor,
     Widget? leading,
+    double? leadingExtent,
     String? valueText,
     int valueMaxLines,
     bool? showChevron,
@@ -136,6 +139,7 @@ abstract class CatchField extends StatefulWidget {
     IconData? icon,
     Color? iconColor,
     Widget? leading,
+    double? leadingExtent,
     String? valueText,
     int valueMaxLines,
     bool? showChevron,
@@ -162,6 +166,7 @@ abstract class CatchField extends StatefulWidget {
     IconData? icon,
     Color? iconColor,
     Widget? leading,
+    double? leadingExtent,
     String? valueText,
     int valueMaxLines,
     String? placeholder,
@@ -627,6 +632,10 @@ abstract class CatchField extends StatefulWidget {
 
   /// Caller-owned leading content used instead of [icon].
   final Widget? leading;
+
+  /// Horizontal extent of caller-owned [leading] content. Sections use this
+  /// to align dividers to the actual text lane instead of assuming icon size.
+  final double? leadingExtent;
   final bool divider;
   final bool enabled;
   final CatchFieldStatus status;

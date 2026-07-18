@@ -165,19 +165,17 @@ class HostEventsClubSection extends StatelessWidget {
               ),
             ),
           ),
-          HostEventsWorkspaceStatus.empty => SliverFillRemaining(
-            child: CatchEmptyState(
-              icon: CatchIcons.eventBusy,
-              title: state.emptyTitle(context.l10n),
-              message: state.emptyBody(context.l10n),
-              action: state.selectedFilter == HostEventsLifecycleFilter.upcoming
-                  ? CatchButton(
-                      label: context.l10n.hostsHostEventsListLabelNewEvent,
-                      size: CatchButtonSize.sm,
-                      onPressed: () => onCreateEvent(club),
-                    )
-                  : null,
-            ),
+          HostEventsWorkspaceStatus.empty => CatchSliverEmptyState(
+            icon: CatchIcons.eventBusy,
+            title: state.emptyTitle(context.l10n),
+            message: state.emptyBody(context.l10n),
+            action: state.selectedFilter == HostEventsLifecycleFilter.upcoming
+                ? CatchButton(
+                    label: context.l10n.hostsHostEventsListLabelNewEvent,
+                    size: CatchButtonSize.sm,
+                    onPressed: () => onCreateEvent(club),
+                  )
+                : null,
           ),
           HostEventsWorkspaceStatus.populated => SliverPadding(
             padding: CatchInsets.pageHorizontal,
@@ -208,6 +206,7 @@ class HostEventsClubSection extends StatelessWidget {
                                 row.event.activityKind,
                               ).accent,
                             ),
+                            leadingExtent: CatchSpacing.s12,
                             title: row.event.title,
                             body: row.metaLabel,
                             emphasis: CatchFieldEmphasis.title,

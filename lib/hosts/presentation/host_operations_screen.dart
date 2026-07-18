@@ -67,7 +67,6 @@ import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_empty_action_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
