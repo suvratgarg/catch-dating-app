@@ -492,7 +492,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         explicitSave: true,
         keyboardType: TextInputType.emailAddress,
         normalizeInput: _normalizeSingleLineInput,
-        validator: _optionalEmailValidator,
+        validator: (value) => _optionalEmailValidator(value, context.l10n),
         toFieldValue: _optionalStringFieldValue,
         contract: CatchContractConstraints.updateClubPatchEmail,
         patchForValue: (value) => UpdateClubPatch(email: value),

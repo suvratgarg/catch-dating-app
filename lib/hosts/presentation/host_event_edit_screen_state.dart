@@ -8,6 +8,7 @@ import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/validators.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 enum HostEventEditRouteStatus { loading, error, notFound, unauthorized, ready }
@@ -125,6 +126,7 @@ class HostEventEditScreenState {
     required Event event,
     required DateTime now,
     required bool savePending,
+    required AppLocalizations l10n,
     HostEventEditFieldDisplayState? fields,
     Object? saveError,
   }) {
@@ -137,8 +139,9 @@ class HostEventEditScreenState {
       footer: EditHostedEventFooterState(
         isLoading: savePending,
         isEnabled: canEdit && !savePending,
+        label: l10n.hostsEventEditSaveChanges,
       ),
-      saveOutcome: const HostEventEditSaveOutcomeState.updated(),
+      saveOutcome: HostEventEditSaveOutcomeState.updated(l10n),
       fields:
           fields ??
           HostEventEditFieldDisplayState.fromEvent(
@@ -401,7 +404,7 @@ class EditHostedEventFooterState {
   const EditHostedEventFooterState({
     required this.isLoading,
     required this.isEnabled,
-    this.label = 'Save changes',
+    required this.label,
   });
 
   final bool isLoading;
@@ -418,11 +421,11 @@ class HostEventEditSaveOutcomeState {
     required this.invalidScheduleMessage,
   });
 
-  const HostEventEditSaveOutcomeState.updated()
-    : successMessage = 'Event updated.',
+  HostEventEditSaveOutcomeState.updated(AppLocalizations l10n)
+    : successMessage = l10n.hostsEventEditUpdated,
       popRouteOnSuccess = true,
-      missingStartingPointMessage = 'Pin a starting point before saving.',
-      invalidScheduleMessage = 'Event start must be in the future.';
+      missingStartingPointMessage = l10n.hostsEventEditMissingStartingPoint,
+      invalidScheduleMessage = l10n.hostsEventEditInvalidSchedule;
 
   final String successMessage;
   final bool popRouteOnSuccess;

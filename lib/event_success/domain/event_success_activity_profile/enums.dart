@@ -1,11 +1,11 @@
 part of '../event_success_activity_profile.dart';
 
 enum EventSuccessRecommendationLevel {
-  defaultOn('Default on'),
-  recommended('Recommended'),
-  optional('Optional'),
-  discouraged('Advanced'),
-  unsupported('Unavailable');
+  defaultOn(StructuredDomainCopy.eventSuccessRecommendationDefaultOn),
+  recommended(StructuredDomainCopy.eventSuccessRecommendationRecommended),
+  optional(StructuredDomainCopy.eventSuccessRecommendationOptional),
+  discouraged(StructuredDomainCopy.eventSuccessRecommendationAdvanced),
+  unsupported(StructuredDomainCopy.eventSuccessRecommendationUnavailable);
 
   const EventSuccessRecommendationLevel(this.label);
 

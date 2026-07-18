@@ -2,46 +2,50 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class ChatsEmptyState extends StatelessWidget {
   const ChatsEmptyState({
     super.key,
-    this.title = 'No catches yet',
-    this.message =
-        'When someone catches you back after a shared event, '
-        'the conversation opens here with that event as context.',
+    this.title,
+    this.message,
     this._iconRole = _ChatsEmptyStateIconRole.catchWindow,
-  });
+  }) : _variant = _ChatsEmptyStateVariant.noCatches;
 
   const ChatsEmptyState.hostInbox({super.key})
-    : title = 'No attendee queries yet',
-      message =
-          'Guest and attendee questions will appear here once people reach out about an event.',
+    : title = null,
+      message = null,
+      _variant = _ChatsEmptyStateVariant.hostInbox,
       _iconRole = _ChatsEmptyStateIconRole.hostInquiry;
 
   const ChatsEmptyState.noSearchResults({super.key})
-    : title = 'No chats match your search',
-      message = 'Try another name or clear the search field.',
+    : title = null,
+      message = null,
+      _variant = _ChatsEmptyStateVariant.noSearchResults,
       _iconRole = _ChatsEmptyStateIconRole.catchWindow;
 
   const ChatsEmptyState.noHostSearchResults({super.key})
-    : title = 'No attendee queries match your search',
-      message = 'Try another attendee name or clear the search field.',
+    : title = null,
+      message = null,
+      _variant = _ChatsEmptyStateVariant.noHostSearchResults,
       _iconRole = _ChatsEmptyStateIconRole.hostInquiry;
 
   const ChatsEmptyState.noUnreadQueries({super.key})
-    : title = 'No unread queries',
-      message =
-          'New attendee questions will move here until you open their thread.',
+    : title = null,
+      message = null,
+      _variant = _ChatsEmptyStateVariant.noUnreadQueries,
       _iconRole = _ChatsEmptyStateIconRole.hostInquiry;
 
-  final String title;
-  final String message;
+  final String? title;
+  final String? message;
+  final _ChatsEmptyStateVariant _variant;
   final _ChatsEmptyStateIconRole _iconRole;
 
   @override
   Widget build(BuildContext context) {
+    final resolvedTitle = title ?? _variant.title(context.l10n);
+    final resolvedMessage = message ?? _variant.message(context.l10n);
     return Padding(
       padding: CatchInsets.contentRelaxed,
       child: Column(
@@ -50,14 +54,44 @@ class ChatsEmptyState extends StatelessWidget {
           const SizedBox(height: CatchSpacing.s10),
           CatchEmptyState(
             icon: _iconRole.icon,
-            title: title,
-            message: message,
+            title: resolvedTitle,
+            message: resolvedMessage,
             titleStyle: CatchTextStyles.headlineS(context),
           ),
         ],
       ),
     );
   }
+}
+
+enum _ChatsEmptyStateVariant {
+  noCatches,
+  hostInbox,
+  noSearchResults,
+  noHostSearchResults,
+  noUnreadQueries;
+
+  String title(AppLocalizations l10n) => switch (this) {
+    _ChatsEmptyStateVariant.noCatches => l10n.chatsEmptyStateNoCatchesTitle,
+    _ChatsEmptyStateVariant.hostInbox => l10n.chatsEmptyStateHostInboxTitle,
+    _ChatsEmptyStateVariant.noSearchResults =>
+      l10n.chatsEmptyStateNoSearchResultsTitle,
+    _ChatsEmptyStateVariant.noHostSearchResults =>
+      l10n.chatsEmptyStateNoHostSearchResultsTitle,
+    _ChatsEmptyStateVariant.noUnreadQueries =>
+      l10n.chatsEmptyStateNoUnreadQueriesTitle,
+  };
+
+  String message(AppLocalizations l10n) => switch (this) {
+    _ChatsEmptyStateVariant.noCatches => l10n.chatsEmptyStateNoCatchesMessage,
+    _ChatsEmptyStateVariant.hostInbox => l10n.chatsEmptyStateHostInboxMessage,
+    _ChatsEmptyStateVariant.noSearchResults =>
+      l10n.chatsEmptyStateNoSearchResultsMessage,
+    _ChatsEmptyStateVariant.noHostSearchResults =>
+      l10n.chatsEmptyStateNoHostSearchResultsMessage,
+    _ChatsEmptyStateVariant.noUnreadQueries =>
+      l10n.chatsEmptyStateNoUnreadQueriesMessage,
+  };
 }
 
 enum _ChatsEmptyStateIconRole {

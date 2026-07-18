@@ -1,7 +1,10 @@
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_controller.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
+
+final _l10n = AppLocalizationsEn();
 
 void main() {
   test('builds a native calendar event from event details', () {
@@ -55,19 +58,19 @@ void main() {
     final event = buildEvent(meetingPoint: 'Bandra');
 
     expect(
-      PaymentConfirmationController.inviteSubject(event),
+      PaymentConfirmationController.inviteSubject(event, _l10n),
       'Join me at ${event.title}',
     );
     expect(
-      PaymentConfirmationController.inviteText(event),
+      PaymentConfirmationController.inviteText(event, _l10n),
       contains('I just booked this. Come with me?'),
     );
     expect(
-      PaymentConfirmationController.inviteText(event),
+      PaymentConfirmationController.inviteText(event, _l10n),
       contains('https://catchdates.com'),
     );
     expect(
-      PaymentConfirmationController.referralText(event),
+      PaymentConfirmationController.referralText(event, _l10n),
       contains('thought of you'),
     );
   });

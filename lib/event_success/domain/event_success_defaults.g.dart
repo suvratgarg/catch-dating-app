@@ -25,7 +25,7 @@ _EventSuccessDefaults _$EventSuccessDefaultsFromJson(
         ),
   hostGoal:
       json['hostGoal'] as String? ??
-      'Help attendees meet at least two new people.',
+      StructuredDomainCopy.eventSuccessDefaultHostGoal,
   wingmanRequestsEnabled: json['wingmanRequestsEnabled'] as bool? ?? true,
   contextualOpenersEnabled: json['contextualOpenersEnabled'] as bool? ?? true,
   compatibilityAffectsRanking:

@@ -8,6 +8,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'event_success_defaults.freezed.dart';
@@ -24,7 +25,7 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
     @Default(false) bool moduleSelectionConfigured,
     @Default(EventSuccessStructureConfig.legacyDefault())
     EventSuccessStructureConfig structureConfig,
-    @Default('Help attendees meet at least two new people.') String hostGoal,
+    @Default(StructuredDomainCopy.eventSuccessDefaultHostGoal) String hostGoal,
     @Deprecated(
       'Platform-owned and always true; retained only for stored-schema compatibility.',
     )

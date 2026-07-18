@@ -1742,6 +1742,7 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
       actionState: HostEventActionDisplayState.resolve(
         event: event,
         roster: roster,
+        l10n: context.l10n,
         cancelEventPending: false,
         deleteEventPending: false,
       ),

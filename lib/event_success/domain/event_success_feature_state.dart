@@ -8,8 +8,8 @@ import 'package:catch_dating_app/event_success/domain/event_success_structure.da
 import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 
 enum EventSuccessSetupStatus {
-  needsWork('Needs work'),
-  readyForLaunch('Ready for launch');
+  needsWork(StructuredDomainCopy.eventSuccessSetupNeedsWork),
+  readyForLaunch(StructuredDomainCopy.eventSuccessSetupReadyForLaunch);
 
   const EventSuccessSetupStatus(this.label);
 
@@ -22,7 +22,7 @@ class EventSuccessHostDraft {
     required this.selectedModuleIds,
     required this.targetAttendeeCount,
     required this.structureConfig,
-    this.hostGoal = 'Help attendees meet at least two new people.',
+    this.hostGoal = StructuredDomainCopy.eventSuccessDefaultHostGoal,
     this.wingmanRequestsEnabled = true,
     this.contextualOpenersEnabled = true,
     this.compatibilityAffectsRanking = false,

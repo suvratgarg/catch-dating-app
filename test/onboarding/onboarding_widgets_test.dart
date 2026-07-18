@@ -543,6 +543,7 @@ void main() {
       final empty = OnboardingGenderInterestState.fromDraft(
         gender: null,
         interestedIn: const [],
+        l10n: _l10n,
       );
 
       expect(empty.selectedGender, isEmpty);
@@ -556,6 +557,7 @@ void main() {
       final ready = OnboardingGenderInterestState.fromDraft(
         gender: Gender.woman,
         interestedIn: const [Gender.man],
+        l10n: _l10n,
         isSaving: true,
         saveErrorMessage: 'Could not save profile.',
       );
@@ -576,6 +578,7 @@ void main() {
       final state = OnboardingGenderInterestState.fromDraft(
         gender: Gender.woman,
         interestedIn: const [Gender.woman, Gender.man],
+        l10n: _l10n,
         saveErrorMessage: 'Could not save profile.',
       );
       Set<Gender>? nextGender;
@@ -1211,6 +1214,7 @@ void main() {
         distances: const [PreferredDistance.fiveK],
         reasons: const [RunReason.community],
         runTimes: const [PreferredRunTime.morning],
+        l10n: _l10n,
         runPreferencesOnly: true,
         isCompleting: true,
         completeErrorMessage: 'Could not save run preferences.',
@@ -1240,6 +1244,7 @@ void main() {
         distances: const [PreferredDistance.fiveK],
         reasons: const [RunReason.community],
         runTimes: const [PreferredRunTime.morning],
+        l10n: _l10n,
         completeErrorMessage: 'Could not save run preferences.',
       );
       var continueCount = 0;

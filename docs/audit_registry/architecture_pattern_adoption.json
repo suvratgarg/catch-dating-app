@@ -1064,6 +1064,7 @@
         "copy/structured_domain_copy_en.json",
         "functions/src/shared/notificationCopy.ts",
         "tool/copy/check_mobile_copy_ownership.dart",
+        "tool/copy/mobile_copy_allowlist.json",
         "tool/copy/sync_structured_domain_copy.dart"
       ],
       "adopters": [
@@ -1153,9 +1154,33 @@
         },
         {
           "path": "copy/structured_domain_copy_en.json",
-          "role": "marketing-owned synchronous Event Success and event-policy content source",
+          "role": "marketing-owned synchronous Event Success, profile-validation, and event-policy content source",
           "status": "aligned",
-          "lastReviewedPass": "2026-07-12-mobile-copy-zero-baseline"
+          "lastReviewedPass": "2026-07-18-mobile-copy-scanner-hardening"
+        },
+        {
+          "path": "lib/events/shared/event_invite_share_copy.dart",
+          "role": "consumer and Host external-share copy with explicit AppLocalizations injection",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-mobile-copy-scanner-hardening"
+        },
+        {
+          "path": "lib/onboarding/presentation/pages/running_prefs_page_state.dart",
+          "role": "consumer presentation-state copy resolved from AppLocalizations",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-mobile-copy-scanner-hardening"
+        },
+        {
+          "path": "lib/event_success/domain/event_success_models.dart",
+          "role": "Flutter-independent Event Success display metadata from generated structured copy",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-mobile-copy-scanner-hardening"
+        },
+        {
+          "path": "lib/user_profile/domain/profile_validation.dart",
+          "role": "Flutter-independent profile validation copy from generated structured constants",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-mobile-copy-scanner-hardening"
         },
         {
           "path": "functions/src/shared/notifications.ts",
@@ -1170,6 +1195,7 @@
         "flutter gen-l10n",
         "node tool/run.mjs check copy:mobile-catalog",
         "node tool/run.mjs check copy:mobile-ownership",
+        "node tool/run.mjs check copy:l10n-key-usage",
         "node tool/run.mjs check copy:native-sync",
         "node tool/run.mjs check copy:notification-sync",
         "node tool/run.mjs check copy:event-success-questionnaires",

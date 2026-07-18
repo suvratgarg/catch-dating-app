@@ -34,7 +34,7 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
   }
 
   void _submit() {
-    final state = _stateFor(isSaving: false);
+    final state = _stateFor(isSaving: false, l10n: context.l10n);
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -54,11 +54,13 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
 
   OnboardingGenderInterestState _stateFor({
     required bool isSaving,
+    required AppLocalizations l10n,
     String? saveErrorMessage,
   }) {
     return OnboardingGenderInterestState.fromDraft(
       gender: _gender,
       interestedIn: _interestedIn,
+      l10n: l10n,
       isSaving: isSaving,
       saveErrorMessage: saveErrorMessage,
     );
@@ -69,6 +71,7 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
     final mutation = ref.watch(OnboardingController.saveProfileMutation);
     final state = _stateFor(
       isSaving: mutation.isPending,
+      l10n: context.l10n,
       saveErrorMessage: mutation.hasError
           ? mutationErrorMessage(mutation, l10n: context.l10n)
           : null,

@@ -169,7 +169,7 @@ class EventPolicyStep extends StatelessWidget {
                       ],
                       validator:
                           admissionPreset == EventAdmissionPreset.inviteOnly
-                          ? inviteCodeValidator
+                          ? (value) => inviteCodeValidator(value, context.l10n)
                           : null,
                     ),
                   if (admissionPreset == EventAdmissionPreset.openCapacity) ...[
@@ -203,7 +203,10 @@ class EventPolicyStep extends StatelessWidget {
                             ],
                             textInputAction: TextInputAction.next,
                             validator: cohortCapsEnabled
-                                ? positiveOptionalValidator
+                                ? (value) => positiveOptionalValidator(
+                                    value,
+                                    context.l10n,
+                                  )
                                 : null,
                           ),
                           CatchField.input(
@@ -223,7 +226,10 @@ class EventPolicyStep extends StatelessWidget {
                             ],
                             textInputAction: TextInputAction.next,
                             validator: cohortCapsEnabled
-                                ? positiveOptionalValidator
+                                ? (value) => positiveOptionalValidator(
+                                    value,
+                                    context.l10n,
+                                  )
                                 : null,
                           ),
                         ],
@@ -268,7 +274,10 @@ class EventPolicyStep extends StatelessWidget {
                             ],
                             textInputAction: TextInputAction.next,
                             validator: dynamicPricingEnabled
-                                ? positiveRequiredValidator
+                                ? (value) => positiveRequiredValidator(
+                                    value,
+                                    context.l10n,
+                                  )
                                 : null,
                           ),
                           CatchField.input(
@@ -286,7 +295,10 @@ class EventPolicyStep extends StatelessWidget {
                             ],
                             textInputAction: TextInputAction.next,
                             validator: dynamicPricingEnabled
-                                ? positiveRequiredValidator
+                                ? (value) => positiveRequiredValidator(
+                                    value,
+                                    context.l10n,
+                                  )
                                 : null,
                           ),
                         ],

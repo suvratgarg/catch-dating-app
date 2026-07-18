@@ -10889,4 +10889,325 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get userAnalyticsUserAnalyticsCopyDataqualityAnalyticsSource =>
       'Analytics source';
+
+  @override
+  String get sharedSearchLabel => 'Search';
+
+  @override
+  String get sharedActionDelete => 'Delete';
+
+  @override
+  String get sharedValidationRequired => 'Required';
+
+  @override
+  String get sharedValidationInvalid => 'Invalid';
+
+  @override
+  String get sharedValidationMinimumOne => 'Min 1';
+
+  @override
+  String get sharedValidationInviteCodeMinimum => 'Min 4 chars';
+
+  @override
+  String get sharedValidationInviteCodeMaximum => 'Max 64 chars';
+
+  @override
+  String get sharedValidationAgeRange => '18-99';
+
+  @override
+  String get sharedValidationMinimumAtMostMaximum => '<= max';
+
+  @override
+  String get sharedValidationMaximumAtLeastMinimum => '>= min';
+
+  @override
+  String get chatsEmptyStateNoCatchesTitle => 'No catches yet';
+
+  @override
+  String get chatsEmptyStateNoCatchesMessage =>
+      'When someone catches you back after a shared event, the conversation opens here with that event as context.';
+
+  @override
+  String get chatsEmptyStateHostInboxTitle => 'No attendee queries yet';
+
+  @override
+  String get chatsEmptyStateHostInboxMessage =>
+      'Guest and attendee questions will appear here once people reach out about an event.';
+
+  @override
+  String get chatsEmptyStateNoSearchResultsTitle =>
+      'No chats match your search';
+
+  @override
+  String get chatsEmptyStateNoSearchResultsMessage =>
+      'Try another name or clear the search field.';
+
+  @override
+  String get chatsEmptyStateNoHostSearchResultsTitle =>
+      'No attendee queries match your search';
+
+  @override
+  String get chatsEmptyStateNoHostSearchResultsMessage =>
+      'Try another attendee name or clear the search field.';
+
+  @override
+  String get chatsEmptyStateNoUnreadQueriesTitle => 'No unread queries';
+
+  @override
+  String get chatsEmptyStateNoUnreadQueriesMessage =>
+      'New attendee questions will move here until you open their thread.';
+
+  @override
+  String get clubsClubShareCardFootnote =>
+      'Shares a visual club card with the club link.';
+
+  @override
+  String clubsClubShareCardHostedBy({required String hostName}) {
+    return 'Hosted by $hostName';
+  }
+
+  @override
+  String clubsClubShareTextIntro({required String clubName}) {
+    return 'Check out $clubName on Catch.';
+  }
+
+  @override
+  String get clubsClubHostRoleOwner => 'OWNER';
+
+  @override
+  String get clubsClubHostRoleHost => 'HOST';
+
+  @override
+  String clubsClubHostEstablishedMeta({
+    required String role,
+    required String established,
+  }) {
+    return '$role · EST. $established';
+  }
+
+  @override
+  String get clubsClubScheduleHostedBadge => 'HOSTED';
+
+  @override
+  String get clubsClubScheduleViewBadge => 'VIEW';
+
+  @override
+  String get eventsInviteShareButton => 'Share invite';
+
+  @override
+  String get eventsInviteShareFootnote =>
+      'Shares a visual invite with the event link.';
+
+  @override
+  String eventsInviteShareSubject({required String eventTitle}) {
+    return 'Join me at $eventTitle';
+  }
+
+  @override
+  String get eventsInviteShareEventDetailIntro =>
+      'This feels like your kind of plan.';
+
+  @override
+  String get eventsInviteShareBookingIntro =>
+      'I just booked this. Come with me?';
+
+  @override
+  String get eventsInviteShareReferralIntro =>
+      'I am going to this on Catch and thought of you.';
+
+  @override
+  String eventsInviteShareHostPrivateIntro({
+    required String eventTitle,
+    required String clubName,
+  }) {
+    return 'You are invited to $eventTitle from $clubName.';
+  }
+
+  @override
+  String get eventsInviteShareHostPrivatePrompt =>
+      'Use this private Catch invite to book your spot:';
+
+  @override
+  String get eventsInviteShareBookingPrompt => 'Book it on Catch:';
+
+  @override
+  String get eventsInviteShareFree => 'Free';
+
+  @override
+  String get eventsInviteShareFooter => 'Curated singles event';
+
+  @override
+  String eventsInviteShareSpotsLeft({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count spots left',
+      one: '1 spot left',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get eventsInviteShareWaitlistOpen => 'Waitlist open';
+
+  @override
+  String get eventsTileStatusOpen => 'Open';
+
+  @override
+  String get eventsTileStatusJoined => 'You\'re in';
+
+  @override
+  String get eventsTileStatusSaved => 'Saved';
+
+  @override
+  String get eventsTileStatusRecommended => 'Recommended';
+
+  @override
+  String get eventsTileStatusHosted => 'Hosted';
+
+  @override
+  String get eventsTileStatusWaitlisted => 'Waitlisted';
+
+  @override
+  String get eventsTileStatusAttended => 'Attended';
+
+  @override
+  String get eventsTileStatusPast => 'Past';
+
+  @override
+  String get eventsTileStatusFull => 'Full';
+
+  @override
+  String get eventsTileStatusIneligible => 'Not eligible';
+
+  @override
+  String get eventsTileStatusCancelled => 'Cancelled';
+
+  @override
+  String get exploreRecommendationsTitleForYou => 'For you';
+
+  @override
+  String get eventsLocationPickerSelectedPlace => 'selected place';
+
+  @override
+  String get eventsLocationPickerSearchFailure =>
+      'Could not search places. Try again.';
+
+  @override
+  String get eventsLocationPickerDetailsFailure =>
+      'Could not load that place. Try another result.';
+
+  @override
+  String get eventSuccessSocialMissionTitle => 'Social mission';
+
+  @override
+  String get hostsAdmissionOpenCapacityDescription =>
+      'Anyone eligible can book until the event reaches capacity.';
+
+  @override
+  String get hostsAdmissionInviteOnlyDescription =>
+      'New invite-only events ask for an event-specific code.';
+
+  @override
+  String get hostsAdmissionBalancedSinglesDescription =>
+      'Straight men and women are kept within one spot of each other.';
+
+  @override
+  String get hostsAdmissionFixedCohortCapsLabel => 'Fixed cohort caps';
+
+  @override
+  String get hostsAdmissionFixedCohortCapsDescription =>
+      'Open booking with optional straight men and straight women caps.';
+
+  @override
+  String get hostsValidationEnterValidEmail => 'Enter a valid email.';
+
+  @override
+  String get hostsValidationEnterDisplayName => 'Enter a display name.';
+
+  @override
+  String get hostsProfileStatusActive => 'Active professional profile';
+
+  @override
+  String get hostsProfileStatusPending => 'Profile pending review';
+
+  @override
+  String get hostsProfileStatusSuspended => 'Profile suspended';
+
+  @override
+  String get hostsEventActionCancelling => 'Cancelling...';
+
+  @override
+  String get hostsEventActionCancelDetail => 'Keeps records · notifies guests';
+
+  @override
+  String get hostsEventActionDeleting => 'Deleting...';
+
+  @override
+  String get hostsEventActionDeleteDetail => 'Permanent removal';
+
+  @override
+  String get hostsEventEditSaveChanges => 'Save changes';
+
+  @override
+  String get hostsEventEditUpdated => 'Event updated.';
+
+  @override
+  String get hostsEventEditMissingStartingPoint =>
+      'Pin a starting point before saving.';
+
+  @override
+  String get hostsEventEditInvalidSchedule =>
+      'Event start must be in the future.';
+
+  @override
+  String get launchAccessValidationChooseCity => 'Please choose your city';
+
+  @override
+  String get launchAccessValidationChooseEventType =>
+      'Choose at least one event type';
+
+  @override
+  String get launchAccessValidationChooseTime => 'Choose at least one time';
+
+  @override
+  String get launchAccessValidationTellUsMore => 'Tell us a little more.';
+
+  @override
+  String matchesCelebrationLikedBack({required String name}) {
+    return '$name liked you back.';
+  }
+
+  @override
+  String get onboardingRunningPrefsContinueBooking => 'Continue booking';
+
+  @override
+  String get onboardingRunningPrefsSave => 'Save run preferences';
+
+  @override
+  String get onboardingRunningPrefsBookingReasonLabel => 'Why do you run?';
+
+  @override
+  String get onboardingRunningPrefsReasonLabel => 'WHY DO YOU RUN?';
+
+  @override
+  String get onboardingRunningPrefsRunTimesLabel => 'FAVOURITE RUN TIMES';
+
+  @override
+  String get onboardingRunningPrefsEventTimesLabel => 'FAVOURITE EVENT TIMES';
+
+  @override
+  String get onboardingGenderValidationSelectGender =>
+      'Please select your gender';
+
+  @override
+  String get onboardingGenderValidationSelectInterest =>
+      'Please select who you want to see';
+
+  @override
+  String get paymentsHistorySupportMessage =>
+      'Please contact Catch support for assistance with this booking.';
+
+  @override
+  String get safetyAccountUnblockedMessage => 'Account unblocked.';
 }

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 
 class HostReportExport {
   const HostReportExport({
@@ -87,7 +88,8 @@ HostReportExport buildHostRevenueReportExport({
 
   return HostReportExport(
     fileName: '${_eventSlug(event)}-revenue.csv',
-    subject: 'Revenue report: ${event.title}',
+    subject:
+        '${StructuredDomainCopy.hostRevenueReportSubjectPrefix}${event.title}',
     csv: _csv(rows),
   );
 }
@@ -160,7 +162,7 @@ HostReportExport buildHostOpsReportExport({
 
   return HostReportExport(
     fileName: '${_eventSlug(event)}-ops.csv',
-    subject: 'Ops report: ${event.title}',
+    subject: '${StructuredDomainCopy.hostOpsReportSubjectPrefix}${event.title}',
     csv: _csv(rows),
   );
 }

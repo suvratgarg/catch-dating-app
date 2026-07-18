@@ -319,8 +319,10 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                       ),
                       onSubmit: () => _submitNumericField(
                         field: 'maxMen',
-                        validate: () =>
-                            positiveOptionalValidator(_maxMenController.text),
+                        validate: () => positiveOptionalValidator(
+                          _maxMenController.text,
+                          context.l10n,
+                        ),
                         update: (current) => current.copyWith(
                           maxMen: _parseOptionalInt(_maxMenController),
                         ),
@@ -350,8 +352,10 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                       ),
                       onSubmit: () => _submitNumericField(
                         field: 'maxWomen',
-                        validate: () =>
-                            positiveOptionalValidator(_maxWomenController.text),
+                        validate: () => positiveOptionalValidator(
+                          _maxWomenController.text,
+                          context.l10n,
+                        ),
                         update: (current) => current.copyWith(
                           maxWomen: _parseOptionalInt(_maxWomenController),
                         ),
@@ -412,6 +416,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                           field: 'pricingStep',
                           validate: () => positiveRequiredValidator(
                             _pricingStepController.text,
+                            context.l10n,
                           ),
                           update: (current) => current.copyWith(
                             dynamicPricingStepInPaise: _parseMajorUnitsToMinor(
@@ -451,6 +456,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                           field: 'pricingMax',
                           validate: () => positiveRequiredValidator(
                             _pricingMaxController.text,
+                            context.l10n,
                           ),
                           update: (current) => current.copyWith(
                             dynamicPricingMaxInPaise: _parseMajorUnitsToMinor(

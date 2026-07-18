@@ -120,7 +120,7 @@
   },
   "app_architecture": {
     "path": "docs/app_architecture.md",
-    "version": "1.4.34",
+    "version": "1.4.35",
     "updated": "2026-07-18",
     "status": "active",
     "read_policy": "Read first for Flutter app code organization, dependency-direction seams including annotated feature-root barrel exports, provider-free *_state.dart naming, Firebase/domain boundaries, mutation-cardinality grain, app-role boundaries, feature/layer/screen/controller/repository/widget ownership, async state boundaries, error-surface taxonomy, UI layout/scroll/sizing, realtime stream lifecycle keepAlive markers, routing/navigation constants, reference implementation exhibits, exhibit-freshness markers, and architecture enforcement policy.",

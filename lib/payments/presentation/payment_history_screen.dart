@@ -313,7 +313,7 @@ class PaymentHistoryTile extends StatelessWidget {
             Navigator.of(sheetContext).pop();
             showCatchSnackBar(
               context,
-              'Please contact Catch support for assistance with this booking.',
+              context.l10n.paymentsHistorySupportMessage,
             );
           },
         );

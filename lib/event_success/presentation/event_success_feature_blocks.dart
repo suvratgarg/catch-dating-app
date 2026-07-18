@@ -733,14 +733,10 @@ class LiveStepRow extends StatelessWidget {
 }
 
 class EventSuccessPromptCard extends StatelessWidget {
-  const EventSuccessPromptCard({
-    super.key,
-    required this.prompt,
-    this.title = 'Social mission',
-  });
+  const EventSuccessPromptCard({super.key, required this.prompt, this.title});
 
   final String prompt;
-  final String title;
+  final String? title;
 
   @override
   Widget build(BuildContext context) {
@@ -759,7 +755,10 @@ class EventSuccessPromptCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: CatchTextStyles.sectionTitle(context)),
+                Text(
+                  title ?? context.l10n.eventSuccessSocialMissionTitle,
+                  style: CatchTextStyles.sectionTitle(context),
+                ),
                 const SizedBox(height: CatchSpacing.s1),
                 Text(prompt, style: CatchTextStyles.supporting(context)),
               ],

@@ -562,7 +562,7 @@
       "command": "dart run tool/copy/check_mobile_copy_ownership.dart",
       "safety": "local",
       "status": "active",
-      "description": "Blocks unmanaged Flutter user-facing strings; the checked baseline must remain empty.",
+      "description": "Blocks unmanaged Flutter product copy in widget arguments, copy-shaped defaults and initializers, presentation-state members, validator/share/status helpers, and Event Success display enums; the checked baseline must remain empty.",
       "checks": [
         "dart run tool/copy/check_mobile_copy_ownership.dart --self-test",
         "dart run tool/copy/check_mobile_copy_ownership.dart"

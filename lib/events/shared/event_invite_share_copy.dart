@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 
 abstract final class EventInviteShareCopy {
@@ -14,50 +15,63 @@ abstract final class EventInviteShareCopy {
     inviteLinkId: inviteLinkId,
   );
 
-  static String subject(Event event) => 'Join me at ${event.title}';
+  static String subject(Event event, AppLocalizations l10n) =>
+      l10n.eventsInviteShareSubject(eventTitle: event.title);
 
   static String eventDetailInviteText(
     Event event, {
+    required AppLocalizations l10n,
     String? inviteCode,
     String? inviteLinkId,
   }) {
     return _composeInvite(
       event,
-      intro: 'This feels like your kind of plan.',
+      l10n: l10n,
+      intro: l10n.eventsInviteShareEventDetailIntro,
       inviteCode: inviteCode,
       inviteLinkId: inviteLinkId,
     );
   }
 
-  static String bookingInviteText(Event event) {
-    return _composeInvite(event, intro: 'I just booked this. Come with me?');
-  }
-
-  static String referralText(Event event) {
+  static String bookingInviteText(Event event, AppLocalizations l10n) {
     return _composeInvite(
       event,
-      intro: 'I am going to this on Catch and thought of you.',
+      l10n: l10n,
+      intro: l10n.eventsInviteShareBookingIntro,
+    );
+  }
+
+  static String referralText(Event event, AppLocalizations l10n) {
+    return _composeInvite(
+      event,
+      l10n: l10n,
+      intro: l10n.eventsInviteShareReferralIntro,
     );
   }
 
   static String hostPrivateInviteText({
     required Event event,
+    required AppLocalizations l10n,
     required String clubName,
     required String inviteLink,
   }) {
     return [
-      'You are invited to ${event.title} from $clubName.',
+      l10n.eventsInviteShareHostPrivateIntro(
+        eventTitle: event.title,
+        clubName: clubName,
+      ),
       '',
-      _eventLine(event),
+      _eventLine(event, l10n),
       event.locationName,
       '',
-      'Use this private Catch invite to book your spot:',
+      l10n.eventsInviteShareHostPrivatePrompt,
       inviteLink,
     ].join('\n');
   }
 
   static String _composeInvite(
     Event event, {
+    required AppLocalizations l10n,
     required String intro,
     String? inviteCode,
     String? inviteLinkId,
@@ -71,17 +85,17 @@ abstract final class EventInviteShareCopy {
       intro,
       '',
       event.title,
-      _eventLine(event),
+      _eventLine(event, l10n),
       event.locationName,
       '',
-      'Book it on Catch:',
+      l10n.eventsInviteShareBookingPrompt,
       link.toString(),
     ].join('\n');
   }
 
-  static String _eventLine(Event event) {
+  static String _eventLine(Event event, AppLocalizations l10n) {
     final price = event.isFree
-        ? 'Free'
+        ? l10n.eventsInviteShareFree
         : EventFormatters.priceInPaise(
             event.priceInPaise,
             currencyCode: event.currency,

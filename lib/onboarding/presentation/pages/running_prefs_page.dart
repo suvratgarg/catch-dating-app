@@ -69,6 +69,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
 
   OnboardingRunningPrefsState _stateFor({
     required bool isCompleting,
+    required AppLocalizations l10n,
     String? completeErrorMessage,
   }) {
     return OnboardingRunningPrefsState.fromDraft(
@@ -76,6 +77,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
       distances: _distances,
       reasons: _reasons,
       runTimes: _runTimes,
+      l10n: l10n,
       runPreferencesOnly: widget.runPreferencesOnly,
       isCompleting: isCompleting,
       completeErrorMessage: completeErrorMessage,
@@ -83,7 +85,10 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
   }
 
   void _submit() {
-    final intent = _stateFor(isCompleting: false).submitIntent();
+    final intent = _stateFor(
+      isCompleting: false,
+      l10n: context.l10n,
+    ).submitIntent();
     OnboardingController.completeMutation.run(ref, (tx) async {
       await tx
           .get(onboardingControllerProvider.notifier)
@@ -102,6 +107,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
     final mutation = ref.watch(OnboardingController.completeMutation);
     final state = _stateFor(
       isCompleting: mutation.isPending,
+      l10n: context.l10n,
       completeErrorMessage: mutation.hasError
           ? mutationErrorMessage(mutation, l10n: context.l10n)
           : null,

@@ -42,7 +42,7 @@ final class HostProfileControllerProvider
 }
 
 String _$hostProfileControllerHash() =>
-    r'4e84f562f73d731357746671249fe699f98f6b5a';
+    r'26db6d47fd09cd13c324434738dd66ca89cff14e';
 
 abstract class _$HostProfileController extends $Notifier<void> {
   void build();

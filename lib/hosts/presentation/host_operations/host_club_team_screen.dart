@@ -430,7 +430,7 @@ class HostTeamProfileRows extends StatelessWidget {
           ),
           CatchField.read(
             title: context.l10n.hostsHostClubTeamScreenTitleStatus,
-            valueText: hostProfileStatusLabel(profile.status),
+            valueText: hostProfileStatusLabel(profile.status, context.l10n),
             icon: CatchIcons.checkCircleOutlineRounded,
           ),
           CatchField.read(
@@ -464,7 +464,7 @@ class HostTeamProfileRows extends StatelessWidget {
             icon: CatchIcons.personOutlineRounded,
             textInputAction: TextInputAction.next,
             textCapitalization: TextCapitalization.words,
-            validator: _requiredDisplayName,
+            validator: (value) => _requiredDisplayName(value, context.l10n),
           ),
           CatchField.input(
             title: context.l10n.hostsHostClubTeamScreenTitleRoleTitle,
@@ -476,7 +476,7 @@ class HostTeamProfileRows extends StatelessWidget {
           ),
           CatchField.read(
             title: context.l10n.hostsHostClubTeamScreenTitleStatus,
-            valueText: hostProfileStatusLabel(profile.status),
+            valueText: hostProfileStatusLabel(profile.status, context.l10n),
             icon: CatchIcons.checkCircleOutlineRounded,
           ),
           CatchField.input(
@@ -549,17 +549,17 @@ class HostTeamHostedClubsSection extends StatelessWidget {
   }
 }
 
-String? _requiredDisplayName(String? value) {
+String? _requiredDisplayName(String? value, AppLocalizations l10n) {
   if (value == null || value.trim().isEmpty) {
-    return 'Enter a display name.';
+    return l10n.hostsValidationEnterDisplayName;
   }
   return null;
 }
 
-String hostProfileStatusLabel(HostProfileStatus status) {
+String hostProfileStatusLabel(HostProfileStatus status, AppLocalizations l10n) {
   return switch (status) {
-    HostProfileStatus.active => 'Active professional profile',
-    HostProfileStatus.pending => 'Profile pending review',
-    HostProfileStatus.suspended => 'Profile suspended',
+    HostProfileStatus.active => l10n.hostsProfileStatusActive,
+    HostProfileStatus.pending => l10n.hostsProfileStatusPending,
+    HostProfileStatus.suspended => l10n.hostsProfileStatusSuspended,
   };
 }

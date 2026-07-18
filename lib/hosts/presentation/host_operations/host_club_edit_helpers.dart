@@ -5,25 +5,35 @@ String _valueOrDash(String? value) {
   return trimmed == null || trimmed.isEmpty ? '—' : trimmed;
 }
 
-String _admissionDefaultLabel(EventAdmissionDefaultPreset preset) {
+String _admissionDefaultLabel(
+  EventAdmissionDefaultPreset preset,
+  AppLocalizations l10n,
+) {
   return switch (preset) {
-    EventAdmissionDefaultPreset.openCapacity => 'Open capacity',
-    EventAdmissionDefaultPreset.inviteOnly => 'Invite only',
-    EventAdmissionDefaultPreset.balancedSingles => 'Balanced singles',
-    EventAdmissionDefaultPreset.fixedCohortCaps => 'Fixed cohort caps',
+    EventAdmissionDefaultPreset.openCapacity =>
+      l10n.hostsCreateEventPolicyStateTitleOpenCapacity,
+    EventAdmissionDefaultPreset.inviteOnly =>
+      l10n.hostsCreateEventPolicyStateTitleInviteOnly,
+    EventAdmissionDefaultPreset.balancedSingles =>
+      l10n.hostsCreateEventPolicyStateTitleBalancedSingles,
+    EventAdmissionDefaultPreset.fixedCohortCaps =>
+      l10n.hostsAdmissionFixedCohortCapsLabel,
   };
 }
 
-String _admissionDefaultDescription(EventAdmissionDefaultPreset preset) {
+String _admissionDefaultDescription(
+  EventAdmissionDefaultPreset preset,
+  AppLocalizations l10n,
+) {
   return switch (preset) {
     EventAdmissionDefaultPreset.openCapacity =>
-      'Anyone eligible can book until the event reaches capacity.',
+      l10n.hostsAdmissionOpenCapacityDescription,
     EventAdmissionDefaultPreset.inviteOnly =>
-      'New invite-only events ask for an event-specific code.',
+      l10n.hostsAdmissionInviteOnlyDescription,
     EventAdmissionDefaultPreset.balancedSingles =>
-      'Straight men and women are kept within one spot of each other.',
+      l10n.hostsAdmissionBalancedSinglesDescription,
     EventAdmissionDefaultPreset.fixedCohortCaps =>
-      'Open booking with optional straight men and straight women caps.',
+      l10n.hostsAdmissionFixedCohortCapsDescription,
   };
 }
 
@@ -52,11 +62,11 @@ String _normalizeMultilineInput(String value) {
       .replaceAll(RegExp(r'\n{3,}'), '\n\n');
 }
 
-String? _optionalEmailValidator(String? value) {
+String? _optionalEmailValidator(String? value, AppLocalizations l10n) {
   final trimmed = value?.trim() ?? '';
   if (trimmed.isEmpty) return null;
   final valid = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(trimmed);
-  return valid ? null : 'Enter a valid email.';
+  return valid ? null : l10n.hostsValidationEnterValidEmail;
 }
 
 Object? _optionalStringFieldValue(String value) {

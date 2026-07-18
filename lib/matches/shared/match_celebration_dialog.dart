@@ -52,7 +52,7 @@ class MatchCelebrationDialog extends ConsumerWidget {
         CelebrationDetail(
           icon: CatchIcons.favoriteBorderRounded,
           label: context.l10n.matchesMatchCelebrationDialogLabelMatch,
-          value: '$name liked you back.',
+          value: context.l10n.matchesCelebrationLikedBack(name: name),
         ),
       ],
       note: context

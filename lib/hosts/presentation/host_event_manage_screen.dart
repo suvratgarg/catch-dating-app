@@ -138,6 +138,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     final actionState = HostEventActionDisplayState.resolve(
       event: event,
       roster: roster,
+      l10n: context.l10n,
       cancelEventPending: cancelMutation.isPending,
       deleteEventPending: deleteMutation.isPending,
     );
@@ -601,6 +602,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                   club: club,
                   event: event,
                   inviteLink: inviteLink,
+                  l10n: context.l10n,
                   origin: origin,
                 ),
           )

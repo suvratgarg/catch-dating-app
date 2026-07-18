@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.4.34
+version: 1.4.35
 updated: 2026-07-18
 owner: recursive_audit_loop
 status: active
@@ -1469,6 +1469,15 @@ zero-use ARB keys fail immediately, and the checked key-usage inventory must
 match the current catalog and handwritten Dart sources. An allowlist entry is
 only appropriate for a technical identifier, test/demo fixture, or
 user-authored value and must contain a narrow reason.
+
+The ownership gate covers more than direct `Text(...)` calls: copy-shaped
+named arguments, default parameters and constructor initializers,
+presentation-state members, validation/share/status helpers, snackbar and
+confirmation helpers, and Event Success display-enum arguments are all
+enforced. Interpolation-only compositions of already-localized values, switch
+wire patterns, exception diagnostics, and generated sources are excluded so
+the gate reports actionable ownership violations instead of protocol strings.
+Its seeded self-test must grow whenever a newly discovered AST shape is added.
 
 Presentation models may contain resolved `String` fields, but any factory that
 creates user-visible prose must accept `AppLocalizations` explicitly. Widgets

@@ -1,32 +1,8 @@
 {
   "version": 1,
-  "updated": "2026-07-17",
+  "updated": "2026-07-18",
   "description": "Intentional inline Flutter strings that are not marketing-owned product copy. Every entry requires a narrow reason.",
   "entries": [
-    {
-      "file": "lib/core/forms/catch_form_descriptors.dart",
-      "kind": "argument:body",
-      "text": "'${descriptor.labelText(_range.start)} - ${descriptor.labelText(_range.end)}'",
-      "reason": "Composes two already localized range endpoint labels with punctuation only."
-    },
-    {
-      "file": "lib/events/presentation/widgets/event_pins_map.dart",
-      "kind": "argument:text",
-      "text": "'$count'",
-      "reason": "Renders only the runtime numeric map-cluster count."
-    },
-    {
-      "file": "lib/events/shared/event_tiles/event_date_rail_card.dart",
-      "kind": "argument:text",
-      "text": "' · ${effectiveStatus.toUpperCase()}'",
-      "reason": "Joins an already localized status value with a visual separator."
-    },
-    {
-      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "kind": "argument:body",
-      "text": "'$dateAndStatus\\n$attendance'",
-      "reason": "Joins two separately localized analytics lines with a newline."
-    },
     {
       "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
       "kind": "variable:description",
@@ -38,12 +14,6 @@
       "kind": "variable:name",
       "text": "name",
       "reason": "Stable Host club field identifier used for edit routing, not visible copy."
-    },
-    {
-      "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
-      "kind": "variable:semanticLabel",
-      "text": "'${data.dateLabel} ${data.monthLabel}'",
-      "reason": "Combines already localized event date and month display values."
     }
   ]
 }

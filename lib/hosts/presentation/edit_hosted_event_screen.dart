@@ -348,6 +348,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       event: widget.event,
       now: _now,
       savePending: mutation.isPending,
+      l10n: context.l10n,
       fields: fieldState,
       saveError: saveError,
     );
@@ -753,8 +754,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
         startTime.minute,
       ),
       now: _now,
-      invalidScheduleMessage:
-          const HostEventEditSaveOutcomeState.updated().invalidScheduleMessage,
+      invalidScheduleMessage: HostEventEditSaveOutcomeState.updated(
+        context.l10n,
+      ).invalidScheduleMessage,
     );
   }
 
@@ -809,6 +811,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       event: widget.event,
       now: _now,
       savePending: false,
+      l10n: context.l10n,
     );
     if (!_formKey.currentState!.validate()) return;
     if (_startingPoint == null) {
@@ -1010,7 +1013,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           textInputAction: TextInputAction.next,
-          validator: positiveRequiredValidator,
+          validator: (value) => positiveRequiredValidator(value, context.l10n),
         ),
         CatchField.input(
           key: CreateEventFormKeys.price,
@@ -1028,8 +1031,11 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
             ),
           ],
           textInputAction: TextInputAction.next,
-          validator: (value) =>
-              _moneyRequiredValidator(value, currencyCode: state.currencyCode),
+          validator: (value) => _moneyRequiredValidator(
+            value,
+            currencyCode: state.currencyCode,
+            l10n: context.l10n,
+          ),
         ),
         CatchField.optionCards<EventAdmissionPreset>(
           title: context.l10n.hostsEditHostedEventScreenLabelAdmissionFormat,
@@ -1061,7 +1067,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                 ),
               ),
             ],
-            validator: inviteCodeValidator,
+            validator: (value) => inviteCodeValidator(value, context.l10n),
           ),
         if (state.showCohortCapsToggle) ...[
           CatchField.toggle(
@@ -1088,7 +1094,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
-                  validator: positiveOptionalValidator,
+                  validator: (value) =>
+                      positiveOptionalValidator(value, context.l10n),
                 ),
                 CatchField.input(
                   key: CreateEventFormKeys.maxWomen,
@@ -1101,7 +1108,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
-                  validator: positiveOptionalValidator,
+                  validator: (value) =>
+                      positiveOptionalValidator(value, context.l10n),
                 ),
               ],
             ),
@@ -1138,7 +1146,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
-                  validator: positiveRequiredValidator,
+                  validator: (value) =>
+                      positiveRequiredValidator(value, context.l10n),
                 ),
                 CatchField.input(
                   key: CreateEventFormKeys.dynamicPricingMax,
@@ -1152,7 +1161,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
-                  validator: positiveRequiredValidator,
+                  validator: (value) =>
+                      positiveRequiredValidator(value, context.l10n),
                 ),
               ],
             ),
@@ -1322,12 +1332,18 @@ String? _inviteCodeHint(String value) {
   return '${code.substring(0, 2)}...${code.substring(code.length - 2)}';
 }
 
-String? _moneyRequiredValidator(String? value, {required String currencyCode}) {
-  if (value == null || value.trim().isEmpty) return 'Required';
+String? _moneyRequiredValidator(
+  String? value, {
+  required String currencyCode,
+  required AppLocalizations l10n,
+}) {
+  if (value == null || value.trim().isEmpty) {
+    return l10n.sharedValidationRequired;
+  }
   final amount = parseMajorCurrencyAmountToMinorUnits(
     value,
     currencyCode: currencyCode,
   );
-  if (amount == null) return 'Invalid';
+  if (amount == null) return l10n.sharedValidationInvalid;
   return null;
 }

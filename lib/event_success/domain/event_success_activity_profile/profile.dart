@@ -96,18 +96,18 @@ class EventSuccessActivityProfile {
   String get defaultAttendeePrompt {
     return switch (interactionModel) {
       EventInteractionModel.pacePods =>
-        'Find someone running your pace and ask what route they want to try next.',
+        StructuredDomainCopy.eventSuccessPromptPacePods,
       EventInteractionModel.pairedRotations =>
-        'Find your next partner and ask what they are hoping to play next.',
+        StructuredDomainCopy.eventSuccessPromptPairedRotations,
       EventInteractionModel.teamRotations =>
-        'Find someone on your team and ask what brought them here.',
+        StructuredDomainCopy.eventSuccessPromptTeamRotations,
       EventInteractionModel.seatedTable =>
-        'Ask someone at your table what made them say yes to tonight.',
+        StructuredDomainCopy.eventSuccessPromptSeatedTable,
       EventInteractionModel.freeFormMixer =>
-        'Find someone nearby and ask what answer from tonight surprised them.',
+        StructuredDomainCopy.eventSuccessPromptFreeFormMixer,
       EventInteractionModel.hostLedProgram ||
       EventInteractionModel.openFormat =>
-        'Find someone near you and ask what brought them here.',
+        StructuredDomainCopy.eventSuccessPromptOpenFormat,
     };
   }
 

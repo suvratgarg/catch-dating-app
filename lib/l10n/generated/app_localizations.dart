@@ -16913,6 +16913,552 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Analytics source'**
   String get userAnalyticsUserAnalyticsCopyDataqualityAnalyticsSource;
+
+  /// Shared search field placeholder and accessibility label.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get sharedSearchLabel;
+
+  /// Shared destructive delete action label.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get sharedActionDelete;
+
+  /// Shared validation message for a required field.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get sharedValidationRequired;
+
+  /// Shared validation message for an invalid field value.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid'**
+  String get sharedValidationInvalid;
+
+  /// Shared validation message for positive integer inputs.
+  ///
+  /// In en, this message translates to:
+  /// **'Min 1'**
+  String get sharedValidationMinimumOne;
+
+  /// Minimum-length validation message for invite codes.
+  ///
+  /// In en, this message translates to:
+  /// **'Min 4 chars'**
+  String get sharedValidationInviteCodeMinimum;
+
+  /// Maximum-length validation message for invite codes.
+  ///
+  /// In en, this message translates to:
+  /// **'Max 64 chars'**
+  String get sharedValidationInviteCodeMaximum;
+
+  /// Allowed age range for Host event policy inputs.
+  ///
+  /// In en, this message translates to:
+  /// **'18-99'**
+  String get sharedValidationAgeRange;
+
+  /// Validation requiring the minimum age not to exceed the maximum.
+  ///
+  /// In en, this message translates to:
+  /// **'<= max'**
+  String get sharedValidationMinimumAtMostMaximum;
+
+  /// Validation requiring the maximum age not to be below the minimum.
+  ///
+  /// In en, this message translates to:
+  /// **'>= min'**
+  String get sharedValidationMaximumAtLeastMinimum;
+
+  /// Consumer inbox empty-state title before a mutual Catch.
+  ///
+  /// In en, this message translates to:
+  /// **'No catches yet'**
+  String get chatsEmptyStateNoCatchesTitle;
+
+  /// Consumer inbox empty-state guidance before a mutual Catch.
+  ///
+  /// In en, this message translates to:
+  /// **'When someone catches you back after a shared event, the conversation opens here with that event as context.'**
+  String get chatsEmptyStateNoCatchesMessage;
+
+  /// Host inbox empty-state title.
+  ///
+  /// In en, this message translates to:
+  /// **'No attendee queries yet'**
+  String get chatsEmptyStateHostInboxTitle;
+
+  /// Host inbox empty-state guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest and attendee questions will appear here once people reach out about an event.'**
+  String get chatsEmptyStateHostInboxMessage;
+
+  /// Consumer chat-search empty-state title.
+  ///
+  /// In en, this message translates to:
+  /// **'No chats match your search'**
+  String get chatsEmptyStateNoSearchResultsTitle;
+
+  /// Consumer chat-search empty-state recovery guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another name or clear the search field.'**
+  String get chatsEmptyStateNoSearchResultsMessage;
+
+  /// Host inbox search empty-state title.
+  ///
+  /// In en, this message translates to:
+  /// **'No attendee queries match your search'**
+  String get chatsEmptyStateNoHostSearchResultsTitle;
+
+  /// Host inbox search empty-state recovery guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another attendee name or clear the search field.'**
+  String get chatsEmptyStateNoHostSearchResultsMessage;
+
+  /// Host inbox unread-filter empty-state title.
+  ///
+  /// In en, this message translates to:
+  /// **'No unread queries'**
+  String get chatsEmptyStateNoUnreadQueriesTitle;
+
+  /// Host inbox unread-filter empty-state guidance.
+  ///
+  /// In en, this message translates to:
+  /// **'New attendee questions will move here until you open their thread.'**
+  String get chatsEmptyStateNoUnreadQueriesMessage;
+
+  /// Explanation below the club share-card action.
+  ///
+  /// In en, this message translates to:
+  /// **'Shares a visual club card with the club link.'**
+  String get clubsClubShareCardFootnote;
+
+  /// Host attribution on a club share card.
+  ///
+  /// In en, this message translates to:
+  /// **'Hosted by {hostName}'**
+  String clubsClubShareCardHostedBy({required String hostName});
+
+  /// Opening line of externally shared club copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Check out {clubName} on Catch.'**
+  String clubsClubShareTextIntro({required String clubName});
+
+  /// Club owner role label in Host attribution.
+  ///
+  /// In en, this message translates to:
+  /// **'OWNER'**
+  String get clubsClubHostRoleOwner;
+
+  /// Club host role label in Host attribution.
+  ///
+  /// In en, this message translates to:
+  /// **'HOST'**
+  String get clubsClubHostRoleHost;
+
+  /// Club host role and established-date metadata.
+  ///
+  /// In en, this message translates to:
+  /// **'{role} · EST. {established}'**
+  String clubsClubHostEstablishedMeta({
+    required String role,
+    required String established,
+  });
+
+  /// Badge on club schedule events managed by the current Host.
+  ///
+  /// In en, this message translates to:
+  /// **'HOSTED'**
+  String get clubsClubScheduleHostedBadge;
+
+  /// Read-only club schedule event action badge.
+  ///
+  /// In en, this message translates to:
+  /// **'VIEW'**
+  String get clubsClubScheduleViewBadge;
+
+  /// Primary action on the event invite share sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Share invite'**
+  String get eventsInviteShareButton;
+
+  /// Explanation below the event invite share action.
+  ///
+  /// In en, this message translates to:
+  /// **'Shares a visual invite with the event link.'**
+  String get eventsInviteShareFootnote;
+
+  /// Subject for an externally shared event invitation.
+  ///
+  /// In en, this message translates to:
+  /// **'Join me at {eventTitle}'**
+  String eventsInviteShareSubject({required String eventTitle});
+
+  /// Opening line when sharing from event details.
+  ///
+  /// In en, this message translates to:
+  /// **'This feels like your kind of plan.'**
+  String get eventsInviteShareEventDetailIntro;
+
+  /// Opening line when sharing after booking.
+  ///
+  /// In en, this message translates to:
+  /// **'I just booked this. Come with me?'**
+  String get eventsInviteShareBookingIntro;
+
+  /// Opening line for an event referral share.
+  ///
+  /// In en, this message translates to:
+  /// **'I am going to this on Catch and thought of you.'**
+  String get eventsInviteShareReferralIntro;
+
+  /// Opening line for a Host private invite.
+  ///
+  /// In en, this message translates to:
+  /// **'You are invited to {eventTitle} from {clubName}.'**
+  String eventsInviteShareHostPrivateIntro({
+    required String eventTitle,
+    required String clubName,
+  });
+
+  /// Prompt before a Host private invite link.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this private Catch invite to book your spot:'**
+  String get eventsInviteShareHostPrivatePrompt;
+
+  /// Prompt before an event deep link in shared copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Book it on Catch:'**
+  String get eventsInviteShareBookingPrompt;
+
+  /// Price label for a free event in shared invite copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get eventsInviteShareFree;
+
+  /// Brand descriptor on the event invite share card.
+  ///
+  /// In en, this message translates to:
+  /// **'Curated singles event'**
+  String get eventsInviteShareFooter;
+
+  /// Remaining-capacity label on an event share card.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 spot left} other{{count} spots left}}'**
+  String eventsInviteShareSpotsLeft({required int count});
+
+  /// Waitlist status on an event share card.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlist open'**
+  String get eventsInviteShareWaitlistOpen;
+
+  /// Open event-tile status.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get eventsTileStatusOpen;
+
+  /// Joined event-tile status.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'\'re in'**
+  String get eventsTileStatusJoined;
+
+  /// Saved event-tile status.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get eventsTileStatusSaved;
+
+  /// Recommended event-tile status.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get eventsTileStatusRecommended;
+
+  /// Hosted event-tile status.
+  ///
+  /// In en, this message translates to:
+  /// **'Hosted'**
+  String get eventsTileStatusHosted;
+
+  /// Waitlisted event-tile status.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlisted'**
+  String get eventsTileStatusWaitlisted;
+
+  /// Attended event-tile status.
+  ///
+  /// In en, this message translates to:
+  /// **'Attended'**
+  String get eventsTileStatusAttended;
+
+  /// Past event-tile status.
+  ///
+  /// In en, this message translates to:
+  /// **'Past'**
+  String get eventsTileStatusPast;
+
+  /// Full event-tile status.
+  ///
+  /// In en, this message translates to:
+  /// **'Full'**
+  String get eventsTileStatusFull;
+
+  /// Ineligible event-tile status.
+  ///
+  /// In en, this message translates to:
+  /// **'Not eligible'**
+  String get eventsTileStatusIneligible;
+
+  /// Cancelled event-tile status.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get eventsTileStatusCancelled;
+
+  /// Default heading above personalized event recommendations.
+  ///
+  /// In en, this message translates to:
+  /// **'For you'**
+  String get exploreRecommendationsTitleForYou;
+
+  /// Fallback label for a selected autocomplete result.
+  ///
+  /// In en, this message translates to:
+  /// **'selected place'**
+  String get eventsLocationPickerSelectedPlace;
+
+  /// Fallback error when place autocomplete fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not search places. Try again.'**
+  String get eventsLocationPickerSearchFailure;
+
+  /// Fallback error when place details fail.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load that place. Try another result.'**
+  String get eventsLocationPickerDetailsFailure;
+
+  /// Default title for Event Success prompt cards.
+  ///
+  /// In en, this message translates to:
+  /// **'Social mission'**
+  String get eventSuccessSocialMissionTitle;
+
+  /// Host admission-default explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone eligible can book until the event reaches capacity.'**
+  String get hostsAdmissionOpenCapacityDescription;
+
+  /// Host admission-default explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'New invite-only events ask for an event-specific code.'**
+  String get hostsAdmissionInviteOnlyDescription;
+
+  /// Host admission-default explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Straight men and women are kept within one spot of each other.'**
+  String get hostsAdmissionBalancedSinglesDescription;
+
+  /// Host admission-default label.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed cohort caps'**
+  String get hostsAdmissionFixedCohortCapsLabel;
+
+  /// Host admission-default explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Open booking with optional straight men and straight women caps.'**
+  String get hostsAdmissionFixedCohortCapsDescription;
+
+  /// Host form validation for an invalid optional email.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email.'**
+  String get hostsValidationEnterValidEmail;
+
+  /// Host professional-profile display-name validation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a display name.'**
+  String get hostsValidationEnterDisplayName;
+
+  /// Active Host professional-profile status.
+  ///
+  /// In en, this message translates to:
+  /// **'Active professional profile'**
+  String get hostsProfileStatusActive;
+
+  /// Pending Host professional-profile status.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile pending review'**
+  String get hostsProfileStatusPending;
+
+  /// Suspended Host professional-profile status.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile suspended'**
+  String get hostsProfileStatusSuspended;
+
+  /// Pending detail for a Host event cancellation.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelling...'**
+  String get hostsEventActionCancelling;
+
+  /// Concise Host event cancellation consequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Keeps records · notifies guests'**
+  String get hostsEventActionCancelDetail;
+
+  /// Pending detail for a Host event deletion.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting...'**
+  String get hostsEventActionDeleting;
+
+  /// Concise Host event deletion consequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Permanent removal'**
+  String get hostsEventActionDeleteDetail;
+
+  /// Primary action for saving Host event edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get hostsEventEditSaveChanges;
+
+  /// Success message after Host event edits are saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Event updated.'**
+  String get hostsEventEditUpdated;
+
+  /// Validation message for a missing event starting point.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin a starting point before saving.'**
+  String get hostsEventEditMissingStartingPoint;
+
+  /// Validation message for an invalid Host event schedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Event start must be in the future.'**
+  String get hostsEventEditInvalidSchedule;
+
+  /// Launch-access city validation message.
+  ///
+  /// In en, this message translates to:
+  /// **'Please choose your city'**
+  String get launchAccessValidationChooseCity;
+
+  /// Launch-access event-type validation message.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose at least one event type'**
+  String get launchAccessValidationChooseEventType;
+
+  /// Launch-access availability validation message.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose at least one time'**
+  String get launchAccessValidationChooseTime;
+
+  /// Launch-access motivation validation message.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us a little more.'**
+  String get launchAccessValidationTellUsMore;
+
+  /// Match celebration detail after a mutual like.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} liked you back.'**
+  String matchesCelebrationLikedBack({required String name});
+
+  /// Action after editing run preferences during booking.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue booking'**
+  String get onboardingRunningPrefsContinueBooking;
+
+  /// Action for saving run preferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Save run preferences'**
+  String get onboardingRunningPrefsSave;
+
+  /// Run-reason field label during booking.
+  ///
+  /// In en, this message translates to:
+  /// **'Why do you run?'**
+  String get onboardingRunningPrefsBookingReasonLabel;
+
+  /// Run-reason field label during onboarding.
+  ///
+  /// In en, this message translates to:
+  /// **'WHY DO YOU RUN?'**
+  String get onboardingRunningPrefsReasonLabel;
+
+  /// Run-time preference label during booking.
+  ///
+  /// In en, this message translates to:
+  /// **'FAVOURITE RUN TIMES'**
+  String get onboardingRunningPrefsRunTimesLabel;
+
+  /// Event-time preference label during onboarding.
+  ///
+  /// In en, this message translates to:
+  /// **'FAVOURITE EVENT TIMES'**
+  String get onboardingRunningPrefsEventTimesLabel;
+
+  /// Validation message when onboarding gender is missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select your gender'**
+  String get onboardingGenderValidationSelectGender;
+
+  /// Validation message when onboarding match interests are missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select who you want to see'**
+  String get onboardingGenderValidationSelectInterest;
+
+  /// Guidance when a payment-history booking needs support.
+  ///
+  /// In en, this message translates to:
+  /// **'Please contact Catch support for assistance with this booking.'**
+  String get paymentsHistorySupportMessage;
+
+  /// Confirmation after removing an account block.
+  ///
+  /// In en, this message translates to:
+  /// **'Account unblocked.'**
+  String get safetyAccountUnblockedMessage;
 }
 
 class _AppLocalizationsDelegate

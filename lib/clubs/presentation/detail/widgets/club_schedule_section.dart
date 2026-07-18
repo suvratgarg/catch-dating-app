@@ -31,7 +31,9 @@ class ClubScheduleSection extends StatelessWidget {
         for (final event in events)
           _ClubScheduleRow(
             event: event,
-            badgeLabel: isHost ? 'HOSTED' : 'VIEW',
+            badgeLabel: isHost
+                ? context.l10n.clubsClubScheduleHostedBadge
+                : context.l10n.clubsClubScheduleViewBadge,
             status: isHost ? EventTileStatus.hosted : EventTileStatus.open,
           ),
       ],
@@ -137,6 +139,7 @@ class ClubScheduleSection extends StatelessWidget {
                               priceLabel: data.priceLabel,
                               statusLabel: eventTileCardStatusLabel(
                                 row.status,
+                                context.l10n,
                                 label: row.badgeLabel,
                               ),
                               stripPosition: eventDateRailCardStripPositionFor(

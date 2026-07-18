@@ -114,7 +114,7 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
       context: context,
       title: context.l10n.reviewsWriteReviewSheetTitleDeleteReview,
       message: context.l10n.reviewsWriteReviewSheetMessageThisRemovesYourReview,
-      confirmLabel: 'Delete',
+      confirmLabel: context.l10n.sharedActionDelete,
     );
     if (confirmed != true || !mounted) return;
 
