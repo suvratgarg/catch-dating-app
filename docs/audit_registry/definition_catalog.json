@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-17T23:22:58.797306+00:00",
+  "generated_at": "2026-07-17T23:56:35.474797+00:00",
   "repo_root": "/Users/suvratgarg/Development/catch-dating-app/catch_dating_app",
-  "total_files_scanned": 778,
-  "total_definitions": 3822,
+  "total_files_scanned": 779,
+  "total_definitions": 3815,
   "file_manifest": [
     {
       "file": "lib/activity/domain/activity_taxonomy.dart",
@@ -861,13 +861,18 @@
     },
     {
       "file": "lib/core/widgets/catch_field.dart",
-      "line_count": 1603,
-      "definition_count": 20
+      "line_count": 810,
+      "definition_count": 7
     },
     {
       "file": "lib/core/widgets/catch_field_accordion.dart",
       "line_count": 26,
       "definition_count": 1
+    },
+    {
+      "file": "lib/core/widgets/catch_field_configs.dart",
+      "line_count": 589,
+      "definition_count": 6
     },
     {
       "file": "lib/core/widgets/catch_field_control.dart",
@@ -3006,12 +3011,12 @@
     },
     {
       "file": "lib/l10n/generated/app_localizations.dart",
-      "line_count": 17193,
+      "line_count": 16949,
       "definition_count": 3
     },
     {
       "file": "lib/l10n/generated/app_localizations_en.dart",
-      "line_count": 11065,
+      "line_count": 10893,
       "definition_count": 1
     },
     {
@@ -10424,7 +10429,7 @@
       "name": "CatchFieldEmphasis",
       "kind": "enum",
       "file": "lib/core/widgets/catch_field.dart",
-      "line": 30,
+      "line": 31,
       "signature": "enum CatchFieldEmphasis { body, title }",
       "body_hash": "61ca1fc64077b986"
     },
@@ -10432,7 +10437,7 @@
       "name": "CatchFieldTone",
       "kind": "enum",
       "file": "lib/core/widgets/catch_field.dart",
-      "line": 32,
+      "line": 33,
       "signature": "enum CatchFieldTone { normal, primary, danger }",
       "body_hash": "acd0f0d40c0963a5"
     },
@@ -10440,7 +10445,7 @@
       "name": "CatchFieldVariant",
       "kind": "enum",
       "file": "lib/core/widgets/catch_field.dart",
-      "line": 34,
+      "line": 35,
       "signature": "enum CatchFieldVariant { row, underline, bare }",
       "body_hash": "4bd2e7df7532de38"
     },
@@ -10448,7 +10453,7 @@
       "name": "CatchFieldSize",
       "kind": "enum",
       "file": "lib/core/widgets/catch_field.dart",
-      "line": 36,
+      "line": 37,
       "signature": "enum CatchFieldSize { floating, compact, md }",
       "body_hash": "5f05aa94744503d6"
     },
@@ -10456,7 +10461,7 @@
       "name": "CatchFieldSupportTone",
       "kind": "enum",
       "file": "lib/core/widgets/catch_field.dart",
-      "line": 38,
+      "line": 39,
       "signature": "enum CatchFieldSupportTone { neutral, brand, success }",
       "body_hash": "0c0594ff1212be18"
     },
@@ -10464,136 +10469,19 @@
       "name": "CatchFieldStatus",
       "kind": "enum",
       "file": "lib/core/widgets/catch_field.dart",
-      "line": 41,
+      "line": 42,
       "signature": "enum CatchFieldStatus { idle, saving, saved }",
       "body_hash": "dca1cd3b0e65c05e"
-    },
-    {
-      "name": "_RowConfigData",
-      "kind": "typedef",
-      "file": "lib/core/widgets/catch_field.dart",
-      "line": 43,
-      "signature": "typedef _RowConfigData = ({",
-      "body_hash": "b2976b0073b2c9f5"
-    },
-    {
-      "name": "_ToggleConfigData",
-      "kind": "typedef",
-      "file": "lib/core/widgets/catch_field.dart",
-      "line": 60,
-      "signature": "typedef _ToggleConfigData = ({",
-      "body_hash": "8a1c6252b063474a"
-    },
-    {
-      "name": "_TextEntryConfigData",
-      "kind": "typedef",
-      "file": "lib/core/widgets/catch_field.dart",
-      "line": 70,
-      "signature": "typedef _TextEntryConfigData = ({",
-      "body_hash": "11822e34c65eedef"
-    },
-    {
-      "name": "_EditConfigData",
-      "kind": "typedef",
-      "file": "lib/core/widgets/catch_field.dart",
-      "line": 103,
-      "signature": "typedef _EditConfigData = ({",
-      "body_hash": "0d4f16cf4018bba2"
-    },
-    {
-      "name": "_ControlConfigData",
-      "kind": "typedef",
-      "file": "lib/core/widgets/catch_field.dart",
-      "line": 127,
-      "signature": "typedef _ControlConfigData = ({",
-      "body_hash": "24fea39d974c4320"
-    },
-    {
-      "name": "_CatchFieldConfig",
-      "kind": "class",
-      "file": "lib/core/widgets/catch_field.dart",
-      "line": 146,
-      "signature": "sealed class _CatchFieldConfig {",
-      "is_widget": false,
-      "body_hash": "62fcf89ad2671b4c"
-    },
-    {
-      "name": "_RowConfig",
-      "kind": "class",
-      "file": "lib/core/widgets/catch_field.dart",
-      "line": 150,
-      "signature": "final class _RowConfig extends _CatchFieldConfig {",
-      "superclass": "_CatchFieldConfig",
-      "is_widget": false,
-      "body_hash": "266b0688e31d20b1"
-    },
-    {
-      "name": "_ToggleConfig",
-      "kind": "class",
-      "file": "lib/core/widgets/catch_field.dart",
-      "line": 184,
-      "signature": "final class _ToggleConfig extends _CatchFieldConfig {",
-      "superclass": "_CatchFieldConfig",
-      "is_widget": false,
-      "body_hash": "cd3ff8f93181ce3c"
-    },
-    {
-      "name": "_TextEntryConfig",
-      "kind": "class",
-      "file": "lib/core/widgets/catch_field.dart",
-      "line": 204,
-      "signature": "final class _TextEntryConfig {",
-      "is_widget": false,
-      "body_hash": "21d34db450fc2df7"
-    },
-    {
-      "name": "_EditConfig",
-      "kind": "class",
-      "file": "lib/core/widgets/catch_field.dart",
-      "line": 273,
-      "signature": "final class _EditConfig extends _CatchFieldConfig {",
-      "superclass": "_CatchFieldConfig",
-      "is_widget": false,
-      "body_hash": "b9e10f992a13bd2f"
-    },
-    {
-      "name": "_SelectConfig",
-      "kind": "class",
-      "file": "lib/core/widgets/catch_field.dart",
-      "line": 328,
-      "signature": "final class _SelectConfig extends _CatchFieldConfig {",
-      "superclass": "_CatchFieldConfig",
-      "is_widget": false,
-      "body_hash": "acc8caa3055fe264"
-    },
-    {
-      "name": "_ControlConfig",
-      "kind": "class",
-      "file": "lib/core/widgets/catch_field.dart",
-      "line": 356,
-      "signature": "final class _ControlConfig extends _CatchFieldConfig {",
-      "superclass": "_CatchFieldConfig",
-      "is_widget": false,
-      "body_hash": "4eb910fdd45e4e14"
-    },
-    {
-      "name": "_materializeCatchFieldConfig",
-      "kind": "function",
-      "file": "lib/core/widgets/catch_field.dart",
-      "line": 394,
-      "signature": "_CatchFieldConfig _materializeCatchFieldConfig(Object data) => switch (data) {",
-      "return_type": "_CatchFieldConfig",
-      "body_hash": "63a1e9ab16a5bd15"
     },
     {
       "name": "CatchField",
       "kind": "class",
       "file": "lib/core/widgets/catch_field.dart",
-      "line": 513,
-      "signature": "class CatchField extends StatefulWidget {",
+      "line": 61,
+      "signature": "abstract class CatchField extends StatefulWidget {",
       "superclass": "StatefulWidget",
       "is_widget": true,
-      "body_hash": "3a16e7802c46ceae"
+      "body_hash": "74d763996b148dad"
     },
     {
       "name": "CatchFieldAccordion",
@@ -10604,6 +10492,66 @@
       "superclass": "ChangeNotifier",
       "is_widget": false,
       "body_hash": "8a977bac0ceb38a2"
+    },
+    {
+      "name": "_CatchFieldConfig",
+      "kind": "class",
+      "file": "lib/core/widgets/catch_field_configs.dart",
+      "line": 7,
+      "signature": "sealed class _CatchFieldConfig extends CatchField {",
+      "superclass": "CatchField",
+      "is_widget": false,
+      "body_hash": "19bbcacd0f9d27d4"
+    },
+    {
+      "name": "_RowConfig",
+      "kind": "class",
+      "file": "lib/core/widgets/catch_field_configs.dart",
+      "line": 39,
+      "signature": "final class _RowConfig extends _CatchFieldConfig {",
+      "superclass": "_CatchFieldConfig",
+      "is_widget": false,
+      "body_hash": "fee879bff6019882"
+    },
+    {
+      "name": "_ToggleConfig",
+      "kind": "class",
+      "file": "lib/core/widgets/catch_field_configs.dart",
+      "line": 253,
+      "signature": "final class _ToggleConfig extends _CatchFieldConfig {",
+      "superclass": "_CatchFieldConfig",
+      "is_widget": false,
+      "body_hash": "fc1ea4ea30812dbf"
+    },
+    {
+      "name": "_EditConfig",
+      "kind": "class",
+      "file": "lib/core/widgets/catch_field_configs.dart",
+      "line": 293,
+      "signature": "final class _EditConfig extends _CatchFieldConfig {",
+      "superclass": "_CatchFieldConfig",
+      "is_widget": false,
+      "body_hash": "ef125849291cf449"
+    },
+    {
+      "name": "_SelectConfig",
+      "kind": "class",
+      "file": "lib/core/widgets/catch_field_configs.dart",
+      "line": 500,
+      "signature": "final class _SelectConfig extends _CatchFieldConfig {",
+      "superclass": "_CatchFieldConfig",
+      "is_widget": false,
+      "body_hash": "619051365ad4399d"
+    },
+    {
+      "name": "_ControlConfig",
+      "kind": "class",
+      "file": "lib/core/widgets/catch_field_configs.dart",
+      "line": 531,
+      "signature": "final class _ControlConfig extends _CatchFieldConfig {",
+      "superclass": "_CatchFieldConfig",
+      "is_widget": false,
+      "body_hash": "7bf77dfc788ff9d3"
     },
     {
       "name": "_CatchFieldControl",
@@ -10951,7 +10899,7 @@
       "signature": "class _CatchFieldState extends State<CatchField>",
       "superclass": "State<CatchField>",
       "is_widget": false,
-      "body_hash": "dbbd71d47a7e8181"
+      "body_hash": "1a3040a15a7bbd41"
     },
     {
       "name": "CatchFormFieldLabel",
@@ -31788,13 +31736,13 @@
       "line": 63,
       "signature": "abstract class AppLocalizations {",
       "is_widget": false,
-      "body_hash": "40c9115640d7bf6c"
+      "body_hash": "b0253a00a3e09e88"
     },
     {
       "name": "_AppLocalizationsDelegate",
       "kind": "class",
       "file": "lib/l10n/generated/app_localizations.dart",
-      "line": 17162,
+      "line": 16918,
       "signature": "class _AppLocalizationsDelegate",
       "is_widget": false,
       "body_hash": "a9b59edf961edabe"
@@ -31803,7 +31751,7 @@
       "name": "lookupAppLocalizations",
       "kind": "function",
       "file": "lib/l10n/generated/app_localizations.dart",
-      "line": 17179,
+      "line": 16935,
       "signature": "AppLocalizations lookupAppLocalizations(Locale locale) {",
       "return_type": "AppLocalizations",
       "body_hash": "f2a3b6548a0086f3"
@@ -31816,7 +31764,7 @@
       "signature": "class AppLocalizationsEn extends AppLocalizations {",
       "superclass": "AppLocalizations",
       "is_widget": false,
-      "body_hash": "bbb9381898231b07"
+      "body_hash": "6d74ddee9df1701b"
     },
     {
       "name": "_englishFallback",

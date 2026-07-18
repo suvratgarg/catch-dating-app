@@ -1,5 +1,5 @@
 {
-  "version": 26,
+  "version": 27,
   "updated": "2026-07-18",
   "owner": "agent_operating_model",
   "entries": [
@@ -1733,6 +1733,28 @@
         "docs/plans/catch_system_stretch_spec.md"
       ],
       "notes": "Null is a meaningful TextField maxLines value. Branch on config presence before reading maxLines; do not use a null-coalescing fallback on the stored value."
+    },
+    {
+      "id": "REG-FIELD-CONFIG-IDENTITY-001",
+      "title": "Typed CatchField configs lose public widget identity or state continuity",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_field.dart",
+        "lib/core/widgets/catch_field_configs.dart",
+        "lib/core/widgets/catch_field_state.dart",
+        "test/core/widgets/catch_field/row_modes_test.dart"
+      ],
+      "symptom": "Per-mode CatchField typing regresses to Object-backed record payloads and runtime materialization, a config gains fields read only by another mode, public constructors stop being const, find.byType(CatchField) no longer finds private mode implementations, or a keyed transition between field modes replaces _CatchFieldState instead of updating it.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/core/widgets/catch_field && flutter analyze --no-fatal-infos lib/core/widgets/catch_field.dart lib/core/widgets/catch_field_configs.dart lib/core/widgets/catch_field_state.dart",
+        "guardEvidence": "the per-mode matrix compiles every public const facade against sealed private row, toggle, edit, select, and control implementations; the identity test asserts public runtimeType, Widget.canUpdate compatibility, find.byType(CatchField), and the same State object across a keyed row-to-toggle transition; focused analysis rejects an incomplete exhaustive switch or incompatible config field"
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md",
+        "docs/plans/catch_system_stretch_spec.md"
+      ],
+      "notes": "The private mode implementations are both the widget and its sealed config, avoiding nested parameterized object construction inside const initializer lists. CatchField overrides runtimeType with the public facade type so Flutter's Widget.canUpdate contract and existing exact-type finders retain their pre-refactor behavior while Dart type tests and the exhaustive config switch still see the private implementation subtype."
     },
     {
       "id": "REG-RIVERPOD-COLLECTION-KEY-001",

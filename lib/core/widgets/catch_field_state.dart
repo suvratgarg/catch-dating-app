@@ -534,12 +534,12 @@ class _CatchFieldState extends State<CatchField>
   bool get _visibleCommitBarOwnsSavingIndicator =>
       _isSaving && !_disclosureOffstage && widget._onSubmit != null;
   bool get _active => _focused || _rowFocused || widget.focused || _isOpen;
-  bool get _isEdit => widget._configData is _EditConfigData;
-  bool get _isSelect => widget._configData is _SelectConfig;
-  bool get _isToggle => widget._configData is _ToggleConfigData;
-  bool get _isNavigation => switch (widget._configData) {
-    _ControlConfigData() => true,
-    final _RowConfigData config => config.navigation,
+  bool get _isEdit => widget._config is _EditConfig;
+  bool get _isSelect => widget._config is _SelectConfig;
+  bool get _isToggle => widget._config is _ToggleConfig;
+  bool get _isNavigation => switch (widget._config) {
+    _ControlConfig() => true,
+    final _RowConfig config => config.navigation,
     _ => false,
   };
   bool get _hasInputValue => !_inputWasEmpty;

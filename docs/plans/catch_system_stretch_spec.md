@@ -1,6 +1,6 @@
 # Catch System Stretch Spec — Field 10/10 Goals + Adjacent Canonical Surfaces (for Codex)
 
-Status: ready for implementation · 2026-07-17
+Status: owner-independent implementation complete; S2 production motion awaits owner sign-off · 2026-07-18
 Scope: `lib/core/widgets/` (field family, top bar family, async/error/loading family, section layout), `lib/core/forms/`, `lib/core/schema_contracts/` + `contracts/` (S1 codegen), `lib/core/theme/` (motion usage only — no new token values without owner sign-off), `design/components/` (S5), `test/core/`, `widgetbook/`, `tool/`, docs.
 Supersedes: §14 of [`catch_field_section_system_spec.md`](catch_field_section_system_spec.md) ("base spec") — that section was a sketch; THIS document is the implementation contract for S1–S6. The base spec's §14 remains as rationale.
 Companions: [`host_club_edit_and_live_guide_spec.md`](host_club_edit_and_live_guide_spec.md) ("edit spec"), [`host_club_insights_spec.md`](host_club_insights_spec.md) ("insights spec").
@@ -239,6 +239,27 @@ Completes the base spec's Phase B. Mechanical; public API unchanged.
    path exceeds ~30 parameters; a deliberately illegal combination (e.g.
    toggle + controller) is a compile error, demonstrated in a
    `// intentionally does not compile` doc snippet in the PR.
+
+### 5.1 Implementation outcome (2026-07-18)
+
+S3 is complete without dropping public const construction or exact public
+widget identity. `CatchField.read/content/nav/action/add`, `toggle`,
+`input/inputActions`, and `control` are const redirecting factories into sealed
+private row, toggle, edit, and control implementations; the generic select
+facade constructs the fifth sealed implementation directly. The private
+implementations store only their mode's fields, and `_CatchFieldState` switches
+exhaustively over that sealed hierarchy. The former record typedefs,
+`Object _configData`, runtime materializer, and unknown-config fallback are
+deleted.
+
+The private implementations report the public `CatchField` runtime type. This
+preserves `Widget.canUpdate`, `find.byType(CatchField)`, and the same state object
+when a keyed field changes mode; the row-mode matrix pins all three. The
+existing intentionally-noncompiling toggle-plus-controller snippet above
+remains the illegal-combination proof. The long public input facade is retained
+unchanged as required by the public-API constraint; the former 84-parameter
+all-mode private path is gone, and no private constructor mixes multiple mode
+families.
 
 ## 6. Phase S4 — Accessibility + dynamic type as tested invariants
 

@@ -10,6 +10,33 @@ import 'package:flutter_test/flutter_test.dart';
 import 'test_support.dart';
 
 void main() {
+  testWidgets(
+    'CatchField const modes preserve public identity and state continuity',
+    (tester) async {
+      const key = ValueKey<String>('field-config-identity');
+      const row = CatchField.read(key: key, title: 'Profile');
+      const toggle = CatchField.toggle(
+        key: key,
+        title: 'Notifications',
+        value: true,
+        onChanged: null,
+      );
+
+      expect(row.runtimeType, CatchField);
+      expect(toggle.runtimeType, CatchField);
+      expect(Widget.canUpdate(row, toggle), isTrue);
+
+      await tester.pumpWidget(_wrap(row));
+      final rowState = tester.state(find.byType(CatchField));
+
+      await tester.pumpWidget(_wrap(toggle));
+
+      expect(find.byType(CatchField), findsOneWidget);
+      expect(tester.state(find.byType(CatchField)), same(rowState));
+      expect(find.text('Notifications'), findsOneWidget);
+    },
+  );
+
   testWidgets('CatchField valueText stays inside narrow row constraints', (
     tester,
   ) async {

@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.648
+version: 2.5.649
 updated: 2026-07-18
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,16 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.649
+
+- Completed the `CatchField` sealed-config migration without weakening its
+  public const API. Each named constructor now redirects to a private row,
+  toggle, edit, select, or control implementation that stores only that mode's
+  fields. The former record payloads, `Object` storage, runtime materializer,
+  and unknown-config fallback are deleted. All private implementations retain
+  the public `CatchField` runtime identity so keyed mode changes preserve the
+  same Flutter state; the identity/continuity test pins that contract.
 
 ### 2.5.648
 
@@ -6347,7 +6357,7 @@ Widgetbook callers.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `CatchField` | `lib/core/widgets/catch_field.dart:49` | Canonical flat field primitive for legacy value rows, natural-height title/supporting-copy rows, navigation, toggle, direct and explicit-save input, wrapping choices, explanatory option cards, bounded steppers, select, disclosure controls, validation, async status, and add states. Use the named constructors (`read`, `content`, `action`, `nav`, `toggle`, `input`, `inputActions`, `control`, `choices`, `optionCards`, `stepper`, `select`, `add`) so capability and trailing affordance are structural. The stable public library delegates state, edit, row-mode, control, lane, and scope implementation to bounded `part` files. Toggle rows expose canonical helper and badge slots; terse choices expose canonical helper and per-item accent slots; `optionCards` composes the existing `CatchOptionCard` so each explanatory title and description remains one clickable target. One root resolver owns caption color across every field type: errors use danger, focus/open uses semantic ink, and inactive captions use their configured tone or ink3 while Optional copy stays ink3. One root trailing lane applies the 18 px caption reserve exactly once and centers non-centered affordances in the 18.9 px value line. Saving progress also has one root owner: a visible explicit commit bar owns the sole 13 px spinner in Done while the header retains its caret; otherwise the trailing lane owns one 16 px spinner. Header press chrome begins on primary pointer-down and the same gesture transfers focus or opens on pointer-up; the full-row disclosure drawer is a sibling below that header. Direct inputs keep one mounted native editable, preserving first-gesture cursor placement, stable populated-row height, and the overlaid 24 px clear target. Choice summaries remain primitive-derived in source order joined by ` · `; `isOptional` remains presentation copy while `allowEmptySelection` owns final-removal policy. Rounded group chrome remains owned by `CatchSection`. Registered as formal component contract `catch.field`; Widgetbook contract states and per-mode behavior tests are canonical. |
+| `CatchField` | `lib/core/widgets/catch_field.dart:49` | Canonical flat field primitive for legacy value rows, natural-height title/supporting-copy rows, navigation, toggle, direct and explicit-save input, wrapping choices, explanatory option cards, bounded steppers, select, disclosure controls, validation, async status, and add states. Use the named constructors (`read`, `content`, `action`, `nav`, `toggle`, `input`, `inputActions`, `control`, `choices`, `optionCards`, `stepper`, `select`, `add`) so capability and trailing affordance are structural. Public const factories redirect to sealed private per-mode implementations in `catch_field_configs.dart`; those implementations retain public `CatchField` runtime identity so Flutter preserves state across keyed mode changes. The stable public library delegates config, state, edit, row-mode, control, lane, and scope implementation to bounded `part` files. Toggle rows expose canonical helper and badge slots; terse choices expose canonical helper and per-item accent slots; `optionCards` composes the existing `CatchOptionCard` so each explanatory title and description remains one clickable target. One root resolver owns caption color across every field type: errors use danger, focus/open uses semantic ink, and inactive captions use their configured tone or ink3 while Optional copy stays ink3. One root trailing lane applies the 18 px caption reserve exactly once and centers non-centered affordances in the 18.9 px value line. Saving progress also has one root owner: a visible explicit commit bar owns the sole 13 px spinner in Done while the header retains its caret; otherwise the trailing lane owns one 16 px spinner. Header press chrome begins on primary pointer-down and the same gesture transfers focus or opens on pointer-up; the full-row disclosure drawer is a sibling below that header. Direct inputs keep one mounted native editable, preserving first-gesture cursor placement, stable populated-row height, and the overlaid 24 px clear target. Choice summaries remain primitive-derived in source order joined by ` · `; `isOptional` remains presentation copy while `allowEmptySelection` owns final-removal policy. Rounded group chrome remains owned by `CatchSection`. Registered as formal component contract `catch.field`; Widgetbook contract states and per-mode behavior tests are canonical. |
 | `CatchFormRowList<P>` | `lib/core/forms/catch_form_descriptors.dart` | Typed form mapper and section owner for `CatchFormReadRow`, `CatchFormTextRow`, `CatchFormSingleChoiceRow`, `CatchFormMultiChoiceRow`, `CatchFormRangeRow`, and feature-owned `CatchFormCustomRow` descriptors. Owns shared `CatchFieldAccordion` wiring and one per-field patch save delegate. The consumer Profile About You section is the reference prototype; broader adoption is owner-gated in `ARCH-FORM-DESCRIPTOR-001`. |
 | `CatchFormTextRowEditor<P>` / `CatchFormSingleChoiceRowEditor<P, T>` / `CatchFormMultiChoiceRowEditor<P, T>` / `CatchFormRangeRowEditor<P>` | `lib/core/forms/catch_form_descriptors.dart` | Public renderer seams used by the typed descriptors and registered together in Widgetbook for exact-name inventory coverage. Product surfaces compose descriptors through `CatchFormRowList<P>` instead of instantiating these editors directly. |
 | `CatchFieldAccordion` | `lib/core/widgets/catch_field_accordion.dart` | Shared `ChangeNotifier` state owner for inline field lists that allow at most one expanded editor. It exposes stable-key lookup, toggle, and collapse operations while each adopting screen remains responsible for rendering and persistence. |
