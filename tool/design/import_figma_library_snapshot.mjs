@@ -88,10 +88,18 @@ export function validateFigmaLibrarySnapshot(snapshot) {
     if (!["COMPONENT", "COMPONENT_SET"].includes(component.type)) {
       problems.push(`${component.nodeId}: unsupported component type ${component.type}`);
     }
+    const bindingCount = (component.boundVariableRefs ?? [])
+      .reduce((total, reference) => total + (reference.variableIds?.length ?? 0), 0);
+    if (component.boundVariableCount !== bindingCount) {
+      problems.push(`${component.nodeId}: bound variable count is stale`);
+    }
   }
   for (const review of snapshot?.reviewSnapshots ?? []) {
     if (!nodeIds.has(review.nodeId)) problems.push(`${review.nodeId}: review snapshot has no component`);
     if (!review.path || !review.sha256) problems.push(`${review.nodeId}: review snapshot requires path and sha256`);
+    if (!/^[a-f0-9]{64}$/u.test(review.sha256 ?? "")) {
+      problems.push(`${review.nodeId}: review snapshot sha256 must be a lowercase digest`);
+    }
   }
   return [...new Set(problems)].sort();
 }
@@ -100,6 +108,7 @@ function collectComponentNodes(node, output, metadataByNodeId) {
   if (!node || typeof node !== "object") return;
   if (node.type === "COMPONENT" || node.type === "COMPONENT_SET") {
     const metadata = metadataByNodeId.get(node.id) ?? {};
+    const boundVariableRefs = collectBoundVariableRefs(node);
     output.push({
       nodeId: node.id,
       componentKey: metadata.key ?? null,
@@ -107,6 +116,9 @@ function collectComponentNodes(node, output, metadataByNodeId) {
       type: node.type,
       description: node.description ?? metadata.description ?? "",
       propertyDefinitions: normalizePropertyDefinitions(node.componentPropertyDefinitions ?? {}),
+      boundVariableRefs,
+      boundVariableCount: boundVariableRefs
+        .reduce((total, reference) => total + reference.variableIds.length, 0),
     });
   }
   for (const child of node.children ?? []) collectComponentNodes(child, output, metadataByNodeId);
@@ -122,6 +134,28 @@ function normalizePropertyDefinitions(definitions) {
   })).sort((a, b) => a.normalizedName.localeCompare(b.normalizedName) || a.name.localeCompare(b.name));
 }
 
+function collectBoundVariableRefs(root) {
+  const references = [];
+  visit(root);
+  return references.sort((a, b) =>
+    a.nodeId.localeCompare(b.nodeId) || a.field.localeCompare(b.field));
+
+  function visit(node) {
+    for (const [field, value] of Object.entries(node.boundVariables ?? {})) {
+      const aliases = Array.isArray(value) ? value : [value];
+      const variableIds = aliases
+        .map((alias) => alias?.id)
+        .filter(Boolean)
+        .map(String)
+        .sort();
+      if (variableIds.length > 0) {
+        references.push({nodeId: node.id, field, variableIds});
+      }
+    }
+    for (const child of node.children ?? []) visit(child);
+  }
+}
+
 function normalizePropertyName(value) {
   return String(value).split("#", 1)[0]
     .replace(/([a-z0-9])([A-Z])/gu, "$1_$2")
@@ -131,8 +165,17 @@ function normalizePropertyName(value) {
 }
 
 function normalizeReviewSnapshot(value) {
-  if (typeof value === "string") return {path: value, sha256: "external"};
-  return {path: value.path, sha256: value.sha256};
+  const snapshotPath = typeof value === "string" ? value : value.path;
+  const suppliedDigest = typeof value === "string" ? null : value.sha256;
+  if (suppliedDigest) return {path: snapshotPath, sha256: suppliedDigest};
+  const absolutePath = fromRepo(snapshotPath);
+  if (!fs.existsSync(absolutePath)) {
+    throw new Error(`${snapshotPath}: review snapshot file is missing`);
+  }
+  return {
+    path: snapshotPath,
+    sha256: crypto.createHash("sha256").update(fs.readFileSync(absolutePath)).digest("hex"),
+  };
 }
 
 function digest(value) {
@@ -163,16 +206,24 @@ function runSelfTest() {
           componentPropertyDefinitions: {
             "Tone#123": {type: "VARIANT", defaultValue: "neutral", variantOptions: ["danger", "neutral"]},
           },
+          children: [{
+            id: "1:4",
+            type: "RECTANGLE",
+            boundVariables: {fills: {type: "VARIABLE_ALIAS", id: "VariableID:brand"}},
+          }],
         }],
       },
     },
-    reviewSnapshots: {"1:2": {path: "design/sync/snapshots/badge.png", sha256: "abc"}},
+    reviewSnapshots: {"1:2": {path: "design/sync/snapshots/badge.png", sha256: "a".repeat(64)}},
   });
   if (validateFigmaLibrarySnapshot(snapshot).length > 0) {
     throw new Error("valid hydrated Figma snapshot failed validation");
   }
   if (snapshot.components[0]?.propertyDefinitions[0]?.normalizedName !== "tone") {
     throw new Error("component property suffix/name normalization failed");
+  }
+  if (snapshot.components[0]?.boundVariableCount !== 1) {
+    throw new Error("descendant bound-variable evidence was not captured");
   }
   let knownBadFailed = false;
   try {

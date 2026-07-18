@@ -4,6 +4,11 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {conceptMetrics} from "./component_concepts.mjs";
+import {
+  buildClaudeDesignHandoffRequest,
+  claudeDesignReceiptState,
+  validateClaudeDesignReceipt,
+} from "./claude_design_handoff.mjs";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 
 const outputPath = fromRepo("design/sync/catch.design-sync.json");
@@ -11,21 +16,31 @@ const componentPath = fromRepo("design/components/catch.components.json");
 const capabilityPath = fromRepo("design/sync/live_capabilities.json");
 const figmaSnapshotPath = fromRepo("design/sync/figma_library_snapshot.json");
 const claudeContextPath = fromRepo("design_context_pack/design_system/components.json");
+const claudeHandoffPath = fromRepo(
+  "design_context_pack/design_system/claude_design_handoff_request.json",
+);
+const claudeReceiptPath = fromRepo("design/sync/claude_design_receipt.json");
 
 export function buildDesignSyncManifest({
   componentsDocument,
   capabilities,
   figmaSnapshot = unavailableFigmaSnapshot(),
   claudeContextDocument = componentsDocument,
+  claudeHandoffRequest = buildClaudeDesignHandoffRequest(componentsDocument),
+  claudeDesignReceipt = unavailableClaudeDesignReceipt(),
 }) {
   const components = componentsDocument.components ?? [];
   const metrics = conceptMetrics(components);
   const figmaByName = groupBy(figmaSnapshot.components ?? [], (entry) => entry.name);
+  const reviewSnapshotByNodeId = new Map(
+    (figmaSnapshot.reviewSnapshots ?? []).map((entry) => [entry.nodeId, entry]),
+  );
   const mappings = components.map((component) => buildMapping({
     component,
     capabilities,
     figmaSnapshot,
     figmaMatches: figmaByName.get(component.design?.figma?.componentName) ?? [],
+    reviewSnapshotByNodeId,
   }));
   const mappingStates = countBy(mappings, (entry) => entry.figmaStatus);
   const codeConnectStates = countBy(mappings, (entry) => entry.codeConnectStatus ?? "missing");
@@ -34,12 +49,30 @@ export function buildDesignSyncManifest({
   const claudeContextStatus = !claudeContextDocument
     ? "missing"
     : claudeContextDigest === sourceDigest ? "current" : "stale";
+  const claudeHandoffRequestStatus = claudeHandoffRequest?.sourceDigest === sourceDigest
+    ? "current"
+    : "stale";
+  const claudeReceiptProblems = validateClaudeDesignReceipt(
+    claudeHandoffRequest,
+    claudeDesignReceipt,
+  );
+  const claudeReceiptStatus = claudeDesignReceiptState(
+    claudeHandoffRequest,
+    claudeDesignReceipt,
+  );
   const spikeIds = ["catch.badge", "catch.field"];
   const spikeMappings = spikeIds.map((id) => mappings.find((entry) => entry.contractId === id));
-  const spikeFigmaReady = spikeMappings.every((entry) => entry?.figmaStatus === "current");
+  const spikeFigmaReady = spikeMappings.every((entry) =>
+    entry?.figmaStatus === "current" &&
+    entry.figmaVariableBindingCount > 0 &&
+    entry.figmaReviewSnapshot !== null);
   const spikeStatus = !capabilities.figma.fileKey
     ? "awaiting-figma-file-approval"
-    : spikeFigmaReady ? "figma-round-trip-ready" : "awaiting-figma-publish-snapshot";
+    : !spikeFigmaReady
+      ? "awaiting-figma-publish-snapshot"
+      : claudeReceiptStatus !== "current"
+        ? "awaiting-claude-design-receipt"
+        : "figma-claude-round-trip-ready";
 
   return {
     version: 2,
@@ -51,6 +84,8 @@ export function buildDesignSyncManifest({
       figmaSnapshot: "design/sync/figma_library_snapshot.json",
       figmaSnapshotImporter: "tool/design/import_figma_library_snapshot.mjs",
       claudeContext: "design_context_pack/design_system/components.json",
+      claudeHandoffRequest: "design_context_pack/design_system/claude_design_handoff_request.json",
+      claudeDesignReceipt: "design/sync/claude_design_receipt.json",
       liveCapabilities: "design/sync/live_capabilities.json",
       generator: "tool/design/build_design_sync_manifest.mjs",
     },
@@ -59,6 +94,14 @@ export function buildDesignSyncManifest({
       status: claudeContextStatus,
       digest: claudeContextDigest,
       contractDigest: sourceDigest,
+    },
+    claudeDesign: {
+      handoffRequestStatus: claudeHandoffRequestStatus,
+      handoffRequestDigest: digest(claudeHandoffRequest),
+      receiptStatus: claudeReceiptStatus,
+      receiptCapturedAt: claudeDesignReceipt.capturedAt ?? null,
+      receiptProposalRef: claudeDesignReceipt.proposalRef ?? null,
+      receiptProblems: claudeReceiptProblems,
     },
     figmaSnapshot: {
       status: figmaSnapshot.status,
@@ -73,9 +116,12 @@ export function buildDesignSyncManifest({
       ...metrics,
       figmaMappingStates: mappingStates,
       figmaPropertyDriftCount: mappings.reduce((sum, entry) => sum + entry.figmaDrift.length, 0),
+      figmaVariableBoundMappings: mappings.filter((entry) => entry.figmaVariableBindingCount > 0).length,
+      figmaReviewSnapshotMappings: mappings.filter((entry) => entry.figmaReviewSnapshot !== null).length,
       codeConnectMappingStates: codeConnectStates,
       claudeAllowed: mappings.filter((entry) => entry.claudeAllowed).length,
       claudeContextState: claudeContextStatus,
+      claudeDesignReceiptState: claudeReceiptStatus,
       figmaMappedConcepts: mappings.filter(
         (entry) => entry.conceptRole === "concept" && entry.figmaStatus === "current",
       ).length,
@@ -91,6 +137,7 @@ export function buildDesignSyncManifest({
         "registry componentName resolves to exactly one published component node",
         "Figma property definitions match generated contract props and review states",
         "contract digest matches the generated Claude context",
+        "Claude Design returns a current receipt for the same concept ids and supported-state digests",
         "Code Connect is mapped only when the account tier supports publication",
         "a deliberately stale or incomplete mapping fails the gate",
       ],
@@ -104,6 +151,12 @@ export function validateDesignSyncManifest(manifest, {requireLive = false} = {})
   const ids = new Set();
   if (manifest.claudeContext?.status !== "current") {
     problems.push(`Claude context is ${manifest.claudeContext?.status ?? "missing"}`);
+  }
+  if (manifest.claudeDesign?.handoffRequestStatus !== "current") {
+    problems.push("Claude Design handoff request is stale");
+  }
+  if ((manifest.claudeDesign?.receiptProblems ?? []).length > 0) {
+    problems.push(...manifest.claudeDesign.receiptProblems);
   }
   for (const entry of manifest.mappings ?? []) {
     if (ids.has(entry.contractId)) problems.push(`${entry.contractId}: duplicate mapping`);
@@ -128,6 +181,25 @@ export function validateDesignSyncManifest(manifest, {requireLive = false} = {})
     if (requireLive && entry?.figmaStatus !== "current") {
       problems.push(`${spikeId}: current live Figma mapping is required`);
     }
+    if (requireLive && !(entry?.figmaVariableBindingCount > 0)) {
+      problems.push(`${spikeId}: variable-bound Figma evidence is required`);
+    }
+    if (requireLive && !entry?.figmaReviewSnapshot) {
+      problems.push(`${spikeId}: review snapshot evidence is required`);
+    }
+    if (
+      requireLive &&
+      entry?.figmaReviewSnapshot &&
+      !/^[a-f0-9]{64}$/u.test(entry.figmaReviewSnapshot.sha256 ?? "")
+    ) {
+      problems.push(`${spikeId}: review snapshot digest is invalid`);
+    }
+    if (requireLive && entry?.codeConnectStatus !== "mapped") {
+      problems.push(`${spikeId}: published Code Connect mapping is required`);
+    }
+  }
+  if (requireLive && manifest.claudeDesign?.receiptStatus !== "current") {
+    problems.push("current Claude Design receipt is required");
   }
   if (
     requireLive &&
@@ -141,7 +213,13 @@ export function validateDesignSyncManifest(manifest, {requireLive = false} = {})
   return problems.sort();
 }
 
-function buildMapping({component, capabilities, figmaSnapshot, figmaMatches}) {
+function buildMapping({
+  component,
+  capabilities,
+  figmaSnapshot,
+  figmaMatches,
+  reviewSnapshotByNodeId,
+}) {
   const expectedProperties = expectedFigmaProperties(component);
   const declaredUrl = component.design?.figma?.componentUrl ?? null;
   const declaredNodeId = nodeIdFromUrl(declaredUrl);
@@ -184,6 +262,13 @@ function buildMapping({component, capabilities, figmaSnapshot, figmaMatches}) {
     figmaUrl: generatedUrl ?? declaredUrl,
     figmaNodeId: figmaNode?.nodeId ?? declaredNodeId,
     figmaComponentKey: figmaNode?.componentKey ?? null,
+    figmaVariableBindingCount: figmaNode?.boundVariableCount ?? 0,
+    figmaVariableBindingDigest: figmaNode
+      ? digest(figmaNode.boundVariableRefs ?? [])
+      : null,
+    figmaReviewSnapshot: figmaNode
+      ? reviewSnapshotByNodeId.get(figmaNode.nodeId) ?? null
+      : null,
     figmaExpectedPropertyCount: expectedProperties.length,
     figmaExpectedPropertyDigest: digest(expectedProperties),
     figmaActualPropertyCount: figmaNode?.propertyDefinitions?.length ?? 0,
@@ -268,11 +353,17 @@ function main() {
   const claudeContextDocument = fs.existsSync(claudeContextPath)
     ? JSON.parse(fs.readFileSync(claudeContextPath, "utf8"))
     : null;
+  const claudeHandoffRequest = fs.existsSync(claudeHandoffPath)
+    ? JSON.parse(fs.readFileSync(claudeHandoffPath, "utf8"))
+    : null;
+  const claudeDesignReceipt = JSON.parse(fs.readFileSync(claudeReceiptPath, "utf8"));
   const manifest = buildDesignSyncManifest({
     componentsDocument: document,
     capabilities,
     figmaSnapshot,
     claudeContextDocument,
+    claudeHandoffRequest,
+    claudeDesignReceipt,
   });
   const problems = validateDesignSyncManifest(manifest, {requireLive});
   if (problems.length > 0) fail(problems);
@@ -288,7 +379,8 @@ function main() {
       `${manifest.metrics.figmaMappingStates.current ?? 0} current, ` +
       `${manifest.metrics.figmaMappingStates.stale ?? 0} stale, ` +
       `${manifest.metrics.figmaMappingStates.missing ?? 0} missing Figma mappings; ` +
-      `Claude context ${manifest.claudeContext.status}).`,
+      `Claude context ${manifest.claudeContext.status}; ` +
+      `Claude Design receipt ${manifest.claudeDesign.receiptStatus}).`,
     );
     return;
   }
@@ -364,6 +456,18 @@ function countBy(values, keyFor) {
 
 function unavailableFigmaSnapshot() {
   return {status: "unavailable", source: {fileKey: null}, components: [], reviewSnapshots: []};
+}
+
+function unavailableClaudeDesignReceipt() {
+  return {
+    version: 1,
+    status: "unavailable",
+    reviewer: "claude-design",
+    sourceDigest: null,
+    capturedAt: null,
+    proposalRef: null,
+    components: [],
+  };
 }
 
 function fail(problems) {

@@ -19,6 +19,7 @@ const loading = patterns.families.find((family) => family.id === "loading-concep
 const ownerReviewQueue = buildOwnerReviewQueue(patterns.families);
 const familyDeltas = buildFamilyDeltas();
 const widgetbookCoverage = classification.summary.widgetbookCoverage;
+const completionAudit = buildCompletionAudit();
 
 const metricsDocument = {
   version: 1,
@@ -65,10 +66,14 @@ const metricsDocument = {
     stale: sync.metrics.figmaMappingStates.stale ?? 0,
     missing: sync.metrics.figmaMappingStates.missing ?? 0,
     propertyDrift: sync.metrics.figmaPropertyDriftCount,
+    variableBound: sync.metrics.figmaVariableBoundMappings,
+    reviewSnapshots: sync.metrics.figmaReviewSnapshotMappings,
   },
   claudeContext: sync.claudeContext,
+  claudeDesign: sync.claudeDesign,
   familyDeltas,
   ownerReviewQueue,
+  completionAudit,
 };
 
 const report = `---
@@ -149,11 +154,13 @@ as an architectural improvement.
 | Figma stale mappings | ${sync.metrics.figmaMappingStates.stale ?? 0} |
 | Figma missing mappings | ${sync.metrics.figmaMappingStates.missing ?? 0} |
 | Figma property drift findings | ${sync.metrics.figmaPropertyDriftCount} |
+| Figma mappings with variable-bound evidence | ${sync.metrics.figmaVariableBoundMappings} |
 | Figma review snapshots | ${sync.figmaSnapshot.reviewSnapshotCount} |
 | Code Connect mapped contracts | ${sync.metrics.codeConnectMappingStates.mapped ?? 0} |
 | Code Connect planned contracts | ${sync.metrics.codeConnectMappingStates.planned ?? 0} |
 | Claude-allowed contracts | ${sync.metrics.claudeAllowed} |
 | Claude context status | ${sync.claudeContext.status} |
+| Claude Design receipt status | ${sync.claudeDesign.receiptStatus} |
 
 The Badge + Field spike is ${sync.spike.status}. Code Connect is
 ${sync.spike.codeConnectStatus}; the live gate remains red until the Figma
@@ -164,6 +171,16 @@ publish snapshot, plan tier, and generated mappings satisfy the prerequisites.
 ${ownerReviewQueue.length === 0
     ? "No owner decisions remain."
     : ownerReviewQueue.map((item) => `- \`${item.familyId}/${item.questionId}\`: ${item.prompt} Recommended: ${item.recommendation}`).join("\n")}
+
+## Completion audit
+
+| Requirement | Status | Authoritative evidence |
+|---|---|---|
+${completionAudit.map((item) => `| ${item.requirement} | ${item.status} | ${item.evidence} |`).join("\n")}
+
+The proposal is not complete while any row is \`pending\`. Passing local gates
+does not substitute for the three semantic owner decisions or the live,
+published Badge + Field evidence.
 
 ## Reproduce
 
@@ -241,8 +258,86 @@ function buildOwnerReviewQueue(families) {
       ],
     });
   }
+  if (sync.claudeDesign.receiptStatus !== "current") {
+    designSyncQuestions.push({
+      familyId: "design-sync",
+      familyStatus: sync.claudeDesign.receiptStatus,
+      questionId: "CLAUDE1",
+      prompt: "Can the generated Badge + Field handoff request be run through Claude Design and its exact JSON receipt returned?",
+      recommendation: "Give Claude Design the committed design_context_pack, require the supplied receipt contract verbatim, and commit only a receipt whose source and supported-state digests pass the gate.",
+      options: [
+        "Run the generated handoff through Claude Design and return its receipt.",
+        "Provide access to an existing automated Claude Design integration that can return the receipt.",
+      ],
+    });
+  }
   return [...familyQuestions, ...designSyncQuestions]
     .sort((a, b) => a.familyId.localeCompare(b.familyId) || a.questionId.localeCompare(b.questionId));
+}
+
+function buildCompletionAudit() {
+  const ledgerComplete = similarity.summary.exactClusterDecisionCoverage ===
+    similarity.summary.clusters;
+  const rolesComplete = sync.metrics.unclassifiedCount === 0 &&
+    classification.summary.unclassifiedCount === 0;
+  const widgetbookComplete =
+    widgetbookCoverage.conceptPrimariesCataloged === widgetbookCoverage.conceptPrimaries &&
+    widgetbookCoverage.memberClassesCataloged === widgetbookCoverage.memberClasses;
+  const semanticQueue = ownerReviewQueue.filter((item) => item.familyId !== "design-sync");
+  const liveReady = sync.spike.status === "figma-claude-round-trip-ready" &&
+    sync.spike.codeConnectStatus === "available" &&
+    sync.claudeDesign.receiptStatus === "current" &&
+    ["catch.badge", "catch.field"].every((id) => {
+      const mapping = sync.mappings.find((entry) => entry.contractId === id);
+      return mapping?.figmaStatus === "current" &&
+        mapping.figmaVariableBindingCount > 0 &&
+        mapping.figmaReviewSnapshot &&
+        mapping.codeConnectStatus === "mapped";
+    });
+  return [
+    {
+      requirement: "1. Reconcile the existing decision ledger",
+      status: ledgerComplete ? "proven" : "pending",
+      evidence: `${similarity.summary.exactClusterDecisionCoverage}/${similarity.summary.clusters} exact normalized-member-set cluster decisions`,
+    },
+    {
+      requirement: "2. Prove all four vertical-slice outcomes",
+      status: familyDeltas.length >= 4 && widgetbookComplete ? "proven" : "pending",
+      evidence: "Generated per-family deltas plus role-derived Widgetbook evidence cover member, separation, composition/recipe, and decompression cases",
+    },
+    {
+      requirement: "3. Resolve owner-gated semantic decisions",
+      status: semanticQueue.length === 0 ? "proven" : "pending",
+      evidence: `${semanticQueue.length} unresolved semantic owner question(s)`,
+    },
+    {
+      requirement: "4. Verify accepted changes and stamp receipts",
+      status: semanticQueue.length === 0 ? "proven" : "pending",
+      evidence: semanticQueue.length === 0
+        ? "Focused checks, generated artifacts, and final clean receipt required"
+        : "Local partial receipt is green; final code scope and clean receipt depend on owner decisions",
+    },
+    {
+      requirement: "5. Give every cataloged entry exactly one governed role",
+      status: rolesComplete ? "proven" : "pending",
+      evidence: `${sync.metrics.unclassifiedCount} unclassified contracts and ${classification.summary.unclassifiedCount} unclassified production entries`,
+    },
+    {
+      requirement: "6. Report concept and class counts separately",
+      status: "proven",
+      evidence: `${sync.metrics.conceptCount} concepts, ${sync.metrics.publicClassCount} contracted public classes, ${classification.summary.total} production widget/state classes`,
+    },
+    {
+      requirement: "7. Complete live Figma/Claude Badge + Field round trip",
+      status: liveReady ? "proven" : "pending",
+      evidence: `${sync.spike.status}; Code Connect ${sync.spike.codeConnectStatus}; Claude context ${sync.claudeContext.status}; Claude Design receipt ${sync.claudeDesign.receiptStatus}`,
+    },
+    {
+      requirement: "8. Reduce remaining work to a bounded queue",
+      status: "proven",
+      evidence: `${ownerReviewQueue.length} generated owner/live gates and ${similarity.summary.unresolvedRankedPairs} advisory ranked-pair candidates`,
+    },
+  ];
 }
 
 function buildFamilyDeltas() {

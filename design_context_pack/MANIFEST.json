@@ -5,13 +5,18 @@
   "files": [
     {
       "path": "README.txt",
-      "sha256": "ad53ab02bb8c8d895b01d877b804cc15579f16bf06d629e6aee6dad5dbf9b3a7",
-      "bytes": 950
+      "sha256": "06640609e89e692b758836697c87efdde55ac557eb5933cd1821350edd8376cd",
+      "bytes": 1112
     },
     {
       "path": "design_system/activity_palette.json",
       "sha256": "128bcd762c701dbeb24862b3360d54c6f6f5a8c892f38bdd0f969bd909729653",
       "bytes": 4368
+    },
+    {
+      "path": "design_system/claude_design_handoff_request.json",
+      "sha256": "2d5db4294834398fad9264ef55068a6fe4890ae1e8c9d2fe673b1551ab3f1a8d",
+      "bytes": 4596
     },
     {
       "path": "design_system/components.json",

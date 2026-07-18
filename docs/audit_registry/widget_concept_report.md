@@ -31,7 +31,7 @@ design-sync manifest. Do not edit it by hand. The machine-readable companion is
 | Unclassified public widgets | — | 0 | Must remain zero. |
 | Widgetbook-complete concept primaries | — | 59/59 | Evidence is role-derived. |
 | Widgetbook-covered member classes | — | 116/116 | Reviewed directly or under the parent family. |
-| Owner-review queue | — | 5 | Only unresolved semantic decisions appear here. |
+| Owner-review queue | — | 6 | Only unresolved semantic decisions appear here. |
 
 ## Collision and ledger coverage
 
@@ -83,11 +83,13 @@ as an architectural improvement.
 | Figma stale mappings | 0 |
 | Figma missing mappings | 65 |
 | Figma property drift findings | 0 |
+| Figma mappings with variable-bound evidence | 0 |
 | Figma review snapshots | 0 |
 | Code Connect mapped contracts | 0 |
 | Code Connect planned contracts | 65 |
 | Claude-allowed contracts | 65 |
 | Claude context status | current |
+| Claude Design receipt status | missing |
 
 The Badge + Field spike is awaiting-figma-file-approval. Code Connect is
 blocked-plan-tier; the live gate remains red until the Figma
@@ -95,11 +97,29 @@ publish snapshot, plan tier, and generated mappings satisfy the prerequisites.
 
 ## Owner review queue
 
+- `design-sync/CLAUDE1`: Can the generated Badge + Field handoff request be run through Claude Design and its exact JSON receipt returned? Recommended: Give Claude Design the committed design_context_pack, require the supplied receipt contract verbatim, and commit only a receipt whose source and supported-state digests pass the gate.
 - `design-sync/CODECONNECT1`: How should the live Code Connect exit gate be resolved on the current Starter plan? Recommended: Upgrade or move the spike to an Organization/Enterprise workspace before claiming published Code Connect; keep repository templates planned until then.
 - `design-sync/FIGMA1`: May Codex create the Catch Design System Figma file for the Badge + Field live spike? Recommended: Approve creation of one dedicated design-system file in the verified Suvrat Garg's team workspace.
 - `host-broadcast-composer-namespace-collision/HBC1`: Should the parameterless Chats blast sheet be replaced by the event-aware Host broadcast workflow, or remain a separately named composition? Recommended: Use the event-aware Host workflow as the canonical broadcast composer; if Chats must retain eventless blasts, rename that composition to ChatBlastComposerSheet so the workflow boundary is explicit.
 - `loading-concept-decompression/L1`: How many independent concepts does the current catch.loading contract contain? Recommended: Use three concepts: skeleton placeholders, indeterminate loading indicator, and async-value boundary; classify the startup screen as composition.
 - `swipe-reaction-control-boundary/SRC1`: Should pass and reaction controls keep two renderers, or share CatchIconButton with feature-owned semantics? Recommended: Share CatchIconButton rendering and retain small feature adapters only where pending-state semantics or stable test keys require them; do not create another core concept.
+
+## Completion audit
+
+| Requirement | Status | Authoritative evidence |
+|---|---|---|
+| 1. Reconcile the existing decision ledger | proven | 45/45 exact normalized-member-set cluster decisions |
+| 2. Prove all four vertical-slice outcomes | proven | Generated per-family deltas plus role-derived Widgetbook evidence cover member, separation, composition/recipe, and decompression cases |
+| 3. Resolve owner-gated semantic decisions | pending | 3 unresolved semantic owner question(s) |
+| 4. Verify accepted changes and stamp receipts | pending | Local partial receipt is green; final code scope and clean receipt depend on owner decisions |
+| 5. Give every cataloged entry exactly one governed role | proven | 0 unclassified contracts and 0 unclassified production entries |
+| 6. Report concept and class counts separately | proven | 60 concepts, 194 contracted public classes, 1094 production widget/state classes |
+| 7. Complete live Figma/Claude Badge + Field round trip | pending | awaiting-figma-file-approval; Code Connect blocked-plan-tier; Claude context current; Claude Design receipt missing |
+| 8. Reduce remaining work to a bounded queue | proven | 6 generated owner/live gates and 53 advisory ranked-pair candidates |
+
+The proposal is not complete while any row is `pending`. Passing local gates
+does not substitute for the three semantic owner decisions or the live,
+published Badge + Field evidence.
 
 ## Reproduce
 

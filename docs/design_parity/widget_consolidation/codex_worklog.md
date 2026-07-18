@@ -2044,9 +2044,13 @@ Implemented scope:
    promoted to owner-review families rather than guessed.
 5. `design/sync/figma_library_snapshot.json` and its importer normalize a real
    Figma `LIBRARY_PUBLISH` trigger plus hydrated file response, node ids,
-   component property definitions, and review snapshot digests. The generated
-   sync manifest derives current/stale/missing mappings without hand-edited
-   node URLs and verifies Claude context parity by digest.
+   component property definitions, descendant variable bindings, and review
+   snapshot digests. The generated sync manifest derives current/stale/missing
+   mappings without hand-edited node URLs and verifies Claude context parity by
+   digest. Its strict live mode requires current Badge + Field nodes, variable
+   bindings, review snapshots, published Code Connect templates, and a
+   referenced Claude Design receipt that repeats the generated concept and
+   supported-state digests exactly.
 6. `widget_concept_metrics.json` and `widget_concept_report.md` separately
    report concept count, class count, members/concept, unclassified entries,
    unresolved collision families, ledger coverage, Widgetbook evidence,
@@ -2073,14 +2077,17 @@ Owner gates (also generated in `widget_concept_metrics.json`):
   concepts;
 - the duplicate public `HostBroadcastComposerSheet` workflow namespace;
 - shared rendering for `CatchesPassButton` and `ReactionControlButton`;
-- approval to create or identify the live Catch Design System Figma file; and
+- approval to create or identify the live Catch Design System Figma file;
 - Organization/Enterprise Code Connect access, or an explicit revision of the
-  live exit gate for Starter.
+  live exit gate for Starter; and
+- execution of the generated Badge + Field request through Claude Design, with
+  the exact machine-checkable response committed as the live receipt.
 
 Interim receipt: `2026-07-18-widget-concept-system-local` (`partial`) records
-the green local enforcement loop and the five generated review/live gates. A
-final clean receipt is stamped only after those decisions and the live Badge +
-Field round trip complete.
+the green local enforcement loop and the original five generated review/live
+gates. The subsequent live-gate hardening receipt records the explicit Claude
+Design receipt as a sixth gate. A final clean receipt is stamped only after
+those decisions and the live Badge + Field round trip complete.
 
 ## Completed
 

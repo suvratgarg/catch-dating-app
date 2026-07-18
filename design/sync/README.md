@@ -1,6 +1,6 @@
 ---
 doc_id: design_sync_pipeline
-version: 1.1.0
+version: 1.2.0
 updated: 2026-07-18
 owner: design_system
 status: active
@@ -38,11 +38,18 @@ node tool/design/import_figma_library_snapshot.mjs \
   --review-snapshots path/to/snapshot-index.json
 ```
 
+The optional snapshot index is an object keyed by Figma node id. Each value is
+either a repo-relative image path (the importer computes its SHA-256 digest) or
+an object with `path` and a previously computed lowercase SHA-256 digest.
+
 The importer extracts component and component-set node ids, canonicalizes
 Figma property names (including generated `#...` suffixes), records optional
-review-image paths/digests, and stamps a content digest. The sync manifest joins
-those nodes to contract ids by `design.figma.componentName` and generates node
-URLs. Neither artifact is hand-edited.
+review-image paths/digests, captures descendant variable-binding references,
+and stamps a content digest. The sync manifest joins those nodes to contract
+ids by `design.figma.componentName` and generates node URLs. Neither artifact
+is hand-edited. The live Badge + Field gate additionally requires at least one
+captured variable binding, one review snapshot, and a published Code Connect
+template for each component; planned metadata cannot satisfy it.
 
 Current live discovery is stored in `live_capabilities.json`. It is operational
 evidence, not a credential file. The current Starter plan permits library work
@@ -52,14 +59,19 @@ Code Connect, so the repository prepares that seam without claiming it is live.
 ## Deterministic loop
 
 1. Change Flutter, tokens, or the component contract.
-2. Regenerate `design_context_pack` for Claude Design.
-3. Update and publish the matching Figma component.
-4. Let the publish receiver hydrate the webhook and regenerate the Figma
+2. Regenerate `design_context_pack`. Its
+   `design_system/claude_design_handoff_request.json` is the only accepted
+   Badge + Field Claude Design prompt contract.
+3. Run that request through Claude Design and store its exact, referenced
+   response in `design/sync/claude_design_receipt.json`. The sync gate rejects
+   stale source, concept, or supported-state digests.
+4. Update and publish the matching Figma component.
+5. Let the publish receiver hydrate the webhook and regenerate the Figma
    snapshot artifact on a review branch.
-5. Regenerate this sync manifest; it reports mappings as `current`, `stale`, or
-   `missing` and verifies the Claude context digest.
-6. Publish Code Connect only where the plan supports it.
-7. Run component, context-pack, snapshot, sync-manifest, Widgetbook, and drift
+6. Regenerate this sync manifest; it reports mappings as `current`, `stale`, or
+   `missing` and verifies both the Claude context and receipt digests.
+7. Publish Code Connect only where the plan supports it.
+8. Run component, context-pack, snapshot, sync-manifest, Widgetbook, and drift
    gates.
 
 The first live vertical slice is `catch.badge` plus `catch.field`. Scale to the
