@@ -1,7 +1,7 @@
 {
   "$schema": "./widget_classification.schema.json",
   "version": 1,
-  "updated": "2026-07-17",
+  "updated": "2026-07-18",
   "sourceOfTruth": {
     "scope": "Generated inventory for production Flutter widget and widget-state classes under lib/**. Widgetbook/test scaffolds are intentionally out of scope.",
     "canonicalContracts": "design/components/catch.components.json owns canonical global component contracts and governance metadata.",
@@ -10,31 +10,31 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1088,
-    "widgetClasses": 964,
-    "stateClasses": 124,
-    "publicClasses": 959,
-    "privateClasses": 129,
+    "total": 1093,
+    "widgetClasses": 965,
+    "stateClasses": 128,
+    "publicClasses": 960,
+    "privateClasses": 133,
     "byRole": {
       "atom": 53,
-      "composition": 348,
-      "feature-adapter": 288,
+      "composition": 350,
+      "feature-adapter": 287,
       "pattern": 18,
       "screen": 257,
-      "widget-state": 124
+      "widget-state": 128
     },
     "byDecision": {
       "keep-canonical-contract": 190,
-      "keep-public-cataloged": 709,
-      "keep-widget-state": 124,
+      "keep-public-cataloged": 708,
+      "keep-widget-state": 128,
       "review-catalog-coverage": 43,
-      "review-promote-or-consolidate": 17,
+      "review-promote-or-consolidate": 19,
       "review-promote-or-inline": 5
     },
     "byCatalogStatus": {
-      "cataloged": 670,
+      "cataloged": 671,
       "contracted": 190,
-      "not-applicable": 124,
+      "not-applicable": 128,
       "route-covered": 54,
       "uncataloged": 50
     }
@@ -3555,6 +3555,60 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "CatchSliverEmptyState",
+      "file": "lib/core/widgets/catch_empty_state.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.sliver_empty_state",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
+    },
+    {
+      "name": "CatchSliverStateViewport",
+      "file": "lib/core/widgets/catch_empty_state.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.sliver_state_viewport",
+      "publicApi": true,
+      "catalogStatus": "cataloged",
+      "contractId": null,
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract"
+      ]
     },
     {
       "name": "CatchErrorBanner",
@@ -11602,25 +11656,48 @@
       "flags": []
     },
     {
-      "name": "CustomQuestionFields",
+      "name": "_CustomQuestionnaireFieldsState",
       "file": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "feature-adapter",
-      "canonicalFamily": "feature.event_success.custom_question_fields",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
+      "classKind": "widget-state",
+      "baseClass": "State<CustomQuestionnaireFields>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.custom_questionnaire_fields",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
       "contractId": null,
-      "allowedDependencyLevel": "feature-display-models",
-      "stateOwnership": "feature-display-state",
-      "asyncOwnership": "display-state-only",
-      "layoutOwnership": "feature-section-layout",
-      "actionOwnership": "feature-callbacks",
-      "decision": "keep-public-cataloged",
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
       "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
+      "name": "_EventSuccessQuestionnaireConfigEditorState",
+      "file": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
+      "classKind": "widget-state",
+      "baseClass": "State<EventSuccessQuestionnaireConfigEditor>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.event_success_questionnaire_config_editor",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
       ],
       "flags": []
     },
@@ -11628,7 +11705,7 @@
       "name": "CustomQuestionnaireFields",
       "file": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
       "classKind": "widget",
-      "baseClass": "StatelessWidget",
+      "baseClass": "StatefulWidget",
       "visibility": "public",
       "role": "feature-adapter",
       "canonicalFamily": "feature.event_success.custom_questionnaire_fields",
@@ -11651,7 +11728,7 @@
       "name": "EventSuccessQuestionnaireConfigEditor",
       "file": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
       "classKind": "widget",
-      "baseClass": "StatelessWidget",
+      "baseClass": "StatefulWidget",
       "visibility": "public",
       "role": "feature-adapter",
       "canonicalFamily": "feature.event_success.event_success_questionnaire_config_editor",
@@ -17872,10 +17949,33 @@
       "flags": []
     },
     {
+      "name": "_EventDetailsStepState",
+      "file": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
+      "classKind": "widget-state",
+      "baseClass": "State<EventDetailsStep>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.event_details_step",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
       "name": "EventDetailsStep",
       "file": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
       "classKind": "widget",
-      "baseClass": "StatelessWidget",
+      "baseClass": "StatefulWidget",
       "visibility": "public",
       "role": "feature-adapter",
       "canonicalFamily": "feature.hosts.event_details_step",
@@ -18884,6 +18984,29 @@
       "flags": []
     },
     {
+      "name": "_HostTeamProfileRowsState",
+      "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+      "classKind": "widget-state",
+      "baseClass": "State<HostTeamProfileRows>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.host_team_profile_rows",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
       "name": "HostClubTeamScreen",
       "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
       "classKind": "widget",
@@ -18933,7 +19056,7 @@
       "name": "HostTeamProfileRows",
       "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
       "classKind": "widget",
-      "baseClass": "StatelessWidget",
+      "baseClass": "StatefulWidget",
       "visibility": "public",
       "role": "screen",
       "canonicalFamily": "screen.host_team_profile_rows",

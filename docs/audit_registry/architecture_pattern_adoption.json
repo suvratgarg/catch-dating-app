@@ -1,6 +1,6 @@
 {
-  "version": "1.5.39",
-  "updated": "2026-07-17",
+  "version": "1.5.40",
+  "updated": "2026-07-18",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
   "patterns": [
@@ -428,6 +428,26 @@
         "test/calendar/calendar_screen_state_test.dart"
       ],
       "adopters": [
+        {
+          "path": "lib/core/widgets/catch_empty_state.dart",
+          "role": "reference shell-aware sliver state viewport plus canonical empty-state placement adapter; preserves responsive overflow while shifting the optical center above floating shell chrome",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-host-consumer-ui-reconciliation"
+        },
+        {
+          "path": "lib/core/widgets/catch_error_state.dart",
+          "role": "canonical sliver error placement adapter sharing CatchSliverStateViewport geometry with empty states",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-host-consumer-ui-reconciliation"
+        },
+        {
+          "path": "test/core/catch_primitives_test.dart",
+          "role": "floating-shell optical-center parity coverage for sliver empty and error states",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-host-consumer-ui-reconciliation"
+        },
         {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
           "role": "route-edge provider reads and CalendarHomeState construction",

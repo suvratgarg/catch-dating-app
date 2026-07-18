@@ -1,8 +1,115 @@
 {
-  "version": 27,
+  "version": 28,
   "updated": "2026-07-18",
   "owner": "agent_operating_model",
   "entries": [
+    {
+      "id": "REG-STATE-VIEWPORT-001",
+      "title": "Empty and error states center behind floating shell chrome",
+      "status": "active",
+      "applies_to": [
+        "lib/**/presentation/**",
+        "lib/core/widgets/catch_empty_state.dart",
+        "lib/core/widgets/catch_error_state.dart",
+        "tool/design/check_tab_root_scroll_contracts.mjs"
+      ],
+      "symptom": "A feature composes SliverFillRemaining around CatchEmptyState or CatchErrorState, so content centers in the full scaffold and appears too low behind the floating tab bar; local spacer nudges then drift between empty and error branches.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/design/check_tab_root_scroll_contracts.mjs --check && flutter test test/core/catch_primitives_test.dart --plain-name 'sliver empty and error states center in the visible floating-shell region'",
+        "guardEvidence": "the scanner rejects raw presentation composition and the primitive test verifies equal 50px upward optical correction for a 100px floating obstruction"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/widget_catalog.md",
+        "docs/audit_registry/rules.json"
+      ],
+      "notes": "Use CatchSliverStateViewport, CatchSliverEmptyState, or CatchSliverErrorState. Keep hasScrollBody true because CatchEmptyState uses LayoutBuilder for responsive overflow."
+    },
+    {
+      "id": "REG-EXPLICIT-FIELD-COMMIT-001",
+      "title": "Field-local edits regress to page-level save or permanently expanded forms",
+      "status": "active",
+      "applies_to": [
+        "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+        "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
+        "test/hosts/host_operations_screen_test.dart",
+        "test/event_success/event_success_questionnaire_config_editor_test.dart"
+      ],
+      "symptom": "A page-level Save profile button returns, multiple custom questionnaire inputs render expanded at once, or switching/cancelling a field leaks uncommitted text.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/hosts/host_operations_screen_test.dart test/event_success/event_success_questionnaire_config_editor_test.dart",
+        "guardEvidence": "tests require no Save profile action, one CatchFieldAccordion editor, field-local Cancel rollback and Done commit, pack preview before commit, and failure retention"
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md"
+      ],
+      "notes": "Display name, role title, bio, question-set selection, custom pack name, prompts, and options use explicit field-local commit semantics."
+    },
+    {
+      "id": "REG-HOST-EVENT-DISCLOSURE-001",
+      "title": "Host event choices auto-expand or lose activity palette accents",
+      "status": "active",
+      "applies_to": [
+        "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
+        "lib/hosts/presentation/event_management/widgets/when_step.dart",
+        "lib/hosts/presentation/edit_hosted_event_screen.dart",
+        "test/hosts/host_create_event_screen_test.dart"
+      ],
+      "symptom": "Entering create/edit event reveals multiple drawers immediately, allows two choice drawers to stay open, or renders activity/pace choice chips without their activity color.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/hosts/host_create_event_screen_test.dart --plain-name 'CreateEventScreen basics disclosures start collapsed, share one accordion, and color activity chips'",
+        "guardEvidence": "the test verifies zero initial chips, mutual exclusion, per-activity pigments, and selected-activity pace accents"
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md"
+      ],
+      "notes": "Do not use initiallyOpen for create/edit duration, activity, format, or pace choices."
+    },
+    {
+      "id": "REG-CUSTOM-LEADING-LANE-001",
+      "title": "Custom field leading content and section dividers use different lanes",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_field.dart",
+        "lib/core/widgets/catch_section_layout.dart",
+        "lib/hosts/presentation/host_operations/host_events_list.dart",
+        "lib/hosts/presentation/widgets/host_team_management_section.dart"
+      ],
+      "symptom": "A 48px date block or 42px avatar begins correctly but its section divider still assumes the standard 24px icon extent, leaving rules visibly short or misaligned.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/core/widgets/catch_section_test.dart test/hosts/host_operations_screen_test.dart",
+        "guardEvidence": "primitive and Host Past geometry tests require leading, text lane, divider start, and trailing section edge to agree"
+      },
+      "owner_docs": [
+        "docs/widget_catalog.md"
+      ],
+      "notes": "Declare leadingExtent whenever CatchField.leading is wider than the standard icon slot."
+    },
+    {
+      "id": "REG-HOST-SCREEN-RHYTHM-001",
+      "title": "Host loading and guide composition collapse top rhythm or synthesize a divider",
+      "status": "active",
+      "applies_to": [
+        "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+        "lib/hosts/presentation/widgets/host_loading_skeletons.dart",
+        "lib/event_success/presentation/event_success_defaults_panel.dart"
+      ],
+      "symptom": "Skeleton content begins four pixels below the app bar/tab rail, or a headerless first field section paints an unexplained horizontal rule directly beneath Live event guide chrome.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/hosts/host_operations_screen_test.dart && node tool/design/check_tab_root_scroll_contracts.mjs --check",
+        "guardEvidence": "Host workspace tests cover the standalone guide toggle and shared tab composition; catalog and architecture require loaded/loading pageBody parity"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/widget_catalog.md"
+      ],
+      "notes": "Use pageBody for normal Host tab content regardless of async state. Headerless CatchSection top rules are intentional section boundaries, not generic wrappers."
+    },
     {
       "id": "REG-HOST-CLUB-EDITOR-001",
       "title": "Club editing fragments across organizer and standalone screens",

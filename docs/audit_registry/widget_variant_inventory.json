@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-17T12:19:43.918Z",
+  "generatedAt": "2026-07-18T12:52:21.370Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
     "useCases": 860,
-    "components": 813,
-    "stateCards": 1757,
+    "components": 812,
+    "stateCards": 1764,
     "reviewCandidates": 42,
     "oversizedUseCases": 42,
     "multiUseCaseComponents": 42
@@ -15693,6 +15693,48 @@
       ]
     },
     {
+      "component": "EventAgeRangeField",
+      "useCaseCount": 1,
+      "stateCardCount": 3,
+      "paths": [
+        "[P1 product surfaces]/Host create event"
+      ],
+      "labels": [
+        "bounded editable range",
+        "disabled",
+        "unrestricted sentinels"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Age range states",
+          "functionName": "eventAgeRangeFieldCatalogStates",
+          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
+          "path": "[P1 product surfaces]/Host create event",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "bounded editable range",
+              "normalizedLabel": "bounded editable range"
+            },
+            {
+              "label": "unrestricted sentinels",
+              "normalizedLabel": "unrestricted sentinels"
+            },
+            {
+              "label": "disabled",
+              "normalizedLabel": "disabled"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "EventDetailOverviewSection",
       "useCaseCount": 1,
       "stateCardCount": 3,
@@ -17324,6 +17366,43 @@
             {
               "label": "visible",
               "normalizedLabel": "visible"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchFieldOptionCardControl",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[Core primitives]/Inputs"
+      ],
+      "labels": [
+        "disabled",
+        "selected / unselected"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchFieldOptionCardControlContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "selected / unselected",
+              "normalizedLabel": "selected unselected"
+            },
+            {
+              "label": "disabled",
+              "normalizedLabel": "disabled"
             }
           ]
         }
@@ -22363,11 +22442,12 @@
     },
     {
       "component": "CatchField",
-      "useCaseCount": 2,
+      "useCaseCount": 3,
       "stateCardCount": 1,
       "paths": [
         "[Core primitives]/Inputs",
-        "[P1 product surfaces]/Profiles/Inline Editors"
+        "[P1 product surfaces]/Profiles/Inline Editors",
+        "[Review gates]/Field motion"
       ],
       "labels": [
         "empty and selected values"
@@ -22399,6 +22479,14 @@
               "normalizedLabel": "empty and selected values"
             }
           ]
+        },
+        {
+          "name": "Current vs proposed",
+          "functionName": "catchFieldMotionReview",
+          "file": "widgetbook/lib/primitives/field_motion_use_cases.dart",
+          "path": "[Review gates]/Field motion",
+          "stateCardCount": 0,
+          "stateCards": []
         }
       ]
     },
@@ -24387,6 +24475,38 @@
       ]
     },
     {
+      "component": "CatchSliverEmptyState",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[Core catalog]/Feedback"
+      ],
+      "labels": [
+        "cardless terminal empty state"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Catalog states",
+          "functionName": "catchSliverEmptyStateCatalogStates",
+          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
+          "path": "[Core catalog]/Feedback",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "cardless terminal empty state",
+              "normalizedLabel": "cardless terminal empty state"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchSliverErrorState",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -24477,6 +24597,38 @@
             {
               "label": "sliver-native insets",
               "normalizedLabel": "sliver native insets"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchSliverStateViewport",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[Core catalog]/Feedback"
+      ],
+      "labels": [
+        "floating-shell optical center"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Catalog states",
+          "functionName": "catchSliverStateViewportCatalogStates",
+          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
+          "path": "[Core catalog]/Feedback",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "floating-shell optical center",
+              "normalizedLabel": "floating shell optical center"
             }
           ]
         }
@@ -30347,31 +30499,6 @@
       ]
     },
     {
-      "component": "CustomQuestionFields",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[P1 product surfaces]/Event Success strict coverage/Questionnaire editor folded states"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "CustomQuestionFields",
-          "functionName": "eventSuccessStrictCustomQuestionFields",
-          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
-          "path": "[P1 product surfaces]/Event Success strict coverage/Questionnaire editor folded states",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
       "component": "CustomQuestionnaireFields",
       "useCaseCount": 1,
       "stateCardCount": 0,
@@ -32322,31 +32449,6 @@
       ]
     },
     {
-      "component": "HostCheckInQrPanel",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[P1 product surfaces]/Event Success strict coverage/Host folded states"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "HostCheckInQrPanel",
-          "functionName": "eventSuccessStrictHostCheckInQrPanel",
-          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
-          "path": "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
       "component": "HostFunnelSummary",
       "useCaseCount": 1,
       "stateCardCount": 0,
@@ -32566,81 +32668,6 @@
           "functionName": "eventSuccessStrictLiveArrivalRing",
           "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
           "path": "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
-      "component": "LiveAttendanceSummaryCard",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[P1 product surfaces]/Event Success strict coverage/Host folded states"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "LiveAttendanceSummaryCard",
-          "functionName": "eventSuccessStrictLiveAttendanceSummaryCard",
-          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
-          "path": "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
-      "component": "LiveCheckInQrCard",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[P1 product surfaces]/Event Success strict coverage/Host folded states"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "LiveCheckInQrCard",
-          "functionName": "eventSuccessStrictLiveCheckInQrCard",
-          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
-          "path": "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
-      "component": "LiveCheckInSummaryStrip",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[P1 product surfaces]/Event Success strict coverage/Host folded states"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "LiveCheckInSummaryStrip",
-          "functionName": "eventSuccessStrictLiveCheckInSummaryStrip",
-          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
-          "path": "[P1 product surfaces]/Event Success strict coverage/Host folded states",
           "stateCardCount": 0,
           "stateCards": []
         }

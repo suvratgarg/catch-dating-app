@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.4.35
+version: 1.4.36
 updated: 2026-07-18
 owner: recursive_audit_loop
 status: active
@@ -406,6 +406,9 @@ Use semantic inset contracts for repeated shells:
 - `CatchInsets.pageBodyTight`, `CatchInsets.pageBodyRelaxedTight`, and
   `CatchInsets.pageBodyUnderHeader` when local chrome or dense headers already
   provide some top separation.
+- Loading skeletons inherit the same semantic body inset as the loaded branch.
+  A loading state is not, by itself, permission to substitute
+  `pageBodyUnderHeader` and collapse the app-bar-to-content rhythm.
 - `CatchInsets.pageHeaderBody`, `CatchInsets.pageHeaderCompact`, and
   `CatchInsets.sectionHeader` for page intro rows and compact rail/list headers.
 - `CatchInsets.pageHorizontal` and `CatchInsets.pageHorizontalWide` when a
@@ -514,8 +517,11 @@ Sliver rules:
 - Use `SliverList.builder`, `SliverList.separated`, or `SliverGrid` for
   repeated content that can grow.
 - Avoid a vertical `ListView` or large `Column` inside `SliverToBoxAdapter`.
-- Use `SliverFillRemaining(hasScrollBody: false)` for centered empty/error
-  states, not for tall skeletons or arbitrary content.
+- Use `CatchSliverStateViewport`, `CatchSliverEmptyState`, or
+  `CatchSliverErrorState` for centered sliver empty/error states. They preserve
+  responsive overflow and subtract the floating shell's published bottom
+  obstruction from the optical center. Do not compose a feature-local
+  `SliverFillRemaining` around `CatchEmptyState` or `CatchErrorState`.
 - If a parent owns a sliver scroll view, async loading/error/empty/data state
   widgets should usually return slivers too.
 
@@ -641,7 +647,7 @@ empty, retry, stale data, and mutation failure are handled.
 | Full-screen initial load | Screen | `CatchAsyncValueView`, `CatchErrorScaffold`, or typed screen-state adapter |
 | Sliver initial load | Screen/sliver body | `CatchAsyncValueSliver`, `CatchSliverErrorState`, or typed sliver adapter |
 | Section-level load | Section widget or view model | `CatchInlineErrorState`, section skeleton, section retry |
-| Empty success | Screen/body/section | `CatchEmptyState` or domain-specific empty widget, never an error primitive |
+| Empty success | Screen/body/section | `CatchEmptyState`, `CatchSliverEmptyState`, or a domain-specific empty widget, never an error primitive |
 | Mutation/action pending | Controller mutation + UI affordance | disabled control, spinner, optimistic state when intentional |
 | Mutation/action failure | Screen or section | `CatchMutationErrorBanner`, `CatchMutationErrorListener(s)`, or `showCatchErrorSnackBar` |
 | Form validation | Form/controller/domain validator | field error text or inline form banner |
