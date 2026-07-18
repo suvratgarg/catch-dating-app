@@ -48,7 +48,8 @@ class ClubReviewsSection extends StatelessWidget {
       maxVisibleReviews: maxVisibleReviews,
       emptyPresentation: ReviewsEmptyPresentation.contained,
       showHeader: false,
-      emptyMessage: 'Reviews appear after members attend an event.',
+      emptyMessage:
+          context.l10n.reviewsReviewsSectionMessageReviewsAppearAfterMembers,
     );
   }
 }

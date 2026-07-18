@@ -43,6 +43,8 @@ import 'package:widgetbook_workspace/primitives/analytics_kit_use_cases.dart'
     as _widgetbook_workspace_primitives_analytics_kit_use_cases;
 import 'package:widgetbook_workspace/primitives/core_catalog_use_cases.dart'
     as _widgetbook_workspace_primitives_core_catalog_use_cases;
+import 'package:widgetbook_workspace/primitives/field_motion_use_cases.dart'
+    as _widgetbook_workspace_primitives_field_motion_use_cases;
 import 'package:widgetbook_workspace/primitives/primitive_contract_use_cases.dart'
     as _widgetbook_workspace_primitives_primitive_contract_use_cases;
 import 'package:widgetbook_workspace/primitives/skeleton_layout_use_cases.dart'
@@ -934,12 +936,42 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchSliverEmptyState',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchSliverEmptyStateCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchSliverErrorState',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchSliverErrorStateCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSliverStateViewport',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchSliverStateViewportCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchStateViewport',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchStateViewportCatalogStates,
               ),
             ],
           ),
@@ -2156,6 +2188,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchFieldFocusOutlineContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFieldOptionCardControl',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchFieldOptionCardControlContractStates,
               ),
             ],
           ),
@@ -6341,17 +6384,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostCheckInQrPanel',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'HostCheckInQrPanel',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictHostCheckInQrPanel,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostFunnelSummary',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -6370,39 +6402,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
                             .eventSuccessStrictHostReportSignalGrid,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'LiveAttendanceSummaryCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'LiveAttendanceSummaryCard',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictLiveAttendanceSummaryCard,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'LiveCheckInQrCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'LiveCheckInQrCard',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictLiveCheckInQrCard,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'LiveCheckInSummaryStrip',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'LiveCheckInSummaryStrip',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictLiveCheckInSummaryStrip,
                   ),
                 ],
               ),
@@ -7087,17 +7086,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Questionnaire editor folded states',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'CustomQuestionFields',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'CustomQuestionFields',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictCustomQuestionFields,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'CustomQuestionnaireFields',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7399,16 +7387,6 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
-          _widgetbook.WidgetbookComponent(
-            name: 'EditClubPhotosLabel',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Photos label states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .editClubPhotosLabelCatalogStates,
-              ),
-            ],
-          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(
@@ -7491,6 +7469,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Draft sheet states',
                 builder: _widgetbook_workspace_hosts_host_operations_use_cases
                     .draftPickerSheetCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAgeRangeField',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Age range states',
+                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                    .eventAgeRangeFieldCatalogStates,
               ),
             ],
           ),
@@ -7825,13 +7813,13 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostSettingsProfileRows',
+                name: 'HostTeamProfileRows',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'Covered by host settings route states',
+                    name: 'Covered by host team route states',
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostSettingsRouteStates,
+                            .hostTeamRouteStates,
                   ),
                 ],
               ),
@@ -7982,17 +7970,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostAccountScreen',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostAccountScreenCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostActionRow',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8125,17 +8102,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostClubInlineTextEntry',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Within Edit tab',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostClubInlineTextEntryCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostClubInsightsPane',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8164,6 +8130,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Exact catalog',
                     builder: _widgetbook_workspace_hosts_host_operations_use_cases
                         .hostStrictHostClubOrganizerOverviewControllerCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostClubTeamScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Exact catalog',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostStrictHostClubTeamScreenCatalogStates,
                   ),
                 ],
               ),
@@ -8208,6 +8185,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostStrictHostEventAttendancePanelCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostEventCheckInQrPanel',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Exact catalog',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostStrictHostEventCheckInQrPanelCatalogStates,
                   ),
                 ],
               ),
@@ -8333,17 +8321,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostExportReportButton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostExportReportButtonCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostFullCapacityApron',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8366,28 +8343,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostInlineAgeRangeEditor',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostInlineAgeRangeEditorCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostInlineOptionEditor',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostInlineOptionEditorCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostInlineSkeletonIcon',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8395,17 +8350,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_operations_use_cases
                             .hostStrictHostInlineSkeletonIconCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostInlineTextEntryEditor',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostInlineTextEntryEditorCatalogStates,
                   ),
                 ],
               ),
@@ -9490,60 +9434,25 @@ final directories = <_widgetbook.WidgetbookNode>[
     name: 'P2 host surfaces',
     children: [
       _widgetbook.WidgetbookFolder(
-        name: 'Host profile',
+        name: 'Host team',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'HostProfileFields',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Field states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .hostProfileFieldStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostProfileForm',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Form states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .hostProfileFormStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'HostProfileScreen',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Route states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .hostProfileRouteStates,
-              ),
-            ],
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookFolder(
-        name: 'Host settings',
-        children: [
-          _widgetbook.WidgetbookComponent(
-            name: 'HostSettingsClubsSection',
+            name: 'HostTeamHostedClubsSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Clubs states',
                 builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .hostSettingsClubsStates,
+                    .hostTeamHostedClubsStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'HostSettingsProfileSection',
+            name: 'HostTeamProfileSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Profile summary states',
                 builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .hostSettingsProfileSummaryStates,
+                    .hostTeamProfileSummaryStates,
               ),
             ],
           ),
@@ -10482,6 +10391,26 @@ final directories = <_widgetbook.WidgetbookNode>[
                             .eventSuccessModuleConsolidationWholeGroup,
                   ),
                 ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  ),
+  _widgetbook.WidgetbookCategory(
+    name: 'Review gates',
+    children: [
+      _widgetbook.WidgetbookFolder(
+        name: 'Field motion',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchField',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Current vs proposed',
+                builder: _widgetbook_workspace_primitives_field_motion_use_cases
+                    .catchFieldMotionReview,
               ),
             ],
           ),

@@ -92,33 +92,34 @@ class _HostEventsScaffoldState extends State<HostEventsScaffold> {
         backgroundColor: t.bg,
         body: SafeArea(
           bottom: false,
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              if (selectedClub == null) ...[
-                CatchScreenHeaderTitle.block(
-                  title: context.l10n.hostNavigationToday,
-                ),
-                Padding(
-                  padding: CatchInsets.pageHorizontal,
-                  child: HostEmptyActionCard(
-                    title: context
-                        .l10n
-                        .hostsHostEventsScaffoldTitleCreateYourFirstClub,
-                    body: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
-                    actions: [
-                      CatchButton(
+          child: selectedClub == null
+              ? CustomScrollView(
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: CatchScreenHeaderTitle.block(
+                        title: context.l10n.hostNavigationToday,
+                      ),
+                    ),
+                    CatchSliverEmptyState(
+                      icon: CatchIcons.groupsOutlined,
+                      title: context
+                          .l10n
+                          .hostsHostEventsScaffoldTitleCreateYourFirstClub,
+                      message:
+                          context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
+                      action: CatchButton(
                         label:
                             context.l10n.hostsHostEventsScaffoldLabelCreateClub,
                         icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+                        size: CatchButtonSize.sm,
                         onPressed: () =>
                             context.pushNamed(Routes.hostCreateClubScreen.name),
                       ),
-                    ],
-                  ),
-                ),
-              ] else
-                HostTodayDashboardCard(
+                    ),
+                    const CatchSliverTerminalPadding(),
+                  ],
+                )
+              : HostTodayDashboardCard(
                   club: selectedClub,
                   currentUid: _state.currentUid,
                   clubs: _state.clubs,
@@ -135,9 +136,6 @@ class _HostEventsScaffoldState extends State<HostEventsScaffold> {
                   onOpenTask: _openTodayTask,
                   now: _clockNow,
                 ),
-              const CatchScrollTerminalPadding(),
-            ],
-          ),
         ),
       );
     }
@@ -147,34 +145,30 @@ class _HostEventsScaffoldState extends State<HostEventsScaffold> {
       body: SafeArea(
         bottom: false,
         child: selectedClub == null
-            ? ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  CatchScreenHeaderTitle.block(
-                    title: context.l10n.hostsHostEventsListTextEvents,
-                  ),
-                  Padding(
-                    padding: CatchInsets.pageHorizontal,
-                    child: HostEmptyActionCard(
-                      title: context
-                          .l10n
-                          .hostsHostEventsScaffoldTitleCreateYourFirstClub,
-                      body:
-                          context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
-                      actions: [
-                        CatchButton(
-                          label: context
-                              .l10n
-                              .hostsHostEventsScaffoldLabelCreateClub,
-                          icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-                          onPressed: () => context.pushNamed(
-                            Routes.hostCreateClubScreen.name,
-                          ),
-                        ),
-                      ],
+            ? CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: CatchScreenHeaderTitle.block(
+                      title: context.l10n.hostsHostEventsListTextEvents,
                     ),
                   ),
-                  const CatchScrollTerminalPadding(),
+                  CatchSliverEmptyState(
+                    icon: CatchIcons.groupsOutlined,
+                    title: context
+                        .l10n
+                        .hostsHostEventsScaffoldTitleCreateYourFirstClub,
+                    message:
+                        context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
+                    action: CatchButton(
+                      label:
+                          context.l10n.hostsHostEventsScaffoldLabelCreateClub,
+                      icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+                      size: CatchButtonSize.sm,
+                      onPressed: () =>
+                          context.pushNamed(Routes.hostCreateClubScreen.name),
+                    ),
+                  ),
+                  const CatchSliverTerminalPadding(),
                 ],
               )
             : HostEventsClubCard(

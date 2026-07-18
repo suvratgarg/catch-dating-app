@@ -53,7 +53,9 @@ bool isAtLeastAge(
 
 String? validateRequiredProfileName(String? value, {required String label}) {
   final text = (value ?? '').trim();
-  if (text.isEmpty) return '$label is required';
+  if (text.isEmpty) {
+    return '$label${StructuredDomainCopy.profileValidationRequiredSuffix}';
+  }
   return null;
 }
 
@@ -71,7 +73,10 @@ String? validateRequiredDisplayName(String? value) {
 }
 
 String? validateRequiredPhoneNumber(String? value) {
-  if ((value ?? '').trim().isEmpty) return 'Phone is required';
+  if ((value ?? '').trim().isEmpty) {
+    return '${StructuredDomainCopy.profileValidationPhone}'
+        '${StructuredDomainCopy.profileValidationRequiredSuffix}';
+  }
   return null;
 }
 
@@ -85,7 +90,7 @@ String? validateOptionalEmail(String? value) {
   );
   if (lengthError != null) return lengthError;
   final valid = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email);
-  return valid ? null : 'Enter a valid email';
+  return valid ? null : StructuredDomainCopy.profileValidationInvalidEmail;
 }
 
 String? validateProfileTextMaxLength(
@@ -95,7 +100,8 @@ String? validateProfileTextMaxLength(
 }) {
   final text = (value ?? '').trim();
   if (text.length <= maxLength) return null;
-  return '$label must be $maxLength characters or fewer';
+  return '$label${StructuredDomainCopy.profileValidationMaxLengthInfix}'
+      '$maxLength${StructuredDomainCopy.profileValidationCharactersOrFewerSuffix}';
 }
 
 String? validateOptionalProfileShortText(
@@ -112,7 +118,10 @@ String? validateOptionalProfileShortText(
 String? validateOptionalProfilePromptAnswer(String? value) {
   final answer = collapseStackedPromptBlankLines(value ?? '').trim();
   if (answer.length > maximumProfilePromptAnswerLength) {
-    return 'Prompt must be $maximumProfilePromptAnswerLength characters or fewer';
+    return '${StructuredDomainCopy.profileValidationPrompt}'
+        '${StructuredDomainCopy.profileValidationMaxLengthInfix}'
+        '$maximumProfilePromptAnswerLength'
+        '${StructuredDomainCopy.profileValidationCharactersOrFewerSuffix}';
   }
   return null;
 }
@@ -120,7 +129,10 @@ String? validateOptionalProfilePromptAnswer(String? value) {
 String? validateOptionalPhotoPromptCaption(String? value) {
   final caption = collapseStackedPromptBlankLines(value ?? '').trim();
   if (caption.length > maximumPhotoPromptCaptionLength) {
-    return 'Caption must be $maximumPhotoPromptCaptionLength characters or fewer';
+    return '${StructuredDomainCopy.profileValidationCaption}'
+        '${StructuredDomainCopy.profileValidationMaxLengthInfix}'
+        '$maximumPhotoPromptCaptionLength'
+        '${StructuredDomainCopy.profileValidationCharactersOrFewerSuffix}';
   }
   return null;
 }
@@ -147,7 +159,7 @@ String? validateOptionalInstagramHandle(String? value) {
   final handle = normalizeInstagramHandle(value ?? '');
   if (handle.isEmpty) return null;
   final valid = RegExp(r'^[A-Za-z0-9._]{1,30}$').hasMatch(handle);
-  return valid ? null : 'Enter a valid Instagram handle';
+  return valid ? null : StructuredDomainCopy.profileValidationInvalidInstagram;
 }
 
 String? validateRequiredDateOfBirth(
@@ -155,10 +167,11 @@ String? validateRequiredDateOfBirth(
   required DateTime today,
 }) {
   if (dateOfBirth == null) {
-    return 'Please select your date of birth';
+    return StructuredDomainCopy.profileValidationSelectDateOfBirth;
   }
   if (!isAtLeastAge(dateOfBirth, today: today)) {
-    return 'You must be at least $minimumProfileAge years old';
+    return '${StructuredDomainCopy.profileValidationMinimumAgePrefix}'
+        '$minimumProfileAge${StructuredDomainCopy.profileValidationYearsOldSuffix}';
   }
   return null;
 }
@@ -168,10 +181,12 @@ String? validateOptionalHeightCm(int? heightCm) {
     return null;
   }
   if (heightCm < minimumHeightCm) {
-    return 'Height must be at least $minimumHeightCm cm';
+    return '${StructuredDomainCopy.profileValidationHeightMinimumPrefix}'
+        '$minimumHeightCm${StructuredDomainCopy.profileValidationCentimetresSuffix}';
   }
   if (heightCm > maximumHeightCm) {
-    return 'Height must be at most $maximumHeightCm cm';
+    return '${StructuredDomainCopy.profileValidationHeightMaximumPrefix}'
+        '$maximumHeightCm${StructuredDomainCopy.profileValidationCentimetresSuffix}';
   }
   return null;
 }

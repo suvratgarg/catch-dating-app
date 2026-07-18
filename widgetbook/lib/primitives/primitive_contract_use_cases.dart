@@ -1464,6 +1464,7 @@ Widget catchFieldContractStates(BuildContext context) {
       'choices-derived-summary',
       'choices-explicit-summary',
       'choices-helper-accent',
+      'option-cards-explanatory',
       'stepper-open',
       'direct-input-one-tap',
       'direct-input-focused-cursor',
@@ -1521,6 +1522,7 @@ Widget catchFieldContractStates(BuildContext context) {
               ),
             ),
           ),
+          leadingExtent: 48,
           title: 'Wednesday Evening Run',
           body: '2 attended · 20% full · free',
           emphasis: CatchFieldEmphasis.title,
@@ -1655,6 +1657,24 @@ Widget catchFieldContractStates(BuildContext context) {
           selected: const {'Social'},
           initiallyOpen: true,
           onSelectionChanged: (_) {},
+        ),
+      ),
+      fieldState(
+        label: 'option-cards-explanatory',
+        description:
+            'Policies with per-option guidance use one full-width title-and-description target per choice instead of chips plus detached selected copy.',
+        child: CatchField.optionCards<String>(
+          title: 'Admission format',
+          values: const ['open', 'request'],
+          itemTitle: (value) =>
+              value == 'open' ? 'Open capacity' : 'Request to join',
+          itemDescription: (value) => value == 'open'
+              ? 'Anyone eligible can book until the event reaches capacity.'
+              : 'People request a spot and a host approves each booking.',
+          selected: 'open',
+          initiallyOpen: true,
+          onChanged: (_) {},
+          icon: CatchIcons.howToRegOutlined,
         ),
       ),
       fieldState(
@@ -2252,6 +2272,45 @@ Widget catchFieldChoiceChipContractStates(BuildContext context) {
           multi: true,
           enabled: true,
           onPressed: _noop,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchFieldOptionCardControl,
+  path: '[Core primitives]/Inputs',
+)
+Widget catchFieldOptionCardControlContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchFieldOptionCardControl',
+    contractId: 'catch.field.option_card_control',
+    states: const ['selected', 'unselected', 'disabled'],
+    children: [
+      _StateCard(
+        label: 'selected / unselected',
+        child: CatchFieldOptionCardControl<String>(
+          values: const ['open', 'invite'],
+          itemTitle: (value) =>
+              value == 'open' ? 'Open capacity' : 'Invite only',
+          itemDescription: (value) => value == 'open'
+              ? 'Anyone eligible can book until capacity.'
+              : 'Only people with the invite code can book.',
+          selected: 'open',
+          onChanged: (_) {},
+        ),
+      ),
+      _StateCard(
+        label: 'disabled',
+        child: CatchFieldOptionCardControl<String>(
+          values: const ['standard'],
+          itemTitle: (_) => 'Standard',
+          itemDescription: (_) => 'Refunds step down as the event approaches.',
+          selected: 'standard',
+          enabled: false,
+          onChanged: null,
         ),
       ),
     ],
@@ -3718,9 +3777,13 @@ Widget catchTopBarContractStates(BuildContext context) {
         child: _TopBarFrame(
           child: CatchTopBar(
             title: 'Chats',
-            actionIcon: CatchIcons.moreHorizRounded,
-            actionLabel: 'More',
-            onAction: _noop,
+            actions: [
+              CatchIconAction(
+                icon: CatchIcons.moreHorizRounded,
+                tooltip: 'More',
+                onPressed: _noop,
+              ),
+            ],
           ),
         ),
       ),
@@ -3729,8 +3792,7 @@ Widget catchTopBarContractStates(BuildContext context) {
         child: _TopBarFrame(
           child: CatchTopBar(
             title: 'Preview',
-            actionText: 'Done',
-            onAction: _noop,
+            actions: [CatchTopBarTextAction(label: 'Done', onPressed: _noop)],
           ),
         ),
       ),
@@ -3740,9 +3802,12 @@ Widget catchTopBarContractStates(BuildContext context) {
         child: _TopBarFrame(
           child: CatchTopBar(
             title: 'Clubs',
-            searchValue: 'run',
-            searchPlaceholder: 'Search clubs',
-            onSearch: _ignoreString,
+            search: CatchTopBarSearch(
+              value: 'run',
+              placeholder: 'Search clubs',
+              tooltip: 'Search clubs',
+              onChanged: _ignoreString,
+            ),
           ),
         ),
       ),

@@ -3,21 +3,20 @@
   "generatedBy": "tool/design/generate_flutter_field_surface_inventory.mjs",
   "source": {
     "manifest": "docs/audit_registry/flutter_field_surface_adoption.json",
-    "manifestSha256": "977a9c90ed870b54f00822b02f606b84a68ddef38b9d1b1587e10de708dcc2a9",
+    "manifestSha256": "56ceae1445f117cad56c0d09bc86cc50f1d8d8a995727d7123f25171f180507a",
     "routeInventory": "tool/ui_capture/route_inventory.json",
-    "routeInventorySha256": "e706df74321f44767c7bff9e0161de612b9e3d9cd38f898606a4e271d1d13599",
+    "routeInventorySha256": "06791556d5d634a08f5b60481c7c258a8ecbd0eb7828b63033a5fc020d16c03c",
     "screenContracts": "design/screens/catch.screens.json",
-    "screenContractsSha256": "657bf530876589ccd13dac02dca160b866a931627f1a340a2b76205d70566576"
+    "screenContractsSha256": "758abb78d0f928b602ed3cf582524fde78ba7771a6fde527187b76173073fe14"
   },
   "summary": {
     "candidateCount": 10,
-    "activeCandidateCount": 9,
-    "completedCandidateCount": 1,
+    "activeCandidateCount": 7,
+    "completedCandidateCount": 3,
     "statusCounts": {
-      "approval_ready": 6,
-      "completed": 1,
+      "approval_ready": 5,
+      "completed": 3,
       "deferred_specialized": 1,
-      "needs_domain_approval": 1,
       "owner_decision": 1
     },
     "riskCounts": {
@@ -25,7 +24,7 @@
       "low": 2,
       "medium": 5
     },
-    "legacyCallsites": 7,
+    "legacyCallsites": 6,
     "reviewedExclusionCallsites": 2,
     "unclassifiedLegacyCallsites": 0
   },
@@ -70,12 +69,17 @@
         {
           "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
           "symbol": "CatchField.input",
-          "expected": 13
+          "expected": 11
         },
         {
           "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
           "symbol": "CatchField.choices",
-          "expected": 3
+          "expected": 1
+        },
+        {
+          "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+          "symbol": "CatchField.optionCards",
+          "expected": 2
         },
         {
           "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
@@ -99,6 +103,7 @@
         "CatchField.nav",
         "CatchField.input",
         "CatchField.choices",
+        "CatchField.optionCards",
         "CatchField.stepper",
         "CatchField.toggle",
         "CatchField.read"
@@ -123,12 +128,12 @@
           "expected": 6,
           "observed": 6,
           "lines": [
-            414,
-            470,
-            536,
-            993,
-            1216,
-            1267
+            417,
+            472,
+            538,
+            1000,
+            1200,
+            1251
           ]
         },
         {
@@ -138,8 +143,8 @@
           "expected": 2,
           "observed": 2,
           "lines": [
-            1080,
-            1129
+            1087,
+            1138
           ]
         },
         {
@@ -149,43 +154,50 @@
           "expected": 3,
           "observed": 3,
           "lines": [
-            418,
-            429,
-            499
+            421,
+            432,
+            501
           ]
         },
         {
           "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
           "kind": "call",
           "symbol": "CatchField.input",
-          "expected": 13,
-          "observed": 13,
+          "expected": 11,
+          "observed": 11,
           "lines": [
-            473,
-            518,
-            542,
-            601,
-            1003,
-            1014,
-            1046,
-            1082,
-            1095,
-            1131,
-            1145,
-            1162,
-            1177
+            475,
+            520,
+            544,
+            606,
+            1010,
+            1021,
+            1053,
+            1089,
+            1103,
+            1140,
+            1155
           ]
         },
         {
           "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
           "kind": "call",
           "symbol": "CatchField.choices",
-          "expected": 3,
-          "observed": 3,
+          "expected": 1,
+          "observed": 1,
           "lines": [
-            582,
-            1033,
-            1192
+            584
+          ]
+        },
+        {
+          "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+          "kind": "call",
+          "symbol": "CatchField.optionCards",
+          "expected": 2,
+          "observed": 2,
+          "lines": [
+            1043,
+            1178
           ]
         },
         {
@@ -195,7 +207,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            441
+            444
           ]
         },
         {
@@ -205,8 +217,8 @@
           "expected": 2,
           "observed": 2,
           "lines": [
-            1069,
-            1120
+            1076,
+            1129
           ]
         },
         {
@@ -216,14 +228,14 @@
           "expected": 8,
           "observed": 8,
           "lines": [
-            1112,
+            1121,
+            1203,
+            1211,
             1219,
-            1227,
-            1235,
-            1245,
-            1250,
-            1270,
-            1275
+            1229,
+            1234,
+            1254,
+            1259
           ]
         }
       ]
@@ -281,9 +293,10 @@
     {
       "id": "FIELD-SURFACE-HOST-CLUB-INLINE-EDITORS",
       "rank": 3,
-      "status": "approval_ready",
+      "status": "completed",
+      "completedAt": "2026-07-18",
       "risk": "medium",
-      "migrationKind": "choice_field_only",
+      "migrationKind": "full_field_section",
       "reachability": "production_embedded",
       "screenIds": [
         "screen.host.clubs"
@@ -291,12 +304,8 @@
       "routeIds": [
         "hostClubsScreen"
       ],
-      "semanticFieldCount": 6,
+      "semanticFieldCount": 7,
       "bindings": [
-        {
-          "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
-          "symbol": "HostInlineOptionEditor"
-        },
         {
           "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
           "symbol": "HostClubEditTab"
@@ -312,12 +321,18 @@
       ],
       "anchors": [
         {
-          "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
-          "symbol": "CatchChip.selectable",
+          "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+          "symbol": "CatchFormRowList<UpdateClubPatch>",
+          "expected": 2
+        },
+        {
+          "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+          "symbol": "CatchFormSingleChoiceRow",
           "expected": 1
         }
       ],
       "targetModes": [
+        "CatchFormRowList",
         "CatchField.choices"
       ],
       "preserve": [
@@ -325,71 +340,84 @@
         "UpdateClubPatch typing",
         "save and cancel behavior"
       ],
-      "recommendation": "Approve with the remaining Host club edit pass, separate from create-club.",
+      "verification": [
+        "Host Club Identity and Contact sections render through two typed CatchFormRowList<UpdateClubPatch> instances",
+        "Contract alignment test covers all seven editable Host Club patch fields",
+        "Deleted HostInline editors leave zero production legacy call sites"
+      ],
+      "recommendation": "Completed: Host Club Identity and Contact editing now use typed form descriptors; the former HostInline editor file and hand-rolled choice chips are deleted.",
       "observedAnchors": [
         {
-          "file": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
+          "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
           "kind": "call",
-          "symbol": "CatchChip.selectable",
+          "symbol": "CatchFormRowList<UpdateClubPatch>",
+          "expected": 2,
+          "observed": 2,
+          "lines": [
+            286,
+            293
+          ]
+        },
+        {
+          "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+          "kind": "call",
+          "symbol": "CatchFormSingleChoiceRow",
           "expected": 1,
           "observed": 1,
           "lines": [
-            364
+            388
           ]
         }
       ]
     },
     {
-      "id": "FIELD-SURFACE-HOST-PROFILE",
+      "id": "FIELD-SURFACE-HOST-TEAM-PROFILE",
       "rank": 4,
       "status": "approval_ready",
       "risk": "low",
       "migrationKind": "section_shell",
       "reachability": "production_route",
       "screenIds": [
-        "screen.host.profile"
+        "screen.host.clubs"
       ],
       "routeIds": [
-        "hostProfileScreen"
+        "hostClubTeamScreen"
       ],
       "semanticFieldCount": 3,
       "bindings": [
         {
-          "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "symbol": "HostProfileFields"
-        },
-        {
-          "file": "lib/hosts/presentation/host_operations/host_account_screen.dart",
-          "symbol": "HostSettingsProfileRows"
+          "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "symbol": "HostTeamProfileRows"
         }
       ],
       "anchors": [
         {
-          "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
-          "symbol": "CatchField.input",
+          "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "symbol": "CatchField.inputActions",
           "expected": 3
         }
       ],
       "targetModes": [
-        "CatchSection.fieldRows"
+        "CatchSection.fieldRows",
+        "CatchField.inputActions"
       ],
       "preserve": [
-        "shared HostProfileForm",
+        "profile validation",
         "controller reuse",
-        "profile image side effects"
+        "profile save side effects"
       ],
-      "recommendation": "Approve as a shell-only cleanup; the inputs are already canonical.",
+      "recommendation": "Complete: the unified Host team route owns the canonical field section.",
       "observedAnchors": [
         {
-          "file": "lib/hosts/presentation/host_operations/host_profile_screen.dart",
+          "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
           "kind": "call",
-          "symbol": "CatchField.input",
+          "symbol": "CatchField.inputActions",
           "expected": 3,
           "observed": 3,
           "lines": [
-            312,
-            320,
-            328
+            480,
+            505,
+            529
           ]
         }
       ]
@@ -523,7 +551,8 @@
     {
       "id": "FIELD-SURFACE-EVENT-SUCCESS-HOST-TARGET",
       "rank": 7,
-      "status": "needs_domain_approval",
+      "status": "completed",
+      "completedAt": "2026-07-18",
       "risk": "high",
       "migrationKind": "stepper_only",
       "reachability": "production_route",
@@ -541,7 +570,7 @@
       "anchors": [
         {
           "file": "lib/event_success/presentation/host_parts/event_success_host_setup.dart",
-          "symbol": "CatchNumberStepper",
+          "symbol": "CatchField.stepper",
           "expected": 1
         }
       ],
@@ -552,16 +581,20 @@
         "Event Success plan constraints",
         "club defaults"
       ],
-      "recommendation": "Confirm the domain contract before changing its one specialized stepper.",
+      "verification": [
+        "TargetAttendeeControl retains Event Success plan bounds while rendering through CatchField.stepper",
+        "Zero CatchNumberStepper calls remain in the Event Success host setup surface"
+      ],
+      "recommendation": "Completed: the target-attendee control retains its domain bounds while using the canonical field stepper facade.",
       "observedAnchors": [
         {
           "file": "lib/event_success/presentation/host_parts/event_success_host_setup.dart",
           "kind": "call",
-          "symbol": "CatchNumberStepper",
+          "symbol": "CatchField.stepper",
           "expected": 1,
           "observed": 1,
           "lines": [
-            335
+            293
           ]
         }
       ]
@@ -775,9 +808,9 @@
           "expected": 3,
           "observed": 3,
           "lines": [
-            308,
-            323,
-            341
+            309,
+            324,
+            342
           ]
         },
         {
@@ -797,7 +830,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            359
+            360
           ]
         },
         {
@@ -807,10 +840,10 @@
           "expected": 4,
           "observed": 4,
           "lines": [
-            375,
-            391,
-            407,
-            422
+            376,
+            392,
+            408,
+            423
           ]
         }
       ]
@@ -836,7 +869,7 @@
           "observed": 2,
           "lines": [
             51,
-            142
+            132
           ]
         }
       ]

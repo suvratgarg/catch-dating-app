@@ -5,25 +5,35 @@ String _valueOrDash(String? value) {
   return trimmed == null || trimmed.isEmpty ? '—' : trimmed;
 }
 
-String _admissionDefaultLabel(EventAdmissionDefaultPreset preset) {
+String _admissionDefaultLabel(
+  EventAdmissionDefaultPreset preset,
+  AppLocalizations l10n,
+) {
   return switch (preset) {
-    EventAdmissionDefaultPreset.openCapacity => 'Open capacity',
-    EventAdmissionDefaultPreset.inviteOnly => 'Invite only',
-    EventAdmissionDefaultPreset.balancedSingles => 'Balanced singles',
-    EventAdmissionDefaultPreset.fixedCohortCaps => 'Fixed cohort caps',
+    EventAdmissionDefaultPreset.openCapacity =>
+      l10n.hostsCreateEventPolicyStateTitleOpenCapacity,
+    EventAdmissionDefaultPreset.inviteOnly =>
+      l10n.hostsCreateEventPolicyStateTitleInviteOnly,
+    EventAdmissionDefaultPreset.balancedSingles =>
+      l10n.hostsCreateEventPolicyStateTitleBalancedSingles,
+    EventAdmissionDefaultPreset.fixedCohortCaps =>
+      l10n.hostsAdmissionFixedCohortCapsLabel,
   };
 }
 
-String _admissionDefaultDescription(EventAdmissionDefaultPreset preset) {
+String _admissionDefaultDescription(
+  EventAdmissionDefaultPreset preset,
+  AppLocalizations l10n,
+) {
   return switch (preset) {
     EventAdmissionDefaultPreset.openCapacity =>
-      'Anyone eligible can book until the event reaches capacity.',
+      l10n.hostsAdmissionOpenCapacityDescription,
     EventAdmissionDefaultPreset.inviteOnly =>
-      'New invite-only events ask for an event-specific code.',
+      l10n.hostsAdmissionInviteOnlyDescription,
     EventAdmissionDefaultPreset.balancedSingles =>
-      'Straight men and women are kept within one spot of each other.',
+      l10n.hostsAdmissionBalancedSinglesDescription,
     EventAdmissionDefaultPreset.fixedCohortCaps =>
-      'Open booking with optional straight men and straight women caps.',
+      l10n.hostsAdmissionFixedCohortCapsDescription,
   };
 }
 
@@ -52,59 +62,14 @@ String _normalizeMultilineInput(String value) {
       .replaceAll(RegExp(r'\n{3,}'), '\n\n');
 }
 
-String? Function(String?) _requiredHostFieldValidator(String label) {
-  return (value) {
-    if (value == null || value.trim().isEmpty) {
-      return '$label is required.';
-    }
-    return null;
-  };
-}
-
-String? _optionalEmailValidator(String? value) {
+String? _optionalEmailValidator(String? value, AppLocalizations l10n) {
   final trimmed = value?.trim() ?? '';
   if (trimmed.isEmpty) return null;
   final valid = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(trimmed);
-  return valid ? null : 'Enter a valid email.';
+  return valid ? null : l10n.hostsValidationEnterValidEmail;
 }
 
 Object? _optionalStringFieldValue(String value) {
   final trimmed = value.trim();
   return trimmed.isEmpty ? null : trimmed;
-}
-
-String _optionalMinAgeText(int minAge) => minAge == 0 ? '' : '$minAge';
-
-String _optionalMaxAgeText(int maxAge) => maxAge == 99 ? '' : '$maxAge';
-
-_ParsedAgeRange _parseAgeRange({
-  required String minText,
-  required String maxText,
-}) {
-  final minRaw = minText.trim();
-  final maxRaw = maxText.trim();
-  final minAge = minRaw.isEmpty ? 0 : int.tryParse(minRaw);
-  final maxAge = maxRaw.isEmpty ? 99 : int.tryParse(maxRaw);
-
-  if (minAge == null || (minRaw.isNotEmpty && (minAge < 18 || minAge > 99))) {
-    return const _ParsedAgeRange.error('Min age must be 18-99.');
-  }
-  if (maxAge == null || (maxRaw.isNotEmpty && (maxAge < 18 || maxAge > 99))) {
-    return const _ParsedAgeRange.error('Max age must be 18-99.');
-  }
-  if (minAge > maxAge) {
-    return const _ParsedAgeRange.error('Min age must be less than max age.');
-  }
-  return _ParsedAgeRange(minAge: minAge, maxAge: maxAge);
-}
-
-class _ParsedAgeRange {
-  const _ParsedAgeRange({required this.minAge, required this.maxAge})
-    : error = null;
-
-  const _ParsedAgeRange.error(this.error) : minAge = null, maxAge = null;
-
-  final int? minAge;
-  final int? maxAge;
-  final String? error;
 }

@@ -805,14 +805,10 @@ class _EventCheckInQrScannerSheetState
 }
 
 class StagePromptCard extends StatelessWidget {
-  const StagePromptCard({
-    super.key,
-    required this.prompt,
-    this.title = 'Social mission',
-  });
+  const StagePromptCard({super.key, required this.prompt, this.title});
 
   final String prompt;
-  final String title;
+  final String? title;
 
   @override
   Widget build(BuildContext context) {
@@ -823,7 +819,7 @@ class StagePromptCard extends StatelessWidget {
         children: [
           StageSectionLabel(
             icon: CatchIcons.chatBubbleOutlineRounded,
-            label: title,
+            label: title ?? context.l10n.eventSuccessSocialMissionTitle,
             color: t.primary,
           ),
           gapH12,

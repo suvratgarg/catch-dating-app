@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-07-16T22:55:53.529Z",
+  "generatedAt": "2026-07-18T13:18:57.015Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 864,
-    "components": 817,
-    "stateCards": 1778,
-    "reviewCandidates": 44,
-    "oversizedUseCases": 44,
+    "useCases": 861,
+    "components": 813,
+    "stateCards": 1765,
+    "reviewCandidates": 42,
+    "oversizedUseCases": 42,
     "multiUseCaseComponents": 42
   },
   "reviewCandidates": [
@@ -2589,92 +2589,6 @@
       ]
     },
     {
-      "component": "HostSettingsProfileRows",
-      "useCaseCount": 1,
-      "stateCardCount": 11,
-      "paths": [
-        "[P1 product surfaces]/Host operations/Composed sections"
-      ],
-      "labels": [
-        "active profile and clubs",
-        "auth required",
-        "clubs error",
-        "clubs loading",
-        "dark theme",
-        "fallback profile from club",
-        "no profile",
-        "profile error",
-        "profile loading",
-        "reduced motion",
-        "text scale 2.0"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "large-state-matrix"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "hostSettingsRouteStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Covered by host settings route states",
-          "functionName": "hostSettingsRouteStates",
-          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
-          "path": "[P1 product surfaces]/Host operations/Composed sections",
-          "stateCardCount": 11,
-          "stateCards": [
-            {
-              "label": "auth required",
-              "normalizedLabel": "auth required"
-            },
-            {
-              "label": "profile loading",
-              "normalizedLabel": "profile loading"
-            },
-            {
-              "label": "profile error",
-              "normalizedLabel": "profile error"
-            },
-            {
-              "label": "no profile",
-              "normalizedLabel": "no profile"
-            },
-            {
-              "label": "fallback profile from club",
-              "normalizedLabel": "fallback profile from club"
-            },
-            {
-              "label": "active profile and clubs",
-              "normalizedLabel": "active profile and clubs"
-            },
-            {
-              "label": "clubs loading",
-              "normalizedLabel": "clubs loading"
-            },
-            {
-              "label": "clubs error",
-              "normalizedLabel": "clubs error"
-            },
-            {
-              "label": "text scale 2.0",
-              "normalizedLabel": "text scale 2 0"
-            },
-            {
-              "label": "reduced motion",
-              "normalizedLabel": "reduced motion"
-            },
-            {
-              "label": "dark theme",
-              "normalizedLabel": "dark theme"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "CatchCountPill",
       "useCaseCount": 2,
       "stateCardCount": 10,
@@ -3013,11 +2927,11 @@
       ]
     },
     {
-      "component": "HostSettingsProfileSection",
+      "component": "HostTeamProfileSection",
       "useCaseCount": 1,
       "stateCardCount": 10,
       "paths": [
-        "[P2 host surfaces]/Host settings"
+        "[P2 host surfaces]/Host team"
       ],
       "labels": [
         "active edit rows",
@@ -3038,15 +2952,15 @@
         ],
         "duplicateLabels": [],
         "oversizedUseCases": [
-          "hostSettingsProfileSummaryStates"
+          "hostTeamProfileSummaryStates"
         ]
       },
       "useCases": [
         {
           "name": "Profile summary states",
-          "functionName": "hostSettingsProfileSummaryStates",
+          "functionName": "hostTeamProfileSummaryStates",
           "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
-          "path": "[P2 host surfaces]/Host settings",
+          "path": "[P2 host surfaces]/Host team",
           "stateCardCount": 10,
           "stateCards": [
             {
@@ -3656,90 +3570,19 @@
       ]
     },
     {
-      "component": "HostProfileForm",
+      "component": "HostTeamProfileRows",
       "useCaseCount": 1,
       "stateCardCount": 8,
       "paths": [
-        "[P2 host surfaces]/Host profile"
+        "[P1 product surfaces]/Host operations/Composed sections"
       ],
       "labels": [
-        "active profile",
-        "dark theme",
-        "pending review",
-        "reduced motion",
-        "save pending",
-        "suspended profile",
-        "text scale 2.0",
-        "validation error"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "large-state-matrix"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "hostProfileFormStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Form states",
-          "functionName": "hostProfileFormStates",
-          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
-          "path": "[P2 host surfaces]/Host profile",
-          "stateCardCount": 8,
-          "stateCards": [
-            {
-              "label": "active profile",
-              "normalizedLabel": "active profile"
-            },
-            {
-              "label": "pending review",
-              "normalizedLabel": "pending review"
-            },
-            {
-              "label": "suspended profile",
-              "normalizedLabel": "suspended profile"
-            },
-            {
-              "label": "validation error",
-              "normalizedLabel": "validation error"
-            },
-            {
-              "label": "save pending",
-              "normalizedLabel": "save pending"
-            },
-            {
-              "label": "text scale 2.0",
-              "normalizedLabel": "text scale 2 0"
-            },
-            {
-              "label": "reduced motion",
-              "normalizedLabel": "reduced motion"
-            },
-            {
-              "label": "dark theme",
-              "normalizedLabel": "dark theme"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "HostProfileScreen",
-      "useCaseCount": 1,
-      "stateCardCount": 8,
-      "paths": [
-        "[P2 host surfaces]/Host profile"
-      ],
-      "labels": [
+        "active profile and clubs",
         "auth required",
+        "clubs error",
+        "clubs loading",
         "dark theme",
-        "missing profile",
-        "populated active profile",
-        "profile error",
-        "profile loading",
+        "fallback profile from club",
         "reduced motion",
         "text scale 2.0"
       ],
@@ -3750,15 +3593,15 @@
         ],
         "duplicateLabels": [],
         "oversizedUseCases": [
-          "hostProfileRouteStates"
+          "hostTeamRouteStates"
         ]
       },
       "useCases": [
         {
-          "name": "Route states",
-          "functionName": "hostProfileRouteStates",
+          "name": "Covered by host team route states",
+          "functionName": "hostTeamRouteStates",
           "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
-          "path": "[P2 host surfaces]/Host profile",
+          "path": "[P1 product surfaces]/Host operations/Composed sections",
           "stateCardCount": 8,
           "stateCards": [
             {
@@ -3766,20 +3609,20 @@
               "normalizedLabel": "auth required"
             },
             {
-              "label": "profile loading",
-              "normalizedLabel": "profile loading"
+              "label": "fallback profile from club",
+              "normalizedLabel": "fallback profile from club"
             },
             {
-              "label": "profile error",
-              "normalizedLabel": "profile error"
+              "label": "active profile and clubs",
+              "normalizedLabel": "active profile and clubs"
             },
             {
-              "label": "missing profile",
-              "normalizedLabel": "missing profile"
+              "label": "clubs loading",
+              "normalizedLabel": "clubs loading"
             },
             {
-              "label": "populated active profile",
-              "normalizedLabel": "populated active profile"
+              "label": "clubs error",
+              "normalizedLabel": "clubs error"
             },
             {
               "label": "text scale 2.0",
@@ -6890,92 +6733,6 @@
       ]
     },
     {
-      "component": "HostSettingsProfileRows",
-      "useCaseCount": 1,
-      "stateCardCount": 11,
-      "paths": [
-        "[P1 product surfaces]/Host operations/Composed sections"
-      ],
-      "labels": [
-        "active profile and clubs",
-        "auth required",
-        "clubs error",
-        "clubs loading",
-        "dark theme",
-        "fallback profile from club",
-        "no profile",
-        "profile error",
-        "profile loading",
-        "reduced motion",
-        "text scale 2.0"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "large-state-matrix"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "hostSettingsRouteStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Covered by host settings route states",
-          "functionName": "hostSettingsRouteStates",
-          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
-          "path": "[P1 product surfaces]/Host operations/Composed sections",
-          "stateCardCount": 11,
-          "stateCards": [
-            {
-              "label": "auth required",
-              "normalizedLabel": "auth required"
-            },
-            {
-              "label": "profile loading",
-              "normalizedLabel": "profile loading"
-            },
-            {
-              "label": "profile error",
-              "normalizedLabel": "profile error"
-            },
-            {
-              "label": "no profile",
-              "normalizedLabel": "no profile"
-            },
-            {
-              "label": "fallback profile from club",
-              "normalizedLabel": "fallback profile from club"
-            },
-            {
-              "label": "active profile and clubs",
-              "normalizedLabel": "active profile and clubs"
-            },
-            {
-              "label": "clubs loading",
-              "normalizedLabel": "clubs loading"
-            },
-            {
-              "label": "clubs error",
-              "normalizedLabel": "clubs error"
-            },
-            {
-              "label": "text scale 2.0",
-              "normalizedLabel": "text scale 2 0"
-            },
-            {
-              "label": "reduced motion",
-              "normalizedLabel": "reduced motion"
-            },
-            {
-              "label": "dark theme",
-              "normalizedLabel": "dark theme"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "CatchCountPill",
       "useCaseCount": 2,
       "stateCardCount": 10,
@@ -7314,11 +7071,11 @@
       ]
     },
     {
-      "component": "HostSettingsProfileSection",
+      "component": "HostTeamProfileSection",
       "useCaseCount": 1,
       "stateCardCount": 10,
       "paths": [
-        "[P2 host surfaces]/Host settings"
+        "[P2 host surfaces]/Host team"
       ],
       "labels": [
         "active edit rows",
@@ -7339,15 +7096,15 @@
         ],
         "duplicateLabels": [],
         "oversizedUseCases": [
-          "hostSettingsProfileSummaryStates"
+          "hostTeamProfileSummaryStates"
         ]
       },
       "useCases": [
         {
           "name": "Profile summary states",
-          "functionName": "hostSettingsProfileSummaryStates",
+          "functionName": "hostTeamProfileSummaryStates",
           "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
-          "path": "[P2 host surfaces]/Host settings",
+          "path": "[P2 host surfaces]/Host team",
           "stateCardCount": 10,
           "stateCards": [
             {
@@ -7957,90 +7714,19 @@
       ]
     },
     {
-      "component": "HostProfileForm",
+      "component": "HostTeamProfileRows",
       "useCaseCount": 1,
       "stateCardCount": 8,
       "paths": [
-        "[P2 host surfaces]/Host profile"
+        "[P1 product surfaces]/Host operations/Composed sections"
       ],
       "labels": [
-        "active profile",
-        "dark theme",
-        "pending review",
-        "reduced motion",
-        "save pending",
-        "suspended profile",
-        "text scale 2.0",
-        "validation error"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "large-state-matrix"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "hostProfileFormStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Form states",
-          "functionName": "hostProfileFormStates",
-          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
-          "path": "[P2 host surfaces]/Host profile",
-          "stateCardCount": 8,
-          "stateCards": [
-            {
-              "label": "active profile",
-              "normalizedLabel": "active profile"
-            },
-            {
-              "label": "pending review",
-              "normalizedLabel": "pending review"
-            },
-            {
-              "label": "suspended profile",
-              "normalizedLabel": "suspended profile"
-            },
-            {
-              "label": "validation error",
-              "normalizedLabel": "validation error"
-            },
-            {
-              "label": "save pending",
-              "normalizedLabel": "save pending"
-            },
-            {
-              "label": "text scale 2.0",
-              "normalizedLabel": "text scale 2 0"
-            },
-            {
-              "label": "reduced motion",
-              "normalizedLabel": "reduced motion"
-            },
-            {
-              "label": "dark theme",
-              "normalizedLabel": "dark theme"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "HostProfileScreen",
-      "useCaseCount": 1,
-      "stateCardCount": 8,
-      "paths": [
-        "[P2 host surfaces]/Host profile"
-      ],
-      "labels": [
+        "active profile and clubs",
         "auth required",
+        "clubs error",
+        "clubs loading",
         "dark theme",
-        "missing profile",
-        "populated active profile",
-        "profile error",
-        "profile loading",
+        "fallback profile from club",
         "reduced motion",
         "text scale 2.0"
       ],
@@ -8051,15 +7737,15 @@
         ],
         "duplicateLabels": [],
         "oversizedUseCases": [
-          "hostProfileRouteStates"
+          "hostTeamRouteStates"
         ]
       },
       "useCases": [
         {
-          "name": "Route states",
-          "functionName": "hostProfileRouteStates",
+          "name": "Covered by host team route states",
+          "functionName": "hostTeamRouteStates",
           "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
-          "path": "[P2 host surfaces]/Host profile",
+          "path": "[P1 product surfaces]/Host operations/Composed sections",
           "stateCardCount": 8,
           "stateCards": [
             {
@@ -8067,20 +7753,20 @@
               "normalizedLabel": "auth required"
             },
             {
-              "label": "profile loading",
-              "normalizedLabel": "profile loading"
+              "label": "fallback profile from club",
+              "normalizedLabel": "fallback profile from club"
             },
             {
-              "label": "profile error",
-              "normalizedLabel": "profile error"
+              "label": "active profile and clubs",
+              "normalizedLabel": "active profile and clubs"
             },
             {
-              "label": "missing profile",
-              "normalizedLabel": "missing profile"
+              "label": "clubs loading",
+              "normalizedLabel": "clubs loading"
             },
             {
-              "label": "populated active profile",
-              "normalizedLabel": "populated active profile"
+              "label": "clubs error",
+              "normalizedLabel": "clubs error"
             },
             {
               "label": "text scale 2.0",
@@ -10487,11 +10173,11 @@
       ]
     },
     {
-      "component": "HostSettingsClubsSection",
+      "component": "HostTeamHostedClubsSection",
       "useCaseCount": 1,
       "stateCardCount": 6,
       "paths": [
-        "[P2 host surfaces]/Host settings"
+        "[P2 host surfaces]/Host team"
       ],
       "labels": [
         "clubs error",
@@ -10510,9 +10196,9 @@
       "useCases": [
         {
           "name": "Clubs states",
-          "functionName": "hostSettingsClubsStates",
+          "functionName": "hostTeamHostedClubsStates",
           "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
-          "path": "[P2 host surfaces]/Host settings",
+          "path": "[P2 host surfaces]/Host team",
           "stateCardCount": 6,
           "stateCards": [
             {
@@ -16007,6 +15693,48 @@
       ]
     },
     {
+      "component": "EventAgeRangeField",
+      "useCaseCount": 1,
+      "stateCardCount": 3,
+      "paths": [
+        "[P1 product surfaces]/Host create event"
+      ],
+      "labels": [
+        "bounded editable range",
+        "disabled",
+        "unrestricted sentinels"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Age range states",
+          "functionName": "eventAgeRangeFieldCatalogStates",
+          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
+          "path": "[P1 product surfaces]/Host create event",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "bounded editable range",
+              "normalizedLabel": "bounded editable range"
+            },
+            {
+              "label": "unrestricted sentinels",
+              "normalizedLabel": "unrestricted sentinels"
+            },
+            {
+              "label": "disabled",
+              "normalizedLabel": "disabled"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "EventDetailOverviewSection",
       "useCaseCount": 1,
       "stateCardCount": 3,
@@ -16463,6 +16191,48 @@
             {
               "label": "text scale 2",
               "normalizedLabel": "text scale 2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "OrderedPhotoPicker",
+      "useCaseCount": 1,
+      "stateCardCount": 3,
+      "paths": [
+        "[P3 utility surfaces]/Image uploads"
+      ],
+      "labels": [
+        "cover plus reorder",
+        "empty picker",
+        "section-owned label"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Picker states",
+          "functionName": "orderedPhotoPickerStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Image uploads",
+          "stateCardCount": 3,
+          "stateCards": [
+            {
+              "label": "empty picker",
+              "normalizedLabel": "empty picker"
+            },
+            {
+              "label": "cover plus reorder",
+              "normalizedLabel": "cover plus reorder"
+            },
+            {
+              "label": "section-owned label",
+              "normalizedLabel": "section owned label"
             }
           ]
         }
@@ -17596,6 +17366,43 @@
             {
               "label": "visible",
               "normalizedLabel": "visible"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchFieldOptionCardControl",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[Core primitives]/Inputs"
+      ],
+      "labels": [
+        "disabled",
+        "selected / unselected"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchFieldOptionCardControlContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "selected / unselected",
+              "normalizedLabel": "selected unselected"
+            },
+            {
+              "label": "disabled",
+              "normalizedLabel": "disabled"
             }
           ]
         }
@@ -19563,43 +19370,6 @@
       ]
     },
     {
-      "component": "EditClubPhotosLabel",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[P1 product surfaces]/Host create club"
-      ],
-      "labels": [
-        "empty strip",
-        "three photos"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Photos label states",
-          "functionName": "editClubPhotosLabelCatalogStates",
-          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
-          "path": "[P1 product surfaces]/Host create club",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "three photos",
-              "normalizedLabel": "three photos"
-            },
-            {
-              "label": "empty strip",
-              "normalizedLabel": "empty strip"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "EditHostedEventScreen",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -21111,43 +20881,6 @@
             {
               "label": "disabled compact",
               "normalizedLabel": "disabled compact"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "OrderedPhotoPicker",
-      "useCaseCount": 1,
-      "stateCardCount": 2,
-      "paths": [
-        "[P3 utility surfaces]/Image uploads"
-      ],
-      "labels": [
-        "cover plus reorder",
-        "empty picker"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Picker states",
-          "functionName": "orderedPhotoPickerStates",
-          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
-          "path": "[P3 utility surfaces]/Image uploads",
-          "stateCardCount": 2,
-          "stateCards": [
-            {
-              "label": "empty picker",
-              "normalizedLabel": "empty picker"
-            },
-            {
-              "label": "cover plus reorder",
-              "normalizedLabel": "cover plus reorder"
             }
           ]
         }
@@ -22709,11 +22442,12 @@
     },
     {
       "component": "CatchField",
-      "useCaseCount": 2,
+      "useCaseCount": 3,
       "stateCardCount": 1,
       "paths": [
         "[Core primitives]/Inputs",
-        "[P1 product surfaces]/Profiles/Inline Editors"
+        "[P1 product surfaces]/Profiles/Inline Editors",
+        "[Review gates]/Field motion"
       ],
       "labels": [
         "empty and selected values"
@@ -22745,6 +22479,14 @@
               "normalizedLabel": "empty and selected values"
             }
           ]
+        },
+        {
+          "name": "Current vs proposed",
+          "functionName": "catchFieldMotionReview",
+          "file": "widgetbook/lib/primitives/field_motion_use_cases.dart",
+          "path": "[Review gates]/Field motion",
+          "stateCardCount": 0,
+          "stateCards": []
         }
       ]
     },
@@ -24733,6 +24475,38 @@
       ]
     },
     {
+      "component": "CatchSliverEmptyState",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[Core catalog]/Feedback"
+      ],
+      "labels": [
+        "cardless terminal empty state"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Catalog states",
+          "functionName": "catchSliverEmptyStateCatalogStates",
+          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
+          "path": "[Core catalog]/Feedback",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "cardless terminal empty state",
+              "normalizedLabel": "cardless terminal empty state"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchSliverErrorState",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -24829,6 +24603,38 @@
       ]
     },
     {
+      "component": "CatchSliverStateViewport",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[Core catalog]/Feedback"
+      ],
+      "labels": [
+        "floating-shell optical center"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Catalog states",
+          "functionName": "catchSliverStateViewportCatalogStates",
+          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
+          "path": "[Core catalog]/Feedback",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "floating-shell optical center",
+              "normalizedLabel": "floating shell optical center"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchStartupLoadingScreen",
       "useCaseCount": 1,
       "stateCardCount": 1,
@@ -24855,6 +24661,38 @@
             {
               "label": "boot surface before delayed spinner",
               "normalizedLabel": "boot surface before delayed spinner"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "CatchStateViewport",
+      "useCaseCount": 1,
+      "stateCardCount": 1,
+      "paths": [
+        "[Core catalog]/Feedback"
+      ],
+      "labels": [
+        "box body / floating-shell optical center"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Catalog states",
+          "functionName": "catchStateViewportCatalogStates",
+          "file": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
+          "path": "[Core catalog]/Feedback",
+          "stateCardCount": 1,
+          "stateCards": [
+            {
+              "label": "box body / floating-shell optical center",
+              "normalizedLabel": "box body floating shell optical center"
             }
           ]
         }
@@ -27479,38 +27317,6 @@
             {
               "label": "Roster-backed broadcast and personal threads",
               "normalizedLabel": "roster backed broadcast and personal threads"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "HostProfileFields",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P2 host surfaces]/Host profile"
-      ],
-      "labels": [
-        "editor sheet without status"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Field states",
-          "functionName": "hostProfileFieldStates",
-          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
-          "path": "[P2 host surfaces]/Host profile",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "editor sheet without status",
-              "normalizedLabel": "editor sheet without status"
             }
           ]
         }
@@ -30725,31 +30531,6 @@
       ]
     },
     {
-      "component": "CustomQuestionFields",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[P1 product surfaces]/Event Success strict coverage/Questionnaire editor folded states"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "CustomQuestionFields",
-          "functionName": "eventSuccessStrictCustomQuestionFields",
-          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
-          "path": "[P1 product surfaces]/Event Success strict coverage/Questionnaire editor folded states",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
       "component": "CustomQuestionnaireFields",
       "useCaseCount": 1,
       "stateCardCount": 0,
@@ -32700,31 +32481,6 @@
       ]
     },
     {
-      "component": "HostCheckInQrPanel",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[P1 product surfaces]/Event Success strict coverage/Host folded states"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "HostCheckInQrPanel",
-          "functionName": "eventSuccessStrictHostCheckInQrPanel",
-          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
-          "path": "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
       "component": "HostFunnelSummary",
       "useCaseCount": 1,
       "stateCardCount": 0,
@@ -32944,81 +32700,6 @@
           "functionName": "eventSuccessStrictLiveArrivalRing",
           "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
           "path": "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
-      "component": "LiveAttendanceSummaryCard",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[P1 product surfaces]/Event Success strict coverage/Host folded states"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "LiveAttendanceSummaryCard",
-          "functionName": "eventSuccessStrictLiveAttendanceSummaryCard",
-          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
-          "path": "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
-      "component": "LiveCheckInQrCard",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[P1 product surfaces]/Event Success strict coverage/Host folded states"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "LiveCheckInQrCard",
-          "functionName": "eventSuccessStrictLiveCheckInQrCard",
-          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
-          "path": "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
-      "component": "LiveCheckInSummaryStrip",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[P1 product surfaces]/Event Success strict coverage/Host folded states"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "LiveCheckInSummaryStrip",
-          "functionName": "eventSuccessStrictLiveCheckInSummaryStrip",
-          "file": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
-          "path": "[P1 product surfaces]/Event Success strict coverage/Host folded states",
           "stateCardCount": 0,
           "stateCards": []
         }

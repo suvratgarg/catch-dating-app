@@ -47,7 +47,7 @@ class CreateClubPhotosPicker extends StatelessWidget {
     final editStrip = variant == CreateClubPhotosPickerVariant.editStrip;
     final picker = OrderedPhotoPicker(
       label: editStrip
-          ? EditClubPhotosLabel(count: visiblePhotos.length)
+          ? null
           : CatchFormFieldLabel(
               label: context.l10n.hostsCreateClubPhotosPickerLabelClubPhotos,
               isOptional: true,
@@ -107,30 +107,20 @@ class CreateClubProfileImagePicker extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     if (variant == CreateClubProfileImagePickerVariant.editLogo) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      return Row(
         children: [
-          Text(
-            context.l10n.hostsCreateClubPhotosPickerTextClubLogo,
-            style: CatchTextStyles.kicker(context),
+          ClubProfileImageTile(
+            imageBytes: imageBytes,
+            existingImageUrl: existingImageUrl,
+            onTap: onTap,
+            size: 64,
           ),
-          gapH8,
-          Row(
-            children: [
-              ClubProfileImageTile(
-                imageBytes: imageBytes,
-                existingImageUrl: existingImageUrl,
-                onTap: onTap,
-                size: 64,
-              ),
-              gapW16,
-              Expanded(
-                child: Text(
-                  context.l10n.hostsCreateClubPhotosPickerTextASquareLogoShown,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
-                ),
-              ),
-            ],
+          gapW16,
+          Expanded(
+            child: Text(
+              context.l10n.hostsCreateClubPhotosPickerTextASquareLogoShown,
+              style: CatchTextStyles.supporting(context, color: t.ink2),
+            ),
           ),
         ],
       );
@@ -150,30 +140,6 @@ class CreateClubProfileImagePicker extends StatelessWidget {
           onTap: onTap,
           size: CatchLayout.clubProfileImagePickerExtent,
           showEmptyLabel: true,
-        ),
-      ],
-    );
-  }
-}
-
-class EditClubPhotosLabel extends StatelessWidget {
-  const EditClubPhotosLabel({super.key, required this.count});
-
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Row(
-      children: [
-        Text(
-          context.l10n.hostsCreateClubPhotosPickerTextPhotos,
-          style: CatchTextStyles.kicker(context),
-        ),
-        const Spacer(),
-        Text(
-          context.l10n.hostsCreateClubPhotosPickerTextCount(count: count),
-          style: CatchTextStyles.monoLabel(context, color: t.ink3),
         ),
       ],
     );

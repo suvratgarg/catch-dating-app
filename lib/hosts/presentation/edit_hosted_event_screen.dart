@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -35,6 +36,7 @@ import 'package:catch_dating_app/events/events.dart'
     show LocationPickerResult, LocationPickerScreen;
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_age_range_field.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_view_model.dart';
@@ -347,6 +349,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       event: widget.event,
       now: _now,
       savePending: mutation.isPending,
+      l10n: context.l10n,
       fields: fieldState,
       saveError: saveError,
     );
@@ -462,7 +465,6 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                               duration.round(),
                             ),
                           ),
-                          initiallyOpen: true,
                           icon: CatchIcons.timerOutlined,
                         ),
                       ],
@@ -585,6 +587,10 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                           body: detailsFields.selectedPace.label,
                           values: PaceLevel.values,
                           itemLabel: (pace) => pace.label,
+                          itemAccent: (_) => ActivityPalette.resolve(
+                            context,
+                            widget.event.eventFormat.activityKind,
+                          ).accent,
                           selected: <PaceLevel>{detailsFields.selectedPace},
                           onSelectionChanged: screenState.canEdit
                               ? (selection) => _handleIntent(
@@ -593,7 +599,6 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                                   ),
                                 )
                               : null,
-                          initiallyOpen: true,
                           enabled: screenState.canEdit,
                           icon: CatchIcons.speedOutlined,
                         ),
@@ -752,8 +757,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
         startTime.minute,
       ),
       now: _now,
-      invalidScheduleMessage:
-          const HostEventEditSaveOutcomeState.updated().invalidScheduleMessage,
+      invalidScheduleMessage: HostEventEditSaveOutcomeState.updated(
+        context.l10n,
+      ).invalidScheduleMessage,
     );
   }
 
@@ -808,6 +814,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       event: widget.event,
       now: _now,
       savePending: false,
+      l10n: context.l10n,
     );
     if (!_formKey.currentState!.validate()) return;
     if (_startingPoint == null) {
@@ -1009,7 +1016,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           textInputAction: TextInputAction.next,
-          validator: positiveRequiredValidator,
+          validator: (value) => positiveRequiredValidator(value, context.l10n),
         ),
         CatchField.input(
           key: CreateEventFormKeys.price,
@@ -1027,19 +1034,19 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
             ),
           ],
           textInputAction: TextInputAction.next,
-          validator: (value) =>
-              _moneyRequiredValidator(value, currencyCode: state.currencyCode),
+          validator: (value) => _moneyRequiredValidator(
+            value,
+            currencyCode: state.currencyCode,
+            l10n: context.l10n,
+          ),
         ),
-        CatchField.choices<EventAdmissionPreset>(
+        CatchField.optionCards<EventAdmissionPreset>(
           title: context.l10n.hostsEditHostedEventScreenLabelAdmissionFormat,
-          body: state.admissionPreset.description(context.l10n),
           values: EventAdmissionPreset.values,
-          itemLabel: (preset) => preset.label(context.l10n),
-          selected: <EventAdmissionPreset>{state.admissionPreset},
-          onSelectionChanged: (selection) {
-            onAdmissionPresetChanged(selection.single);
-          },
-          initiallyOpen: true,
+          itemTitle: (preset) => preset.title(context.l10n),
+          itemDescription: (preset) => preset.description(context.l10n),
+          selected: state.admissionPreset,
+          onChanged: onAdmissionPresetChanged,
           icon: CatchIcons.howToRegOutlined,
         ),
         if (state.showInviteCode)
@@ -1063,7 +1070,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                 ),
               ),
             ],
-            validator: inviteCodeValidator,
+            validator: (value) => inviteCodeValidator(value, context.l10n),
           ),
         if (state.showCohortCapsToggle) ...[
           CatchField.toggle(
@@ -1090,7 +1097,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
-                  validator: positiveOptionalValidator,
+                  validator: (value) =>
+                      positiveOptionalValidator(value, context.l10n),
                 ),
                 CatchField.input(
                   key: CreateEventFormKeys.maxWomen,
@@ -1103,7 +1111,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
-                  validator: positiveOptionalValidator,
+                  validator: (value) =>
+                      positiveOptionalValidator(value, context.l10n),
                 ),
               ],
             ),
@@ -1140,7 +1149,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
-                  validator: positiveRequiredValidator,
+                  validator: (value) =>
+                      positiveRequiredValidator(value, context.l10n),
                 ),
                 CatchField.input(
                   key: CreateEventFormKeys.dynamicPricingMax,
@@ -1154,50 +1164,24 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
-                  validator: positiveRequiredValidator,
+                  validator: (value) =>
+                      positiveRequiredValidator(value, context.l10n),
                 ),
               ],
             ),
         ],
-        CatchField.input(
+        EventAgeRangeField(
           key: CreateEventFormKeys.minAge,
-          title: context.l10n.hostsEditHostedEventScreenTitleMinAge,
-          isOptional: true,
-          controller: minAgeController,
-          icon: CatchIcons.cakeOutlined,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          textInputAction: TextInputAction.next,
-          validator: (value) => validateAge(
-            value,
-            siblingController: maxAgeController,
-            isMinimum: true,
-          ),
+          minAgeController: minAgeController,
+          maxAgeController: maxAgeController,
         ),
-        CatchField.input(
-          key: CreateEventFormKeys.maxAge,
-          title: context.l10n.hostsEditHostedEventScreenTitleMaxAge,
-          isOptional: true,
-          controller: maxAgeController,
-          icon: CatchIcons.cakeOutlined,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          textInputAction: TextInputAction.next,
-          validator: (value) => validateAge(
-            value,
-            siblingController: minAgeController,
-            isMinimum: false,
-          ),
-        ),
-        CatchField.choices<EventCancellationPolicyId>(
+        CatchField.optionCards<EventCancellationPolicyId>(
           title: context.l10n.hostsEditHostedEventScreenLabelCancellationPolicy,
-          body: state.cancellationSummary,
           values: EventCancellationPolicyId.values,
-          itemLabel: (policyId) => policyFor(policyId).title.toUpperCase(),
-          selected: <EventCancellationPolicyId>{state.cancellationPolicyId},
-          onSelectionChanged: (selection) {
-            onCancellationPolicyChanged(selection.single);
-          },
+          itemTitle: (policyId) => policyFor(policyId).title,
+          itemDescription: (policyId) => policyFor(policyId).attendeeSummary,
+          selected: state.cancellationPolicyId,
+          onChanged: onCancellationPolicyChanged,
           icon: CatchIcons.ruleOutlined,
         ),
       ],
@@ -1351,12 +1335,18 @@ String? _inviteCodeHint(String value) {
   return '${code.substring(0, 2)}...${code.substring(code.length - 2)}';
 }
 
-String? _moneyRequiredValidator(String? value, {required String currencyCode}) {
-  if (value == null || value.trim().isEmpty) return 'Required';
+String? _moneyRequiredValidator(
+  String? value, {
+  required String currencyCode,
+  required AppLocalizations l10n,
+}) {
+  if (value == null || value.trim().isEmpty) {
+    return l10n.sharedValidationRequired;
+  }
   final amount = parseMajorCurrencyAmountToMinorUnits(
     value,
     currencyCode: currencyCode,
   );
-  if (amount == null) return 'Invalid';
+  if (amount == null) return l10n.sharedValidationInvalid;
   return null;
 }

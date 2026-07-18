@@ -13,6 +13,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_view_model.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +21,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
+
+final _l10n = AppLocalizationsEn();
 
 void main() {
   test('HostEventEditState maps route provider states', () {
@@ -124,6 +127,7 @@ void main() {
       event: editable,
       now: start.subtract(const Duration(days: 1)),
       savePending: false,
+      l10n: _l10n,
     );
     expect(ready.canEdit, isTrue);
     expect(ready.scheduleLocked, isFalse);
@@ -138,6 +142,7 @@ void main() {
       event: editable,
       now: start.subtract(const Duration(days: 1)),
       savePending: true,
+      l10n: _l10n,
       saveError: error,
     );
     expect(pending.footer.isEnabled, isFalse);
@@ -149,6 +154,7 @@ void main() {
       event: cancelled,
       now: start.subtract(const Duration(days: 1)),
       savePending: false,
+      l10n: _l10n,
     );
     expect(disabled.canEdit, isFalse);
     expect(disabled.footer.isEnabled, isFalse);
@@ -466,7 +472,7 @@ void main() {
         (widget) =>
             widget is CatchField &&
             widget.key == CreateEventFormKeys.datePicker &&
-            widget.mode == CatchFieldMode.nav,
+            widget.onTap != null,
       ),
       findsOneWidget,
     );
@@ -475,7 +481,7 @@ void main() {
         (widget) =>
             widget is CatchField &&
             widget.key == CreateEventFormKeys.timePicker &&
-            widget.mode == CatchFieldMode.nav,
+            widget.onTap != null,
       ),
       findsOneWidget,
     );
@@ -504,6 +510,12 @@ void main() {
       findsOneWidget,
     );
 
+    final paceField = find.byWidgetPredicate(
+      (widget) => widget is CatchField && widget.title == 'Pace level',
+    );
+    await _scrollToFinder(tester, paceField);
+    await tester.tap(paceField);
+    await tester.pumpAndSettle();
     final fastPace = find.byWidgetPredicate(
       (widget) =>
           widget is CatchFieldChoiceChip &&
@@ -513,6 +525,12 @@ void main() {
     await tester.tap(fastPace);
     await tester.pump();
 
+    final durationField = find.byWidgetPredicate(
+      (widget) => widget is CatchField && widget.title == 'Duration',
+    );
+    await _scrollToFinder(tester, durationField);
+    await tester.tap(durationField);
+    await tester.pumpAndSettle();
     final durationStepper = tester.widget<CatchFieldStepper>(
       find.byType(CatchFieldStepper),
     );
@@ -639,7 +657,6 @@ void main() {
     );
 
     expect(meetingPoint.enabled, isFalse);
-    expect(mapPicker.mode, CatchFieldMode.nav);
     expect(mapPicker.onTap, isNull);
     expect(paceField.enabled, isFalse);
     expect(saveButton.onPressed, isNull);

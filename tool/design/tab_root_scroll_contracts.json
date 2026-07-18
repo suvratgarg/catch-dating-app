@@ -110,6 +110,7 @@
             {"text": "bottom: false", "minimumOccurrences": 1},
             {"text": "NestedScrollView", "minimumOccurrences": 1},
             {"text": "ProfileTabScrollView", "minimumOccurrences": 1},
+            {"text": "CatchStateViewport", "minimumOccurrences": 2},
             {"text": "managesFieldVisibility: true", "minimumOccurrences": 1},
             {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
           ]
@@ -144,7 +145,7 @@
           "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
           "requires": [
             {"text": "bottom: false", "minimumOccurrences": 2},
-            {"text": "CatchScrollTerminalPadding", "minimumOccurrences": 2}
+            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 2}
           ]
         }
       ]
@@ -157,7 +158,7 @@
           "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
           "requires": [
             {"text": "bottom: false", "minimumOccurrences": 2},
-            {"text": "CatchScrollTerminalPadding", "minimumOccurrences": 2}
+            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 2}
           ]
         }
       ]
@@ -184,7 +185,7 @@
           "requires": [
             {"text": "CatchTabbedScreenScaffold", "minimumOccurrences": 1},
             {"text": "CatchTabbedPageScrollView", "minimumOccurrences": 1},
-            {"text": "CatchScrollTerminalPadding", "minimumOccurrences": 1}
+            {"text": "CatchSliverTerminalPadding", "minimumOccurrences": 1}
           ]
         },
         {

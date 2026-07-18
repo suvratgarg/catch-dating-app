@@ -454,7 +454,13 @@ per repo rules, and for Phase B specifically: a PR note confirming
 - `inputActions` — one usage today but load-bearing in the edit spec's
   target save model; not a dead limb.
 
-## 14. Stretch — what a 10 looks like (NOT scheduled)
+## 14. Stretch — what a 10 looks like
+
+> **2026-07-17 update:** the stretch goals were authorized and are now
+> specified for implementation in
+> [`catch_system_stretch_spec.md`](catch_system_stretch_spec.md), which
+> supersedes this section as the work contract (S5/S6 stay
+> trigger-gated there). This section remains as rationale only.
 
 ⚠ OWNER: nothing in this section is authorized work. Phases A–E end at
 ~8.5/10. The remaining 1.5 points are step-changes in what the system

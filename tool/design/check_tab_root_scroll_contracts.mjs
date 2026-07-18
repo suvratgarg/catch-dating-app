@@ -97,7 +97,61 @@ export function checkTabRootScrollContracts({
     }
   }
 
+  checkStateViewportOwnership({root, findings});
+
   return summarize(manifest, findings);
+}
+
+function checkStateViewportOwnership({root, findings}) {
+  const libRoot = path.join(root, "lib");
+  if (!fs.existsSync(libRoot)) return;
+  for (const absolutePath of dartFiles(libRoot)) {
+    const relativePath = path.relative(root, absolutePath).split(path.sep).join("/");
+    if (!relativePath.includes("/presentation/")) continue;
+    const source = fs.readFileSync(absolutePath, "utf8");
+    for (const block of callBlocks(source, "SliverFillRemaining")) {
+      if (!/Catch(?:Empty|Error)State(?:\.fromError)?\s*\(/u.test(block)) {
+        continue;
+      }
+      findings.push({
+        code: "raw-sliver-state-viewport",
+        path: relativePath,
+        message:
+          "Empty and error slivers must use CatchSliverStateViewport, " +
+          "CatchSliverEmptyState, or CatchSliverErrorState so shell overlay " +
+          "geometry is applied consistently.",
+      });
+    }
+  }
+}
+
+function* dartFiles(directory) {
+  for (const entry of fs.readdirSync(directory, {withFileTypes: true})) {
+    const entryPath = path.join(directory, entry.name);
+    if (entry.isDirectory()) yield* dartFiles(entryPath);
+    else if (entry.isFile() && entry.name.endsWith(".dart")) yield entryPath;
+  }
+}
+
+function callBlocks(source, callName) {
+  const blocks = [];
+  const marker = `${callName}(`;
+  let cursor = 0;
+  while ((cursor = source.indexOf(marker, cursor)) >= 0) {
+    let depth = 0;
+    let end = cursor + marker.length;
+    for (let index = cursor + callName.length; index < source.length; index++) {
+      if (source[index] === "(") depth += 1;
+      if (source[index] === ")") depth -= 1;
+      if (depth === 0) {
+        end = index + 1;
+        break;
+      }
+    }
+    blocks.push(source.slice(cursor, end));
+    cursor = end;
+  }
+  return blocks;
 }
 
 function checkOwner({root, owner, findings, ownerKind}) {
@@ -240,7 +294,8 @@ function runCli() {
     console.log(`Usage: node tool/design/check_tab_root_scroll_contracts.mjs [--check|--json]
 
 Checks every StatefulShellBranch against the versioned root-scroll owner
-manifest and verifies that each owner retains semantic terminal clearance.`);
+manifest, verifies semantic terminal clearance, and rejects raw empty/error
+SliverFillRemaining composition in presentation code.`);
     return;
   }
 

@@ -1460,20 +1460,6 @@ Widget eventSuccessStrictHostActivitySummary(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "HostCheckInQrPanel",
-  type: HostCheckInQrPanel,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictHostCheckInQrPanel(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.host,
-    componentName: "HostCheckInQrPanel",
-  );
-}
-
-@widgetbook.UseCase(
   name: "HostFunnelSummary",
   type: HostFunnelSummary,
   path:
@@ -1498,48 +1484,6 @@ Widget eventSuccessStrictHostReportSignalGrid(BuildContext context) {
     context,
     surface: _EventSuccessStrictSurface.host,
     componentName: "HostReportSignalGrid",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "LiveAttendanceSummaryCard",
-  type: LiveAttendanceSummaryCard,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictLiveAttendanceSummaryCard(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.host,
-    componentName: "LiveAttendanceSummaryCard",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "LiveCheckInQrCard",
-  type: LiveCheckInQrCard,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictLiveCheckInQrCard(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.host,
-    componentName: "LiveCheckInQrCard",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "LiveCheckInSummaryStrip",
-  type: LiveCheckInSummaryStrip,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictLiveCheckInSummaryStrip(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.host,
-    componentName: "LiveCheckInSummaryStrip",
   );
 }
 
@@ -2395,20 +2339,6 @@ Widget eventSuccessStrictQaDeviceFrame(BuildContext context) {
     context,
     surface: _EventSuccessStrictSurface.manualQa,
     componentName: "QaDeviceFrame",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "CustomQuestionFields",
-  type: CustomQuestionFields,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Questionnaire editor folded states",
-)
-Widget eventSuccessStrictCustomQuestionFields(BuildContext context) {
-  return _eventSuccessStrictPreview(
-    context,
-    surface: _EventSuccessStrictSurface.questionnaire,
-    componentName: "CustomQuestionFields",
   );
 }
 

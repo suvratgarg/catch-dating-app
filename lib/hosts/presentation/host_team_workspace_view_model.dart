@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
-import 'package:catch_dating_app/hosts/presentation/host_settings_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_team_workspace_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-HostSettingsState buildHostSettingsState({
+HostTeamWorkspaceState buildHostTeamWorkspaceState({
   required String? uid,
   required AsyncValue<HostProfile?> profile,
   required AsyncValue<List<Club>> clubs,
@@ -11,15 +11,15 @@ HostSettingsState buildHostSettingsState({
   bool creatingProfile = false,
   bool signOutPending = false,
 }) {
-  final profileState = buildHostSettingsProfileState(
+  final profileState = buildHostTeamProfileState(
     uid: uid,
     profile: profile,
     clubs: clubs,
   );
-  return HostSettingsState(
+  return HostTeamWorkspaceState(
     profile: profileState,
-    clubs: buildHostSettingsClubsState(clubs),
-    actions: HostSettingsActionState.from(
+    clubs: buildHostTeamHostedClubsState(clubs),
+    actions: HostTeamWorkspaceActionState.from(
       uid: uid,
       editMode: editMode,
       creatingProfile: creatingProfile,
@@ -29,59 +29,40 @@ HostSettingsState buildHostSettingsState({
   );
 }
 
-HostSettingsProfileState buildHostSettingsProfileState({
+HostTeamProfileState buildHostTeamProfileState({
   required String? uid,
   required AsyncValue<HostProfile?> profile,
   required AsyncValue<List<Club>> clubs,
 }) {
   final loadedProfile = profile.asData?.value;
   if (loadedProfile != null) {
-    return HostSettingsProfileContent(profile: loadedProfile);
+    return HostTeamProfileContent(profile: loadedProfile);
   }
 
   final fallbackProfile = uid == null
       ? null
       : _fallbackHostProfileFromClubs(uid, clubs.asData?.value);
   if (fallbackProfile != null) {
-    return HostSettingsProfileContent(
-      profile: fallbackProfile,
-      isFallback: true,
-    );
+    return HostTeamProfileContent(profile: fallbackProfile, isFallback: true);
   }
 
   return switch (profile) {
-    AsyncError(:final error) => HostSettingsProfileError(error: error),
-    AsyncLoading() => const HostSettingsProfileLoading(),
-    AsyncData() => const HostSettingsProfileMissing(),
+    AsyncError(:final error) => HostTeamProfileError(error: error),
+    AsyncLoading() => const HostTeamProfileLoading(),
+    AsyncData() => const HostTeamProfileMissing(),
   };
 }
 
-HostSettingsClubsState buildHostSettingsClubsState(
+HostTeamHostedClubsState buildHostTeamHostedClubsState(
   AsyncValue<List<Club>> clubs,
 ) {
   return switch (clubs) {
-    AsyncError(:final error) => HostSettingsClubsError(error: error),
+    AsyncError(:final error) => HostTeamHostedClubsError(error: error),
     AsyncData(:final value) =>
       value.isEmpty
-          ? const HostSettingsClubsEmpty()
-          : HostSettingsClubsContent(clubs: value),
-    _ => const HostSettingsClubsLoading(),
-  };
-}
-
-HostProfileEditState buildHostProfileEditState({
-  required String? uid,
-  required AsyncValue<HostProfile?> profile,
-}) {
-  if (uid == null) return const HostProfileEditAuthRequired();
-
-  return switch (profile) {
-    AsyncError(:final error) => HostProfileEditError(error: error),
-    AsyncData(:final value) =>
-      value == null
-          ? const HostProfileEditMissing()
-          : HostProfileEditContent(profile: value),
-    _ => const HostProfileEditLoading(),
+          ? const HostTeamHostedClubsEmpty()
+          : HostTeamHostedClubsContent(clubs: value),
+    _ => const HostTeamHostedClubsLoading(),
   };
 }
 

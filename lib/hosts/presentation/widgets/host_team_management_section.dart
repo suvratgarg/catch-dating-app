@@ -310,6 +310,7 @@ class HostTeamOwnerHostRow extends StatelessWidget {
         imageUrl: host.avatarUrl,
         size: 42,
       ),
+      leadingExtent: 42,
       action: canManage
           ? CatchActionMenu<String>(
               key: ValueKey('host-team-actions-${host.uid}'),

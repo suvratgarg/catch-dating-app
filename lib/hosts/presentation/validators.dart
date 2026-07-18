@@ -1,30 +1,33 @@
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 /// Returns null if [value] is empty or null; otherwise validates that the
 /// trimmed value is a positive integer >= 1.
-String? positiveOptionalValidator(String? value) {
+String? positiveOptionalValidator(String? value, AppLocalizations l10n) {
   if (value == null || value.trim().isEmpty) return null;
   final n = int.tryParse(value.trim());
-  if (n == null || n < 1) return 'Min 1';
+  if (n == null || n < 1) return l10n.sharedValidationMinimumOne;
   return null;
 }
 
 /// Returns 'Required' if [value] is empty or null; otherwise validates that
 /// the trimmed value is a positive integer >= 1.
-String? positiveRequiredValidator(String? value) {
-  if (value == null || value.trim().isEmpty) return 'Required';
+String? positiveRequiredValidator(String? value, AppLocalizations l10n) {
+  if (value == null || value.trim().isEmpty) {
+    return l10n.sharedValidationRequired;
+  }
   final n = int.tryParse(value.trim());
-  if (n == null || n < 1) return 'Min 1';
+  if (n == null || n < 1) return l10n.sharedValidationMinimumOne;
   return null;
 }
 
 /// Validates an invite code: non-empty, 4-64 characters.
-String? inviteCodeValidator(String? value) {
+String? inviteCodeValidator(String? value, AppLocalizations l10n) {
   final code = value?.trim() ?? '';
-  if (code.isEmpty) return 'Required';
-  if (code.length < 4) return 'Min 4 chars';
-  if (code.length > 64) return 'Max 64 chars';
+  if (code.isEmpty) return l10n.sharedValidationRequired;
+  if (code.length < 4) return l10n.sharedValidationInviteCodeMinimum;
+  if (code.length > 64) return l10n.sharedValidationInviteCodeMaximum;
   return null;
 }
 
@@ -34,6 +37,7 @@ String? inviteCodeValidator(String? value) {
 /// constraints can be checked (e.g. min <= max).
 String? validateAge(
   String? value, {
+  required AppLocalizations l10n,
   required TextEditingController siblingController,
   required bool isMinimum,
 }) {
@@ -41,14 +45,18 @@ String? validateAge(
 
   final parsedValue = int.tryParse(value.trim());
   if (parsedValue == null || parsedValue < 18 || parsedValue > 99) {
-    return '18-99';
+    return l10n.sharedValidationAgeRange;
   }
 
   final siblingValue = int.tryParse(siblingController.text.trim());
   if (siblingValue == null) return null;
 
-  if (isMinimum && parsedValue > siblingValue) return '<= max';
-  if (!isMinimum && parsedValue < siblingValue) return '>= min';
+  if (isMinimum && parsedValue > siblingValue) {
+    return l10n.sharedValidationMinimumAtMostMaximum;
+  }
+  if (!isMinimum && parsedValue < siblingValue) {
+    return l10n.sharedValidationMaximumAtLeastMinimum;
+  }
   return null;
 }
 

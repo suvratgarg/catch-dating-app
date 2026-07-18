@@ -26,8 +26,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
         !widget._explicitSaveInput &&
         widget.enabled &&
         (!widget.readOnly || widget.onTap != null);
-    final canToggleRow =
-        _mode == CatchFieldMode.toggle && widget.onToggle != null && !_isSaving;
+    final canToggleRow = _isToggle && widget.onToggle != null && !_isSaving;
     final canExpand =
         _hasControl &&
         widget.enabled &&
@@ -63,7 +62,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
       rowAction = null;
     }
     final centerVertically =
-        _mode == CatchFieldMode.toggle ||
+        _isToggle ||
         (widget._contentRow && widget.emphasis == CatchFieldEmphasis.title);
     final leadingTopPadding = centerVertically
         ? 0.0
@@ -148,7 +147,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
     final tapRegion = _isEdit
         ? TextFieldTapRegion(groupId: _textFieldTapRegionGroup, child: row)
         : row;
-    final isToggle = _mode == CatchFieldMode.toggle;
+    final isToggle = _isToggle;
     final toggleStatusValue = switch (widget.status) {
       CatchFieldStatus.idle => null,
       CatchFieldStatus.saving => context.l10n.coreCatchFieldSemanticSaving,
@@ -192,7 +191,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
           );
     final rowPadding = _rowPadding;
     final disclosureStartPadding =
-        rowPadding.left + (_hasLeadingSlot ? CatchFieldRow.textLaneInset : 0.0);
+        rowPadding.left + (_hasLeadingSlot ? _leadingTextLaneInset : 0.0);
     final disclosureControl = widget._explicitSaveInput
         ? CatchFieldExplicitSaveControl(
             supporting: widget._supporting,
@@ -278,7 +277,6 @@ extension _CatchFieldRowModes on _CatchFieldState {
       expanded: _hasControl ? _isOpen : null,
       toggled: isToggle ? widget.toggled : null,
       value: isToggle ? toggleStatusValue : null,
-      liveRegion: isToggle && toggleStatusValue != null,
       onTap: isToggle && canInteract ? action : null,
       child: MouseRegion(
         cursor: mouseCursor,
@@ -289,7 +287,12 @@ extension _CatchFieldRowModes on _CatchFieldState {
   }
 
   Widget? _buildLeadingSlot(CatchTokens t) {
-    if (widget.leading != null) return widget.leading;
+    if (widget.leading != null) {
+      final extent = widget.leadingExtent;
+      return extent == null
+          ? widget.leading
+          : SizedBox(width: extent, child: widget.leading);
+    }
 
     if (widget.icon != null) {
       return Icon(
@@ -336,7 +339,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
   }
 
   Widget? _buildTrailingSlot(CatchTokens t) {
-    if (_mode == CatchFieldMode.toggle) {
+    if (_isToggle) {
       return CatchFieldTrailing.toggle(
         value: widget.toggled,
         onChanged: _isSaving ? null : widget.onToggle,
@@ -367,7 +370,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
       );
     }
 
-    if (_mode == CatchFieldMode.nav) {
+    if (_isNavigation) {
       return _buildTrailingGroup(t, includeChevron: _shouldShowChevron);
     }
 
@@ -400,7 +403,9 @@ extension _CatchFieldRowModes on _CatchFieldState {
     final children = <Widget>[];
     final flexibleIndices = <int>{};
     final valueText = widget.valueText?.trim();
-    if (valueText != null && valueText.isNotEmpty) {
+    if (!_stacksTrailingValueText &&
+        valueText != null &&
+        valueText.isNotEmpty) {
       flexibleIndices.add(children.length);
       children.add(
         CatchFieldTrailing.valueText(
@@ -571,7 +576,9 @@ extension _CatchFieldRowModes on _CatchFieldState {
     }
 
     final title = _title?.trim();
-    final value = _body?.trim().isNotEmpty == true
+    final value = _stacksTrailingValueText
+        ? widget.valueText!.trim()
+        : _body?.trim().isNotEmpty == true
         ? _body!.trim()
         : widget._onSubmit != null
         ? _emptyEditableValueText

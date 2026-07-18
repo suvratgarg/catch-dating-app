@@ -4,6 +4,7 @@ import 'package:catch_dating_app/events/data/event_calendar_links.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_location_links.dart';
 import 'package:catch_dating_app/events/shared/event_invite_share_copy.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'payment_confirmation_controller.g.dart';
@@ -38,27 +39,31 @@ class PaymentConfirmationController {
   Future<bool> openCheckout(Uri checkoutUrl) =>
       _links.openExternal(checkoutUrl);
 
-  Future<void> inviteFriend(Event event) =>
-      _share.shareText(text: inviteText(event), subject: inviteSubject(event));
+  Future<void> inviteFriend(Event event, AppLocalizations l10n) =>
+      _share.shareText(
+        text: inviteText(event, l10n),
+        subject: inviteSubject(event, l10n),
+      );
 
-  Future<void> shareReferral(Event event) => _share.shareText(
-    text: referralText(event),
-    subject: inviteSubject(event),
-  );
+  Future<void> shareReferral(Event event, AppLocalizations l10n) =>
+      _share.shareText(
+        text: referralText(event, l10n),
+        subject: inviteSubject(event, l10n),
+      );
 
   static CalendarEventPayload calendarEvent(Event event) =>
       calendarEventPayloadForEvent(event);
 
   static Uri directionsUri(Event event) => directionsUriForEvent(event);
 
-  static String inviteSubject(Event event) =>
-      EventInviteShareCopy.subject(event);
+  static String inviteSubject(Event event, AppLocalizations l10n) =>
+      EventInviteShareCopy.subject(event, l10n);
 
-  static String inviteText(Event event) {
-    return EventInviteShareCopy.bookingInviteText(event);
+  static String inviteText(Event event, AppLocalizations l10n) {
+    return EventInviteShareCopy.bookingInviteText(event, l10n);
   }
 
-  static String referralText(Event event) {
-    return EventInviteShareCopy.referralText(event);
+  static String referralText(Event event, AppLocalizations l10n) {
+    return EventInviteShareCopy.referralText(event, l10n);
   }
 }

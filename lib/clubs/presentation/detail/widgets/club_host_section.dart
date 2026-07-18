@@ -107,7 +107,13 @@ class ClubHostRow extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     final isOwner = host.role == ClubHostRole.owner;
-    final meta = '${isOwner ? 'OWNER' : 'HOST'} · EST. $establishedLabel';
+    final role = isOwner
+        ? context.l10n.clubsClubHostRoleOwner
+        : context.l10n.clubsClubHostRoleHost;
+    final meta = context.l10n.clubsClubHostEstablishedMeta(
+      role: role,
+      established: establishedLabel,
+    );
 
     final row = Row(
       children: [

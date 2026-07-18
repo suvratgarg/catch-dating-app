@@ -498,6 +498,13 @@ that must remain usable by synchronous domain models is owned by locale JSON
 under `copy/` and generates deterministic Dart. For Event Success
 questionnaires:
 
+`tool/copy/check_mobile_copy_ownership.dart` enforces that boundary across
+widget arguments, copy-shaped constructor defaults and initializers,
+presentation-state members, validator/share/status helpers, and Event Success
+display enums. Its self-test seeds each supported AST shape plus technical and
+diagnostic counterexamples. The product-copy baseline stays empty; the narrow
+allowlist is reserved for proven technical identifiers.
+
 `tool/copy/check_mobile_copy_catalog.mjs` also rejects new ARB identifiers that
 contain the generated `Visiblecopy` marker. Reviewed legacy exceptions live in
 `tool/copy/mobile_copy_identifier_allowlist.json`; additions require an explicit

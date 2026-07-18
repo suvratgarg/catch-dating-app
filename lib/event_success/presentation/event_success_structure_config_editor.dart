@@ -39,18 +39,16 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
     return CatchSection.fieldRows(
       title: sectionTitle,
       children: [
-        CatchField.choices<EventSuccessUnitKind>(
+        CatchField.optionCards<EventSuccessUnitKind>(
           title: context
               .l10n
               .eventSuccessEventSuccessStructureConfigEditorTextGroupPeopleInto,
-          body: value.unitKind.setupHint,
           values: EventSuccessUnitKind.values,
-          itemLabel: (kind) => kind.label,
-          selected: {value.unitKind},
+          itemTitle: (kind) => kind.label,
+          itemDescription: (kind) => kind.setupHint,
+          selected: value.unitKind,
           enabled: enabled,
-          onSelectionChanged: enabled
-              ? (selection) => onChanged(_withUnitKind(selection.single))
-              : null,
+          onChanged: enabled ? (kind) => onChanged(_withUnitKind(kind)) : null,
         ),
         if (value.unitKind != EventSuccessUnitKind.wholeGroup)
           CatchField.stepper(
@@ -79,27 +77,27 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                 : null,
           ),
         if (supportsUnitCount)
-          CatchField.choices<bool>(
+          CatchField.optionCards<bool>(
             title: value.unitKind.countLabel,
-            body: value.unitCount == null
-                ? autoUnitCountSummary
-                : context
-                      .l10n
-                      .eventSuccessEventSuccessStructureConfigEditorDetailSetTheNumberYourselfOrLetCatchWorkItOutFromAttendance,
             values: const [false, true],
-            itemLabel: (fixed) => fixed
+            itemTitle: (fixed) => fixed
                 ? context
                       .l10n
                       .eventSuccessEventSuccessStructureConfigEditorLabelFixed
                 : context
                       .l10n
                       .eventSuccessEventSuccessStructureConfigEditorLabelAuto,
-            selected: {value.unitCount != null},
+            itemDescription: (fixed) => fixed
+                ? context
+                      .l10n
+                      .eventSuccessEventSuccessStructureConfigEditorDetailSetTheNumberYourselfOrLetCatchWorkItOutFromAttendance
+                : autoUnitCountSummary,
+            selected: value.unitCount != null,
             enabled: enabled,
-            onSelectionChanged: enabled
-                ? (selection) => onChanged(
+            onChanged: enabled
+                ? (fixed) => onChanged(
                     value.copyWith(
-                      unitCount: selection.single ? estimatedUnitCount : null,
+                      unitCount: fixed ? estimatedUnitCount : null,
                     ),
                   )
                 : null,

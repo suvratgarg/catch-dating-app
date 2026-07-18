@@ -33,7 +33,7 @@ abstract final class OrderedPhotoPickerKeys {
 class OrderedPhotoPicker extends StatefulWidget {
   const OrderedPhotoPicker({
     super.key,
-    required this.label,
+    this.label,
     required this.photos,
     required this.onAddPhotos,
     required this.onRemovePhoto,
@@ -47,7 +47,7 @@ class OrderedPhotoPicker extends StatefulWidget {
     this.showReorderHandle = true,
   });
 
-  final Widget label;
+  final Widget? label;
   final List<OrderedPhotoPreview> photos;
   final VoidCallback? onAddPhotos;
   final ValueChanged<int>? onRemovePhoto;
@@ -77,8 +77,7 @@ class _OrderedPhotoPickerState extends State<OrderedPhotoPicker> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        widget.label,
-        gapH8,
+        if (widget.label case final label?) ...[label, gapH8],
         if (photos.isEmpty)
           AspectRatio(
             aspectRatio: CatchAspectRatio.wide16x9,

@@ -39,9 +39,8 @@ void main() {
     expect(find.text('LIVE'), findsOneWidget);
     expect(find.text('REPORT'), findsOneWidget);
     await _tapHostSection(tester, 'Guests');
-    await _scrollHostManageUntilVisible(tester, 'Participation');
-    expect(find.text('Participation'), findsOneWidget);
-    expect(find.text('GUEST'), findsOneWidget);
+    await _scrollHostManageUntilVisible(tester, 'PARTICIPATION');
+    expect(find.text('PARTICIPATION'), findsOneWidget);
     expect(find.text('Attendee experience'), findsOneWidget);
     expect(find.text('Event companion'), findsOneWidget);
     expect(find.text('FIXTURE DATA'), findsOneWidget);
@@ -51,9 +50,9 @@ void main() {
     expect(find.text('Sign in required'), findsNothing);
 
     await _tapHostSection(tester, 'Report');
-    await _scrollHostManageUntilVisible(tester, 'Post-event host report');
+    await _scrollHostManageUntilVisible(tester, 'POST-EVENT HOST REPORT');
 
-    expect(find.text('Post-event host report'), findsOneWidget);
+    expect(find.text('POST-EVENT HOST REPORT'), findsOneWidget);
   });
 
   testWidgets('manual QA host next advances the paired attendee state', (
@@ -147,33 +146,36 @@ void main() {
     expect(find.text('Sign in required'), findsNothing);
   });
 
-  testWidgets('manual QA host manage guests includes participant table', (
-    tester,
-  ) async {
-    tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(1200, 2400);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    addTearDown(tester.view.resetPhysicalSize);
+  testWidgets(
+    'manual QA host manage guests includes compact participant roster',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(1200, 2400);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
 
-    await tester.pumpWidget(_manualQaTestHarness());
-    await _pumpManualQaReady(tester);
+      await tester.pumpWidget(_manualQaTestHarness());
+      await _pumpManualQaReady(tester);
 
-    await _tapHostSection(tester, 'Guests');
-    await _scrollHostManageUntilVisible(tester, 'GUEST');
+      await _tapHostSection(tester, 'Guests');
+      await _scrollHostManageUntilVisible(tester, 'Maya Shah');
 
-    expect(find.text('ALL'), findsWidgets);
-    expect(find.text('BOOKED'), findsWidgets);
-    expect(find.text('WAITLIST'), findsWidgets);
-    expect(find.text('SLOTS'), findsWidgets);
-    expect(find.text('GUEST'), findsOneWidget);
-    expect(find.text('SIGNAL'), findsOneWidget);
-    expect(find.text('HOST ACTION'), findsOneWidget);
-    expect(
-      find.text('Signed-up participants will appear here when they book.'),
-      findsNothing,
-    );
-    expect(find.text('Sign in required'), findsNothing);
-  });
+      expect(find.text('ALL'), findsWidgets);
+      expect(find.text('BOOKED'), findsWidgets);
+      expect(find.text('WAITLIST'), findsWidgets);
+      expect(find.text('SLOTS'), findsWidgets);
+      expect(find.text('Maya Shah'), findsOneWidget);
+      expect(find.text('Profile'), findsWidgets);
+      expect(find.text('GUEST'), findsNothing);
+      expect(find.text('SIGNAL'), findsNothing);
+      expect(find.text('HOST ACTION'), findsNothing);
+      expect(
+        find.text('Signed-up participants will appear here when they book.'),
+        findsNothing,
+      );
+      expect(find.text('Sign in required'), findsNothing);
+    },
+  );
 
   testWidgets('manual QA covers flagship singles live reveal', (tester) async {
     tester.view.devicePixelRatio = 1;
@@ -261,13 +263,13 @@ Future<void> _tapHostNext(WidgetTester tester) async {
   await _scrollHostManageFinderUntilVisible(tester, nextButton);
   await tester.pump();
   _pressCatchButton(tester, nextButton);
-  await tester.pump();
+  await pumpFeatureUi(tester);
 }
 
 Future<void> _tapHostSection(WidgetTester tester, String label) async {
   final hostManage = find.byType(HostEventManageScreen);
   final scrollable = find
-      .descendant(of: hostManage, matching: find.byType(Scrollable))
+      .descendant(of: hostManage, matching: find.byType(ListView))
       .first;
   final section = find.descendant(
     of: hostManage,
@@ -280,7 +282,7 @@ Future<void> _tapHostSection(WidgetTester tester, String label) async {
   await tester.ensureVisible(section.first);
   await tester.pump();
   await tester.tap(section.first);
-  await _pumpManualQaFrames(tester);
+  await pumpFeatureUi(tester);
 }
 
 Future<void> _scrollHostManageUntilVisible(
@@ -302,16 +304,17 @@ Future<void> _scrollHostManageFinderUntilVisible(
 ) async {
   final hostManage = find.byType(HostEventManageScreen);
   final scrollable = find
-      .descendant(of: hostManage, matching: find.byType(Scrollable))
+      .descendant(of: hostManage, matching: find.byType(ListView))
       .first;
-  for (var i = 0; i < 12; i += 1) {
+  await pumpFeatureUi(tester);
+  for (var i = 0; i < 20; i += 1) {
     if (target.evaluate().isNotEmpty) {
       await tester.ensureVisible(target.first);
       await tester.pump();
       return;
     }
     await tester.drag(scrollable, const Offset(0, -180));
-    await tester.pump();
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 16));
   }
   expect(target, findsWidgets);
   await tester.pump();

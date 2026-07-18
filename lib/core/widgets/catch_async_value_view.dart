@@ -20,39 +20,30 @@ typedef CatchAsyncValueErrorBuilder =
 /// ```dart
 /// CatchAsyncValueView<List<Club>>(
 ///   value: ref.watch(watchClubsProvider),
-///   data: (clubs) => ListView(...),
+///   builder: (context, clubs) => ListView(...),
 /// )
 /// ```
 class CatchAsyncValueView<T> extends StatelessWidget {
   const CatchAsyncValueView({
     super.key,
     required this.value,
-    this.data,
-    this.builder,
-    this.loading,
+    required this.builder,
     this.loadingBuilder,
-    this.error,
     this.errorBuilder,
     this.errorContext = AppErrorContext.generic,
     this.onRetry,
     this.skipLoadingOnReload = false,
     this.skipLoadingOnRefresh = true,
     this.skipError = false,
-  }) : assert(
-         data != null || builder != null,
-         'Provide either data or builder.',
-       );
+  });
 
   final AsyncValue<T> value;
-  final Widget Function(T)? data;
-  final CatchAsyncValueDataBuilder<T>? builder;
+  final CatchAsyncValueDataBuilder<T> builder;
 
   /// Optional custom loading widget. Defaults to [CatchLoadingIndicator].
-  final Widget Function()? loading;
   final CatchAsyncValueLoadingBuilder? loadingBuilder;
 
   /// Optional custom error widget. Defaults to [CatchErrorState].
-  final Widget Function(Object error, StackTrace? stackTrace)? error;
   final CatchAsyncValueErrorBuilder? errorBuilder;
   final AppErrorContext errorContext;
   final VoidCallback? onRetry;
@@ -66,14 +57,11 @@ class CatchAsyncValueView<T> extends StatelessWidget {
       skipLoadingOnReload: skipLoadingOnReload,
       skipLoadingOnRefresh: skipLoadingOnRefresh,
       skipError: skipError,
-      data: (value) => builder?.call(context, value) ?? data!(value),
+      data: (value) => builder(context, value),
       loading: () =>
-          loadingBuilder?.call(context) ??
-          loading?.call() ??
-          const CatchLoadingIndicator(),
+          loadingBuilder?.call(context) ?? const CatchLoadingIndicator(),
       error: (e, st) =>
           errorBuilder?.call(context, e, st) ??
-          error?.call(e, st) ??
           CatchErrorState.fromError(e, context: errorContext, onRetry: onRetry),
     );
   }
@@ -84,12 +72,9 @@ class CatchAsyncValueSliver<T> extends StatelessWidget {
   const CatchAsyncValueSliver({
     super.key,
     required this.value,
-    this.data,
-    this.builder,
-    this.loading,
+    required this.builder,
     this.loadingBuilder,
     this.sliverLoadingBuilder,
-    this.error,
     this.errorBuilder,
     this.sliverErrorBuilder,
     this.errorContext = AppErrorContext.generic,
@@ -98,18 +83,12 @@ class CatchAsyncValueSliver<T> extends StatelessWidget {
     this.skipLoadingOnReload = false,
     this.skipLoadingOnRefresh = true,
     this.skipError = false,
-  }) : assert(
-         data != null || builder != null,
-         'Provide either data or builder.',
-       );
+  });
 
   final AsyncValue<T> value;
-  final Widget Function(T)? data;
-  final CatchAsyncValueDataBuilder<T>? builder;
-  final Widget Function()? loading;
+  final CatchAsyncValueDataBuilder<T> builder;
   final CatchAsyncValueLoadingBuilder? loadingBuilder;
   final WidgetBuilder? sliverLoadingBuilder;
-  final Widget Function(Object error, StackTrace? stackTrace)? error;
   final CatchAsyncValueErrorBuilder? errorBuilder;
   final CatchAsyncValueErrorBuilder? sliverErrorBuilder;
   final AppErrorContext errorContext;
@@ -125,15 +104,12 @@ class CatchAsyncValueSliver<T> extends StatelessWidget {
       skipLoadingOnReload: skipLoadingOnReload,
       skipLoadingOnRefresh: skipLoadingOnRefresh,
       skipError: skipError,
-      data: (value) => builder?.call(context, value) ?? data!(value),
+      data: (value) => builder(context, value),
       loading: () {
         final customSliver = sliverLoadingBuilder?.call(context);
         if (customSliver != null) return customSliver;
         return SliverToBoxAdapter(
-          child:
-              loadingBuilder?.call(context) ??
-              loading?.call() ??
-              const CatchLoadingIndicator(),
+          child: loadingBuilder?.call(context) ?? const CatchLoadingIndicator(),
         );
       },
       error: (e, st) {
@@ -143,8 +119,6 @@ class CatchAsyncValueSliver<T> extends StatelessWidget {
         if (customBuilder != null) {
           return SliverToBoxAdapter(child: customBuilder);
         }
-        final custom = error?.call(e, st);
-        if (custom != null) return SliverToBoxAdapter(child: custom);
         return CatchSliverErrorState.fromError(
           e,
           context: errorContext,

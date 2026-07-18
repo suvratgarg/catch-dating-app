@@ -584,6 +584,17 @@ Widget orderedPhotoPickerStates(BuildContext context) {
           showCoverBadge: true,
         ),
       ),
+      _StateCard(
+        label: 'section-owned label',
+        child: OrderedPhotoPicker(
+          photos: const [],
+          onAddPhotos: _noop,
+          onRemovePhoto: _noopIndex,
+          onReorderPhoto: _noopReorder,
+          emptyActionLabel: 'Add photos',
+          addActionLabel: 'Add more',
+        ),
+      ),
     ],
   );
 }

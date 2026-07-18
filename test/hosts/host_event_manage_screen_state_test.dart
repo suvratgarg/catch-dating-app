@@ -97,12 +97,14 @@ void main() {
     final emptyActive = HostEventActionDisplayState.resolve(
       event: buildEvent(id: 'event-empty'),
       roster: null,
+      l10n: _l10n,
       cancelEventPending: false,
       deleteEventPending: false,
     );
     final bookedActive = HostEventActionDisplayState.resolve(
       event: buildEvent(id: 'event-booked', bookedCount: 1),
       roster: null,
+      l10n: _l10n,
       cancelEventPending: true,
       deleteEventPending: false,
     );
@@ -112,6 +114,7 @@ void main() {
         status: EventLifecycleStatus.cancelled,
       ),
       roster: null,
+      l10n: _l10n,
       cancelEventPending: false,
       deleteEventPending: false,
     );

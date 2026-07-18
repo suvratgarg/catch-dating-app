@@ -53,7 +53,7 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
                 )
               : CatchAsyncValueView<String?>(
                   value: uidAsync,
-                  data: (uid) {
+                  builder: (context, uid) {
                     if (uid == null || uid.isEmpty) {
                       return Center(
                         child: CatchEmptyState(
@@ -296,8 +296,9 @@ class _LaunchAccessApplicationFormState
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenHinttextSelectCity,
               prefixIcon: Icon(CatchIcons.locationCityOutlined),
-              validator: (_) =>
-                  draft.city.trim().isEmpty ? 'Please choose your city' : null,
+              validator: (_) => draft.city.trim().isEmpty
+                  ? context.l10n.launchAccessValidationChooseCity
+                  : null,
               onChanged: (city) {
                 final next = city?.effectiveMarketId ?? '';
                 LaunchAccessController.submitMutation.reset(ref);
@@ -328,7 +329,7 @@ class _LaunchAccessApplicationFormState
               selected: draft.eventTypes,
               multiSelect: true,
               validator: (_) => draft.eventTypes.isEmpty
-                  ? 'Choose at least one event type'
+                  ? context.l10n.launchAccessValidationChooseEventType
                   : null,
               onChanged: (next) {
                 LaunchAccessController.submitMutation.reset(ref);
@@ -346,7 +347,7 @@ class _LaunchAccessApplicationFormState
               selected: draft.availabilityWindows,
               multiSelect: true,
               validator: (_) => draft.availabilityWindows.isEmpty
-                  ? 'Choose at least one time'
+                  ? context.l10n.launchAccessValidationChooseTime
                   : null,
               onChanged: (next) {
                 LaunchAccessController.submitMutation.reset(ref);
@@ -430,7 +431,7 @@ class _LaunchAccessApplicationFormState
               validator: (value) {
                 final trimmed = value?.trim() ?? '';
                 if (trimmed.length < 12) {
-                  return 'Tell us a little more.';
+                  return context.l10n.launchAccessValidationTellUsMore;
                 }
                 return null;
               },

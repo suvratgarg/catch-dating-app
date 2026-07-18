@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_icon.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -18,7 +19,7 @@ class CatchErrorState extends StatelessWidget {
     required this.message,
     this.icon = CatchIcons.errorOutlineRounded,
     this.onRetry,
-    this.retryLabel = 'Try again',
+    this.retryLabel,
     this.secondaryAction,
     this.mode = CatchErrorStateMode.fullScreen,
   });
@@ -49,7 +50,7 @@ class CatchErrorState extends StatelessWidget {
   final String message;
   final IconData icon;
   final VoidCallback? onRetry;
-  final String retryLabel;
+  final String? retryLabel;
   final Widget? secondaryAction;
   final CatchErrorStateMode mode;
 
@@ -74,7 +75,7 @@ class CatchErrorBody extends StatelessWidget {
     required this.message,
     this.icon = CatchIcons.errorOutlineRounded,
     this.onRetry,
-    this.retryLabel = 'Try again',
+    this.retryLabel,
     this.secondaryAction,
     this.mode = CatchErrorStateMode.fullScreen,
   });
@@ -83,7 +84,7 @@ class CatchErrorBody extends StatelessWidget {
   final String message;
   final IconData icon;
   final VoidCallback? onRetry;
-  final String retryLabel;
+  final String? retryLabel;
   final Widget? secondaryAction;
   final CatchErrorStateMode mode;
 
@@ -126,7 +127,7 @@ class CatchErrorBody extends StatelessWidget {
             children: [
               if (onRetry != null)
                 CatchButton(
-                  label: retryLabel,
+                  label: retryLabel ?? context.l10n.sharedActionTryAgain,
                   onPressed: onRetry,
                   size: isCompact ? CatchButtonSize.sm : CatchButtonSize.md,
                   icon: Icon(CatchIcons.refreshRounded),
@@ -199,7 +200,7 @@ class _CatchErrorSpec {
 }
 
 class _LocalizedCatchErrorState extends CatchErrorState {
-  _LocalizedCatchErrorState({
+  const _LocalizedCatchErrorState({
     super.key,
     required this.error,
     required this.errorContext,
@@ -250,7 +251,7 @@ class CatchErrorScaffold extends StatelessWidget {
     required this.title,
     required this.message,
     this.onRetry,
-    this.retryLabel = 'Try again',
+    this.retryLabel,
     this.icon = CatchIcons.errorOutlineRounded,
     this.backgroundColor,
   });
@@ -276,7 +277,7 @@ class CatchErrorScaffold extends StatelessWidget {
   final String title;
   final String message;
   final VoidCallback? onRetry;
-  final String retryLabel;
+  final String? retryLabel;
   final IconData icon;
   final Color? backgroundColor;
 
@@ -344,7 +345,7 @@ class CatchSliverErrorState extends StatelessWidget {
     required this.title,
     required this.message,
     this.onRetry,
-    this.retryLabel = 'Try again',
+    this.retryLabel,
     this.icon = CatchIcons.errorOutlineRounded,
     this.fillRemaining = true,
   });
@@ -372,7 +373,7 @@ class CatchSliverErrorState extends StatelessWidget {
   final String title;
   final String message;
   final VoidCallback? onRetry;
-  final String retryLabel;
+  final String? retryLabel;
   final IconData icon;
   final bool fillRemaining;
 
@@ -387,7 +388,7 @@ class CatchSliverErrorState extends StatelessWidget {
     );
 
     if (fillRemaining) {
-      return SliverFillRemaining(hasScrollBody: false, child: child);
+      return CatchSliverStateViewport(child: child);
     }
 
     return SliverToBoxAdapter(child: child);
@@ -429,7 +430,7 @@ class _LocalizedCatchSliverErrorState extends CatchSliverErrorState {
       retryLabel: spec.retryLabel,
     );
     return fillRemaining
-        ? SliverFillRemaining(hasScrollBody: false, child: child)
+        ? CatchSliverStateViewport(child: child)
         : SliverToBoxAdapter(child: child);
   }
 }
@@ -440,7 +441,7 @@ class CatchInlineErrorState extends StatelessWidget {
     required this.title,
     required this.message,
     this.onRetry,
-    this.retryLabel = 'Try again',
+    this.retryLabel,
     this.icon = CatchIcons.errorOutlineRounded,
     this.compact = false,
   });
@@ -468,7 +469,7 @@ class CatchInlineErrorState extends StatelessWidget {
   final String title;
   final String message;
   final VoidCallback? onRetry;
-  final String retryLabel;
+  final String? retryLabel;
   final IconData icon;
   final bool compact;
 

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
+import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -13,7 +14,9 @@ class HostProfileController extends _$HostProfileController {
   @override
   void build() {}
 
-  Future<void> ensureProfile({String displayName = 'Catch Host'}) async {
+  Future<void> ensureProfile({
+    String displayName = StructuredDomainCopy.hostDefaultDisplayName,
+  }) async {
     final uid = requireSignedInUid(ref, action: 'create a host profile');
     await ref
         .read(hostProfileRepositoryProvider)

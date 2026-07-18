@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 
 const eventSuccessLayerDevelopmentStatus =
     'live_wired_with_preview_lab_and_iterating';
@@ -7,12 +8,21 @@ const eventSuccessLayerDevelopmentStatus =
 typedef EventActivityType = ActivityKind;
 
 enum EventSocialIntensity {
-  light('Light', 'Small nudges that keep the activity primary.'),
-  guided('Guided', 'Host-led prompts and small group structure.'),
-  structured('Structured', 'Planned rotations, teams, or timed moments.'),
+  light(
+    StructuredDomainCopy.eventSuccessSocialIntensityLightLabel,
+    StructuredDomainCopy.eventSuccessSocialIntensityLightDescription,
+  ),
+  guided(
+    StructuredDomainCopy.eventSuccessSocialIntensityGuidedLabel,
+    StructuredDomainCopy.eventSuccessSocialIntensityGuidedDescription,
+  ),
+  structured(
+    StructuredDomainCopy.eventSuccessSocialIntensityStructuredLabel,
+    StructuredDomainCopy.eventSuccessSocialIntensityStructuredDescription,
+  ),
   algorithmic(
-    'Reveal-led',
-    'Short questions, match clues, and live reveal moments.',
+    StructuredDomainCopy.eventSuccessSocialIntensityRevealLedLabel,
+    StructuredDomainCopy.eventSuccessSocialIntensityRevealLedDescription,
   );
 
   const EventSocialIntensity(this.label, this.description);
@@ -22,14 +32,14 @@ enum EventSocialIntensity {
 }
 
 enum EventSuccessStage {
-  before('Before'),
-  arrival('Arrival'),
-  opening('Opening'),
-  activity('Activity'),
-  mixing('Mixing'),
-  closing('Closing'),
-  after('After'),
-  hostDebrief('Host debrief');
+  before(StructuredDomainCopy.eventSuccessStageBefore),
+  arrival(StructuredDomainCopy.eventSuccessStageArrival),
+  opening(StructuredDomainCopy.eventSuccessStageOpening),
+  activity(StructuredDomainCopy.eventSuccessStageActivity),
+  mixing(StructuredDomainCopy.eventSuccessStageMixing),
+  closing(StructuredDomainCopy.eventSuccessStageClosing),
+  after(StructuredDomainCopy.eventSuccessStageAfter),
+  hostDebrief(StructuredDomainCopy.eventSuccessStageHostDebrief);
 
   const EventSuccessStage(this.label);
 
@@ -55,40 +65,40 @@ enum EventSuccessModuleType {
 
 enum EventSuccessProductLayer {
   eventStructure(
-    'Event structure',
-    'Defines the format, units, cadence, and live flow.',
+    StructuredDomainCopy.eventSuccessLayerEventStructureLabel,
+    StructuredDomainCopy.eventSuccessLayerEventStructureDescription,
   ),
   rosterAttendance(
-    'Roster and attendance',
-    'Keeps booking, arrival, eligibility, and waitlist state reliable.',
+    StructuredDomainCopy.eventSuccessLayerRosterAttendanceLabel,
+    StructuredDomainCopy.eventSuccessLayerRosterAttendanceDescription,
   ),
   assignments(
-    'Assignments',
-    'Creates pods, pairs, teams, tables, rotations, and breaks.',
+    StructuredDomainCopy.eventSuccessLayerAssignmentsLabel,
+    StructuredDomainCopy.eventSuccessLayerAssignmentsDescription,
   ),
   compatibility(
-    'Compatibility',
-    'Uses short answers and preferences to create better reveal clues.',
+    StructuredDomainCopy.eventSuccessLayerCompatibilityLabel,
+    StructuredDomainCopy.eventSuccessLayerCompatibilityDescription,
   ),
   liveReveal(
-    'Live reveal',
-    'Creates countdowns, clues, synchronized reveals, and anticipation.',
+    StructuredDomainCopy.eventSuccessLayerLiveRevealLabel,
+    StructuredDomainCopy.eventSuccessLayerLiveRevealDescription,
   ),
   conversation(
-    'Conversation prompts',
-    'Provides live prompts and post-match openers from shared context.',
+    StructuredDomainCopy.eventSuccessLayerConversationLabel,
+    StructuredDomainCopy.eventSuccessLayerConversationDescription,
   ),
   hostFacilitation(
-    'Host facilitation',
-    'Lets attendees explicitly ask the host for live help without exposing private matching choices.',
+    StructuredDomainCopy.eventSuccessLayerHostFacilitationLabel,
+    StructuredDomainCopy.eventSuccessLayerHostFacilitationDescription,
   ),
   hostCoach(
-    'Host coach',
-    'Turns event outcomes into clear advice for the next event.',
+    StructuredDomainCopy.eventSuccessLayerHostCoachLabel,
+    StructuredDomainCopy.eventSuccessLayerHostCoachDescription,
   ),
   safety(
-    'Safety layer',
-    'Applies blocks, reports, visibility, and opt-outs everywhere.',
+    StructuredDomainCopy.eventSuccessLayerSafetyLabel,
+    StructuredDomainCopy.eventSuccessLayerSafetyDescription,
   );
 
   const EventSuccessProductLayer(this.label, this.description);

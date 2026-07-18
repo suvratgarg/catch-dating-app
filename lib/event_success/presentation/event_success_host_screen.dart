@@ -8,27 +8,29 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_inline_status.dart';
-import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
+import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
@@ -37,6 +39,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_preference.d
 import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
@@ -45,15 +48,12 @@ import 'package:catch_dating_app/event_success/presentation/event_success_setup_
 import 'package:catch_dating_app/event_success/presentation/event_success_skeletons.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_check_in_qr_payload.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 export 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 
@@ -63,63 +63,9 @@ part 'host_parts/event_success_host_report.dart';
 part 'host_parts/event_success_host_setup.dart';
 part 'host_parts/event_success_host_shared.dart';
 
-final EdgeInsets _hostTabPickerPadding = CatchInsets.pageBody.copyWith(
-  top: CatchSpacing.s4,
-  bottom: CatchSpacing.s2,
-);
 const EdgeInsets _hostLaunchIssueGap = EdgeInsets.only(bottom: CatchSpacing.s1);
-const EdgeInsets _hostWingmanRequestGap = EdgeInsets.only(
-  bottom: CatchSpacing.s2,
-);
 final EdgeInsets _hostWingmanRequestNotePadding = CatchInsets.pageHorizontal
     .copyWith(bottom: CatchSpacing.s2);
-
-MutationState<void>? _firstHostRosterMutationError(
-  MutationState<void> Function(Mutation<void> mutation) watchMutation, {
-  required String eventId,
-  required EventParticipationRoster? roster,
-}) {
-  if (roster == null) return null;
-  final participantIds = <String>{...roster.bookedIds, ...roster.waitlistedIds};
-  for (final uid in participantIds) {
-    final mutations = <Mutation<void>>[
-      HostEventBookingController.markAttendanceMutation(
-        HostEventBookingController.markAttendanceMutationKey(
-          eventId: eventId,
-          userId: uid,
-        ),
-      ),
-      HostEventBookingController.approveJoinRequestMutation(
-        HostEventBookingController.approveJoinRequestMutationKey(
-          eventId: eventId,
-          userId: uid,
-        ),
-      ),
-      HostEventBookingController.declineJoinRequestMutation(
-        HostEventBookingController.declineJoinRequestMutationKey(
-          eventId: eventId,
-          userId: uid,
-        ),
-      ),
-      HostEventBookingController.createWaitlistOfferMutation(
-        HostEventBookingController.waitlistOfferMutationKey(
-          eventId: eventId,
-          userId: uid,
-        ),
-      ),
-    ];
-    for (final mutation in mutations) {
-      final state = watchMutation(mutation);
-      if (state.hasError) return state;
-    }
-  }
-  final bulkOfferState = watchMutation(
-    HostEventBookingController.createWaitlistOfferMutation(
-      HostEventBookingController.bulkWaitlistOfferMutationKey(eventId: eventId),
-    ),
-  );
-  return bulkOfferState.hasError ? bulkOfferState : null;
-}
 
 CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
   return value.when(
@@ -127,10 +73,6 @@ CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
     loading: () => const CatchAsyncState.loading(),
     error: (error, stackTrace) => CatchAsyncState<T>.error(error),
   );
-}
-
-Object? _nullableMutationError(MutationState<dynamic>? state) {
-  return state == null ? null : _mutationError(state);
 }
 
 Object? _mutationError(MutationState<dynamic> state) {
@@ -143,7 +85,6 @@ class EventSuccessHostSection extends ConsumerStatefulWidget {
     required this.event,
     this.initialTab = EventSuccessHostTab.setup,
     this.showTabs = true,
-    this.liveRoster,
     this.compactLiveControls = false,
     this.fixtureActions,
   });
@@ -151,7 +92,6 @@ class EventSuccessHostSection extends ConsumerStatefulWidget {
   final Event event;
   final EventSuccessHostTab initialTab;
   final bool showTabs;
-  final Widget? liveRoster;
   final bool compactLiveControls;
   final EventSuccessHostFixtureActions? fixtureActions;
 
@@ -167,7 +107,6 @@ class _EventSuccessHostSectionState
     final event = widget.event;
     final initialTab = widget.initialTab;
     final showTabs = widget.showTabs;
-    final liveRoster = widget.liveRoster;
     final compactLiveControls = widget.compactLiveControls;
     final fixtureActions = widget.fixtureActions;
     final planAsync = ref.watch(watchEventSuccessPlanProvider(event.id));
@@ -209,13 +148,6 @@ class _EventSuccessHostSectionState
     final AsyncValue<EventParticipationRoster> rosterAsync = shouldLoadRoster
         ? ref.watch(watchEventParticipationRosterProvider(event.id))
         : AsyncData(EventParticipationRoster.empty());
-    final attendanceErrorMutation = liveRoster == null
-        ? null
-        : _firstHostRosterMutationError(
-            (mutation) => ref.watch(mutation),
-            eventId: event.id,
-            roster: rosterAsync.asData?.value,
-          );
     final ensureError = ensureMutation.hasError
         ? _mutationError(ensureMutation)
         : null;
@@ -352,7 +284,7 @@ class _EventSuccessHostSectionState
       wingmanProfiles: state.wingmanProfiles,
       initialTab: initialTab,
       showTabs: showTabs,
-      liveRoster: liveRoster,
+      embedded: true,
       compactLiveControls: compactLiveControls,
       setupActionState: EventSuccessSetupActionState.resolve(
         ensurePending: ensureMutation.isPending,
@@ -366,7 +298,6 @@ class _EventSuccessHostSectionState
         completePending: completePlanMutation.isPending,
         stepError: updateStepError,
         completeError: completePlanError,
-        attendanceError: _nullableMutationError(attendanceErrorMutation),
       ),
       onSetLiveStep: (index) =>
           _setEventSuccessLiveStep(eventId: event.id, index: index),
@@ -803,8 +734,7 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.wingmanProfiles = const [],
     this.initialTab = EventSuccessHostTab.setup,
     this.showTabs = true,
-    this.embedded = true,
-    this.liveRoster,
+    this.embedded = false,
     this.compactLiveControls = false,
     this.setupActionState = const EventSuccessSetupActionState(),
     this.onSaveSetup,
@@ -842,7 +772,6 @@ class EventSuccessHostPanel extends StatefulWidget {
   final EventSuccessHostTab initialTab;
   final bool showTabs;
   final bool embedded;
-  final Widget? liveRoster;
   final bool compactLiveControls;
   final EventSuccessSetupActionState setupActionState;
   final Future<void> Function(EventSuccessSetupSaveRequest request)?
@@ -905,7 +834,6 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         preferences: widget.preferences,
         wingmanRequests: widget.wingmanRequests,
         wingmanProfiles: widget.wingmanProfiles,
-        liveRoster: widget.liveRoster,
         compactLiveControls: widget.compactLiveControls,
         actionState: widget.liveActionState,
         onPreviousStep: _liveStepCallback(
@@ -961,7 +889,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(padding: _hostTabPickerPadding, child: tabs),
+        tabs,
         Expanded(child: body),
       ],
     );

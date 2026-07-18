@@ -151,8 +151,6 @@ enum Routes {
   ),
   hostInboxScreen('/host/inbox', AppRouteAudience.host),
   hostChatScreen('/host/inbox/:matchId', AppRouteAudience.host),
-  hostSettingsScreen('/host/settings', AppRouteAudience.host),
-  hostProfileScreen('/host/settings/profile', AppRouteAudience.host),
   eventPolicyLabScreen('/dev/event-policy-lab', AppRouteAudience.shared),
   eventSuccessLabScreen('/dev/event-success-lab', AppRouteAudience.shared),
   eventSuccessManualQaScreen(
@@ -810,19 +808,6 @@ List<RouteBase> _hostUtilityRoutes() {
               ),
             ),
           ],
-        ),
-      ],
-    ),
-    GoRoute(
-      path: Routes.hostSettingsScreen.path,
-      name: Routes.hostSettingsScreen.name,
-      builder: (context, state) => const HostAccountScreen(),
-      routes: [
-        GoRoute(
-          path: 'profile',
-          name: Routes.hostProfileScreen.name,
-          parentNavigatorKey: _rootNavigatorKey,
-          builder: (context, state) => const HostProfileScreen(),
         ),
       ],
     ),

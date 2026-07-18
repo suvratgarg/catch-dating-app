@@ -19,7 +19,6 @@ class HostRouteLoadingBody extends StatelessWidget {
           maxWidth: CatchLayout.maxContentWidth,
         ),
         child: CatchSectionStack(
-          padding: CatchInsets.pageBodyUnderHeader,
           gap: CatchSpacing.micro18,
           children: [
             if (showTabRail) const HostTabRailSkeleton(),

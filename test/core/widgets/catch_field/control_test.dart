@@ -4,11 +4,13 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../test_pump_helpers.dart';
+import 'test_support.dart';
 
 void main() {
   testWidgets('CatchField preserves the last state when control is released', (
@@ -132,6 +134,61 @@ void main() {
     expect(chip.selected, isTrue);
   });
 
+  testWidgets(
+    'CatchField optionCards keeps each title and description in one target',
+    (tester) async {
+      var selected = 'open';
+      await tester.pumpWidget(
+        _wrap(
+          StatefulBuilder(
+            builder: (context, setState) => CatchField.optionCards<String>(
+              title: 'Admission format',
+              values: const ['open', 'invite'],
+              itemTitle: (value) => value == 'open' ? 'Open' : 'Invite only',
+              itemDescription: (value) => value == 'open'
+                  ? 'Anyone eligible can book until capacity.'
+                  : 'Only people with the invite code can book.',
+              selected: selected,
+              initiallyOpen: true,
+              onChanged: (value) => setState(() => selected = value),
+            ),
+          ),
+        ),
+      );
+
+      final openCard = tester.widget<CatchOptionCard>(
+        find.byKey(const ValueKey('catch-field-option-card-Open')),
+      );
+      final inviteCard = tester.widget<CatchOptionCard>(
+        find.byKey(const ValueKey('catch-field-option-card-Invite only')),
+      );
+      expect(openCard.description, 'Anyone eligible can book until capacity.');
+      expect(openCard.selected, isTrue);
+      expect(
+        inviteCard.description,
+        'Only people with the invite code can book.',
+      );
+      expect(inviteCard.selected, isFalse);
+
+      await tester.tap(
+        find.byKey(const ValueKey('catch-field-option-card-Invite only')),
+      );
+      await tester.pump();
+      expect(selected, 'invite');
+      expect(
+        tester
+            .widget<CatchOptionCard>(
+              find.byKey(
+                const ValueKey('catch-field-option-card-Invite only'),
+                skipOffstage: false,
+              ),
+            )
+            .selected,
+        isTrue,
+      );
+    },
+  );
+
   testWidgets('CatchField stepper reports bounded changes', (tester) async {
     num value = 168;
 
@@ -190,6 +247,18 @@ void main() {
     );
     expect(decreaseVisual.center, decreaseHit.center);
     expect(increaseVisual.center, increaseHit.center);
+    expectMinimumAccessibleTarget(
+      tester,
+      find.byKey(
+        const ValueKey('catch-field-stepper-Decrease height-focus-outline'),
+      ),
+    );
+    expectMinimumAccessibleTarget(
+      tester,
+      find.byKey(
+        const ValueKey('catch-field-stepper-Increase height-focus-outline'),
+      ),
+    );
 
     final increase = tester.widget<Semantics>(
       find.byWidgetPredicate(
@@ -1087,6 +1156,57 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await _pumpCatchFieldMotion(tester);
     expect(cancels, 1);
+  });
+
+  for (final scale in [1.3, 2.0]) {
+    testWidgets('CatchField control remains usable at ${scale}x text', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(
+          SizedBox(
+            width: 280,
+            child: CatchField.control(
+              title: 'Preferred group size',
+              body: 'Four people for a comfortable conversation',
+              initiallyOpen: true,
+              control: CatchFieldStepper(
+                value: 4,
+                decreaseSemanticLabel: 'Decrease group size',
+                increaseSemanticLabel: 'Increase group size',
+                onChanged: (_) {},
+              ),
+            ),
+          ),
+          textScale: scale,
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('CatchField control lanes mirror in RTL', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        Directionality(
+          textDirection: TextDirection.rtl,
+          child: CatchFieldStepper(
+            value: 4,
+            decreaseSemanticLabel: 'Decrease group size',
+            increaseSemanticLabel: 'Increase group size',
+            onChanged: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    expect(
+      tester.getCenter(find.bySemanticsLabel('Decrease group size')).dx,
+      greaterThan(
+        tester.getCenter(find.bySemanticsLabel('Increase group size')).dx,
+      ),
+    );
   });
 }
 

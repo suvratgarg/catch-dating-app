@@ -2,13 +2,16 @@ import 'dart:async';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/labelled.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_field_accordion.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 typedef CatchFormSave<P> = Future<bool> Function(P patch);
 typedef CatchFormErrorText =
@@ -72,6 +75,7 @@ final class CatchFormTextRow<P> extends CatchFormRowDescriptor<P> {
     this.fieldName,
     this.currentFieldValue,
     this.emptyValueText,
+    this.placeholder,
     this.inputHint,
     this.leadingUnit,
     this.showClearButton = false,
@@ -80,12 +84,20 @@ final class CatchFormTextRow<P> extends CatchFormRowDescriptor<P> {
     this.autofillHints,
     this.validator,
     this.toFieldValue,
+    this.contract,
+    this.maxLength,
+    this.inputFormatters,
+    this.explicitSave = false,
+    this.maxLines = 1,
+    this.minLines,
+    this.normalizeInput,
   });
 
   final String currentValue;
   final Object? currentFieldValue;
   final String? fieldName;
   final String? emptyValueText;
+  final String? placeholder;
   final String? inputHint;
   final String? leadingUnit;
   final bool showClearButton;
@@ -94,7 +106,56 @@ final class CatchFormTextRow<P> extends CatchFormRowDescriptor<P> {
   final Iterable<String>? autofillHints;
   final FormFieldValidator<String>? validator;
   final Object? Function(String value)? toFieldValue;
+  final CatchContractFieldConstraints? contract;
+  final int? maxLength;
+  final List<TextInputFormatter>? inputFormatters;
+  final bool explicitSave;
+  final int? maxLines;
+  final int? minLines;
+  final String Function(String value)? normalizeInput;
   final P Function(Object? value) patchForValue;
+
+  int? get effectiveMaxLength => maxLength ?? contract?.maxLength;
+
+  List<TextInputFormatter>? get effectiveInputFormatters {
+    final limit = effectiveMaxLength;
+    if (limit == null) return inputFormatters;
+    return <TextInputFormatter>[
+      ...?inputFormatters,
+      LengthLimitingTextInputFormatter(limit),
+    ];
+  }
+
+  String? validate(BuildContext context, String value) {
+    final explicitError = validator?.call(value);
+    if (explicitError != null) return explicitError;
+    final contract = this.contract;
+    if (contract == null) return null;
+    if (contract.required && value.isEmpty) {
+      return context.l10n.coreCatchFormValidationRequired(field: label);
+    }
+    final minLength = contract.minLength;
+    if (value.isNotEmpty && minLength != null && value.length < minLength) {
+      return context.l10n.coreCatchFormValidationMinLength(
+        field: label,
+        minLength: minLength,
+      );
+    }
+    final maxLength = effectiveMaxLength;
+    if (maxLength != null && value.length > maxLength) {
+      return context.l10n.coreCatchFormValidationMaxLength(
+        field: label,
+        maxLength: maxLength,
+      );
+    }
+    final pattern = contract.pattern;
+    if (value.isNotEmpty &&
+        pattern != null &&
+        !RegExp(pattern).hasMatch(value)) {
+      return context.l10n.coreCatchFormValidationPattern(field: label);
+    }
+    return null;
+  }
 
   @override
   Widget buildRow(
@@ -102,7 +163,14 @@ final class CatchFormTextRow<P> extends CatchFormRowDescriptor<P> {
     CatchFormRowScope<P> scope,
     CatchFormErrorText errorText,
   ) {
+    assert(
+      maxLength == null ||
+          contract?.maxLength == null ||
+          maxLength! <= contract!.maxLength!,
+      'An explicit maxLength cannot exceed the schema contract.',
+    );
     return CatchFormTextRowEditor<P>(
+      key: ValueKey('catch-form-text-$id'),
       descriptor: this,
       scope: scope,
       errorText: errorText,
@@ -125,6 +193,7 @@ final class CatchFormSingleChoiceRow<P, T extends Labelled>
     this.itemAccent,
     this.allowEmptySelection = true,
     this.showOptionalLabel = false,
+    this.contract,
   });
 
   final List<T> values;
@@ -135,6 +204,7 @@ final class CatchFormSingleChoiceRow<P, T extends Labelled>
   final Color? Function(T item)? itemAccent;
   final bool allowEmptySelection;
   final bool showOptionalLabel;
+  final CatchContractFieldConstraints? contract;
   final P Function(T? value) patchForValue;
 
   @override
@@ -147,6 +217,7 @@ final class CatchFormSingleChoiceRow<P, T extends Labelled>
     CatchFormErrorText errorText,
   ) {
     return CatchFormSingleChoiceRowEditor<P, T>(
+      key: ValueKey('catch-form-single-choice-$id'),
       descriptor: this,
       scope: scope,
       errorText: errorText,
@@ -170,6 +241,7 @@ final class CatchFormMultiChoiceRow<P, T extends Labelled>
     this.isAddAffordanceWhenEmpty = true,
     this.allowEmptySelection = true,
     this.showOptionalLabel = false,
+    this.contract,
   });
 
   final List<T> values;
@@ -181,6 +253,7 @@ final class CatchFormMultiChoiceRow<P, T extends Labelled>
   final bool isAddAffordanceWhenEmpty;
   final bool allowEmptySelection;
   final bool showOptionalLabel;
+  final CatchContractFieldConstraints? contract;
   final P Function(List<T> values) patchForValues;
 
   @override
@@ -193,6 +266,7 @@ final class CatchFormMultiChoiceRow<P, T extends Labelled>
     CatchFormErrorText errorText,
   ) {
     return CatchFormMultiChoiceRowEditor<P, T>(
+      key: ValueKey('catch-form-multi-choice-$id'),
       descriptor: this,
       scope: scope,
       errorText: errorText,
@@ -213,6 +287,7 @@ final class CatchFormRangeRow<P> extends CatchFormRowDescriptor<P> {
     required this.divisions,
     required this.labelText,
     required this.patchForRange,
+    this.contract,
   });
 
   final String value;
@@ -222,6 +297,7 @@ final class CatchFormRangeRow<P> extends CatchFormRowDescriptor<P> {
   final double sliderMax;
   final int divisions;
   final String Function(double value) labelText;
+  final CatchContractFieldConstraints? contract;
   final P Function(int min, int max) patchForRange;
 
   @override
@@ -230,7 +306,16 @@ final class CatchFormRangeRow<P> extends CatchFormRowDescriptor<P> {
     CatchFormRowScope<P> scope,
     CatchFormErrorText errorText,
   ) {
+    assert(
+      contract?.minimum == null || sliderMin >= contract!.minimum!,
+      'The slider minimum cannot undercut the schema contract.',
+    );
+    assert(
+      contract?.maximum == null || sliderMax <= contract!.maximum!,
+      'The slider maximum cannot exceed the schema contract.',
+    );
     return CatchFormRangeRowEditor<P>(
+      key: ValueKey('catch-form-range-$id'),
       descriptor: this,
       scope: scope,
       errorText: errorText,
@@ -245,9 +330,11 @@ final class CatchFormCustomRow<P> extends CatchFormRowDescriptor<P> {
     required super.label,
     required this.build,
     this.fieldName,
+    this.contract,
   });
 
   final String? fieldName;
+  final CatchContractFieldConstraints? contract;
   final Widget Function(BuildContext context, CatchFormRowScope<P> scope) build;
 
   @override
@@ -478,14 +565,16 @@ class _CatchFormTextRowEditorState<P> extends State<CatchFormTextRowEditor<P>> {
   Future<void> _submit() async {
     if (_saveState.saving) return;
     final descriptor = widget.descriptor;
-    final normalized = _controller.text.trim();
+    final normalized =
+        descriptor.normalizeInput?.call(_controller.text) ??
+        _controller.text.trim();
     if (normalized != _controller.text) {
       _controller.value = TextEditingValue(
         text: normalized,
         selection: TextSelection.collapsed(offset: normalized.length),
       );
     }
-    final validationError = descriptor.validator?.call(normalized);
+    final validationError = descriptor.validate(context, normalized);
     if (validationError != null) {
       setState(() => _validationError = validationError);
       return;
@@ -500,6 +589,7 @@ class _CatchFormTextRowEditorState<P> extends State<CatchFormTextRowEditor<P>> {
     if (value == comparable ||
         (value == null && descriptor.currentValue.trim().isEmpty) ||
         (value == '' && descriptor.currentFieldValue == null)) {
+      if (descriptor.explicitSave) widget.scope.collapse();
       return;
     }
     setState(() {
@@ -530,6 +620,7 @@ class _CatchFormTextRowEditorState<P> extends State<CatchFormTextRowEditor<P>> {
           setState(() => _saveState.status = CatchFieldStatus.idle);
         }
       });
+      if (descriptor.explicitSave) widget.scope.collapse();
     } catch (error) {
       if (!mounted) return;
       setState(() {
@@ -545,9 +636,47 @@ class _CatchFormTextRowEditorState<P> extends State<CatchFormTextRowEditor<P>> {
   Widget build(BuildContext context) {
     final descriptor = widget.descriptor;
     final saveError = _saveState.error;
+    final error =
+        _validationError ??
+        (saveError == null ? null : widget.errorText(context, saveError));
+    if (descriptor.explicitSave) {
+      return CatchField.inputActions(
+        icon: descriptor.icon,
+        title: descriptor.label,
+        placeholder: descriptor.placeholder,
+        emptyValueText: descriptor.emptyValueText,
+        inputHint: descriptor.inputHint,
+        controller: _controller,
+        open: widget.scope.isExpanded,
+        onOpenChanged: (_) => widget.scope.toggle(),
+        onCancel: () {
+          _controller.text = descriptor.currentValue;
+          _validationError = null;
+          _saveState.reset();
+          widget.scope.collapse();
+        },
+        onSubmit: _submit,
+        isLoading: _saveState.saving,
+        status: _saveState.status,
+        keyboardType: descriptor.keyboardType,
+        textInputAction: descriptor.maxLines == 1
+            ? TextInputAction.done
+            : TextInputAction.newline,
+        textCapitalization: descriptor.textCapitalization,
+        inputFormatters: descriptor.effectiveInputFormatters,
+        autofillHints: descriptor.autofillHints,
+        maxLines: descriptor.maxLines,
+        minLines: descriptor.minLines,
+        maxLength: descriptor.effectiveMaxLength,
+        enabled: !_saveState.saving,
+        error: error,
+        onSubmitted: descriptor.maxLines == 1 ? (_) => _submit() : null,
+      );
+    }
     return CatchField.input(
       icon: descriptor.icon,
       title: descriptor.label,
+      placeholder: descriptor.placeholder,
       emptyValueText: descriptor.emptyValueText,
       inputHint: descriptor.inputHint,
       leadingUnit: descriptor.leadingUnit,
@@ -557,11 +686,13 @@ class _CatchFormTextRowEditorState<P> extends State<CatchFormTextRowEditor<P>> {
       textInputAction: TextInputAction.done,
       textCapitalization: descriptor.textCapitalization,
       autofillHints: descriptor.autofillHints,
+      inputFormatters: descriptor.effectiveInputFormatters,
+      maxLines: descriptor.maxLines,
+      minLines: descriptor.minLines,
+      maxLength: descriptor.effectiveMaxLength,
       readOnly: _saveState.saving,
       status: _saveState.status,
-      error:
-          _validationError ??
-          (saveError == null ? null : widget.errorText(context, saveError)),
+      error: error,
       onFocusChanged: (focused) {
         _hasFocus = focused;
         if (!focused) unawaited(_submit());

@@ -444,7 +444,7 @@ class ExploreEventRowState {
       supportingLabel: _rowSupportingLabel(item),
       priceLabel: item.priceLabel,
       capacityLabel: _capacityLabel(item),
-      statusLabel: _cardStatusLabel(item),
+      statusLabel: _cardStatusLabel(item, l10n),
     );
   }
 
@@ -818,7 +818,7 @@ String _capacityLabel(ExploreEventItem item) {
   ).goingAvailabilityLabel(availabilityLabel: item.availabilityLabel);
 }
 
-String? _cardStatusLabel(ExploreEventItem item) {
+String? _cardStatusLabel(ExploreEventItem item, AppLocalizations l10n) {
   return switch (item.status) {
     EventTileStatus.open => _availabilityStatusLabel(item),
     EventTileStatus.recommended => _availabilityStatusLabel(item),
@@ -829,22 +829,27 @@ String? _cardStatusLabel(ExploreEventItem item) {
     EventTileStatus.attended ||
     EventTileStatus.past ||
     EventTileStatus.ineligible ||
-    EventTileStatus.cancelled => eventTileStatusLabel(item.status),
+    EventTileStatus.cancelled => eventTileStatusLabel(item.status, l10n),
     EventTileStatus.full => _availabilityStatusLabel(item),
   };
 }
 
 String? _availabilityStatusLabel(ExploreEventItem item) {
   final label = item.availabilityLabel?.trim();
-  if (label == null || label.isEmpty || label.toLowerCase() == 'open') {
+  if (label == null ||
+      label.isEmpty ||
+      label.toLowerCase() == _openAvailabilityValue) {
     return null;
   }
   if (RegExp(r'^\d+ spots? left$', caseSensitive: false).hasMatch(label)) {
     return null;
   }
-  if (label.toLowerCase() == 'full') return null;
+  if (label.toLowerCase() == _fullAvailabilityValue) return null;
   return label;
 }
+
+const _openAvailabilityValue = 'open';
+const _fullAvailabilityValue = 'full';
 
 String _externalEventSupportingLabel(ExploreExternalEventItem item) {
   final event = item.event;

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/format_utils.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +12,9 @@ class OnboardingRunningPrefsState {
     required this.runPreferencesOnly,
     required this.isCompleting,
     required this.completeErrorMessage,
+    required this.footerLabel,
+    required this.reasonLabel,
+    required this.runTimesLabel,
   });
 
   factory OnboardingRunningPrefsState.fromDraft({
@@ -18,6 +22,7 @@ class OnboardingRunningPrefsState {
     required Iterable<PreferredDistance> distances,
     required Iterable<RunReason> reasons,
     required Iterable<PreferredRunTime> runTimes,
+    required AppLocalizations l10n,
     bool runPreferencesOnly = false,
     bool isCompleting = false,
     String? completeErrorMessage,
@@ -30,6 +35,15 @@ class OnboardingRunningPrefsState {
       runPreferencesOnly: runPreferencesOnly,
       isCompleting: isCompleting,
       completeErrorMessage: completeErrorMessage,
+      footerLabel: runPreferencesOnly
+          ? l10n.onboardingRunningPrefsContinueBooking
+          : l10n.onboardingRunningPrefsSave,
+      reasonLabel: runPreferencesOnly
+          ? l10n.onboardingRunningPrefsBookingReasonLabel
+          : l10n.onboardingRunningPrefsReasonLabel,
+      runTimesLabel: runPreferencesOnly
+          ? l10n.onboardingRunningPrefsRunTimesLabel
+          : l10n.onboardingRunningPrefsEventTimesLabel,
     );
   }
 
@@ -40,15 +54,9 @@ class OnboardingRunningPrefsState {
   final bool runPreferencesOnly;
   final bool isCompleting;
   final String? completeErrorMessage;
-
-  String get footerLabel =>
-      runPreferencesOnly ? 'Continue booking' : 'Save run preferences';
-
-  String get reasonLabel =>
-      runPreferencesOnly ? 'Why do you run?' : 'WHY DO YOU RUN?';
-
-  String get runTimesLabel =>
-      runPreferencesOnly ? 'FAVOURITE RUN TIMES' : 'FAVOURITE EVENT TIMES';
+  final String footerLabel;
+  final String reasonLabel;
+  final String runTimesLabel;
 
   String get minPaceLabel => '${formatPace(paceRange.start)}/km';
 

@@ -328,13 +328,9 @@ class ProfileSurfaceRule extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Padding(
+    return const Padding(
       padding: CatchInsets.contentVertical,
-      child: ColoredBox(
-        color: t.line,
-        child: const SizedBox(height: CatchStroke.hairline),
-      ),
+      child: CatchDivider.section(),
     );
   }
 }

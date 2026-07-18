@@ -19,6 +19,7 @@ const _copyArgumentNames = <String>{
   'ctaLabel',
   'description',
   'detail',
+  'emptyMessage',
   'emptyBody',
   'emptyTitle',
   'errorMessage',
@@ -31,6 +32,10 @@ const _copyArgumentNames = <String>{
   'iterationQuestions',
   'kicker',
   'label',
+  'buttonLabel',
+  'confirmLabel',
+  'footerLabel',
+  'footnote',
   'linkLabel',
   'message',
   'note',
@@ -46,12 +51,14 @@ const _copyArgumentNames = <String>{
   'setupSteps',
   'subtitle',
   'successMessage',
+  'subject',
   'summary',
   'target',
   'text',
   'title',
   'tooltip',
   'validationMessage',
+  'validator',
   'wiringNotes',
 };
 
@@ -66,38 +73,82 @@ const _copyConstructors = <String>{
   'CatchNoticeData',
   'CatchPageHeader',
   'CatchSectionHeader',
+  'CatchShareCardFooter',
+  'CatchShareCardSheet',
   'CatchText',
+  'CelebrationDetail',
   'CupertinoActionSheetAction',
   'CupertinoDialogAction',
   'DropdownMenuEntry',
   'SnackBar',
   'Text',
   'TextSpan',
+  'showCatchSnackBar',
+  'showConfirmDangerDialog',
 };
 
 const _copyMemberNames = <String>{
+  'balanceLabel',
   'badgeLabel',
   'body',
   'bodyFor',
+  'cancelDetail',
+  'clusterLabel',
+  'countLabel',
+  'defaultAttendeePrompt',
   'description',
+  'deleteDetail',
   'displayLabel',
   'displayName',
+  'emptyCopy',
+  'emptyMessage',
   'emptyBody',
   'emptyTitle',
   'errorMessage',
+  'footerLabel',
   'helperText',
   'hintText',
+  'invalidScheduleMessage',
   'label',
   'message',
+  'missingStartingPointMessage',
   'name',
+  'peoplePerLabel',
   'placeholder',
+  'reasonLabel',
+  'runTimesLabel',
   'semanticLabel',
+  'setupHint',
+  'singularLabel',
   'subtitle',
   'successMessage',
   'title',
   'tooltip',
   'validationMessage',
 };
+
+const _technicalArgumentNames = <String>{
+  'analyticsSource',
+  'assetName',
+  'collection',
+  'fileName',
+  'fontFamily',
+  'heroTag',
+  'id',
+  'key',
+  'path',
+  'resource',
+  'routeName',
+};
+
+final _copyFunctionNameSuffix = RegExp(
+  r'(?:(?:Empty|Failure|Invite|Share|Status|Validation)(?:Copy|Description|Detail|Hint|Label|Message|Placeholder|Prompt|Subject|Text|Title|Tooltip)|Validator)$',
+);
+
+final _diagnosticName = RegExp(
+  r'(?:analytics|debug|diagnostic|exception|log|metric|trace|wire)',
+  caseSensitive: false,
+);
 
 final _visibleText = RegExp('[A-Za-z]');
 
@@ -288,12 +339,30 @@ class _CopyVisitor extends RecursiveAstVisitor<void> {
 
   @override
   void visitSimpleStringLiteral(SimpleStringLiteral node) {
+    AstNode? ancestor = node.parent;
+    while (ancestor != null) {
+      if (ancestor is StringInterpolation) {
+        // The enclosing interpolation is recorded as one actionable finding;
+        // do not also report plural suffixes or other nested fragments.
+        super.visitSimpleStringLiteral(node);
+        return;
+      }
+      ancestor = ancestor.parent;
+    }
     _inspect(node, node.value);
     super.visitSimpleStringLiteral(node);
   }
 
   @override
   void visitStringInterpolation(StringInterpolation node) {
+    final literalText = node.elements
+        .whereType<InterpolationString>()
+        .map((element) => element.value)
+        .join();
+    if (!_visibleText.hasMatch(literalText)) {
+      super.visitStringInterpolation(node);
+      return;
+    }
     _inspect(node, node.toSource());
     super.visitStringInterpolation(node);
   }
@@ -302,7 +371,7 @@ class _CopyVisitor extends RecursiveAstVisitor<void> {
     final text = value.replaceAll(RegExp(r'\s+'), ' ').trim();
     if (!_visibleText.hasMatch(text)) return;
     if (RegExp(r'^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+$').hasMatch(text)) return;
-    final context = _copyContext(node);
+    final context = _copyContext(node, text);
     if (context == null || _hasInlineAllowance(node)) return;
     final location = unit.lineInfo.getLocation(node.offset);
     findings.add(
@@ -316,12 +385,21 @@ class _CopyVisitor extends RecursiveAstVisitor<void> {
     );
   }
 
-  String? _copyContext(AstNode node) {
+  String? _copyContext(AstNode node, String text) {
+    // AppException messages are diagnostic fallbacks. Presentation adapters
+    // localize them before display, so treating their constructor defaults as
+    // product copy would invert the ownership boundary.
+    if (file.startsWith('lib/exceptions/')) return null;
     AstNode? diagnosticAncestor = node.parent;
     while (diagnosticAncestor != null) {
+      if (diagnosticAncestor is ThrowExpression ||
+          diagnosticAncestor is AssertStatement ||
+          diagnosticAncestor is ConstantPattern) {
+        return null;
+      }
       if (diagnosticAncestor is InstanceCreationExpression &&
-          diagnosticAncestor.constructorName.type.name.lexeme.endsWith(
-            'Exception',
+          _isDiagnosticConstructor(
+            diagnosticAncestor.constructorName.type.name.lexeme,
           )) {
         return null;
       }
@@ -333,6 +411,7 @@ class _CopyVisitor extends RecursiveAstVisitor<void> {
       if (parent == null) break;
       if (parent is NamedExpression) {
         final name = parent.name.label.name;
+        if (_technicalArgumentNames.contains(name)) return null;
         final argumentList = parent.parent;
         final invocation = argumentList is ArgumentList
             ? argumentList.parent
@@ -352,7 +431,9 @@ class _CopyVisitor extends RecursiveAstVisitor<void> {
             invocation.constructorName.type.name.lexeme.endsWith('Exception')) {
           return null;
         }
-        if (_copyArgumentNames.contains(name)) return 'argument:$name';
+        if (_copyArgumentNames.contains(name)) {
+          return 'argument:$name';
+        }
       }
       if (parent is ArgumentList) {
         final invocation = parent.parent;
@@ -362,6 +443,14 @@ class _CopyVisitor extends RecursiveAstVisitor<void> {
         } else if (invocation is MethodInvocation) {
           final name = invocation.methodName.name;
           if (_copyConstructors.contains(name)) return 'constructor:$name';
+          if (name == 'add') {
+            current = parent;
+            continue;
+          }
+        } else if (invocation is EnumConstantArguments &&
+            file.startsWith('lib/event_success/domain/') &&
+            _looksLikeEnumDisplayCopy(text)) {
+          return 'enum:display-argument';
         }
         // A string nested inside a non-UI helper call is normally a wire key,
         // parser field name, or other implementation detail. The enclosing
@@ -370,19 +459,73 @@ class _CopyVisitor extends RecursiveAstVisitor<void> {
         return null;
       }
       if (parent is IndexExpression) return null;
-      if (parent is VariableDeclaration &&
-          _copyMemberNames.contains(parent.name.lexeme)) {
-        return 'variable:${parent.name.lexeme}';
+      if (parent is DefaultFormalParameter) {
+        final name = parent.parameter.name?.lexeme;
+        if (name != null && _isCopyMemberName(name)) {
+          return 'default:$name';
+        }
       }
-      if (parent is MethodDeclaration &&
-          _copyMemberNames.contains(parent.name.lexeme)) {
-        return 'member:${parent.name.lexeme}';
+      if (parent is ConstructorFieldInitializer) {
+        final name = parent.fieldName.name;
+        if (_isCopyMemberName(name)) return 'initializer:$name';
+      }
+      if (parent is VariableDeclaration) {
+        final name = parent.name.lexeme;
+        if (_isCopyMemberName(name)) return 'variable:$name';
+      }
+      if (parent is MethodDeclaration) {
+        final name = parent.name.lexeme;
+        if (_isCopyMemberName(name) || _isCopyFunctionName(name)) {
+          return 'member:$name';
+        }
+      }
+      if (parent is FunctionDeclaration) {
+        final name = parent.name.lexeme;
+        if (_isCopyFunctionName(name)) return 'function:$name';
       }
       if (parent is FieldDeclaration) break;
       if (parent is CompilationUnit) break;
       current = parent;
     }
     return null;
+  }
+
+  bool _isCopyMemberName(String name) {
+    if (_diagnosticName.hasMatch(name)) return false;
+    return _copyMemberNames.contains(name);
+  }
+
+  bool _isCopyFunctionName(String name) {
+    if (_diagnosticName.hasMatch(name)) return false;
+    return const {
+          '_admissionDefaultDescription',
+          '_admissionDefaultLabel',
+          '_optionalEmailValidator',
+          '_requiredDisplayName',
+          '_suggestionLabel',
+          '_spotsLabel',
+          'validateOptionalEmail',
+          'subject',
+        }.contains(name) ||
+        RegExp(r'^validate[A-Z]').hasMatch(name) ||
+        _copyFunctionNameSuffix.hasMatch(name);
+  }
+
+  bool _looksLikeEnumDisplayCopy(String text) {
+    if (RegExp(r'^[a-z][a-z0-9]*(?:[_-][a-z0-9]+)*$').hasMatch(text)) {
+      return false;
+    }
+    return RegExp(r'\s').hasMatch(text) || RegExp(r'^[A-Z]').hasMatch(text);
+  }
+
+  bool _isDiagnosticConstructor(String name) {
+    return name.endsWith('Exception') ||
+        const {
+          'ArgumentError',
+          'AssertionError',
+          'StateError',
+          'UnsupportedError',
+        }.contains(name);
   }
 
   bool _hasInlineAllowance(AstNode node) {
@@ -491,6 +634,67 @@ const route = '/events';
       texts.contains('/events') ||
       findings.length != 2) {
     throw StateError('Mobile copy scanner self-test failed: $findings');
+  }
+  const missedShapesSource = r'''
+enum DisplayMode {
+  compact('Compact', 'A concise product description.'),
+  wire('wire_value', 'wire_value_2');
+  const DisplayMode(this.label, this.description);
+  final String label;
+  final String description;
+}
+
+String shareInviteText(String name) => 'Join me at $name';
+String validateDisplayName(String? value) => 'Enter a display name.';
+
+class DisplayState {
+  const DisplayState({this.footerLabel = 'Save changes'});
+  const DisplayState.host() : footerLabel = 'Host inbox';
+  final String footerLabel;
+  String get emptyMessage => 'Nothing here yet.';
+}
+
+Widget buildForm(BuildContext context) => Column(children: [
+  CatchField.input(
+    validator: (_) => 'Please choose your city',
+  ),
+  CatchButton(
+    label: helper('wire-key'),
+  ),
+  Builder(
+    builder: (_) {
+      showCatchSnackBar(context, 'Account unblocked.');
+      return const SizedBox.shrink();
+    },
+  ),
+]);
+''';
+  final missedShapeFindings = scanDartSource(
+    'lib/event_success/domain/example_missed_shapes.dart',
+    missedShapesSource,
+  );
+  final missedShapeTexts = missedShapeFindings
+      .map((finding) => finding.text)
+      .toSet();
+  const expectedMissedShapeTexts = {
+    'Compact',
+    'A concise product description.',
+    r"'Join me at $name'",
+    'Enter a display name.',
+    'Save changes',
+    'Host inbox',
+    'Nothing here yet.',
+    'Please choose your city',
+    'Account unblocked.',
+  };
+  if (!missedShapeTexts.containsAll(expectedMissedShapeTexts) ||
+      missedShapeTexts.contains('wire_value') ||
+      missedShapeTexts.contains('wire_value_2') ||
+      missedShapeTexts.contains('wire-key')) {
+    throw StateError(
+      'Mobile copy scanner missed extended UI-copy shapes: '
+      '$missedShapeFindings',
+    );
   }
   const exceptionSource = '''
 void fail() => throw BackendOperationException(

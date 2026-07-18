@@ -292,7 +292,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
   }
 
   Future<void> _selectSuggestion(PlaceAutocompleteSuggestion suggestion) async {
-    final label = _suggestionLabel(suggestion);
+    final label = _suggestionLabel(suggestion, context.l10n);
     setState(() {
       _pendingSuggestion = suggestion;
       _suggestions = const [];
@@ -338,17 +338,20 @@ String? _trimToNull(String? value) {
   return trimmed;
 }
 
-String _suggestionLabel(PlaceAutocompleteSuggestion suggestion) {
+String _suggestionLabel(
+  PlaceAutocompleteSuggestion suggestion,
+  AppLocalizations l10n,
+) {
   if (suggestion.mainText.isNotEmpty) return suggestion.mainText;
   if (suggestion.description.isNotEmpty) return suggestion.description;
-  return 'selected place';
+  return l10n.eventsLocationPickerSelectedPlace;
 }
 
 String _placeSearchFailureText(AppLocalizations l10n, Object error) {
   return _locationPickerFailureText(
     l10n,
     error,
-    fallback: 'Could not search places. Try again.',
+    fallback: l10n.eventsLocationPickerSearchFailure,
   );
 }
 
@@ -356,7 +359,7 @@ String _placeDetailsFailureText(AppLocalizations l10n, Object error) {
   return _locationPickerFailureText(
     l10n,
     error,
-    fallback: 'Could not load that place. Try another result.',
+    fallback: l10n.eventsLocationPickerDetailsFailure,
   );
 }
 

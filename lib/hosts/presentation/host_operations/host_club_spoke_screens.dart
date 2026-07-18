@@ -129,7 +129,7 @@ class HostClubSpokeScaffold extends StatelessWidget {
         top: false,
         bottom: false,
         child: ListView(
-          padding: CatchInsets.pageBodyUnderHeader.copyWith(bottom: 0),
+          padding: CatchInsets.pageBody.copyWith(bottom: 0),
           children: [
             Center(
               child: ConstrainedBox(
@@ -252,8 +252,14 @@ class HostClubReadOnlyEventDefaults extends StatelessWidget {
         ),
         CatchField.read(
           title: context.l10n.hostsHostClubProfileTitleAdmission,
-          body: _admissionDefaultDescription(policy.admissionPreset),
-          valueText: _admissionDefaultLabel(policy.admissionPreset),
+          body: _admissionDefaultDescription(
+            policy.admissionPreset,
+            context.l10n,
+          ),
+          valueText: _admissionDefaultLabel(
+            policy.admissionPreset,
+            context.l10n,
+          ),
           icon: CatchIcons.eventSeatOutlined,
         ),
         CatchField.read(

@@ -117,10 +117,10 @@ test("flags thin feature wrappers around CatchSection field rows", () => {
 
 test("flags feature row groups that manually assign sibling field dividers", () => {
   const findings = scanSourceForSectionDividers({
-    relativePath: "lib/hosts/presentation/host_operations/host_account_screen.dart",
+    relativePath: "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
     source: [
-      "class HostSettingsClubRows extends StatelessWidget {",
-      "  const HostSettingsClubRows({required this.clubs});",
+      "class HostTeamClubRows extends StatelessWidget {",
+      "  const HostTeamClubRows({required this.clubs});",
       "  final List<Club> clubs;",
       "  @override",
       "  Widget build(BuildContext context) => Column(children: [",
@@ -142,7 +142,7 @@ test("flags feature row groups that manually assign sibling field dividers", () 
 
 test("allows CatchSection field rows to own sibling dividers", () => {
   const findings = scanSourceForSectionDividers({
-    relativePath: "lib/hosts/presentation/host_operations/host_account_screen.dart",
+    relativePath: "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
     source: [
       "CatchSection.fieldRows(",
       "  title: 'Clubs you host',",
@@ -150,6 +150,37 @@ test("allows CatchSection field rows to own sibling dividers", () => {
       "    for (final club in clubs)",
       "      CatchField.nav(title: 'Owner'),",
       "  ],",
+      ")",
+    ].join("\n"),
+  });
+
+  assert.equal(findings.length, 0);
+});
+
+test("flags custom CatchField leading content without a declared extent", () => {
+  const findings = scanSourceForSectionDividers({
+    relativePath: "lib/hosts/presentation/host_operations/host_events_list.dart",
+    source: [
+      "CatchField.nav(",
+      "  title: 'Saturday Evening Run',",
+      "  leading: HostEventLifecycleDateBlock(day: '23'),",
+      ")",
+    ].join("\n"),
+  });
+
+  assert.equal(findings.length, 1);
+  assert.equal(findings[0].level, "high");
+  assert.equal(findings[0].rule, "FIELD-LEADING-001");
+});
+
+test("allows custom CatchField leading content with a declared extent", () => {
+  const findings = scanSourceForSectionDividers({
+    relativePath: "lib/hosts/presentation/host_operations/host_events_list.dart",
+    source: [
+      "CatchField.nav(",
+      "  title: 'Saturday Evening Run',",
+      "  leading: HostEventLifecycleDateBlock(day: '23'),",
+      "  leadingExtent: 48,",
       ")",
     ].join("\n"),
   });

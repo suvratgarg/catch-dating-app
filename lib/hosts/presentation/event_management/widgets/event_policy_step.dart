@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_age_range_field.dart';
 import 'package:catch_dating_app/hosts/presentation/validators.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -136,17 +137,15 @@ class EventPolicyStep extends StatelessWidget {
                       return null;
                     },
                   ),
-                  CatchField.choices<EventAdmissionPreset>(
+                  CatchField.optionCards<EventAdmissionPreset>(
                     title:
                         context.l10n.hostsEventPolicyStepLabelAdmissionFormat,
-                    body: admissionPreset.description(context.l10n),
                     values: EventAdmissionPreset.values,
-                    itemLabel: (preset) => preset.label(context.l10n),
-                    selected: <EventAdmissionPreset>{admissionPreset},
-                    onSelectionChanged: (selection) {
-                      onAdmissionPresetChanged(selection.single);
-                    },
-                    initiallyOpen: true,
+                    itemTitle: (preset) => preset.title(context.l10n),
+                    itemDescription: (preset) =>
+                        preset.description(context.l10n),
+                    selected: admissionPreset,
+                    onChanged: onAdmissionPresetChanged,
                     icon: CatchIcons.howToRegOutlined,
                   ),
                   if (admissionPreset == EventAdmissionPreset.inviteOnly)
@@ -170,7 +169,7 @@ class EventPolicyStep extends StatelessWidget {
                       ],
                       validator:
                           admissionPreset == EventAdmissionPreset.inviteOnly
-                          ? inviteCodeValidator
+                          ? (value) => inviteCodeValidator(value, context.l10n)
                           : null,
                     ),
                   if (admissionPreset == EventAdmissionPreset.openCapacity) ...[
@@ -204,7 +203,10 @@ class EventPolicyStep extends StatelessWidget {
                             ],
                             textInputAction: TextInputAction.next,
                             validator: cohortCapsEnabled
-                                ? positiveOptionalValidator
+                                ? (value) => positiveOptionalValidator(
+                                    value,
+                                    context.l10n,
+                                  )
                                 : null,
                           ),
                           CatchField.input(
@@ -224,7 +226,10 @@ class EventPolicyStep extends StatelessWidget {
                             ],
                             textInputAction: TextInputAction.next,
                             validator: cohortCapsEnabled
-                                ? positiveOptionalValidator
+                                ? (value) => positiveOptionalValidator(
+                                    value,
+                                    context.l10n,
+                                  )
                                 : null,
                           ),
                         ],
@@ -269,7 +274,10 @@ class EventPolicyStep extends StatelessWidget {
                             ],
                             textInputAction: TextInputAction.next,
                             validator: dynamicPricingEnabled
-                                ? positiveRequiredValidator
+                                ? (value) => positiveRequiredValidator(
+                                    value,
+                                    context.l10n,
+                                  )
                                 : null,
                           ),
                           CatchField.input(
@@ -287,56 +295,30 @@ class EventPolicyStep extends StatelessWidget {
                             ],
                             textInputAction: TextInputAction.next,
                             validator: dynamicPricingEnabled
-                                ? positiveRequiredValidator
+                                ? (value) => positiveRequiredValidator(
+                                    value,
+                                    context.l10n,
+                                  )
                                 : null,
                           ),
                         ],
                       ),
                   ],
-                  CatchField.input(
+                  EventAgeRangeField(
                     key: CreateEventFormKeys.minAge,
-                    title: context.l10n.hostsEventPolicyStepTitleMinAge,
-                    isOptional: true,
-                    controller: minAgeController,
-                    inputHint: context.l10n.hostsEventPolicyStepPlaceholderMin,
-                    icon: CatchIcons.cakeOutlined,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    textInputAction: TextInputAction.next,
-                    validator: (value) => validateAge(
-                      value,
-                      siblingController: maxAgeController,
-                      isMinimum: true,
-                    ),
+                    minAgeController: minAgeController,
+                    maxAgeController: maxAgeController,
                   ),
-                  CatchField.input(
-                    key: CreateEventFormKeys.maxAge,
-                    title: context.l10n.hostsEventPolicyStepTitleMaxAge,
-                    isOptional: true,
-                    controller: maxAgeController,
-                    inputHint: context.l10n.hostsEventPolicyStepPlaceholderMax,
-                    icon: CatchIcons.cakeOutlined,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    textInputAction: TextInputAction.next,
-                    validator: (value) => validateAge(
-                      value,
-                      siblingController: minAgeController,
-                      isMinimum: false,
-                    ),
-                  ),
-                  CatchField.choices<EventCancellationPolicyId>(
+                  CatchField.optionCards<EventCancellationPolicyId>(
                     title: context
                         .l10n
                         .hostsEventPolicyStepLabelCancellationPolicy,
-                    body: policyFor(cancellationPolicyId).attendeeSummary,
                     values: EventCancellationPolicyId.values,
-                    itemLabel: (policyId) =>
-                        policyFor(policyId).title.toUpperCase(),
-                    selected: <EventCancellationPolicyId>{cancellationPolicyId},
-                    onSelectionChanged: (selection) {
-                      onCancellationPolicyChanged(selection.single);
-                    },
+                    itemTitle: (policyId) => policyFor(policyId).title,
+                    itemDescription: (policyId) =>
+                        policyFor(policyId).attendeeSummary,
+                    selected: cancellationPolicyId,
+                    onChanged: onCancellationPolicyChanged,
                     icon: CatchIcons.ruleOutlined,
                   ),
                 ],

@@ -9,6 +9,8 @@ const rawDividerPattern = /\b(?:Divider|VerticalDivider)\s*\(/gu;
 const rawHairlineBoxPattern =
   /ColoredBox\s*\([\s\S]{0,220}CatchStroke\.hairline/gu;
 const sectionCallPattern = /\bCatchSection\.divided\s*\(/gu;
+const customFieldLeadingPattern =
+  /\bCatchField\.(?:read|content|nav|action)\s*\(/gu;
 const thinSectionWrapperPattern =
   /\bclass\s+([A-Za-z_]\w*)\s+extends\s+StatelessWidget\s*\{/gu;
 const allowedRawDividerFiles = new Set([
@@ -64,6 +66,26 @@ export function scanSourceForSectionDividers({relativePath, source}) {
         rule: "SECTION-DIVIDER-001",
         reason:
           "CatchSection.divided row groups should use the default field-row divider role or internalDividerRole, not caller-owned internalDividerColor.",
+        expression: compactWhitespace(expression),
+      });
+    }
+  }
+
+  customFieldLeadingPattern.lastIndex = 0;
+  for (const match of maskedSource.matchAll(customFieldLeadingPattern)) {
+    const start = match.index ?? 0;
+    const openParen = maskedSource.indexOf("(", start);
+    const end = findBalancedClose(maskedSource, openParen);
+    if (end == null) continue;
+    const expression = source.slice(start, end + 1);
+    if (/\bleading\s*:/u.test(expression) && !/\bleadingExtent\s*:/u.test(expression)) {
+      findings.push({
+        path: relativePath,
+        line: lineForOffset(source, start),
+        level: "high",
+        rule: "FIELD-LEADING-001",
+        reason:
+          "Custom CatchField leading content must declare leadingExtent so text lanes and section dividers share the same geometry.",
         expression: compactWhitespace(expression),
       });
     }
@@ -362,7 +384,8 @@ function printHelp() {
   node tool/design/check_section_dividers.mjs --json
 
 Reports raw divider and section-row divider patterns that should route through
-CatchDivider or CatchSection divider roles.
+CatchDivider or CatchSection divider roles, plus custom CatchField leading
+content whose text-lane extent is not declared.
 `);
 }
 

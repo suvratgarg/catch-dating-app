@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.4.32
-updated: 2026-07-17
+version: 1.4.37
+updated: 2026-07-18
 owner: recursive_audit_loop
 status: active
 ---
@@ -349,6 +349,14 @@ bottom spacers. When a route uses this terminal sliver inside a `SafeArea`, the
 screen-level `SafeArea` must leave `bottom: false` so the device bottom inset
 remains visible to the sliver and becomes scrollable clearance.
 
+`AppShellBottomBarPlacement` is the shell-to-scroll-owner contract:
+`floating` publishes the complete physical obstruction and terminal padding
+consumes it; `anchored` means the scaffold already reduced the body viewport,
+so only the requested breathing room is added; `none` (and routes outside a
+shell) falls back to the larger of the device padding and view padding. Product
+screens consume that contract through `CatchScrollTerminalPadding` or
+`CatchSliverTerminalPadding`; they never read safe-area bottom values directly.
+
 Software-keyboard visibility is defined by `MediaQuery.viewInsets.bottom > 0`,
 not by focus. While that inset is nonzero, both `AppShell` and `HostAppShell`
 omit authenticated navigation, the consumer shell also omits its guest auth
@@ -398,6 +406,9 @@ Use semantic inset contracts for repeated shells:
 - `CatchInsets.pageBodyTight`, `CatchInsets.pageBodyRelaxedTight`, and
   `CatchInsets.pageBodyUnderHeader` when local chrome or dense headers already
   provide some top separation.
+- Loading skeletons inherit the same semantic body inset as the loaded branch.
+  A loading state is not, by itself, permission to substitute
+  `pageBodyUnderHeader` and collapse the app-bar-to-content rhythm.
 - `CatchInsets.pageHeaderBody`, `CatchInsets.pageHeaderCompact`, and
   `CatchInsets.sectionHeader` for page intro rows and compact rail/list headers.
 - `CatchInsets.pageHorizontal` and `CatchInsets.pageHorizontalWide` when a
@@ -499,6 +510,11 @@ Prefer box layout for auth, onboarding, create/edit forms, bottom sheets,
 dialogs, short settings pages, and small reusable widgets that need to work
 inside more than one scroll context.
 
+When a box-layout root branch renders a terminal empty or error state inside a
+floating app shell, wrap the state in `CatchStateViewport`. It subtracts the
+shell's published bottom obstruction from the optical center. Do not add a
+feature-local `Center`, spacer, or bottom padding to compensate for tab chrome.
+
 Sliver rules:
 
 - Direct children of `CustomScrollView.slivers` must be slivers.
@@ -506,8 +522,12 @@ Sliver rules:
 - Use `SliverList.builder`, `SliverList.separated`, or `SliverGrid` for
   repeated content that can grow.
 - Avoid a vertical `ListView` or large `Column` inside `SliverToBoxAdapter`.
-- Use `SliverFillRemaining(hasScrollBody: false)` for centered empty/error
-  states, not for tall skeletons or arbitrary content.
+- Use `CatchSliverStateViewport`, `CatchSliverEmptyState`, or
+  `CatchSliverErrorState` for centered sliver empty/error states. They preserve
+  responsive overflow and subtract the floating shell's published bottom
+  obstruction from the optical center through the same `CatchStateViewport`
+  geometry as box screens. Do not compose a feature-local
+  `SliverFillRemaining` around `CatchEmptyState` or `CatchErrorState`.
 - If a parent owns a sliver scroll view, async loading/error/empty/data state
   widgets should usually return slivers too.
 
@@ -633,7 +653,7 @@ empty, retry, stale data, and mutation failure are handled.
 | Full-screen initial load | Screen | `CatchAsyncValueView`, `CatchErrorScaffold`, or typed screen-state adapter |
 | Sliver initial load | Screen/sliver body | `CatchAsyncValueSliver`, `CatchSliverErrorState`, or typed sliver adapter |
 | Section-level load | Section widget or view model | `CatchInlineErrorState`, section skeleton, section retry |
-| Empty success | Screen/body/section | `CatchEmptyState` or domain-specific empty widget, never an error primitive |
+| Empty success | Screen/body/section | `CatchEmptyState`, `CatchSliverEmptyState`, or a domain-specific empty widget, never an error primitive |
 | Mutation/action pending | Controller mutation + UI affordance | disabled control, spinner, optimistic state when intentional |
 | Mutation/action failure | Screen or section | `CatchMutationErrorBanner`, `CatchMutationErrorListener(s)`, or `showCatchErrorSnackBar` |
 | Form validation | Form/controller/domain validator | field error text or inline form banner |
@@ -1461,6 +1481,15 @@ zero-use ARB keys fail immediately, and the checked key-usage inventory must
 match the current catalog and handwritten Dart sources. An allowlist entry is
 only appropriate for a technical identifier, test/demo fixture, or
 user-authored value and must contain a narrow reason.
+
+The ownership gate covers more than direct `Text(...)` calls: copy-shaped
+named arguments, default parameters and constructor initializers,
+presentation-state members, validation/share/status helpers, snackbar and
+confirmation helpers, and Event Success display-enum arguments are all
+enforced. Interpolation-only compositions of already-localized values, switch
+wire patterns, exception diagnostics, and generated sources are excluded so
+the gate reports actionable ownership violations instead of protocol strings.
+Its seeded self-test must grow whenever a newly discovered AST shape is added.
 
 Presentation models may contain resolved `String` fields, but any factory that
 creates user-visible prose must accept `AppLocalizations` explicitly. Widgets
@@ -2316,7 +2345,9 @@ Reference files:
 - `lib/core/forms/catch_form_descriptors.dart`
 - `lib/user_profile/presentation/self_profile_edit_tab_state.dart`
 - `lib/user_profile/presentation/widgets/profile_tab.dart`
+- `lib/hosts/presentation/host_operations/host_club_edit_tab.dart`
 - `test/core/forms/catch_form_descriptors_test.dart`
+- `test/core/forms/contract_alignment_test.dart`
 - `test/profile/self_profile_edit_tab_state_test.dart`
 
 Use this pattern when multiple form surfaces need the same row mapping,
@@ -2327,9 +2358,10 @@ wiring, pending/error presentation, and one `Future<bool> Function(P)` save
 delegate. Product-specific controls use `CatchFormCustomRow<P>` and the
 provided scope instead of adding feature policy to core.
 
-The consumer Profile About You section is the reference prototype. Do not
-migrate its Running/Lifestyle sections, Host Club editing, or onboarding until
-the prototype API receives owner review; those remain tracker candidates.
+The consumer Profile About You section remains the reference prototype. Host
+Club Identity and Contact are the first promoted adopter: both sections use
+typed `UpdateClubPatch` descriptors, schema-derived field constraints, and one
+save delegate. Running/Lifestyle and onboarding remain tracker candidates.
 
 ```dart
 CatchFormRowList<UpdateUserProfilePatch>(

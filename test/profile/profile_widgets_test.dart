@@ -10,6 +10,8 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart'
     show CatchFieldTokens, CatchInsets, CatchLayout, CatchMotion, CatchTokens;
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
@@ -28,6 +30,7 @@ import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
+import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab.dart';
@@ -299,6 +302,64 @@ final _perfectRunPromptTitle = profilePromptDefinition(
 ).title;
 
 void main() {
+  testWidgets(
+    'Profile terminal empty and error branches use shell-aware placement',
+    (tester) async {
+      Future<void> pumpState(SelfProfileScreenState state) async {
+        final previewScrollController = ScrollController();
+        addTearDown(previewScrollController.dispose);
+        await tester.pumpWidget(
+          ProviderScope(
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: AppShellActiveTab(
+                index: appShellProfileTabIndex,
+                bottomBarPlacement: AppShellBottomBarPlacement.floating,
+                bottomOverlayInset: _profileBottomOverlayInset,
+                child: Scaffold(
+                  body: DefaultTabController(
+                    length: 3,
+                    child: Builder(
+                      builder: (context) => SelfProfileTabBody(
+                        state: state,
+                        controller: DefaultTabController.of(context),
+                        previewScrollController: previewScrollController,
+                        onPreviewForwardScroll: (delta) => delta,
+                        onPreviewLeadingOverscroll: (_) {},
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+      }
+
+      await pumpState(
+        const SelfProfileScreenState(
+          status: SelfProfileRouteStatus.unavailable,
+          uploadState: (loadingIndices: <int>{}, uploadError: null),
+          mutationMode: SelfProfileMutationMode.idle,
+        ),
+      );
+      expect(find.byType(CatchStateViewport), findsOneWidget);
+      expect(find.byType(CatchEmptyState), findsOneWidget);
+
+      await pumpState(
+        SelfProfileScreenState(
+          status: SelfProfileRouteStatus.error,
+          error: StateError('profile failed'),
+          uploadState: const (loadingIndices: <int>{}, uploadError: null),
+          mutationMode: SelfProfileMutationMode.idle,
+        ),
+      );
+      expect(find.byType(CatchStateViewport), findsOneWidget);
+      expect(find.bySubtype<CatchErrorState>(), findsOneWidget);
+    },
+  );
+
   testWidgets('ProfileScreen renders tab-shaped skeletons while loading', (
     tester,
   ) async {
@@ -1129,8 +1190,8 @@ void main() {
       );
       final genderTile = tester.widget<CatchField>(_profileInfoTile('Gender'));
 
-      expect(displayNameTile.mode, CatchFieldMode.edit);
       expect(displayNameTile.enabled, isTrue);
+      expect(displayNameTile.controller, isNotNull);
       expect(displayNameTile.showClearButton, isTrue);
       expect(
         find.descendant(
@@ -1140,9 +1201,9 @@ void main() {
         findsWidgets,
       );
       expect(find.text('Name'), findsNothing);
-      expect(dobTile.mode, CatchFieldMode.read);
+      expect(dobTile.controller, isNull);
       expect(dobTile.onTap, isNull);
-      expect(genderTile.mode, CatchFieldMode.read);
+      expect(genderTile.controller, isNull);
       expect(genderTile.onTap, isNull);
       expect(
         find.descendant(
@@ -1172,8 +1233,8 @@ void main() {
       final instagramTile = tester.widget<CatchField>(
         _profileInfoTile('Instagram'),
       );
-      expect(instagramTile.mode, CatchFieldMode.edit);
       expect(instagramTile.enabled, isTrue);
+      expect(instagramTile.controller, isNotNull);
       expect(instagramTile.leadingUnit, '@');
       expect(instagramTile.showClearButton, isTrue);
       expect(find.text('@'), findsOneWidget);

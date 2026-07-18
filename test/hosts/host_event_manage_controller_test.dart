@@ -7,6 +7,7 @@ import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/labs/design_fixtures/host_operations_fixtures.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/services.dart';
@@ -143,6 +144,7 @@ void main() {
       club: club,
       event: event,
       inviteLink: 'https://catchdates.com/events/e-1?invite=VIP123',
+      l10n: AppLocalizationsEn(),
     );
 
     expect(sharedParams?.subject, contains(event.title));

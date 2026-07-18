@@ -220,40 +220,23 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
             context: AppErrorContext.club,
           )
         : null;
-    const cityFieldName = HostClubEditFieldKeys.location;
-    final cityOptions = <HostInlineOption<String>>[
+    final cityOptions = <_HostClubCityOption>[
       for (final city in defaultCityOptions.where((city) => city.hostCreatable))
-        HostInlineOption(value: city.effectiveMarketId, label: city.label),
+        _HostClubCityOption(value: city.effectiveMarketId, label: city.label),
       if (!defaultCityOptions.any(
         (city) => city.hostCreatable && city.effectiveMarketId == club.location,
       ))
-        HostInlineOption(value: club.location, label: cityLabel(club.location)),
+        _HostClubCityOption(
+          value: club.location,
+          label: cityLabel(club.location),
+        ),
     ];
-    final cityEntry = !widget.isOwner
-        ? CatchField.read(
-            title: context.l10n.hostsHostClubProfileLabelCity,
-            valueText: cityLabel(club.location),
-            icon: CatchIcons.locationCityOutlined,
-          )
-        : HostInlineOptionEditor<String>(
-            key: const ValueKey('host-inline-location'),
-            clubId: club.id,
-            icon: CatchIcons.locationCityOutlined,
-            label: context.l10n.hostsHostClubProfileLabelCity,
-            value: cityLabel(club.location),
-            currentValue: club.location,
-            fieldName: cityFieldName,
-            isExpanded: _fieldAccordion.isExpanded(cityFieldName),
-            options: cityOptions,
-            patchForValue: (value) => UpdateClubPatch(location: value),
-            onTap: () => _fieldAccordion.toggle(cityFieldName),
-            onSaved: _fieldAccordion.collapse,
-            onCancel: _fieldAccordion.collapse,
-          );
     final eventSuccess = club.hostDefaults.eventSuccessForActivity(
       club.hostDefaults.primaryActivityKind,
     );
     final hostCount = club.displayHostProfiles.length;
+    final identityRows = _identityRows(context, club, cityOptions);
+    final contactRows = _contactRows(context, club);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,149 +248,54 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
                 completedCount: _mediaDrafts.length,
                 maximumClubPhotoCount: maxClubPhotos,
               ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              CreateClubProfileImagePicker(
-                imageBytes: _pickedLogo?.bytes,
-                existingImageUrl: club.profileImageUrl,
-                onTap: mediaPending ? null : _pickLogo,
-                variant: CreateClubProfileImagePickerVariant.editLogo,
-              ),
-              gapH20,
-              CreateClubPhotosPicker(
-                photos: [for (final draft in _mediaDrafts) draft.preview],
-                existingImageUrl: _mediaDrafts.isEmpty ? club.imageUrl : null,
-                onAddPhotos:
-                    mediaPending || _mediaDrafts.length >= maxClubPhotos
-                    ? null
-                    : _pickPhotos,
-                onRemovePhoto: mediaPending ? null : _removePhoto,
-                onReorderPhoto: mediaPending ? null : _reorderPhoto,
-                variant: CreateClubPhotosPickerVariant.editStrip,
-              ),
-              if (mediaError != null) ...[
-                gapH12,
-                CatchFieldSupportRow(
-                  text: mediaError,
-                  color: CatchTokens.of(context).danger,
-                  showErrorIcon: true,
+          child: Padding(
+            padding: CatchInsets.fieldSectionChildTop,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CreateClubProfileImagePicker(
+                  imageBytes: _pickedLogo?.bytes,
+                  existingImageUrl: club.profileImageUrl,
+                  onTap: mediaPending ? null : _pickLogo,
+                  variant: CreateClubProfileImagePickerVariant.editLogo,
                 ),
+                gapH20,
+                CreateClubPhotosPicker(
+                  photos: [for (final draft in _mediaDrafts) draft.preview],
+                  existingImageUrl: _mediaDrafts.isEmpty ? club.imageUrl : null,
+                  onAddPhotos:
+                      mediaPending || _mediaDrafts.length >= maxClubPhotos
+                      ? null
+                      : _pickPhotos,
+                  onRemovePhoto: mediaPending ? null : _removePhoto,
+                  onReorderPhoto: mediaPending ? null : _reorderPhoto,
+                  variant: CreateClubPhotosPickerVariant.editStrip,
+                ),
+                if (mediaError != null) ...[
+                  gapH12,
+                  CatchFieldSupportRow(
+                    text: mediaError,
+                    color: CatchTokens.of(context).danger,
+                    showErrorIcon: true,
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
-        CatchSection.fieldRows(
+        CatchFormRowList<UpdateClubPatch>(
           title: context.l10n.hostsHostClubProfileTitleIdentity,
-          children: [
-            HostClubInlineTextEntry._(
-              club: club,
-              isOwner: widget.isOwner,
-              accordion: _fieldAccordion,
-              fieldName: HostClubEditFieldKeys.name,
-              label: context.l10n.hostsHostClubProfileLabelClubName,
-              value: club.name,
-              currentValue: club.name,
-              icon: CatchIcons.groups3Outlined,
-              validator: _requiredHostFieldValidator(
-                context.l10n.hostsHostClubProfileVisiblecopyClubName,
-              ),
-              normalizeInput: _normalizeSingleLineInput,
-              patchForValue: (value) => UpdateClubPatch(name: value as String),
-            ),
-            cityEntry,
-            HostClubInlineTextEntry._(
-              club: club,
-              isOwner: widget.isOwner,
-              accordion: _fieldAccordion,
-              fieldName: HostClubEditFieldKeys.area,
-              label: context.l10n.hostsHostClubProfileLabelAreaNeighbourhood,
-              value: _valueOrDash(club.area),
-              currentValue: club.area,
-              icon: CatchIcons.locationOnOutlined,
-              validator: _requiredHostFieldValidator(
-                context.l10n.hostsHostClubProfileVisiblecopyAreaNeighbourhood,
-              ),
-              normalizeInput: _normalizeSingleLineInput,
-              patchForValue: (value) => UpdateClubPatch(area: value as String),
-            ),
-            HostClubInlineTextEntry._(
-              club: club,
-              isOwner: widget.isOwner,
-              accordion: _fieldAccordion,
-              fieldName: HostClubEditFieldKeys.description,
-              label: context.l10n.hostsHostClubProfileLabelDescription,
-              value: _valueOrDash(club.description),
-              currentValue: club.description,
-              icon: CatchIcons.descriptionOutlined,
-              maxLines: 3,
-              minLines: 2,
-              maxLength: 280,
-              showCounter: true,
-              keyboardType: TextInputType.multiline,
-              validator: _requiredHostFieldValidator(
-                context.l10n.hostsHostClubProfileVisiblecopyDescription8d3ca8,
-              ),
-              normalizeInput: _normalizeMultilineInput,
-              patchForValue: (value) =>
-                  UpdateClubPatch(description: value as String),
-            ),
-          ],
+          rows: identityRows,
+          accordion: _fieldAccordion,
+          savePatch: _savePatch,
+          errorText: _errorText,
         ),
-        CatchSection.fieldRows(
+        CatchFormRowList<UpdateClubPatch>(
           title: context.l10n.hostsHostClubProfileTitleContact,
-          children: [
-            HostClubInlineTextEntry._(
-              club: club,
-              isOwner: widget.isOwner,
-              accordion: _fieldAccordion,
-              fieldName: HostClubEditFieldKeys.instagramHandle,
-              label: context.l10n.hostsHostClubProfileLabelInstagram,
-              value: _valueOrDash(club.instagramHandle),
-              placeholder: context.l10n.hostsHostClubProfilePlaceholderYourclub,
-              currentValue: club.instagramHandle ?? '',
-              currentFieldValue: club.instagramHandle,
-              icon: CatchIcons.alternateEmailRounded,
-              keyboardType: TextInputType.text,
-              normalizeInput: _normalizeSingleLineInput,
-              toFieldValue: _optionalStringFieldValue,
-              patchForValue: (value) => UpdateClubPatch(instagramHandle: value),
-            ),
-            HostClubInlineTextEntry._(
-              club: club,
-              isOwner: widget.isOwner,
-              accordion: _fieldAccordion,
-              fieldName: HostClubEditFieldKeys.phoneNumber,
-              label: context.l10n.hostsHostClubProfileLabelPhone,
-              value: _valueOrDash(club.phoneNumber),
-              placeholder: '98765 43210',
-              currentValue: club.phoneNumber ?? '',
-              currentFieldValue: club.phoneNumber,
-              icon: CatchIcons.phoneOutlined,
-              keyboardType: TextInputType.phone,
-              normalizeInput: _normalizeSingleLineInput,
-              toFieldValue: _optionalStringFieldValue,
-              patchForValue: (value) => UpdateClubPatch(phoneNumber: value),
-            ),
-            HostClubInlineTextEntry._(
-              club: club,
-              isOwner: widget.isOwner,
-              accordion: _fieldAccordion,
-              fieldName: HostClubEditFieldKeys.email,
-              label: context.l10n.hostsHostClubProfileLabelEmail,
-              value: _valueOrDash(club.email),
-              placeholder:
-                  context.l10n.hostsHostClubProfilePlaceholderHelloYourclubCom,
-              currentValue: club.email ?? '',
-              currentFieldValue: club.email,
-              icon: CatchIcons.emailOutlined,
-              keyboardType: TextInputType.emailAddress,
-              normalizeInput: _normalizeSingleLineInput,
-              validator: _optionalEmailValidator,
-              toFieldValue: _optionalStringFieldValue,
-              patchForValue: (value) => UpdateClubPatch(email: value),
-            ),
-          ],
+          rows: contactRows,
+          accordion: _fieldAccordion,
+          savePatch: _savePatch,
+          errorText: _errorText,
         ),
         CatchSection.fieldRows(
           title: context.l10n.hostsHostClubEditTabTitleClubSettings,
@@ -450,6 +338,185 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
     );
   }
 
+  List<CatchFormRowDescriptor<UpdateClubPatch>> _identityRows(
+    BuildContext context,
+    Club club,
+    List<_HostClubCityOption> cityOptions,
+  ) {
+    if (!widget.isOwner) {
+      return [
+        CatchFormReadRow<UpdateClubPatch>(
+          id: HostClubEditFieldKeys.name,
+          icon: CatchIcons.groups3Outlined,
+          label: context.l10n.hostsHostClubProfileLabelClubName,
+          body: club.name,
+        ),
+        CatchFormReadRow<UpdateClubPatch>(
+          id: HostClubEditFieldKeys.location,
+          icon: CatchIcons.locationCityOutlined,
+          label: context.l10n.hostsHostClubProfileLabelCity,
+          body: cityLabel(club.location),
+        ),
+        CatchFormReadRow<UpdateClubPatch>(
+          id: HostClubEditFieldKeys.area,
+          icon: CatchIcons.locationOnOutlined,
+          label: context.l10n.hostsHostClubProfileLabelAreaNeighbourhood,
+          body: _valueOrDash(club.area),
+        ),
+        CatchFormReadRow<UpdateClubPatch>(
+          id: HostClubEditFieldKeys.description,
+          icon: CatchIcons.descriptionOutlined,
+          label: context.l10n.hostsHostClubProfileLabelDescription,
+          body: _valueOrDash(club.description),
+        ),
+      ];
+    }
+
+    return [
+      CatchFormTextRow<UpdateClubPatch>(
+        id: HostClubEditFieldKeys.name,
+        icon: CatchIcons.groups3Outlined,
+        label: context.l10n.hostsHostClubProfileLabelClubName,
+        currentValue: club.name,
+        currentFieldValue: club.name,
+        placeholder: club.name,
+        explicitSave: true,
+        normalizeInput: _normalizeSingleLineInput,
+        contract: CatchContractConstraints.updateClubPatchName,
+        patchForValue: (value) => UpdateClubPatch(name: value as String),
+      ),
+      CatchFormSingleChoiceRow<UpdateClubPatch, _HostClubCityOption>(
+        id: HostClubEditFieldKeys.location,
+        icon: CatchIcons.locationCityOutlined,
+        label: context.l10n.hostsHostClubProfileLabelCity,
+        values: cityOptions,
+        value: cityOptions.firstWhere((city) => city.value == club.location),
+        allowEmptySelection: false,
+        contract: CatchContractConstraints.updateClubPatchLocation,
+        patchForValue: (value) => UpdateClubPatch(location: value!.value),
+      ),
+      CatchFormTextRow<UpdateClubPatch>(
+        id: HostClubEditFieldKeys.area,
+        icon: CatchIcons.locationOnOutlined,
+        label: context.l10n.hostsHostClubProfileLabelAreaNeighbourhood,
+        currentValue: club.area,
+        currentFieldValue: club.area,
+        placeholder: _valueOrDash(club.area),
+        explicitSave: true,
+        normalizeInput: _normalizeSingleLineInput,
+        contract: CatchContractConstraints.updateClubPatchArea,
+        patchForValue: (value) => UpdateClubPatch(area: value as String),
+      ),
+      CatchFormTextRow<UpdateClubPatch>(
+        id: HostClubEditFieldKeys.description,
+        icon: CatchIcons.descriptionOutlined,
+        label: context.l10n.hostsHostClubProfileLabelDescription,
+        currentValue: club.description,
+        currentFieldValue: club.description,
+        placeholder: _valueOrDash(club.description),
+        explicitSave: true,
+        keyboardType: TextInputType.multiline,
+        maxLines: 3,
+        minLines: 2,
+        normalizeInput: _normalizeMultilineInput,
+        contract: CatchContractConstraints.updateClubPatchDescription,
+        patchForValue: (value) => UpdateClubPatch(description: value as String),
+      ),
+    ];
+  }
+
+  List<CatchFormRowDescriptor<UpdateClubPatch>> _contactRows(
+    BuildContext context,
+    Club club,
+  ) {
+    if (!widget.isOwner) {
+      return [
+        CatchFormReadRow<UpdateClubPatch>(
+          id: HostClubEditFieldKeys.instagramHandle,
+          icon: CatchIcons.alternateEmailRounded,
+          label: context.l10n.hostsHostClubProfileLabelInstagram,
+          body: _valueOrDash(club.instagramHandle),
+        ),
+        CatchFormReadRow<UpdateClubPatch>(
+          id: HostClubEditFieldKeys.phoneNumber,
+          icon: CatchIcons.phoneOutlined,
+          label: context.l10n.hostsHostClubProfileLabelPhone,
+          body: _valueOrDash(club.phoneNumber),
+        ),
+        CatchFormReadRow<UpdateClubPatch>(
+          id: HostClubEditFieldKeys.email,
+          icon: CatchIcons.emailOutlined,
+          label: context.l10n.hostsHostClubProfileLabelEmail,
+          body: _valueOrDash(club.email),
+        ),
+      ];
+    }
+
+    return [
+      CatchFormTextRow<UpdateClubPatch>(
+        id: HostClubEditFieldKeys.instagramHandle,
+        icon: CatchIcons.alternateEmailRounded,
+        label: context.l10n.hostsHostClubProfileLabelInstagram,
+        currentValue: club.instagramHandle ?? '',
+        currentFieldValue: club.instagramHandle,
+        placeholder: context.l10n.hostsHostClubProfilePlaceholderYourclub,
+        explicitSave: true,
+        keyboardType: TextInputType.text,
+        normalizeInput: _normalizeSingleLineInput,
+        toFieldValue: _optionalStringFieldValue,
+        contract: CatchContractConstraints.updateClubPatchInstagramHandle,
+        patchForValue: (value) => UpdateClubPatch(instagramHandle: value),
+      ),
+      CatchFormTextRow<UpdateClubPatch>(
+        id: HostClubEditFieldKeys.phoneNumber,
+        icon: CatchIcons.phoneOutlined,
+        label: context.l10n.hostsHostClubProfileLabelPhone,
+        currentValue: club.phoneNumber ?? '',
+        currentFieldValue: club.phoneNumber,
+        placeholder: '98765 43210',
+        explicitSave: true,
+        keyboardType: TextInputType.phone,
+        normalizeInput: _normalizeSingleLineInput,
+        toFieldValue: _optionalStringFieldValue,
+        contract: CatchContractConstraints.updateClubPatchPhoneNumber,
+        patchForValue: (value) => UpdateClubPatch(phoneNumber: value),
+      ),
+      CatchFormTextRow<UpdateClubPatch>(
+        id: HostClubEditFieldKeys.email,
+        icon: CatchIcons.emailOutlined,
+        label: context.l10n.hostsHostClubProfileLabelEmail,
+        currentValue: club.email ?? '',
+        currentFieldValue: club.email,
+        placeholder:
+            context.l10n.hostsHostClubProfilePlaceholderHelloYourclubCom,
+        explicitSave: true,
+        keyboardType: TextInputType.emailAddress,
+        normalizeInput: _normalizeSingleLineInput,
+        validator: (value) => _optionalEmailValidator(value, context.l10n),
+        toFieldValue: _optionalStringFieldValue,
+        contract: CatchContractConstraints.updateClubPatchEmail,
+        patchForValue: (value) => UpdateClubPatch(email: value),
+      ),
+    ];
+  }
+
+  Future<bool> _savePatch(UpdateClubPatch patch) async {
+    if (patch.isEmpty) return true;
+    if (ref.read(HostClubEditController.updateClubMutation).isPending) {
+      return false;
+    }
+    await HostClubEditController.updateClubMutation.run(
+      ref,
+      (tx) => tx
+          .get(hostClubEditControllerProvider)
+          .updateClub(clubId: widget.club.id, patch: patch),
+    );
+    return true;
+  }
+
+  String _errorText(BuildContext context, Object error) =>
+      appErrorMessage(error, l10n: context.l10n, context: AppErrorContext.club);
+
   void _openSpoke(Routes route) {
     final onOpenSettingsRoute = widget.onOpenSettingsRoute;
     if (onOpenSettingsRoute != null) {
@@ -460,80 +527,12 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
   }
 }
 
-class HostClubInlineTextEntry extends StatelessWidget {
-  const HostClubInlineTextEntry._({
-    required this.club,
-    required this.isOwner,
-    required this.accordion,
-    required this.fieldName,
-    required this.label,
-    required this.value,
-    required this.currentValue,
-    required this.icon,
-    required this.patchForValue,
-    this.currentFieldValue,
-    this.placeholder,
-    this.keyboardType,
-    this.maxLines = 1,
-    this.minLines,
-    this.maxLength,
-    this.showCounter = false,
-    this.normalizeInput,
-    this.validator,
-    this.toFieldValue,
-  });
+final class _HostClubCityOption implements Labelled {
+  const _HostClubCityOption({required this.value, required this.label});
 
-  final Club club;
-  final bool isOwner;
-  final CatchFieldAccordion accordion;
-  final String fieldName;
-  final String label;
   final String value;
-  final String currentValue;
-  final IconData icon;
-  final UpdateClubPatch Function(Object? value) patchForValue;
-  final Object? currentFieldValue;
-  final String? placeholder;
-  final TextInputType? keyboardType;
-  final int? maxLines;
-  final int? minLines;
-  final int? maxLength;
-  final bool showCounter;
-  final String Function(String value)? normalizeInput;
-  final FormFieldValidator<String>? validator;
-  final Object? Function(String value)? toFieldValue;
-
   @override
-  Widget build(BuildContext context) {
-    if (!isOwner) {
-      return CatchField.read(title: label, valueText: value, icon: icon);
-    }
-
-    return HostInlineTextEntryEditor(
-      key: ValueKey('host-inline-$fieldName'),
-      clubId: club.id,
-      icon: icon,
-      label: label,
-      value: value,
-      currentValue: currentValue,
-      currentFieldValue: currentFieldValue ?? currentValue,
-      fieldName: fieldName,
-      isExpanded: accordion.isExpanded(fieldName),
-      placeholder: placeholder,
-      keyboardType: keyboardType,
-      maxLines: maxLines,
-      minLines: minLines,
-      maxLength: maxLength,
-      showCounter: showCounter,
-      normalizeInput: normalizeInput,
-      validator: validator,
-      toFieldValue: toFieldValue,
-      patchForValue: patchForValue,
-      onTap: () => accordion.toggle(fieldName),
-      onSaved: accordion.collapse,
-      onCancel: accordion.collapse,
-    );
-  }
+  final String label;
 }
 
 sealed class _HostClubMediaDraft {

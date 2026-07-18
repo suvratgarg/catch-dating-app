@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_field_accordion.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -12,7 +13,7 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class EventDetailsStep extends StatelessWidget {
+class EventDetailsStep extends StatefulWidget {
   const EventDetailsStep({
     super.key,
     required this.formKey,
@@ -49,11 +50,51 @@ class EventDetailsStep extends StatelessWidget {
   final ValueChanged<PaceLevel?> onPaceChanged;
 
   @override
+  State<EventDetailsStep> createState() => _EventDetailsStepState();
+}
+
+class _EventDetailsStepState extends State<EventDetailsStep> {
+  static const _activityField = 'activity';
+  static const _interactionField = 'interaction';
+  static const _paceField = 'pace';
+
+  final CatchFieldAccordion _accordion = CatchFieldAccordion();
+
+  @override
+  void initState() {
+    super.initState();
+    _accordion.addListener(_handleAccordionChanged);
+  }
+
+  @override
+  void dispose() {
+    _accordion
+      ..removeListener(_handleAccordionChanged)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _handleAccordionChanged() {
+    if (mounted) setState(() {});
+  }
+
+  void _setOpen(String field, bool open) {
+    if (open && !_accordion.isExpanded(field)) {
+      _accordion.toggle(field);
+    } else if (!open && _accordion.isExpanded(field)) {
+      _accordion.collapse();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final activity = ActivityPalette.resolve(context, selectedActivityKind);
+    final activity = ActivityPalette.resolve(
+      context,
+      widget.selectedActivityKind,
+    );
     return Form(
-      key: formKey,
-      autovalidateMode: autovalidateMode,
+      key: widget.formKey,
+      autovalidateMode: widget.autovalidateMode,
       child: ListView(
         padding: CatchInsets.formStepBody,
         children: [
@@ -61,32 +102,36 @@ class EventDetailsStep extends StatelessWidget {
             gap: 0,
             children: [
               CreateEventPhotoPicker(
-                photos: photoPreviews,
-                onAddPhotos: onPickPhotos,
-                onRemovePhoto: onRemovePhoto,
-                onReorderPhoto: onReorderPhoto,
+                photos: widget.photoPreviews,
+                onAddPhotos: widget.onPickPhotos,
+                onRemovePhoto: widget.onRemovePhoto,
+                onReorderPhoto: widget.onReorderPhoto,
               ),
               CatchSection.fieldRows(
                 children: [
                   CatchField.choices<ActivityKind>(
                     key: CreateEventFormKeys.activityType,
                     title: context.l10n.hostsEventDetailsStepLabelActivityType,
-                    body: selectedActivityKind.label,
+                    body: widget.selectedActivityKind.label,
                     values: ActivityKind.eventCreationDefaults,
                     itemLabel: (activityKind) => activityKind.label,
-                    selected: <ActivityKind>{selectedActivityKind},
+                    itemAccent: (activityKind) =>
+                        ActivityPalette.resolve(context, activityKind).accent,
+                    selected: <ActivityKind>{widget.selectedActivityKind},
                     onSelectionChanged: (selection) {
-                      onActivityKindChanged(selection.single);
+                      widget.onActivityKindChanged(selection.single);
                     },
-                    initiallyOpen: true,
+                    open: _accordion.isExpanded(_activityField),
+                    onOpenChanged: (open) => _setOpen(_activityField, open),
                     icon: activity.glyph,
                     iconColor: activity.accent,
                   ),
-                  if (selectedActivityKind == ActivityKind.openActivity) ...[
+                  if (widget.selectedActivityKind ==
+                      ActivityKind.openActivity) ...[
                     CatchField.input(
                       key: CreateEventFormKeys.customActivityLabel,
                       title: context.l10n.hostsEventDetailsStepTitleFormatName,
-                      controller: customActivityLabelController,
+                      controller: widget.customActivityLabelController,
                       inputHint: context
                           .l10n
                           .hostsEventDetailsStepPlaceholderSalsaNight,
@@ -118,25 +163,28 @@ class EventDetailsStep extends StatelessWidget {
                       title: context
                           .l10n
                           .hostsEventDetailsStepLabelFormatStructure,
-                      body: selectedInteractionModel.label,
+                      body: widget.selectedInteractionModel.label,
                       values: EventInteractionModel.values,
                       itemLabel: (model) => model.label,
+                      itemAccent: (_) => activity.accent,
                       selected: <EventInteractionModel>{
-                        selectedInteractionModel,
+                        widget.selectedInteractionModel,
                       },
                       onSelectionChanged: (selection) {
-                        onInteractionModelChanged(selection.single);
+                        widget.onInteractionModelChanged(selection.single);
                       },
-                      initiallyOpen: true,
+                      open: _accordion.isExpanded(_interactionField),
+                      onOpenChanged: (open) =>
+                          _setOpen(_interactionField, open),
                       icon: CatchIcons.tuneRounded,
                       iconColor: activity.accent,
                     ),
                   ],
-                  if (selectedActivityKind.isDistanceBased) ...[
+                  if (widget.selectedActivityKind.isDistanceBased) ...[
                     CatchField.input(
                       key: CreateEventFormKeys.distance,
                       title: context.l10n.hostsEventDetailsStepTitleDistanceKm,
-                      controller: distanceController,
+                      controller: widget.distanceController,
                       inputHint: '10',
                       icon: CatchIcons.straightenOutlined,
                       keyboardType: const TextInputType.numberWithOptions(
@@ -171,7 +219,7 @@ class EventDetailsStep extends StatelessWidget {
                       },
                     ),
                     FormField<PaceLevel>(
-                      initialValue: selectedPace,
+                      initialValue: widget.selectedPace,
                       validator: (value) => value == null
                           ? context
                                 .l10n
@@ -179,21 +227,23 @@ class EventDetailsStep extends StatelessWidget {
                           : null,
                       builder: (field) => CatchField.choices<PaceLevel>(
                         title: context.l10n.hostsEventDetailsStepLabelPaceLevel,
-                        body: selectedPace?.label,
+                        body: widget.selectedPace?.label,
                         values: PaceLevel.values,
                         itemLabel: (pace) => pace.label,
-                        selected: selectedPace == null
+                        itemAccent: (_) => activity.accent,
+                        selected: widget.selectedPace == null
                             ? const <PaceLevel>{}
-                            : <PaceLevel>{selectedPace!},
+                            : <PaceLevel>{widget.selectedPace!},
                         onSelectionChanged: (selection) {
                           final next = selection.isEmpty
                               ? null
                               : selection.single;
-                          onPaceChanged(next);
+                          widget.onPaceChanged(next);
                           field.didChange(next);
                         },
                         allowEmptySelection: true,
-                        initiallyOpen: true,
+                        open: _accordion.isExpanded(_paceField),
+                        onOpenChanged: (open) => _setOpen(_paceField, open),
                         icon: CatchIcons.speedOutlined,
                         iconColor: activity.accent,
                         error: field.errorText,
@@ -204,7 +254,7 @@ class EventDetailsStep extends StatelessWidget {
                     key: CreateEventFormKeys.description,
                     title: context.l10n.hostsEventDetailsStepTitleDescription,
                     isOptional: true,
-                    controller: descriptionController,
+                    controller: widget.descriptionController,
                     inputHint: context
                         .l10n
                         .hostsEventDetailsStepPlaceholderWhatShouldAttendeesExpect,

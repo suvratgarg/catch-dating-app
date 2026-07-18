@@ -307,7 +307,6 @@ class CatchFieldTrailing extends StatelessWidget {
         topPadding: topPadding,
         builder: (context) => Semantics(
           label: context.l10n.coreCatchFieldSemanticSaving,
-          liveRegion: true,
           child: ExcludeSemantics(
             child: SizedBox.square(
               dimension: CatchFieldTokens.spinnerExtent,
@@ -323,7 +322,6 @@ class CatchFieldTrailing extends StatelessWidget {
         topPadding: topPadding,
         builder: (context) => Semantics(
           label: context.l10n.coreCatchFieldSemanticSaved,
-          liveRegion: true,
           child: ExcludeSemantics(
             child: Icon(
               CatchIcons.checkCircleFilled,
@@ -442,7 +440,7 @@ class CatchFieldSupportRow extends StatelessWidget {
           )
         : label;
 
-    return Padding(
+    final content = Padding(
       padding: padding,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -462,6 +460,12 @@ class CatchFieldSupportRow extends StatelessWidget {
           ],
         ],
       ),
+    );
+    if (!showErrorIcon || !hasText) return content;
+    return Semantics(
+      label: normalizedText,
+      liveRegion: true,
+      child: ExcludeSemantics(child: content),
     );
   }
 }

@@ -28,18 +28,18 @@ Future<void> showClubShareCardSheet(
       card: ClubShareCard(club: club),
       share: share,
       fileName: 'catch-club-card.png',
-      buttonLabel: 'Share club',
-      footnote: 'Shares a visual club card with the club link.',
+      buttonLabel: context.l10n.clubsClubHeroAppBarTooltipShareClub,
+      footnote: context.l10n.clubsClubShareCardFootnote,
       subject: club.name,
-      text: clubShareText(club),
+      text: clubShareText(club, context.l10n),
     ),
   );
 }
 
-String clubShareText(Club club) {
+String clubShareText(Club club, AppLocalizations l10n) {
   final uri = AppDeepLinks.club(club.id);
   return [
-    'Check out ${club.name} on Catch.',
+    l10n.clubsClubShareTextIntro(clubName: club.name),
     '${club.area}, ${cityLabel(club.location)}',
     uri.toString(),
   ].join('\n');
@@ -111,7 +111,9 @@ class ClubShareCard extends StatelessWidget {
                   if (tags.isNotEmpty) ...[gapH10, ClubTagWrap(tags: tags)],
                   const Spacer(),
                   CatchShareCardFooter(
-                    trailing: 'Hosted by ${club.displayHostName}',
+                    trailing: context.l10n.clubsClubShareCardHostedBy(
+                      hostName: club.displayHostName,
+                    ),
                   ),
                 ],
               ),

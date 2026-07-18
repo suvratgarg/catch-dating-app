@@ -339,8 +339,9 @@ void main() {
           kicker: 'Explore',
           leadingType: CatchTopBarLeading.close,
           onBack: () => closed = true,
-          actionText: 'Done',
-          onAction: () => done = true,
+          actions: [
+            CatchTopBarTextAction(label: 'Done', onPressed: () => done = true),
+          ],
           surface: true,
         ),
       ),
@@ -374,9 +375,12 @@ void main() {
           builder: (context, setState) => Scaffold(
             appBar: CatchTopBar(
               title: 'Clubs',
-              searchValue: query,
-              onSearch: (value) => setState(() => query = value),
-              searchPlaceholder: 'Search clubs',
+              search: CatchTopBarSearch(
+                value: query,
+                onChanged: (value) => setState(() => query = value),
+                placeholder: 'Search clubs',
+                tooltip: 'Search clubs',
+              ),
             ),
             body: const SizedBox.shrink(),
           ),

@@ -4,9 +4,12 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_analytics_kit.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
+import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
@@ -25,6 +28,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_compan
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -107,7 +111,7 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
 
-    final event = buildEvent(bookedCount: 10, checkedInCount: 6);
+    final event = buildEvent(bookedCount: 0, checkedInCount: 0);
     final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
 
     await tester.pumpWidget(
@@ -153,10 +157,11 @@ void main() {
 
     expect(find.text('Setup'), findsWidgets);
     expect(find.byType(CatchOptionGroup<EventSuccessHostTab>), findsOneWidget);
+    expect(find.byType(CatchTabRail<EventSuccessHostTab>), findsOneWidget);
     expect(find.text('Target attendees'), findsOneWidget);
     expect(find.text('How the room is grouped'), findsNothing);
     expect(find.text('Your goal for the event'), findsOneWidget);
-    expect(find.text('Your plan'), findsOneWidget);
+    expect(find.text('YOUR PLAN'), findsOneWidget);
     expect(find.text('WHEN PEOPLE ARRIVE'), findsOneWidget);
     expect(find.text('DURING THE EVENT'), findsOneWidget);
     expect(find.text('AFTER THE EVENT'), findsNothing);
@@ -178,7 +183,9 @@ void main() {
     await tester.tap(find.text('Live'));
     await pumpFeatureUi(tester);
     expect(find.text('LIVE NOW'), findsOneWidget);
+    expect(find.byType(CatchStepProgress), findsOneWidget);
     expect(find.text('Conversation cues'), findsOneWidget);
+    expect(find.text('Check guests in'), findsNothing);
     expect(
       find.byKey(const ValueKey('eventSuccessNextStepButton')),
       findsOneWidget,
@@ -186,7 +193,47 @@ void main() {
 
     await tester.tap(find.text('Report'));
     await pumpFeatureUi(tester);
-    expect(find.text('Post-event host report'), findsOneWidget);
+    expect(find.text('POST-EVENT HOST REPORT'), findsOneWidget);
+    expect(find.byType(CatchAnalyticsMetricGrid), findsWidgets);
+  });
+
+  testWidgets('host setup collapses to a read-only plan after bookings start', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 1800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final event = buildEvent(bookedCount: 1);
+    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: EventSuccessHostPanel(
+              event: event,
+              plan: plan,
+              planIsPersisted: true,
+              roster: const EventParticipationRoster(
+                bookedIds: ['runner-1'],
+                checkedInIds: [],
+                waitlistedIds: [],
+              ),
+              showTabs: false,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Settings are locked'), findsOneWidget);
+    expect(find.text('YOUR PLAN'), findsOneWidget);
+    expect(find.text('Your goal for the event'), findsNothing);
+    expect(find.text('Save setup'), findsNothing);
+    expect(find.byType(EventSuccessSetupBody), findsNothing);
   });
 
   testWidgets('host setup preserves custom format interaction model on save', (
@@ -786,20 +833,24 @@ void main() {
       ),
     );
 
-    expect(find.text('How reliable is this report?'), findsOneWidget);
-    expect(find.text('Feedback 40%'), findsOneWidget);
-    expect(find.text('Caught someone 40%'), findsWidgets);
-    expect(find.text('People included 80%'), findsOneWidget);
-    expect(find.text('Opted out 20%'), findsOneWidget);
-    expect(find.text('Wingman help 20%'), findsOneWidget);
+    expect(find.text('HOW RELIABLE IS THIS REPORT?'), findsOneWidget);
+    expect(find.text('Feedback'), findsOneWidget);
+    expect(find.text('Caught someone'), findsWidgets);
+    expect(find.text('People included'), findsOneWidget);
+    expect(find.text('Opted out'), findsOneWidget);
+    expect(find.text('Wingman help'), findsOneWidget);
+    expect(find.text('40%'), findsWidgets);
+    expect(find.text('80%'), findsWidgets);
+    expect(find.text('20%'), findsWidgets);
     expect(find.text('2/5 feedback'), findsOneWidget);
     expect(find.text('2 caught someone'), findsOneWidget);
-    expect(find.text('3 catches sent'), findsOneWidget);
+    expect(find.text('Catches sent'), findsOneWidget);
     expect(find.text('4 assigned'), findsOneWidget);
     expect(find.text('1 opted out'), findsOneWidget);
     expect(find.text('1 host-help requests'), findsOneWidget);
     expect(find.textContaining('Private notes'), findsOneWidget);
-    expect(find.text('Working well'), findsOneWidget);
+    expect(find.text('WORKING WELL'), findsOneWidget);
+    expect(find.text('IMPROVE NEXT TIME'), findsOneWidget);
   });
 
   testWidgets('host live mode summarizes generated micro-pod groups', (
@@ -876,9 +927,9 @@ void main() {
       ),
     );
 
-    expect(find.text('Arrival check-in'), findsOneWidget);
-    expect(find.text('1 / 3'), findsOneWidget);
-    expect(find.text('1 checked in'), findsOneWidget);
+    expect(find.text('Arrival check-in'), findsNothing);
+    expect(find.text('1 / 3'), findsNothing);
+    expect(find.text('1 checked in'), findsNothing);
     expect(find.text('3 assigned'), findsOneWidget);
     expect(find.text('1 opted out'), findsOneWidget);
     expect(find.text('Pod A · 2 assigned'), findsOneWidget);
@@ -1032,7 +1083,7 @@ void main() {
       ),
     );
 
-    expect(find.text('"Help me say hi" requests'), findsOneWidget);
+    expect(find.text('"HELP ME SAY HI" REQUESTS'), findsOneWidget);
     expect(find.text('1 active'), findsOneWidget);
     expect(find.text('Arjun'), findsOneWidget);
     expect(find.text('Asked for help meeting Rhea'), findsOneWidget);

@@ -95,7 +95,6 @@ class WhenStep extends StatelessWidget {
                     onIncreaseDuration?.call();
                   }
                 },
-                initiallyOpen: true,
                 icon: CatchIcons.timerOutlined,
               ),
             ],

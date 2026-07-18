@@ -25,7 +25,6 @@ class CreateEventPhotoPicker extends StatelessWidget {
       first: true,
       showInternalDividers: false,
       child: OrderedPhotoPicker(
-        label: const SizedBox.shrink(),
         photos: photos,
         onAddPhotos: onAddPhotos,
         onRemovePhoto: onRemovePhoto,

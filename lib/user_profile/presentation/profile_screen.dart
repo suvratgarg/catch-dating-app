@@ -211,13 +211,15 @@ class SelfProfileTabBody extends StatelessWidget {
           ],
         );
       case SelfProfileRouteStatus.error:
-        return CatchErrorState.fromError(
-          state.error!,
-          context: AppErrorContext.profile,
-          onRetry: onRetry,
+        return CatchStateViewport(
+          child: CatchErrorState.fromError(
+            state.error!,
+            context: AppErrorContext.profile,
+            onRetry: onRetry,
+          ),
         );
       case SelfProfileRouteStatus.unavailable:
-        return Center(
+        return CatchStateViewport(
           child: CatchEmptyState(
             icon: CatchIcons.personOffOutlined,
             title:
@@ -380,7 +382,6 @@ class PreviewTabSliverBody extends StatelessWidget {
               scrollPhysics: PreviewHeaderBridgeScrollPhysics(
                 onForwardScroll: onForwardScroll,
               ),
-              bottomPadding: 0,
               onLeadingOverscroll: onLeadingOverscroll,
             ),
           ),

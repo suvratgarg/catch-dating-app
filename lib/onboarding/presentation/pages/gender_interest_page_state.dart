@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
 class OnboardingGenderInterestState {
@@ -6,11 +7,14 @@ class OnboardingGenderInterestState {
     required this.interestedIn,
     required this.isSaving,
     required this.saveErrorMessage,
+    required this.genderValidationMessage,
+    required this.interestValidationMessage,
   });
 
   factory OnboardingGenderInterestState.fromDraft({
     required Gender? gender,
     required Iterable<Gender> interestedIn,
+    required AppLocalizations l10n,
     bool isSaving = false,
     String? saveErrorMessage,
   }) {
@@ -19,6 +23,8 @@ class OnboardingGenderInterestState {
       interestedIn: Set<Gender>.unmodifiable(interestedIn),
       isSaving: isSaving,
       saveErrorMessage: saveErrorMessage,
+      genderValidationMessage: l10n.onboardingGenderValidationSelectGender,
+      interestValidationMessage: l10n.onboardingGenderValidationSelectInterest,
     );
   }
 
@@ -26,6 +32,8 @@ class OnboardingGenderInterestState {
   final Set<Gender> interestedIn;
   final bool isSaving;
   final String? saveErrorMessage;
+  final String genderValidationMessage;
+  final String interestValidationMessage;
 
   Set<Gender> get selectedGender =>
       gender == null ? const <Gender>{} : {gender!};
@@ -33,10 +41,10 @@ class OnboardingGenderInterestState {
   bool get hasSaveError => saveErrorMessage != null;
 
   String? validateGender(Set<Gender>? value) =>
-      gender == null ? 'Please select your gender' : null;
+      gender == null ? genderValidationMessage : null;
 
   String? validateInterestedIn(Set<Gender>? value) =>
-      interestedIn.isEmpty ? 'Please select who you want to see' : null;
+      interestedIn.isEmpty ? interestValidationMessage : null;
 
   OnboardingGenderInterestSubmitIntent? submitIntent() {
     final gender = this.gender;

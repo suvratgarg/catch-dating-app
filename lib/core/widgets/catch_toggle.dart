@@ -105,50 +105,58 @@ class _CatchToggleState extends State<CatchToggle> {
             child: SizedBox(
               key: widget._field ? const ValueKey('catch-field-toggle') : null,
               width: trackWidth,
-              height: trackHeight,
-              child: DecoratedBox(
-                key: widget._field
-                    ? const ValueKey('catch-field-toggle-focus-outline')
-                    : null,
-                position: DecorationPosition.foreground,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(CatchRadius.pill),
-                  border: _showFocusHighlight
-                      ? Border.all(
-                          color: t.ink,
-                          width: CatchFieldTokens.focusRingWidth,
-                        )
-                      : null,
-                ),
-                child: AnimatedContainer(
-                  key: widget._field
-                      ? const ValueKey('catch-field-toggle-track')
-                      : null,
-                  duration: alignmentDuration,
-                  curve: widget._field
-                      ? CatchFieldTokens.curve
-                      : CatchMotion.standardCurve,
-                  decoration: BoxDecoration(
-                    color: trackColor,
-                    borderRadius: BorderRadius.circular(CatchRadius.pill),
-                  ),
-                  child: AnimatedAlign(
-                    duration: alignmentDuration,
-                    curve: widget._field
-                        ? CatchFieldTokens.curve
-                        : CatchMotion.standardCurve,
-                    alignment: widget.value
-                        ? AlignmentDirectional.centerEnd
-                        : AlignmentDirectional.centerStart,
-                    child: Padding(
-                      padding: EdgeInsets.all(trackInset),
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: t.surface,
-                          borderRadius: BorderRadius.circular(CatchRadius.pill),
-                          boxShadow: CatchElevation.toggleKnob,
+              height: widget._field ? CatchSpacing.s11 : trackHeight,
+              child: Center(
+                child: SizedBox(
+                  width: trackWidth,
+                  height: trackHeight,
+                  child: DecoratedBox(
+                    key: widget._field
+                        ? const ValueKey('catch-field-toggle-focus-outline')
+                        : null,
+                    position: DecorationPosition.foreground,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(CatchRadius.pill),
+                      border: _showFocusHighlight
+                          ? Border.all(
+                              color: t.ink,
+                              width: CatchFieldTokens.focusRingWidth,
+                            )
+                          : null,
+                    ),
+                    child: AnimatedContainer(
+                      key: widget._field
+                          ? const ValueKey('catch-field-toggle-track')
+                          : null,
+                      duration: alignmentDuration,
+                      curve: widget._field
+                          ? CatchFieldTokens.curve
+                          : CatchMotion.standardCurve,
+                      decoration: BoxDecoration(
+                        color: trackColor,
+                        borderRadius: BorderRadius.circular(CatchRadius.pill),
+                      ),
+                      child: AnimatedAlign(
+                        duration: alignmentDuration,
+                        curve: widget._field
+                            ? CatchFieldTokens.curve
+                            : CatchMotion.standardCurve,
+                        alignment: widget.value
+                            ? AlignmentDirectional.centerEnd
+                            : AlignmentDirectional.centerStart,
+                        child: Padding(
+                          padding: EdgeInsets.all(trackInset),
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: t.surface,
+                              borderRadius: BorderRadius.circular(
+                                CatchRadius.pill,
+                              ),
+                              boxShadow: CatchElevation.toggleKnob,
+                            ),
+                            child: SizedBox.square(dimension: knobExtent),
+                          ),
                         ),
-                        child: SizedBox.square(dimension: knobExtent),
                       ),
                     ),
                   ),

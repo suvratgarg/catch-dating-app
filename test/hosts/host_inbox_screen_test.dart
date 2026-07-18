@@ -205,6 +205,7 @@ void main() {
 
       final emptyState = find.byType(CatchEmptyState);
       final content = find.byType(CatchEmptyStateContent);
+      expect(find.byType(CatchSliverStateViewport), findsOneWidget);
       expect(
         find.ancestor(of: emptyState, matching: find.byType(Center)),
         findsNothing,

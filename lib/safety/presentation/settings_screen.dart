@@ -81,7 +81,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       context: context,
       title: context.l10n.safetySettingsScreenTitleDeleteAccount,
       message: context.l10n.safetySettingsScreenMessageThisRemovesYourPublic,
-      confirmLabel: 'Delete',
+      confirmLabel: context.l10n.sharedActionDelete,
     );
     if (confirmed != true || !mounted) return;
 
@@ -169,7 +169,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     ref.listen(SettingsController.unblockUserMutation, (previous, current) {
       if (previous?.isPending == true && current.isSuccess) {
-        showCatchSnackBar(context, 'Account unblocked.');
+        showCatchSnackBar(context, context.l10n.safetyAccountUnblockedMessage);
       }
     });
 

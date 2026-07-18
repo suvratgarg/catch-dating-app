@@ -69,23 +69,23 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Live host mode'),
       700,
-      scrollable: findPrimaryScrollable(),
+      scrollable: _eventSuccessScrollable(),
     );
     expect(find.text('Live host mode'), findsOneWidget);
 
     await tester.scrollUntilVisible(
       find.text('Attendee companion'),
       700,
-      scrollable: findPrimaryScrollable(),
+      scrollable: _eventSuccessScrollable(),
     );
     expect(find.text('Attendee companion'), findsOneWidget);
 
     await tester.scrollUntilVisible(
-      find.text('Post-event host report'),
+      find.text('POST-EVENT HOST REPORT'),
       700,
-      scrollable: findPrimaryScrollable(),
+      scrollable: _eventSuccessScrollable(),
     );
-    expect(find.text('Post-event host report'), findsOneWidget);
+    expect(find.text('POST-EVENT HOST REPORT'), findsOneWidget);
   });
 
   testWidgets('host setup flow can change formats and flag missing gates', (
@@ -162,3 +162,10 @@ Finder _badge(String label) {
     (widget) => widget is CatchBadge && widget.label == label,
   );
 }
+
+Finder _eventSuccessScrollable() => find
+    .descendant(
+      of: find.byType(CustomScrollView),
+      matching: find.byType(Scrollable),
+    )
+    .first;

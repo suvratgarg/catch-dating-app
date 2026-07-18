@@ -73,6 +73,9 @@ class _CatchFieldState extends State<CatchField>
   @override
   void didUpdateWidget(covariant CatchField oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.status != widget.status) {
+      _announceStatusTransition(widget.status);
+    }
     if (oldWidget.focusNode != widget.focusNode) {
       _detachFocusNode();
       _attachFocusNode(widget.focusNode);
@@ -124,6 +127,22 @@ class _CatchFieldState extends State<CatchField>
       );
       _syncFieldValue();
     }
+  }
+
+  void _announceStatusTransition(CatchFieldStatus status) {
+    final message = switch (status) {
+      CatchFieldStatus.idle => null,
+      CatchFieldStatus.saving => context.l10n.coreCatchFieldSemanticSaving,
+      CatchFieldStatus.saved => context.l10n.coreCatchFieldSemanticSaved,
+    };
+    if (message == null) return;
+    unawaited(
+      SemanticsService.sendAnnouncement(
+        View.of(context),
+        message,
+        Directionality.of(context),
+      ),
+    );
   }
 
   @override
@@ -490,24 +509,19 @@ class _CatchFieldState extends State<CatchField>
     return true;
   }
 
-  CatchFieldMode get _mode => _hasSelect
-      ? CatchFieldMode.select
-      : widget.mode ??
-            (_hasTextEntryConfiguration
-                ? CatchFieldMode.edit
-                : widget.onToggle != null
-                ? CatchFieldMode.toggle
-                : (widget.showChevron == true || widget.onTap != null)
-                ? CatchFieldMode.nav
-                : CatchFieldMode.read);
-
   bool get _hasValue => _body != null && _body!.isNotEmpty;
+  bool get _stacksTrailingValueText {
+    final valueText = widget.valueText?.trim();
+    return MediaQuery.textScalerOf(context).scale(1) >= 2 &&
+        (_body?.trim().isNotEmpty != true) &&
+        valueText != null &&
+        valueText.isNotEmpty;
+  }
+
   bool get _inlineControlAddAtRest => widget.addable && !_hasValue && !_isOpen;
   bool get _hasControl => widget.control != null || widget._explicitSaveInput;
   Object get _textFieldTapRegionGroup =>
       widget._explicitSaveInput ? _tapRegionGroup : EditableText;
-  bool get _hasSelect =>
-      widget._selectValues != null && widget._selectItemLabel != null;
   bool get _hasFieldValidationError => _textEntryHasValidationError;
   bool get _hasError =>
       (_displayError != null && _displayError!.isNotEmpty) ||
@@ -520,30 +534,15 @@ class _CatchFieldState extends State<CatchField>
   bool get _visibleCommitBarOwnsSavingIndicator =>
       _isSaving && !_disclosureOffstage && widget._onSubmit != null;
   bool get _active => _focused || _rowFocused || widget.focused || _isOpen;
-  bool get _isEdit => _mode == CatchFieldMode.edit;
+  bool get _isEdit => widget._config is _EditConfig;
+  bool get _isSelect => widget._config is _SelectConfig;
+  bool get _isToggle => widget._config is _ToggleConfig;
+  bool get _isNavigation => switch (widget._config) {
+    _ControlConfig() => true,
+    final _RowConfig config => config.navigation,
+    _ => false,
+  };
   bool get _hasInputValue => !_inputWasEmpty;
-  bool get _hasTextEntryConfiguration =>
-      widget.controller != null ||
-      widget.initialValue != null ||
-      widget.onChanged != null ||
-      widget.onSubmitted != null ||
-      widget.onFocusChanged != null ||
-      widget.validator != null ||
-      widget.keyboardType != null ||
-      widget.textInputAction != null ||
-      widget.inputFormatters != null ||
-      widget.autofillHints != null ||
-      widget.obscureText ||
-      widget.maxLines != 1 ||
-      widget.minLines != null ||
-      widget.maxLength != null ||
-      widget.readOnly ||
-      widget.autofocus ||
-      widget.prefixIcon != null ||
-      widget.prefixText != null ||
-      widget.suffixIcon != null ||
-      widget.suffixText != null ||
-      widget.showClearButton;
   bool get _usesUnderlineChrome =>
       _isEdit && widget.variant == CatchFieldVariant.underline;
   bool get _usesRowPrefixIcon =>
@@ -568,6 +567,10 @@ class _CatchFieldState extends State<CatchField>
       !(widget.valid && !_hasError);
   bool get _hasLeadingSlot =>
       widget.leading != null || widget.icon != null || _usesRowPrefixIcon;
+  double get _leadingTextLaneInset => widget.leading != null
+      ? (widget.leadingExtent ?? CatchFieldTokens.leadingIconExtent) +
+            CatchFieldTokens.leadingGap
+      : CatchFieldRow.textLaneInset;
   String? get _title => widget.title;
   String? get _body => widget.body;
   Widget? get _action => widget.action;
@@ -602,8 +605,7 @@ class _CatchFieldState extends State<CatchField>
 
   bool get _shouldShowChevron =>
       widget.showChevron ??
-      (_mode == CatchFieldMode.nav &&
-          (widget.mode == CatchFieldMode.nav || _action == null) &&
+      (_isNavigation &&
           widget.onTap != null &&
           widget.tone != CatchFieldTone.danger);
 
@@ -640,69 +642,14 @@ class _CatchFieldState extends State<CatchField>
 
   @override
   Widget build(BuildContext context) {
-    late final Widget field;
-    if (_mode == CatchFieldMode.select) {
-      field = _buildSelectField(context);
-    } else if (_usesUnderlineChrome) {
-      field = _buildTextEntryField(context);
-    } else {
-      final t = CatchTokens.of(context);
-      final rowStack = Stack(
-        children: [
-          if (widget.divider)
-            Positioned(
-              top: 0,
-              left:
-                  _rowPadding.left +
-                  (_hasLeadingSlot ? CatchFieldRow.textLaneInset : 0),
-              right: _rowPadding.right,
-              child: ColoredBox(
-                color: CatchDivider.colorFor(t, CatchDividerRole.fieldRow),
-                child: const SizedBox(height: CatchStroke.hairline),
-              ),
-            ),
-          widget.add ? _buildAdd(t) : _buildRow(t),
-        ],
-      );
-      if (!_isEdit && !_hasControl) {
-        field = rowStack;
-      } else {
-        field = Shortcuts(
-          shortcuts: const <ShortcutActivator, Intent>{
-            SingleActivator(LogicalKeyboardKey.escape):
-                _CatchFieldDismissIntent(),
-          },
-          child: Actions(
-            actions: <Type, Action<Intent>>{
-              _CatchFieldDismissIntent:
-                  CallbackAction<_CatchFieldDismissIntent>(
-                    onInvoke: (_) {
-                      _dismiss();
-                      return null;
-                    },
-                  ),
-            },
-            child: _isEdit
-                ? TextFieldTapRegion(
-                    groupId: _textFieldTapRegionGroup,
-                    onTapOutside: _handleOutsidePointerDown,
-                    onTapUpOutside: _handleOutsidePointerUp,
-                    onTapInside: _clearOutsidePointer,
-                    onTapUpInside: _clearOutsidePointer,
-                    child: rowStack,
-                  )
-                : TapRegion(
-                    groupId: _tapRegionGroup,
-                    onTapOutside: _handleOutsidePointerDown,
-                    onTapUpOutside: _handleOutsidePointerUp,
-                    onTapInside: _clearOutsidePointer,
-                    onTapUpInside: _clearOutsidePointer,
-                    child: rowStack,
-                  ),
-          ),
-        );
-      }
-    }
+    final field = switch (widget._config) {
+      _SelectConfig() => _buildSelectField(context),
+      _EditConfig() when _usesUnderlineChrome => _buildTextEntryField(context),
+      _EditConfig() ||
+      _RowConfig() ||
+      _ToggleConfig() ||
+      _ControlConfig() => _buildConfiguredRow(context),
+    };
     final listeningField =
         NotificationListener<_CatchFieldChoicePickedNotification>(
           onNotification: _handleChoicePicked,
@@ -713,6 +660,60 @@ class _CatchFieldState extends State<CatchField>
       child: Opacity(
         opacity: CatchFieldTokens.disabledOpacity,
         child: listeningField,
+      ),
+    );
+  }
+
+  Widget _buildConfiguredRow(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final rowStack = Stack(
+      children: [
+        if (widget.divider)
+          Positioned(
+            top: 0,
+            left:
+                _rowPadding.left +
+                (_hasLeadingSlot ? _leadingTextLaneInset : 0),
+            right: _rowPadding.right,
+            child: ColoredBox(
+              color: CatchDivider.colorFor(t, CatchDividerRole.fieldRow),
+              child: const SizedBox(height: CatchStroke.hairline),
+            ),
+          ),
+        widget.add ? _buildAdd(t) : _buildRow(t),
+      ],
+    );
+    if (!_isEdit && !_hasControl) return rowStack;
+    return Shortcuts(
+      shortcuts: const <ShortcutActivator, Intent>{
+        SingleActivator(LogicalKeyboardKey.escape): _CatchFieldDismissIntent(),
+      },
+      child: Actions(
+        actions: <Type, Action<Intent>>{
+          _CatchFieldDismissIntent: CallbackAction<_CatchFieldDismissIntent>(
+            onInvoke: (_) {
+              _dismiss();
+              return null;
+            },
+          ),
+        },
+        child: _isEdit
+            ? TextFieldTapRegion(
+                groupId: _textFieldTapRegionGroup,
+                onTapOutside: _handleOutsidePointerDown,
+                onTapUpOutside: _handleOutsidePointerUp,
+                onTapInside: _clearOutsidePointer,
+                onTapUpInside: _clearOutsidePointer,
+                child: rowStack,
+              )
+            : TapRegion(
+                groupId: _tapRegionGroup,
+                onTapOutside: _handleOutsidePointerDown,
+                onTapUpOutside: _handleOutsidePointerUp,
+                onTapInside: _clearOutsidePointer,
+                onTapUpInside: _clearOutsidePointer,
+                child: rowStack,
+              ),
       ),
     );
   }

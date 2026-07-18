@@ -1244,6 +1244,14 @@ async function main() {
     addTextOutput(file.path, file.content);
   }
 
+  addTextOutput(
+    "lib/core/schema_contracts/generated/field_constraints.g.dart",
+    renderDartFieldConstraints({
+      schemaSpecs,
+      schemaMap: bundledSchemas,
+    })
+  );
+
   const dartCallableRequests = renderDartCallableRequestClasses({
     schemaSpecs,
     schemaMap: bundledSchemas,
@@ -1962,12 +1970,184 @@ ${bySource}
     text: `${dartGeneratedHeader()}
 // Stable barrel for generated Dart JSON Schema contracts.
 
+export 'field_constraints.g.dart';
 export 'schemas/schema_constants.g.dart';
 export 'schemas/schema_registry.g.dart';
 `,
     files,
     generatedConstants,
   };
+}
+
+function renderDartFieldConstraints({schemaSpecs, schemaMap}) {
+  const constraints = [];
+  for (const spec of schemaSpecs) {
+    const schema = schemaMap.get(spec.name);
+    if (!schema || !isFieldConstraintSchema(spec, schema)) continue;
+
+    const patchConfig = schema["x-callable-shape"] === "patch" ?
+      dartPatchClassConfig(spec.name) :
+      null;
+    const rootName = lowerCamelCase(patchConfig?.className ?? spec.name);
+    const rootSchema = patchConfig ? schema.properties?.fields : schema;
+    if (!rootSchema || typeof rootSchema !== "object") continue;
+    collectFieldConstraints({
+      schema: rootSchema,
+      rootName,
+      segments: [],
+      constraints,
+    });
+  }
+
+  constraints.sort((a, b) => a.path.localeCompare(b.path));
+  const declarations = constraints.map((entry) => {
+    const args = [
+      `path: ${dartString(entry.path)}`,
+      entry.maxLength == null ? null : `maxLength: ${entry.maxLength}`,
+      entry.minLength == null ? null : `minLength: ${entry.minLength}`,
+      entry.required ? "required: true" : null,
+      entry.pattern == null ? null : `pattern: ${dartString(entry.pattern)}`,
+      entry.enumValues == null ? null :
+        `enumValues: <String>[${entry.enumValues.map(dartString).join(", ")}]`,
+      entry.minimum == null ? null : `minimum: ${entry.minimum}`,
+      entry.maximum == null ? null : `maximum: ${entry.maximum}`,
+    ].filter(Boolean);
+    return `  static const ${entry.constName} = CatchContractFieldConstraints(\n` +
+      `${args.map((arg) => `    ${arg},`).join("\n")}\n` +
+      "  );";
+  }).join("\n\n");
+  const allEntries = constraints.map((entry) =>
+    `    ${dartString(entry.path)}: ${entry.constName},`
+  ).join("\n");
+
+  return `${dartGeneratedHeader()}
+/// UI-relevant constraints projected from patch and Firestore document schemas.
+class CatchContractFieldConstraints {
+  const CatchContractFieldConstraints({
+    required this.path,
+    this.maxLength,
+    this.minLength,
+    this.required = false,
+    this.pattern,
+    this.enumValues,
+    this.minimum,
+    this.maximum,
+  });
+
+  final String path;
+  final int? maxLength;
+  final int? minLength;
+  final bool required;
+  final String? pattern;
+  final List<String>? enumValues;
+  final num? minimum;
+  final num? maximum;
+}
+
+abstract final class CatchContractConstraints {
+${declarations}
+
+  static const all = <String, CatchContractFieldConstraints>{
+${allEntries}
+  };
+}
+`;
+}
+
+function isFieldConstraintSchema(spec, schema) {
+  return spec.source.startsWith("firestore/") ||
+    schema["x-callable-shape"] === "patch";
+}
+
+function collectFieldConstraints({schema, rootName, segments, constraints}) {
+  const objectSchema = constraintObjectSchema(schema);
+  const properties = objectSchema?.properties;
+  if (!properties || typeof properties !== "object") return;
+  const requiredFields = new Set(objectSchema.required ?? []);
+
+  for (const [fieldName, fieldSchema] of Object.entries(properties)) {
+    const nextSegments = [...segments, fieldName];
+    const nestedObject = constraintObjectSchema(fieldSchema);
+    if (nestedObject?.properties) {
+      collectFieldConstraints({
+        schema: nestedObject,
+        rootName,
+        segments: nextSegments,
+        constraints,
+      });
+      continue;
+    }
+
+    const projected = projectFieldConstraint(
+      fieldSchema,
+      requiredFields.has(fieldName)
+    );
+    if (!projected) continue;
+    const path = `${rootName}.${nextSegments.join(".")}`;
+    constraints.push({
+      ...projected,
+      path,
+      constName: `${rootName}${nextSegments.map(pascalCase).join("")}`,
+    });
+  }
+}
+
+function constraintObjectSchema(schema) {
+  if (!schema || typeof schema !== "object") return null;
+  if (schema.type === "object" || schema.properties) return schema;
+  for (const branch of schema.anyOf ?? schema.oneOf ?? []) {
+    if (branch?.type === "object" || branch?.properties) return branch;
+  }
+  return null;
+}
+
+function projectFieldConstraint(schema, parentRequired) {
+  const branches = [schema, ...(schema?.anyOf ?? []), ...(schema?.oneOf ?? [])]
+    .filter((branch) => branch && typeof branch === "object");
+  const values = (key) => branches
+    .map((branch) => branch[key])
+    .filter((value) => value != null);
+  const numberValue = (key, choose) => {
+    const candidates = values(key).filter((value) => typeof value === "number");
+    return candidates.length === 0 ? null : choose(...candidates);
+  };
+  const stringValues = values("pattern")
+    .filter((value) => typeof value === "string");
+  const patterns = [...new Set(stringValues)];
+  const enumValues = [...new Set(
+    branches.flatMap((branch) => Array.isArray(branch.enum) ? branch.enum : [])
+      .filter((value) => typeof value === "string")
+  )];
+  const types = branches.flatMap((branch) => Array.isArray(branch.type) ?
+    branch.type :
+    [branch.type]
+  );
+  const allowsNull = types.includes("null") ||
+    branches.some((branch) => branch.const === null);
+  const allowsEmpty = branches.some((branch) => branch.const === "") ||
+    branches.some((branch) => branch.minLength === 0);
+  const minLength = numberValue("minLength", Math.min);
+  const maxLength = numberValue("maxLength", Math.max);
+  const required = (parentRequired || (minLength ?? 0) > 0) &&
+    !allowsNull && !allowsEmpty;
+  const result = {
+    maxLength,
+    minLength,
+    required,
+    pattern: patterns.length === 1 ? patterns[0] : null,
+    enumValues: enumValues.length > 0 ? enumValues : null,
+    minimum: numberValue("minimum", Math.min),
+    maximum: numberValue("maximum", Math.max),
+  };
+  return Object.values(result).some((value) => value != null && value !== false) ?
+    result :
+    null;
+}
+
+function lowerCamelCase(value) {
+  const converted = pascalCase(value);
+  return converted.length === 0 ? converted :
+    `${converted[0].toLowerCase()}${converted.slice(1)}`;
 }
 
 function dartSchemaOutputPath(name) {
@@ -2046,6 +2226,7 @@ ${ungenerableRows}
 | \`tool/contracts/generated/schema_contract_registry.mjs\` | Node-side schema registry for validation tooling. |
 | \`tool/contracts/generated/schema_contract_validators.mjs\` | Node-side Ajv validators for contract checks. |
 | \`lib/core/schema_contracts/generated/profile_schema_contracts.g.dart\` | Dart profile catalog and storage policy constants. |
+| \`lib/core/schema_contracts/generated/field_constraints.g.dart\` | UI-relevant constraints projected from patch and Firestore document schemas. |
 | \`lib/core/schema_contracts/generated/schema_contracts.g.dart\` | Dart schema contract barrel. |
 | \`lib/core/schema_contracts/generated/schemas/*.g.dart\` | One generated Dart JSON Schema constant file per schema, plus lookup registry files. |
 | \`lib/core/schema_contracts/generated/callable_request_dtos.g.dart\` | Generated Dart callable request and patch helper barrel. |

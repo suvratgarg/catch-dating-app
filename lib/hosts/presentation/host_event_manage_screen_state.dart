@@ -110,6 +110,7 @@ class HostEventActionDisplayState {
   factory HostEventActionDisplayState.resolve({
     required Event event,
     required EventParticipationRoster? roster,
+    required AppLocalizations l10n,
     required bool cancelEventPending,
     required bool deleteEventPending,
   }) {
@@ -129,9 +130,11 @@ class HostEventActionDisplayState {
       showCancelAction: !isCancelled,
       showDeleteAction: !isCancelled && !hasKnownActivity,
       cancelDetail: cancelEventPending
-          ? 'Cancelling...'
-          : 'Keeps records · notifies guests',
-      deleteDetail: deleteEventPending ? 'Deleting...' : 'Permanent removal',
+          ? l10n.hostsEventActionCancelling
+          : l10n.hostsEventActionCancelDetail,
+      deleteDetail: deleteEventPending
+          ? l10n.hostsEventActionDeleting
+          : l10n.hostsEventActionDeleteDetail,
     );
   }
 

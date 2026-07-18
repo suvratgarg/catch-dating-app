@@ -11,8 +11,34 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../test_pump_helpers.dart';
+import 'test_support.dart';
 
 void main() {
+  testWidgets('CatchField input preserves an explicit unbounded maxLines', (
+    tester,
+  ) async {
+    final controller = TextEditingController(text: 'existing');
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchField.input(
+          title: 'Answer',
+          controller: controller,
+          maxLines: null,
+          minLines: 1,
+          keyboardType: TextInputType.multiline,
+        ),
+      ),
+    );
+
+    expect(tester.widget<CatchField>(find.byType(CatchField)).maxLines, isNull);
+    expect(tester.widget<TextField>(find.byType(TextField)).maxLines, isNull);
+
+    await tester.enterText(find.byType(TextField), 'first\nsecond');
+    expect(controller.text, 'first\nsecond');
+  });
+
   testWidgets('CatchField choices wrap and report caller-owned selection', (
     tester,
   ) async {
@@ -1067,6 +1093,112 @@ void main() {
       expect(submits, 1);
     },
   );
+
+  for (final scale in [1.3, 2.0]) {
+    testWidgets('CatchField input remains usable at ${scale}x text', (
+      tester,
+    ) async {
+      final controller = TextEditingController(
+        text: 'A long club description that must remain editable',
+      );
+      addTearDown(controller.dispose);
+      await tester.pumpWidget(
+        _wrap(
+          SizedBox(
+            width: 280,
+            child: CatchField.input(
+              title: 'Description',
+              controller: controller,
+              maxLines: 3,
+            ),
+          ),
+          textScale: scale,
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expectMinimumAccessibleTarget(tester, find.byType(TextField));
+    });
+
+    testWidgets('CatchField select remains usable at ${scale}x text', (
+      tester,
+    ) async {
+      final selected = cityOptionByName('mumbai')!;
+      await tester.pumpWidget(
+        _wrap(
+          SizedBox(
+            width: 280,
+            child: CatchField.select<CityOption>(
+              title: 'Preferred city',
+              values: defaultCityOptions,
+              itemLabel: (city) => city.label,
+              value: selected,
+              prefixIcon: Icon(CatchIcons.locationOnOutlined),
+              onChanged: (_) {},
+            ),
+          ),
+          textScale: scale,
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expectMinimumAccessibleTarget(
+        tester,
+        find.bySemanticsLabel('Preferred city'),
+      );
+    });
+  }
+
+  testWidgets('CatchField input lanes mirror in RTL', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        Directionality(
+          textDirection: TextDirection.rtl,
+          child: SizedBox(
+            width: 280,
+            child: CatchField.input(
+              title: 'City',
+              initialValue: 'Mumbai',
+              prefixIcon: Icon(CatchIcons.locationOnOutlined),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(
+      tester.getCenter(find.byIcon(CatchIcons.locationOnOutlined)).dx,
+      greaterThan(tester.getCenter(find.byType(EditableText)).dx),
+    );
+  });
+
+  testWidgets('CatchField select lanes mirror in RTL', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        Directionality(
+          textDirection: TextDirection.rtl,
+          child: SizedBox(
+            width: 280,
+            child: CatchField.select<CityOption>(
+              title: 'City',
+              values: defaultCityOptions,
+              itemLabel: (city) => city.label,
+              value: cityOptionByName('mumbai'),
+              prefixIcon: Icon(CatchIcons.locationOnOutlined),
+              onChanged: (_) {},
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(
+      tester.getCenter(find.byIcon(CatchIcons.locationOnOutlined)).dx,
+      greaterThan(
+        tester.getCenter(find.byIcon(CatchIcons.expandMoreRounded)).dx,
+      ),
+    );
+  });
 }
 
 Widget _wrap(Widget child, {ThemeData? theme, double textScale = 1}) {

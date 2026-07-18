@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/events/shared/event_tiles/event_date_rail_card.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_atoms.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class EventAgendaTile extends StatelessWidget {
@@ -29,7 +30,11 @@ class EventAgendaTile extends StatelessWidget {
         showClubName: showClubName,
       ),
       priceLabel: data.priceLabel,
-      statusLabel: eventTileCardStatusLabel(data.status, label: badgeLabel),
+      statusLabel: eventTileCardStatusLabel(
+        data.status,
+        context.l10n,
+        label: badgeLabel,
+      ),
       stripPosition: stripPosition,
       onTap: onTap,
     );

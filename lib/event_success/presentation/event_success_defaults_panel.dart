@@ -60,8 +60,8 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
 
     return CatchSectionList(
       children: [
-        CatchSection.fieldRows(
-          first: true,
+        CatchFieldInsetScope(
+          flush: true,
           child: CatchField.toggle(
             title: title,
             body: subtitle,

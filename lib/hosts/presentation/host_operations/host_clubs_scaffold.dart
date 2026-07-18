@@ -97,22 +97,21 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
         body: SafeArea(
           top: false,
           bottom: false,
-          child: ListView(
-            padding: CatchInsets.pageBodyUnderHeader.copyWith(bottom: 0),
-            children: [
-              HostEmptyActionCard(
+          child: CustomScrollView(
+            slivers: [
+              CatchSliverEmptyState(
+                icon: CatchIcons.groupsOutlined,
                 title: context.l10n.hostsHostClubsScaffoldTitleNoHostClubsYet,
-                body: context.l10n.hostsHostClubsScaffoldBodyCreateAClubOr,
-                actions: [
-                  CatchButton(
-                    label: context.l10n.hostsHostClubsScaffoldLabelCreateClub,
-                    icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-                    onPressed: () =>
-                        context.pushNamed(Routes.hostCreateClubScreen.name),
-                  ),
-                ],
+                message: context.l10n.hostsHostClubsScaffoldBodyCreateAClubOr,
+                action: CatchButton(
+                  label: context.l10n.hostsHostClubsScaffoldLabelCreateClub,
+                  icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+                  size: CatchButtonSize.sm,
+                  onPressed: () =>
+                      context.pushNamed(Routes.hostCreateClubScreen.name),
+                ),
               ),
-              const CatchScrollTerminalPadding(),
+              const CatchSliverTerminalPadding(),
             ],
           ),
         ),
@@ -124,15 +123,6 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
     return CatchTabbedScreenScaffold(
       title: selectedClub.name,
       actions: [
-        Semantics(
-          label: context.l10n.hostsHostClubsScaffoldTooltipSettings,
-          button: true,
-          child: CatchIconAction(
-            tooltip: context.l10n.hostsHostClubsScaffoldTooltipSettings,
-            icon: CatchIcons.settingsOutlined,
-            onPressed: _openHostSettings,
-          ),
-        ),
         if (_state.showClubPicker)
           CatchTopBarMenuAction<int>(
             tooltip: context.l10n.hostsHostClubsScaffoldTooltipSwitchClub,
@@ -172,7 +162,7 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
             slivers: [
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: CatchInsets.pageBodyUnderHeader.copyWith(bottom: 0),
+                  padding: CatchInsets.pageBody.copyWith(bottom: 0),
                   child: Center(
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(
@@ -206,7 +196,7 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
             ),
             slivers: [
               SliverPadding(
-                padding: CatchInsets.pageBodyUnderHeader.copyWith(bottom: 0),
+                padding: CatchInsets.pageBody.copyWith(bottom: 0),
                 sliver: SliverToBoxAdapter(
                   child: Center(
                     child: ConstrainedBox(
@@ -280,10 +270,6 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
         _pageScrollControllers[tab]?.restoreOffset(_pageScrollOffsets[tab]);
       });
     }
-  }
-
-  void _openHostSettings() {
-    context.pushNamed(Routes.hostSettingsScreen.name);
   }
 
   void _scheduleInitialEditorReveal() {

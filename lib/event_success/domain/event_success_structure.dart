@@ -1,13 +1,14 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/sentinels.dart';
+import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 
 enum EventSuccessUnitKind implements Labelled {
-  wholeGroup('Whole group'),
-  pods('Pods'),
-  pairs('Pairs'),
-  teams('Teams'),
-  tables('Tables');
+  wholeGroup(StructuredDomainCopy.eventSuccessUnitWholeGroupLabel),
+  pods(StructuredDomainCopy.eventSuccessUnitPodsLabel),
+  pairs(StructuredDomainCopy.eventSuccessUnitPairsLabel),
+  teams(StructuredDomainCopy.eventSuccessUnitTeamsLabel),
+  tables(StructuredDomainCopy.eventSuccessUnitTablesLabel);
 
   const EventSuccessUnitKind(this.label);
 
@@ -15,42 +16,57 @@ enum EventSuccessUnitKind implements Labelled {
   final String label;
 
   String get singularLabel => switch (this) {
-    EventSuccessUnitKind.wholeGroup => 'group',
-    EventSuccessUnitKind.pods => 'pod',
-    EventSuccessUnitKind.pairs => 'pair',
-    EventSuccessUnitKind.teams => 'team',
-    EventSuccessUnitKind.tables => 'table',
+    EventSuccessUnitKind.wholeGroup =>
+      StructuredDomainCopy.eventSuccessUnitWholeGroupSingular,
+    EventSuccessUnitKind.pods =>
+      StructuredDomainCopy.eventSuccessUnitPodSingular,
+    EventSuccessUnitKind.pairs =>
+      StructuredDomainCopy.eventSuccessUnitPairSingular,
+    EventSuccessUnitKind.teams =>
+      StructuredDomainCopy.eventSuccessUnitTeamSingular,
+    EventSuccessUnitKind.tables =>
+      StructuredDomainCopy.eventSuccessUnitTableSingular,
   };
 
   String get setupHint => switch (this) {
     EventSuccessUnitKind.wholeGroup =>
-      'Everyone stays in one shared flow; prompts happen at planned pauses.',
+      StructuredDomainCopy.eventSuccessUnitWholeGroupSetupHint,
     EventSuccessUnitKind.pods =>
-      'Small groups make arrival and first conversations less awkward.',
+      StructuredDomainCopy.eventSuccessUnitPodsSetupHint,
     EventSuccessUnitKind.pairs =>
-      'Pairings work for racket sports, speed rounds, and direct rotations.',
+      StructuredDomainCopy.eventSuccessUnitPairsSetupHint,
     EventSuccessUnitKind.teams =>
-      'Teams fit quizzes and collaborative activities with shared goals.',
+      StructuredDomainCopy.eventSuccessUnitTeamsSetupHint,
     EventSuccessUnitKind.tables =>
-      'Tables fit dinners and seated formats where movement is limited.',
+      StructuredDomainCopy.eventSuccessUnitTablesSetupHint,
   };
 
   bool get supportsUnitCount => this != EventSuccessUnitKind.wholeGroup;
 
   String get peoplePerLabel => switch (this) {
-    EventSuccessUnitKind.wholeGroup => 'Attendance target',
-    EventSuccessUnitKind.pods => 'People per pod',
-    EventSuccessUnitKind.pairs => 'People per pair',
-    EventSuccessUnitKind.teams => 'People per team',
-    EventSuccessUnitKind.tables => 'People per table',
+    EventSuccessUnitKind.wholeGroup =>
+      StructuredDomainCopy.eventSuccessUnitWholeGroupPeoplePerLabel,
+    EventSuccessUnitKind.pods =>
+      StructuredDomainCopy.eventSuccessUnitPodsPeoplePerLabel,
+    EventSuccessUnitKind.pairs =>
+      StructuredDomainCopy.eventSuccessUnitPairsPeoplePerLabel,
+    EventSuccessUnitKind.teams =>
+      StructuredDomainCopy.eventSuccessUnitTeamsPeoplePerLabel,
+    EventSuccessUnitKind.tables =>
+      StructuredDomainCopy.eventSuccessUnitTablesPeoplePerLabel,
   };
 
   String get countLabel => switch (this) {
-    EventSuccessUnitKind.wholeGroup => 'Group count',
-    EventSuccessUnitKind.pods => 'Pod count',
-    EventSuccessUnitKind.pairs => 'Pair count',
-    EventSuccessUnitKind.teams => 'Team count',
-    EventSuccessUnitKind.tables => 'Table count',
+    EventSuccessUnitKind.wholeGroup =>
+      StructuredDomainCopy.eventSuccessUnitWholeGroupCountLabel,
+    EventSuccessUnitKind.pods =>
+      StructuredDomainCopy.eventSuccessUnitPodsCountLabel,
+    EventSuccessUnitKind.pairs =>
+      StructuredDomainCopy.eventSuccessUnitPairsCountLabel,
+    EventSuccessUnitKind.teams =>
+      StructuredDomainCopy.eventSuccessUnitTeamsCountLabel,
+    EventSuccessUnitKind.tables =>
+      StructuredDomainCopy.eventSuccessUnitTablesCountLabel,
   };
 
   String countText(int count) =>
@@ -58,8 +74,8 @@ enum EventSuccessUnitKind implements Labelled {
 }
 
 enum EventSuccessRotationRepeatStrategy implements Labelled {
-  avoid('Avoid repeats'),
-  allowWhenExhausted('Allow when rounds run long');
+  avoid(StructuredDomainCopy.eventSuccessRepeatAvoid),
+  allowWhenExhausted(StructuredDomainCopy.eventSuccessRepeatAllowWhenExhausted);
 
   const EventSuccessRotationRepeatStrategy(this.label);
 
@@ -68,9 +84,9 @@ enum EventSuccessRotationRepeatStrategy implements Labelled {
 }
 
 enum EventSuccessActivityAssignmentAttribute implements Labelled {
-  paceBand('Pace'),
-  skillBand('Skill'),
-  roleBand('Role');
+  paceBand(StructuredDomainCopy.eventSuccessAttributePace),
+  skillBand(StructuredDomainCopy.eventSuccessAttributeSkill),
+  roleBand(StructuredDomainCopy.eventSuccessAttributeRole);
 
   const EventSuccessActivityAssignmentAttribute(this.label);
 
@@ -78,15 +94,21 @@ enum EventSuccessActivityAssignmentAttribute implements Labelled {
   final String label;
 
   String get balanceLabel => switch (this) {
-    EventSuccessActivityAssignmentAttribute.paceBand => 'Spread pace',
-    EventSuccessActivityAssignmentAttribute.skillBand => 'Spread skill',
-    EventSuccessActivityAssignmentAttribute.roleBand => 'Spread roles',
+    EventSuccessActivityAssignmentAttribute.paceBand =>
+      StructuredDomainCopy.eventSuccessAttributeSpreadPace,
+    EventSuccessActivityAssignmentAttribute.skillBand =>
+      StructuredDomainCopy.eventSuccessAttributeSpreadSkill,
+    EventSuccessActivityAssignmentAttribute.roleBand =>
+      StructuredDomainCopy.eventSuccessAttributeSpreadRoles,
   };
 
   String get clusterLabel => switch (this) {
-    EventSuccessActivityAssignmentAttribute.paceBand => 'Pace together',
-    EventSuccessActivityAssignmentAttribute.skillBand => 'Skill together',
-    EventSuccessActivityAssignmentAttribute.roleBand => 'Role together',
+    EventSuccessActivityAssignmentAttribute.paceBand =>
+      StructuredDomainCopy.eventSuccessAttributePaceTogether,
+    EventSuccessActivityAssignmentAttribute.skillBand =>
+      StructuredDomainCopy.eventSuccessAttributeSkillTogether,
+    EventSuccessActivityAssignmentAttribute.roleBand =>
+      StructuredDomainCopy.eventSuccessAttributeRoleTogether,
   };
 }
 

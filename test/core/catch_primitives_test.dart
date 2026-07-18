@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/motion/catch_transitions.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -2320,6 +2321,86 @@ void main() {
     expect(find.byType(CatchErrorBody), findsOneWidget);
   });
 
+  testWidgets(
+    'box state viewport centers in the visible floating-shell region',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(400, 800);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: const AppShellActiveTab(
+            index: 1,
+            bottomBarPlacement: AppShellBottomBarPlacement.floating,
+            bottomOverlayInset: 100,
+            child: Scaffold(
+              key: ValueKey('box-state-scaffold'),
+              body: CatchStateViewport(
+                child: CatchEmptyState(title: 'Nothing here'),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final scaffold = find.byKey(const ValueKey('box-state-scaffold'));
+      final offset =
+          tester.getCenter(find.byType(CatchEmptyStateContent)).dy -
+          tester.getCenter(scaffold).dy;
+      expect(offset, closeTo(-50, 1));
+    },
+  );
+
+  testWidgets(
+    'sliver empty and error states center in the visible floating-shell region',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(400, 800);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      Future<double> pumpState(Widget sliver, Finder content) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.light,
+            home: AppShellActiveTab(
+              index: 1,
+              bottomBarPlacement: AppShellBottomBarPlacement.floating,
+              bottomOverlayInset: 100,
+              child: Scaffold(
+                key: const ValueKey('state-scaffold'),
+                body: CustomScrollView(slivers: [sliver]),
+              ),
+            ),
+          ),
+        );
+        final viewport = find.descendant(
+          of: find.byKey(const ValueKey('state-scaffold')),
+          matching: find.byType(CustomScrollView),
+        );
+        return tester.getCenter(content).dy - tester.getCenter(viewport).dy;
+      }
+
+      final emptyOffset = await pumpState(
+        const CatchSliverEmptyState(title: 'Nothing here'),
+        find.byType(CatchEmptyStateContent),
+      );
+      expect(emptyOffset, closeTo(-50, 1));
+
+      final errorOffset = await pumpState(
+        const CatchSliverErrorState(
+          title: 'Unavailable',
+          message: 'Try again later.',
+        ),
+        find.byType(CatchErrorBody),
+      );
+      expect(errorOffset, closeTo(-50, 1));
+    },
+  );
+
   testWidgets('CatchAsyncValueView uses branded default error state', (
     tester,
   ) async {
@@ -2327,7 +2408,7 @@ void main() {
       _wrap(
         CatchAsyncValueView<int>(
           value: AsyncError<int>(StateError('load failed'), StackTrace.empty),
-          data: (value) => Text('$value'),
+          builder: (context, value) => Text('$value'),
         ),
       ),
     );
@@ -2361,7 +2442,7 @@ void main() {
       _wrap(
         CatchAsyncValueView<int>(
           value: const AsyncLoading<int>(),
-          data: (value) => Text('$value'),
+          builder: (context, value) => Text('$value'),
           loadingBuilder: (context) => const Text('Loading custom state'),
         ),
       ),

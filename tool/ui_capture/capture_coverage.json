@@ -671,9 +671,24 @@
     },
     {
       "routeId": "hostClubTeamScreen",
-      "status": "planned",
-      "priority": "P2",
-      "reason": "The Host team spoke has loaded Widgetbook coverage; add routed owner and co-host captures in the next Host Clubs capture refresh."
+      "status": "captured",
+      "priority": "P1",
+      "reason": "The unified Host team workspace captures professional profile, selected-club team management, hosted-club navigation, profile create/save mutations, bottom sign-out failures, accessibility scale, and reduced motion on the canonical route.",
+      "captureIds": [
+        "host_team_active_profile",
+        "host_team_text_scale_2",
+        "host_team_reduced_motion",
+        "host_team_fallback_profile",
+        "host_team_clubs_loading",
+        "host_team_clubs_error",
+        "host_team_clubs_offline",
+        "host_team_inline_profile_edit",
+        "host_team_save_profile_pending",
+        "host_team_save_profile_error",
+        "host_team_save_profile_offline",
+        "host_team_sign_out_error",
+        "host_team_sign_out_offline"
+      ]
     },
     {
       "routeId": "hostClubPaymentsScreen",
@@ -758,6 +773,7 @@
         "host_create_policy_dynamic_pricing_disabled",
         "host_create_policy_dynamic_pricing_validation",
         "host_create_guide",
+        "host_create_guide_question_pack",
         "host_create_basics_validation",
         "host_create_custom_activity",
         "host_create_event_photos",
@@ -942,56 +958,6 @@
         "host_chat_safety_pending_menu"
       ],
       "reason": "Host Chat now has deterministic captures for host inquiry baseline, match loading, match error, missing chat, message loading, message error, offline message load, empty thread, event fallback, blocked chat, text scale 2.0, reduced motion, paired light/dark output, composer ready/send-pending/image-pending/disabled states, keyboard-open multiline safe-area, image/day-separator populated thread, report failure snackbar, block confirmation dialog, and pending safety menu rows. Remaining work is provider-specific offline policy, dedicated references, and pixel comparison."
-    },
-    {
-      "routeId": "hostSettingsScreen",
-      "status": "captured",
-      "priority": "P2",
-      "captureIds": [
-        "host_settings_active_profile",
-        "host_settings_profile_loading",
-        "host_settings_profile_error",
-        "host_settings_profile_offline",
-        "host_settings_no_profile",
-        "host_settings_create_profile_pending",
-        "host_settings_create_profile_error",
-        "host_settings_create_profile_offline",
-        "host_settings_fallback_profile",
-        "host_settings_clubs_loading",
-        "host_settings_clubs_error",
-        "host_settings_clubs_offline",
-        "host_settings_inline_profile_edit",
-        "host_settings_save_profile_pending",
-        "host_settings_save_profile_error",
-        "host_settings_save_profile_offline",
-        "host_settings_sign_out_error",
-        "host_settings_sign_out_offline",
-        "host_settings_text_scale_2",
-        "host_settings_reduced_motion"
-      ],
-      "reason": "Host account/settings captures cover active professional profile, profile loading/error/offline, no-profile, create-profile mutation pending/error/offline, fallback profile, hosted/owned clubs loading/error/offline, editor-sheet save pending/error/offline, sign-out error/offline, text-scale 2.0, and reduced-motion fixtures."
-    },
-    {
-      "routeId": "hostProfileScreen",
-      "status": "captured",
-      "priority": "P2",
-      "captureIds": [
-        "host_profile_populated",
-        "host_profile_loading",
-        "host_profile_error",
-        "host_profile_offline",
-        "host_profile_missing",
-        "host_profile_validation_error",
-        "host_profile_create_pending",
-        "host_profile_create_error",
-        "host_profile_create_offline",
-        "host_profile_save_pending",
-        "host_profile_save_error",
-        "host_profile_save_offline",
-        "host_profile_text_scale_2",
-        "host_profile_reduced_motion"
-      ],
-      "reason": "Host professional profile editor captures cover populated, loading, error/offline, missing-profile, display-name validation, create/save mutation pending/error/offline, text-scale 2.0, and reduced-motion fixtures."
     },
     {
       "routeId": "eventPolicyLabScreen",

@@ -31,6 +31,7 @@ class EventSuccessSetupBody extends StatefulWidget {
     required this.onChanged,
     required this.onAttendeePromptChanged,
     this.editable = true,
+    this.planLeadingRows = const [],
     this.showResetToRecommended = false,
     this.onResetToRecommended,
   }) : assert(
@@ -45,6 +46,7 @@ class EventSuccessSetupBody extends StatefulWidget {
   final ValueChanged<EventSuccessHostDraftUpdate> onChanged;
   final ValueChanged<String> onAttendeePromptChanged;
   final bool editable;
+  final List<Widget> planLeadingRows;
   final bool showResetToRecommended;
   final VoidCallback? onResetToRecommended;
 
@@ -105,11 +107,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
             CatchField.read(
               title: profile.formatLabel,
               body: profile.summary,
-              valueText: context.l10n
-                  .eventSuccessEventSuccessSetupBodyVisiblecopyMinimumcapacityMaximumcapacityGuests(
-                    minimumCapacity: draft.playbook.capacity.min,
-                    maximumCapacity: draft.playbook.capacity.max,
-                  ),
+              valueText: profile.interactionModel.label,
               action:
                   widget.showResetToRecommended &&
                       widget.onResetToRecommended != null
@@ -121,6 +119,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                     )
                   : null,
             ),
+            ...widget.planLeadingRows,
             CatchField.inputActions(
               title: context
                   .l10n
@@ -289,12 +288,23 @@ class EventSuccessModuleRows extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (questionnaire)
-          CatchField.choices<_QuestionnaireMode>(
+          CatchField.optionCards<_QuestionnaireMode>(
             key: ValueKey('eventSuccessModule-${module.id}'),
             title: context
                 .l10n
                 .eventSuccessEventSuccessSetupBodyTextMatchClueQuestions,
-            body: switch (_questionnaireMode(_draft)) {
+            values: _QuestionnaireMode.values,
+            itemTitle: (mode) => switch (mode) {
+              _QuestionnaireMode.off =>
+                context.l10n.eventSuccessEventSuccessSetupBodyLabelOff,
+              _QuestionnaireMode.cluesOnly =>
+                context.l10n.eventSuccessEventSuccessSetupBodyLabelCluesOnly,
+              _QuestionnaireMode.cluesAndPairing =>
+                context
+                    .l10n
+                    .eventSuccessEventSuccessSetupBodyLabelCluesSoftPairing,
+            },
+            itemDescription: (mode) => switch (mode) {
               _QuestionnaireMode.off =>
                 context
                     .l10n
@@ -308,22 +318,9 @@ class EventSuccessModuleRows extends StatelessWidget {
                     .l10n
                     .eventSuccessEventSuccessSetupBodyTextAnswersCreateCluesAndSoftlyGuidePairings,
             },
-            values: _QuestionnaireMode.values,
-            itemLabel: (mode) => switch (mode) {
-              _QuestionnaireMode.off =>
-                context.l10n.eventSuccessEventSuccessSetupBodyLabelOff,
-              _QuestionnaireMode.cluesOnly =>
-                context.l10n.eventSuccessEventSuccessSetupBodyLabelCluesOnly,
-              _QuestionnaireMode.cluesAndPairing =>
-                context
-                    .l10n
-                    .eventSuccessEventSuccessSetupBodyLabelCluesSoftPairing,
-            },
-            selected: {_questionnaireMode(_draft)},
+            selected: _questionnaireMode(_draft),
             enabled: _editable,
-            onSelectionChanged: _editable
-                ? (selection) => _onQuestionnaireModeChanged(selection.single)
-                : null,
+            onChanged: _editable ? _onQuestionnaireModeChanged : null,
           )
         else
           CatchField.toggle(
@@ -336,7 +333,7 @@ class EventSuccessModuleRows extends StatelessWidget {
             onChanged: _editable ? _onModuleChanged : null,
           ),
         if (questionnaire && _draft.isModuleSelected(module.id))
-          CatchSection.containedFieldRows(
+          KeyedSubtree(
             key: const ValueKey('eventSuccessQuestionnaireConfig'),
             child: EventSuccessQuestionnaireConfigEditor(
               value: _draft.questionnaireConfig,

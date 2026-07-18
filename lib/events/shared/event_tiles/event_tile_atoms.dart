@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
+import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 String eventTileKickerLabel(EventTileData data, {required bool showClubName}) {
@@ -28,19 +29,19 @@ String? eventTileSupportingLabel(
   return null;
 }
 
-String eventTileStatusLabel(EventTileStatus status) {
+String eventTileStatusLabel(EventTileStatus status, AppLocalizations l10n) {
   return switch (status) {
-    EventTileStatus.open => 'Open',
-    EventTileStatus.joined => "You're in",
-    EventTileStatus.saved => 'Saved',
-    EventTileStatus.recommended => 'Recommended',
-    EventTileStatus.hosted => 'Hosted',
-    EventTileStatus.waitlisted => 'Waitlisted',
-    EventTileStatus.attended => 'Attended',
-    EventTileStatus.past => 'Past',
-    EventTileStatus.full => 'Full',
-    EventTileStatus.ineligible => 'Not eligible',
-    EventTileStatus.cancelled => 'Cancelled',
+    EventTileStatus.open => l10n.eventsTileStatusOpen,
+    EventTileStatus.joined => l10n.eventsTileStatusJoined,
+    EventTileStatus.saved => l10n.eventsTileStatusSaved,
+    EventTileStatus.recommended => l10n.eventsTileStatusRecommended,
+    EventTileStatus.hosted => l10n.eventsTileStatusHosted,
+    EventTileStatus.waitlisted => l10n.eventsTileStatusWaitlisted,
+    EventTileStatus.attended => l10n.eventsTileStatusAttended,
+    EventTileStatus.past => l10n.eventsTileStatusPast,
+    EventTileStatus.full => l10n.eventsTileStatusFull,
+    EventTileStatus.ineligible => l10n.eventsTileStatusIneligible,
+    EventTileStatus.cancelled => l10n.eventsTileStatusCancelled,
   };
 }
 
@@ -57,15 +58,21 @@ EventTileStatus eventTileStatusForBadge(String? badgeLabel) {
   };
 }
 
-String? eventTileCardStatusLabel(EventTileStatus status, {String? label}) {
+String? eventTileCardStatusLabel(
+  EventTileStatus status,
+  AppLocalizations l10n, {
+  String? label,
+}) {
   final explicit = label?.trim();
   if (explicit != null && explicit.isNotEmpty) {
-    if (explicit.toUpperCase() == 'VIEW') return null;
+    if (explicit.toUpperCase() == _eventTileViewBadge) return null;
     return explicit;
   }
   if (status == EventTileStatus.open) return null;
-  return eventTileStatusLabel(status);
+  return eventTileStatusLabel(status, l10n);
 }
+
+const _eventTileViewBadge = 'VIEW';
 
 CatchBadgeTone eventTileStatusTone(EventTileStatus status) {
   return switch (status) {

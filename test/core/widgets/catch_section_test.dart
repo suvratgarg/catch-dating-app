@@ -62,6 +62,56 @@ void main() {
     },
   );
 
+  testWidgets('CatchSection aligns dividers to caller-owned leading extents', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const SizedBox(
+          width: 360,
+          child: CatchSection.fieldRows(
+            title: 'Events',
+            children: [
+              CatchField.read(
+                title: 'First',
+                leading: SizedBox(
+                  key: ValueKey('first-leading'),
+                  width: 48,
+                  height: 32,
+                ),
+                leadingExtent: 48,
+              ),
+              CatchField.read(
+                title: 'Second',
+                leading: SizedBox(width: 48, height: 32),
+                leadingExtent: 48,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final sectionRect = tester.getRect(find.byType(CatchSection));
+    final leadingRect = tester.getRect(
+      find.byKey(const ValueKey('first-leading')),
+    );
+    final dividerRect = tester.getRect(
+      find
+          .byWidgetPredicate(
+            (widget) => widget is Positioned && widget.child is CatchDivider,
+          )
+          .first,
+    );
+
+    expect(leadingRect.left, sectionRect.left);
+    expect(
+      dividerRect.left - sectionRect.left,
+      48 + CatchFieldTokens.leadingGap,
+    );
+    expect(dividerRect.right, sectionRect.right);
+  });
+
   testWidgets(
     'CatchSection.fieldRows paints dividers from the preceding row layer',
     (tester) async {
@@ -100,18 +150,26 @@ void main() {
   );
 
   testWidgets(
-    'CatchSection field dividers do not change the global row divider tone',
+    'CatchSection field dividers scale the token alpha in light and dark',
     (tester) async {
-      final tokens = CatchTokens.editorialLight;
-
-      expect(
-        CatchDivider.colorFor(tokens, CatchDividerRole.fieldSection),
-        tokens.line,
-      );
-      expect(
-        CatchDivider.colorFor(tokens, CatchDividerRole.fieldRow),
-        tokens.line.withValues(alpha: CatchOpacity.fieldRowDivider),
-      );
+      for (final tokens in [
+        CatchTokens.editorialLight,
+        CatchTokens.editorialDark,
+      ]) {
+        expect(
+          CatchDivider.colorFor(tokens, CatchDividerRole.fieldSection),
+          tokens.line,
+        );
+        final rowColor = CatchDivider.colorFor(
+          tokens,
+          CatchDividerRole.fieldRow,
+        );
+        expect(
+          rowColor.a,
+          closeTo(tokens.line.a * CatchOpacity.fieldRowDivider, 0.0001),
+        );
+        expect(rowColor.a, lessThan(tokens.line.a));
+      }
     },
   );
 

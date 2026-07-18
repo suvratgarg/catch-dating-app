@@ -1,6 +1,6 @@
 {
-  "version": "1.5.39",
-  "updated": "2026-07-17",
+  "version": "1.5.42",
+  "updated": "2026-07-18",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
   "patterns": [
@@ -429,6 +429,38 @@
       ],
       "adopters": [
         {
+          "path": "lib/core/widgets/catch_empty_state.dart",
+          "role": "reference CatchStateViewport geometry shared by box and sliver empty/error placement; preserves responsive overflow while shifting the optical center above floating shell chrome",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-host-consumer-ui-reconciliation"
+        },
+        {
+          "path": "lib/core/widgets/catch_error_state.dart",
+          "role": "canonical sliver error placement adapter sharing CatchSliverStateViewport geometry with empty states",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-host-consumer-ui-reconciliation"
+        },
+        {
+          "path": "test/core/catch_primitives_test.dart",
+          "role": "floating-shell optical-center parity coverage for box, sliver empty, and sliver error states",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-host-consumer-ui-reconciliation"
+        },
+        {
+          "path": "lib/user_profile/presentation/profile_screen.dart",
+          "role": "consumer Profile terminal box empty/error branches routed through CatchStateViewport inside the floating tab shell",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-host-consumer-ui-reconciliation"
+        },
+        {
+          "path": "test/profile/profile_widgets_test.dart",
+          "role": "Profile unavailable/error branch adoption coverage for shell-aware box placement",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-host-consumer-ui-reconciliation"
+        },
+        {
           "path": "lib/events/presentation/calendar/calendar_screen.dart",
           "role": "route-edge provider reads and CalendarHomeState construction",
           "status": "aligned",
@@ -678,6 +710,13 @@
           "providerFree": true,
           "status": "aligned",
           "lastReviewedPass": "2026-07-03-host-operations-screen-state"
+        },
+        {
+          "path": "lib/hosts/presentation/host_team_workspace_state.dart",
+          "role": "provider-free Host Team workspace state for profile and hosted-club async branches, create/edit/sign-out action policy, owner-versus-team role labels, and typed edit-or-preview navigation intent",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-host-consumer-ui-reconciliation"
         },
         {
           "path": "test/hosts/host_operations_screen_test.dart",
@@ -1064,6 +1103,7 @@
         "copy/structured_domain_copy_en.json",
         "functions/src/shared/notificationCopy.ts",
         "tool/copy/check_mobile_copy_ownership.dart",
+        "tool/copy/mobile_copy_allowlist.json",
         "tool/copy/sync_structured_domain_copy.dart"
       ],
       "adopters": [
@@ -1153,9 +1193,33 @@
         },
         {
           "path": "copy/structured_domain_copy_en.json",
-          "role": "marketing-owned synchronous Event Success and event-policy content source",
+          "role": "marketing-owned synchronous Event Success, profile-validation, and event-policy content source",
           "status": "aligned",
-          "lastReviewedPass": "2026-07-12-mobile-copy-zero-baseline"
+          "lastReviewedPass": "2026-07-18-mobile-copy-scanner-hardening"
+        },
+        {
+          "path": "lib/events/shared/event_invite_share_copy.dart",
+          "role": "consumer and Host external-share copy with explicit AppLocalizations injection",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-mobile-copy-scanner-hardening"
+        },
+        {
+          "path": "lib/onboarding/presentation/pages/running_prefs_page_state.dart",
+          "role": "consumer presentation-state copy resolved from AppLocalizations",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-mobile-copy-scanner-hardening"
+        },
+        {
+          "path": "lib/event_success/domain/event_success_models.dart",
+          "role": "Flutter-independent Event Success display metadata from generated structured copy",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-mobile-copy-scanner-hardening"
+        },
+        {
+          "path": "lib/user_profile/domain/profile_validation.dart",
+          "role": "Flutter-independent profile validation copy from generated structured constants",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-mobile-copy-scanner-hardening"
         },
         {
           "path": "functions/src/shared/notifications.ts",
@@ -1170,6 +1234,7 @@
         "flutter gen-l10n",
         "node tool/run.mjs check copy:mobile-catalog",
         "node tool/run.mjs check copy:mobile-ownership",
+        "node tool/run.mjs check copy:l10n-key-usage",
         "node tool/run.mjs check copy:native-sync",
         "node tool/run.mjs check copy:notification-sync",
         "node tool/run.mjs check copy:event-success-questionnaires",
@@ -1447,6 +1512,18 @@
           "role": "typed descriptor, shared accordion, and single save-delegate contract coverage",
           "status": "aligned",
           "lastReviewedPass": "2026-07-17-catch-field-phase-d-descriptor-prototype"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+          "role": "Host Club Identity and Contact adopter with typed UpdateClubPatch descriptors, schema-derived constraints, and one save delegate",
+          "status": "aligned",
+          "lastReviewedPass": "catch-system-stretch-20260718"
+        },
+        {
+          "path": "test/core/forms/contract_alignment_test.dart",
+          "role": "consumer and Host descriptor-to-schema alignment gate with a seeded drift fixture",
+          "status": "aligned",
+          "lastReviewedPass": "catch-system-stretch-20260718"
         }
       ],
       "candidateQueue": [
@@ -1454,12 +1531,6 @@
           "id": "ARCH-FORM-DESCRIPTOR-001-CONSUMER-REMAINDER",
           "path": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
           "reason": "Running and Lifestyle intentionally retain SelfProfile descriptors until the About You prototype receives owner API review.",
-          "addedPass": "2026-07-17-catch-field-phase-d-descriptor-prototype"
-        },
-        {
-          "id": "ARCH-FORM-DESCRIPTOR-001-HOST-EDIT",
-          "path": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
-          "reason": "Host Club migration is ordered after owner approval and the edit-spec Phase 3 immediate-save model.",
           "addedPass": "2026-07-17-catch-field-phase-d-descriptor-prototype"
         },
         {

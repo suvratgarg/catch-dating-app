@@ -39,74 +39,57 @@ class MicroPodsHostCard extends StatelessWidget {
               .l10n
               .eventSuccessEventSuccessHostOverridesVisiblecopyHostOverrideV1,
     );
-    return CatchSurface(
-      borderColor: CatchTokens.of(context).line,
-      padding: CatchInsets.content,
+    return CatchSection.contained(
+      title: context
+          .l10n
+          .eventSuccessEventSuccessHostOverridesTextSmallStarterGroups,
+      subtitle: staleAssignmentCount > 0
+          ? context
+                .l10n
+                .eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted
+          : optedOutCount > 0
+          ? context
+                .l10n
+                .eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards
+          : context
+                .l10n
+                .eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards4cbcdf,
+      trailing: CatchBadge(
+        label: context.l10n
+            .eventSuccessEventSuccessHostOverridesLabelLengthAssigned(
+              length: activeAssignments.length,
+            ),
+        tone: activeAssignments.isEmpty
+            ? CatchBadgeTone.warning
+            : CatchBadgeTone.success,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(
-                CatchIcons.groups2Outlined,
-                color: CatchTokens.of(context).primary,
-              ),
-              gapW10,
-              Expanded(
-                child: Text(
-                  context
-                      .l10n
-                      .eventSuccessEventSuccessHostOverridesTextSmallStarterGroups,
-                  style: CatchTextStyles.sectionTitle(context),
-                ),
-              ),
-              CatchBadge(
-                label: context.l10n
-                    .eventSuccessEventSuccessHostOverridesLabelLengthAssigned(
-                      length: activeAssignments.length,
-                    ),
-                tone: activeAssignments.isEmpty
-                    ? CatchBadgeTone.warning
-                    : CatchBadgeTone.success,
-              ),
-              if (optedOutCount > 0) ...[
-                gapW8,
-                CatchBadge(
-                  label: context.l10n
-                      .eventSuccessEventSuccessHostOverridesLabelOptedoutcountOptedOut(
-                        optedOutCount: optedOutCount,
-                      ),
-                  icon: CatchIcons.visibilityOffOutlined,
-                ),
+          if (optedOutCount > 0 || hostEdited)
+            Wrap(
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
+              children: [
+                if (optedOutCount > 0)
+                  CatchBadge(
+                    label: context.l10n
+                        .eventSuccessEventSuccessHostOverridesLabelOptedoutcountOptedOut(
+                          optedOutCount: optedOutCount,
+                        ),
+                    icon: CatchIcons.visibilityOffOutlined,
+                  ),
+                if (hostEdited)
+                  CatchBadge(
+                    label: context
+                        .l10n
+                        .eventSuccessEventSuccessHostOverridesLabelHostEdited,
+                    icon: CatchIcons.editOutlined,
+                  ),
               ],
-              if (hostEdited) ...[
-                gapW8,
-                CatchBadge(
-                  label: context
-                      .l10n
-                      .eventSuccessEventSuccessHostOverridesLabelHostEdited,
-                  icon: CatchIcons.editOutlined,
-                ),
-              ],
-            ],
-          ),
-          gapH8,
-          Text(
-            staleAssignmentCount > 0
-                ? context
-                      .l10n
-                      .eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted
-                : optedOutCount > 0
-                ? context
-                      .l10n
-                      .eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards
-                : context
-                      .l10n
-                      .eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards4cbcdf,
-            style: CatchTextStyles.supporting(context),
-          ),
+            ),
           if (activeAssignments.isNotEmpty) ...[
-            gapH12,
+            if (optedOutCount > 0 || hostEdited) gapH12,
             PodGroupSummary(assignments: activeAssignments),
             gapH10,
             AssignmentReasonSummary(assignments: activeAssignments),
@@ -674,70 +657,51 @@ class RotationsHostCard extends StatelessWidget {
               .l10n
               .eventSuccessEventSuccessHostOverridesVisiblecopyHostOverrideV1,
     );
-    return CatchSurface(
-      borderColor: CatchTokens.of(context).line,
-      padding: CatchInsets.content,
+    return CatchSection.contained(
+      title: context
+          .l10n
+          .eventSuccessEventSuccessHostOverridesTextTimedPartnerRotations,
+      subtitle: staleAssignmentCount > 0
+          ? context
+                .l10n
+                .eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted4eddde
+          : context
+                .l10n
+                .eventSuccessEventSuccessHostOverridesTextGeneratePairingsFromEvent,
+      trailing: CatchBadge(
+        label: context.l10n
+            .eventSuccessEventSuccessHostOverridesLabelRoundcountRounds(
+              roundCount: roundCount,
+            ),
+        tone: roundCount == 0 ? CatchBadgeTone.warning : CatchBadgeTone.success,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(
-                CatchIcons.syncAltRounded,
-                color: CatchTokens.of(context).primary,
-              ),
-              gapW10,
-              Expanded(
-                child: Text(
-                  context
-                      .l10n
-                      .eventSuccessEventSuccessHostOverridesTextTimedPartnerRotations,
-                  style: CatchTextStyles.sectionTitle(context),
-                ),
-              ),
-              CatchBadge(
-                label: context.l10n
-                    .eventSuccessEventSuccessHostOverridesLabelRoundcountRounds(
-                      roundCount: roundCount,
-                    ),
-                tone: roundCount == 0
-                    ? CatchBadgeTone.warning
-                    : CatchBadgeTone.success,
-              ),
-              if (optedOutCount > 0) ...[
-                gapW8,
-                CatchBadge(
-                  label: context.l10n
-                      .eventSuccessEventSuccessHostOverridesLabelOptedoutcountOptedOut(
-                        optedOutCount: optedOutCount,
-                      ),
-                  icon: CatchIcons.visibilityOffOutlined,
-                ),
+          if (optedOutCount > 0 || hostEdited)
+            Wrap(
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
+              children: [
+                if (optedOutCount > 0)
+                  CatchBadge(
+                    label: context.l10n
+                        .eventSuccessEventSuccessHostOverridesLabelOptedoutcountOptedOut(
+                          optedOutCount: optedOutCount,
+                        ),
+                    icon: CatchIcons.visibilityOffOutlined,
+                  ),
+                if (hostEdited)
+                  CatchBadge(
+                    label: context
+                        .l10n
+                        .eventSuccessEventSuccessHostOverridesLabelHostEdited,
+                    icon: CatchIcons.editOutlined,
+                  ),
               ],
-              if (hostEdited) ...[
-                gapW8,
-                CatchBadge(
-                  label: context
-                      .l10n
-                      .eventSuccessEventSuccessHostOverridesLabelHostEdited,
-                  icon: CatchIcons.editOutlined,
-                ),
-              ],
-            ],
-          ),
-          gapH8,
-          Text(
-            staleAssignmentCount > 0
-                ? context
-                      .l10n
-                      .eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted4eddde
-                : context
-                      .l10n
-                      .eventSuccessEventSuccessHostOverridesTextGeneratePairingsFromEvent,
-            style: CatchTextStyles.supporting(context),
-          ),
+            ),
           if (activeAssignments.isNotEmpty) ...[
-            gapH12,
+            if (optedOutCount > 0 || hostEdited) gapH12,
             Wrap(
               spacing: CatchSpacing.s2,
               runSpacing: CatchSpacing.s2,

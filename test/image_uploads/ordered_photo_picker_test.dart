@@ -69,6 +69,36 @@ void main() {
 
     expect(removed, [1]);
   });
+
+  testWidgets('picker supports section-owned labels without a spacer', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const Scaffold(
+          body: OrderedPhotoPicker(
+            photos: [],
+            onAddPhotos: null,
+            onRemovePhoto: null,
+            onReorderPhoto: null,
+            emptyActionLabel: 'Add photos',
+            addActionLabel: 'Add more',
+          ),
+        ),
+      ),
+    );
+
+    final pickerColumn = tester.widget<Column>(
+      find
+          .descendant(
+            of: find.byType(OrderedPhotoPicker),
+            matching: find.byType(Column),
+          )
+          .first,
+    );
+    expect(pickerColumn.children.first, isA<AspectRatio>());
+  });
 }
 
 Uint8List _pngBytes() {

@@ -754,7 +754,7 @@ extension _CatchFieldEdit on _CatchFieldState {
         minHeight: CatchControlMetrics.floatingMinHeight,
       );
     }
-    if (_mode == CatchFieldMode.select && !widget.showLabel) {
+    if (_isSelect && !widget.showLabel) {
       return BoxConstraints(
         minHeight: CatchControlMetrics.minHeight(_controlSize),
       );

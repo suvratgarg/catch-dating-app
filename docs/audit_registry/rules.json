@@ -498,6 +498,40 @@
         }
       ]
     },
+    "FORM-CONTRACT-001": {
+      "title": "Editable form constraints derive from schema contracts",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "data_contracts",
+        "version": "1.1.21"
+      },
+      "applies_to": [
+        "contracts/**/*.schema.json",
+        "tool/contracts/generate_schema_contracts.mjs",
+        "lib/core/schema_contracts/generated/field_constraints.g.dart",
+        "lib/core/forms/**",
+        "lib/user_profile/presentation/**",
+        "lib/hosts/presentation/**",
+        "test/core/forms/contract_alignment_test.dart"
+      ],
+      "instruction": "Editable consumer and host form rows that map to schema-owned fields must bind the generated CatchContractFieldConstraints entry instead of repeating length, required, pattern, enum, or numeric constraints as literals.",
+      "sunset_when": [
+        "All schema-backed form factories are generated directly from schema-owned form metadata"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "contracts:form-alignment",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/data_contracts.md#field-constraint-projection"
+        }
+      ]
+    },
     "SCHEMA-FIXTURE-001": {
       "title": "Contract fixtures stay schema-backed",
       "status": "active",
@@ -691,6 +725,11 @@
         }
       ],
       "enforcement": [
+        {
+          "tool": "design:host-event-field-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/widget_catalog.md#rule-changelog"
+        },
         {
           "tool": "design:section-dividers",
           "stage": "scanner-gate",
@@ -896,6 +935,11 @@
       ],
       "enforcement": [
         {
+          "tool": "design:host-event-field-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/widget_catalog.md"
+        },
+        {
           "tool": "design:section-dividers",
           "stage": "scanner-gate",
           "docAnchor": "docs/widget_catalog.md"
@@ -944,6 +988,11 @@
         }
       ],
       "enforcement": [
+        {
+          "tool": "design:host-event-field-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
+        },
         {
           "tool": "lint:catch-ui-plugin-smoke",
           "stage": "analyzer-warning",
@@ -1718,7 +1767,7 @@
         "lib/core/presentation/**",
         "lib/core/widgets/catch_section_layout.dart"
       ],
-      "instruction": "Every direct consumer and host StatefulShellBranch must declare its true root scroll owners in tool/design/tab_root_scroll_contracts.json. Root scrolls end in CatchSliverTerminalPadding or CatchScrollTerminalPadding, use SafeArea(bottom: false) when the terminal owns the device inset, consume raw floating iOS shell obstruction, and add no tab-bar inset for Android chrome already reserved by Scaffold.",
+      "instruction": "Every direct consumer and host StatefulShellBranch must declare its true root scroll owners in tool/design/tab_root_scroll_contracts.json. Root scrolls end in CatchSliverTerminalPadding or CatchScrollTerminalPadding, use SafeArea(bottom: false) when the terminal owns the device inset, consume raw floating iOS shell obstruction, and add no tab-bar inset for Android chrome already reserved by Scaffold. Box-layout terminal empty/error branches use CatchStateViewport; presentation slivers use CatchSliverStateViewport, CatchSliverEmptyState, or CatchSliverErrorState rather than composing SliverFillRemaining directly, so the same shell obstruction controls their optical center.",
       "sunset_when": [
         "Every tab-root scroll surface is structurally created through one canonical root-scroll constructor that appends terminal clearance automatically"
       ],
@@ -1730,6 +1779,11 @@
       "enforcement": [
         {
           "tool": "design:tab-root-scroll-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#app-shell-chrome-policy"
+        },
+        {
+          "tool": "design:terminal-padding",
           "stage": "scanner-gate",
           "docAnchor": "docs/app_architecture.md#app-shell-chrome-policy"
         }
@@ -2824,6 +2878,6 @@
       ]
     }
   },
-  "version": "2.7.15",
-  "updated": "2026-07-14"
+  "version": "2.7.19",
+  "updated": "2026-07-18"
 }

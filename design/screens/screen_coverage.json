@@ -251,8 +251,8 @@
     {
       "routeId": "hostClubTeamScreen",
       "status": "contracted",
-      "priority": "P2",
-      "reason": "Covered by screen.host.clubs as the Host team spoke reached from Club settings.",
+      "priority": "P1",
+      "reason": "Covered by screen.host.clubs as the canonical Host team workspace for profile, team management, hosted clubs, and sign out.",
       "screenId": "screen.host.clubs"
     },
     {
@@ -338,20 +338,6 @@
       "priority": "P1",
       "reason": "Covered by screen.host.chat as the professional host conversation thread.",
       "screenId": "screen.host.chat"
-    },
-    {
-      "routeId": "hostSettingsScreen",
-      "status": "contracted",
-      "priority": "P2",
-      "reason": "Covered by screen.host.settings as the host account/settings route.",
-      "screenId": "screen.host.settings"
-    },
-    {
-      "routeId": "hostProfileScreen",
-      "status": "contracted",
-      "priority": "P2",
-      "reason": "Covered by screen.host.profile as the direct professional host profile editor route.",
-      "screenId": "screen.host.profile"
     },
     {
       "routeId": "eventPolicyLabScreen",

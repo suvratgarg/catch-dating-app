@@ -11,6 +11,7 @@ class CatchRangeSlider extends StatelessWidget {
     super.key,
     required this.values,
     required this.onChanged,
+    this.onChangeEnd,
     this.min = 0,
     this.max = 100,
     this.divisions,
@@ -21,6 +22,7 @@ class CatchRangeSlider extends StatelessWidget {
 
   final RangeValues values;
   final ValueChanged<RangeValues>? onChanged;
+  final ValueChanged<RangeValues>? onChangeEnd;
   final double min;
   final double max;
   final int? divisions;
@@ -58,6 +60,7 @@ class CatchRangeSlider extends StatelessWidget {
         values: values,
         semanticFormatterCallback: semanticFormatterCallback,
         onChanged: onChanged,
+        onChangeEnd: onChangeEnd,
       ),
     );
 

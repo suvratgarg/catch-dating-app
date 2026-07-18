@@ -68,6 +68,7 @@ import 'package:catch_dating_app/hosts/presentation/club_management/create/widge
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/host_club_editor_loading_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_team_management_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
@@ -80,6 +81,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/host_create
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_photo_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_step_header.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_age_range_field.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_details_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_policy_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_success_step.dart';
@@ -93,8 +95,8 @@ import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state
 import 'package:catch_dating_app/hosts/presentation/host_home_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_home_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/host_settings_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_settings_view_model.dart';
+import 'package:catch_dating_app/hosts/presentation/host_team_workspace_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_team_workspace_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
@@ -174,7 +176,7 @@ final _longNameEvent = HostOperationsFixtures.upcomingEvent.copyWith(
   id: 'design-host-long-name-event',
   clubId: _longNameOwnerClub.id,
   meetingPoint: 'Bandra West Promenade amphitheatre',
-  meetingLocation: HostOperationsFixtures.upcomingEvent.meetingLocation
+  meetingLocation: HostOperationsFixtures.upcomingEvent.meetingLocation!
       .copyWith(name: 'Bandra West Promenade amphitheatre'),
 );
 final _customActivityEventDraft = HostOperationsFixtures.eventDraft.copyWith(
@@ -185,6 +187,14 @@ final _customActivityEventDraft = HostOperationsFixtures.eventDraft.copyWith(
   distance: null,
   paceName: null,
 );
+
+const _createEventSteps = <int, String>{
+  0: 'Basics',
+  1: 'Location',
+  2: 'Photos',
+  3: 'Policy',
+  4: 'Review',
+};
 final _hostManageDisabledInviteLinks = <EventInviteLink>[
   HostOperationsFixtures.inviteLinks.first.copyWith(
     id: 'design-host-link-disabled-edge',
@@ -1385,22 +1395,25 @@ Widget _hostHomeExactCatalog(BuildContext context, String focus) {
     children: [
       _StateCard(
         label: 'exact component',
-        child: _HostHomeSectionFrame(child: _hostHomePreviewFor(focus)),
+        child: _HostHomeSectionFrame(
+          child: _hostHomePreviewFor(context, focus),
+        ),
       ),
     ],
   );
 }
 
-Widget _hostHomePreviewFor(String focus) {
+Widget _hostHomePreviewFor(BuildContext context, String focus) {
   final club = HostOperationsFixtures.primaryClub;
   final event = HostOperationsFixtures.upcomingEvent;
   final clubs = HostOperationsFixtures.clubs;
   final state = buildHostHomeTodayDashboardState(
     AsyncData<List<Event>>([event, HostOperationsFixtures.privateEvent]),
     now: event.startTime.subtract(const Duration(hours: 2)),
+    l10n: context.l10n,
   );
   final now = event.startTime.subtract(const Duration(hours: 2));
-  final tasks = HostHomeTodayTaskData.forEvent(event);
+  final tasks = HostHomeTodayTaskData.forEvent(event, context.l10n);
   return switch (focus) {
     'HostEmptyActionCard' => HostEmptyActionCard(
       title: 'No clubs yet',
@@ -1621,24 +1634,6 @@ Widget _hostClubPreviewFor(String focus) {
       onManageEvent: (_, _) {},
       now: HostOperationsFixtures.now,
     ),
-    'HostInlineAgeRangeEditor' => HostClubEditTab(
-      club: club,
-      currentUid: _hostUid,
-      isOwner: true,
-      initialExpandedField: 'ageRange',
-    ),
-    'HostInlineOptionEditor' => HostClubEditTab(
-      club: club,
-      currentUid: _hostUid,
-      isOwner: true,
-      initialExpandedField: 'primaryActivityKind',
-    ),
-    'HostInlineTextEntryEditor' => HostClubEditTab(
-      club: club,
-      currentUid: _hostUid,
-      isOwner: true,
-      initialExpandedField: 'name',
-    ),
     'HostOrganizerMetricGrid' => HostOrganizerMetricGrid(
       club: club,
       eventsLoaded: true,
@@ -1689,14 +1684,14 @@ Widget _hostEventManageExactCatalog(BuildContext context, String focus) {
       _StateCard(
         label: 'exact component',
         child: _HostManageComponentFrame(
-          child: _hostEventManagePreviewFor(focus),
+          child: _hostEventManagePreviewFor(context, focus),
         ),
       ),
     ],
   );
 }
 
-Widget _hostEventManagePreviewFor(String focus) {
+Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
   final event = HostOperationsFixtures.privateEvent;
   final club = HostOperationsFixtures.primaryClub;
   final roster = EventParticipationRoster.fromParticipations(
@@ -1747,11 +1742,13 @@ Widget _hostEventManagePreviewFor(String focus) {
       actionState: HostEventActionDisplayState.resolve(
         event: event,
         roster: roster,
+        l10n: context.l10n,
         cancelEventPending: false,
         deleteEventPending: false,
       ),
       actionError: null,
       privateLinkActionState: HostPrivateLinkActionState.resolve(
+        l10n: context.l10n,
         accessState: CatchAsyncState<EventPrivateAccess?>.data(
           HostOperationsFixtures.privateAccess,
         ),
@@ -1802,16 +1799,12 @@ Widget _hostEventManagePreviewFor(String focus) {
       eventId: event.id,
       mode: HostEventParticipantsMode.setup,
     ),
+    'HostEventCheckInQrPanel' => HostEventCheckInQrPanel(event: event),
     'HostEventSummaryCard' => HostEventSummaryCard(club: club, event: event),
     'HostEventSummaryRow' => HostEventSummaryRow(
       icon: CatchIcons.locationOnOutlined,
       label: 'Meet',
       value: 'Carter Road Jetty',
-    ),
-    'HostExportReportButton' => HostExportReportButton(
-      label: 'Ops CSV',
-      isExporting: false,
-      onExport: () async {},
     ),
     'HostFullCapacityApron' => HostFullCapacityApron(
       event: event,
@@ -1886,6 +1879,7 @@ Widget _hostEventManagePreviewFor(String focus) {
         return HostPrivateAccessBody(
           event: event,
           state: HostPrivateAccessDisplayState.resolve(
+            l10n: context.l10n,
             access: HostOperationsFixtures.privateAccess,
             inviteLinksState: CatchAsyncState<List<EventInviteLink>>.data(
               HostOperationsFixtures.inviteLinks,
@@ -2175,59 +2169,26 @@ Widget hostTeamHostActionDialogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Covered by host settings route states',
-  type: HostSettingsProfileRows,
+  name: 'Covered by host team route states',
+  type: HostTeamProfileRows,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
   name: 'Route states',
-  type: HostAccountScreen,
-  path: '[P2 host surfaces]/Host settings',
+  type: HostClubTeamScreen,
+  path: '[P2 host surfaces]/Host team',
 )
-Widget hostSettingsRouteStates(BuildContext context) {
+Widget hostTeamRouteStates(BuildContext context) {
   return _HostCatalog(
-    title: 'HostAccountScreen',
-    contractId: 'screen.host.settings',
+    title: 'HostClubTeamScreen',
+    contractId: 'screen.host.clubs',
     children: [
       _StateCard(
         label: 'auth required',
         child: const _DeviceFrame(
-          child: _HostShellScope(uid: null, child: HostAccountScreen()),
-        ),
-      ),
-      _StateCard(
-        label: 'profile loading',
-        child: _DeviceFrame(
           child: _HostShellScope(
-            hostedClubs: const [],
-            ownedClubs: const [],
-            hostProfileStream:
-                HostOperationsFixtures.loadingStream<HostProfile?>(),
-            child: const HostAccountScreen(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'profile error',
-        child: _DeviceFrame(
-          child: _HostShellScope(
-            hostedClubs: const [],
-            ownedClubs: const [],
-            hostProfileStream: HostOperationsFixtures.errorStream<HostProfile?>(
-              'Host profile failed',
-            ),
-            child: const HostAccountScreen(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'no profile',
-        child: _DeviceFrame(
-          child: _HostShellScope(
-            hostedClubs: const [],
-            ownedClubs: const [],
-            hostProfileStream: Stream<HostProfile?>.value(null),
-            child: const HostAccountScreen(),
+            uid: null,
+            child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
           ),
         ),
       ),
@@ -2237,14 +2198,16 @@ Widget hostSettingsRouteStates(BuildContext context) {
           child: _HostShellScope(
             hostProfileStream:
                 HostOperationsFixtures.loadingStream<HostProfile?>(),
-            child: const HostAccountScreen(),
+            child: const HostClubTeamScreen(clubId: 'design-host-sea-face'),
           ),
         ),
       ),
       _StateCard(
         label: 'active profile and clubs',
         child: const _DeviceFrame(
-          child: _HostShellScope(child: HostAccountScreen()),
+          child: _HostShellScope(
+            child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
+          ),
         ),
       ),
       _StateCard(
@@ -2253,7 +2216,7 @@ Widget hostSettingsRouteStates(BuildContext context) {
           child: _HostShellScope(
             hostedClubsStream:
                 HostOperationsFixtures.loadingStream<List<Club>>(),
-            child: const HostAccountScreen(),
+            child: const HostClubTeamScreen(clubId: 'design-host-sea-face'),
           ),
         ),
       ),
@@ -2264,7 +2227,7 @@ Widget hostSettingsRouteStates(BuildContext context) {
             ownedClubsStream: HostOperationsFixtures.errorStream<List<Club>>(
               'Hosted clubs failed',
             ),
-            child: const HostAccountScreen(),
+            child: const HostClubTeamScreen(clubId: 'design-host-sea-face'),
           ),
         ),
       ),
@@ -2273,7 +2236,9 @@ Widget hostSettingsRouteStates(BuildContext context) {
         child: const _DeviceFrame(
           child: _MediaOverride(
             textScaler: TextScaler.linear(2),
-            child: _HostShellScope(child: HostAccountScreen()),
+            child: _HostShellScope(
+              child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
+            ),
           ),
         ),
       ),
@@ -2282,7 +2247,9 @@ Widget hostSettingsRouteStates(BuildContext context) {
         child: const _DeviceFrame(
           child: _MediaOverride(
             disableAnimations: true,
-            child: _HostShellScope(child: HostAccountScreen()),
+            child: _HostShellScope(
+              child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
+            ),
           ),
         ),
       ),
@@ -2291,7 +2258,7 @@ Widget hostSettingsRouteStates(BuildContext context) {
         child: const _DeviceFrame(
           child: _HostShellScope(
             themeMode: ThemeMode.dark,
-            child: HostAccountScreen(),
+            child: HostClubTeamScreen(clubId: 'design-host-sea-face'),
           ),
         ),
       ),
@@ -2301,25 +2268,25 @@ Widget hostSettingsRouteStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Profile summary states',
-  type: HostSettingsProfileSection,
-  path: '[P2 host surfaces]/Host settings',
+  type: HostTeamProfileSection,
+  path: '[P2 host surfaces]/Host team',
 )
-Widget hostSettingsProfileSummaryStates(BuildContext context) {
+Widget hostTeamProfileSummaryStates(BuildContext context) {
   return _HostCatalog(
-    title: 'HostSettingsProfileSection',
-    contractId: 'section.host.settings.profile_summary',
+    title: 'HostTeamProfileSection',
+    contractId: 'section.host.team.profile',
     children: [
       _StateCard(
         label: 'profile loading',
         child: const _DeviceFrame(
-          child: _HostSettingsProfileFrame(state: HostSettingsProfileLoading()),
+          child: _HostTeamProfileFrame(state: HostTeamProfileLoading()),
         ),
       ),
       _StateCard(
         label: 'profile error',
         child: _DeviceFrame(
-          child: _HostSettingsProfileFrame(
-            state: HostSettingsProfileError(
+          child: _HostTeamProfileFrame(
+            state: HostTeamProfileError(
               error: StateError('Host profile failed'),
             ),
           ),
@@ -2328,14 +2295,14 @@ Widget hostSettingsProfileSummaryStates(BuildContext context) {
       _StateCard(
         label: 'no profile',
         child: const _DeviceFrame(
-          child: _HostSettingsProfileFrame(state: HostSettingsProfileMissing()),
+          child: _HostTeamProfileFrame(state: HostTeamProfileMissing()),
         ),
       ),
       _StateCard(
         label: 'create pending',
         child: const _DeviceFrame(
-          child: _HostSettingsProfileFrame(
-            state: HostSettingsProfileMissing(),
+          child: _HostTeamProfileFrame(
+            state: HostTeamProfileMissing(),
             creatingProfile: true,
           ),
         ),
@@ -2343,8 +2310,8 @@ Widget hostSettingsProfileSummaryStates(BuildContext context) {
       _StateCard(
         label: 'club fallback profile',
         child: _DeviceFrame(
-          child: _HostSettingsProfileFrame(
-            state: HostSettingsProfileContent(
+          child: _HostTeamProfileFrame(
+            state: HostTeamProfileContent(
               profile: _hostProfileVariant(HostProfileStatus.active),
               isFallback: true,
             ),
@@ -2354,7 +2321,7 @@ Widget hostSettingsProfileSummaryStates(BuildContext context) {
       _StateCard(
         label: 'active edit rows',
         child: _DeviceFrame(
-          child: _HostSettingsProfileFrame(
+          child: _HostTeamProfileFrame(
             profile: _hostProfileVariant(HostProfileStatus.active),
           ),
         ),
@@ -2362,7 +2329,7 @@ Widget hostSettingsProfileSummaryStates(BuildContext context) {
       _StateCard(
         label: 'active preview rows',
         child: _DeviceFrame(
-          child: _HostSettingsProfileFrame(
+          child: _HostTeamProfileFrame(
             profile: _hostProfileVariant(HostProfileStatus.active),
             editMode: false,
           ),
@@ -2371,7 +2338,7 @@ Widget hostSettingsProfileSummaryStates(BuildContext context) {
       _StateCard(
         label: 'pending status',
         child: _DeviceFrame(
-          child: _HostSettingsProfileFrame(
+          child: _HostTeamProfileFrame(
             profile: _hostProfileVariant(HostProfileStatus.pending),
           ),
         ),
@@ -2379,7 +2346,7 @@ Widget hostSettingsProfileSummaryStates(BuildContext context) {
       _StateCard(
         label: 'suspended status',
         child: _DeviceFrame(
-          child: _HostSettingsProfileFrame(
+          child: _HostTeamProfileFrame(
             profile: _hostProfileVariant(HostProfileStatus.suspended),
           ),
         ),
@@ -2389,7 +2356,7 @@ Widget hostSettingsProfileSummaryStates(BuildContext context) {
         child: _DeviceFrame(
           child: _MediaOverride(
             textScaler: const TextScaler.linear(2),
-            child: _HostSettingsProfileFrame(
+            child: _HostTeamProfileFrame(
               profile: _hostProfileVariant(HostProfileStatus.active),
             ),
           ),
@@ -2401,40 +2368,40 @@ Widget hostSettingsProfileSummaryStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Clubs states',
-  type: HostSettingsClubsSection,
-  path: '[P2 host surfaces]/Host settings',
+  type: HostTeamHostedClubsSection,
+  path: '[P2 host surfaces]/Host team',
 )
-Widget hostSettingsClubsStates(BuildContext context) {
+Widget hostTeamHostedClubsStates(BuildContext context) {
   return _HostCatalog(
-    title: 'HostSettingsClubsSection',
-    contractId: 'section.host.settings.clubs',
+    title: 'HostTeamHostedClubsSection',
+    contractId: 'section.host.team.hosted_clubs',
     children: [
       _StateCard(
         label: 'clubs loading',
         child: const _DeviceFrame(
-          child: _HostSettingsClubsFrame(loading: true),
+          child: _HostTeamHostedClubsFrame(loading: true),
         ),
       ),
       _StateCard(
         label: 'clubs error',
         child: _DeviceFrame(
-          child: _HostSettingsClubsFrame(
+          child: _HostTeamHostedClubsFrame(
             error: StateError('Hosted clubs failed'),
           ),
         ),
       ),
       _StateCard(
         label: 'empty clubs',
-        child: const _DeviceFrame(child: _HostSettingsClubsFrame(clubs: [])),
+        child: const _DeviceFrame(child: _HostTeamHostedClubsFrame(clubs: [])),
       ),
       _StateCard(
         label: 'owner and host-team rows',
-        child: const _DeviceFrame(child: _HostSettingsClubsFrame()),
+        child: const _DeviceFrame(child: _HostTeamHostedClubsFrame()),
       ),
       _StateCard(
         label: 'preview mode rows',
         child: const _DeviceFrame(
-          child: _HostSettingsClubsFrame(editMode: false),
+          child: _HostTeamHostedClubsFrame(editMode: false),
         ),
       ),
       _StateCard(
@@ -2442,210 +2409,7 @@ Widget hostSettingsClubsStates(BuildContext context) {
         child: const _DeviceFrame(
           child: _MediaOverride(
             textScaler: TextScaler.linear(2),
-            child: _HostSettingsClubsFrame(),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Route states',
-  type: HostProfileScreen,
-  path: '[P2 host surfaces]/Host profile',
-)
-Widget hostProfileRouteStates(BuildContext context) {
-  return _HostCatalog(
-    title: 'HostProfileScreen',
-    contractId: 'screen.host.profile',
-    children: [
-      _StateCard(
-        label: 'auth required',
-        child: const _DeviceFrame(
-          child: _HostShellScope(uid: null, child: HostProfileScreen()),
-        ),
-      ),
-      _StateCard(
-        label: 'profile loading',
-        child: _DeviceFrame(
-          child: _HostShellScope(
-            hostProfileStream:
-                HostOperationsFixtures.loadingStream<HostProfile?>(),
-            child: const HostProfileScreen(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'profile error',
-        child: _DeviceFrame(
-          child: _HostShellScope(
-            hostProfileStream: HostOperationsFixtures.errorStream<HostProfile?>(
-              'Host profile failed',
-            ),
-            child: const HostProfileScreen(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'missing profile',
-        child: _DeviceFrame(
-          child: _HostShellScope(
-            hostProfileStream: Stream<HostProfile?>.value(null),
-            child: const HostProfileScreen(),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'populated active profile',
-        child: const _DeviceFrame(
-          child: _HostShellScope(child: HostProfileScreen()),
-        ),
-      ),
-      _StateCard(
-        label: 'text scale 2.0',
-        child: const _DeviceFrame(
-          child: _MediaOverride(
-            textScaler: TextScaler.linear(2),
-            child: _HostShellScope(child: HostProfileScreen()),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'reduced motion',
-        child: const _DeviceFrame(
-          child: _MediaOverride(
-            disableAnimations: true,
-            child: _HostShellScope(child: HostProfileScreen()),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'dark theme',
-        child: const _DeviceFrame(
-          child: _HostShellScope(
-            themeMode: ThemeMode.dark,
-            child: HostProfileScreen(),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Form states',
-  type: HostProfileForm,
-  path: '[P2 host surfaces]/Host profile',
-)
-Widget hostProfileFormStates(BuildContext context) {
-  return _HostCatalog(
-    title: 'HostProfileForm',
-    contractId: 'section.host.profile.form',
-    children: [
-      _StateCard(
-        label: 'active profile',
-        child: _DeviceFrame(
-          child: _HostProfileFormFrame(
-            profile: _hostProfileVariant(HostProfileStatus.active),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'pending review',
-        child: _DeviceFrame(
-          child: _HostProfileFormFrame(
-            profile: _hostProfileVariant(HostProfileStatus.pending),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'suspended profile',
-        child: _DeviceFrame(
-          child: _HostProfileFormFrame(
-            profile: _hostProfileVariant(HostProfileStatus.suspended),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'validation error',
-        child: _DeviceFrame(
-          child: _HostProfileFormFrame(
-            profile: _hostProfileVariant(HostProfileStatus.active),
-            displayNameOverride: '',
-            validateOnBuild: true,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'save pending',
-        child: _DeviceFrame(
-          child: _HostProfileFormFrame(
-            profile: _hostProfileVariant(HostProfileStatus.active),
-            saving: true,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'text scale 2.0',
-        child: _DeviceFrame(
-          child: _MediaOverride(
-            textScaler: const TextScaler.linear(2),
-            child: _HostProfileFormFrame(
-              profile: _hostProfileVariant(HostProfileStatus.active),
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'reduced motion',
-        child: _DeviceFrame(
-          child: _MediaOverride(
-            disableAnimations: true,
-            child: _HostProfileFormFrame(
-              profile: _hostProfileVariant(HostProfileStatus.active),
-            ),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'dark theme',
-        child: _DeviceFrame(
-          child: _HostProfileFormFrame(
-            profile: _hostProfileVariant(HostProfileStatus.active),
-            themeMode: ThemeMode.dark,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Field states',
-  type: HostProfileFields,
-  path: '[P2 host surfaces]/Host profile',
-)
-Widget hostProfileFieldStates(BuildContext context) {
-  return _HostCatalog(
-    title: 'HostProfileFields',
-    contractId: 'section.host.profile.form.fields',
-    children: [
-      for (final status in HostProfileStatus.values)
-        _StateCard(
-          label: hostProfileStatusLabel(status),
-          child: _DeviceFrame(
-            child: _HostProfileFieldsFrame(
-              profile: _hostProfileVariant(status),
-            ),
-          ),
-        ),
-      _StateCard(
-        label: 'editor sheet without status',
-        child: _DeviceFrame(
-          child: _HostProfileFieldsFrame(
-            profile: _hostProfileVariant(HostProfileStatus.active),
-            showStatus: false,
+            child: _HostTeamHostedClubsFrame(),
           ),
         ),
       ),
@@ -3710,28 +3474,6 @@ Widget createClubPhotosPickerCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Photos label states',
-  type: EditClubPhotosLabel,
-  path: '[P1 product surfaces]/Host create club',
-)
-Widget editClubPhotosLabelCatalogStates(BuildContext context) {
-  return const _HostCatalog(
-    title: 'EditClubPhotosLabel',
-    contractId: 'component.host.club.edit_photos_label',
-    children: [
-      _StateCard(
-        label: 'three photos',
-        child: SizedBox(width: 320, child: EditClubPhotosLabel(count: 3)),
-      ),
-      _StateCard(
-        label: 'empty strip',
-        child: SizedBox(width: 320, child: EditClubPhotosLabel(count: 0)),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Image states',
   type: CreateClubProfileImagePicker,
   path: '[P1 product surfaces]/Host create club',
@@ -4262,6 +4004,34 @@ Widget eventPolicyStepCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Age range states',
+  type: EventAgeRangeField,
+  path: '[P1 product surfaces]/Host create event',
+)
+Widget eventAgeRangeFieldCatalogStates(BuildContext context) {
+  return const _HostCatalog(
+    title: 'EventAgeRangeField',
+    contractId: 'component.host.event.age_range_field',
+    children: [
+      _StateCard(
+        label: 'bounded editable range',
+        child: _DeviceFrame(child: _EventAgeRangeFieldFrame()),
+      ),
+      _StateCard(
+        label: 'unrestricted sentinels',
+        child: _DeviceFrame(
+          child: _EventAgeRangeFieldFrame(minAge: 0, maxAge: 99),
+        ),
+      ),
+      _StateCard(
+        label: 'disabled',
+        child: _DeviceFrame(child: _EventAgeRangeFieldFrame(enabled: false)),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Event success step states',
   type: EventSuccessStep,
   path: '[P1 product surfaces]/Host create event',
@@ -4482,11 +4252,11 @@ Widget hostStrictCatchRosterDecideTargetCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostAccountScreen,
+  type: HostClubTeamScreen,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostAccountScreenCatalogStates(BuildContext context) =>
-    hostSettingsRouteStates(context);
+Widget hostStrictHostClubTeamScreenCatalogStates(BuildContext context) =>
+    hostTeamRouteStates(context);
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -4628,14 +4398,6 @@ Widget hostStrictHostClubEditTabCatalogStates(BuildContext context) =>
     _hostClubExactCatalog(context, 'HostClubEditTab');
 
 @widgetbook.UseCase(
-  name: 'Within Edit tab',
-  type: HostClubInlineTextEntry,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostClubInlineTextEntryCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostClubInlineTextEntry');
-
-@widgetbook.UseCase(
   name: 'Owner loaded',
   type: HostClubEventDefaultsScreen,
   path: '[P1 product surfaces]/Host operations/Club settings spokes',
@@ -4745,7 +4507,7 @@ Widget hostStrictHostEventAttendancePanelCatalogStates(BuildContext context) =>
 )
 Widget hostStrictHostEventManageRouteScreenCatalogStates(
   BuildContext context,
-) => hostEventManageRouteAndSectionStates(context);
+) => _hostEventManageExactCatalog(context, 'HostEventManageRouteScreen');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -4832,11 +4594,11 @@ Widget hostStrictHostEventToolsPageIndicatorCatalogStates(
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostExportReportButton,
+  type: HostEventCheckInQrPanel,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostExportReportButtonCatalogStates(BuildContext context) =>
-    _hostEventManageExactCatalog(context, 'HostExportReportButton');
+Widget hostStrictHostEventCheckInQrPanelCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostEventCheckInQrPanel');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -4856,35 +4618,11 @@ Widget hostStrictHostFullCapacityBannerCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostInlineAgeRangeEditor,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostInlineAgeRangeEditorCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostInlineAgeRangeEditor');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostInlineOptionEditor,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostInlineOptionEditorCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostInlineOptionEditor');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
   type: HostInlineSkeletonIcon,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictHostInlineSkeletonIconCatalogStates(BuildContext context) =>
     hostLoadingSkeletonCatalogStates(context);
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostInlineTextEntryEditor,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostInlineTextEntryEditorCatalogStates(BuildContext context) =>
-    _hostClubExactCatalog(context, 'HostInlineTextEntryEditor');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -4909,6 +4647,28 @@ Widget hostStrictHostInviteLinksListCatalogStates(BuildContext context) =>
 )
 Widget hostStrictHostLoadingScreenCatalogStates(BuildContext context) =>
     hostHomeRouteStates(context);
+
+enum _HostCreateEventMutationPreviewMode {
+  saveDraftPending,
+  saveDraftError,
+  submitPending,
+  submitError,
+  submitOffline,
+}
+
+class _HostCreateEventMutationPreview extends ConsumerStatefulWidget {
+  const _HostCreateEventMutationPreview({
+    required this.mode,
+    required this.child,
+  });
+
+  final _HostCreateEventMutationPreviewMode mode;
+  final Widget child;
+
+  @override
+  ConsumerState<_HostCreateEventMutationPreview> createState() =>
+      _HostCreateEventMutationPreviewState();
+}
 
 class _HostCreateEventMutationPreviewState
     extends ConsumerState<_HostCreateEventMutationPreview> {
@@ -5366,6 +5126,57 @@ class _EventPolicyStepFrame extends StatefulWidget {
   State<_EventPolicyStepFrame> createState() => _EventPolicyStepFrameState();
 }
 
+class _EventAgeRangeFieldFrame extends StatefulWidget {
+  const _EventAgeRangeFieldFrame({
+    this.minAge = 24,
+    this.maxAge = 38,
+    this.enabled = true,
+  });
+
+  final int minAge;
+  final int maxAge;
+  final bool enabled;
+
+  @override
+  State<_EventAgeRangeFieldFrame> createState() =>
+      _EventAgeRangeFieldFrameState();
+}
+
+class _EventAgeRangeFieldFrameState extends State<_EventAgeRangeFieldFrame> {
+  late final TextEditingController _minAgeController;
+  late final TextEditingController _maxAgeController;
+
+  @override
+  void initState() {
+    super.initState();
+    _minAgeController = TextEditingController(
+      text: widget.minAge == 0 ? '' : widget.minAge.toString(),
+    );
+    _maxAgeController = TextEditingController(
+      text: widget.maxAge == EventAgeRangeField.maximumAge
+          ? ''
+          : widget.maxAge.toString(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _minAgeController.dispose();
+    _maxAgeController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return EventAgeRangeField(
+      minAgeController: _minAgeController,
+      maxAgeController: _maxAgeController,
+      initiallyOpen: true,
+      enabled: widget.enabled,
+    );
+  }
+}
+
 class _EventPolicyStepFrameState extends State<_EventPolicyStepFrame> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _capacityController;
@@ -5565,8 +5376,8 @@ class _EditableHostedEventPolicyCardFrameState
   }
 }
 
-class _HostSettingsProfileFrame extends StatefulWidget {
-  const _HostSettingsProfileFrame({
+class _HostTeamProfileFrame extends StatefulWidget {
+  const _HostTeamProfileFrame({
     this.profile,
     this.state,
     this.editMode = true,
@@ -5574,16 +5385,15 @@ class _HostSettingsProfileFrame extends StatefulWidget {
   });
 
   final HostProfile? profile;
-  final HostSettingsProfileState? state;
+  final HostTeamProfileState? state;
   final bool editMode;
   final bool creatingProfile;
 
   @override
-  State<_HostSettingsProfileFrame> createState() =>
-      _HostSettingsProfileFrameState();
+  State<_HostTeamProfileFrame> createState() => _HostTeamProfileFrameState();
 }
 
-class _HostSettingsProfileFrameState extends State<_HostSettingsProfileFrame> {
+class _HostTeamProfileFrameState extends State<_HostTeamProfileFrame> {
   final _formKey = GlobalKey<FormState>();
   final _displayNameController = TextEditingController();
   final _roleTitleController = TextEditingController();
@@ -5619,10 +5429,10 @@ class _HostSettingsProfileFrameState extends State<_HostSettingsProfileFrame> {
             body: ListView(
               padding: CatchInsets.pageBodyUnderHeader,
               children: [
-                HostSettingsProfileSection(
+                HostTeamProfileSection(
                   state:
                       widget.state ??
-                      HostSettingsProfileContent(profile: widget.profile!),
+                      HostTeamProfileContent(profile: widget.profile!),
                   editMode: widget.editMode,
                   creatingProfile: widget.creatingProfile,
                   onRetry: () {},
@@ -5643,8 +5453,8 @@ class _HostSettingsProfileFrameState extends State<_HostSettingsProfileFrame> {
   }
 }
 
-class _HostSettingsClubsFrame extends StatelessWidget {
-  const _HostSettingsClubsFrame({
+class _HostTeamHostedClubsFrame extends StatelessWidget {
+  const _HostTeamHostedClubsFrame({
     this.clubs,
     this.loading = false,
     this.error,
@@ -5668,21 +5478,21 @@ class _HostSettingsClubsFrame extends StatelessWidget {
             body: ListView(
               padding: CatchInsets.pageBodyUnderHeader,
               children: [
-                HostSettingsClubsSection(
-                  actions: HostSettingsActionState.from(
+                HostTeamHostedClubsSection(
+                  actions: HostTeamWorkspaceActionState.from(
                     uid: _hostUid,
                     editMode: editMode,
                     creatingProfile: false,
                     signOutPending: false,
-                    profile: HostSettingsProfileContent(
+                    profile: HostTeamProfileContent(
                       profile: HostOperationsFixtures.hostProfile,
                     ),
                   ),
                   state: error != null
-                      ? HostSettingsClubsError(error: error!)
+                      ? HostTeamHostedClubsError(error: error!)
                       : loading
-                      ? const HostSettingsClubsLoading()
-                      : buildHostSettingsClubsState(
+                      ? const HostTeamHostedClubsLoading()
+                      : buildHostTeamHostedClubsState(
                           AsyncData<List<Club>>(
                             clubs ?? HostOperationsFixtures.clubs,
                           ),
@@ -5771,176 +5581,6 @@ class _HostHomeSectionFrame extends StatelessWidget {
       child: _HostShellScope(
         clubEventStreams: clubEventStreams,
         child: framedChild,
-      ),
-    );
-  }
-}
-
-class _HostProfileFormFrame extends StatefulWidget {
-  const _HostProfileFormFrame({
-    required this.profile,
-    this.displayNameOverride,
-    this.saving = false,
-    this.validateOnBuild = false,
-    this.themeMode = ThemeMode.light,
-  });
-
-  final HostProfile profile;
-  final String? displayNameOverride;
-  final bool saving;
-  final bool validateOnBuild;
-  final ThemeMode themeMode;
-
-  @override
-  State<_HostProfileFormFrame> createState() => _HostProfileFormFrameState();
-}
-
-class _HostProfileFormFrameState extends State<_HostProfileFormFrame> {
-  final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _displayNameController;
-  late final TextEditingController _roleTitleController;
-  late final TextEditingController _bioController;
-  var _validated = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _displayNameController = TextEditingController(
-      text: widget.displayNameOverride ?? widget.profile.displayName,
-    );
-    _roleTitleController = TextEditingController(
-      text: widget.profile.roleTitle ?? '',
-    );
-    _bioController = TextEditingController(text: widget.profile.bio ?? '');
-  }
-
-  @override
-  void didUpdateWidget(covariant _HostProfileFormFrame oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.profile != widget.profile ||
-        oldWidget.displayNameOverride != widget.displayNameOverride) {
-      _displayNameController.text =
-          widget.displayNameOverride ?? widget.profile.displayName;
-      _roleTitleController.text = widget.profile.roleTitle ?? '';
-      _bioController.text = widget.profile.bio ?? '';
-      _validated = false;
-    }
-  }
-
-  @override
-  void dispose() {
-    _displayNameController.dispose();
-    _roleTitleController.dispose();
-    _bioController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (widget.validateOnBuild && !_validated) {
-      _validated = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _formKey.currentState?.validate();
-      });
-    }
-
-    return _ThemedHostPreview(
-      themeMode: widget.themeMode,
-      child: Builder(
-        builder: (context) {
-          final t = CatchTokens.of(context);
-          return Scaffold(
-            backgroundColor: t.bg,
-            body: Form(
-              key: _formKey,
-              child: HostProfileForm(
-                profile: widget.profile,
-                displayNameController: _displayNameController,
-                roleTitleController: _roleTitleController,
-                bioController: _bioController,
-                saving: widget.saving,
-                onSave: () => _formKey.currentState?.validate(),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _HostProfileFieldsFrame extends StatefulWidget {
-  const _HostProfileFieldsFrame({
-    required this.profile,
-    this.showStatus = true,
-  });
-
-  final HostProfile profile;
-  final bool showStatus;
-
-  @override
-  State<_HostProfileFieldsFrame> createState() =>
-      _HostProfileFieldsFrameState();
-}
-
-class _HostProfileFieldsFrameState extends State<_HostProfileFieldsFrame> {
-  late final TextEditingController _displayNameController;
-  late final TextEditingController _roleTitleController;
-  late final TextEditingController _bioController;
-
-  @override
-  void initState() {
-    super.initState();
-    _displayNameController = TextEditingController(
-      text: widget.profile.displayName,
-    );
-    _roleTitleController = TextEditingController(
-      text: widget.profile.roleTitle ?? '',
-    );
-    _bioController = TextEditingController(text: widget.profile.bio ?? '');
-  }
-
-  @override
-  void didUpdateWidget(covariant _HostProfileFieldsFrame oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.profile != widget.profile) {
-      _displayNameController.text = widget.profile.displayName;
-      _roleTitleController.text = widget.profile.roleTitle ?? '';
-      _bioController.text = widget.profile.bio ?? '';
-    }
-  }
-
-  @override
-  void dispose() {
-    _displayNameController.dispose();
-    _roleTitleController.dispose();
-    _bioController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _ThemedHostPreview(
-      themeMode: ThemeMode.light,
-      child: Builder(
-        builder: (context) {
-          final t = CatchTokens.of(context);
-          return Scaffold(
-            backgroundColor: t.bg,
-            body: ListView(
-              padding: CatchInsets.pageBodyUnderHeader,
-              children: [
-                HostProfileFields(
-                  status: widget.profile.status,
-                  showStatus: widget.showStatus,
-                  displayNameController: _displayNameController,
-                  roleTitleController: _roleTitleController,
-                  bioController: _bioController,
-                ),
-              ],
-            ),
-          );
-        },
       ),
     );
   }
@@ -6268,12 +5908,14 @@ class _HostTeamAddHostSheetPreview extends StatelessWidget {
       _HostTeamAddHostSheetPreviewMode.error => HostTeamAddHostActionState(
         errorMessage: appErrorMessage(
           StateError('Widgetbook add host failed'),
+          l10n: context.l10n,
           context: AppErrorContext.club,
         ),
       ),
       _HostTeamAddHostSheetPreviewMode.offline => HostTeamAddHostActionState(
         errorMessage: appErrorMessage(
           obviousOfflineException(),
+          l10n: context.l10n,
           context: AppErrorContext.club,
         ),
       ),
@@ -6911,18 +6553,6 @@ class _HostManageActionMutationPreviewState
 
   @override
   Widget build(BuildContext context) => widget.child;
-}
-
-Widget _hostManageLiveSectionPreview({
-  required Event event,
-  Widget? liveRoster,
-}) {
-  return EventSuccessHostSection(
-    event: event,
-    initialTab: EventSuccessHostTab.live,
-    showTabs: false,
-    liveRoster: liveRoster,
-  );
 }
 
 Event _hostManageLiveRevealEvent(Event event) {

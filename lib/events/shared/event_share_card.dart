@@ -29,11 +29,12 @@ Future<void> showEventShareCardSheet(
       card: EventShareCard(event: event),
       share: share,
       fileName: 'catch-event-invite.png',
-      buttonLabel: 'Share invite',
-      footnote: 'Shares a visual invite with the event link.',
-      subject: EventInviteShareCopy.subject(event),
+      buttonLabel: context.l10n.eventsInviteShareButton,
+      footnote: context.l10n.eventsInviteShareFootnote,
+      subject: EventInviteShareCopy.subject(event, context.l10n),
       text: EventInviteShareCopy.eventDetailInviteText(
         event,
+        l10n: context.l10n,
         inviteCode: inviteCode,
         inviteLinkId: inviteLinkId,
       ),
@@ -51,7 +52,7 @@ class EventShareCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     final visual = eventActivityVisual(event.activityKind, context: context);
     final priceLabel = event.isFree
-        ? 'Free'
+        ? context.l10n.eventsInviteShareFree
         : EventFormatters.priceInPaise(
             event.priceInPaise,
             currencyCode: event.currency,
@@ -186,12 +187,14 @@ class EventShareCard extends StatelessWidget {
                         runSpacing: CatchSpacing.micro6,
                         children: [
                           EventSharePill(label: priceLabel),
-                          EventSharePill(label: _spotsLabel(event)),
+                          EventSharePill(
+                            label: _spotsLabel(event, context.l10n),
+                          ),
                         ],
                       ),
                       gapH14,
-                      const CatchShareCardFooter(
-                        trailing: 'Curated singles event',
+                      CatchShareCardFooter(
+                        trailing: context.l10n.eventsInviteShareFooter,
                       ),
                     ],
                   ),
@@ -223,9 +226,8 @@ class EventSharePill extends StatelessWidget {
   }
 }
 
-String _spotsLabel(Event event) {
+String _spotsLabel(Event event, AppLocalizations l10n) {
   final spots = event.spotsRemaining;
-  if (spots == 1) return '1 spot left';
-  if (spots == 0) return 'Waitlist open';
-  return '$spots spots left';
+  if (spots == 0) return l10n.eventsInviteShareWaitlistOpen;
+  return l10n.eventsInviteShareSpotsLeft(count: spots);
 }

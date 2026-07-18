@@ -77,10 +77,31 @@ test("flags a new StatefulShellBranch until it is registered", () => {
   );
 });
 
+test("flags a raw SliverFillRemaining empty state in presentation code", () => {
+  const root = fixtureRoot({
+    ownerSource:
+      "SafeArea(bottom: false, child: CustomScrollView(slivers: [CatchSliverTerminalPadding()]));",
+    stateSource: `
+      SliverFillRemaining(
+        child: CatchEmptyState(title: "Nothing here"),
+      );
+    `,
+  });
+  const result = checkTabRootScrollContracts({root});
+  assert.ok(
+    result.findings.some(
+      (finding) =>
+        finding.code === "raw-sliver-state-viewport" &&
+        finding.path === "lib/example/presentation/example_screen.dart",
+    ),
+  );
+});
+
 function fixtureRoot({
   ownerSource,
   shellSource = "return CatchAdaptiveTabScaffold(body: navigationShell);",
   extraRouterSource = "",
+  stateSource,
   requires = [
     {text: "bottom: false", minimumOccurrences: 1},
     {text: "CatchSliverTerminalPadding", minimumOccurrences: 1},
@@ -100,6 +121,9 @@ function fixtureRoot({
   );
   write(root, "lib/core/presentation/app_shell.dart", shellSource);
   write(root, "lib/home/home_screen.dart", ownerSource);
+  if (stateSource != null) {
+    write(root, "lib/example/presentation/example_screen.dart", stateSource);
+  }
   write(
     root,
     "tool/design/tab_root_scroll_contracts.json",

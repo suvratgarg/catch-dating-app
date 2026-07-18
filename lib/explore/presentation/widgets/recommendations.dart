@@ -2,17 +2,14 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_horizontal_rail.dart';
 import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/recommend_card.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class Recommendations extends StatelessWidget {
-  const Recommendations({
-    super.key,
-    required this.recommendations,
-    this.title = 'For you',
-  });
+  const Recommendations({super.key, required this.recommendations, this.title});
 
   final List<ExploreEventRecommendation> recommendations;
-  final String title;
+  final String? title;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +19,7 @@ class Recommendations extends StatelessWidget {
             .clamp(280.0, 340.0)
             .toDouble();
         return CatchHorizontalRail(
-          title: title,
+          title: title ?? context.l10n.exploreRecommendationsTitleForYou,
           itemCount: recommendations.length,
           itemBuilder: (context, i) => RecommendCard.fromRecommendation(
             recommendation: recommendations[i],

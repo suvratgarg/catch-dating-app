@@ -29,14 +29,17 @@ class ReportTab extends StatelessWidget {
       return EventSuccessHostTabBody(
         embedded: embedded,
         children: [
-          NoticeCard(
+          CatchEmptyState(
             icon: CatchIcons.insightsOutlined,
             title: context
                 .l10n
                 .eventSuccessEventSuccessHostReportTitleNoEventReportYet,
-            body: context
+            message: context
                 .l10n
                 .eventSuccessEventSuccessHostReportBodyTheLiveEventGuide,
+            layout: CatchEmptyStateLayout.inline,
+            surface: true,
+            padding: CatchInsets.content,
           ),
         ],
       );
@@ -51,14 +54,17 @@ class ReportTab extends StatelessWidget {
       return EventSuccessHostTabBody(
         embedded: embedded,
         children: [
-          NoticeCard(
+          CatchEmptyState(
             icon: CatchIcons.insightsOutlined,
             title: context
                 .l10n
                 .eventSuccessEventSuccessHostReportTitlePostEventInsightsAre,
-            body: context
+            message: context
                 .l10n
                 .eventSuccessEventSuccessHostReportBodyThisEventGuideDoes,
+            layout: CatchEmptyStateLayout.inline,
+            surface: true,
+            padding: CatchInsets.content,
           ),
         ],
       );
@@ -69,14 +75,17 @@ class ReportTab extends StatelessWidget {
       return EventSuccessHostTabBody(
         embedded: embedded,
         children: [
-          NoticeCard(
+          CatchEmptyState(
             icon: CatchIcons.insightsOutlined,
             title: context
                 .l10n
                 .eventSuccessEventSuccessHostReportTitleWaitingForAttendeeFeedback,
-            body: context
+            message: context
                 .l10n
                 .eventSuccessEventSuccessHostReportBodyThePostEventReport,
+            layout: CatchEmptyStateLayout.inline,
+            surface: true,
+            padding: CatchInsets.content,
           ),
         ],
       );
@@ -95,8 +104,8 @@ class ReportTab extends StatelessWidget {
     return EventSuccessHostTabBody(
       embedded: embedded,
       children: [
-        NoticeCard(
-          icon: CatchIcons.assignmentTurnedInOutlined,
+        CatchSurface.message(
+          messageIcon: CatchIcons.assignmentTurnedInOutlined,
           title: context.l10n
               .eventSuccessEventSuccessHostReportTitleFeedbackcountAttendeeFeedbackResponse(
                 feedbackCount: feedbackCount,
@@ -104,7 +113,7 @@ class ReportTab extends StatelessWidget {
                     ? ''
                     : context.l10n.eventSuccessEventSuccessHostReportTitleS,
               ),
-          body: context
+          message: context
               .l10n
               .eventSuccessEventSuccessHostReportBodyTheReportCombinesAttendance,
         ),
@@ -126,129 +135,73 @@ class HostReportSignalGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final scorecard = brief.scorecard;
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(CatchIcons.queryStatsRounded, color: t.primary),
-              gapW12,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      context
-                          .l10n
-                          .eventSuccessEventSuccessHostReportTextHowReliableIsThis,
-                      style: CatchTextStyles.sectionTitle(context),
-                    ),
-                    gapH4,
-                    Text(
-                      context
-                          .l10n
-                          .eventSuccessEventSuccessHostReportTextShowsWhetherTheReport,
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
-                    ),
-                  ],
+    return CatchSection.plain(
+      title:
+          context.l10n.eventSuccessEventSuccessHostReportTextHowReliableIsThis,
+      subtitle: context
+          .l10n
+          .eventSuccessEventSuccessHostReportTextShowsWhetherTheReport,
+      child: CatchAnalyticsMetricGrid(
+        metrics: [
+          CatchMetricCardData(
+            icon: CatchIcons.rateReviewOutlined,
+            value: _eventSuccessPercent(scorecard.feedbackResponseRate),
+            label: context.l10n.eventSuccessEventSuccessHostReportLabelFeedback,
+            caption: context.l10n
+                .eventSuccessEventSuccessHostReportLabelFeedbackresponsecountCheckedincountFeedback(
+                  feedbackResponseCount: scorecard.feedbackResponseCount,
+                  checkedInCount: scorecard.checkedInCount,
                 ),
-              ),
-            ],
           ),
-          gapH14,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              EventSuccessMetricPill(
-                label: context
-                    .l10n
-                    .eventSuccessEventSuccessHostReportLabelFeedback,
-                value: scorecard.feedbackResponseRate,
-              ),
-              EventSuccessMetricPill(
-                label: context
-                    .l10n
-                    .eventSuccessEventSuccessHostReportLabelCaughtSomeone,
-                value: scorecard.caughtSomeoneRate,
-              ),
-              EventSuccessMetricPill(
-                label: context
-                    .l10n
-                    .eventSuccessEventSuccessHostReportLabelPeopleIncluded,
-                value: scorecard.assignmentCoverageRate,
-              ),
-              EventSuccessMetricPill(
-                label: context
-                    .l10n
-                    .eventSuccessEventSuccessHostReportLabelOptedOut,
-                value: scorecard.assignmentOptOutRate,
-              ),
-              EventSuccessMetricPill(
-                label: context
-                    .l10n
-                    .eventSuccessEventSuccessHostReportLabelWingmanHelp,
-                value: scorecard.wingmanRequestRate,
-              ),
-            ],
+          CatchMetricCardData(
+            icon: CatchIcons.favoriteOutlineRounded,
+            value: _eventSuccessPercent(scorecard.caughtSomeoneRate),
+            label: context
+                .l10n
+                .eventSuccessEventSuccessHostReportLabelCaughtSomeone,
+            caption: context.l10n
+                .eventSuccessEventSuccessHostReportLabelAttendeeswhocaughtsomeoneCaughtSomeone(
+                  attendeesWhoCaughtSomeone:
+                      scorecard.attendeesWhoCaughtSomeone,
+                ),
           ),
-          gapH12,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              CatchBadge(
-                label: context.l10n
-                    .eventSuccessEventSuccessHostReportLabelFeedbackresponsecountCheckedincountFeedback(
-                      feedbackResponseCount: scorecard.feedbackResponseCount,
-                      checkedInCount: scorecard.checkedInCount,
-                    ),
-                icon: CatchIcons.rateReviewOutlined,
-              ),
-              CatchBadge(
-                label: context.l10n
-                    .eventSuccessEventSuccessHostReportLabelAttendeeswhocaughtsomeoneCaughtSomeone(
-                      attendeesWhoCaughtSomeone:
-                          scorecard.attendeesWhoCaughtSomeone,
-                    ),
-                icon: CatchIcons.favoriteOutlineRounded,
-              ),
-              CatchBadge(
-                label: context.l10n
-                    .eventSuccessEventSuccessHostReportLabelCatchsentcountCatchesSent(
-                      catchSentCount: scorecard.catchSentCount,
-                    ),
-                icon: CatchIcons.favoriteRounded,
-              ),
-              CatchBadge(
-                label: context.l10n
-                    .eventSuccessEventSuccessHostReportLabelAssignmentparticipantcountAssigned(
-                      assignmentParticipantCount:
-                          scorecard.assignmentParticipantCount,
-                    ),
-                icon: CatchIcons.groups2Outlined,
-              ),
-              CatchBadge(
-                label: context.l10n
-                    .eventSuccessEventSuccessHostReportLabelAssignmentoptoutcountOptedOut(
-                      assignmentOptOutCount: scorecard.assignmentOptOutCount,
-                    ),
-                icon: CatchIcons.visibilityOffOutlined,
-              ),
-              CatchBadge(
-                label: context.l10n
-                    .eventSuccessEventSuccessHostReportLabelWingmanrequestcountHostHelpRequests(
-                      wingmanRequestCount: scorecard.wingmanRequestCount,
-                    ),
-                icon: CatchIcons.volunteerActivismOutlined,
-              ),
-            ],
+          CatchMetricCardData(
+            icon: CatchIcons.favoriteRounded,
+            value: '${scorecard.catchSentCount}',
+            label:
+                context.l10n.eventSuccessEventSuccessHostReportLabelCatchesSent,
+          ),
+          CatchMetricCardData(
+            icon: CatchIcons.groups2Outlined,
+            value: _eventSuccessPercent(scorecard.assignmentCoverageRate),
+            label: context
+                .l10n
+                .eventSuccessEventSuccessHostReportLabelPeopleIncluded,
+            caption: context.l10n
+                .eventSuccessEventSuccessHostReportLabelAssignmentparticipantcountAssigned(
+                  assignmentParticipantCount:
+                      scorecard.assignmentParticipantCount,
+                ),
+          ),
+          CatchMetricCardData(
+            icon: CatchIcons.visibilityOffOutlined,
+            value: _eventSuccessPercent(scorecard.assignmentOptOutRate),
+            label: context.l10n.eventSuccessEventSuccessHostReportLabelOptedOut,
+            caption: context.l10n
+                .eventSuccessEventSuccessHostReportLabelAssignmentoptoutcountOptedOut(
+                  assignmentOptOutCount: scorecard.assignmentOptOutCount,
+                ),
+          ),
+          CatchMetricCardData(
+            icon: CatchIcons.volunteerActivismOutlined,
+            value: _eventSuccessPercent(scorecard.wingmanRequestRate),
+            label:
+                context.l10n.eventSuccessEventSuccessHostReportLabelWingmanHelp,
+            caption: context.l10n
+                .eventSuccessEventSuccessHostReportLabelWingmanrequestcountHostHelpRequests(
+                  wingmanRequestCount: scorecard.wingmanRequestCount,
+                ),
           ),
         ],
       ),
@@ -263,130 +216,70 @@ class HostFunnelSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final funnel = brief.scorecard.funnel;
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(CatchIcons.routeRounded, color: t.primary),
-              gapW12,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      context
-                          .l10n
-                          .eventSuccessEventSuccessHostReportTextEventFunnel,
-                      style: CatchTextStyles.sectionTitle(context),
-                    ),
-                    gapH4,
-                    Text(
-                      _funnelSummaryCopy(funnel),
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
-                    ),
-                  ],
+    return CatchSection.plain(
+      title: context.l10n.eventSuccessEventSuccessHostReportTextEventFunnel,
+      subtitle: _funnelSummaryCopy(funnel),
+      child: CatchAnalyticsMetricGrid(
+        metrics: [
+          CatchMetricCardData(
+            icon: CatchIcons.personAddAlt1Rounded,
+            value: _eventSuccessPercent(funnel.demandConversionRate),
+            label: context
+                .l10n
+                .eventSuccessEventSuccessHostReportLabelDemandToBooked,
+            caption: context.l10n
+                .eventSuccessEventSuccessHostReportLabelTotaldemandcountPeopleInDemand(
+                  totalDemandCount: funnel.totalDemandCount,
                 ),
-              ),
-            ],
           ),
-          gapH14,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              EventSuccessMetricPill(
-                label: context
-                    .l10n
-                    .eventSuccessEventSuccessHostReportLabelDemandToBooked,
-                value: funnel.demandConversionRate,
-              ),
-              EventSuccessMetricPill(
-                label: context
-                    .l10n
-                    .eventSuccessEventSuccessHostReportLabelRequestsApproved,
-                value: funnel.requestApprovalRate,
-              ),
-              EventSuccessMetricPill(
-                label: context
-                    .l10n
-                    .eventSuccessEventSuccessHostReportLabelOffersAccepted,
-                value: funnel.waitlistOfferAcceptanceRate,
-              ),
-              EventSuccessMetricPill(
-                label: context
-                    .l10n
-                    .eventSuccessEventSuccessHostReportLabelPaymentComplete,
-                value: funnel.paymentCompletionRate,
-              ),
-              EventSuccessMetricPill(
-                label: context
-                    .l10n
-                    .eventSuccessEventSuccessHostReportLabelRepeatAttendees,
-                value: funnel.repeatAttendeeRate,
-              ),
-            ],
+          CatchMetricCardData(
+            icon: CatchIcons.checkCircleOutlineRounded,
+            value: _eventSuccessPercent(funnel.requestApprovalRate),
+            label: context
+                .l10n
+                .eventSuccessEventSuccessHostReportLabelRequestsApproved,
           ),
-          gapH12,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              CatchBadge(
-                label: context.l10n
-                    .eventSuccessEventSuccessHostReportLabelInviteopencountInviteOpens(
-                      inviteOpenCount: funnel.inviteOpenCount,
-                    ),
-                icon: CatchIcons.linkRounded,
-              ),
-              CatchBadge(
-                label: context.l10n
-                    .eventSuccessEventSuccessHostReportLabelTotaldemandcountPeopleInDemand(
-                      totalDemandCount: funnel.totalDemandCount,
-                    ),
-                icon: CatchIcons.personAddAlt1Rounded,
-              ),
-              CatchBadge(
-                label: context.l10n
-                    .eventSuccessEventSuccessHostReportLabelWaitlistjoincountWaitlisted(
-                      waitlistJoinCount: funnel.waitlistJoinCount,
-                    ),
-                icon: CatchIcons.hourglassEmptyRounded,
-              ),
-              CatchBadge(
-                label: context.l10n
-                    .eventSuccessEventSuccessHostReportLabelPaymentcompletedcountPaid(
-                      paymentCompletedCount: funnel.paymentCompletedCount,
-                    ),
-                icon: CatchIcons.paymentsOutlined,
-              ),
-              CatchBadge(
-                label: context.l10n
-                    .eventSuccessEventSuccessHostReportLabelNoshowcountNoShow(
-                      noShowCount: funnel.noShowCount,
-                    ),
-                icon: CatchIcons.visibilityOffOutlined,
-              ),
-              CatchBadge(
-                label: context.l10n
-                    .eventSuccessEventSuccessHostReportLabelChatstartedcountChatsStarted(
-                      chatStartedCount: funnel.chatStartedCount,
-                    ),
-                icon: CatchIcons.chatBubbleOutlineRounded,
-              ),
-            ],
+          CatchMetricCardData(
+            icon: CatchIcons.hourglassEmptyRounded,
+            value: _eventSuccessPercent(funnel.waitlistOfferAcceptanceRate),
+            label: context
+                .l10n
+                .eventSuccessEventSuccessHostReportLabelOffersAccepted,
+            caption: context.l10n
+                .eventSuccessEventSuccessHostReportLabelWaitlistjoincountWaitlisted(
+                  waitlistJoinCount: funnel.waitlistJoinCount,
+                ),
+          ),
+          CatchMetricCardData(
+            icon: CatchIcons.paymentsOutlined,
+            value: _eventSuccessPercent(funnel.paymentCompletionRate),
+            label: context
+                .l10n
+                .eventSuccessEventSuccessHostReportLabelPaymentComplete,
+            caption: context.l10n
+                .eventSuccessEventSuccessHostReportLabelPaymentcompletedcountPaid(
+                  paymentCompletedCount: funnel.paymentCompletedCount,
+                ),
+          ),
+          CatchMetricCardData(
+            icon: CatchIcons.chatBubbleOutlineRounded,
+            value: _eventSuccessPercent(funnel.repeatAttendeeRate),
+            label: context
+                .l10n
+                .eventSuccessEventSuccessHostReportLabelRepeatAttendees,
+            caption: context.l10n
+                .eventSuccessEventSuccessHostReportLabelChatstartedcountChatsStarted(
+                  chatStartedCount: funnel.chatStartedCount,
+                ),
           ),
         ],
       ),
     );
   }
 }
+
+String _eventSuccessPercent(double value) => '${(value * 100).round()}%';
 
 String _funnelSummaryCopy(EventSuccessHostFunnel funnel) {
   if (funnel.totalDemandCount == 0 && funnel.inviteOpenCount == 0) {
