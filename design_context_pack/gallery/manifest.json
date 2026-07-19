@@ -3,7 +3,7 @@
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
     "routes": 52,
-    "captures": 598,
+    "captures": 599,
     "statusCounts": {
       "excluded": 6,
       "captured": 36,
@@ -3897,6 +3897,23 @@
         "salesDemo.member.eventDiscovery"
       ],
       "whatItIs": "Member Event Discovery",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "explore_cover_contrast_floor",
+      "routes": [
+        "exploreScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/explore_cover_contrast_floor.png",
+        "dark": "dark/explore_cover_contrast_floor.png"
+      },
+      "whatItIs": "Explore Cover Contrast Floor",
       "keepChangeNotes": ""
     },
     {

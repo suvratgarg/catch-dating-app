@@ -2330,6 +2330,12 @@ abstract class AppLocalizations {
   /// **'Saved events'**
   String get exploreExploreScreenTooltipSavedEvents;
 
+  /// Button that advances the cursor-paginated Explore discovery window.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more plans'**
+  String get exploreExploreScreenActionLoadMorePlans;
+
   /// Product copy used by lib/explore/presentation/explore_screen.dart (title).
   ///
   /// In en, this message translates to:
@@ -2384,6 +2390,12 @@ abstract class AppLocalizations {
   /// **'Clear'**
   String get exploreExploreScreenLabelClear;
 
+  /// Recovery action shown when the selected Explore city has no clubs.
+  ///
+  /// In en, this message translates to:
+  /// **'Change city'**
+  String get exploreExploreScreenLabelChangeCity;
+
   /// Product copy used by lib/explore/presentation/widgets/catch_cover_story.dart (message).
   ///
   /// In en, this message translates to:
@@ -2395,18 +2407,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search'**
   String get exploreCatchCoverStoryTooltipSearch;
-
-  /// Product copy used by lib/explore/presentation/widgets/catch_cross_paths_card.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'TO: YOU'**
-  String get exploreCatchCrossPathsCardTextToYou;
-
-  /// Product copy used by lib/explore/presentation/widgets/catch_cross_paths_card.dart (tooltip).
-  ///
-  /// In en, this message translates to:
-  /// **'Like'**
-  String get exploreCatchCrossPathsCardTooltipLike;
 
   /// Product copy used by lib/explore/presentation/widgets/explore_city_picker.dart (Text).
   ///
@@ -2444,17 +2444,35 @@ abstract class AppLocalizations {
   /// **'Clear'**
   String get exploreExploreFilterRailLabelClear;
 
-  /// Product copy used by lib/explore/presentation/widgets/explore_filter_rail.dart (label).
+  /// Filter sheet footer while the current Explore result count is loading.
   ///
   /// In en, this message translates to:
-  /// **'Done'**
-  String get exploreExploreFilterRailLabelDone;
+  /// **'Updating plans'**
+  String get exploreExploreFilterRailLabelUpdatingPlans;
 
-  /// Product copy used by lib/explore/presentation/widgets/explore_filter_rail.dart (Text).
+  /// Filter sheet footer with the exhaustive live Explore result count.
   ///
   /// In en, this message translates to:
-  /// **'DISTANCE'**
-  String get exploreExploreFilterRailTextDistance;
+  /// **'{count, plural, =1{Show 1 plan} other{Show {count} plans}}'**
+  String exploreExploreFilterRailLabelShowPlans({required int count});
+
+  /// Filter sheet footer with the lower-bound live Explore result count when more pages exist.
+  ///
+  /// In en, this message translates to:
+  /// **'Show {count}+ plans'**
+  String exploreExploreFilterRailLabelShowPlansPlus({required int count});
+
+  /// Explore filter heading clarifying that club cards do not carry distance coordinates.
+  ///
+  /// In en, this message translates to:
+  /// **'DISTANCE · EVENTS ONLY'**
+  String get exploreExploreFilterRailTextDistanceEventsOnly;
+
+  /// Applied distance-filter chip clarifying its event-only scope.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} · events only'**
+  String exploreExploreFilterRailAppliedDistance({required Object distance});
 
   /// Product copy used by lib/explore/presentation/widgets/explore_filter_rail.dart (Text).
   ///
@@ -10841,11 +10859,29 @@ abstract class AppLocalizations {
   /// **'10 km'**
   String get exploreExploreScreenStateLabel10Km;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (ctaLabel).
+  /// Explore cover-story CTA for an event the viewer can book after opening its details.
   ///
   /// In en, this message translates to:
-  /// **'Claim a seat'**
-  String get exploreExploreScreenStateCtalabelClaimASeat;
+  /// **'View and book'**
+  String get exploreExploreScreenStateCtaViewAndBook;
+
+  /// Explore cover-story CTA for an event that requires an attendance request.
+  ///
+  /// In en, this message translates to:
+  /// **'View and request'**
+  String get exploreExploreScreenStateCtaViewAndRequest;
+
+  /// Explore cover-story CTA for an event whose waitlist can be viewed from details.
+  ///
+  /// In en, this message translates to:
+  /// **'View waitlist'**
+  String get exploreExploreScreenStateCtaViewWaitlist;
+
+  /// Explore cover-story CTA for an event that has no immediate booking action.
+  ///
+  /// In en, this message translates to:
+  /// **'View event'**
+  String get exploreExploreScreenStateCtaViewEvent;
 
   /// Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).
   ///
@@ -10865,17 +10901,11 @@ abstract class AppLocalizations {
   /// **'Club to know'**
   String get exploreExploreScreenStateCaptionClubToKnow;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).
+  /// Eyebrow above the host identity shown on an Explore club polaroid.
   ///
   /// In en, this message translates to:
-  /// **'Preview'**
-  String get exploreExploreScreenStateActionlabelPreview;
-
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).
-  ///
-  /// In en, this message translates to:
-  /// **'View club'**
-  String get exploreExploreScreenStateActionlabelViewClub;
+  /// **'Hosted by'**
+  String get exploreExploreScreenStateLabelHostedBy;
 
   /// Product copy used by lib/explore/presentation/explore_screen_state.dart (title).
   ///
@@ -10906,12 +10936,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The next good fit may be over the weekend.'**
   String get exploreExploreScreenStateMessageTheNextGoodFit;
-
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).
-  ///
-  /// In en, this message translates to:
-  /// **'See weekend'**
-  String get exploreExploreScreenStateActionlabelSeeWeekend;
 
   /// Product copy used by lib/explore/presentation/explore_screen_state.dart (title).
   ///
@@ -11830,11 +11854,29 @@ abstract class AppLocalizations {
   /// **'This week'**
   String get exploreExploreFilterRailLabelThisWeek;
 
-  /// Product copy used by lib/explore/presentation/widgets/explore_filter_rail.dart (label).
+  /// Compact final option in the Explore seven-day date strip.
   ///
   /// In en, this message translates to:
-  /// **'Anytime'**
-  String get exploreExploreFilterRailLabelAnytime;
+  /// **'Any'**
+  String get exploreExploreFilterRailLabelAny;
+
+  /// Explore date-strip label paired with the current supply count.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} · {count}'**
+  String exploreExploreFilterRailDateSupply({
+    required Object label,
+    required int count,
+  });
+
+  /// Explore date-strip label with a lower-bound supply count when more discovery pages exist.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} · {count}+'**
+  String exploreExploreFilterRailDateSupplyPlus({
+    required Object label,
+    required int count,
+  });
 
   /// Product copy used by lib/dashboard/presentation/notifications_list_state.dart (visibleCopy).
   ///
@@ -14089,11 +14131,30 @@ abstract class AppLocalizations {
     required Object noun,
   });
 
+  /// Honest Explore result count while more cursor pages are available.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}+ {noun}'**
+  String exploreExploreScreenStateVisiblecopyCountPlusNoun({
+    required Object count,
+    required Object noun,
+  });
+
   /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{count} {noun} · {dateSpan}'**
   String exploreExploreScreenStateVisiblecopyCountNounDatespan({
+    required Object count,
+    required Object noun,
+    required Object dateSpan,
+  });
+
+  /// Honest dated Explore result count while more cursor pages are available.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}+ {noun} · {dateSpan}'**
+  String exploreExploreScreenStateVisiblecopyCountPlusNounDatespan({
     required Object count,
     required Object noun,
     required Object dateSpan,
@@ -14163,12 +14224,6 @@ abstract class AppLocalizations {
   String exploreExploreEventRowsVisiblecopyComingUpLength({
     required Object length,
   });
-
-  /// Product copy used by lib/explore/presentation/widgets/recommend_card.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Free'**
-  String get exploreRecommendCardVisiblecopyFree;
 
   /// Product copy used by lib/hosts/presentation/club_management/create/create_club_screen.dart (visibleCopy).
   ///
@@ -16707,12 +16762,6 @@ abstract class AppLocalizations {
   /// **'Add {fieldLabel}'**
   String coreCatchFieldVisiblecopyAddFieldLabel({required Object fieldLabel});
 
-  /// Fallback price copy used by the shared event DateTicket.
-  ///
-  /// In en, this message translates to:
-  /// **'Free'**
-  String get eventsEventDateRailCardVisiblecopyFree;
-
   /// Compact visible label attached to the Explore map distance ring.
   ///
   /// In en, this message translates to:
@@ -17440,6 +17489,181 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Account unblocked.'**
   String get safetyAccountUnblockedMessage;
+
+  /// Canonical zero-price label shared by event cards and Explore.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get eventsEventPriceCopyFree;
+
+  /// Canonical demand-priced event label when only the base price is known.
+  ///
+  /// In en, this message translates to:
+  /// **'From {price}'**
+  String eventsEventPriceCopyFromPrice({required Object price});
+
+  /// Fallback price label for external events whose source has no parsed price.
+  ///
+  /// In en, this message translates to:
+  /// **'Price on source'**
+  String get eventsEventPriceCopyPriceOnSource;
+
+  /// Shared localized event-count copy for indexes and semantic labels.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No events} =1{1 event} other{{count} events}}'**
+  String coreCatchCountCopyEvents({required int count});
+
+  /// Shared distance label for a place less than one kilometre away.
+  ///
+  /// In en, this message translates to:
+  /// **'{meters} m away'**
+  String coreCatchDistanceFormatterMetersAway({required int meters});
+
+  /// Shared distance label for a place at least one kilometre away.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} km away'**
+  String coreCatchDistanceFormatterKilometersAway({required String distance});
+
+  /// Explore availability label for an event open to the viewer.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get exploreExploreScreenStateAvailabilityOpen;
+
+  /// Explore availability label after a viewer is approved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved to join'**
+  String get exploreExploreScreenStateAvailabilityApprovedToJoin;
+
+  /// Explore availability label when a join request is required.
+  ///
+  /// In en, this message translates to:
+  /// **'Request required'**
+  String get exploreExploreScreenStateAvailabilityRequestRequired;
+
+  /// Explore availability label when only the waitlist is open.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlist open'**
+  String get exploreExploreScreenStateAvailabilityWaitlistOpen;
+
+  /// Explore availability label for a full event.
+  ///
+  /// In en, this message translates to:
+  /// **'Full'**
+  String get exploreExploreScreenStateAvailabilityFull;
+
+  /// Explore availability label when viewer-specific inventory is full.
+  ///
+  /// In en, this message translates to:
+  /// **'Your group is full'**
+  String get exploreExploreScreenStateAvailabilityFullForYou;
+
+  /// Explore availability label for an invite-only event.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite required'**
+  String get exploreExploreScreenStateAvailabilityInviteRequired;
+
+  /// Explore availability label for a members-only event.
+  ///
+  /// In en, this message translates to:
+  /// **'Members only'**
+  String get exploreExploreScreenStateAvailabilityMembersOnly;
+
+  /// Explore availability label when run preferences are missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Set preferences'**
+  String get exploreExploreScreenStateAvailabilitySetPreferences;
+
+  /// Explore availability label for a past event.
+  ///
+  /// In en, this message translates to:
+  /// **'Ended'**
+  String get exploreExploreScreenStateAvailabilityEnded;
+
+  /// Explore availability label for a cancelled event.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get exploreExploreScreenStateAvailabilityCancelled;
+
+  /// Explore availability fallback for an age-restricted event.
+  ///
+  /// In en, this message translates to:
+  /// **'Age restricted'**
+  String get exploreExploreScreenStateAvailabilityAgeRestricted;
+
+  /// Explore availability label for a minimum-age restriction.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be {minAge}+'**
+  String exploreExploreScreenStateAvailabilityMinimumAge({required int minAge});
+
+  /// Explore availability label for a maximum-age restriction.
+  ///
+  /// In en, this message translates to:
+  /// **'Max age {maxAge}'**
+  String exploreExploreScreenStateAvailabilityMaximumAge({required int maxAge});
+
+  /// Explore low-inventory availability label.
+  ///
+  /// In en, this message translates to:
+  /// **'{spots, plural, =1{1 spot left} other{{spots} spots left}}'**
+  String exploreExploreScreenStateAvailabilitySpotsLeft({required int spots});
+
+  /// Explore event attendance count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 going} other{{count} going}}'**
+  String exploreExploreScreenStateGoingCount({required int count});
+
+  /// Explore attendance and availability decision line.
+  ///
+  /// In en, this message translates to:
+  /// **'{goingLabel} · {availabilityLabel}'**
+  String exploreExploreScreenStateGoingAvailability({
+    required Object goingLabel,
+    required Object availabilityLabel,
+  });
+
+  /// Compact club rating and review-count line on Explore cards.
+  ///
+  /// In en, this message translates to:
+  /// **'{rating} · {reviewCount, plural, =0{NO REVIEWS} =1{1 REVIEW} other{{reviewCount} REVIEWS}}'**
+  String exploreExploreScreenStateClubRatingReviews({
+    required Object rating,
+    required int reviewCount,
+  });
+
+  /// Composed screen-reader label for an Explore club card.
+  ///
+  /// In en, this message translates to:
+  /// **'{title}, {caption}, {supportingLabel}, {memberCountLabel}, {ratingReviewLabel}'**
+  String exploreExploreScreenStateClubCardSemantics({
+    required Object title,
+    required Object caption,
+    required Object supportingLabel,
+    required Object memberCountLabel,
+    required Object ratingReviewLabel,
+  });
+
+  /// Composed screen-reader summary for an external Explore event row.
+  ///
+  /// In en, this message translates to:
+  /// **'{title}, {sourceLabel}, {statusLabel}, {supportingLabel}, {timePriceLabel}, {readOnlySupplyLabel}'**
+  String exploreExploreScreenStateExternalEventSemantics({
+    required Object title,
+    required Object sourceLabel,
+    required Object statusLabel,
+    required Object supportingLabel,
+    required Object timePriceLabel,
+    required Object readOnlySupplyLabel,
+  });
 }
 
 class _AppLocalizationsDelegate

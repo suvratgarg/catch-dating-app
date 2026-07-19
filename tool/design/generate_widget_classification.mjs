@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fromRepo} from "../lib/repo_paths.mjs";
+import {collisionKeyFor} from "./component_concepts.mjs";
 
 const outputPath = fromRepo("docs/audit_registry/widget_classification.json");
 const contractsPath = fromRepo("design/components/catch.components.json");
@@ -32,7 +33,7 @@ widgets.sort((a, b) => a.file.localeCompare(b.file) || a.name.localeCompare(b.na
 
 const registry = {
   $schema: "./widget_classification.schema.json",
-  version: 1,
+  version: 2,
   updated: today,
   sourceOfTruth: {
     scope:
@@ -91,6 +92,7 @@ function buildContractSymbolMap(components) {
         symbol: component.dart.symbol,
         component,
         member: null,
+        governance: component.governance,
       });
     }
     for (const member of component.contract?.members ?? []) {
@@ -100,6 +102,7 @@ function buildContractSymbolMap(components) {
         symbol: member.symbol,
         component,
         member,
+        governance: member.governance,
       });
     }
   }
@@ -135,6 +138,7 @@ function classifyDeclaration(entry) {
   const flags = flagsFor(entry, role, contract, catalogStatus, visibility);
   const decision = decisionFor(entry, contract, catalogStatus, visibility, flags);
   const governance = governanceFor(entry, role);
+  const concept = conceptFor(entry, contract, role);
 
   return {
     name: entry.name,
@@ -147,6 +151,18 @@ function classifyDeclaration(entry) {
     publicApi: entry.classKind === "widget" && visibility === "public",
     catalogStatus,
     contractId: contract?.id ?? null,
+    conceptRole: concept.conceptRole,
+    conceptId: concept.conceptId,
+    parentConceptId: concept.parentConceptId,
+    qualifier: concept.qualifier,
+    collisionKey: concept.conceptRole === null
+      ? null
+      : collisionKeyFor({
+          conceptRole: concept.conceptRole,
+          conceptId: concept.conceptId,
+          symbol: entry.name,
+        }),
+    decisionRef: concept.decisionRef,
     allowedDependencyLevel: governance.allowedDependencyLevel,
     stateOwnership: governance.stateOwnership,
     asyncOwnership: governance.asyncOwnership,
@@ -155,6 +171,37 @@ function classifyDeclaration(entry) {
     decision,
     remediationOptions: remediationOptionsFor(decision, entry, flags),
     flags,
+  };
+}
+
+function conceptFor(entry, contract, role) {
+  if (entry.classKind === "widget-state") {
+    return {
+      conceptRole: null,
+      conceptId: null,
+      parentConceptId: null,
+      qualifier: null,
+      decisionRef: null,
+    };
+  }
+  if (contract) {
+    const value = contract.governance ?? {};
+    return {
+      conceptRole: value.conceptRole ?? "unclassified",
+      conceptId: value.conceptId ?? null,
+      parentConceptId: value.parentConceptId ?? null,
+      qualifier: value.qualifier ?? null,
+      decisionRef: value.decisionRef ?? null,
+    };
+  }
+  return {
+    conceptRole: role === "screen" ? "screen" : "composition",
+    conceptId: null,
+    parentConceptId: null,
+    qualifier: null,
+    decisionRef: role === "screen"
+      ? "generated-rule:screen-boundary"
+      : "generated-rule:uncontracted-composition",
   };
 }
 
@@ -327,6 +374,10 @@ function slug(value) {
 }
 
 function summarize(rows) {
+  const publicWidgets = rows.filter(
+    (row) => row.classKind === "widget" && row.visibility === "public",
+  );
+  const collisions = collisionGroups(publicWidgets);
   return {
     total: rows.length,
     widgetClasses: rows.filter((row) => row.classKind === "widget").length,
@@ -336,7 +387,49 @@ function summarize(rows) {
     byRole: countBy(rows, "role"),
     byDecision: countBy(rows, "decision"),
     byCatalogStatus: countBy(rows, "catalogStatus"),
+    conceptCount: new Set(
+      publicWidgets
+        .filter((row) => row.conceptRole === "concept")
+        .map((row) => row.conceptId),
+    ).size,
+    memberClassCount: publicWidgets.filter((row) => row.conceptRole === "member").length,
+    compositionClassCount: publicWidgets.filter((row) => row.conceptRole === "composition").length,
+    screenClassCount: publicWidgets.filter((row) => row.conceptRole === "screen").length,
+    unclassifiedCount: publicWidgets.filter((row) => row.conceptRole === "unclassified").length,
+    byConceptRole: countBy(publicWidgets, "conceptRole"),
+    collisionGroupCount: collisions.length,
+    collisions,
+    widgetbookCoverage: {
+      conceptPrimaries: publicWidgets.filter((row) => row.conceptRole === "concept").length,
+      conceptPrimariesCataloged: publicWidgets.filter(
+        (row) => row.conceptRole === "concept" && widgetbookNames.has(row.name),
+      ).length,
+      memberClasses: publicWidgets.filter((row) => row.conceptRole === "member").length,
+      memberClassesCataloged: publicWidgets.filter(
+        (row) => row.conceptRole === "member" && widgetbookNames.has(row.name),
+      ).length,
+      compositionsCataloged: publicWidgets.filter(
+        (row) => row.conceptRole === "composition" && widgetbookNames.has(row.name),
+      ).length,
+      screensCataloged: publicWidgets.filter(
+        (row) => row.conceptRole === "screen" && widgetbookNames.has(row.name),
+      ).length,
+    },
   };
+}
+
+function collisionGroups(rows) {
+  const groups = new Map();
+  for (const row of rows) {
+    if (!row.collisionKey) continue;
+    const values = groups.get(row.collisionKey) ?? [];
+    values.push(row.name);
+    groups.set(row.collisionKey, values);
+  }
+  return [...groups.entries()]
+    .map(([key, names]) => ({key, names: [...new Set(names)].sort()}))
+    .filter((entry) => entry.names.length > 1)
+    .sort((a, b) => a.key.localeCompare(b.key));
 }
 
 function countBy(rows, field) {

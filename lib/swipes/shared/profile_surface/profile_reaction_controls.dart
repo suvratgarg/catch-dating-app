@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -258,33 +259,23 @@ class ReactionControlButton extends StatelessWidget {
         child: AnimatedOpacity(
           opacity: isEnabled || isPending ? 1 : CatchOpacity.disabledControl,
           duration: const Duration(milliseconds: 120),
-          child: Material(
-            color: background,
-            shape: CircleBorder(side: BorderSide(color: border)),
-            child: InkWell(
-              customBorder: const CircleBorder(),
-              onTap: isEnabled ? onPressed : null,
-              child: SizedBox.square(
-                dimension: CatchLayout.reactionControlExtent,
-                child: Center(
-                  child: isPending
-                      ? SizedBox.square(
-                          dimension: CatchLayout.reactionControlIconSize,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              foreground,
-                            ),
-                          ),
-                        )
-                      : Icon(
-                          icon,
-                          color: foreground,
-                          size: CatchLayout.reactionControlIconSize,
-                        ),
-                ),
-              ),
-            ),
+          child: CatchIconButton(
+            onTap: isEnabled ? onPressed : null,
+            background: background,
+            borderColor: border,
+            child: isPending
+                ? SizedBox.square(
+                    dimension: CatchLayout.reactionControlIconSize,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.2,
+                      valueColor: AlwaysStoppedAnimation<Color>(foreground),
+                    ),
+                  )
+                : Icon(
+                    icon,
+                    color: foreground,
+                    size: CatchLayout.reactionControlIconSize,
+                  ),
           ),
         ),
       ),

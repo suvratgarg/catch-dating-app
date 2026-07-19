@@ -136,7 +136,10 @@ class ClubScheduleSection extends StatelessWidget {
                                 data,
                                 showClubName: false,
                               ),
-                              priceLabel: data.priceLabel,
+                              priceLabel: eventPriceLabel(
+                                context.l10n,
+                                data.event,
+                              ),
                               statusLabel: eventTileCardStatusLabel(
                                 row.status,
                                 context.l10n,

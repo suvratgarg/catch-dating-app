@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/events/shared/event_price_copy.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_date_rail_card.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_atoms.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
@@ -29,7 +30,7 @@ class EventAgendaTile extends StatelessWidget {
         data,
         showClubName: showClubName,
       ),
-      priceLabel: data.priceLabel,
+      priceLabel: eventPriceLabel(context.l10n, data.event),
       statusLabel: eventTileCardStatusLabel(
         data.status,
         context.l10n,

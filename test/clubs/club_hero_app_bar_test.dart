@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
+import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
 import 'package:catch_dating_app/clubs/shared/catch_polaroid.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -37,7 +38,8 @@ void main() {
       await _pumpHeroModule(tester, club, clubHeroVariantFor(club));
 
       expect(find.byType(CatchPolaroid), findsOneWidget);
-      expect(find.byType(ClubPolaroidArtwork), findsNothing);
+      expect(find.byType(CatchClubCover), findsOneWidget);
+      expect(find.byType(ClubPolaroidArtwork), findsOneWidget);
       expect(
         find.byKey(const ValueKey('club-detail-hero-polaroid-frame')),
         findsOneWidget,

@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -32,12 +34,14 @@ import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_host_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_inline_status.dart';
+import 'package:catch_dating_app/core/widgets/catch_index_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_journey_steps.dart';
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
+import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_mini_bar_chart.dart';
 import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
@@ -61,6 +65,7 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
+import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
@@ -73,13 +78,13 @@ import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/catch_cross_paths_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/catch_map_preview.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 @widgetbook.UseCase(
@@ -131,6 +136,55 @@ Widget catchSectionLabelContractStates(BuildContext context) {
           child: CatchSectionLabel(
             label: 'A deliberately long structural context label',
           ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchMetaRow,
+  path: '[Core primitives]/Metadata',
+)
+Widget catchMetaRowContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _ContractScreen(
+    title: 'CatchMetaRow',
+    contractId: 'catch.meta_row',
+    states: const ['default', 'semantic-icon', 'semantic-label', 'truncated'],
+    children: [
+      _StateCard(
+        label: 'default',
+        child: CatchMetaRow(
+          icon: CatchIcons.locationOnRounded,
+          label: '2.4 km away',
+        ),
+      ),
+      _StateCard(
+        label: 'semantic-icon',
+        child: CatchMetaRow(
+          icon: CatchIcons.directionsRunRounded,
+          label: 'Social run',
+          color: t.success,
+        ),
+      ),
+      _StateCard(
+        label: 'semantic-label',
+        child: CatchMetaRow(
+          icon: CatchIcons.infoOutlineRounded,
+          label: 'Host confirmation required',
+          color: t.warning,
+          labelColor: t.warning,
+        ),
+      ),
+      _StateCard(
+        label: 'truncated',
+        child: CatchMetaRow(
+          icon: CatchIcons.locationOnRounded,
+          label:
+              'A deliberately long venue description that demonstrates the single-line truncation contract in the review surface',
         ),
       ),
     ],
@@ -583,12 +637,10 @@ Widget catchErrorIconContractStates(BuildContext context) {
   type: CatchSkeleton,
   path: '[Core primitives]/Loading',
 )
-Widget catchLoadingContractStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-
+Widget catchSkeletonContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchLoading',
-    contractId: 'catch.loading',
+    title: 'CatchSkeleton',
+    contractId: 'catch.skeleton',
     states: const [
       'card',
       'box',
@@ -597,7 +649,6 @@ Widget catchLoadingContractStates(BuildContext context) {
       'circle',
       'custom',
       'list',
-      'spinner',
       'async-screen',
       'async-sliver',
     ],
@@ -630,25 +681,6 @@ Widget catchLoadingContractStates(BuildContext context) {
         label: 'list',
         child: CatchSkeletonList(count: 3, height: 72),
       ),
-      _StateCard(
-        label: 'spinner',
-        child: _InlineWrap(
-          children: [
-            const SizedBox.square(
-              dimension: 48,
-              child: CatchLoadingIndicator(),
-            ),
-            const SizedBox.square(
-              dimension: 32,
-              child: CatchLoadingIndicator(strokeWidth: 2),
-            ),
-            SizedBox.square(
-              dimension: 48,
-              child: CatchLoadingIndicator(color: t.primary),
-            ),
-          ],
-        ),
-      ),
       const _StateCard(
         label: 'async-screen',
         child: SizedBox(
@@ -664,6 +696,141 @@ Widget catchLoadingContractStates(BuildContext context) {
             slivers: [CatchAsyncSliverLoading(count: 2, itemHeight: 72)],
           ),
         ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchLoadingIndicator,
+  path: '[Core primitives]/Loading',
+)
+Widget catchLoadingIndicatorContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+
+  return _ContractScreen(
+    title: 'CatchLoadingIndicator',
+    contractId: 'catch.loading_indicator',
+    states: const ['default', 'small', 'tinted'],
+    children: [
+      const _StateCard(
+        label: 'default',
+        child: SizedBox.square(dimension: 48, child: CatchLoadingIndicator()),
+      ),
+      const _StateCard(
+        label: 'small',
+        child: SizedBox.square(
+          dimension: 32,
+          child: CatchLoadingIndicator(strokeWidth: 2),
+        ),
+      ),
+      _StateCard(
+        label: 'tinted',
+        child: SizedBox.square(
+          dimension: 48,
+          child: CatchLoadingIndicator(color: t.primary),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchAsyncValueView,
+  path: '[Core primitives]/Loading',
+)
+Widget catchAsyncValueContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchAsyncValueView',
+    contractId: 'catch.async_value',
+    states: const [
+      'data',
+      'loading',
+      'error',
+      'skip-loading-on-refresh',
+      'custom-builders',
+    ],
+    children: [
+      _StateCard(
+        label: 'data',
+        child: CatchAsyncValueView<String>(
+          value: const AsyncValue.data('3 events ready'),
+          builder: (context, value) => CatchSurface.card(child: Text(value)),
+        ),
+      ),
+      _StateCard(
+        label: 'loading',
+        child: SizedBox(
+          height: 80,
+          child: CatchAsyncValueView<String>(
+            value: const AsyncValue.loading(),
+            builder: (context, value) => Text(value),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'error',
+        child: SizedBox(
+          height: 220,
+          child: CatchAsyncValueView<String>(
+            value: AsyncValue.error(
+              Exception('Could not load events'),
+              StackTrace.current,
+            ),
+            builder: (context, value) => Text(value),
+            onRetry: _noop,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'skip-loading-on-refresh',
+        child: CatchAsyncValueView<String>(
+          value: const AsyncValue.data('Existing data remains visible'),
+          builder: (context, value) => CatchSurface.card(child: Text(value)),
+          skipLoadingOnRefresh: true,
+        ),
+      ),
+      _StateCard(
+        label: 'custom-builders',
+        child: CatchAsyncValueView<String>(
+          value: const AsyncValue.loading(),
+          builder: (context, value) => Text(value),
+          loadingBuilder: (context) =>
+              const CatchInlineStatus(label: 'Custom loading state'),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchStartupLoadingScreen,
+  path: '[Core primitives]/Loading',
+)
+Widget catchStartupLoadingScreenContractStates(BuildContext context) {
+  return _ContractScreen(
+    title: 'CatchStartupLoadingScreen',
+    contractId: 'catch.startup_loading_screen',
+    states: const ['startup', 'safe-area', 'primary-fill', 'bounded-spinner'],
+    children: const [
+      _StateCard(
+        label: 'startup',
+        child: SizedBox(height: 360, child: CatchStartupLoadingScreen()),
+      ),
+      _StateCard(
+        label: 'safe-area',
+        child: SizedBox(height: 360, child: CatchStartupLoadingScreen()),
+      ),
+      _StateCard(
+        label: 'primary-fill',
+        child: SizedBox(height: 360, child: CatchStartupLoadingScreen()),
+      ),
+      _StateCard(
+        label: 'bounded-spinner',
+        child: SizedBox(height: 360, child: CatchStartupLoadingScreen()),
       ),
     ],
   );
@@ -729,6 +896,91 @@ Widget catchTypographyContractStates(BuildContext context) {
               ),
             ),
           ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchIndexRow,
+  path: '[Core primitives]/Lists',
+)
+Widget catchIndexRowContractStates(BuildContext context) {
+  final t = CatchTokens.of(context);
+  return _ContractScreen(
+    title: 'CatchIndexRow',
+    contractId: 'catch.index_row',
+    states: const ['default', 'selected', 'leading', 'trailing', 'disabled'],
+    children: [
+      _StateCard(
+        label: 'default',
+        child: CatchIndexRow(title: 'Dinner', onTap: _noop),
+      ),
+      _StateCard(
+        label: 'selected with leading and trailing',
+        child: CatchIndexRow(
+          title: 'Social run',
+          selected: true,
+          leading: CatchStatusDot(color: t.accent),
+          trailing: const Text('12'),
+          onTap: _noop,
+        ),
+      ),
+      const _StateCard(
+        label: 'disabled',
+        child: CatchIndexRow(title: 'Coming soon', onTap: null),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Contract states',
+  type: CatchClubCover,
+  path: '[Core primitives]/Media',
+)
+Widget catchClubCoverContractStates(BuildContext context) {
+  final fallbackClub = Club(
+    id: 'contract-cover-fallback',
+    name: 'Sea Face Social',
+    description: 'A social movement club.',
+    location: 'Mumbai',
+    area: 'Bandra',
+    createdAt: DateTime(2026),
+  );
+  final photoClub = fallbackClub.copyWith(
+    id: 'contract-cover-photo',
+    imageUrl:
+        'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=720&q=80',
+  );
+  return _ContractScreen(
+    title: 'CatchClubCover',
+    contractId: 'catch.club_cover',
+    states: const ['photo', 'fallback', 'compact', 'error-fallback'],
+    children: [
+      _StateCard(
+        label: 'photo',
+        child: SizedBox(
+          width: 280,
+          height: 180,
+          child: CatchClubCover(club: photoClub),
+        ),
+      ),
+      _StateCard(
+        label: 'fallback',
+        child: SizedBox(
+          width: 280,
+          height: 180,
+          child: CatchClubCover(club: fallbackClub),
+        ),
+      ),
+      _StateCard(
+        label: 'compact',
+        child: SizedBox.square(
+          dimension: 72,
+          child: CatchClubCover(club: fallbackClub, compact: true),
         ),
       ),
     ],
@@ -7091,98 +7343,6 @@ Widget catchCoverStoryContractStates(BuildContext context) {
             activityKind: ActivityKind.yoga,
             title: 'Stretch into Sunday',
             showGhostGlyph: false,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchCrossPathsCard,
-  path: '[Core primitives]/Product composites',
-)
-Widget catchCrossPathsCardContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchCrossPathsCard',
-    contractId: 'catch.cross_paths_card',
-    states: const [
-      'postcard',
-      'photo-row',
-      'no-photo-fallback',
-      'with-like',
-      'long-copy',
-    ],
-    children: [
-      _StateCard(
-        label: 'postcard',
-        child: SizedBox(
-          width: 420,
-          child: CatchCrossPathsCard(
-            activityKind: ActivityKind.socialRun,
-            kicker: 'Crossed paths',
-            quote: 'I am going for coffee after the run.',
-            displayName: 'Isha',
-            age: 29,
-            meta: '2 km away',
-            onJoin: _noop,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'photo-row',
-        child: SizedBox(
-          width: 420,
-          child: CatchCrossPathsCard(
-            activityKind: ActivityKind.dinner,
-            variant: CatchCrossPathsVariant.photo,
-            quote: 'The host saved two seats at the long table.',
-            displayName: 'Maya',
-            age: 31,
-            meta: 'Tonight',
-            onJoin: _noop,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'no-photo-fallback',
-        child: SizedBox(
-          width: 420,
-          child: CatchCrossPathsCard(
-            activityKind: ActivityKind.pickleball,
-            variant: CatchCrossPathsVariant.photo,
-            quote: 'Come hit a warm-up set.',
-            displayName: 'Naina',
-            onJoin: _noop,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'with-like',
-        child: SizedBox(
-          width: 420,
-          child: CatchCrossPathsCard(
-            activityKind: ActivityKind.pubQuiz,
-            quote: 'I need one more teammate for music trivia.',
-            displayName: 'Dev',
-            onJoin: _noop,
-            onLike: _noop,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'long-copy',
-        child: SizedBox(
-          width: 340,
-          child: CatchCrossPathsCard(
-            activityKind: ActivityKind.yoga,
-            quote:
-                'I am trying the longer beginner-friendly class before brunch if you want to join the same table afterwards.',
-            displayName: 'Aanya',
-            age: 28,
-            meta: 'Sunday morning near Bandra',
-            onJoin: _noop,
           ),
         ),
       ),

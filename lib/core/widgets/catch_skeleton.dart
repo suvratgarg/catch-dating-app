@@ -30,12 +30,14 @@ class CatchSkeleton extends StatelessWidget {
     double height = CatchLayout.skeletonCardHeight,
   }) {
     return CatchSkeleton._(
-      child: Container(
-        width: width ?? double.infinity,
-        height: height,
-        decoration: BoxDecoration(
-          color: CatchTokens.editorialWhite,
-          borderRadius: BorderRadius.circular(CatchRadius.md),
+      child: Builder(
+        builder: (context) => Container(
+          width: width ?? double.infinity,
+          height: height,
+          decoration: BoxDecoration(
+            color: CatchTokens.of(context).raised,
+            borderRadius: BorderRadius.circular(CatchRadius.md),
+          ),
         ),
       ),
     );
@@ -50,14 +52,16 @@ class CatchSkeleton extends StatelessWidget {
     Color? borderColor,
   }) {
     return CatchSkeleton._(
-      child: Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-          color: CatchTokens.editorialWhite,
-          borderRadius:
-              borderRadius ?? BorderRadius.all(Radius.circular(radius)),
-          border: borderColor == null ? null : Border.all(color: borderColor),
+      child: Builder(
+        builder: (context) => Container(
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+            color: CatchTokens.of(context).raised,
+            borderRadius:
+                borderRadius ?? BorderRadius.all(Radius.circular(radius)),
+            border: borderColor == null ? null : Border.all(color: borderColor),
+          ),
         ),
       ),
     );
@@ -66,12 +70,14 @@ class CatchSkeleton extends StatelessWidget {
   /// Single text line placeholder.
   factory CatchSkeleton.text({double width = double.infinity}) {
     return CatchSkeleton._(
-      child: Container(
-        width: width,
-        height: CatchLayout.skeletonTextHeight,
-        decoration: BoxDecoration(
-          color: CatchTokens.editorialWhite,
-          borderRadius: BorderRadius.circular(CatchRadius.xs),
+      child: Builder(
+        builder: (context) => Container(
+          width: width,
+          height: CatchLayout.skeletonTextHeight,
+          decoration: BoxDecoration(
+            color: CatchTokens.of(context).raised,
+            borderRadius: BorderRadius.circular(CatchRadius.xs),
+          ),
         ),
       ),
     );
@@ -82,26 +88,28 @@ class CatchSkeleton extends StatelessWidget {
   /// Renders [lines] rows with decreasing width (last line at 60%).
   factory CatchSkeleton.textBlock({int lines = 3}) {
     return CatchSkeleton._(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (var i = 0; i < lines; i++)
-            Padding(
-              padding: EdgeInsets.only(
-                bottom: i < lines - 1 ? CatchSpacing.s2 : CatchSpacing.s0,
-              ),
-              child: FractionallySizedBox(
-                widthFactor: i == lines - 1 ? 0.6 : 1.0,
-                child: Container(
-                  height: CatchLayout.skeletonTextHeight,
-                  decoration: BoxDecoration(
-                    color: CatchTokens.editorialWhite,
-                    borderRadius: BorderRadius.circular(CatchRadius.xs),
+      child: Builder(
+        builder: (context) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (var i = 0; i < lines; i++)
+              Padding(
+                padding: EdgeInsets.only(
+                  bottom: i < lines - 1 ? CatchSpacing.s2 : CatchSpacing.s0,
+                ),
+                child: FractionallySizedBox(
+                  widthFactor: i == lines - 1 ? 0.6 : 1.0,
+                  child: Container(
+                    height: CatchLayout.skeletonTextHeight,
+                    decoration: BoxDecoration(
+                      color: CatchTokens.of(context).raised,
+                      borderRadius: BorderRadius.circular(CatchRadius.xs),
+                    ),
                   ),
                 ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -111,12 +119,14 @@ class CatchSkeleton extends StatelessWidget {
     double size = CatchLayout.skeletonCircleExtent,
   }) {
     return CatchSkeleton._(
-      child: Container(
-        width: size,
-        height: size,
-        decoration: const BoxDecoration(
-          color: CatchTokens.editorialWhite,
-          shape: BoxShape.circle,
+      child: Builder(
+        builder: (context) => Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            color: CatchTokens.of(context).raised,
+            shape: BoxShape.circle,
+          ),
         ),
       ),
     );

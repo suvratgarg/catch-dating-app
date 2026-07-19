@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
 import 'package:catch_dating_app/clubs/shared/catch_polaroid.dart';
 import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
@@ -7,13 +8,11 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_graded_image.dart';
-import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
+import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_event_support_widgets.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_synthetic_visual_fill.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class ExploreClubPolaroidCard extends StatelessWidget {
@@ -30,15 +29,14 @@ class ExploreClubPolaroidCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final isSynthetic = isSyntheticExploreClub(club);
-    final state = ExploreClubCardState.from(
-      club,
-      isSynthetic: isSynthetic,
-      l10n: context.l10n,
-    );
+    final state = ExploreClubCardState.from(club, l10n: context.l10n);
+    final onTap = isSynthetic || onClubSelected == null
+        ? null
+        : () => onClubSelected!(club);
     final card = CatchPolaroid(
-      onTap: isSynthetic ? null : () => onClubSelected?.call(club),
+      onTap: onTap,
       paddingKey: const ValueKey('explore-club-polaroid-padding'),
-      media: ExploreClubCover(club: club),
+      media: CatchClubCover(club: club),
       mediaOverlay: Positioned(
         top: CatchSpacing.s3,
         right: CatchSpacing.s3,
@@ -48,20 +46,35 @@ class ExploreClubPolaroidCard extends StatelessWidget {
       captionColor: t.ink3,
       title: state.title,
       subtitle: state.supportingLabel,
-      showArrow: false,
-      footer: Row(
+      showArrow: onTap != null,
+      footer: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Expanded(child: ExploreClubTags(state: state)),
-          gapW10,
-          CatchBadge.solid(label: state.actionLabel, size: CatchBadgeSize.sm),
+          ClubHostIdentityLine(
+            hostName: state.hostName,
+            hostAvatarUrl: state.hostAvatarUrl,
+            eyebrow: state.hostEyebrow,
+            avatarSize: 24,
+            trailing: CatchMonoLabel(state.ratingReviewLabel, color: t.ink3),
+          ),
+          if (state.tags.isNotEmpty) ...[gapH8, ExploreClubTags(state: state)],
         ],
       ),
     );
-    if (isSynthetic) return card;
-    return Hero(
-      tag: clubInteractionHeroTag(club.id),
-      transitionOnUserGestures: true,
-      child: Material(color: Colors.transparent, child: card),
+    final content = isSynthetic
+        ? card
+        : Hero(
+            tag: clubInteractionHeroTag(club.id),
+            transitionOnUserGestures: true,
+            child: Material(color: Colors.transparent, child: card),
+          );
+    return Semantics(
+      container: true,
+      button: onTap != null,
+      label: state.semanticLabel,
+      onTap: onTap,
+      child: ExcludeSemantics(child: content),
     );
   }
 }
@@ -81,16 +94,13 @@ class ExploreFeedClubRow extends StatelessWidget {
     final t = CatchTokens.of(context);
     final palette = ClubCoverVisualPalette.forClub(context, club);
     final isSynthetic = isSyntheticExploreClub(club);
-    final state = ExploreClubCardState.from(
-      club,
-      isSynthetic: isSynthetic,
-      l10n: context.l10n,
-    );
-    return CatchSurface(
-      onTap: isSynthetic ? null : () => onClubSelected?.call(club),
-      radius: CatchRadius.md,
+    final state = ExploreClubCardState.from(club, l10n: context.l10n);
+    final onTap = isSynthetic || onClubSelected == null
+        ? null
+        : () => onClubSelected!(club);
+    final card = CatchSurface.card(
+      onTap: onTap,
       borderColor: t.line2,
-      elevation: CatchSurfaceElevation.card,
       padding: CatchInsets.content,
       child: Row(
         children: [
@@ -100,8 +110,10 @@ class ExploreFeedClubRow extends StatelessWidget {
             // unbounded width (Row) and height (SliverList) and cannot lay out.
             dimension: CatchLayout.clubCoverThumbnailExtent,
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(CatchRadius.md),
-              child: ExploreClubCover(club: club, compact: true),
+              borderRadius: BorderRadius.circular(
+                CatchLayout.clubCoverCompactMediaRadius,
+              ),
+              child: CatchClubCover(club: club, compact: true),
             ),
           ),
           gapW14,
@@ -110,13 +122,16 @@ class ExploreFeedClubRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                ExploreMonoLabel(state.rowKicker, color: palette.accent),
+                CatchMonoLabel(state.rowKicker, color: palette.accent),
                 gapH4,
                 Text(
                   state.title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.clubDisplay(context, size: 27),
+                  style: CatchTextStyles.clubDisplay(
+                    context,
+                    step: CatchDisplayStep.m,
+                  ),
                 ),
                 gapH4,
                 Text(
@@ -125,6 +140,8 @@ class ExploreFeedClubRow extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
+                gapH4,
+                CatchMonoLabel(state.ratingReviewLabel, color: t.ink3),
               ],
             ),
           ),
@@ -139,27 +156,12 @@ class ExploreFeedClubRow extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class ExploreClubCover extends StatelessWidget {
-  const ExploreClubCover({super.key, required this.club, this.compact = false});
-
-  final Club club;
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    final url = club.imageUrl?.trim();
-    if (url == null || url.isEmpty) {
-      return ClubPolaroidArtwork(club: club, compact: compact);
-    }
-    return CatchGradedImage(
-      child: CatchNetworkImage(
-        url,
-        errorBuilder: (_, _, _) =>
-            ClubPolaroidArtwork(club: club, compact: compact),
-      ),
+    return Semantics(
+      container: true,
+      button: onTap != null,
+      label: state.semanticLabel,
+      onTap: onTap,
+      child: ExcludeSemantics(child: card),
     );
   }
 }
@@ -173,7 +175,7 @@ class ExploreClubTags extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     if (state.tags.isEmpty) {
-      return ExploreMonoLabel(
+      return CatchMonoLabel(
         state.memberCountLabel.toUpperCase(),
         color: t.ink3,
       );

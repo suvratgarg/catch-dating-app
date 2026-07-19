@@ -5,11 +5,13 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
+import 'package:catch_dating_app/core/widgets/catch_person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_capacity_labels.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/shared/event_price_copy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -39,6 +41,7 @@ class EventDateRailCard extends StatelessWidget {
     this.priceLabel,
     this.capacityLabel,
     this.statusLabel,
+    this.showAttendeeSignal = false,
     this.stripPosition = EventDateRailCardStripPosition.single,
     this.heroTag,
     this.onTap,
@@ -51,6 +54,7 @@ class EventDateRailCard extends StatelessWidget {
   final String? priceLabel;
   final String? capacityLabel;
   final String? statusLabel;
+  final bool showAttendeeSignal;
   final EventDateRailCardStripPosition stripPosition;
   final Object? heroTag;
   final VoidCallback? onTap;
@@ -65,7 +69,8 @@ class EventDateRailCard extends StatelessWidget {
     final effectiveTitle = title?.trim().isNotEmpty == true
         ? title!.trim()
         : _eventIdentityTitle(event);
-    final effectivePrice = (priceLabel ?? _priceLabel(event, context)).trim();
+    final effectivePrice = (priceLabel ?? eventPriceLabel(context.l10n, event))
+        .trim();
     final effectiveCapacity =
         capacityLabel?.trim() ?? capacity.goingAvailabilityLabel();
     final decisionLabel = [
@@ -90,21 +95,6 @@ class EventDateRailCard extends StatelessWidget {
         stripPosition == EventDateRailCardStripPosition.single
         ? CatchElevation.physicalTicket
         : 0.0;
-    final decisionTextStyle = CatchTextStyles.monoLabelS(
-      context,
-      color: t.ink2,
-    );
-    final decisionSpan = TextSpan(
-      style: decisionTextStyle,
-      children: [
-        TextSpan(text: decisionLabel.toUpperCase()),
-        if (showDecisionStatus)
-          TextSpan(
-            text: ' · ${effectiveStatus.toUpperCase()}',
-            style: CatchTextStyles.monoLabelS(context, color: visual.accent),
-          ),
-      ],
-    );
     final semanticLabel = <String>[
       effectiveTitle,
       kicker,
@@ -147,7 +137,7 @@ class EventDateRailCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: CatchTextStyles.eventDisplay(
                         context,
-                        size: 22,
+                        step: CatchDisplayStep.s,
                         height: 1.06,
                       ),
                     ),
@@ -164,55 +154,22 @@ class EventDateRailCard extends StatelessWidget {
                         ),
                       ),
                     ],
+                    if (showAttendeeSignal && event.signedUpCount > 0) ...[
+                      gapH8,
+                      CatchPersonAvatarStack(
+                        items: const [],
+                        totalCount: event.signedUpCount,
+                        size: 24,
+                        veiledCount: event.signedUpCount,
+                        activityKind: event.activityKind,
+                      ),
+                    ],
                     gapH8,
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final priceStyle = CatchTextStyles.monoCapsLabel(
-                          context,
-                          color: t.ink,
-                        );
-                        final textScaler = MediaQuery.textScalerOf(context);
-                        final shouldStack =
-                            textScaler.scale(1) > 1.3 ||
-                            constraints.maxWidth <
-                                CatchLayout.eventTicketDecisionInlineMinWidth;
-                        Text decisionText({required int maxLines}) => Text.rich(
-                          decisionSpan,
-                          key: const ValueKey('event_date_rail_card.decision'),
-                          maxLines: maxLines,
-                          overflow: TextOverflow.ellipsis,
-                        );
-                        final priceText = Text(
-                          effectivePrice.toUpperCase(),
-                          key: const ValueKey('event_date_rail_card.price'),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.end,
-                          style: priceStyle,
-                        );
-                        if (shouldStack) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              decisionText(maxLines: 2),
-                              gapH4,
-                              Align(
-                                alignment: AlignmentDirectional.centerEnd,
-                                child: priceText,
-                              ),
-                            ],
-                          );
-                        }
-                        return Row(
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          textBaseline: TextBaseline.alphabetic,
-                          children: [
-                            Expanded(child: decisionText(maxLines: 1)),
-                            gapW12,
-                            priceText,
-                          ],
-                        );
-                      },
+                    EventTicketStub(
+                      decisionLabel: decisionLabel,
+                      statusLabel: effectiveStatus,
+                      priceLabel: effectivePrice,
+                      statusColor: visual.accent,
                     ),
                   ],
                 ),
@@ -273,6 +230,88 @@ class EventDateRailCard extends StatelessWidget {
           : context.l10n.eventsEventDateRailCardSemanticsOpensEventDetails,
       onTap: onTap,
       child: ExcludeSemantics(child: cardWithHero),
+    );
+  }
+}
+
+/// Canonical decision row used by date-rail and agenda ticket compositions.
+class EventTicketStub extends StatelessWidget {
+  const EventTicketStub({
+    super.key,
+    required this.decisionLabel,
+    required this.priceLabel,
+    required this.statusColor,
+    this.statusLabel,
+  });
+
+  final String decisionLabel;
+  final String? statusLabel;
+  final String priceLabel;
+  final Color statusColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final effectiveStatus = statusLabel?.trim();
+    final showStatus =
+        effectiveStatus != null &&
+        effectiveStatus.isNotEmpty &&
+        !decisionLabel.toLowerCase().contains(effectiveStatus.toLowerCase());
+    final decisionSpan = TextSpan(
+      style: CatchTextStyles.monoLabelS(context, color: t.ink2),
+      children: [
+        TextSpan(text: decisionLabel.toUpperCase()),
+        if (showStatus)
+          TextSpan(
+            text: ' · ${effectiveStatus.toUpperCase()}',
+            style: CatchTextStyles.monoLabelS(context, color: statusColor),
+          ),
+      ],
+    );
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final textScaler = MediaQuery.textScalerOf(context);
+        final shouldStack =
+            textScaler.scale(1) > 1.3 ||
+            constraints.maxWidth <
+                CatchLayout.eventTicketDecisionInlineMinWidth;
+        Text decisionText({required int maxLines}) => Text.rich(
+          decisionSpan,
+          key: const ValueKey('event_date_rail_card.decision'),
+          maxLines: maxLines,
+          overflow: TextOverflow.ellipsis,
+        );
+        final priceText = Text(
+          priceLabel.toUpperCase(),
+          key: const ValueKey('event_date_rail_card.price'),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.end,
+          style: CatchTextStyles.monoCapsLabel(context, color: t.ink),
+        );
+        if (shouldStack) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              decisionText(maxLines: 2),
+              gapH4,
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: priceText,
+              ),
+            ],
+          );
+        }
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Expanded(child: decisionText(maxLines: 1)),
+            gapW12,
+            priceText,
+          ],
+        );
+      },
     );
   }
 }
@@ -424,7 +463,7 @@ class _DateRailTicketBorderPainter extends CustomPainter {
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
+      ..strokeWidth = CatchStroke.hairline;
     if (excludeBottomEdge) {
       canvas.save();
       canvas.clipRect(Rect.fromLTRB(0, 0, size.width, size.height - 1));
@@ -447,7 +486,7 @@ class PerforationLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 1,
+      width: CatchStroke.hairline,
       child: CustomPaint(painter: _PerforationPainter(color: color)),
     );
   }
@@ -462,12 +501,16 @@ class _PerforationPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color
-      ..strokeWidth = 1.4
+      ..strokeWidth = CatchStroke.underline
       ..strokeCap = StrokeCap.round;
-    var y = 0.5;
+    var y = CatchLayout.ticketPerforationStartOffset;
     while (y < size.height) {
-      canvas.drawLine(Offset(0, y), Offset(0, y + 2.2), paint);
-      y += 7;
+      canvas.drawLine(
+        Offset(0, y),
+        Offset(0, y + CatchLayout.ticketPerforationDashLength),
+        paint,
+      );
+      y += CatchLayout.ticketPerforationStride;
     }
   }
 
@@ -534,7 +577,7 @@ class DateRail extends StatelessWidget {
                   ),
                   style: CatchTextStyles.eventDisplay(
                     context,
-                    size: 31,
+                    step: CatchDisplayStep.l,
                     height: 0.9,
                     color: onColor,
                   ),
@@ -561,10 +604,3 @@ String _eventIdentityTitle(Event event) {
       ? event.eventFormat.label
       : event.eventFormat.eventTitleLabel;
 }
-
-String _priceLabel(Event event, BuildContext context) => event.priceInPaise <= 0
-    ? context.l10n.eventsEventDateRailCardVisiblecopyFree
-    : EventFormatters.priceInPaise(
-        event.priceInPaise,
-        currencyCode: event.currency,
-      );

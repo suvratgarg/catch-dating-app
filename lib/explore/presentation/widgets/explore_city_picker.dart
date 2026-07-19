@@ -4,7 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
-import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -55,20 +55,33 @@ class _ExploreCityPickerState extends State<ExploreCityPicker> {
     final onSelected = widget.onSelected;
     if (onSelected == null || widget.state.cities.isEmpty) return;
     setState(() => _isSheetOpen = true);
-    await showCatchBottomSheet<void>(
+    await showExploreCityPickerSheet(
       context: context,
-      builder: (sheetContext) => ExploreCityPickerSheet(
-        cities: widget.state.cities,
-        selectedCity: widget.state.selectedCity,
-        onSelected: (city) {
-          onSelected(city);
-          Navigator.of(sheetContext).pop();
-        },
-      ),
+      state: widget.state,
+      onSelected: onSelected,
     );
     if (!mounted) return;
     setState(() => _isSheetOpen = false);
   }
+}
+
+Future<void> showExploreCityPickerSheet({
+  required BuildContext context,
+  required ExploreCityPickerState state,
+  required ValueChanged<CityData> onSelected,
+}) {
+  if (!state.enabled || state.cities.isEmpty) return Future.value();
+  return showCatchBottomSheet<void>(
+    context: context,
+    builder: (sheetContext) => ExploreCityPickerSheet(
+      cities: state.cities,
+      selectedCity: state.selectedCity,
+      onSelected: (city) {
+        onSelected(city);
+        Navigator.of(sheetContext).pop();
+      },
+    ),
+  );
 }
 
 class CityTrigger extends StatelessWidget {
@@ -103,87 +116,27 @@ class CityTrigger extends StatelessWidget {
       l10n: context.l10n,
     );
 
-    if (presentation == ExploreCityPickerPresentation.scopeLabel) {
-      final labelColor = enabled ? effectiveForeground : t.ink3;
-      return Tooltip(
-        message: state.tooltipLabel,
-        child: Semantics(
-          button: true,
-          enabled: enabled,
-          label: state.semanticLabel,
-          child: InkWell(
-            onTap: enabled ? onTap : null,
-            borderRadius: BorderRadius.circular(CatchRadius.sm),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Flexible(
-                    child: Text(
-                      state.scopeLabel,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.kicker(context, color: labelColor),
-                    ),
-                  ),
-                  gapW4,
-                  Icon(state.icon, color: labelColor, size: CatchIcon.sm),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
     final labelColor = enabled ? effectiveForeground : t.ink3;
     return Tooltip(
       message: state.tooltipLabel,
       excludeFromSemantics: true,
-      child: Semantics(
-        button: true,
-        enabled: enabled,
-        label: state.semanticLabel,
-        child: ExcludeSemantics(
-          child: Material(
-            color: backgroundColor ?? t.surface,
-            borderRadius: BorderRadius.circular(CatchRadius.pill),
-            clipBehavior: Clip.antiAlias,
-            child: InkWell(
-              onTap: enabled ? onTap : null,
-              child: Container(
-                height: CatchIconButton.navSize,
-                constraints: const BoxConstraints(maxWidth: 132),
-                padding: const EdgeInsets.only(
-                  left: CatchSpacing.s2,
-                  right: CatchSpacing.s3,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(CatchRadius.pill),
-                  border: Border.all(color: borderColor ?? t.line2),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(state.icon, color: labelColor, size: CatchIcon.md),
-                    gapW6,
-                    Flexible(
-                      child: Text(
-                        city.label,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: CatchTextStyles.labelL(
-                          context,
-                          color: labelColor,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 132),
+        child: CatchButton(
+          label: presentation == ExploreCityPickerPresentation.scopeLabel
+              ? state.scopeLabel
+              : city.label,
+          semanticsLabel: state.semanticLabel,
+          icon: Icon(state.icon),
+          variant: CatchButtonVariant.secondary,
+          backgroundColor:
+              backgroundColor ??
+              (presentation == ExploreCityPickerPresentation.scopeLabel
+                  ? Colors.transparent
+                  : t.surface),
+          foregroundColor: labelColor,
+          borderColor: borderColor ?? t.line2,
+          onPressed: enabled ? onTap : null,
         ),
       ),
     );
@@ -205,67 +158,30 @@ class ExploreCityPickerSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final maxHeight = MediaQuery.sizeOf(context).height * 0.68;
+    final maxHeight =
+        MediaQuery.sizeOf(context).height * CatchLayout.sheetMaxHeightFraction;
 
-    return Material(
-      color: t.surface,
-      borderRadius: const BorderRadius.vertical(
-        top: Radius.circular(CatchRadius.lg),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: SafeArea(
-        top: false,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: maxHeight),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: CatchInsets.pageBody.copyWith(
-                  top: CatchSpacing.s3,
-                  bottom: CatchSpacing.s2,
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        context.l10n.exploreExploreCityPickerTextCity,
-                        style: CatchTextStyles.sectionTitle(context),
-                      ),
-                    ),
-                    Icon(
-                      CatchIcons.locationOnOutlined,
-                      size: 18,
-                      color: t.ink3,
-                    ),
-                  ],
-                ),
-              ),
-              Flexible(
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.fromLTRB(
-                    CatchSpacing.s3,
-                    0,
-                    CatchSpacing.s3,
-                    CatchSpacing.s4,
-                  ),
-                  itemCount: cities.length,
-                  separatorBuilder: (_, _) => gapH2,
-                  itemBuilder: (context, index) {
-                    final city = cities[index];
-                    final selected =
-                        city.effectiveMarketId ==
-                        selectedCity.effectiveMarketId;
-                    return CityOptionTile(
-                      city: city,
-                      selected: selected,
-                      onTap: () => onSelected(city),
-                    );
-                  },
-                ),
-              ),
-            ],
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: maxHeight),
+      child: CatchBottomSheetScaffold(
+        title: context.l10n.exploreExploreCityPickerTextCity,
+        trailing: Icon(CatchIcons.locationOnOutlined, size: 18, color: t.ink3),
+        child: Flexible(
+          child: ListView.separated(
+            shrinkWrap: true,
+            padding: EdgeInsets.zero,
+            itemCount: cities.length,
+            separatorBuilder: (_, _) => gapH2,
+            itemBuilder: (context, index) {
+              final city = cities[index];
+              final selected =
+                  city.effectiveMarketId == selectedCity.effectiveMarketId;
+              return CityOptionTile(
+                city: city,
+                selected: selected,
+                onTap: () => onSelected(city),
+              );
+            },
           ),
         ),
       ),

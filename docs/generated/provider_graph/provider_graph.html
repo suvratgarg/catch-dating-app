@@ -69,19 +69,19 @@ code { color: var(--fg); }
     "lib"
   ],
   "summary": {
-    "dartSourceFiles": 779,
-    "providerNodes": 212,
-    "generatedProviderNodes": 208,
+    "dartSourceFiles": 786,
+    "providerNodes": 214,
+    "generatedProviderNodes": 210,
     "manualProviderNodes": 4,
     "aliasProviderNodes": 0,
     "keepAliveNodes": 62,
-    "familyNodes": 82,
+    "familyNodes": 83,
     "mutationNodes": 83,
-    "consumerNodes": 238,
-    "providerToProviderCallsites": 409,
-    "uniqueProviderToProviderPairs": 324,
+    "consumerNodes": 241,
+    "providerToProviderCallsites": 414,
+    "uniqueProviderToProviderPairs": 327,
     "uniqueCrossFeatureProviderPairs": 167,
-    "consumerToStateCallsites": 670,
+    "consumerToStateCallsites": 688,
     "mutationReferenceCallsites": 191,
     "unresolvedRefOperations": 10,
     "unresolvedInsideProviders": 0,
@@ -108,8 +108,8 @@ code { color: var(--fg); }
     "clubs": 23,
     "core": 22,
     "event_success": 21,
+    "explore": 17,
     "hosts": 16,
-    "explore": 15,
     "chats": 10,
     "payments": 8,
     "auth": 6,
@@ -134,7 +134,7 @@ code { color: var(--fg); }
   },
   "providersByLayer": {
     "data": 123,
-    "presentation": 61,
+    "presentation": 63,
     "core": 19,
     "shared": 3,
     "event_success": 2,
@@ -143,22 +143,22 @@ code { color: var(--fg); }
     "exceptions": 1
   },
   "providerEdgesByOperation": {
-    "watch": 250,
-    "read": 148,
+    "watch": 253,
+    "read": 150,
     "invalidate": 6,
     "listen": 5
   },
   "consumerEdgesByOperation": {
-    "watch": 249,
-    "read": 170,
-    "invalidate": 120,
+    "watch": 252,
+    "read": 178,
+    "invalidate": 127,
     "mutation-run": 90,
     "listen": 21,
     "override": 20
   },
   "featurePairCounts": {
     "events -> events": 33,
-    "explore -> explore": 23,
+    "explore -> explore": 26,
     "clubs -> clubs": 21,
     "event_success -> event_success": 16,
     "core -> core": 9,
@@ -266,7 +266,7 @@ code { color: var(--fg); }
     "presentation -> data": 115,
     "data -> data": 96,
     "data -> core": 44,
-    "presentation -> presentation": 30,
+    "presentation -> presentation": 33,
     "presentation -> core": 10,
     "core -> core": 6,
     "shared -> data": 5,
@@ -303,6 +303,10 @@ code { color: var(--fg); }
       "degree": 7
     },
     {
+      "name": "exploreRecommendationsProvider",
+      "degree": 7
+    },
+    {
       "name": "onboardingControllerProvider",
       "degree": 7
     },
@@ -312,10 +316,6 @@ code { color: var(--fg); }
     },
     {
       "name": "eventMapViewModelProvider",
-      "degree": 6
-    },
-    {
-      "name": "exploreRecommendationsProvider",
       "degree": 6
     },
     {
@@ -503,9 +503,9 @@ code { color: var(--fg); }
       },
       {
         "id": "explore",
-        "providers": 15,
+        "providers": 17,
         "mutations": 0,
-        "consumers": 14
+        "consumers": 17
       },
       {
         "id": "force_update",
@@ -844,7 +844,7 @@ code { color: var(--fg); }
       {
         "source": "explore",
         "target": "explore",
-        "uniqueProviderPairs": 23
+        "uniqueProviderPairs": 26
       },
       {
         "source": "explore",
@@ -1313,7 +1313,7 @@ code { color: var(--fg); }
       "name": "activityNotificationRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/notifications/data/activity_notification_repository.dart",
-      "line": 78,
+      "line": 117,
       "feature": "notifications",
       "layer": "data",
       "keepAlive": false,
@@ -1505,7 +1505,7 @@ code { color: var(--fg); }
       "name": "chatRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/chats/data/chat_repository.dart",
-      "line": 132,
+      "line": 174,
       "feature": "chats",
       "layer": "data",
       "keepAlive": false,
@@ -1671,7 +1671,7 @@ code { color: var(--fg); }
       "name": "clubMembershipRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/clubs/data/club_membership_repository.dart",
-      "line": 79,
+      "line": 82,
       "feature": "clubs",
       "layer": "data",
       "keepAlive": true,
@@ -1695,7 +1695,7 @@ code { color: var(--fg); }
       "name": "clubPostsRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/clubs/data/club_posts_repository.dart",
-      "line": 84,
+      "line": 86,
       "feature": "clubs",
       "layer": "data",
       "keepAlive": true,
@@ -1707,7 +1707,7 @@ code { color: var(--fg); }
       "name": "clubsRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 439,
+      "line": 381,
       "feature": "clubs",
       "layer": "data",
       "keepAlive": true,
@@ -1779,7 +1779,7 @@ code { color: var(--fg); }
       "name": "currentUserFollowedClubIdsProvider",
       "kind": "generated-function",
       "path": "lib/clubs/data/club_membership_repository.dart",
-      "line": 108,
+      "line": 111,
       "feature": "clubs",
       "layer": "data",
       "keepAlive": false,
@@ -1827,7 +1827,7 @@ code { color: var(--fg); }
       "name": "debouncedExploreSearchQueryProvider",
       "kind": "generated-function",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 309,
+      "line": 358,
       "feature": "explore",
       "layer": "presentation",
       "keepAlive": false,
@@ -1862,7 +1862,7 @@ code { color: var(--fg); }
       "name": "discoverableEventsProvider",
       "kind": "generated-function",
       "path": "lib/events/data/event_discovery_repository.dart",
-      "line": 371,
+      "line": 407,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -1874,7 +1874,7 @@ code { color: var(--fg); }
       "name": "discoverableExternalEventsProvider",
       "kind": "generated-function",
       "path": "lib/events/data/external_event_repository.dart",
-      "line": 147,
+      "line": 175,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -1958,7 +1958,7 @@ code { color: var(--fg); }
       "name": "eventDiscoveryRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/events/data/event_discovery_repository.dart",
-      "line": 366,
+      "line": 402,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -2006,7 +2006,7 @@ code { color: var(--fg); }
       "name": "eventParticipationRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/events/data/event_participation_repository.dart",
-      "line": 119,
+      "line": 122,
       "feature": "events",
       "layer": "data",
       "keepAlive": true,
@@ -2030,7 +2030,7 @@ code { color: var(--fg); }
       "name": "eventRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/events/data/event_repository.dart",
-      "line": 612,
+      "line": 622,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -2126,7 +2126,7 @@ code { color: var(--fg); }
       "name": "exploreClubsViewModelProvider",
       "kind": "generated-function",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 540,
+      "line": 589,
       "feature": "explore",
       "layer": "presentation",
       "keepAlive": false,
@@ -2134,11 +2134,35 @@ code { color: var(--fg); }
       "returnType": "AsyncValue<ExploreViewModel>"
     },
     {
+      "id": "provider:exploreDiscoveryReferenceNowProvider",
+      "name": "exploreDiscoveryReferenceNowProvider",
+      "kind": "generated-function",
+      "path": "lib/explore/presentation/explore_feed_view_model.dart",
+      "line": 33,
+      "feature": "explore",
+      "layer": "presentation",
+      "keepAlive": false,
+      "family": false,
+      "returnType": "DateTime"
+    },
+    {
+      "id": "provider:exploreDiscoveryWindowProvider",
+      "name": "exploreDiscoveryWindowProvider",
+      "kind": "generated-class",
+      "path": "lib/explore/presentation/explore_discovery_window_controller.dart",
+      "line": 69,
+      "feature": "explore",
+      "layer": "presentation",
+      "keepAlive": false,
+      "family": true,
+      "returnType": "Future<ExploreDiscoveryWindowState>"
+    },
+    {
       "id": "provider:exploreFeedViewModelProvider",
       "name": "exploreFeedViewModelProvider",
       "kind": "generated-function",
       "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 307,
+      "line": 349,
       "feature": "explore",
       "layer": "presentation",
       "keepAlive": false,
@@ -2150,7 +2174,7 @@ code { color: var(--fg); }
       "name": "exploreFiltersProvider",
       "kind": "generated-class",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 336,
+      "line": 385,
       "feature": "explore",
       "layer": "presentation",
       "keepAlive": true,
@@ -2162,7 +2186,7 @@ code { color: var(--fg); }
       "name": "exploreRecommendationsProvider",
       "kind": "generated-function",
       "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 641,
+      "line": 724,
       "feature": "explore",
       "layer": "presentation",
       "keepAlive": false,
@@ -2174,7 +2198,7 @@ code { color: var(--fg); }
       "name": "exploreRecommendedEventsProvider",
       "kind": "generated-function",
       "path": "lib/explore/data/explore_recommendations_repository.dart",
-      "line": 50,
+      "line": 51,
       "feature": "explore",
       "layer": "data",
       "keepAlive": false,
@@ -2186,7 +2210,7 @@ code { color: var(--fg); }
       "name": "exploreSearchQueryProvider",
       "kind": "generated-class",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 288,
+      "line": 337,
       "feature": "explore",
       "layer": "presentation",
       "keepAlive": true,
@@ -2198,7 +2222,7 @@ code { color: var(--fg); }
       "name": "exploreSearchRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/explore/data/explore_search_repository.dart",
-      "line": 11,
+      "line": 12,
       "feature": "explore",
       "layer": "data",
       "keepAlive": true,
@@ -2210,7 +2234,7 @@ code { color: var(--fg); }
       "name": "exploreServerSearchProvider",
       "kind": "generated-function",
       "path": "lib/explore/data/explore_search_repository.dart",
-      "line": 74,
+      "line": 75,
       "feature": "explore",
       "layer": "data",
       "keepAlive": false,
@@ -2222,7 +2246,7 @@ code { color: var(--fg); }
       "name": "exploreSourceClubsProvider",
       "kind": "generated-function",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 437,
+      "line": 486,
       "feature": "explore",
       "layer": "presentation",
       "keepAlive": false,
@@ -2234,7 +2258,7 @@ code { color: var(--fg); }
       "name": "exploreViewerCohortIdProvider",
       "kind": "generated-function",
       "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 279,
+      "line": 321,
       "feature": "explore",
       "layer": "presentation",
       "keepAlive": false,
@@ -2246,7 +2270,7 @@ code { color: var(--fg); }
       "name": "externalEventRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/events/data/external_event_repository.dart",
-      "line": 142,
+      "line": 170,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -2318,7 +2342,7 @@ code { color: var(--fg); }
       "name": "fetchClubProvider",
       "kind": "generated-function",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 478,
+      "line": 420,
       "feature": "clubs",
       "layer": "data",
       "keepAlive": false,
@@ -2330,7 +2354,7 @@ code { color: var(--fg); }
       "name": "filteredExploreClubsProvider",
       "kind": "generated-function",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 462,
+      "line": 511,
       "feature": "explore",
       "layer": "presentation",
       "keepAlive": false,
@@ -2534,7 +2558,7 @@ code { color: var(--fg); }
       "name": "hostOperableClubsProvider",
       "kind": "generated-function",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 492,
+      "line": 434,
       "feature": "clubs",
       "layer": "data",
       "keepAlive": false,
@@ -2666,7 +2690,7 @@ code { color: var(--fg); }
       "name": "launchAccessRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/launch_access/data/launch_access_repository.dart",
-      "line": 130,
+      "line": 136,
       "feature": "launch_access",
       "layer": "data",
       "keepAlive": true,
@@ -2678,7 +2702,7 @@ code { color: var(--fg); }
       "name": "matchRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/matches/data/match_repository.dart",
-      "line": 204,
+      "line": 303,
       "feature": "matches",
       "layer": "data",
       "keepAlive": false,
@@ -2690,7 +2714,7 @@ code { color: var(--fg); }
       "name": "matchStreamProvider",
       "kind": "generated-function",
       "path": "lib/matches/data/match_repository.dart",
-      "line": 212,
+      "line": 311,
       "feature": "matches",
       "layer": "data",
       "keepAlive": false,
@@ -2750,7 +2774,7 @@ code { color: var(--fg); }
       "name": "paymentHistoryRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/payments/data/payment_history_repository.dart",
-      "line": 105,
+      "line": 132,
       "feature": "payments",
       "layer": "data",
       "keepAlive": false,
@@ -2882,7 +2906,7 @@ code { color: var(--fg); }
       "name": "recommendedEventsProvider",
       "kind": "generated-function",
       "path": "lib/events/data/event_repository.dart",
-      "line": 717,
+      "line": 727,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -2894,7 +2918,7 @@ code { color: var(--fg); }
       "name": "reviewsRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/reviews/data/reviews_repository.dart",
-      "line": 199,
+      "line": 274,
       "feature": "reviews",
       "layer": "data",
       "keepAlive": false,
@@ -2906,7 +2930,7 @@ code { color: var(--fg); }
       "name": "safetyRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/safety/data/safety_repository.dart",
-      "line": 146,
+      "line": 150,
       "feature": "safety",
       "layer": "data",
       "keepAlive": false,
@@ -2918,7 +2942,7 @@ code { color: var(--fg); }
       "name": "savedEventRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/events/data/saved_event_repository.dart",
-      "line": 121,
+      "line": 122,
       "feature": "events",
       "layer": "data",
       "keepAlive": true,
@@ -2930,7 +2954,7 @@ code { color: var(--fg); }
       "name": "selectedExploreCityProvider",
       "kind": "generated-class",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 235,
+      "line": 284,
       "feature": "explore",
       "layer": "presentation",
       "keepAlive": true,
@@ -2942,7 +2966,7 @@ code { color: var(--fg); }
       "name": "selectedExploreCityWasUserSelectedProvider",
       "kind": "generated-class",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 279,
+      "line": 328,
       "feature": "explore",
       "layer": "presentation",
       "keepAlive": true,
@@ -3062,7 +3086,7 @@ code { color: var(--fg); }
       "name": "totalUnreadCountProvider",
       "kind": "generated-function",
       "path": "lib/matches/data/match_repository.dart",
-      "line": 216,
+      "line": 315,
       "feature": "matches",
       "layer": "data",
       "keepAlive": false,
@@ -3134,7 +3158,7 @@ code { color: var(--fg); }
       "name": "watchActiveClubMembershipsForClubProvider",
       "kind": "generated-function",
       "path": "lib/clubs/data/club_membership_repository.dart",
-      "line": 91,
+      "line": 94,
       "feature": "clubs",
       "layer": "data",
       "keepAlive": false,
@@ -3146,7 +3170,7 @@ code { color: var(--fg); }
       "name": "watchActiveClubMembershipsForUserProvider",
       "kind": "generated-function",
       "path": "lib/clubs/data/club_membership_repository.dart",
-      "line": 83,
+      "line": 86,
       "feature": "clubs",
       "layer": "data",
       "keepAlive": false,
@@ -3158,7 +3182,7 @@ code { color: var(--fg); }
       "name": "watchActivityNotificationsProvider",
       "kind": "generated-function",
       "path": "lib/notifications/data/activity_notification_repository.dart",
-      "line": 82,
+      "line": 121,
       "feature": "notifications",
       "layer": "data",
       "keepAlive": false,
@@ -3170,7 +3194,7 @@ code { color: var(--fg); }
       "name": "watchAttendedEventsProvider",
       "kind": "generated-function",
       "path": "lib/events/data/event_repository.dart",
-      "line": 640,
+      "line": 650,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -3182,7 +3206,7 @@ code { color: var(--fg); }
       "name": "watchBlockedUsersProvider",
       "kind": "generated-function",
       "path": "lib/safety/data/safety_repository.dart",
-      "line": 153,
+      "line": 157,
       "feature": "safety",
       "layer": "data",
       "keepAlive": false,
@@ -3194,7 +3218,7 @@ code { color: var(--fg); }
       "name": "watchClubMembershipProvider",
       "kind": "generated-function",
       "path": "lib/clubs/data/club_membership_repository.dart",
-      "line": 99,
+      "line": 102,
       "feature": "clubs",
       "layer": "data",
       "keepAlive": false,
@@ -3206,7 +3230,7 @@ code { color: var(--fg); }
       "name": "watchClubPostRemainingWeeklyQuotaProvider",
       "kind": "generated-function",
       "path": "lib/clubs/data/club_posts_repository.dart",
-      "line": 90,
+      "line": 92,
       "feature": "clubs",
       "layer": "data",
       "keepAlive": false,
@@ -3218,7 +3242,7 @@ code { color: var(--fg); }
       "name": "watchClubProvider",
       "kind": "generated-function",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 445,
+      "line": 387,
       "feature": "clubs",
       "layer": "data",
       "keepAlive": false,
@@ -3230,7 +3254,7 @@ code { color: var(--fg); }
       "name": "watchClubsByIdsProvider",
       "kind": "generated-function",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 482,
+      "line": 424,
       "feature": "clubs",
       "layer": "data",
       "keepAlive": false,
@@ -3242,7 +3266,7 @@ code { color: var(--fg); }
       "name": "watchClubsByLocationProvider",
       "kind": "generated-function",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 451,
+      "line": 393,
       "feature": "clubs",
       "layer": "data",
       "keepAlive": false,
@@ -3254,7 +3278,7 @@ code { color: var(--fg); }
       "name": "watchClubsByLocationSortedByRatingProvider",
       "kind": "generated-function",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 457,
+      "line": 399,
       "feature": "clubs",
       "layer": "data",
       "keepAlive": false,
@@ -3266,7 +3290,7 @@ code { color: var(--fg); }
       "name": "watchClubsForMessagingByIdsProvider",
       "kind": "generated-function",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 486,
+      "line": 428,
       "feature": "clubs",
       "layer": "data",
       "keepAlive": false,
@@ -3278,7 +3302,7 @@ code { color: var(--fg); }
       "name": "watchClubsHostedByProvider",
       "kind": "generated-function",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 466,
+      "line": 408,
       "feature": "clubs",
       "layer": "data",
       "keepAlive": false,
@@ -3290,7 +3314,7 @@ code { color: var(--fg); }
       "name": "watchClubsOwnedByProvider",
       "kind": "generated-function",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 472,
+      "line": 414,
       "feature": "clubs",
       "layer": "data",
       "keepAlive": false,
@@ -3314,7 +3338,7 @@ code { color: var(--fg); }
       "name": "watchEventInviteLinksProvider",
       "kind": "generated-function",
       "path": "lib/events/data/event_repository.dart",
-      "line": 626,
+      "line": 636,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -3326,7 +3350,7 @@ code { color: var(--fg); }
       "name": "watchEventParticipationProvider",
       "kind": "generated-function",
       "path": "lib/events/data/event_participation_repository.dart",
-      "line": 148,
+      "line": 151,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -3338,7 +3362,7 @@ code { color: var(--fg); }
       "name": "watchEventParticipationRosterProvider",
       "kind": "generated-function",
       "path": "lib/events/data/event_participation_repository.dart",
-      "line": 139,
+      "line": 142,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -3350,7 +3374,7 @@ code { color: var(--fg); }
       "name": "watchEventParticipationsForEventProvider",
       "kind": "generated-function",
       "path": "lib/events/data/event_participation_repository.dart",
-      "line": 131,
+      "line": 134,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -3362,7 +3386,7 @@ code { color: var(--fg); }
       "name": "watchEventParticipationsForUserProvider",
       "kind": "generated-function",
       "path": "lib/events/data/event_participation_repository.dart",
-      "line": 123,
+      "line": 126,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -3374,7 +3398,7 @@ code { color: var(--fg); }
       "name": "watchEventPrivateAccessProvider",
       "kind": "generated-function",
       "path": "lib/events/data/event_repository.dart",
-      "line": 622,
+      "line": 632,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -3386,7 +3410,7 @@ code { color: var(--fg); }
       "name": "watchEventProvider",
       "kind": "generated-function",
       "path": "lib/events/data/event_repository.dart",
-      "line": 618,
+      "line": 628,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -3482,7 +3506,7 @@ code { color: var(--fg); }
       "name": "watchEventsByIdsProvider",
       "kind": "generated-function",
       "path": "lib/events/data/event_repository.dart",
-      "line": 648,
+      "line": 658,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -3494,7 +3518,7 @@ code { color: var(--fg); }
       "name": "watchEventsForClubProvider",
       "kind": "generated-function",
       "path": "lib/events/data/event_repository.dart",
-      "line": 630,
+      "line": 640,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -3506,7 +3530,7 @@ code { color: var(--fg); }
       "name": "watchEventsForClubsProvider",
       "kind": "generated-function",
       "path": "lib/events/data/event_repository.dart",
-      "line": 634,
+      "line": 644,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -3542,7 +3566,7 @@ code { color: var(--fg); }
       "name": "watchLaunchAccessApplicationProvider",
       "kind": "generated-function",
       "path": "lib/launch_access/data/launch_access_repository.dart",
-      "line": 134,
+      "line": 140,
       "feature": "launch_access",
       "layer": "data",
       "keepAlive": false,
@@ -3554,7 +3578,7 @@ code { color: var(--fg); }
       "name": "watchMatchesForUserProvider",
       "kind": "generated-function",
       "path": "lib/matches/data/match_repository.dart",
-      "line": 208,
+      "line": 307,
       "feature": "matches",
       "layer": "data",
       "keepAlive": false,
@@ -3566,7 +3590,7 @@ code { color: var(--fg); }
       "name": "watchPaymentProvider",
       "kind": "generated-function",
       "path": "lib/payments/data/payment_history_repository.dart",
-      "line": 113,
+      "line": 140,
       "feature": "payments",
       "layer": "data",
       "keepAlive": false,
@@ -3578,7 +3602,7 @@ code { color: var(--fg); }
       "name": "watchPaymentsForUserProvider",
       "kind": "generated-function",
       "path": "lib/payments/data/payment_history_repository.dart",
-      "line": 109,
+      "line": 136,
       "feature": "payments",
       "layer": "data",
       "keepAlive": false,
@@ -3602,7 +3626,7 @@ code { color: var(--fg); }
       "name": "watchReviewsByUserProvider",
       "kind": "generated-function",
       "path": "lib/reviews/data/reviews_repository.dart",
-      "line": 213,
+      "line": 288,
       "feature": "reviews",
       "layer": "data",
       "keepAlive": false,
@@ -3614,7 +3638,7 @@ code { color: var(--fg); }
       "name": "watchReviewsForClubProvider",
       "kind": "generated-function",
       "path": "lib/reviews/data/reviews_repository.dart",
-      "line": 205,
+      "line": 280,
       "feature": "reviews",
       "layer": "data",
       "keepAlive": false,
@@ -3626,7 +3650,7 @@ code { color: var(--fg); }
       "name": "watchReviewsForEventProvider",
       "kind": "generated-function",
       "path": "lib/reviews/data/reviews_repository.dart",
-      "line": 209,
+      "line": 284,
       "feature": "reviews",
       "layer": "data",
       "keepAlive": false,
@@ -3638,7 +3662,7 @@ code { color: var(--fg); }
       "name": "watchSavedEventDetailsForUserProvider",
       "kind": "generated-function",
       "path": "lib/events/data/saved_event_repository.dart",
-      "line": 134,
+      "line": 135,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -3650,7 +3674,7 @@ code { color: var(--fg); }
       "name": "watchSavedEventProvider",
       "kind": "generated-function",
       "path": "lib/events/data/saved_event_repository.dart",
-      "line": 129,
+      "line": 130,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -3662,7 +3686,7 @@ code { color: var(--fg); }
       "name": "watchSavedEventsForUserProvider",
       "kind": "generated-function",
       "path": "lib/events/data/saved_event_repository.dart",
-      "line": 125,
+      "line": 126,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -3674,7 +3698,7 @@ code { color: var(--fg); }
       "name": "watchSignedUpEventsProvider",
       "kind": "generated-function",
       "path": "lib/events/data/event_repository.dart",
-      "line": 644,
+      "line": 654,
       "feature": "events",
       "layer": "data",
       "keepAlive": false,
@@ -3782,7 +3806,7 @@ code { color: var(--fg); }
       "name": "watchUserReviewForEventProvider",
       "kind": "generated-function",
       "path": "lib/reviews/data/reviews_repository.dart",
-      "line": 217,
+      "line": 292,
       "feature": "reviews",
       "layer": "data",
       "keepAlive": false,
@@ -4673,7 +4697,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/chats/presentation/inbox/chat_inbox_screen.dart#_ChatsListScreenState.build",
       "owner": "_ChatsListScreenState.build",
       "path": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
-      "line": 32,
+      "line": 29,
       "feature": "chats",
       "layer": "presentation"
     },
@@ -5201,7 +5225,23 @@ code { color: var(--fg); }
       "id": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._applyDistanceFilter",
       "owner": "_ExploreScreenState._applyDistanceFilter",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 380,
+      "line": 467,
+      "feature": "explore",
+      "layer": "presentation"
+    },
+    {
+      "id": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._loadMore",
+      "owner": "_ExploreScreenState._loadMore",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 494,
+      "feature": "explore",
+      "layer": "presentation"
+    },
+    {
+      "id": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
+      "owner": "_ExploreScreenState._refreshExploreData",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 475,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5209,7 +5249,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._showLocationFailure",
       "owner": "_ExploreScreenState._showLocationFailure",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 388,
+      "line": 512,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5217,7 +5257,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
       "owner": "_ExploreScreenState.build",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 56,
+      "line": 79,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5225,7 +5265,15 @@ code { color: var(--fg); }
       "id": "consumer:lib/explore/presentation/explore_screen.dart#openEvent",
       "owner": "openEvent",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 138,
+      "line": 168,
+      "feature": "explore",
+      "layer": "presentation"
+    },
+    {
+      "id": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
+      "owner": "openExploreFilters",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 229,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5233,7 +5281,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/explore/presentation/explore_screen.dart#openExternalEvent",
       "owner": "openExternalEvent",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 167,
+      "line": 197,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5241,7 +5289,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/explore/presentation/explore_screen.dart#openFeaturedEvent",
       "owner": "openFeaturedEvent",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 116,
+      "line": 146,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -5249,7 +5297,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/explore/presentation/explore_screen.dart#retryBodyState",
       "owner": "retryBodyState",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 105,
+      "line": 135,
       "feature": "explore",
       "layer": "presentation"
     },
@@ -6424,7 +6472,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/notifications/data/activity_notification_repository.dart",
-      "line": 80
+      "line": 119
     },
     {
       "source": "appShellFcmInitializationProvider",
@@ -6658,7 +6706,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/chats/data/chat_repository.dart",
-      "line": 134
+      "line": 176
     },
     {
       "source": "chatRouteStateProvider",
@@ -6946,7 +6994,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/club_membership_repository.dart",
-      "line": 81
+      "line": 84
     },
     {
       "source": "clubNameLookupProvider",
@@ -6964,7 +7012,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/club_posts_repository.dart",
-      "line": 86
+      "line": 88
     },
     {
       "source": "clubPostsRepositoryProvider",
@@ -6973,7 +7021,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/club_posts_repository.dart",
-      "line": 87
+      "line": 89
     },
     {
       "source": "clubsRepositoryProvider",
@@ -6982,7 +7030,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 441
+      "line": 383
     },
     {
       "source": "clubsRepositoryProvider",
@@ -6991,7 +7039,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 442
+      "line": 384
     },
     {
       "source": "conversationRepositoryProvider",
@@ -7153,7 +7201,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/club_membership_repository.dart",
-      "line": 110
+      "line": 113
     },
     {
       "source": "currentUserFollowedClubIdsProvider",
@@ -7162,7 +7210,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/club_membership_repository.dart",
-      "line": 122
+      "line": 125
     },
     {
       "source": "dashboardFullViewModelProvider",
@@ -7252,7 +7300,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 323
+      "line": 372
     },
     {
       "source": "deviceLocationProvider",
@@ -7288,7 +7336,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/event_discovery_repository.dart",
-      "line": 373
+      "line": 409
     },
     {
       "source": "discoverableExternalEventsProvider",
@@ -7297,7 +7345,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/external_event_repository.dart",
-      "line": 152
+      "line": 180
     },
     {
       "source": "eventBookingControllerProvider",
@@ -7477,7 +7525,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/event_discovery_repository.dart",
-      "line": 368
+      "line": 404
     },
     {
       "source": "eventDraftRepositoryProvider",
@@ -7567,7 +7615,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/event_participation_repository.dart",
-      "line": 121
+      "line": 124
     },
     {
       "source": "eventRecapViewModelProvider",
@@ -7603,7 +7651,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/event_repository.dart",
-      "line": 614
+      "line": 624
     },
     {
       "source": "eventRepositoryProvider",
@@ -7612,7 +7660,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/event_repository.dart",
-      "line": 615
+      "line": 625
     },
     {
       "source": "eventSuccessAssignmentPeerProfilesProvider",
@@ -7900,7 +7948,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 578
+      "line": 627
     },
     {
       "source": "exploreClubsViewModelProvider",
@@ -7909,7 +7957,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 549
+      "line": 598
     },
     {
       "source": "exploreClubsViewModelProvider",
@@ -7918,7 +7966,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 548
+      "line": 597
     },
     {
       "source": "exploreClubsViewModelProvider",
@@ -7927,7 +7975,43 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 566
+      "line": 615
+    },
+    {
+      "source": "exploreDiscoveryWindowProvider",
+      "sourceKind": "provider",
+      "target": "eventDiscoveryRepositoryProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_discovery_window_controller.dart",
+      "line": 100
+    },
+    {
+      "source": "exploreDiscoveryWindowProvider",
+      "sourceKind": "provider",
+      "target": "eventDiscoveryRepositoryProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_discovery_window_controller.dart",
+      "line": 80
+    },
+    {
+      "source": "exploreDiscoveryWindowProvider",
+      "sourceKind": "provider",
+      "target": "externalEventRepositoryProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_discovery_window_controller.dart",
+      "line": 108
+    },
+    {
+      "source": "exploreDiscoveryWindowProvider",
+      "sourceKind": "provider",
+      "target": "externalEventRepositoryProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_discovery_window_controller.dart",
+      "line": 83
     },
     {
       "source": "exploreFeedViewModelProvider",
@@ -7936,7 +8020,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 373
+      "line": 420
     },
     {
       "source": "exploreFeedViewModelProvider",
@@ -7945,7 +8029,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 326
+      "line": 373
     },
     {
       "source": "exploreFeedViewModelProvider",
@@ -7954,25 +8038,25 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 321
+      "line": 368
     },
     {
       "source": "exploreFeedViewModelProvider",
       "sourceKind": "provider",
-      "target": "discoverableEventsProvider",
+      "target": "exploreDiscoveryReferenceNowProvider",
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 424
+      "line": 356
     },
     {
       "source": "exploreFeedViewModelProvider",
       "sourceKind": "provider",
-      "target": "discoverableExternalEventsProvider",
+      "target": "exploreDiscoveryWindowProvider",
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 437
+      "line": 488
     },
     {
       "source": "exploreFeedViewModelProvider",
@@ -7981,102 +8065,12 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 311
+      "line": 353
     },
     {
       "source": "exploreFeedViewModelProvider",
       "sourceKind": "provider",
       "target": "exploreRecommendedEventsProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 469
-    },
-    {
-      "source": "exploreFeedViewModelProvider",
-      "sourceKind": "provider",
-      "target": "exploreSearchQueryProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 310
-    },
-    {
-      "source": "exploreFeedViewModelProvider",
-      "sourceKind": "provider",
-      "target": "exploreServerSearchProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 329
-    },
-    {
-      "source": "exploreFeedViewModelProvider",
-      "sourceKind": "provider",
-      "target": "exploreSourceClubsProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 312
-    },
-    {
-      "source": "exploreFeedViewModelProvider",
-      "sourceKind": "provider",
-      "target": "exploreViewerCohortIdProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 369
-    },
-    {
-      "source": "exploreFeedViewModelProvider",
-      "sourceKind": "provider",
-      "target": "selectedExploreCityProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 309
-    },
-    {
-      "source": "exploreFeedViewModelProvider",
-      "sourceKind": "provider",
-      "target": "uidProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 313
-    },
-    {
-      "source": "exploreFeedViewModelProvider",
-      "sourceKind": "provider",
-      "target": "watchClubsByIdsProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 549
-    },
-    {
-      "source": "exploreFeedViewModelProvider",
-      "sourceKind": "provider",
-      "target": "watchEventParticipationsForUserProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 376
-    },
-    {
-      "source": "exploreFeedViewModelProvider",
-      "sourceKind": "provider",
-      "target": "watchEventsByIdsProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 501
-    },
-    {
-      "source": "exploreFeedViewModelProvider",
-      "sourceKind": "provider",
-      "target": "watchEventsByIdsProvider",
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_feed_view_model.dart",
@@ -8085,11 +8079,101 @@ code { color: var(--fg); }
     {
       "source": "exploreFeedViewModelProvider",
       "sourceKind": "provider",
+      "target": "exploreSearchQueryProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_feed_view_model.dart",
+      "line": 352
+    },
+    {
+      "source": "exploreFeedViewModelProvider",
+      "sourceKind": "provider",
+      "target": "exploreServerSearchProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_feed_view_model.dart",
+      "line": 376
+    },
+    {
+      "source": "exploreFeedViewModelProvider",
+      "sourceKind": "provider",
+      "target": "exploreSourceClubsProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_feed_view_model.dart",
+      "line": 354
+    },
+    {
+      "source": "exploreFeedViewModelProvider",
+      "sourceKind": "provider",
+      "target": "exploreViewerCohortIdProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_feed_view_model.dart",
+      "line": 416
+    },
+    {
+      "source": "exploreFeedViewModelProvider",
+      "sourceKind": "provider",
+      "target": "selectedExploreCityProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_feed_view_model.dart",
+      "line": 351
+    },
+    {
+      "source": "exploreFeedViewModelProvider",
+      "sourceKind": "provider",
+      "target": "uidProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_feed_view_model.dart",
+      "line": 355
+    },
+    {
+      "source": "exploreFeedViewModelProvider",
+      "sourceKind": "provider",
+      "target": "watchClubsByIdsProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_feed_view_model.dart",
+      "line": 587
+    },
+    {
+      "source": "exploreFeedViewModelProvider",
+      "sourceKind": "provider",
+      "target": "watchEventParticipationsForUserProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_feed_view_model.dart",
+      "line": 423
+    },
+    {
+      "source": "exploreFeedViewModelProvider",
+      "sourceKind": "provider",
+      "target": "watchEventsByIdsProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_feed_view_model.dart",
+      "line": 539
+    },
+    {
+      "source": "exploreFeedViewModelProvider",
+      "sourceKind": "provider",
+      "target": "watchEventsByIdsProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_feed_view_model.dart",
+      "line": 545
+    },
+    {
+      "source": "exploreFeedViewModelProvider",
+      "sourceKind": "provider",
       "target": "watchSavedEventsForUserProvider",
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 379
+      "line": 426
     },
     {
       "source": "exploreFeedViewModelProvider",
@@ -8098,7 +8182,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 372
+      "line": 419
     },
     {
       "source": "exploreFiltersProvider",
@@ -8107,7 +8191,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 374
+      "line": 423
     },
     {
       "source": "exploreFiltersProvider",
@@ -8116,7 +8200,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 375
+      "line": 424
     },
     {
       "source": "exploreRecommendationsProvider",
@@ -8125,7 +8209,16 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 644
+      "line": 727
+    },
+    {
+      "source": "exploreRecommendationsProvider",
+      "sourceKind": "provider",
+      "target": "exploreDiscoveryReferenceNowProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_feed_view_model.dart",
+      "line": 802
     },
     {
       "source": "exploreRecommendationsProvider",
@@ -8134,7 +8227,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 670
+      "line": 753
     },
     {
       "source": "exploreRecommendationsProvider",
@@ -8143,7 +8236,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 643
+      "line": 726
     },
     {
       "source": "exploreRecommendationsProvider",
@@ -8152,7 +8245,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 669
+      "line": 752
     },
     {
       "source": "exploreRecommendationsProvider",
@@ -8161,7 +8254,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 668
+      "line": 751
     },
     {
       "source": "exploreRecommendationsProvider",
@@ -8170,7 +8263,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 667
+      "line": 750
     },
     {
       "source": "exploreRecommendedEventsProvider",
@@ -8179,7 +8272,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/data/explore_recommendations_repository.dart",
-      "line": 60
+      "line": 61
     },
     {
       "source": "exploreRecommendedEventsProvider",
@@ -8188,7 +8281,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/data/explore_recommendations_repository.dart",
-      "line": 55
+      "line": 56
     },
     {
       "source": "exploreSearchRepositoryProvider",
@@ -8197,7 +8290,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/data/explore_search_repository.dart",
-      "line": 13
+      "line": 14
     },
     {
       "source": "exploreServerSearchProvider",
@@ -8206,7 +8299,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/data/explore_search_repository.dart",
-      "line": 82
+      "line": 83
     },
     {
       "source": "exploreSourceClubsProvider",
@@ -8215,7 +8308,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 444
+      "line": 493
     },
     {
       "source": "exploreSourceClubsProvider",
@@ -8224,7 +8317,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 445
+      "line": 494
     },
     {
       "source": "exploreViewerCohortIdProvider",
@@ -8233,7 +8326,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 281
+      "line": 323
     },
     {
       "source": "exploreViewerCohortIdProvider",
@@ -8242,7 +8335,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "line": 291
+      "line": 333
     },
     {
       "source": "externalEventRepositoryProvider",
@@ -8251,7 +8344,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/external_event_repository.dart",
-      "line": 144
+      "line": 172
     },
     {
       "source": "externalLinkControllerProvider",
@@ -8296,7 +8389,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 480
+      "line": 422
     },
     {
       "source": "filteredExploreClubsProvider",
@@ -8305,7 +8398,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 489
+      "line": 538
     },
     {
       "source": "filteredExploreClubsProvider",
@@ -8314,7 +8407,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 465
+      "line": 514
     },
     {
       "source": "filteredExploreClubsProvider",
@@ -8323,7 +8416,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 493
+      "line": 542
     },
     {
       "source": "filteredExploreClubsProvider",
@@ -8332,7 +8425,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 466
+      "line": 515
     },
     {
       "source": "filteredExploreClubsProvider",
@@ -8341,7 +8434,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 464
+      "line": 513
     },
     {
       "source": "filteredExploreClubsProvider",
@@ -8350,7 +8443,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 512
+      "line": 561
     },
     {
       "source": "filtersControllerProvider",
@@ -8548,7 +8641,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 494
+      "line": 436
     },
     {
       "source": "hostOperableClubsProvider",
@@ -8557,7 +8650,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 495
+      "line": 437
     },
     {
       "source": "hostPaymentAccountRepositoryProvider",
@@ -8674,7 +8767,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/launch_access/data/launch_access_repository.dart",
-      "line": 132
+      "line": 138
     },
     {
       "source": "matchRepositoryProvider",
@@ -8683,7 +8776,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/matches/data/match_repository.dart",
-      "line": 206
+      "line": 305
     },
     {
       "source": "matchStreamProvider",
@@ -8692,7 +8785,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/matches/data/match_repository.dart",
-      "line": 214
+      "line": 313
     },
     {
       "source": "onboardingControllerProvider",
@@ -8899,7 +8992,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/payments/data/payment_history_repository.dart",
-      "line": 107
+      "line": 134
     },
     {
       "source": "paymentHistoryViewModelProvider",
@@ -9151,7 +9244,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/event_repository.dart",
-      "line": 720
+      "line": 730
     },
     {
       "source": "reviewsRepositoryProvider",
@@ -9160,7 +9253,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/reviews/data/reviews_repository.dart",
-      "line": 201
+      "line": 276
     },
     {
       "source": "reviewsRepositoryProvider",
@@ -9169,7 +9262,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/reviews/data/reviews_repository.dart",
-      "line": 202
+      "line": 277
     },
     {
       "source": "safetyRepositoryProvider",
@@ -9178,7 +9271,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/safety/data/safety_repository.dart",
-      "line": 150
+      "line": 154
     },
     {
       "source": "safetyRepositoryProvider",
@@ -9187,7 +9280,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/safety/data/safety_repository.dart",
-      "line": 148
+      "line": 152
     },
     {
       "source": "safetyRepositoryProvider",
@@ -9196,7 +9289,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/safety/data/safety_repository.dart",
-      "line": 149
+      "line": 153
     },
     {
       "source": "savedEventRepositoryProvider",
@@ -9205,7 +9298,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/saved_event_repository.dart",
-      "line": 123
+      "line": 124
     },
     {
       "source": "selectedExploreCityProvider",
@@ -9214,7 +9307,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 257
+      "line": 306
     },
     {
       "source": "selectedExploreCityProvider",
@@ -9223,7 +9316,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 266
+      "line": 315
     },
     {
       "source": "selectedExploreCityProvider",
@@ -9232,7 +9325,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 256
+      "line": 305
     },
     {
       "source": "selectedExploreCityProvider",
@@ -9241,7 +9334,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 265
+      "line": 314
     },
     {
       "source": "selectedExploreCityProvider",
@@ -9250,7 +9343,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_view_model.dart",
-      "line": 251
+      "line": 300
     },
     {
       "source": "selfProfileScreenStateProvider",
@@ -9466,7 +9559,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/matches/data/match_repository.dart",
-      "line": 219
+      "line": 318
     },
     {
       "source": "uidProvider",
@@ -9529,7 +9622,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/club_membership_repository.dart",
-      "line": 95
+      "line": 98
     },
     {
       "source": "watchActiveClubMembershipsForUserProvider",
@@ -9538,7 +9631,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/club_membership_repository.dart",
-      "line": 87
+      "line": 90
     },
     {
       "source": "watchActivityNotificationsProvider",
@@ -9547,7 +9640,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/notifications/data/activity_notification_repository.dart",
-      "line": 86
+      "line": 125
     },
     {
       "source": "watchAttendedEventsProvider",
@@ -9556,7 +9649,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/event_repository.dart",
-      "line": 642
+      "line": 652
     },
     {
       "source": "watchBlockedUsersProvider",
@@ -9565,7 +9658,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/safety/data/safety_repository.dart",
-      "line": 160
+      "line": 164
     },
     {
       "source": "watchBlockedUsersProvider",
@@ -9574,7 +9667,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/safety/data/safety_repository.dart",
-      "line": 155
+      "line": 159
     },
     {
       "source": "watchClubMembershipProvider",
@@ -9583,7 +9676,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/club_membership_repository.dart",
-      "line": 104
+      "line": 107
     },
     {
       "source": "watchClubPostRemainingWeeklyQuotaProvider",
@@ -9592,7 +9685,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/club_posts_repository.dart",
-      "line": 92
+      "line": 94
     },
     {
       "source": "watchClubProvider",
@@ -9601,7 +9694,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 447
+      "line": 389
     },
     {
       "source": "watchClubsByIdsProvider",
@@ -9610,7 +9703,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 484
+      "line": 426
     },
     {
       "source": "watchClubsByLocationProvider",
@@ -9619,7 +9712,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 453
+      "line": 395
     },
     {
       "source": "watchClubsByLocationSortedByRatingProvider",
@@ -9628,7 +9721,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 462
+      "line": 404
     },
     {
       "source": "watchClubsForMessagingByIdsProvider",
@@ -9637,7 +9730,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 488
+      "line": 430
     },
     {
       "source": "watchClubsHostedByProvider",
@@ -9646,7 +9739,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 468
+      "line": 410
     },
     {
       "source": "watchClubsOwnedByProvider",
@@ -9655,7 +9748,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/clubs/data/clubs_repository.dart",
-      "line": 474
+      "line": 416
     },
     {
       "source": "watchConversationMessagesProvider",
@@ -9673,7 +9766,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/event_repository.dart",
-      "line": 628
+      "line": 638
     },
     {
       "source": "watchEventParticipationProvider",
@@ -9682,7 +9775,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/event_participation_repository.dart",
-      "line": 153
+      "line": 156
     },
     {
       "source": "watchEventParticipationRosterProvider",
@@ -9691,7 +9784,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/event_participation_repository.dart",
-      "line": 143
+      "line": 146
     },
     {
       "source": "watchEventParticipationsForEventProvider",
@@ -9700,7 +9793,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/event_participation_repository.dart",
-      "line": 135
+      "line": 138
     },
     {
       "source": "watchEventParticipationsForUserProvider",
@@ -9709,7 +9802,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/event_participation_repository.dart",
-      "line": 127
+      "line": 130
     },
     {
       "source": "watchEventPrivateAccessProvider",
@@ -9718,7 +9811,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/event_repository.dart",
-      "line": 624
+      "line": 634
     },
     {
       "source": "watchEventProvider",
@@ -9727,7 +9820,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/event_repository.dart",
-      "line": 620
+      "line": 630
     },
     {
       "source": "watchEventSuccessAssignmentsProvider",
@@ -9799,7 +9892,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/event_repository.dart",
-      "line": 649
+      "line": 659
     },
     {
       "source": "watchEventsForClubProvider",
@@ -9808,7 +9901,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/event_repository.dart",
-      "line": 632
+      "line": 642
     },
     {
       "source": "watchEventsForClubsProvider",
@@ -9817,7 +9910,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/event_repository.dart",
-      "line": 636
+      "line": 646
     },
     {
       "source": "watchHostPaymentAccountProvider",
@@ -9844,7 +9937,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/launch_access/data/launch_access_repository.dart",
-      "line": 138
+      "line": 144
     },
     {
       "source": "watchMatchesForUserProvider",
@@ -9853,7 +9946,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/matches/data/match_repository.dart",
-      "line": 210
+      "line": 309
     },
     {
       "source": "watchPaymentProvider",
@@ -9862,7 +9955,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/payments/data/payment_history_repository.dart",
-      "line": 115
+      "line": 142
     },
     {
       "source": "watchPaymentsForUserProvider",
@@ -9871,7 +9964,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/payments/data/payment_history_repository.dart",
-      "line": 111
+      "line": 138
     },
     {
       "source": "watchPublicProfileProvider",
@@ -9889,7 +9982,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/reviews/data/reviews_repository.dart",
-      "line": 215
+      "line": 290
     },
     {
       "source": "watchReviewsForClubProvider",
@@ -9898,7 +9991,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/reviews/data/reviews_repository.dart",
-      "line": 207
+      "line": 282
     },
     {
       "source": "watchReviewsForEventProvider",
@@ -9907,7 +10000,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/reviews/data/reviews_repository.dart",
-      "line": 211
+      "line": 286
     },
     {
       "source": "watchSavedEventDetailsForUserProvider",
@@ -9916,7 +10009,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/saved_event_repository.dart",
-      "line": 135
+      "line": 136
     },
     {
       "source": "watchSavedEventProvider",
@@ -9925,7 +10018,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/saved_event_repository.dart",
-      "line": 130
+      "line": 131
     },
     {
       "source": "watchSavedEventsForUserProvider",
@@ -9934,7 +10027,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/saved_event_repository.dart",
-      "line": 127
+      "line": 128
     },
     {
       "source": "watchSignedUpEventsProvider",
@@ -9943,7 +10036,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/events/data/event_repository.dart",
-      "line": 646
+      "line": 656
     },
     {
       "source": "watchUserEventSuccessArrivalMissionProvider",
@@ -10033,7 +10126,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/reviews/data/reviews_repository.dart",
-      "line": 222
+      "line": 297
     },
     {
       "source": "weeklyActivityProvider",
@@ -10548,7 +10641,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
-      "line": 65
+      "line": 62
     },
     {
       "source": "consumer:lib/chats/presentation/inbox/chat_inbox_screen.dart#_ChatsListScreenState.build",
@@ -10557,7 +10650,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
-      "line": 39
+      "line": 36
     },
     {
       "source": "consumer:lib/chats/presentation/inbox/chat_inbox_screen.dart#_ChatsListScreenState.build",
@@ -10566,7 +10659,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
-      "line": 38
+      "line": 35
     },
     {
       "source": "consumer:lib/chats/presentation/inbox/chat_inbox_screen.dart#_ChatsListScreenState.build",
@@ -10575,7 +10668,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
-      "line": 37
+      "line": 34
     },
     {
       "source": "consumer:lib/chats/presentation/inbox/widgets/chats_list.dart#ChatsList.build",
@@ -12969,7 +13062,88 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 381
+      "line": 468
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._loadMore",
+      "sourceKind": "consumer",
+      "target": "exploreDiscoveryWindowProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 498
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
+      "sourceKind": "consumer",
+      "target": "exploreClubsViewModelProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 480
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
+      "sourceKind": "consumer",
+      "target": "exploreDiscoveryReferenceNowProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 476
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
+      "sourceKind": "consumer",
+      "target": "exploreDiscoveryWindowProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 477
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
+      "sourceKind": "consumer",
+      "target": "exploreFeedViewModelProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 481
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
+      "sourceKind": "consumer",
+      "target": "exploreFeedViewModelProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 490
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
+      "sourceKind": "consumer",
+      "target": "exploreRecommendationsProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 482
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
+      "sourceKind": "consumer",
+      "target": "exploreSourceClubsProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 479
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._refreshExploreData",
+      "sourceKind": "consumer",
+      "target": "watchClubsByLocationProvider",
+      "targetKind": "provider",
+      "operation": "invalidate",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 478
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState._showLocationFailure",
@@ -12978,7 +13152,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 409
+      "line": 533
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -12987,7 +13161,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 64
+      "line": 87
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -12996,7 +13170,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 62
+      "line": 85
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13005,7 +13179,16 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 61
+      "line": 84
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
+      "sourceKind": "consumer",
+      "target": "exploreDiscoveryReferenceNowProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 110
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13014,7 +13197,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 237
+      "line": 305
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13023,7 +13206,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 259
+      "line": 328
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13032,7 +13215,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 59
+      "line": 82
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13041,7 +13224,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 241
+      "line": 309
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13050,7 +13233,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 243
+      "line": 312
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13059,61 +13242,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 244
-    },
-    {
-      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
-      "sourceKind": "consumer",
-      "target": "exploreFiltersProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 263
-    },
-    {
-      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
-      "sourceKind": "consumer",
-      "target": "exploreFiltersProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 265
-    },
-    {
-      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
-      "sourceKind": "consumer",
-      "target": "exploreFiltersProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 266
-    },
-    {
-      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
-      "sourceKind": "consumer",
-      "target": "exploreFiltersProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 281
-    },
-    {
-      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
-      "sourceKind": "consumer",
-      "target": "exploreFiltersProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 324
-    },
-    {
-      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
-      "sourceKind": "consumer",
-      "target": "exploreFiltersProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 329
+      "line": 313
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13140,7 +13269,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 338
+      "line": 336
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13149,7 +13278,61 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 342
+      "line": 351
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 409
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 414
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 417
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 420
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 423
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 427
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13158,7 +13341,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 73
+      "line": 96
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13167,7 +13350,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 60
+      "line": 83
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13176,7 +13359,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 240
+      "line": 308
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13185,7 +13368,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 262
+      "line": 331
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13194,7 +13377,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 279
+      "line": 349
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13203,7 +13386,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 306
+      "line": 390
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13212,7 +13395,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 72
+      "line": 95
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13221,7 +13404,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 74
+      "line": 97
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13230,7 +13413,16 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 303
+      "line": 357
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
+      "sourceKind": "consumer",
+      "target": "selectedExploreCityProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 387
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#_ExploreScreenState.build",
@@ -13239,7 +13431,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 63
+      "line": 86
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openEvent",
@@ -13248,7 +13440,70 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 139
+      "line": 169
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
+      "sourceKind": "consumer",
+      "target": "exploreFeedViewModelProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 236
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 247
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 250
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 253
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 257
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 259
+    },
+    {
+      "source": "consumer:lib/explore/presentation/explore_screen.dart#openExploreFilters",
+      "sourceKind": "consumer",
+      "target": "exploreFiltersProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "line": 235
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openExternalEvent",
@@ -13257,7 +13512,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 170
+      "line": 200
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openExternalEvent",
@@ -13266,7 +13521,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 188
+      "line": 218
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#openFeaturedEvent",
@@ -13275,7 +13530,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 117
+      "line": 147
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#retryBodyState",
@@ -13284,7 +13539,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 111
+      "line": 141
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#retryBodyState",
@@ -13293,7 +13548,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 108
+      "line": 138
     },
     {
       "source": "consumer:lib/explore/presentation/explore_screen.dart#retryBodyState",
@@ -13302,7 +13557,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/explore/presentation/explore_screen.dart",
-      "line": 112
+      "line": 142
     },
     {
       "source": "consumer:lib/explore/presentation/widgets/explore_list.dart#ExploreList.build",

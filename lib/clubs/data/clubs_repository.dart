@@ -1,12 +1,10 @@
-import 'dart:async';
-
 import 'package:catch_dating_app/clubs/data/club_callable_responses.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/core/firestore_chunks.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show
@@ -17,6 +15,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
         SetClubNotificationPreferenceCallableRequest,
         StartClubHostConversationCallableRequest,
         TransferClubOwnershipCallableRequest;
+import 'package:catch_dating_app/events/data/event_stream_utils.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -28,7 +27,6 @@ class ClubsRepository {
   const ClubsRepository(this._db, this._functions);
 
   static const _collectionPath = 'clubs';
-  static const discoveryLimit = 30;
 
   final FirebaseFirestore _db;
   final FirebaseFunctions _functions;
@@ -71,7 +69,7 @@ class ClubsRepository {
         () => _clubsRef
             .where('locationMarketId', isEqualTo: location)
             .orderBy('createdAt', descending: true)
-            .limit(discoveryLimit)
+            .limit(ReadLimitPolicy.directoryPage)
             .snapshots()
             .map(
               (snap) => _appDiscoverableClubs(snap.docs.map((d) => d.data())),
@@ -88,7 +86,7 @@ class ClubsRepository {
         () => _clubsRef
             .where('locationMarketId', isEqualTo: location)
             .orderBy('rating', descending: true)
-            .limit(discoveryLimit)
+            .limit(ReadLimitPolicy.directoryPage)
             .snapshots()
             .map(
               (snap) => _appDiscoverableClubs(snap.docs.map((d) => d.data())),
@@ -108,6 +106,7 @@ class ClubsRepository {
             Filter('hostUserIds', arrayContains: uid),
           ),
         )
+        .limit(ReadLimitPolicy.directoryPage)
         .snapshots()
         .map((snap) => snap.docs.map((d) => d.data()).toList()),
     context: const BackendErrorContext(
@@ -125,6 +124,7 @@ class ClubsRepository {
             Filter('ownerUserId', isEqualTo: uid),
           ),
         )
+        .limit(ReadLimitPolicy.directoryPage)
         .snapshots()
         .map((snap) => snap.docs.map((d) => d.data()).toList()),
     context: const BackendErrorContext(
@@ -147,75 +147,17 @@ class ClubsRepository {
   Stream<List<Club>> _watchClubsByIds({
     required List<String> clubIds,
     required bool discoverableOnly,
-  }) {
-    final uniqueIds = clubIds.toSet().toList()..sort();
-    if (uniqueIds.isEmpty) return Stream.value(const []);
-
-    var clubSubs = <StreamSubscription<QuerySnapshot<Club>>>[];
-    var closed = false;
-    late final StreamController<List<Club>> controller;
-
-    void emitOrderedClubs({
-      required Map<int, List<Club>> clubsByChunk,
-      required int chunkCount,
-    }) {
-      if (clubsByChunk.length < chunkCount || controller.isClosed) return;
-      final byId = <String, Club>{};
-      for (final clubs in clubsByChunk.values) {
-        for (final club in clubs) {
-          byId[club.id] = club;
-        }
-      }
-      final clubs = [
-        for (final id in uniqueIds)
-          if (byId[id] != null) byId[id]!,
-      ];
-      controller.add(discoverableOnly ? _appDiscoverableClubs(clubs) : clubs);
-    }
-
-    controller = StreamController<List<Club>>(
-      onListen: () {
-        final chunks = chunkedForWhereIn(uniqueIds).toList(growable: false);
-        final clubsByChunk = <int, List<Club>>{};
-        for (var i = 0; i < chunks.length; i += 1) {
-          final chunk = chunks[i];
-          final sub = _clubsRef
-              .where(FieldPath.documentId, whereIn: chunk)
-              .snapshots()
-              .listen((clubSnap) {
-                if (closed) return;
-                clubsByChunk[i] = clubSnap.docs
-                    .map((doc) => doc.data())
-                    .toList();
-                emitOrderedClubs(
-                  clubsByChunk: clubsByChunk,
-                  chunkCount: chunks.length,
-                );
-              }, onError: controller.addError);
-          clubSubs.add(sub);
-        }
-      },
-      onCancel: () async {
-        closed = true;
-        for (final sub in clubSubs) {
-          await sub.cancel();
-        }
-        clubSubs = [];
-        if (!controller.isClosed) {
-          await controller.close();
-        }
-      },
-    );
-
-    return withBackendErrorStream(
-      () => controller.stream,
-      context: const BackendErrorContext(
-        service: BackendService.firestore,
-        action: 'watch clubs by ids',
-        resource: _collectionPath,
-      ),
-    );
-  }
+  }) => watchDocumentsByIds(
+    ids: clubIds,
+    collection: _clubsRef,
+    idOf: (club) => club.id,
+    transform: discoverableOnly ? _appDiscoverableClubs : null,
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch clubs by ids',
+      resource: _collectionPath,
+    ),
+  );
 
   static List<Club> _appDiscoverableClubs(Iterable<Club> clubs) =>
       clubs.where((club) => club.isAppDiscoverable).toList(growable: false);

@@ -4,6 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
+import {buildClaudeDesignHandoffRequest} from "./claude_design_handoff.mjs";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 
 const args = process.argv.slice(2);
@@ -43,6 +44,7 @@ function buildPack(targetDir, {renderGallery}) {
     {cwd: repoRoot, stdio: "inherit"}
   );
   if (testResult.status !== 0) process.exit(testResult.status ?? 1);
+  writeClaudeDesignHandoff(targetDir);
 
   if (!renderGallery) return;
   const captureResult = spawnSync(
@@ -57,6 +59,19 @@ function buildPack(targetDir, {renderGallery}) {
     {cwd: repoRoot, stdio: "inherit"}
   );
   if (captureResult.status !== 0) process.exit(captureResult.status ?? 1);
+}
+
+function writeClaudeDesignHandoff(targetDir) {
+  const components = JSON.parse(
+    fs.readFileSync(fromRepo("design/components/catch.components.json"), "utf8"),
+  );
+  const request = buildClaudeDesignHandoffRequest(components);
+  const output = path.join(
+    targetDir,
+    "design_system/claude_design_handoff_request.json",
+  );
+  fs.mkdirSync(path.dirname(output), {recursive: true});
+  fs.writeFileSync(output, `${JSON.stringify(request, null, 2)}\n`);
 }
 
 function writeManifest(targetDir, {includeGalleryPngs}) {

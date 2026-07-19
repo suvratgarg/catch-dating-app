@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
@@ -38,6 +39,7 @@ class EventParticipationRepository {
   }) => withBackendErrorStream(
     () => _participationsRef
         .where('uid', isEqualTo: uid)
+        .limit(ReadLimitPolicy.boundedWorkingSet)
         .snapshots()
         .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
     context: const BackendErrorContext(
@@ -53,6 +55,7 @@ class EventParticipationRepository {
     () => _participationsRef
         .where('eventId', isEqualTo: eventId)
         .where('status', whereIn: _rosterVisibleStatuses)
+        .limit(ReadLimitPolicy.boundedWorkingSet)
         .snapshots()
         .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
     context: const BackendErrorContext(
@@ -69,6 +72,7 @@ class EventParticipationRepository {
       final snap = await _participationsRef
           .where('eventId', isEqualTo: eventId)
           .where('status', whereIn: _rosterVisibleStatuses)
+          .limit(ReadLimitPolicy.boundedWorkingSet)
           .get();
       return snap.docs.map((doc) => doc.data()).toList();
     },
@@ -86,6 +90,7 @@ class EventParticipationRepository {
       final snap = await _participationsRef
           .where('eventId', isEqualTo: eventId)
           .where('status', whereIn: _hostReportStatuses)
+          .limit(ReadLimitPolicy.boundedWorkingSet)
           .get();
       return snap.docs.map((doc) => doc.data()).toList();
     },
@@ -101,11 +106,9 @@ class EventParticipationRepository {
     required String uid,
   }) => withBackendErrorStream(
     () => _participationsRef
-        .where('eventId', isEqualTo: eventId)
-        .where('uid', isEqualTo: uid)
-        .limit(1)
+        .doc(eventParticipationId(eventId: eventId, uid: uid))
         .snapshots()
-        .map((snap) => snap.docs.isEmpty ? null : snap.docs.first.data()),
+        .map((snapshot) => snapshot.exists ? snapshot.data() : null),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch event participation',

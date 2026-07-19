@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/profile_schema_contracts.g.dart'
     as schema_contracts;
@@ -19,13 +20,12 @@ class SwipeRepository {
 
   CollectionReference<Map<String, dynamic>> _outgoingProfileDecisionsRef(
     String uid,
-  ) =>
-      _db
-          .collection(_collectionPath)
-          .doc(uid)
-          .collection(
-            schema_contracts.schemaProfileDecisionOutgoingSubcollectionPath,
-          );
+  ) => _db
+      .collection(_collectionPath)
+      .doc(uid)
+      .collection(
+        schema_contracts.schemaProfileDecisionOutgoingSubcollectionPath,
+      );
 
   // ── Read ──────────────────────────────────────────────────────────────────
 
@@ -33,10 +33,10 @@ class SwipeRepository {
   Future<Set<String>> fetchSwipedUserIds({required String uid}) =>
       withBackendErrorContext(
         () async {
-          final snap = await _outgoingProfileDecisionsRef(uid).get();
-          return {
-            for (final doc in snap.docs) doc.id,
-          };
+          final snap = await _outgoingProfileDecisionsRef(
+            uid,
+          ).limit(ReadLimitPolicy.boundedWorkingSet).get();
+          return {for (final doc in snap.docs) doc.id};
         },
         context: const BackendErrorContext(
           service: BackendService.firestore,

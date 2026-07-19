@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -175,7 +176,7 @@ void main() {
     });
 
     test('watchClubsByLocation caps the discovery stream', () async {
-      for (var i = 0; i < ClubsRepository.discoveryLimit + 5; i++) {
+      for (var i = 0; i < ReadLimitPolicy.directoryPage + 5; i++) {
         await _seedClub(
           firestore,
           buildClub(
@@ -189,7 +190,7 @@ void main() {
         repository.watchClubsByLocation('in-mh-mumbai'),
         emits(
           allOf(
-            hasLength(ClubsRepository.discoveryLimit),
+            hasLength(ReadLimitPolicy.directoryPage),
             predicate<List<Club>>((clubs) => clubs.first.id == 'club-34'),
           ),
         ),

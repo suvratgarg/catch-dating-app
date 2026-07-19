@@ -125,6 +125,39 @@ void main() {
 
       expect(results.map((event) => event.id), ['external-provider']);
     });
+
+    test('cursor pages advance through external discovery', () async {
+      final firestore = FakeFirebaseFirestore();
+      final repository = ExternalEventRepository(firestore);
+      final now = DateTime(2026, 6, 25, 10);
+      for (var day = 1; day <= 3; day += 1) {
+        await _seedExternalEvent(
+          firestore,
+          id: 'external-$day',
+          citySlug: 'mumbai',
+          startTime: now.add(Duration(days: day)),
+        );
+      }
+      final query = ExternalEventDiscoveryQuery.forCity(
+        citySlug: 'mumbai',
+        startAt: now,
+        limit: 2,
+      );
+
+      final first = await repository.fetchDiscoverableExternalEventsPage(query);
+      final second = await repository.fetchDiscoverableExternalEventsPage(
+        query,
+        startAfter: first.nextCursor,
+      );
+
+      expect(first.items.map((event) => event.id), [
+        'external-1',
+        'external-2',
+      ]);
+      expect(first.hasMore, isTrue);
+      expect(second.items.map((event) => event.id), ['external-3']);
+      expect(second.hasMore, isFalse);
+    });
   });
 }
 

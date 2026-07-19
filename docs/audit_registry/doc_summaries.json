@@ -1,6 +1,6 @@
 {
-  "version": "4.5.149",
-  "updated": "2026-07-14",
+  "version": "4.5.150",
+  "updated": "2026-07-18",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -272,9 +272,10 @@
       ]
     },
     "docs/data_contracts.md": {
-      "purpose": "Firestore document shape, Cloud Functions write ownership, schema tooling, relationship documents, organizer claim documents, migration policy, and rules-test workflow.",
+      "purpose": "Firestore document shape, Cloud Functions write ownership, read/query and index discipline, schema tooling, relationship documents, organizer claim documents, migration policy, and rules-test workflow.",
       "read_when": [
         "Changing Firestore rules",
+        "Changing repository-owned Firestore queries or composite indexes",
         "Changing Functions mutation boundaries",
         "Changing shared data contracts or schema-source tooling",
         "Changing schema-generated Firestore TypeScript type generation",

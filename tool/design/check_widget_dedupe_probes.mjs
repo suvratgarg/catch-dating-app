@@ -4,6 +4,11 @@ import os from "node:os";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
+import {
+  collisionKeyFor,
+  conceptMetrics,
+  conceptTopologyProblems,
+} from "./component_concepts.mjs";
 
 const dart = findDart();
 const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "widget-dedupe-probes-"));
@@ -22,7 +27,8 @@ if (process.argv.includes("--help") || process.argv.includes("-h")) {
   console.log(`Usage:
   node tool/design/check_widget_dedupe_probes.mjs
 
-Runs seeded structural probes for the widget dedupe extractor and clustering tool.
+Runs seeded structural probes for the widget dedupe extractor and clustering tool,
+plus concept-primary, member-parent, composition-identity, and collision probes.
 `);
   process.exit(0);
 }
@@ -70,6 +76,7 @@ expect(!hasStructuralSignal(similarity, "ProbeDupeA", "ProbeDistinct"),
   "ProbeDistinct must not structurally edge with ProbeDupeA");
 expect(!hasStructuralSignal(similarity, "ProbeDupeB", "ProbeDistinct"),
   "ProbeDistinct must not structurally edge with ProbeDupeB");
+runConceptGovernanceProbes();
 
 if (failures.length > 0) {
   console.error("Widget dedupe probes failed:");
@@ -100,6 +107,99 @@ function hasNameFamily(registry, stem, members) {
 
 function expect(condition, message) {
   if (!condition) failures.push(message);
+}
+
+function runConceptGovernanceProbes() {
+  const valid = [{
+    id: "catch.probe",
+    dart: {symbol: "CatchProbe"},
+    governance: {
+      conceptRole: "concept",
+      conceptId: "catch.probe",
+    },
+    contract: {
+      members: [{
+        id: "catch.probe.compact",
+        symbol: "CatchProbeCompact",
+        governance: {
+          conceptRole: "member",
+          conceptId: "catch.probe",
+          parentConceptId: "catch.probe",
+          qualifier: "variant",
+        },
+      }],
+    },
+  }];
+  expect(
+    conceptTopologyProblems(valid).length === 0,
+    "valid concept/member topology must pass",
+  );
+  const metrics = conceptMetrics(valid);
+  expect(
+    metrics.conceptCount === 1 && metrics.memberCount === 1,
+    "valid concept/member fixture must count one concept and one member",
+  );
+  expect(
+    metrics.collisionCount === 1 && metrics.collisions[0]?.key === "catch.probe",
+    "concept and member must deterministically collide in their concept namespace",
+  );
+  expect(
+    collisionKeyFor({
+      conceptRole: "concept",
+      conceptId: "catch.probe",
+      symbol: "CatchProbe",
+    }) === collisionKeyFor({
+      conceptRole: "member",
+      conceptId: "catch.probe",
+      symbol: "CatchProbeCompact",
+    }),
+    "concept and member collision keys must be identical",
+  );
+
+  const duplicatePrimaryProblems = conceptTopologyProblems([
+    valid[0],
+    {...valid[0], contract: {members: []}},
+  ]);
+  expect(
+    duplicatePrimaryProblems.some((problem) => problem.includes("duplicate concept primary")),
+    "known-bad duplicate concept primary must fail",
+  );
+
+  const missingParentProblems = conceptTopologyProblems([{
+    id: "catch.probe_recipe",
+    dart: {symbol: "CatchProbeRecipe"},
+    governance: {conceptRole: "composition"},
+    contract: {
+      members: [{
+        id: "catch.probe_recipe.orphan",
+        symbol: "CatchProbeOrphan",
+        governance: {
+          conceptRole: "member",
+          conceptId: "catch.missing",
+          parentConceptId: "catch.missing",
+          qualifier: "recipe",
+        },
+      }],
+    },
+  }]);
+  expect(
+    missingParentProblems.some((problem) => problem.includes("missing concept primary")),
+    "known-bad member without a concept primary must fail",
+  );
+
+  const compositionIdentityProblems = conceptTopologyProblems([{
+    id: "catch.probe_recipe",
+    dart: {symbol: "CatchProbeRecipe"},
+    governance: {
+      conceptRole: "composition",
+      conceptId: "catch.probe",
+    },
+    contract: {members: []},
+  }]);
+  expect(
+    compositionIdentityProblems.some((problem) => problem.includes("claims concept identity")),
+    "known-bad composition claiming concept identity must fail",
+  );
 }
 
 function run(command, args) {

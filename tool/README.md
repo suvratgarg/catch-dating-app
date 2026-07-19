@@ -105,6 +105,13 @@ standalone scanners:
   `.github/workflows/flutter-ci.yml`; pure Node and Bash gates run through
   `tools-ci.yml` manifest categories.
 
+Composite Firestore query/index parity is owned by
+`tool/contracts/check_firestore_query_indexes.mjs`. Repository query builders
+declare ordered `firestore-index` contracts next to the query; the gate scans
+all handwritten repository sources and validates the declared shapes against
+`firestore.indexes.json`. Run it through
+`node tool/run.mjs check contracts:firestore-query-indexes`.
+
 New scanners must ship with a manifest `role`, `rules`, `vacuityProof`, and a
 test containing a known-bad fixture.
 

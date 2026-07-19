@@ -5,6 +5,7 @@ import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/chat_blast_composer_sheet.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_screen_state.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
@@ -403,20 +404,20 @@ Widget matchesListHostInboxStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Legacy review sheet',
-  type: HostBroadcastComposerSheet,
+  name: 'Eventless blast review',
+  type: ChatBlastComposerSheet,
   path: '[P2 supporting surfaces]/Matches and chat',
 )
-Widget hostBroadcastComposerSheetStates(BuildContext context) {
+Widget chatBlastComposerSheetStates(BuildContext context) {
   return _AppRoleBoundary(
     role: AppRole.host,
     child: _MatchesCatalog(
-      title: 'Legacy Host broadcast review sheet',
-      contractId: 'component.messaging.legacy_broadcast_review',
+      title: 'ChatBlastComposerSheet',
+      contractId: 'component.messaging.chat_blast_composer',
       children: const [
         _StateCard(
           label: 'template review surface',
-          child: _HostBroadcastComposerFrame(),
+          child: _ChatBlastComposerFrame(),
         ),
       ],
     ),
@@ -2090,8 +2091,8 @@ CatchPersonRow _chatPersonRowForPreview(
   );
 }
 
-class _HostBroadcastComposerFrame extends StatelessWidget {
-  const _HostBroadcastComposerFrame();
+class _ChatBlastComposerFrame extends StatelessWidget {
+  const _ChatBlastComposerFrame();
 
   @override
   Widget build(BuildContext context) {
@@ -2104,7 +2105,7 @@ class _HostBroadcastComposerFrame extends StatelessWidget {
             backgroundColor: t.bg,
             body: const Align(
               alignment: Alignment.bottomCenter,
-              child: HostBroadcastComposerSheet(),
+              child: ChatBlastComposerSheet(),
             ),
           );
         },

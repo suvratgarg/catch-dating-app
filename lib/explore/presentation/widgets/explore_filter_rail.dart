@@ -25,6 +25,7 @@ class ExploreFilterRail extends StatelessWidget {
     super.key,
     this.filters = const ExploreFilterSelection(),
     this.state,
+    this.dateStripState,
     this.sheetState,
     this.onTimeFilterSelected,
     this.onDistanceFilterSelected,
@@ -33,12 +34,14 @@ class ExploreFilterRail extends StatelessWidget {
     this.onToggleActivityTag,
     this.onToggleArea,
     this.onClearFilters,
+    this.onOpenFilters,
     this.backgroundColor,
   });
 
   final Color? backgroundColor;
   final ExploreFilterSelection filters;
   final ExploreFilterRailState? state;
+  final ExploreDateStripState? dateStripState;
   final ExploreFilterSheetState? sheetState;
   final ValueChanged<ExploreTimeFilter>? onTimeFilterSelected;
   final ValueChanged<ExploreDistanceFilter>? onDistanceFilterSelected;
@@ -47,30 +50,13 @@ class ExploreFilterRail extends StatelessWidget {
   final ValueChanged<String>? onToggleActivityTag;
   final ValueChanged<String>? onToggleArea;
   final VoidCallback? onClearFilters;
+  final VoidCallback? onOpenFilters;
 
   static List<CatchOption<ExploreTimeFilter>> _timeOptions(
-    AppLocalizations l10n,
+    ExploreDateStripState state,
   ) => [
-    CatchOption(
-      value: ExploreTimeFilter.tonight,
-      label: l10n.exploreExploreFilterRailLabelTonight,
-    ),
-    CatchOption(
-      value: ExploreTimeFilter.tomorrow,
-      label: l10n.exploreExploreFilterRailLabelTomorrow,
-    ),
-    CatchOption(
-      value: ExploreTimeFilter.weekend,
-      label: l10n.exploreExploreFilterRailLabelWeekend,
-    ),
-    CatchOption(
-      value: ExploreTimeFilter.thisWeek,
-      label: l10n.exploreExploreFilterRailLabelThisWeek,
-    ),
-    CatchOption(
-      value: ExploreTimeFilter.anytime,
-      label: l10n.exploreExploreFilterRailLabelAnytime,
-    ),
+    for (final option in state.options)
+      CatchOption(value: option.value, label: option.label),
   ];
 
   @override
@@ -78,22 +64,113 @@ class ExploreFilterRail extends StatelessWidget {
     final t = CatchTokens.of(context);
     final railState =
         state ?? ExploreFilterRailState.from(filters, l10n: context.l10n);
+    final effectiveDateStripState =
+        dateStripState ??
+        ExploreDateStripState.from(viewModel: null, l10n: context.l10n);
+    final appliedFilters = _appliedFilterChips(context);
 
-    return CatchTabRail<ExploreTimeFilter>(
-      selected: filters.timeFilter,
-      onChanged: onTimeFilterSelected,
-      options: _timeOptions(context.l10n),
-      scrollable: true,
-      backgroundColor: backgroundColor ?? t.bg,
-      trailing: CatchIconButton.counted(
-        key: const ValueKey('explore-filter-button'),
-        icon: CatchIcons.tuneRounded,
-        count: railState.activeCount,
-        variant: CatchIconButtonVariant.plain,
-        tooltip: railState.filterButtonSemanticLabel,
-        onTap: () => _showExploreFilterSheet(context),
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CatchTabRail<ExploreTimeFilter>(
+          selected: filters.timeFilter,
+          onChanged: onTimeFilterSelected,
+          options: _timeOptions(effectiveDateStripState),
+          scrollable: true,
+          backgroundColor: backgroundColor ?? t.bg,
+          trailing: CatchIconButton.counted(
+            key: const ValueKey('explore-filter-button'),
+            icon: CatchIcons.tuneRounded,
+            count: railState.activeCount,
+            variant: CatchIconButtonVariant.plain,
+            tooltip: railState.filterButtonSemanticLabel,
+            onTap: onOpenFilters ?? () => _showExploreFilterSheet(context),
+          ),
+        ),
+        if (appliedFilters.isNotEmpty)
+          SingleChildScrollView(
+            key: const ValueKey('explore-applied-filter-row'),
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.fromLTRB(
+              CatchSpacing.s5,
+              CatchSpacing.s2,
+              CatchSpacing.s5,
+              CatchSpacing.s2,
+            ),
+            child: Row(spacing: CatchSpacing.s2, children: appliedFilters),
+          ),
+      ],
     );
+  }
+
+  List<Widget> _appliedFilterChips(BuildContext context) {
+    final chips = <Widget>[];
+    if (filters.distanceFilter != ExploreDistanceFilter.any) {
+      final option = exploreDistanceFilterOptions(
+        context.l10n,
+      ).firstWhere((candidate) => candidate.value == filters.distanceFilter);
+      chips.add(
+        CatchChip.removable(
+          key: const ValueKey('explore-applied-distance'),
+          label: context.l10n.exploreExploreFilterRailAppliedDistance(
+            distance: option.label,
+          ),
+          onRemove: () =>
+              onDistanceFilterSelected?.call(ExploreDistanceFilter.any),
+          enabled: onDistanceFilterSelected != null,
+        ),
+      );
+    }
+    if (filters.joinedOnly) {
+      chips.add(
+        CatchChip.removable(
+          key: const ValueKey('explore-applied-joined'),
+          label: context.l10n.exploreExploreFilterRailLabelJoinedClubs,
+          onRemove: () => onToggleJoinedOnly?.call(),
+          enabled: onToggleJoinedOnly != null,
+        ),
+      );
+    }
+    if (filters.highRatedOnly) {
+      chips.add(
+        CatchChip.removable(
+          key: const ValueKey('explore-applied-rating'),
+          label: context.l10n.exploreExploreFilterRailLabelRated45,
+          onRemove: () => onToggleHighRatedOnly?.call(),
+          enabled: onToggleHighRatedOnly != null,
+        ),
+      );
+    }
+    final activityTag = filters.activityTag;
+    if (activityTag != null) {
+      chips.add(
+        CatchChip.removable(
+          key: const ValueKey('explore-applied-activity'),
+          label: _activityFilterLabel(activityTag),
+          onRemove: () => onToggleActivityTag?.call(activityTag),
+          enabled: onToggleActivityTag != null,
+        ),
+      );
+    }
+    final area = filters.area;
+    if (area != null) {
+      chips.add(
+        CatchChip.removable(
+          key: const ValueKey('explore-applied-area'),
+          label: area,
+          onRemove: () => onToggleArea?.call(area),
+          enabled: onToggleArea != null,
+        ),
+      );
+    }
+    return chips;
+  }
+
+  String _activityFilterLabel(String selected) {
+    for (final kind in primaryBrowseActivityKinds) {
+      if (_activityFilterActive(selected, kind)) return kind.label;
+    }
+    return selected;
   }
 
   Future<void> _showExploreFilterSheet(BuildContext context) {
@@ -163,7 +240,8 @@ class ExploreFilterSheet extends StatelessWidget {
           ],
           Expanded(
             child: CatchButton(
-              label: context.l10n.exploreExploreFilterRailLabelDone,
+              label: sheetState.actionLabel,
+              isLoading: sheetState.actionLoading,
               onPressed: () => Navigator.of(context).pop(),
             ),
           ),
@@ -171,14 +249,16 @@ class ExploreFilterSheet extends StatelessWidget {
       ),
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxHeight: MediaQuery.sizeOf(context).height * 0.56,
+          maxHeight:
+              MediaQuery.sizeOf(context).height *
+              CatchLayout.sheetMaxHeightFraction,
         ),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                context.l10n.exploreExploreFilterRailTextDistance,
+                context.l10n.exploreExploreFilterRailTextDistanceEventsOnly,
                 style: CatchTextStyles.kicker(context, color: t.ink2),
               ),
               gapH12,

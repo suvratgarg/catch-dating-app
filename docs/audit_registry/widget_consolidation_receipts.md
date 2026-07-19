@@ -1,7 +1,7 @@
 ---
 doc_id: widget_consolidation_receipts
-version: 0.2.3
-updated: 2026-07-16
+version: 0.2.4
+updated: 2026-07-19
 owner: widget_consolidation
 status: active
 ---
@@ -2849,14 +2849,85 @@ Verification:
   unresolved items relative to `HEAD^ -> working tree`.
 - Widget cleanup scanner and tool manifest validation passed.
 
-Known blockers / inherited debt:
+## 2026-07-19 Widget Concept Owner Defaults
+
+Receipt id: `widget-concept-owner-decisions-2026-07-19`
+
+Scope:
+
+- Implement the three owner-approved semantic defaults from WO-024 while
+  leaving Figma file creation, Code Connect plan/exit-gate resolution, and the
+  Claude Design receipt explicitly deferred.
+- Decompress the former loading registry family without unnecessary Dart API
+  renames.
+- Resolve the duplicate host-broadcast public namespace.
+- Consolidate pass/reaction circular rendering without erasing feature-owned
+  behavior.
+
+Outcomes:
+
+- Replaced `catch.loading` with `catch.skeleton`,
+  `catch.loading_indicator`, and `catch.async_value`; registered
+  `catch.startup_loading_screen` as composition. The same eight loading-related
+  Dart classes remain public.
+- Kept the event-aware Hosts `HostBroadcastComposerSheet` canonical and
+  extracted the eventless Chats preview as `ChatBlastComposerSheet`.
+- Routed `CatchesPassButton` and `ReactionControlButton` through
+  `CatchIconButton`, retaining localized semantics, pending state, feature
+  palettes and geometry, and `SwipeKeys.passButton`.
+- Accepted one bounded visual delta: `CatchesPassButton` now uses the canonical
+  icon-button floating shadow instead of feature-local Material elevation;
+  `ReactionControlButton` retains its no-shadow bordered treatment.
+
+Generated proof:
+
+- 68 top-level contracts, 62 concepts, 115 member APIs, 194 contracted public
+  classes, and 1,094 production widget/state entries.
+- Zero unclassified contract or production entries.
+- 61/61 instantiated concept primaries and 113/113 member classes have
+  role-derived Widgetbook evidence.
+- 43/43 structural similarity clusters have exact normalized-member-set ledger
+  decisions; zero collision families remain unresolved.
+- The semantic owner queue is zero. The generated owner/live queue contains
+  only the three explicitly deferred design-tool gates.
+
+Commands:
+
+- `flutter pub get` and
+  `dart run build_runner build --delete-conflicting-outputs` in `widgetbook/`.
+- `flutter analyze --no-fatal-infos` over the six changed production/test Dart
+  files; no issues.
+- `flutter analyze --no-fatal-infos` over the three changed Widgetbook files;
+  no issues.
+- `flutter test --concurrency=1 test/swipes/swipe_action_buttons_test.dart test/chats/chat_blast_composer_sheet_test.dart test/hosts/host_broadcast_composer_sheet_test.dart`;
+  6 tests passed.
+- `node tool/run.mjs check --category design`; all enforced design checks
+  passed, including generated contract, classification, similarity, sync,
+  Widgetbook, context-pack, and seeded known-bad gates.
+- `npm run design:widgets:new` and `npm run design:widgets:new:check`; one public
+  class added, covered, zero unresolved items.
+- `bash tool/widget_cleanup_scan.sh --summary`;
+  `node tool/run.mjs check --manifest-only`; and
+  `node tool/agent/check_agent_readiness.mjs`; manifest passed and readiness was
+  3279/3279.
+
+Deferred external proof:
+
+- Catch Design System Figma file creation or an editable file URL.
+- Organization/Enterprise Code Connect access or explicit exit-gate revision.
+- Claude Design execution and exact generated receipt.
+
+## Historical WO-023 inherited debt (cleared)
+
+These blockers were accurate when the earlier WO-023 receipt was recorded.
+They are retained as provenance; the current aggregate design gates pass.
 
 - `node tool/design/check_component_contracts.mjs` and
-  `node tool/run.mjs check --category design` still fail on inherited
+  `node tool/run.mjs check --category design` had failed on inherited
   `catch.tab_rail` token drift:
   `layout.tabRailHeight` is not a known DTCG token reference.
-- `node tool/design/check_widgetbook_contract_refs.mjs --check` still fails on
+- `node tool/design/check_widgetbook_contract_refs.mjs --check` had failed on
   inherited HostOperations route-state and HostTeam preview-id drift.
-- `node tool/design/check_screen_contracts.mjs --check` still fails on inherited
+- `node tool/design/check_screen_contracts.mjs --check` had failed on inherited
   missing-symbol drift for Calendar, Saved Events, host create/edit footers,
   Host settings adapter ownership, Event edit footer, and Reviews History.

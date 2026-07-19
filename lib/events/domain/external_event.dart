@@ -106,15 +106,6 @@ abstract class ExternalEvent with _$ExternalEvent {
     return uri;
   }
 
-  String get priceLabel {
-    final display = priceDisplayText?.trim();
-    if (display != null && display.isNotEmpty) return display;
-    final parsed = parsedPriceInPaise;
-    if (parsed == null) return 'Price on source';
-    if (parsed <= 0) return 'Free';
-    return formatMinorCurrency(parsed, currencyCode: currency);
-  }
-
   String get platformLabel =>
       platformDisplayLabel(primaryExternalLink?.platform ?? sourcePlatform);
 }

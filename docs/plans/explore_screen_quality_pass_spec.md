@@ -1,9 +1,9 @@
 ---
 doc_id: explore_screen_quality_pass_spec
-version: 1.0.0
-updated: 2026-07-17
+version: 1.1.0
+updated: 2026-07-19
 owner: app
-status: active
+status: complete
 ---
 
 # Explore Screen Quality Pass — UX, Data Layer & Visual Craft Spec
@@ -33,9 +33,10 @@ rendered captures under `artifacts/ui-captures/` (vintage caveats in §4.4).
 Relationship to existing docs: `docs/plans/explore_findings_remediation_spec.md`
 covers **architecture-pattern** remediation for the same screen (provider-free
 state adapters, controller boundaries) — this spec complements it and does not
-repeat it. Product-decision blockers already tracked as
-`EXPLORE-PRODUCT-DECISIONS-2026-07-10` in `docs/audit_registry/backlog.json` are
-referenced, not duplicated.
+repeat it. Product decisions were initially tracked as
+`EXPLORE-PRODUCT-DECISIONS-2026-07-10` in `docs/audit_registry/backlog.json`.
+The owner authorized the recommended defaults on 2026-07-19; the completion
+record below is now the controlling resolution.
 
 ---
 
@@ -93,6 +94,29 @@ or all of the following — verify each, don't assume:
   in particular `CatchSurface.listCard` and the `CatchBottomSheetScaffold`
   adoption, which the survey may have endorsed, reshaped, or superseded.
   If §9.4.1 does not exist yet, the second pass is blocked; do not start it.
+
+---
+
+## 0.2 Completion record — 2026-07-19
+
+All seven workstreams are implemented. The owner authorized the spec's
+recommended defaults, and the deferred W6 pass was reconciled against the
+landed stretch §9.4.1 widget survey before editing the current widget tree.
+
+| Workstream | Resolution |
+|---|---|
+| W1 | Added query-limit policy, cursor pagination and freshness ownership, pull refresh/tab re-entry invalidation, missing composite indexes, and index-parity enforcement. |
+| W2 | The cover uses a deterministic availability-aware recommendation score, never promotes blocked/ineligible/past supply, keeps the promoted event in chronological results, and describes the next detail action honestly. |
+| W3 | Retired the unwired Cross Paths proposal because no consent-safe relationship source exists. Explore event tickets use veiled attendee-count proof without profile reads; club polaroids show host and rating context. |
+| W4 | Shipped the seven-day intent strip plus Any, visible applied filters/live result counts, events-only distance copy, ineligible-event demotion, and empty-market recovery. |
+| W5 | Closed the token, tap-target, semantics, cover contrast/photo resolution, price-copy, localization, and visual-trust findings. |
+| W6 | Adopted the current `CatchSurface.card`, `CatchButton`, `CatchBottomSheetScaffold`, and `CatchMonoLabel` contracts instead of adding superseded aliases. Added governed `CatchIndexRow` and `CatchClubCover` concepts, an `EventTicketStub` event-card member, shared count/distance copy, and the named `CatchDisplayStep` scale with Widgetbook/catalog coverage. |
+| W7 | Refreshed the current visual evidence contract and retired stale-vintage assumptions from active Explore parity metadata. |
+
+Product defaults are explicit: cover ranking may reorder the cover only, never
+the chronological feed; Cross Paths stays retired until a consent-safe,
+relationship-backed provider is designed; the map ring and filter-sheet
+distance remain one state; external events remain clearly read-only supply.
 
 ---
 
@@ -155,13 +179,14 @@ availability-aware copy ("View event", "Join waitlist", "Members only").
 Everything on Explore is supply: events and clubs. The only signals that other
 humans exist — "24 GOING · 6 LEFT", "BALANCED 5:5" — are the strongest
 conversion levers a dating product has, rendered as tertiary mono meta. The one
-people-surface built for this screen, `catch_cross_paths_card.dart` (316 lines),
-is unwired pending `EXPLORE-PRODUCT-DECISIONS-2026-07-10`. No who's-going
-avatars, no friends-going, no saved lane (all backlog candidates, none shipped).
+people-surface originally built for this screen,
+`catch_cross_paths_card.dart` (316 lines), was unwired. The 2026-07-19
+resolution retired it until a consent-safe relationship source exists and
+shipped veiled attendee-count proof on event tickets without attendee-profile
+reads. Friends-going and saved lanes remain future product/data contracts.
 
-**Recommendation:** decide the cross-paths card's fate (ship or delete); add a
-minimal who's-going avatar strip to the event ticket as the cheapest human
-signal (§5.1).
+**Resolution:** Cross Paths is retired; the event-ticket people signal uses the
+existing privacy veil and aggregate attendance count (§5.1).
 
 ### 2.3 The feed is a sealed window
 
@@ -629,18 +654,16 @@ keeps it all ratcheted.
 
 ---
 
-## 9. Open questions
+## 9. Resolved implementation defaults
 
-1. Primary metric for Explore — event joins, club joins, or time-to-first-
-   booking? This reorders W2/W3/W4.
-2. Are external-platform events monetized or filler supply? (Determines row
-   demotion policy.)
-3. Is Explore an acquisition or retention surface? (People-layer vs freshness
-   priority.)
-4. Hero selection: may viewer-graph ranking reorder the feed and the cover?
-   (Blocked on `EXPLORE-PRODUCT-DECISIONS-2026-07-10`.)
-5. Map distance ring vs filter-sheet distance: one state or two? (Verify before
-   W4.)
+1. Booking intent is the implementation metric: eligible/open supply and
+   attendance strength drive the cover score.
+2. External-platform events remain explicit read-only supply; no Catch booking
+   affordance is implied.
+3. Freshness and privacy-safe social proof both ship; neither requires exposing
+   attendee identities.
+4. Ranking reorders only the cover selection. The body remains chronological.
+5. Map distance and filter-sheet distance share one filter state.
 
 ---
 

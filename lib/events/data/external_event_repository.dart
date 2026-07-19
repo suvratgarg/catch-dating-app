@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/data/cursor_page.dart';
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
@@ -26,7 +28,7 @@ class ExternalEventDiscoveryQuery {
     required DateTime startAt,
     DateTime? endBefore,
     Iterable<ActivityKind> activityKinds = const [],
-    int limit = 40,
+    int limit = ReadLimitPolicy.exploreExternalFeedPage,
   }) {
     return ExternalEventDiscoveryQuery._(
       citySlug: citySlug.trim().toLowerCase(),
@@ -82,10 +84,24 @@ class ExternalEventRepository {
 
   Future<List<ExternalEvent>> fetchDiscoverableExternalEvents(
     ExternalEventDiscoveryQuery query,
-  ) {
+  ) async {
+    return (await fetchDiscoverableExternalEventsPage(query)).items;
+  }
+
+  Future<CursorPage<ExternalEvent, DocumentSnapshot<ExternalEvent>>>
+  fetchDiscoverableExternalEventsPage(
+    ExternalEventDiscoveryQuery query, {
+    DocumentSnapshot<ExternalEvent>? startAfter,
+  }) {
+    // firestore-index: externalEvents (discovery.citySlug:ASCENDING,publicationStatus:ASCENDING,status:ASCENDING,startTime:ASCENDING)
     return withBackendErrorContext(
       () async {
-        if (query.citySlug.isEmpty) return const [];
+        if (query.citySlug.isEmpty) {
+          return CursorPage.empty<
+            ExternalEvent,
+            DocumentSnapshot<ExternalEvent>
+          >();
+        }
 
         Query<ExternalEvent> firestoreQuery = _eventsRef
             .where('discovery.citySlug', isEqualTo: query.citySlug)
@@ -103,16 +119,28 @@ class ExternalEventRepository {
           );
         }
 
-        firestoreQuery = firestoreQuery.orderBy('startTime').limit(query.limit);
-        final snap = await firestoreQuery.get();
+        firestoreQuery = firestoreQuery.orderBy('startTime');
+        final page = await firestoreQuery.fetchDocumentCursorPage(
+          limit: query.limit,
+          startAfter: startAfter,
+          errorContext: const BackendErrorContext(
+            service: BackendService.firestore,
+            action: 'fetch external event discovery',
+            resource: _collectionPath,
+          ),
+        );
         final events =
-            snap.docs
+            page.items
                 .map((doc) => doc.data())
                 .where((event) => event.isDiscoverableAt(query.startAt))
                 .where((event) => _matchesActivityFilter(event, query))
                 .toList(growable: false)
               ..sort((a, b) => a.startTime.compareTo(b.startTime));
-        return events;
+        return CursorPage(
+          items: List.unmodifiable(events),
+          nextCursor: page.nextCursor,
+          hasMore: page.hasMore,
+        );
       },
       context: const BackendErrorContext(
         service: BackendService.firestore,

@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/data/cursor_page.dart';
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -43,7 +45,7 @@ class EventDiscoveryQuery {
     EventDiscoveryAvailabilityFilter availabilityFilter =
         EventDiscoveryAvailabilityFilter.any,
     String? viewerCohortId,
-    int limit = 80,
+    int limit = ReadLimitPolicy.exploreInternalFeedPage,
   }) {
     final normalizedMarketId = marketId.trim().toLowerCase();
     final normalizedMaxDistance = maxDistanceKm == null || maxDistanceKm <= 0
@@ -121,10 +123,32 @@ class EventDiscoveryRepository {
         toJson: (event) => event.toJson(),
       );
 
-  Future<List<Event>> fetchDiscoverableEvents(EventDiscoveryQuery query) {
+  Future<List<Event>> fetchDiscoverableEvents(EventDiscoveryQuery query) async {
+    return (await fetchDiscoverableEventsPage(query)).items;
+  }
+
+  Future<CursorPage<Event, DocumentSnapshot<Event>>>
+  fetchDiscoverableEventsPage(
+    EventDiscoveryQuery query, {
+    DocumentSnapshot<Event>? startAfter,
+  }) {
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryActivityKind:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryActivityKind:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,discoveryActivityKind:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,discoveryActivityKind:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,discoveryActivityKind:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: events (discoveryMarketId:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,discoveryActivityKind:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
     return withBackendErrorContext(
       () async {
-        if (query.marketId.isEmpty) return const [];
+        if (query.marketId.isEmpty) {
+          return CursorPage.empty<Event, DocumentSnapshot<Event>>();
+        }
 
         Query<Event> firestoreQuery = _eventsRef
             .where('discoveryMarketId', isEqualTo: query.marketId)
@@ -144,16 +168,28 @@ class EventDiscoveryRepository {
         firestoreQuery = _applyActivityFilter(firestoreQuery, query);
         firestoreQuery = _applyAvailabilityFilter(firestoreQuery, query);
         firestoreQuery = _applyGeoCellFilter(firestoreQuery, query);
-        firestoreQuery = firestoreQuery.orderBy('startTime').limit(query.limit);
+        firestoreQuery = firestoreQuery.orderBy('startTime');
 
-        final snap = await firestoreQuery.get();
+        final page = await firestoreQuery.fetchDocumentCursorPage(
+          limit: query.limit,
+          startAfter: startAfter,
+          errorContext: const BackendErrorContext(
+            service: BackendService.firestore,
+            action: 'fetch event discovery',
+            resource: _collectionPath,
+          ),
+        );
         final events =
-            snap.docs
+            page.items
                 .map((doc) => doc.data())
                 .where((event) => _matchesPostQueryFilters(event, query))
                 .toList(growable: false)
               ..sort((a, b) => a.startTime.compareTo(b.startTime));
-        return events;
+        return CursorPage(
+          items: List.unmodifiable(events),
+          nextCursor: page.nextCursor,
+          hasMore: page.hasMore,
+        );
       },
       context: const BackendErrorContext(
         service: BackendService.firestore,

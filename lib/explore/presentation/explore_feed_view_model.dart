@@ -11,7 +11,6 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/external_event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
@@ -21,37 +20,58 @@ import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/data/explore_recommendations_repository.dart';
 import 'package:catch_dating_app/explore/data/explore_search_repository.dart';
 import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
+import 'package:catch_dating_app/explore/presentation/explore_discovery_window_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'explore_feed_view_model.g.dart';
 
+/// Shared wall-clock snapshot for one mounted Explore surface.
+///
+/// Keeping the query window and date-strip labels on the same provider avoids
+/// midnight drift and gives capture/tests one explicit deterministic seam.
+@riverpod
+DateTime exploreDiscoveryReferenceNow(Ref ref) => _discoveryReferenceNow();
+
 class ExploreFeedViewModel {
   const ExploreFeedViewModel({
     required this.items,
+    this.featuredEventId,
     this.externalItems = const <ExploreExternalEventItem>[],
+    this.dateSupplyCounts = const <ExploreTimeFilter, int>{},
+    this.isExhaustive = true,
+    this.isLoadingMore = false,
+    this.windowRequest,
   });
 
   final List<ExploreEventItem> items;
+  final String? featuredEventId;
   final List<ExploreExternalEventItem> externalItems;
+  final Map<ExploreTimeFilter, int> dateSupplyCounts;
+  final bool isExhaustive;
+  final bool isLoadingMore;
+  final ExploreDiscoveryWindowRequest? windowRequest;
 
   bool get isEmpty => items.isEmpty && externalItems.isEmpty;
   int get count => items.length + externalItems.length;
-  int get mappableEventCount => items.length + externalItems.length;
-  ExploreEventItem? get featuredItem => items.isEmpty ? null : items.first;
-  List<ExploreEventItem> get railItems => items.skip(1).take(8).toList();
-
-  /// All items except the featured hero, grouped by local-time day in
-  /// chronological order. The day buckets are what the Explore feed renders
-  /// as sticky sections (`TODAY`, `TOMORROW`, day-of-week + date for further
-  /// out).
-  List<ExploreEventDayGroup> dayGroupsExcludingFeatured({DateTime? now}) {
-    final featured = featuredItem;
-    final referenceNow = now ?? DateTime.now();
-    return _groupByDay(items.where((item) => item != featured), referenceNow);
+  int get mappableEventCount =>
+      items.where((item) => item.event.hasExactStartingPoint).length +
+      externalItems
+          .where(
+            (item) =>
+                item.event.latitude != null && item.event.longitude != null,
+          )
+          .length;
+  bool get hasMore => !isExhaustive;
+  int? dateSupplyCount(ExploreTimeFilter filter) => dateSupplyCounts[filter];
+  ExploreEventItem? get featuredItem {
+    final eventId = featuredEventId;
+    if (eventId == null) return null;
+    return items.where((item) => item.event.id == eventId).firstOrNull;
   }
 
   /// All items grouped by day, including the featured one. Useful when the
@@ -152,39 +172,113 @@ class ExploreEventItem {
       );
   EventTileStatus get tileStatus => status;
 
-  String? get distanceFromUserLabel {
-    final distance = distanceFromUserKm;
-    if (distance == null) return null;
-    if (distance < 1) {
-      return '${(distance * 1000).round()} m away';
-    }
-    final rounded = distance >= 10
-        ? distance.round().toString()
-        : distance.toStringAsFixed(1);
-    return '$rounded km away';
-  }
-
-  String get priceLabel {
-    final quotedPrice = availability?.quotedPriceInPaise;
-    if (quotedPrice == null) return tileData.priceLabel;
-    if (quotedPrice <= 0) return 'Free';
-    return EventFormatters.priceInPaise(
-      quotedPrice,
-      currencyCode: event.currency,
-    );
-  }
-
-  String? get availabilityLabel {
-    final viewerAvailability = availability;
-    if (viewerAvailability == null) return null;
-    return _availabilityLabel(viewerAvailability);
-  }
-
   EventTileData get tileData => EventTileData.fromEvent(
     event: event,
     status: tileStatus,
     clubName: club.name,
   );
+}
+
+/// Picks one honest Explore hero from viewer-actionable events.
+///
+/// The existing recommendation scorer supplies preference, distance, and
+/// recency relevance. Explore then adds availability priority and bounded
+/// social proof so the chronologically first event cannot win merely by being
+/// first. Joined/hosted and blocked events stay in the feed but cannot become
+/// acquisition CTAs in the cover story.
+String? selectExploreFeaturedEventId({
+  required List<ExploreEventItem> items,
+  required DateTime now,
+  UserProfile? viewer,
+  Set<String> signedUpEventIds = const <String>{},
+  List<Event> attendedEvents = const <Event>[],
+  List<Event> signedUpEvents = const <Event>[],
+}) {
+  final candidates = items
+      .where((item) => _isExploreHeroCandidate(item, now))
+      .toList(growable: false);
+  if (candidates.isEmpty) return null;
+
+  final recommendationScores = <String, double>{
+    for (final recommendation in rankExploreEventRecommendations(
+      candidates: [
+        for (final item in candidates)
+          ExploreEventRecommendationCandidate(
+            event: item.event,
+            clubName: item.club.name,
+            clubLocation: item.club.location,
+          ),
+      ],
+      signedUpEventIds: signedUpEventIds,
+      attendedEvents: attendedEvents,
+      signedUpEvents: signedUpEvents,
+      viewer: viewer,
+      now: now,
+      limit: candidates.length,
+    ))
+      recommendation.event.id: recommendation.score,
+  };
+
+  final ranked = [...candidates]
+    ..sort((a, b) {
+      final bScore = _exploreHeroScore(b, recommendationScores);
+      final aScore = _exploreHeroScore(a, recommendationScores);
+      final byScore = bScore.compareTo(aScore);
+      if (byScore != 0) return byScore;
+      return a.event.startTime.compareTo(b.event.startTime);
+    });
+  return ranked.first.event.id;
+}
+
+bool _isExploreHeroCandidate(ExploreEventItem item, DateTime now) {
+  final event = item.event;
+  if (event.isCancelled || !event.startTime.isAfter(now)) return false;
+  final availability = item.availability;
+  if (availability == null) {
+    return !event.isFull &&
+        item.status != EventTileStatus.ineligible &&
+        item.status != EventTileStatus.full &&
+        item.status != EventTileStatus.joined &&
+        item.status != EventTileStatus.hosted;
+  }
+  return switch (availability.status) {
+    ViewerEventAvailabilityStatus.open ||
+    ViewerEventAvailabilityStatus.saved ||
+    ViewerEventAvailabilityStatus.approvedToBook ||
+    ViewerEventAvailabilityStatus.requestRequired ||
+    ViewerEventAvailabilityStatus.waitlistAvailable => true,
+    ViewerEventAvailabilityStatus.hosted ||
+    ViewerEventAvailabilityStatus.joined ||
+    ViewerEventAvailabilityStatus.waitlisted ||
+    ViewerEventAvailabilityStatus.attended ||
+    ViewerEventAvailabilityStatus.full ||
+    ViewerEventAvailabilityStatus.fullForViewer ||
+    ViewerEventAvailabilityStatus.inviteRequired ||
+    ViewerEventAvailabilityStatus.membershipRequired ||
+    ViewerEventAvailabilityStatus.runPreferencesRequired ||
+    ViewerEventAvailabilityStatus.ageRestricted ||
+    ViewerEventAvailabilityStatus.past ||
+    ViewerEventAvailabilityStatus.cancelled => false,
+  };
+}
+
+double _exploreHeroScore(
+  ExploreEventItem item,
+  Map<String, double> recommendationScores,
+) {
+  final availabilityScore = switch (item.availability?.status) {
+    ViewerEventAvailabilityStatus.approvedToBook => 48.0,
+    ViewerEventAvailabilityStatus.saved => 46.0,
+    ViewerEventAvailabilityStatus.open || null => 44.0,
+    ViewerEventAvailabilityStatus.requestRequired => 34.0,
+    ViewerEventAvailabilityStatus.waitlistAvailable => 24.0,
+    _ => 0.0,
+  };
+  final attendanceScore =
+      item.event.signedUpCount.clamp(0, 20).toDouble() * 0.8;
+  return availabilityScore +
+      attendanceScore +
+      (recommendationScores[item.event.id] ?? 0);
 }
 
 class ExploreExternalEventItem {
@@ -195,18 +289,6 @@ class ExploreExternalEventItem {
 
   final ExternalEvent event;
   final double? distanceFromUserKm;
-
-  String? get distanceFromUserLabel {
-    final distance = distanceFromUserKm;
-    if (distance == null) return null;
-    if (distance < 1) {
-      return '${(distance * 1000).round()} m away';
-    }
-    final rounded = distance >= 10
-        ? distance.round().toString()
-        : distance.toStringAsFixed(1);
-    return '$rounded km away';
-  }
 }
 
 EventTileStatus _statusForAvailability(
@@ -233,46 +315,6 @@ EventTileStatus _statusForAvailability(
     ViewerEventAvailabilityStatus.open ||
     null =>
       isJoinedClubMember ? EventTileStatus.recommended : EventTileStatus.open,
-  };
-}
-
-String? _availabilityLabel(ViewerEventAvailability availability) {
-  final lowSpotLabel = _lowSpotLabel(availability.spotsRemaining);
-  return switch (availability.status) {
-    ViewerEventAvailabilityStatus.open => lowSpotLabel ?? 'Open',
-    ViewerEventAvailabilityStatus.saved => lowSpotLabel,
-    ViewerEventAvailabilityStatus.hosted => lowSpotLabel,
-    ViewerEventAvailabilityStatus.joined ||
-    ViewerEventAvailabilityStatus.waitlisted ||
-    ViewerEventAvailabilityStatus.attended => null,
-    ViewerEventAvailabilityStatus.approvedToBook => 'Approved to join',
-    ViewerEventAvailabilityStatus.requestRequired => 'Request required',
-    ViewerEventAvailabilityStatus.waitlistAvailable => 'Waitlist open',
-    ViewerEventAvailabilityStatus.full => 'Full',
-    ViewerEventAvailabilityStatus.fullForViewer => 'Full for you',
-    ViewerEventAvailabilityStatus.inviteRequired => 'Invite required',
-    ViewerEventAvailabilityStatus.membershipRequired => 'Members only',
-    ViewerEventAvailabilityStatus.runPreferencesRequired => 'Set preferences',
-    ViewerEventAvailabilityStatus.ageRestricted => _ageRestrictedLabel(
-      availability,
-    ),
-    ViewerEventAvailabilityStatus.past => 'Ended',
-    ViewerEventAvailabilityStatus.cancelled => 'Cancelled',
-  };
-}
-
-String? _lowSpotLabel(int spotsRemaining) {
-  if (spotsRemaining <= 0) return null;
-  if (spotsRemaining == 1) return '1 spot left';
-  if (spotsRemaining <= 4) return '$spotsRemaining spots left';
-  return null;
-}
-
-String _ageRestrictedLabel(ViewerEventAvailability availability) {
-  return switch (availability.eligibility) {
-    AgeTooYoung(:final minAge) => 'Must be $minAge+',
-    AgeTooOld(:final maxAge) => 'Max age $maxAge',
-    _ => 'Age restricted',
   };
 }
 
@@ -311,8 +353,13 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final filters = ref.watch(exploreFiltersProvider);
   final clubsAsync = ref.watch(exploreSourceClubsProvider);
   final uidAsync = ref.watch(uidProvider);
-  final now = _discoveryReferenceNow();
-  final timeWindow = exploreTimeWindowFor(filters.timeFilter, now);
+  final now = ref.watch(exploreDiscoveryReferenceNowProvider);
+  final selectedTimeWindow = exploreTimeWindowFor(filters.timeFilter, now);
+  final queryTimeWindow =
+      isExploreDateStripFilter(filters.timeFilter) &&
+          filters.timeFilter != ExploreTimeFilter.anytime
+      ? exploreDateStripQueryWindow(now)
+      : selectedTimeWindow;
   final activityKindFilter = _activityKindForFilter(filters.activityTag);
   final distanceFilterKm = exploreDistanceFilterKm(filters.distanceFilter);
   final normalizedQuery = query.trim().toLowerCase();
@@ -421,48 +468,39 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final userProfile = userProfileAsync.asData?.value;
   final viewerCohortId = viewerCohortIdAsync.asData?.value;
 
-  final eventsAsync = ref.watch(
-    discoverableEventsProvider(
-      EventDiscoveryQuery.forCity(
-        marketId: city.effectiveMarketId,
-        startAt: timeWindow?.start ?? now,
-        endBefore: timeWindow?.end,
-        activityKinds: [?activityKindFilter],
-        center: deviceLocationAsync.asData?.value,
-        maxDistanceKm: distanceFilterKm,
-        viewerCohortId: viewerCohortId,
-      ),
+  final windowRequest = ExploreDiscoveryWindowRequest(
+    internalQuery: EventDiscoveryQuery.forCity(
+      marketId: city.effectiveMarketId,
+      startAt: queryTimeWindow?.start ?? now,
+      endBefore: queryTimeWindow?.end,
+      activityKinds: [?activityKindFilter],
+      center: deviceLocationAsync.asData?.value,
+      maxDistanceKm: distanceFilterKm,
+      viewerCohortId: viewerCohortId,
+    ),
+    externalQuery: ExternalEventDiscoveryQuery.forCity(
+      citySlug: city.effectiveSlug,
+      startAt: queryTimeWindow?.start ?? now,
+      endBefore: queryTimeWindow?.end,
+      activityKinds: [?activityKindFilter],
     ),
   );
-  final externalEventsAsync = ref.watch(
-    discoverableExternalEventsProvider(
-      ExternalEventDiscoveryQuery.forCity(
-        citySlug: city.effectiveSlug,
-        startAt: timeWindow?.start ?? now,
-        endBefore: timeWindow?.end,
-        activityKinds: [?activityKindFilter],
-      ),
-    ),
+  final discoveryWindowAsync = ref.watch(
+    exploreDiscoveryWindowProvider(windowRequest),
   );
-  if (eventsAsync.isLoading || externalEventsAsync.isLoading) {
+  if (discoveryWindowAsync.isLoading) {
     return const AsyncLoading();
   }
-  if (eventsAsync.hasError) {
+  if (discoveryWindowAsync.hasError) {
     return AsyncError(
-      eventsAsync.error!,
-      eventsAsync.stackTrace ?? StackTrace.current,
+      discoveryWindowAsync.error!,
+      discoveryWindowAsync.stackTrace ?? StackTrace.current,
     );
   }
-  if (externalEventsAsync.hasError) {
-    return AsyncError(
-      externalEventsAsync.error!,
-      externalEventsAsync.stackTrace ?? StackTrace.current,
-    );
-  }
+  final discoveryWindow = discoveryWindowAsync.requireValue;
 
   final eventsById = <String, Event>{
-    for (final event in eventsAsync.asData?.value ?? const <Event>[])
-      event.id: event,
+    for (final event in discoveryWindow.internalEvents) event.id: event,
   };
   final followedRecommendationsAsync = uid == null || followedClubIds.isEmpty
       ? const AsyncData<List<ExploreEventRecommendationCandidate>>([])
@@ -560,82 +598,127 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
       club.id: club,
   };
   final deviceLocation = deviceLocationAsync.asData?.value;
+  final allItems = eventsById.values
+      .where((event) => event.isUpcomingAt(now))
+      .map((event) {
+        final club = clubById[event.clubId];
+        if (club == null) return null;
+        final isClubMember = membershipClubIds.contains(event.clubId);
+        final distanceFromUserKm = _distanceFromUserKm(
+          event: event,
+          deviceLocation: deviceLocation,
+        );
+        return ExploreEventItem(
+          event: event,
+          club: club,
+          availability: resolveViewerEventAvailability(
+            event: event,
+            userProfile: userProfile,
+            participation: participationByEventId[event.id],
+            isSaved: savedEventIds.contains(event.id),
+            isClubMember: isClubMember,
+            now: now,
+          ),
+          isJoinedClubMember: isClubMember,
+          isFollowedClubSignal: followedClubIds.contains(event.clubId),
+          distanceFromUserKm: distanceFromUserKm,
+        );
+      })
+      .nonNulls
+      .where(
+        (item) => _matchesClubScopeFilters(
+          club: item.club,
+          filters: filters,
+          joinedClubIds: membershipClubIds,
+          activityKindFilter: activityKindFilter,
+        ),
+      )
+      .where((item) => _matchesDistanceFilter(item, distanceFilterKm))
+      .where(
+        (item) => _matchesSearch(
+          item,
+          normalizedQuery,
+          serverEventIds: serverEventIds,
+          serverClubIds: serverClubIds,
+        ),
+      )
+      .toList();
   final items =
-      eventsById.values
-          .where((event) => event.isUpcomingAt(now))
-          .where((event) => _matchesEventTimeFilters(event, filters, now))
-          .map((event) {
-            final club = clubById[event.clubId];
-            if (club == null) return null;
-            final isClubMember = membershipClubIds.contains(event.clubId);
-            final distanceFromUserKm = _distanceFromUserKm(
-              event: event,
-              deviceLocation: deviceLocation,
-            );
-            return ExploreEventItem(
-              event: event,
-              club: club,
-              availability: resolveViewerEventAvailability(
-                event: event,
-                userProfile: userProfile,
-                participation: participationByEventId[event.id],
-                isSaved: savedEventIds.contains(event.id),
-                isClubMember: isClubMember,
-                now: now,
-              ),
-              isJoinedClubMember: isClubMember,
-              isFollowedClubSignal: followedClubIds.contains(event.clubId),
-              distanceFromUserKm: distanceFromUserKm,
-            );
-          })
-          .nonNulls
-          .where(
-            (item) => _matchesClubScopeFilters(
-              club: item.club,
-              filters: filters,
-              joinedClubIds: membershipClubIds,
-              activityKindFilter: activityKindFilter,
-            ),
-          )
-          .where((item) => _matchesDistanceFilter(item, distanceFilterKm))
-          .where(
-            (item) => _matchesSearch(
-              item,
-              normalizedQuery,
-              serverEventIds: serverEventIds,
-              serverClubIds: serverClubIds,
-            ),
-          )
+      allItems
+          .where((item) => _matchesEventTimeFilters(item.event, filters, now))
           .toList()
         ..sort((a, b) => a.event.startTime.compareTo(b.event.startTime));
+  final allExternalItems = discoveryWindow.externalEvents
+      .where((event) => event.isUpcomingAt(now))
+      .map((event) {
+        return ExploreExternalEventItem(
+          event: event,
+          distanceFromUserKm: _externalDistanceFromUserKm(
+            event: event,
+            deviceLocation: deviceLocation,
+          ),
+        );
+      })
+      .where((item) => _matchesExternalDistanceFilter(item, distanceFilterKm))
+      .where((item) => _matchesExternalSearch(item, normalizedQuery))
+      .toList();
   final externalItems =
-      (externalEventsAsync.asData?.value ?? const <ExternalEvent>[])
-          .where((event) => event.isUpcomingAt(now))
+      allExternalItems
           .where(
-            (event) => _matchesExternalEventTimeFilters(event, filters, now),
+            (item) =>
+                _matchesExternalEventTimeFilters(item.event, filters, now),
           )
-          .map((event) {
-            return ExploreExternalEventItem(
-              event: event,
-              distanceFromUserKm: _externalDistanceFromUserKm(
-                event: event,
-                deviceLocation: deviceLocation,
-              ),
-            );
-          })
-          .where(
-            (item) => _matchesExternalDistanceFilter(item, distanceFilterKm),
-          )
-          .where((item) => _matchesExternalSearch(item, normalizedQuery))
           .toList()
         ..sort((a, b) => a.event.startTime.compareTo(b.event.startTime));
+  final dateSupplyCounts = _exploreDateSupplyCounts(
+    internalItems: allItems,
+    externalItems: allExternalItems,
+    now: now,
+  );
 
   return AsyncData(
     ExploreFeedViewModel(
       items: List.unmodifiable(items),
+      featuredEventId: selectExploreFeaturedEventId(
+        items: items,
+        viewer: userProfile,
+        signedUpEventIds: {
+          for (final participation
+              in participationsAsync.asData?.value ??
+                  const <EventParticipation>[])
+            if (participation.status == EventParticipationStatus.signedUp)
+              participation.eventId,
+        },
+        now: now,
+      ),
       externalItems: List.unmodifiable(externalItems),
+      dateSupplyCounts: dateSupplyCounts,
+      isExhaustive: discoveryWindow.isExhaustive,
+      isLoadingMore: discoveryWindow.isLoadingMore,
+      windowRequest: windowRequest,
     ),
   );
+}
+
+Map<ExploreTimeFilter, int> _exploreDateSupplyCounts({
+  required List<ExploreEventItem> internalItems,
+  required List<ExploreExternalEventItem> externalItems,
+  required DateTime now,
+}) {
+  final starts = <DateTime>[
+    for (final item in internalItems) item.event.startTime,
+    for (final item in externalItems) item.event.startTime,
+  ];
+  return Map.unmodifiable({
+    for (final filter in displayedExploreDateFilters)
+      filter: filter == ExploreTimeFilter.anytime
+          ? starts.length
+          : starts
+                .where(
+                  (start) => exploreTimeWindowFor(filter, now)!.contains(start),
+                )
+                .length,
+  });
 }
 
 @riverpod
@@ -716,7 +799,7 @@ AsyncValue<List<ExploreEventRecommendation>> exploreRecommendations(Ref ref) {
       attendedEvents: attendedEventsAsync.asData?.value ?? const <Event>[],
       signedUpEvents: signedUpEvents,
       viewer: userAsync.asData?.value,
-      now: _discoveryReferenceNow(),
+      now: ref.watch(exploreDiscoveryReferenceNowProvider),
     ),
   );
 }

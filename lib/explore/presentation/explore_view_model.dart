@@ -17,7 +17,35 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'explore_view_model.freezed.dart';
 part 'explore_view_model.g.dart';
 
-enum ExploreTimeFilter { anytime, tonight, tomorrow, weekend, thisWeek }
+enum ExploreTimeFilter {
+  anytime,
+  tonight,
+  tomorrow,
+  dayTwo,
+  dayThree,
+  dayFour,
+  dayFive,
+  daySix,
+
+  // Compatibility values retained until the owner-gated W6/catalog pass can
+  // remove the legacy weekly stories and public symbols together.
+  weekend,
+  thisWeek,
+}
+
+const displayedExploreDateFilters = <ExploreTimeFilter>[
+  ExploreTimeFilter.tonight,
+  ExploreTimeFilter.tomorrow,
+  ExploreTimeFilter.dayTwo,
+  ExploreTimeFilter.dayThree,
+  ExploreTimeFilter.dayFour,
+  ExploreTimeFilter.dayFive,
+  ExploreTimeFilter.daySix,
+  ExploreTimeFilter.anytime,
+];
+
+bool isExploreDateStripFilter(ExploreTimeFilter filter) =>
+    displayedExploreDateFilters.contains(filter);
 
 enum ExploreDistanceFilter { any, oneKm, threeKm, fiveKm, tenKm }
 
@@ -59,11 +87,17 @@ ExploreTimeWindow? exploreTimeWindowFor(
         end: baseDay.add(const Duration(days: 1, hours: 3)),
       );
     case ExploreTimeFilter.tomorrow:
-      final start = _startOfDay(now).add(const Duration(days: 1));
-      return ExploreTimeWindow(
-        start: start,
-        end: start.add(const Duration(days: 1)),
-      );
+      return _exploreDayWindow(now, 1);
+    case ExploreTimeFilter.dayTwo:
+      return _exploreDayWindow(now, 2);
+    case ExploreTimeFilter.dayThree:
+      return _exploreDayWindow(now, 3);
+    case ExploreTimeFilter.dayFour:
+      return _exploreDayWindow(now, 4);
+    case ExploreTimeFilter.dayFive:
+      return _exploreDayWindow(now, 5);
+    case ExploreTimeFilter.daySix:
+      return _exploreDayWindow(now, 6);
     case ExploreTimeFilter.weekend:
       final today = _startOfDay(now);
       final daysFromFriday = now.weekday - DateTime.friday;
@@ -82,11 +116,26 @@ ExploreTimeWindow? exploreTimeWindowFor(
   }
 }
 
-/// Default time scope on cold load. The filter row reads as "live" rather
-/// than empty by default-selecting the broadest useful window. `thisWeek`
-/// catches every upcoming event without making the user act first, while
-/// still narrowing the result set so the feed doesn't sprawl.
-const ExploreTimeFilter defaultExploreTimeFilter = ExploreTimeFilter.thisWeek;
+ExploreTimeWindow _exploreDayWindow(DateTime now, int dayOffset) {
+  final start = _startOfDay(now).add(Duration(days: dayOffset, hours: 3));
+  return ExploreTimeWindow(
+    start: start,
+    end: start.add(const Duration(days: 1)),
+  );
+}
+
+/// One shared query window backs every visible date-strip selection.
+///
+/// Changing days then reuses the same cached discovery page and only changes
+/// the in-memory day predicate. The 03:00 boundary keeps late-night events in
+/// "Tonight" without double-counting them in the following date.
+ExploreTimeWindow exploreDateStripQueryWindow(DateTime now) {
+  return ExploreTimeWindow(start: now, end: _exploreDayWindow(now, 6).end);
+}
+
+/// Highest-intent cold-load scope. The date strip exposes the following six
+/// days and Anytime beside it, so users can widen without opening a sheet.
+const ExploreTimeFilter defaultExploreTimeFilter = ExploreTimeFilter.tonight;
 
 class ExploreFilterSelection {
   const ExploreFilterSelection({

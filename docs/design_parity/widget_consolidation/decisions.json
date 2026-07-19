@@ -486,7 +486,7 @@
           "note": "inline; unify overrides to CalendarMessage's set (fixes eventInfoTileExtent icon-size token misuse)"
         }
       ],
-      "rationale": "Thin CatchEmptyState wrappers (same policy as c009). CalendarMessage/SavedEventsMessage additionally drifted on typography overrides; standardize both surfaces on the calendar treatment. Recon task: count the CatchScreenBody+Center(CatchEmptyState) pattern repo-wide \u2014 if >=4, next batch designs a CatchEmptyState screen variant.",
+      "rationale": "Thin CatchEmptyState wrappers (same policy as c009). CalendarMessage/SavedEventsMessage additionally drifted on typography overrides; standardize both surfaces on the calendar treatment. Recon task: count the CatchScreenBody+Center(CatchEmptyState) pattern repo-wide — if >=4, next batch designs a CatchEmptyState screen variant.",
       "decidedBy": "claude",
       "date": "2026-07-03",
       "status": "implemented-WO-008"
@@ -525,7 +525,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Two entry points (confirm vs form) are good API ergonomics, same as the error-state pair. The overlay shell (Dialog + CatchSurface + title + actions row) must be shared internally, not duplicated \u2014 verify and delegate.",
+      "rationale": "Two entry points (confirm vs form) are good API ergonomics, same as the error-state pair. The overlay shell (Dialog + CatchSurface + title + actions row) must be shared internally, not duplicated — verify and delegate.",
       "decidedBy": "claude",
       "date": "2026-07-03",
       "status": "implemented-WO-010"
@@ -608,7 +608,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Per-tab skeleton compositions; parameterizing would move the same jitter to call sites. Real finding: raw title-width literals (148/190/170/150) instead of CatchLayout.skeletonText* tokens \u2014 drift fix in WO-013.",
+      "rationale": "Per-tab skeleton compositions; parameterizing would move the same jitter to call sites. Real finding: raw title-width literals (148/190/170/150) instead of CatchLayout.skeletonText* tokens — drift fix in WO-013.",
       "decidedBy": "claude",
       "date": "2026-07-03",
       "status": "implemented-WO-013 (token fix only)"
@@ -763,7 +763,7 @@
         {
           "name": "ProfileInlineMultiChoiceEntryEditor",
           "action": "keep",
-          "note": "deferred \u2014 generic classes, need type-aware read"
+          "note": "deferred — generic classes, need type-aware read"
         },
         {
           "name": "ProfileInlineSingleChoiceEntryEditor",
@@ -778,10 +778,10 @@
         {
           "name": "ExploreRailLabel",
           "action": "keep",
-          "note": "deferred \u2014 possible overlap with CatchOptionGroup item rendering"
+          "note": "deferred — possible overlap with CatchOptionGroup item rendering"
         }
       ],
-      "rationale": "Deferred, not decided: classes are generic (class X<T>) and need a proper read in the next batch. REVIEW (claude, 2026-07-04): type-aware read done \u2014 editors stay distinct (see c010); the ExploreRailLabel/CatchOptionGroupItem overlap is real and resolved as an absorb (see c014, WO-021).",
+      "rationale": "Deferred, not decided: classes are generic (class X<T>) and need a proper read in the next batch. REVIEW (claude, 2026-07-04): type-aware read done — editors stay distinct (see c010); the ExploreRailLabel/CatchOptionGroupItem overlap is real and resolved as an absorb (see c014, WO-021).",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -943,7 +943,7 @@
           "action": "delete"
         }
       ],
-      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 needs read. REVIEW (claude, 2026-07-04): not screen composition after read \u2014 each is an R2-shape thin wrapper (CatchBottomDock(CatchButton(save))) over a typed footer state with exactly one call site. Inline the expression at each call site verbatim (keep the key and padding args) and delete both classes; the footer-state types stay.",
+      "rationale": "Rulebook scope limit: current cluster is scope: screen, so it needs review instead of mechanical merge. REVIEW (claude, 2026-07-03): deferred to next review batch — needs read. REVIEW (claude, 2026-07-04): not screen composition after read — each is an R2-shape thin wrapper (CatchBottomDock(CatchButton(save))) over a typed footer state with exactly one call site. Inline the expression at each call site verbatim (keep the key and padding args) and delete both classes; the footer-state types stay.",
       "decidedBy": "codex-rule:scope-screen -> claude",
       "date": "2026-07-04",
       "status": "executed-WO-021"
@@ -997,7 +997,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K5 territory: both share the Semantics/InkWell/DecoratedBox/ConstrainedBox shell, but ActivityTypeRow's body is ActivityDot + titleL label + titleL count with selected semantics while MoreActivityTypesRow's body is kicker '+ n MORE TYPES' + forward arrow expand affordance. REVIEW ANSWER (claude, 2026-07-03): keep-distinct \u2014 divergent semantics would need ~5 knobs to reproduce; churn over value (K4/K5).",
+      "rationale": "K5 territory: both share the Semantics/InkWell/DecoratedBox/ConstrainedBox shell, but ActivityTypeRow's body is ActivityDot + titleL label + titleL count with selected semantics while MoreActivityTypesRow's body is kicker '+ n MORE TYPES' + forward arrow expand affordance. REVIEW ANSWER (claude, 2026-07-03): keep-distinct — divergent semantics would need ~5 knobs to reproduce; churn over value (K4/K5).",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
       "status": "recorded"
@@ -1367,7 +1367,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: both profile adapters now delegate their rendered field, wrapping chips, source-order summary, clearability policy, and Cancel/Done bar to CatchField.choices. The remaining residue is genuinely forked draft/save state: single-choice owns a nullable T?, multi-choice owns Set<T>, equality/no-op checks differ, and only multi-choice supports patchForLatestProfile. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 generic classes; needs type-aware read. REVIEW (claude, 2026-07-04): type-aware read done. K3 plus genuine K2 \u2014 merging the adapters would introduce a mode switch over two state machines without removing visual duplication, because the visual contract is already canonicalized in CatchField.",
+      "rationale": "No exact K/R match: both profile adapters now delegate their rendered field, wrapping chips, source-order summary, clearability policy, and Cancel/Done bar to CatchField.choices. The remaining residue is genuinely forked draft/save state: single-choice owns a nullable T?, multi-choice owns Set<T>, equality/no-op checks differ, and only multi-choice supports patchForLatestProfile. REVIEW (claude, 2026-07-03): deferred to next review batch — generic classes; needs type-aware read. REVIEW (claude, 2026-07-04): type-aware read done. K3 plus genuine K2 — merging the adapters would introduce a mode switch over two state machines without removing visual duplication, because the visual contract is already canonicalized in CatchField.",
       "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -1403,7 +1403,7 @@
           "action": "absorb"
         }
       ],
-      "rationale": "No exact K/R match: ExploreRailLabel is structurally close to core CatchOptionGroupItem, but absorbing it requires a core option-item API decision around selectedRule, variant, option typing, and whether explore filter rails are option groups. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 generic classes; needs type-aware read. REVIEW (claude, 2026-07-04): ExploreRailLabel is a near-byte clone of CatchOptionGroupItem's label variant (same Semantics/InkWell/AnimatedContainer underline, micro10/s3 padding flip, micro3 rule, labelL ink/ink3) \u2014 the explore time rail IS an option-group row that only needed a scrollable layout the group shell doesn't provide. Core API loosened: selectedRule becomes optional (defaults to t.ink), variant defaults to label; explore constructs items directly in its scroll row. Accepted standardization: rail labels gain ellipsis overflow (visual noop at these lengths).",
+      "rationale": "No exact K/R match: ExploreRailLabel is structurally close to core CatchOptionGroupItem, but absorbing it requires a core option-item API decision around selectedRule, variant, option typing, and whether explore filter rails are option groups. REVIEW (claude, 2026-07-03): deferred to next review batch — generic classes; needs type-aware read. REVIEW (claude, 2026-07-04): ExploreRailLabel is a near-byte clone of CatchOptionGroupItem's label variant (same Semantics/InkWell/AnimatedContainer underline, micro10/s3 padding flip, micro3 rule, labelL ink/ink3) — the explore time rail IS an option-group row that only needed a scrollable layout the group shell doesn't provide. Core API loosened: selectedRule becomes optional (defaults to t.ink), variant defaults to label; explore constructs items directly in its scroll row. Accepted standardization: rail labels gain ellipsis overflow (visual noop at these lengths).",
       "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-04",
       "status": "executed-WO-021"
@@ -1797,7 +1797,7 @@
           "action": "delete"
         }
       ],
-      "rationale": "No exact K/R match: the shared CatchSelectChip/Wrap shape hides different multi-select, questionnaire, reveal countdown, and rotation-cadence APIs that need a feature-level chip-group design decision. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 chips-row family; needs read against CatchSelectChip/option-group vocabulary. REVIEW (claude, 2026-07-04): the titled chip-wrap is a layout convention, not one concept \u2014 typography intentionally differs by level (labelM setup control, labelL block title, supporting sub-field). Merge only the same-file twins RotationCadenceChips + RevealCountdownChips (identical labelM + gapH6 + Wrap bodies over const single-select option lists) into one feature-local generic SetupChoiceChips<T> taking List<CatchOption<T>>; option lists and label formatting move to call sites as data. QuestionnaireBlock keeps (3-state mode derivation + nested config editor); ActivityAttributeGoalChips keeps (multi-select contains-semantics, sub-field typography). No core primitive \u2014 a Catch* chip row would need a typography knob per concept (K5).",
+      "rationale": "No exact K/R match: the shared CatchSelectChip/Wrap shape hides different multi-select, questionnaire, reveal countdown, and rotation-cadence APIs that need a feature-level chip-group design decision. REVIEW (claude, 2026-07-03): deferred to next review batch — chips-row family; needs read against CatchSelectChip/option-group vocabulary. REVIEW (claude, 2026-07-04): the titled chip-wrap is a layout convention, not one concept — typography intentionally differs by level (labelM setup control, labelL block title, supporting sub-field). Merge only the same-file twins RotationCadenceChips + RevealCountdownChips (identical labelM + gapH6 + Wrap bodies over const single-select option lists) into one feature-local generic SetupChoiceChips<T> taking List<CatchOption<T>>; option lists and label formatting move to call sites as data. QuestionnaireBlock keeps (3-state mode derivation + nested config editor); ActivityAttributeGoalChips keeps (multi-select contains-semantics, sub-field typography). No core primitive — a Catch* chip row would need a typography knob per concept (K5).",
       "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-04",
       "status": "executed-WO-021"
@@ -1888,7 +1888,7 @@
           "action": "absorb"
         }
       ],
-      "rationale": "K2 domain fork: the tiles share the same card skeleton, but they render parallel HostAnalyticsMetricCard/UserAnalyticsMetricCard data, status enums, status-copy rules, and user analytics copy helpers. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): identical layout/tokens over identical model shapes; kit takes display-ready CatchMetricCardData, features keep icon/format/copy mapping.",
+      "rationale": "K2 domain fork: the tiles share the same card skeleton, but they render parallel HostAnalyticsMetricCard/UserAnalyticsMetricCard data, status enums, status-copy rules, and user analytics copy helpers. AUDIT (claude, 2026-07-03): K2 misapplied — bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): identical layout/tokens over identical model shapes; kit takes display-ready CatchMetricCardData, features keep icon/format/copy mapping.",
       "decidedBy": "codex-rule:K2 -> claude",
       "date": "2026-07-03",
       "status": "implemented-WO-018",
@@ -1926,7 +1926,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K2 domain fork: the trend panels share chart chrome and CatchAnalyticsBar, but they read parallel HostAnalyticsTrendPoint/UserAnalyticsTrendPoint metrics with different metric keys, section shells, and summary stat copy. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): aggregation + chart composition are feature semantics; both already share CatchAnalyticsBar and will share CatchAnalyticsSection. Remaining duplication dissolves with kit v1.",
+      "rationale": "K2 domain fork: the trend panels share chart chrome and CatchAnalyticsBar, but they read parallel HostAnalyticsTrendPoint/UserAnalyticsTrendPoint metrics with different metric keys, section shells, and summary stat copy. AUDIT (claude, 2026-07-03): K2 misapplied — bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): aggregation + chart composition are feature semantics; both already share CatchAnalyticsBar and will share CatchAnalyticsSection. Remaining duplication dissolves with kit v1.",
       "decidedBy": "codex-rule:K2 -> claude",
       "date": "2026-07-03",
       "status": "recorded"
@@ -1944,7 +1944,7 @@
           "action": "absorb"
         }
       ],
-      "rationale": "K2 domain fork: the grid skeleton is shared, but the members render parallel metric-card domains and tile types; the user grid also caps at six cards while the host grid renders the supplied host summary cards. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): identical 2-col Wrap grid; user .take(6) becomes maxItems param.",
+      "rationale": "K2 domain fork: the grid skeleton is shared, but the members render parallel metric-card domains and tile types; the user grid also caps at six cards while the host grid renders the supplied host summary cards. AUDIT (claude, 2026-07-03): K2 misapplied — bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): identical 2-col Wrap grid; user .take(6) becomes maxItems param.",
       "decidedBy": "codex-rule:K2 -> claude",
       "date": "2026-07-03",
       "status": "implemented-WO-018",
@@ -2380,7 +2380,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: CatchScreenBody is a generic padding/scroll shell, while PublicProfileScreenBody is a route-state dispatcher for loading/error/unavailable/ready profile states. REVIEW (claude, 2026-07-03): name collision only \u2014 PublicProfileScreenBody is a route status switch (StateView), not a body primitive. Naming-pass candidate: PublicProfileStateView.",
+      "rationale": "No exact K/R match: CatchScreenBody is a generic padding/scroll shell, while PublicProfileScreenBody is a route-state dispatcher for loading/error/unavailable/ready profile states. REVIEW (claude, 2026-07-03): name collision only — PublicProfileScreenBody is a route status switch (StateView), not a body primitive. Naming-pass candidate: PublicProfileStateView.",
       "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-03",
       "status": "recorded"
@@ -2398,7 +2398,7 @@
           "action": "absorb"
         }
       ],
-      "rationale": "K5 concept mismatch: CatchPrivacyBadge is a core uppercase privacy token badge with transparent surface styling, while the Event Success PrivacyBadge maps a private audience enum to CatchBadge labels and icons. REVIEW (claude, 2026-07-03): privacy vocabulary is a trust surface \u2014 one component. Extend CatchPrivacyBadgeKind with privateToYou/hostCanSee/catchPrivate (labels/icons from the companion widget); companion standardizes to the core mono-pill treatment (intentional visual change). Also fix raw size: 11 -> CatchIcon.micro in the core badge.",
+      "rationale": "K5 concept mismatch: CatchPrivacyBadge is a core uppercase privacy token badge with transparent surface styling, while the Event Success PrivacyBadge maps a private audience enum to CatchBadge labels and icons. REVIEW (claude, 2026-07-03): privacy vocabulary is a trust surface — one component. Extend CatchPrivacyBadgeKind with privateToYou/hostCanSee/catchPrivate (labels/icons from the companion widget); companion standardizes to the core mono-pill treatment (intentional visual change). Also fix raw size: 11 -> CatchIcon.micro in the core badge.",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
       "status": "implemented-WO-019",
@@ -2453,7 +2453,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: DarkPill is a manual-QA dark accent pill while EventSharePill is a light event share-card metadata pill with different surface and typography roles. REVIEW (claude, 2026-07-03): light-primary share pill vs dark reveal pill \u2014 different tone recipes for different surfaces; DarkPill itself merges into EventSuccessDarkPill (WO-019).",
+      "rationale": "K5 concept mismatch: DarkPill is a manual-QA dark accent pill while EventSharePill is a light event share-card metadata pill with different surface and typography roles. REVIEW (claude, 2026-07-03): light-primary share pill vs dark reveal pill — different tone recipes for different surfaces; DarkPill itself merges into EventSuccessDarkPill (WO-019).",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
       "status": "recorded"
@@ -2795,7 +2795,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: both dispatch Explore empty-state copy after ExploreEmptyState was inlined, but the list variant owns provider-backed clear actions while the screen variant consumes route-level empty state and callbacks. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 likely R2 inlines; conditional order in WO-020. WO-020 REVIEW (codex, 2026-07-03): keep distinct; ExploreListEmptyState is a ConsumerWidget that clears exploreSearchQueryProvider/exploreFiltersProvider directly, while ExploreScreenEmptyState maps ExploreDiscoveryEmptyState.kind and receives route callbacks.",
+      "rationale": "No exact K/R match: both dispatch Explore empty-state copy after ExploreEmptyState was inlined, but the list variant owns provider-backed clear actions while the screen variant consumes route-level empty state and callbacks. REVIEW (claude, 2026-07-03): deferred to next review batch — likely R2 inlines; conditional order in WO-020. WO-020 REVIEW (codex, 2026-07-03): keep distinct; ExploreListEmptyState is a ConsumerWidget that clears exploreSearchQueryProvider/exploreFiltersProvider directly, while ExploreScreenEmptyState maps ExploreDiscoveryEmptyState.kind and receives route callbacks.",
       "decidedBy": "codex-rule:no-exact -> codex",
       "date": "2026-07-03",
       "status": "recorded-WO-020"
@@ -2849,7 +2849,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "No exact K/R match: both wrap profile inline enum editors, but single-choice owns nullable value/add affordance while multi-choice owns list selection, empty affordance rules, and latest-profile patching. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 generic classes; needs type-aware read. REVIEW (claude, 2026-07-04): both are 1:1 typed adapters (display-value + add-affordance derivation) over the inline editors, which stay forked (c010); each adapter is K1 composition over its editor.",
+      "rationale": "No exact K/R match: both wrap profile inline enum editors, but single-choice owns nullable value/add affordance while multi-choice owns list selection, empty affordance rules, and latest-profile patching. REVIEW (claude, 2026-07-03): deferred to next review batch — generic classes; needs type-aware read. REVIEW (claude, 2026-07-04): both are 1:1 typed adapters (display-value + add-affordance derivation) over the inline editors, which stay forked (c010); each adapter is K1 composition over its editor.",
       "decidedBy": "codex-rule:no-exact -> claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -2885,7 +2885,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: HostActivitySummary describes setup draft activity configuration while HostFunnelSummary explains post-event funnel metrics and conversion pills. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 needs read. REVIEW (claude, 2026-07-04): confirmed distinct concepts \u2014 primarySoft setup summary (badge wrap + blurb) vs line-bordered post-event funnel report (icon/title header + metric pills + count badges); the shared vocabulary is already primitives.",
+      "rationale": "K5 concept mismatch: HostActivitySummary describes setup draft activity configuration while HostFunnelSummary explains post-event funnel metrics and conversion pills. REVIEW (claude, 2026-07-03): deferred to next review batch — needs read. REVIEW (claude, 2026-07-04): confirmed distinct concepts — primarySoft setup summary (badge wrap + blurb) vs line-bordered post-event funnel report (icon/title header + metric pills + count badges); the shared vocabulary is already primitives.",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -3354,7 +3354,7 @@
           "action": "delete"
         }
       ],
-      "rationale": "K2 domain fork: host and user analytics quality panels use parallel role-specific row models, section shells, warning states, and copy contracts. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): same concept, genuinely different treatments (per-row warning surfaces vs single divided surface); kit v2 candidate (CatchAnalyticsDataQualityList) after v1 lands. REVIEW (claude, 2026-07-04): kit v2 lands \u2014 new core CatchAnalyticsDataQualityList (display-ready rows reusing CatchMetricStatus). Canonical treatment = host per-row status surfaces; accepted standardization: user side moves from one divided surface with sm neutral icons to per-row contentDense surfaces with md status-colored icons (partial/missing take the warning treatment). Both panels inline into their report views and die, along with UserAnalyticsDataQualityRow.",
+      "rationale": "K2 domain fork: host and user analytics quality panels use parallel role-specific row models, section shells, warning states, and copy contracts. AUDIT (claude, 2026-07-03): K2 misapplied — bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): same concept, genuinely different treatments (per-row warning surfaces vs single divided surface); kit v2 candidate (CatchAnalyticsDataQualityList) after v1 lands. REVIEW (claude, 2026-07-04): kit v2 lands — new core CatchAnalyticsDataQualityList (display-ready rows reusing CatchMetricStatus). Canonical treatment = host per-row status surfaces; accepted standardization: user side moves from one divided surface with sm neutral icons to per-row contentDense surfaces with md status-colored icons (partial/missing take the warning treatment). Both panels inline into their report views and die, along with UserAnalyticsDataQualityRow.",
       "decidedBy": "codex-rule:K2 -> claude",
       "date": "2026-07-04",
       "status": "executed-WO-021"
@@ -3462,7 +3462,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: countdown beat pills show reveal-progress state, while cue pills are instructional cue cards with title/body copy and different token roles. REVIEW (claude, 2026-07-03): verified structurally different (beat pill with active states vs icon+two-line cue panel). Naming-pass note: CountdownCuePill is a card, not a pill \u2014 rename candidate.",
+      "rationale": "K5 concept mismatch: countdown beat pills show reveal-progress state, while cue pills are instructional cue cards with title/body copy and different token roles. REVIEW (claude, 2026-07-03): verified structurally different (beat pill with active states vs icon+two-line cue panel). Naming-pass note: CountdownCuePill is a card, not a pill — rename candidate.",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
       "status": "recorded"
@@ -3678,7 +3678,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K2 domain fork: attended-event catch tiles and host analytics event tiles consume different row models, actions, metrics, and role-specific copy. AUDIT (claude, 2026-07-03): K2 misapplied \u2014 bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): audit flip reverted \u2014 code read shows genuinely different widgets (swipes-hub tile with art block + catch/recap actions vs analytics list row with divider/selected state). Original K2 keep stands.",
+      "rationale": "K2 domain fork: attended-event catch tiles and host analytics event tiles consume different row models, actions, metrics, and role-specific copy. AUDIT (claude, 2026-07-03): K2 misapplied — bodies are structurally parallel presentation over parallel view-model types (same surfaces, tokens, layout; only typed field access/metric keys differ). Re-opened for the host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): audit flip reverted — code read shows genuinely different widgets (swipes-hub tile with art block + catch/recap actions vs analytics list row with divider/selected state). Original K2 keep stands.",
       "decidedBy": "codex-rule:K2 -> claude",
       "date": "2026-07-03",
       "status": "recorded"
@@ -3984,7 +3984,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: organizer identity headers and today-dashboard headers own different host contexts, actions, and information hierarchy. REVIEW (claude, 2026-07-03): different header compositions (organizer identity vs today greeting). WO-020 token review: exact 64.0 layout tokens exist only for unrelated club/chat surfaces, so HostOrganizerHeader keeps the raw value until a semantic host organizer avatar token is added. REVIEW (claude, 2026-07-04): semantic token decided \u2014 CatchLayout.avatarIdentityExtent = 64.0 lands in WO-022 and HostOrganizerHeader repoints to it.",
+      "rationale": "K5 concept mismatch: organizer identity headers and today-dashboard headers own different host contexts, actions, and information hierarchy. REVIEW (claude, 2026-07-03): different header compositions (organizer identity vs today greeting). WO-020 token review: exact 64.0 layout tokens exist only for unrelated club/chat surfaces, so HostOrganizerHeader keeps the raw value until a semantic host organizer avatar token is added. REVIEW (claude, 2026-07-04): semantic token decided — CatchLayout.avatarIdentityExtent = 64.0 lands in WO-022 and HostOrganizerHeader repoints to it.",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-04",
       "status": "recorded-token-escalation-WO-020"
@@ -4002,7 +4002,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: paper progress rails show passive companion-step progress while questionnaire rails are interactive progress controls. REVIEW (claude, 2026-07-03): deferred to next review batch \u2014 needs read. REVIEW (claude, 2026-07-04): confirmed different behavior contracts \u2014 passive segment fill vs interactive numbered-dot navigation with a progress bar. D1 in passing: QuestionProgressRail raw minHeight: 8 (WO-021).",
+      "rationale": "K5 concept mismatch: paper progress rails show passive companion-step progress while questionnaire rails are interactive progress controls. REVIEW (claude, 2026-07-03): deferred to next review batch — needs read. REVIEW (claude, 2026-07-04): confirmed different behavior contracts — passive segment fill vs interactive numbered-dot navigation with a progress bar. D1 in passing: QuestionProgressRail raw minHeight: 8 (WO-021).",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -4362,7 +4362,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K2 discriminator audit: host and user analytics report views are structurally parallel presentation kits over role-specific analytics view models; reopen for host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): stays escalated \u2014 analytics-kit v2 scope after WO-018 lands (report views compose the kit pieces; re-fingerprint then). REVIEW (claude, 2026-07-04): post-WO-018 re-read. The report views are now thin feature compositions of kit pieces with divergent panel sets (host: interactive event list + review/discovery panel + selection callbacks; user: tips panel + empty-state gate). Composition, not duplication. Residual kit gaps split into their own WO-021 decisions: data-quality panels (CatchAnalyticsDataQualityList) and HostAnalyticsInlineStat -> CatchStatColumn. Closes deferred-analytics-kit-v2.",
+      "rationale": "K2 discriminator audit: host and user analytics report views are structurally parallel presentation kits over role-specific analytics view models; reopen for host/user analytics-kit unification review. REVIEW (claude, 2026-07-03): stays escalated — analytics-kit v2 scope after WO-018 lands (report views compose the kit pieces; re-fingerprint then). REVIEW (claude, 2026-07-04): post-WO-018 re-read. The report views are now thin feature compositions of kit pieces with divergent panel sets (host: interactive event list + review/discovery panel + selection callbacks; user: tips panel + empty-state gate). Composition, not duplication. Residual kit gaps split into their own WO-021 decisions: data-quality panels (CatchAnalyticsDataQualityList) and HostAnalyticsInlineStat -> CatchStatColumn. Closes deferred-analytics-kit-v2.",
       "decidedBy": "codex-rule:K2-discriminator -> claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -4715,7 +4715,7 @@
           "action": "delete"
         }
       ],
-      "rationale": "Name-family review: CatchesHubEmptyState is a full screen-state body (header + empty state + explainer surface) \u2014 keep. SwipeEmptyState has 6 content-driven call sites, above the R2 bar \u2014 keep. HostSettingsClubsEmptyState is a single supporting Text with one call site \u2014 inline it (WO-022). EmptyRoster (event_recap_screen) is an R2 thin CatchEmptyState wrapper with one call site \u2014 inline it (WO-022).",
+      "rationale": "Name-family review: CatchesHubEmptyState is a full screen-state body (header + empty state + explainer surface) — keep. SwipeEmptyState has 6 content-driven call sites, above the R2 bar — keep. HostSettingsClubsEmptyState is a single supporting Text with one call site — inline it (WO-022). EmptyRoster (event_recap_screen) is an R2 thin CatchEmptyState wrapper with one call site — inline it (WO-022).",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "executed-WO-022"
@@ -4811,7 +4811,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review: distinct concepts \u2014 ticket-strip rail card, rich host identity card, map-preview card, adapter over EventActionCard (K1), lab scenario card (screen scope), and the live-reveal pair. The attendee/host reveal cards are a GENUINE K2 fork (attendee = reveal-gated view of own assignment with opt-out; host = round-control surface computing reveal sets/actions) already sharing RevealTicker and plan reveal APIs via the same part library. D1 found: EventDetailMapCard hand-rolls alphas 0.52/0.24 on grid/route painter colors \u2014 WO-022.",
+      "rationale": "Name-family review: distinct concepts — ticket-strip rail card, rich host identity card, map-preview card, adapter over EventActionCard (K1), lab scenario card (screen scope), and the live-reveal pair. The attendee/host reveal cards are a GENUINE K2 fork (attendee = reveal-gated view of own assignment with opt-out; host = round-control surface computing reveal sets/actions) already sharing RevealTicker and plan reveal APIs via the same part library. D1 found: EventDetailMapCard hand-rolls alphas 0.52/0.24 on grid/route painter colors — WO-022.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -4829,7 +4829,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review: K3 \u2014 CatchMutationErrorBanner already delegates to CatchErrorBanner.fromError and both render through CatchInlineMessageSurface; the mutation variant is a deliberate API layer for the hasError-gate pattern.",
+      "rationale": "Name-family review: K3 — CatchMutationErrorBanner already delegates to CatchErrorBanner.fromError and both render through CatchInlineMessageSurface; the mutation variant is a deliberate API layer for the hasError-gate pattern.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -4887,7 +4887,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review: the five EventPreview{Notes,Setup,Live,Companion,Report}Skeleton widgets are 10-line const R2 wrappers over EventSuccessSkeletonSurface(titleWidth/textLines/trailingCount) with single call sites \u2014 inline them (WO-022). The rest are per-screen skeleton compositions; parameterizing moves the same jitter to call sites (c010/c011 precedent).",
+      "rationale": "Name-family review: the five EventPreview{Notes,Setup,Live,Companion,Report}Skeleton widgets are 10-line const R2 wrappers over EventSuccessSkeletonSurface(titleWidth/textLines/trailingCount) with single call sites — inline them (WO-022). The rest are per-screen skeleton compositions; parameterizing moves the same jitter to call sites (c010/c011 precedent).",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "executed-WO-022"
@@ -4909,7 +4909,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review: three distinct concepts \u2014 a month/day date block (md radius, fixed extent; 'Pill' is a misnomer), the core uppercase mono status pill with soft/dark tones, and the Event Success percentage metric chip (21 usages, above the merge bar). LEXICON: reserve 'Pill' for pill-radius chips; EventCompactDatePill is a rename candidate at ratification.",
+      "rationale": "Name-family review: three distinct concepts — a month/day date block (md radius, fixed extent; 'Pill' is a misnomer), the core uppercase mono status pill with soft/dark tones, and the Event Success percentage metric chip (21 usages, above the merge bar). LEXICON: reserve 'Pill' for pill-radius chips; EventCompactDatePill is a rename candidate at ratification.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -4931,7 +4931,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review: EventHeroSurface is a 3-line widget alias for the catchHeroSurface() transition helper with one call site \u2014 inline and delete (WO-022). EventDetailTicketHeroSurface is K1 composition (conditional hero wrapper over the ticket surface). EventSuccessHeroSurface is an unrelated gradient shell. LEXICON: 'hero' means transition wrapper in events but prominent gradient shell in event_success \u2014 disambiguate at ratification.",
+      "rationale": "Name-family review: EventHeroSurface is a 3-line widget alias for the catchHeroSurface() transition helper with one call site — inline and delete (WO-022). EventDetailTicketHeroSurface is K1 composition (conditional hero wrapper over the ticket surface). EventSuccessHeroSurface is an unrelated gradient shell. LEXICON: 'hero' means transition wrapper in events but prominent gradient shell in event_success — disambiguate at ratification.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "executed-WO-022"
@@ -4961,7 +4961,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review: EventLocationMapLoadingBody composes EventMapLoadingBody (Positioned.fill) plus an overlay skeleton card \u2014 K1, dedupe already done. The rest are screen-level bodies with distinct route ownership.",
+      "rationale": "Name-family review: EventLocationMapLoadingBody composes EventMapLoadingBody (Positioned.fill) plus an overlay skeleton card — K1, dedupe already done. The rest are screen-level bodies with distinct route ownership.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -4983,7 +4983,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review: a host-state dispatcher, a CatchSection.divided composition, and a stateful tabbed Event Success section \u2014 different features and abstraction levels.",
+      "rationale": "Name-family review: a host-state dispatcher, a CatchSection.divided composition, and a stateful tabbed Event Success section — different features and abstraction levels.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -5061,7 +5061,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): byte-identical API/chrome but different type roles \u2014 CatchMonoLabel renders monoLabel, ExploreMonoLabel renders kicker. Distinct concepts per K5. LEXICON: ExploreMonoLabel's name lies about its style (rename candidate ExploreKickerLabel at ratification).",
+      "rationale": "Name-family review (batch 2): byte-identical API/chrome but different type roles — CatchMonoLabel renders monoLabel, ExploreMonoLabel renders kicker. Distinct concepts per K5. LEXICON: ExploreMonoLabel's name lies about its style (rename candidate ExploreKickerLabel at ratification).",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -5097,7 +5097,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): ClubHostAvatar is a pure 1:1 pass-through over CatchPersonAvatar (only adds a raw size-32 default) with 4 call sites \u2014 absorb (WO-023). HostAvatar keeps: distinct event-detail identity treatment (activity accent->deep gradient fallback + CatchGradedImage), a different visual contract from the initials avatar.",
+      "rationale": "Name-family review (batch 2): ClubHostAvatar is a pure 1:1 pass-through over CatchPersonAvatar (only adds a raw size-32 default) with 4 call sites — absorb (WO-023). HostAvatar keeps: distinct event-detail identity treatment (activity accent->deep gradient fallback + CatchGradedImage), a different visual contract from the initials avatar.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "executed-WO-023"
@@ -5115,7 +5115,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): EventFocusPageIndicator is an R2 wrapper (Center + CatchPageDots + semanticLabel) with one call site \u2014 inline (WO-023). HostEventToolsPageIndicator keeps: deliberate 'N of M + progress bar' treatment that scales to long host rails where dots do not (concept, not drift). D1: its raw minHeight: 6 goes to WO-023.",
+      "rationale": "Name-family review (batch 2): EventFocusPageIndicator is an R2 wrapper (Center + CatchPageDots + semanticLabel) with one call site — inline (WO-023). HostEventToolsPageIndicator keeps: deliberate 'N of M + progress bar' treatment that scales to long host rails where dots do not (concept, not drift). D1: its raw minHeight: 6 goes to WO-023.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "executed-WO-023"
@@ -5133,7 +5133,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): ManualQaToggleRow is a 1:1 pass-through over CatchField.toggle with 2 call sites \u2014 inline (WO-023). ModuleToggleRow keeps: rich selected-surface module toggle.",
+      "rationale": "Name-family review (batch 2): ManualQaToggleRow is a 1:1 pass-through over CatchField.toggle with 2 call sites — inline (WO-023). ModuleToggleRow keeps: rich selected-surface module toggle.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "executed-WO-023"
@@ -5159,7 +5159,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): HostEventAttendancePanel already delegates to HostEventParticipantsPanel(mode: live) \u2014 the R4 delegation exists; the named entry point is API ergonomics (K3). QR and club-management panels are unrelated features.",
+      "rationale": "Name-family review (batch 2): HostEventAttendancePanel already delegates to HostEventParticipantsPanel(mode: live) — the R4 delegation exists; the named entry point is API ergonomics (K3). QR and club-management panels are unrelated features.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -5195,7 +5195,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): K1 \u2014 the surface skeleton composes the photo skeleton; both are profile-surface loading mimics.",
+      "rationale": "Name-family review (batch 2): K1 — the surface skeleton composes the photo skeleton; both are profile-surface loading mimics.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -5309,7 +5309,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): the two inline-editor kits (profile: UpdateUserProfilePatch; host: UpdateClubPatch + clubId) both already delegate their chrome to core CatchField.actions \u2014 K3 \u2014 and fork on genuinely different domain plumbing (save repos, latest-profile rebase, hostDefaults derivation) plus per-field-type logic (slider vs text vs prompt vs options). KIT-WATCH: if a third inline-editor family appears, revisit with a patch-abstraction design.",
+      "rationale": "Name-family review (batch 2): the two inline-editor kits (profile: UpdateUserProfilePatch; host: UpdateClubPatch + clubId) both already delegate their chrome to core CatchField.actions — K3 — and fork on genuinely different domain plumbing (save repos, latest-profile rebase, hostDefaults derivation) plus per-field-type logic (slider vs text vs prompt vs options). KIT-WATCH: if a third inline-editor family appears, revisit with a patch-abstraction design.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -5389,7 +5389,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): DashboardErrorScreen dispatches to CatchErrorScaffold with dashboard fallback copy (K4-scale branching). ForceUpdateCheckErrorScreen renders in the pre-shell bootstrap context (Theme.textTheme, no Catch chrome) \u2014 a deliberate constraint. WO-023 D1 escalation recorded: raw maxWidth: 420 has no exact semantic token; nearest candidates are CatchLayout.frameworkErrorMaxWidth (460) and CatchLayout.maxContentWidth (600), so no code token was invented.",
+      "rationale": "Name-family review (batch 2): DashboardErrorScreen dispatches to CatchErrorScaffold with dashboard fallback copy (K4-scale branching). ForceUpdateCheckErrorScreen renders in the pre-shell bootstrap context (Theme.textTheme, no Catch chrome) — a deliberate constraint. WO-023 D1 escalation recorded: raw maxWidth: 420 has no exact semantic token; nearest candidates are CatchLayout.frameworkErrorMaxWidth (460) and CatchLayout.maxContentWidth (600), so no code token was invented.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded-WO-023-escalation"
@@ -5407,7 +5407,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): internal cells of the roster-board kit: a sealed-union action dispatcher vs a selectable tile \u2014 different slots of one kit.",
+      "rationale": "Name-family review (batch 2): internal cells of the roster-board kit: a sealed-union action dispatcher vs a selectable tile — different slots of one kit.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -5673,7 +5673,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): agenda list/tile vs event-detail mechanism list and photo-strip tile \u2014 different content contracts; stem-only match.",
+      "rationale": "Name-family review (batch 2): agenda list/tile vs event-detail mechanism list and photo-strip tile — different content contracts; stem-only match.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -5735,7 +5735,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): stepper +/- control, settings gear, analytics date-range picker, and export CTA \u2014 four unrelated button concepts; stem-only matches.",
+      "rationale": "Name-family review (batch 2): stepper +/- control, settings gear, analytics date-range picker, and export CTA — four unrelated button concepts; stem-only matches.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -5757,7 +5757,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): attendee-facing detail policy line vs policy-lab debug lines \u2014 same verdict as the parent EventDetailPolicySummary/EventPolicySummary K5 keep.",
+      "rationale": "Name-family review (batch 2): attendee-facing detail policy line vs policy-lab debug lines — same verdict as the parent EventDetailPolicySummary/EventPolicySummary K5 keep.",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -6075,6 +6075,295 @@
       "decidedBy": "user-review -> codex",
       "date": "2026-07-16",
       "status": "executed-bottom-action-drift"
+    },
+    {
+      "clusterId": "concept-boundary:option-group-tab-rail",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchOptionGroup",
+      "members": [
+        {
+          "name": "CatchOptionGroup",
+          "action": "keep"
+        },
+        {
+          "name": "CatchTabRail",
+          "action": "keep-as-adapter"
+        },
+        {
+          "name": "CatchTabControllerRail",
+          "action": "keep-as-adapter"
+        }
+      ],
+      "rationale": "Option selection is one concept. CatchTabRail only supplies PreferredSize placement and CatchTabControllerRail only binds a route-owned TabController, so both remain public adapters without becoming independent concepts.",
+      "decidedBy": "user-direction -> codex",
+      "date": "2026-07-18",
+      "status": "implemented-concept-classification"
+    },
+    {
+      "clusterId": "concept-boundary:notification-row-field-composition",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchField",
+      "members": [
+        {
+          "name": "CatchField",
+          "action": "keep"
+        },
+        {
+          "name": "NotificationRow",
+          "action": "keep-as-feature-composition"
+        }
+      ],
+      "rationale": "NotificationRow maps ActivityNotificationType, unread state, timestamps, and localized copy into CatchField.content. It is reusable feature behavior, not a second field concept.",
+      "decidedBy": "user-direction -> codex",
+      "date": "2026-07-18",
+      "status": "implemented-concept-classification"
+    },
+    {
+      "clusterId": "concept-discovery:host-broadcast-composer-namespace-collision",
+      "decision": "escalate-owner-review",
+      "members": [
+        {
+          "name": "HostBroadcastComposerSheet",
+          "action": "review",
+          "note": "lib/chats/presentation/inbox/chat_inbox_screen.dart: parameterless eventless blast sheet"
+        },
+        {
+          "name": "HostBroadcastComposerSheet",
+          "action": "review",
+          "note": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart: event-aware broadcast mutation"
+        }
+      ],
+      "rationale": "The generated collision is real, not a similarity false positive: two public classes claim the same deterministic namespace while owning different inputs and workflows. The host-broadcast-composer-namespace-collision family carries the bounded owner question; no rename or workflow merge is authorized before that decision.",
+      "decidedBy": "owner-review-requested -> codex",
+      "date": "2026-07-18",
+      "status": "review-required-concept-system"
+    },
+    {
+      "clusterId": "concept-discovery:skeleton-list-vs-hairline-list",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "CatchSkeletonList", "action": "keep"},
+        {"name": "HairlineList", "action": "keep"}
+      ],
+      "rationale": "K4 churn threshold: both emit short Columns, but CatchSkeletonList owns repeated loading cards while HairlineList owns caller-built content separated by dividers. A shared API would need content-builder, loading-shape, divider, height, and spacing knobs and would erase distinct intent.",
+      "decidedBy": "codex-rule:K4",
+      "date": "2026-07-18",
+      "status": "recorded-concept-reconciliation"
+    },
+    {
+      "clusterId": "concept-discovery:feature-skeleton-layouts-a",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "ClubHostLoadingSkeleton", "action": "keep"},
+        {"name": "EventDetailCompanionSkeleton", "action": "keep"},
+        {"name": "EventTypeBrowseSkeleton", "action": "keep"},
+        {"name": "HostChartSkeleton", "action": "keep"},
+        {"name": "HostSummarySkeleton", "action": "keep"}
+      ],
+      "rationale": "K3 already-sharing-internals: every member delegates visual placeholder rendering to CatchSkeleton while retaining feature-specific content geometry. They are loading compositions under the loading-family decision, not competing primitive concepts.",
+      "decidedBy": "codex-rule:K3",
+      "date": "2026-07-18",
+      "status": "recorded-concept-reconciliation"
+    },
+    {
+      "clusterId": "concept-discovery:cross-domain-info-surfaces",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "AfterglowBeatRow", "action": "keep"},
+        {"name": "CountdownCuePill", "action": "keep"},
+        {"name": "EmptyRosterMessage", "action": "keep"},
+        {"name": "PaperPrivacyCard", "action": "keep"},
+        {"name": "StagePrivacyLine", "action": "keep"},
+        {"name": "SwipeWindowBanner", "action": "keep"},
+        {"name": "WaitingRevealCue", "action": "keep"}
+      ],
+      "rationale": "K5 reconciliation of prior reviewed c002-afterglow-beat-row and c007-attendee-prompt-preview decisions: animation, empty roster, privacy, swipe-window, and reveal-state surfaces have different typography, tokens, state, and domain invariants. Their low parameter compatibility is structural coincidence.",
+      "decidedBy": "codex-rule:K5 -> prior-reviewed-ledger",
+      "date": "2026-07-18",
+      "status": "recorded-concept-reconciliation"
+    },
+    {
+      "clusterId": "concept-discovery:badge-wrap-adapters",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "ClubTagWrap", "action": "keep"},
+        {"name": "PeopleTokenRow", "action": "keep"},
+        {"name": "PodGroupSummary", "action": "keep"},
+        {"name": "VisiblePodAssignment", "action": "keep"}
+      ],
+      "rationale": "K2 plus K3: all members already share CatchBadge rendering, while each maps a different domain invariant—club tags, profile loading, assignment counts, or visible pod membership. The shared Wrap skeleton is not another widget concept.",
+      "decidedBy": "codex-rule:K2+K3",
+      "date": "2026-07-18",
+      "status": "recorded-concept-reconciliation"
+    },
+    {
+      "clusterId": "concept-discovery:feature-skeleton-layouts-b",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "EventDetailSocialSkeleton", "action": "keep"},
+        {"name": "HostAnalyticsMetricGridSkeleton", "action": "keep"},
+        {"name": "HostTabRailSkeleton", "action": "keep"}
+      ],
+      "rationale": "K3 already-sharing-internals: the members use CatchSkeleton for different social, analytics-grid, and tab-rail geometry. They are feature loading layouts, not duplicate primary concepts.",
+      "decidedBy": "codex-rule:K3",
+      "date": "2026-07-18",
+      "status": "recorded-concept-reconciliation"
+    },
+    {
+      "clusterId": "concept-discovery:profile-tab-live-vs-skeleton-sliver",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "ProfileTabSkeletonSliverBody", "action": "keep"},
+        {"name": "ProfileTabSliverBody", "action": "keep"}
+      ],
+      "rationale": "K4 reconciliation of prior c006-sliver-body: only the sliver padding/adapter/constraint shell overlaps. Live profile editing owns user and upload state; the loading body owns deterministic placeholder sections. Unification would require state and child-builder knobs without reducing concepts.",
+      "decidedBy": "codex-rule:K4 -> prior-reviewed-ledger",
+      "date": "2026-07-18",
+      "status": "recorded-concept-reconciliation"
+    },
+    {
+      "clusterId": "concept-discovery:icon-text-content-rows",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "PaperExpectationRow", "action": "keep"},
+        {"name": "PreviewLine", "action": "keep"},
+        {"name": "ProfileFacts", "action": "keep"}
+      ],
+      "rationale": "K5 reconciliation of prior c007-attendee-prompt-preview: paper expectations, companion preview lines, and profile fact sections use different typography, icon scale, section ownership, and data contracts. A row-like silhouette does not establish concept identity.",
+      "decidedBy": "codex-rule:K5 -> prior-reviewed-ledger",
+      "date": "2026-07-18",
+      "status": "recorded-concept-reconciliation"
+    },
+    {
+      "clusterId": "concept-discovery:swipe-reaction-controls",
+      "decision": "escalate-owner-review",
+      "members": [
+        {"name": "CatchesPassButton", "action": "review"},
+        {"name": "ReactionControlButton", "action": "review"}
+      ],
+      "rationale": "Both feature widgets independently implement semantic/tooltip ownership, disabled opacity, circular Material and InkWell chrome, pending spinners, and icon states. Their size, elevation, palette, localization, and stable test-key differences may be representable through CatchIconButton plus behavior adapters, but accepting that visual/API convergence belongs to the swipe-reaction-control-boundary owner review.",
+      "decidedBy": "owner-review-requested -> codex",
+      "date": "2026-07-18",
+      "status": "review-required-concept-system"
+    },
+    {
+      "clusterId": "concept-discovery:feature-skeleton-layouts-c",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "EventDetailHintSkeleton", "action": "keep"},
+        {"name": "EventDetailMechanismSkeleton", "action": "keep"},
+        {"name": "ProfileSurfaceFactsSkeleton", "action": "keep"}
+      ],
+      "rationale": "K3 already-sharing-internals: all three use CatchSkeleton primitives but preserve different hint, mechanism, and profile-facts geometry. Their feature composition names remain useful without creating concepts.",
+      "decidedBy": "codex-rule:K3",
+      "date": "2026-07-18",
+      "status": "recorded-concept-reconciliation"
+    },
+    {
+      "clusterId": "concept-discovery:host-report-metric-sections",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "HostFunnelSummary", "action": "keep"},
+        {"name": "HostReportSignalGrid", "action": "keep"}
+      ],
+      "rationale": "K5 reconciliation of prior c002-afterglow-beat-row: both deliberately compose CatchSection and CatchAnalyticsMetricGrid, while one owns event-funnel metrics and the other report-reliability signals. The shared renderer is already canonical; the classes are domain data adapters, not new concepts.",
+      "decidedBy": "codex-rule:K5 -> prior-reviewed-ledger",
+      "date": "2026-07-18",
+      "status": "recorded-concept-reconciliation"
+    },
+    {
+      "clusterId": "concept-discovery:conversation-vs-progress-row",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "ConversationCueRow", "action": "keep"},
+        {"name": "LiveStepRow", "action": "keep"}
+      ],
+      "rationale": "K5 and the approved progress-cues family: LiveStepRow consumes future/current/complete state and duration semantics; ConversationCueRow renders contextual discussion copy and a badge. They share only an icon/text row skeleton.",
+      "decidedBy": "codex-rule:K5 -> user-approved:progress-cues",
+      "date": "2026-07-18",
+      "status": "recorded-concept-reconciliation"
+    },
+    {
+      "clusterId": "concept-discovery:profile-hero-vs-photo-block",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "ProfileHeroWidget", "action": "keep"},
+        {"name": "ProfilePhotoBlock", "action": "keep"}
+      ],
+      "rationale": "K3 already-sharing-internals: both delegate image rendering to ProfilePhoto and reactions to ProfileReactionControls. The hero additionally owns scrim, identity copy, and route-leading composition while the content photo owns caption placement; public compositions remain distinct.",
+      "decidedBy": "codex-rule:K3",
+      "date": "2026-07-18",
+      "status": "recorded-concept-reconciliation"
+    },
+    {
+      "clusterId": "concept-discovery:prompt-vs-analytics-empty-state",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "EventSuccessPromptCard", "action": "keep"},
+        {"name": "UserAnalyticsEmptyState", "action": "keep"}
+      ],
+      "rationale": "K5 reconciliation of prior c002-afterglow-beat-row: a social-mission prompt and an analytics no-data state have different semantic roles, typography, token emphasis, and feature ownership. Preserving both compositions does not assert separate primitive concepts.",
+      "decidedBy": "codex-rule:K5 -> prior-reviewed-ledger",
+      "date": "2026-07-18",
+      "status": "recorded-concept-reconciliation"
+    },
+    {
+      "clusterId": "concept-discovery:hero-metric-vs-reveal-copy",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "HostTodayHeroMetric", "action": "keep"},
+        {"name": "RevealHostCopy", "action": "keep"}
+      ],
+      "rationale": "K5 concept mismatch: HostTodayHeroMetric is a value plus mono metric label; RevealHostCopy is narrative headline plus supporting body. Different typography contracts and semantic content make the two-text Column a structural false positive.",
+      "decidedBy": "codex-rule:K5",
+      "date": "2026-07-18",
+      "status": "recorded-concept-reconciliation"
+    },
+    {
+      "clusterId": "concept-boundary:loading-concept-decompression",
+      "decision": "split-contract-concepts",
+      "canonicalSymbol": "CatchSkeleton + CatchLoadingIndicator + CatchAsyncValueView",
+      "members": [
+        {"name": "CatchSkeleton", "action": "canonical-concept"},
+        {"name": "CatchSkeletonList", "action": "register-member", "note": "catch.skeleton"},
+        {"name": "CatchAsyncScreenLoading", "action": "register-member", "note": "catch.skeleton"},
+        {"name": "CatchAsyncSliverLoading", "action": "register-member", "note": "catch.skeleton"},
+        {"name": "CatchLoadingIndicator", "action": "canonical-concept"},
+        {"name": "CatchAsyncValueView", "action": "canonical-concept"},
+        {"name": "CatchAsyncValueSliver", "action": "register-member", "note": "catch.async_value"},
+        {"name": "CatchStartupLoadingScreen", "action": "register-composition"}
+      ],
+      "rationale": "Owner approval establishes three independent concepts based on semantic responsibility rather than the shared circumstance of waiting: content-shaped skeletons, indeterminate progress, and async data-state boundaries. The branded startup surface is a composition over the indicator. Stable Dart class names remain unchanged; the contract registry and formal previews now expose the actual concept boundaries.",
+      "decidedBy": "owner-approved -> codex",
+      "date": "2026-07-19",
+      "status": "recorded-concept-reconciliation"
+    },
+    {
+      "clusterId": "concept-boundary:host-broadcast-composer-namespace",
+      "decision": "qualify-distinct-compositions",
+      "canonicalSymbol": "HostBroadcastComposerSheet",
+      "members": [
+        {"name": "HostBroadcastComposerSheet", "action": "canonical"},
+        {"name": "ChatBlastComposerSheet", "action": "rename-and-keep"}
+      ],
+      "rationale": "The event-aware Hosts sheet owns the canonical host-broadcast workflow. The eventless Chats review surface remains useful but is explicitly named ChatBlastComposerSheet, eliminating the deterministic namespace collision without merging distinct workflow behavior.",
+      "decidedBy": "owner-approved -> codex",
+      "date": "2026-07-19",
+      "status": "recorded-concept-reconciliation"
+    },
+    {
+      "clusterId": "concept-boundary:swipe-reaction-icon-rendering",
+      "decision": "unify-renderer-keep-adapters",
+      "canonicalSymbol": "CatchIconButton",
+      "members": [
+        {"name": "CatchIconButton", "action": "canonical"},
+        {"name": "CatchesPassButton", "action": "unify", "note": "retain pass semantics and SwipeKeys.passButton"},
+        {"name": "ReactionControlButton", "action": "unify", "note": "retain reaction palette and pending semantics"}
+      ],
+      "rationale": "Both feature controls now delegate circular icon-action rendering to CatchIconButton while retaining behavior-bearing adapters. This removes duplicate renderer ownership without promoting pass or reaction behavior into a new core concept.",
+      "decidedBy": "owner-approved -> codex",
+      "date": "2026-07-19",
+      "status": "recorded-concept-reconciliation"
     }
   ]
 }

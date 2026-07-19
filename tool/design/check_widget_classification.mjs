@@ -55,7 +55,7 @@ function validateRoot(value) {
     failures.push("registry root must be an object");
     return;
   }
-  if (value.version !== 1) failures.push("registry.version must be 1");
+  if (value.version !== 2) failures.push("registry.version must be 2");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value.updated ?? "")) {
     failures.push("registry.updated must be YYYY-MM-DD");
   }
@@ -95,6 +95,7 @@ function validateEntries(widgets) {
     "routeThroughScreenState",
   ]);
   const forbiddenPattern = /private[-_ ]?helper|convert.*private|demote.*private/iu;
+  const validConceptRoles = new Set(["concept", "member", "composition", "screen", "unclassified"]);
 
   for (const widget of widgets) {
     const label = `${widget.file}:${widget.name}`;
@@ -103,6 +104,26 @@ function validateEntries(widgets) {
     registryKeys.add(key);
 
     if (!validRoles.has(widget.role)) failures.push(`${label}: invalid role '${widget.role}'`);
+    if (widget.classKind === "widget" && !validConceptRoles.has(widget.conceptRole)) {
+      failures.push(`${label}: widget requires a valid conceptRole`);
+    }
+    if (widget.classKind === "widget-state" && widget.conceptRole !== null) {
+      failures.push(`${label}: widget-state conceptRole must be null`);
+    }
+    if (widget.conceptRole === "concept" && widget.conceptId !== widget.contractId) {
+      failures.push(`${label}: primary conceptId must equal contractId`);
+    }
+    if (widget.conceptRole === "member") {
+      if (!widget.conceptId || widget.conceptId !== widget.parentConceptId) {
+        failures.push(`${label}: members require matching conceptId and parentConceptId`);
+      }
+      if (!widget.qualifier) failures.push(`${label}: members require qualifier`);
+    }
+    if (["composition", "screen", "unclassified"].includes(widget.conceptRole)) {
+      if (widget.conceptId !== null || widget.parentConceptId !== null || widget.qualifier !== null) {
+        failures.push(`${label}: ${widget.conceptRole} cannot claim concept identity`);
+      }
+    }
     if (forbiddenPattern.test(JSON.stringify(widget))) {
       failures.push(`${label}: private-helper remediation wording is forbidden`);
     }
@@ -145,6 +166,9 @@ function validateEntries(widgets) {
       if (contract && widget.canonicalFamily !== contract.parentId) {
         failures.push(`${label}: canonicalFamily must equal contract parent ${contract.parentId}`);
       }
+      if (contract && widget.conceptRole !== contract.governance?.conceptRole) {
+        failures.push(`${label}: conceptRole does not match component contract`);
+      }
       if (widget.catalogStatus !== "contracted") {
         failures.push(`${label}: contractId entries must use catalogStatus=contracted`);
       }
@@ -163,6 +187,7 @@ function collectContractEntries(components) {
       parentId: component.id,
       symbol: component.dart?.symbol,
       primary: true,
+      governance: component.governance,
     });
     for (const member of component.contract?.members ?? []) {
       entries.push({
@@ -170,6 +195,7 @@ function collectContractEntries(components) {
         parentId: component.id,
         symbol: member.symbol,
         primary: false,
+        governance: member.governance,
       });
     }
   }

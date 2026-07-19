@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/data/cursor_page.dart';
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -10,6 +12,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'match_repository.g.dart';
+
+class MatchPageCursor {
+  const MatchPageCursor({
+    this.user1Cursor,
+    this.user2Cursor,
+    this.user1Exhausted = false,
+    this.user2Exhausted = false,
+  });
+
+  final DocumentSnapshot<Match>? user1Cursor;
+  final DocumentSnapshot<Match>? user2Cursor;
+  final bool user1Exhausted;
+  final bool user2Exhausted;
+}
 
 class MatchRepository {
   const MatchRepository(this._db);
@@ -97,6 +113,7 @@ class MatchRepository {
         .where(field, isEqualTo: uid)
         .where('status', isEqualTo: 'active')
         .orderBy('createdAt', descending: true)
+        .limit(ReadLimitPolicy.historyPage)
         .snapshots()
         .map((snap) => snap.docs.map((d) => d.data()).toList()),
     context: const BackendErrorContext(
@@ -105,6 +122,88 @@ class MatchRepository {
       resource: _collectionPath,
     ),
   );
+
+  /// Fetches the next page across both rule-compatible participant queries.
+  /// The compound cursor remembers when either branch is exhausted so a later
+  /// page never restarts that branch from its beginning.
+  Future<CursorPage<Match, MatchPageCursor>> fetchMatchesForUserPage({
+    required String uid,
+    MatchPageCursor? startAfter,
+    int limit = ReadLimitPolicy.historyPage,
+  }) => withBackendErrorContext(
+    () async {
+      final cursor = startAfter ?? const MatchPageCursor();
+      final user1Future = cursor.user1Exhausted
+          ? Future.value(CursorPage.empty<Match, DocumentSnapshot<Match>>())
+          : _fetchActiveMatchesByParticipantFieldPage(
+              field: 'user1Id',
+              uid: uid,
+              startAfter: cursor.user1Cursor,
+              limit: limit,
+            );
+      final user2Future = cursor.user2Exhausted
+          ? Future.value(CursorPage.empty<Match, DocumentSnapshot<Match>>())
+          : _fetchActiveMatchesByParticipantFieldPage(
+              field: 'user2Id',
+              uid: uid,
+              startAfter: cursor.user2Cursor,
+              limit: limit,
+            );
+      final (user1Page, user2Page) = await (user1Future, user2Future).wait;
+
+      final byId = <String, Match>{
+        for (final match in [...user1Page.items, ...user2Page.items])
+          match.id: match,
+      };
+      final matches = byId.values.toList(growable: false)
+        ..sort((left, right) => right.createdAt.compareTo(left.createdAt));
+      final hasMore = user1Page.hasMore || user2Page.hasMore;
+      return CursorPage(
+        items: List.unmodifiable(matches),
+        nextCursor: hasMore
+            ? MatchPageCursor(
+                user1Cursor: user1Page.nextCursor,
+                user2Cursor: user2Page.nextCursor,
+                user1Exhausted: !user1Page.hasMore,
+                user2Exhausted: !user2Page.hasMore,
+              )
+            : null,
+        hasMore: hasMore,
+      );
+    },
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'fetch matches page',
+      resource: _collectionPath,
+    ),
+  );
+
+  Future<CursorPage<Match, DocumentSnapshot<Match>>>
+  _fetchActiveMatchesByParticipantFieldPage({
+    required String field,
+    required String uid,
+    required DocumentSnapshot<Match>? startAfter,
+    required int limit,
+  }) async {
+    final page = await _matchesRef
+        .where(field, isEqualTo: uid)
+        .where('status', isEqualTo: 'active')
+        .orderBy('createdAt', descending: true)
+        .fetchDocumentCursorPage(
+          limit: limit,
+          startAfter: startAfter,
+          errorContext: const BackendErrorContext(
+            service: BackendService.firestore,
+            action: 'fetch matches page',
+            resource: _collectionPath,
+          ),
+        );
+    return CursorPage(
+      items: List.unmodifiable(page.items.map((document) => document.data())),
+      nextCursor: page.nextCursor,
+      hasMore: page.hasMore,
+    );
+  }
 
   Stream<Match?> watchMatch({required String matchId}) =>
       withBackendErrorStream(

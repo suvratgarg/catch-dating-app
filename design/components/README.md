@@ -1,7 +1,7 @@
 ---
 doc_id: component_contract_registry
-version: 1.0.0
-updated: 2026-06-17
+version: 1.3.0
+updated: 2026-07-19
 owner: ui_elevation_initiative
 status: active
 ---
@@ -14,7 +14,10 @@ names the public component contract that Figma, Claude Design, future Code
 Connect templates, docs, and validators should agree on.
 
 The registry deliberately describes component APIs, states, slots, token
-dependencies, and handoff names. It does not attempt to generate Dart widget
+dependencies, handoff names, and concept identity. A top-level contract is not
+automatically an independent concept: `conceptRole` distinguishes a primary
+concept from a member, composition, or screen while preserving useful public
+handoff contracts. It does not attempt to generate Dart widget
 implementations from JSX, CSS, or Figma node geometry.
 
 ## Files
@@ -33,8 +36,31 @@ implementations from JSX, CSS, or Figma node geometry.
 4. Regenerate the design context pack with
    `node tool/design/build_context_pack.mjs` when the registry should be shared
    with Claude Design or another design tool.
+5. Regenerate `design/sync/catch.design-sync.json` so mapping state and contract
+   digests stay current.
 
-Figma mappings start as `unmapped`. Once a Figma library component exists, set
-`design.figma.status` to `mapped` and add its component URL. Code Connect
-templates should then live beside their owning Flutter primitive or in a
-dedicated Figma mapping folder, and the registry should point at that template.
+Use `Catch<ControlledNoun>` for new concepts. Prefer named constructors for
+variants, concept-qualified names for public members, and explicit adapter or
+recipe qualifiers when a standalone class solves a real API problem without
+creating another concept. Feature compositions normally keep feature names and
+do not count as concepts.
+
+Concept boundaries follow semantic responsibility, not a shared circumstance
+or visual shape. If one contract contains independently configurable behavior
+with different usage rules, split its concept identity even when stable Dart
+class names do not need to change. The loading family is the reference case:
+`catch.skeleton`, `catch.loading_indicator`, and `catch.async_value` are three
+concepts, while `catch.startup_loading_screen` is a composition over the
+indicator. Conversely, feature adapters that only retain semantics, pending
+state, or stable test keys should configure an existing renderer rather than
+claim another core concept.
+
+Figma mappings start as `unmapped`. The registry's `componentName` is the stable
+join key. A library-publish snapshot supplies the file key and node id, and the
+sync manifest generates the node URL; live mappings do not require hand-edited
+URLs. The old `status` and `componentUrl` fields remain accepted as declared
+fallback metadata and are treated as stale when no captured node proves them.
+Code Connect templates should live beside their owning Flutter primitive or in
+a dedicated Figma mapping folder, and the registry should point at that
+template. The executable sync contract, snapshot importer, and current
+live-capability receipt live in `design/sync/README.md`.

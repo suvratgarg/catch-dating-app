@@ -21,7 +21,7 @@ import '../clubs/clubs_test_helpers.dart' as club_helpers;
 import '../events/events_test_helpers.dart' as run_helpers;
 import '../test_pump_helpers.dart';
 
-class _FakeMatchRepository implements MatchRepository {
+class _FakeMatchRepository extends Fake implements MatchRepository {
   _FakeMatchRepository({this.match});
 
   Match? match;

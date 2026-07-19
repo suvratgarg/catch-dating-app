@@ -221,6 +221,7 @@
       "priority": "P1",
       "captureIds": [
         "member_event_discovery",
+        "explore_cover_contrast_floor",
         "explore_loading",
         "explore_club_source_error",
         "explore_feed_error",
@@ -235,7 +236,7 @@
         "explore_text_scale_2",
         "explore_reduced_motion"
       ],
-      "reason": "Explore discovery route captures now cover populated, signed-in joined clubs, loading, source error, feed error, offline, empty city, no-search, no-filter, active search, active filters, unclaimed host projection, text-scale, and reduced-motion states."
+      "reason": "Explore discovery route captures now cover populated, signed-in joined clubs, worst-case bright cover contrast, loading, source error, feed error, offline, empty city, no-search, no-filter, active search, active filters, unclaimed host projection, text-scale, and reduced-motion states."
     },
     {
       "routeId": "exploreMapScreen",

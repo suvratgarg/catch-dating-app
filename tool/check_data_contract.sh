@@ -44,6 +44,12 @@ node tool/demo/seed_demo_data.mjs --scenario smoke --json >/dev/null
 echo "==> Checking Firestore contract metadata"
 node tool/contracts/check_firestore_contract.mjs
 
+echo "==> Checking Firestore query/index parity"
+node tool/contracts/check_firestore_query_indexes.mjs
+
+echo "==> Checking Firestore read-limit policy"
+node tool/contracts/check_firestore_read_limits.mjs
+
 echo "==> Checking Storage contract metadata"
 node tool/contracts/check_storage_contract.mjs
 

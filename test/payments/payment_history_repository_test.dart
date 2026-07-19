@@ -115,6 +115,33 @@ void main() {
       },
     );
 
+    test('fetchPaymentsForUserPage advances without overlap', () async {
+      for (var day = 1; day <= 3; day += 1) {
+        await _seedPayment(
+          firestore,
+          buildPayment(id: 'payment-$day', createdAt: DateTime(2025, 1, day)),
+        );
+      }
+
+      final first = await repository.fetchPaymentsForUserPage(
+        userId: 'runner-1',
+        limit: 2,
+      );
+      final second = await repository.fetchPaymentsForUserPage(
+        userId: 'runner-1',
+        startAfter: first.nextCursor,
+        limit: 2,
+      );
+
+      expect(first.items.map((payment) => payment.id), [
+        'payment-3',
+        'payment-2',
+      ]);
+      expect(first.hasMore, isTrue);
+      expect(second.items.map((payment) => payment.id), ['payment-1']);
+      expect(second.hasMore, isFalse);
+    });
+
     test('watchPaymentsForUserProvider auto-disposes when unwatched', () async {
       final payment = buildPayment(id: 'payment-1', createdAt: DateTime(2025));
       final cancelCompleter = Completer<void>();

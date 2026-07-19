@@ -1,12 +1,59 @@
 ---
 doc_id: widget_consolidation_rules
-version: 1.0.0
+version: 1.1.0
 updated: 2026-07-12
 owner: widget_consolidation
 status: active
 ---
 
 # Widget Consolidation Rules
+
+## Concept identity and deterministic naming
+
+The component count is not the concept count. A public widget may be a primary
+concept, a member API, a feature composition, or a screen. The authoritative
+classification lives in `design/components/catch.components.json` under
+`governance.conceptRole`:
+
+- `concept`: one primary contract with `conceptId` equal to its contract id;
+- `member`: a variant, anatomy, adapter, recipe, or layout whose `conceptId`
+  and `parentConceptId` resolve to exactly one primary;
+- `composition`: reusable assembly or feature behavior with no independent
+  concept identity;
+- `screen`: route/screen ownership, excluded from primitive concept counts.
+
+Non-obvious roles require `decisionRef`. The checker derives collision keys;
+they are never hand-authored. A concept and all of its members deliberately
+collide on `conceptId`. Uncontracted widget names normalize by stripping
+`Catch`, `Widget`, and `View`, splitting camel case, and lowercasing. A
+collision creates a review candidate, not a merge instruction.
+
+New primary APIs use `Catch<ControlledNoun>`. Variations prefer named
+constructors or typed specs. Public members use `Catch<Concept><Part>`;
+placement/controller bindings use `Catch<Concept><Input>Adapter`; feature
+composition does not acquire a `Catch*` name merely to look reusable. Existing
+nonconforming public names remain source-compatible only with a stable naming
+exception; the rule is enforced prospectively rather than through a bulk rename.
+
+Generated similarity ids remain unstable. Reconcile evidence with
+`decisions.json` by the sorted, de-duplicated member-name set. The generated
+similarity registry reports exact-cluster and ranked-pair ledger coverage, so
+regeneration cannot orphan a decision merely because its cluster number moved.
+
+The calibration slice pins four outcomes:
+
+1. Error and person-row placement/layout APIs are members of one concept.
+2. `CatchMetaRow` is a concept while `StageSectionLabel` remains feature
+   composition; visual similarity does not erase the metadata/structure split.
+3. `NotificationRow` is feature behavior composed with `CatchField`, and
+   `CatchPrivacyBadge` is a typed recipe member of `catch.badge`.
+4. The currently compressed loading contract is a review family because
+   skeleton, indeterminate progress, async boundaries, and startup-screen
+   composition may represent multiple concepts.
+
+Run `npm run design:components:test`, `npm run design:components:check`,
+`npm run design:widgets:classify`, `npm run design:widgets:check`, and
+`node tool/design/build_widget_similarity.mjs --check` after identity changes.
 
 The actionable unit is a stable UI pattern family, not a generated similarity
 pair or cluster. `pattern_families.json` records the family intent, approved

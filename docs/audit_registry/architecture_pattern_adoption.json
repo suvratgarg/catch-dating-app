@@ -1,6 +1,6 @@
 {
-  "version": "1.5.42",
-  "updated": "2026-07-18",
+  "version": "1.5.44",
+  "updated": "2026-07-19",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
   "patterns": [
@@ -150,9 +150,9 @@
         },
         {
           "path": "lib/explore/presentation/explore_screen.dart",
-          "role": "adopter route screen: route-owned Explore feed/clubs/city/search/filter/source provider wave, body-state branch precedence, map launcher, mutation listener, empty-state callbacks, event/external navigation side effects, and provider-free chrome/body composition",
+          "role": "adopter route screen: route-owned Explore feed/clubs/city/search/filter/source provider wave, live filter-sheet count subscription, body-state branch precedence, map launcher, mutation listener, city-recovery callback, event/external navigation side effects, and provider-free chrome/body composition",
           "status": "aligned",
-          "lastReviewedPass": "2026-07-03-explore-screen-boundary"
+          "lastReviewedPass": "2026-07-18-explore-discovery-ux-w4"
         },
         {
           "path": "lib/explore/presentation/explore_map_screen.dart",
@@ -176,10 +176,10 @@
         },
         {
           "path": "lib/explore/presentation/widgets/explore_event_rows.dart",
-          "role": "provider-free Explore event row widgets and this-week recommendation section receiving explicit row state and route-owned event/external callbacks",
+          "role": "provider-free Explore event row widgets with explicit ineligible visual weight and this-week compatibility section receiving explicit row state and route-owned event/external callbacks",
           "providerFree": true,
           "status": "aligned",
-          "lastReviewedPass": "2026-07-03-explore-screen-boundary"
+          "lastReviewedPass": "2026-07-18-explore-discovery-ux-w4"
         },
         {
           "path": "lib/explore/presentation/widgets/explore_club_cards.dart",
@@ -197,10 +197,10 @@
         },
         {
           "path": "lib/explore/presentation/widgets/explore_filter_rail.dart",
-          "role": "provider-free Explore filter rail and sheet receiving explicit filter state, sheet state, and route-owned filter mutation callbacks",
+          "role": "provider-free Explore date strip, removable applied-filter row, and filter sheet receiving explicit date/filter/sheet state plus route-owned open and mutation callbacks",
           "providerFree": true,
           "status": "aligned",
-          "lastReviewedPass": "2026-07-03-explore-screen-boundary"
+          "lastReviewedPass": "2026-07-18-explore-discovery-ux-w4"
         },
         {
           "path": "lib/explore/presentation/widgets/explore_header.dart",
@@ -546,10 +546,10 @@
         },
         {
           "path": "lib/explore/presentation/explore_screen_state.dart",
-          "role": "provider-free ExploreFeedSectionState, ExploreCoverStoryState, ExploreChromeState, ExploreEventRowState, ExploreExternalEventRowState, ExploreClubCardState, ExploreMapLauncherState, ExploreCityPickerState, ExploreCityTriggerState, ExploreFilterRailState, ExploreFilterSheetState, ExploreCollapsedMapSummaryState, ExplorePeekRailState, ExploreMapEventTicketState, ExploreScreenBodyState, ExploreDiscoveryEmptyState, and ExploreEventsEmptyState adapters for mixed-feed card planning, cover-story/search-open/event-row/external-row/club-card/map-sheet/filter/chrome display labels, city-picker availability, map-count label, route body branch precedence, source-club/feed empty copy, clear-action cardinality, and broaden-time-filter intent",
+          "role": "provider-free ExploreFeedSectionState, ExploreCoverStoryState, ExploreChromeState, ExploreEventRowState, ExploreExternalEventRowState, ExploreClubCardState, ExploreMapLauncherState, ExploreCityPickerState, ExploreCityTriggerState, ExploreFilterRailState, ExploreDateStripState, ExploreFilterSheetState, ExploreCollapsedMapSummaryState, ExplorePeekRailState, ExploreMapEventTicketState, ExploreScreenBodyState, ExploreDiscoveryEmptyState, and ExploreEventsEmptyState adapters for mixed-feed card planning, cover-story/search-open/event-row/external-row/club-card/map-sheet/filter/chrome display labels, date supply density, live count copy, city-picker availability, map-count label, route body branch precedence, source-club/feed empty copy, clear-action cardinality, and broaden-time-filter intent",
           "providerFree": true,
           "status": "aligned",
-          "lastReviewedPass": "2026-07-03-explore-city-picker-provider-free"
+          "lastReviewedPass": "2026-07-18-explore-discovery-ux-w4"
         },
         {
           "path": "lib/explore/presentation/widgets/explore_city_picker.dart",
@@ -560,15 +560,15 @@
         },
         {
           "path": "test/explore/explore_view_model_test.dart",
-          "role": "provider-free ExploreFeedSectionState, ExploreCoverStoryState, ExploreChromeState, ExploreEventRowState, ExploreExternalEventRowState, ExploreClubCardState, ExploreMapLauncherState, ExploreCityPickerState, ExploreCityTriggerState, ExploreFilterRailState, ExploreFilterSheetState, ExploreCollapsedMapSummaryState, ExplorePeekRailState, ExploreMapEventTicketState, ExploreScreenBodyState, ExploreDiscoveryEmptyState, and ExploreEventsEmptyState behavior coverage",
+          "role": "provider-free Explore display-state coverage including date-strip density, live cursor-honest filter counts, event eligibility reason copy, and legacy weekly compatibility",
           "status": "aligned",
-          "lastReviewedPass": "2026-07-03-explore-city-picker-provider-free"
+          "lastReviewedPass": "2026-07-18-explore-discovery-ux-w4"
         },
         {
           "path": "test/explore/explore_widgets_test.dart",
-          "role": "ExploreScreen and ExploreEventsSection route-owned clear-search/filter/time-filter callback coverage for empty-state adapters",
+          "role": "ExploreScreen and ExploreEventsSection route-owned clear/search/filter/date/city callback coverage plus date strip, applied filter, live count, distance scope, and eligibility-demotion widget acceptance",
           "status": "aligned",
-          "lastReviewedPass": "2026-07-01-explore-events-empty-state-adapter"
+          "lastReviewedPass": "2026-07-18-explore-discovery-ux-w4"
         },
         {
           "path": "lib/auth/presentation/auth_presentation_state.dart",
@@ -1549,6 +1549,79 @@
         "node tool/agent/check_agent_readiness.mjs"
       ],
       "notes": "Only the consumer Profile About You section is promoted. CatchFormCustomRow keeps the profile height stepper feature-owned while routing accordion and save behavior through CatchFormRowScope."
+    },
+    {
+      "id": "ARCH-DATA-CURSOR-001",
+      "name": "Bounded cursor read window",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-data-cursor-001-bounded-cursor-read-window",
+      "prototypeFiles": [
+        "lib/core/data/cursor_page.dart",
+        "lib/core/data/read_limit_policy.dart",
+        "lib/explore/presentation/explore_discovery_window_controller.dart",
+        "test/core/cursor_page_test.dart",
+        "test/explore/explore_discovery_window_controller_test.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/events/data/event_discovery_repository.dart",
+          "role": "reference internal discovery page retaining a raw document cursor through exact availability and distance post-filtering",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-explore-screen-quality-pass"
+        },
+        {
+          "path": "lib/events/data/external_event_repository.dart",
+          "role": "reference external discovery page sharing the same bounded Firestore window contract",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-explore-screen-quality-pass"
+        },
+        {
+          "path": "lib/explore/presentation/explore_feed_view_model.dart",
+          "role": "consumer composition that preserves cursor exhaustiveness, load-more state, one shared date-strip query window and clock snapshot, per-date supply density, honest result count, and coordinate-complete map count",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-explore-discovery-ux-w4"
+        },
+        {
+          "path": "lib/chats/data/chat_repository.dart",
+          "role": "bounded newest-message stream plus explicit older-message cursor page",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-explore-screen-quality-pass"
+        },
+        {
+          "path": "lib/matches/data/match_repository.dart",
+          "role": "two-branch participant query with a compound cursor and branch-exhaustion state",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-explore-screen-quality-pass"
+        },
+        {
+          "path": "lib/reviews/data/reviews_repository.dart",
+          "role": "bounded club, event, and reviewer streams with document-cursor history pages",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-explore-screen-quality-pass"
+        },
+        {
+          "path": "lib/notifications/data/activity_notification_repository.dart",
+          "role": "bounded visible activity stream plus document-cursor history page",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-explore-screen-quality-pass"
+        },
+        {
+          "path": "lib/payments/data/payment_history_repository.dart",
+          "role": "bounded newest-payment stream plus document-cursor history page",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-18-explore-screen-quality-pass"
+        }
+      ],
+      "exceptions": [],
+      "requiredBackPropagation": "When cursor, page-size, post-filter, refresh, or count-truth semantics change, update the shared cursor helper, Explore reference controller, read-path contract, tracker adopters, focused tests, and read-limit/index scanners in the same pass.",
+      "requiredChecks": [
+        "node tool/run.mjs check contracts:firestore-read-limits",
+        "node tool/run.mjs check contracts:firestore-query-indexes",
+        "flutter test test/core/cursor_page_test.dart test/explore/explore_discovery_window_controller_test.dart test/events/event_discovery_repository_test.dart test/events/external_event_repository_test.dart",
+        "node tool/architecture/check_app_architecture_exhibits.mjs",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "notes": "The Explore query pair is the reference accumulated feed. Realtime first-page history adopters remain bounded; documented operational-set exceptions are capped but intentionally do not expose archive pagination."
     }
   ]
 }

@@ -1,18 +1,33 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import Ajv2020 from "ajv/dist/2020.js";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
+import {
+  conceptMetrics,
+  conceptQualifiers,
+  conceptRoles,
+  conceptTopologyProblems,
+} from "./component_concepts.mjs";
 
 const registryPath = fromRepo("design/components/catch.components.json");
 const tokenPath = fromRepo("design/tokens/catch.tokens.json");
+const schemaPath = fromRepo("design/components/catch.components.schema.json");
+const decisionsPath = fromRepo("docs/design_parity/widget_consolidation/decisions.json");
+const patternFamiliesPath = fromRepo("docs/design_parity/widget_consolidation/pattern_families.json");
 
 const registry = readJson(registryPath);
 const tokens = readJson(tokenPath);
+const schema = readJson(schemaPath);
+const decisionIds = new Set((readJson(decisionsPath).decisions ?? []).map((entry) => entry.clusterId));
+const patternFamilyIds = new Set((readJson(patternFamiliesPath).families ?? []).map((entry) => entry.id));
 const tokenRefs = collectTokenRefs(tokens);
 const failures = [];
 
 validateRoot(registry);
+validateSchema(registry);
 validateComponents(registry.components ?? []);
+failures.push(...conceptTopologyProblems(registry.components ?? []));
 
 if (failures.length > 0) {
   console.error("Component contract check failed:");
@@ -20,7 +35,10 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log(`Component contract check passed (${registry.components.length} components).`);
+const metrics = conceptMetrics(registry.components);
+console.log(
+  `Component contract check passed (${metrics.contractCount} contracts, ${metrics.conceptCount} concepts, ${metrics.memberCount} members, ${metrics.unclassifiedCount} unclassified).`,
+);
 
 function readJson(file) {
   try {
@@ -49,12 +67,21 @@ function collectTokenRefs(document) {
   return refs;
 }
 
+function validateSchema(value) {
+  const ajv = new Ajv2020({allErrors: true, strict: false});
+  const validate = ajv.compile(schema);
+  if (validate(value)) return;
+  for (const error of validate.errors ?? []) {
+    failures.push(`schema ${error.instancePath || "/"}: ${error.message}`);
+  }
+}
+
 function validateRoot(value) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     failures.push("registry root must be an object");
     return;
   }
-  if (value.version !== 2) failures.push("registry.version must be 2");
+  if (value.version !== 3) failures.push("registry.version must be 3");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value.updated ?? "")) {
     failures.push("registry.updated must be YYYY-MM-DD");
   }
@@ -72,6 +99,7 @@ function validateComponents(components) {
   const validCodeConnectStatuses = new Set(["planned", "mapped", "not-applicable"]);
   const memberIds = new Set();
   const memberSymbols = new Set();
+  const conceptPrimaries = new Map();
 
   for (const component of components) {
     const label = component?.id ?? "<missing id>";
@@ -110,7 +138,17 @@ function validateComponents(components) {
 
     validateContract(component.contract, component, label, {memberIds, memberSymbols});
     validateGovernance(component.governance, component, label);
+    validateConceptGovernance(component.governance, component, label, {conceptPrimaries});
     validateHandoff(component.handoff, label, ids, components);
+  }
+
+  for (const component of components) {
+    const governance = component.governance;
+    if (governance?.conceptRole === "member") {
+      if (!conceptPrimaries.has(governance.parentConceptId)) {
+        failures.push(`${component.id}: missing primary concept '${governance.parentConceptId}'`);
+      }
+    }
   }
 }
 
@@ -214,7 +252,87 @@ function validateContractMembers(members, component, label, {memberIds, memberSy
       failures.push(`${memberLabel}: member summary is required`);
     }
     validateUniqueArray(member.states, `${memberLabel}: states`);
+    validateMemberConceptGovernance(member.governance, component, memberLabel);
   }
+}
+
+function validateConceptGovernance(governance, component, label, {conceptPrimaries}) {
+  const role = governance?.conceptRole;
+  if (!conceptRoles.has(role)) {
+    failures.push(`${label}: invalid governance.conceptRole '${role}'`);
+    return;
+  }
+  if (role === "concept") {
+    if (governance.conceptId !== component.id) {
+      failures.push(`${label}: concept governance.conceptId must equal component id`);
+    }
+    if (governance.parentConceptId || governance.qualifier) {
+      failures.push(`${label}: primary concepts cannot declare parentConceptId or qualifier`);
+    }
+    if (conceptPrimaries.has(governance.conceptId)) {
+      failures.push(`${label}: duplicate primary for concept '${governance.conceptId}'`);
+    }
+    conceptPrimaries.set(governance.conceptId, label);
+    return;
+  }
+  if (role === "member") {
+    if (!governance.conceptId || governance.conceptId !== governance.parentConceptId) {
+      failures.push(`${label}: members require matching conceptId and parentConceptId`);
+    }
+    if (!conceptQualifiers.has(governance.qualifier)) {
+      failures.push(`${label}: members require a valid qualifier`);
+    }
+  } else if (governance.conceptId || governance.parentConceptId || governance.qualifier) {
+    failures.push(`${label}: ${role} entries cannot claim concept identity`);
+  }
+  if (!governance.decisionRef) failures.push(`${label}: ${role} entries require decisionRef`);
+  else validateDecisionRef(governance.decisionRef, label);
+}
+
+function validateMemberConceptGovernance(governance, component, label) {
+  if (!governance || !conceptRoles.has(governance.conceptRole)) {
+    failures.push(`${label}: valid governance.conceptRole is required`);
+    return;
+  }
+  const parent = component.governance;
+  if (governance.conceptRole === "member") {
+    if (parent.conceptRole !== "concept" && parent.conceptRole !== "member") {
+      failures.push(`${label}: member cannot be nested under ${parent.conceptRole}`);
+    }
+    if (
+      !governance.conceptId ||
+      governance.conceptId !== governance.parentConceptId ||
+      governance.conceptId !== parent.conceptId
+    ) {
+      failures.push(`${label}: member concept identity must match its owning concept`);
+    }
+    if (!conceptQualifiers.has(governance.qualifier)) {
+      failures.push(`${label}: member qualifier is required`);
+    }
+  } else if (governance.conceptId || governance.parentConceptId || governance.qualifier) {
+    failures.push(`${label}: ${governance.conceptRole} cannot claim concept identity`);
+  }
+  if (!governance.decisionRef) failures.push(`${label}: decisionRef is required`);
+  else validateDecisionRef(governance.decisionRef, label);
+}
+
+function validateDecisionRef(reference, label) {
+  if (reference.startsWith("pattern-family:")) {
+    const id = reference.slice("pattern-family:".length);
+    if (!patternFamilyIds.has(id)) failures.push(`${label}: unknown pattern family decisionRef '${reference}'`);
+    return;
+  }
+  if (reference.startsWith("ledger:")) {
+    const id = reference.slice("ledger:".length);
+    if (!decisionIds.has(id)) failures.push(`${label}: unknown ledger decisionRef '${reference}'`);
+    return;
+  }
+  if (reference.startsWith("concept-boundary:")) {
+    if (!decisionIds.has(reference)) failures.push(`${label}: unknown concept-boundary decisionRef '${reference}'`);
+    return;
+  }
+  if (/^(contract-family|contract-kind|contract-note|naming-exception):/u.test(reference)) return;
+  failures.push(`${label}: unsupported decisionRef '${reference}'`);
 }
 
 function validateGovernance(governance, component, label) {

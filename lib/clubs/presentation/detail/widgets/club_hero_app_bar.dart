@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_share_card.dart';
+import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
 import 'package:catch_dating_app/clubs/shared/catch_polaroid.dart';
 import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
@@ -29,7 +30,7 @@ enum ClubHeroPresentationMode { route, embeddedReadOnlyPreview }
 
 @visibleForTesting
 ClubHeroVariant clubHeroVariantFor(Club club) {
-  if (_clubHeroPrimaryPhotoUrl(club) != null) {
+  if (club.primaryClubPhotoUrl != null) {
     return ClubHeroVariant.polaroid;
   }
   if (_clubHeroLogoUrl(club) != null) {
@@ -73,7 +74,7 @@ class ClubHeroAppBar extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     final topInset = MediaQuery.paddingOf(context).top;
     final variant = clubHeroVariantFor(club);
-    final hasCover = _clubHeroPrimaryPhotoUrl(club) != null;
+    final hasCover = club.primaryClubPhotoUrl != null;
     final mediaHeight = _heroMediaHeightFor(width, hasCover: hasCover);
     final resolvedLocationLabel = locationLabel ?? _clubLocationLabel(club);
     final kickerLabel = _clubHeroKicker(club);
@@ -123,7 +124,7 @@ class ClubHeroAppBar extends StatelessWidget {
         ),
         style: CatchTextStyles.clubDisplay(
           context,
-          size: CatchLayout.clubDetailHeroCollapsedTitleSize,
+          step: CatchDisplayStep.m,
           height: CatchLayout.clubDetailHeroCollapsedTitleLineHeight,
           color: t.ink,
         ),
@@ -231,7 +232,7 @@ double _heroCaptionExtentFor(
       text: title,
       style: CatchTextStyles.clubDisplay(
         context,
-        size: CatchLayout.clubDetailHeroExpandedTitleSize,
+        step: CatchDisplayStep.l,
         height: CatchLayout.clubDetailHeroExpandedTitleLineHeight,
         color: t.ink,
       ),
@@ -300,8 +301,6 @@ class ClubHeroModule extends StatelessWidget {
   }
 
   Padding _buildPolaroid(BuildContext context) {
-    final photoUrl = _clubHeroPrimaryPhotoUrl(club);
-
     return Padding(
       key: const ValueKey('club-detail-hero-polaroid-padding'),
       padding: clubInteractionMediaPadding,
@@ -309,16 +308,13 @@ class ClubHeroModule extends StatelessWidget {
         key: const ValueKey('club-detail-hero-polaroid-frame'),
         height: mediaHeight + captionExtent,
         child: CatchPolaroid(
-          media: photoUrl == null
-              ? ClubPolaroidArtwork(club: club)
-              : CatchDetailHeroBackdrop(
-                  imageUrl: photoUrl,
-                  semanticLabel: context.l10n
-                      .clubsClubHeroAppBarSemanticlabelNameCoverPhoto(
-                        name: club.name,
-                      ),
-                  showScrim: false,
+          media: CatchClubCover(
+            club: club,
+            semanticLabel: context.l10n
+                .clubsClubHeroAppBarSemanticlabelNameCoverPhoto(
+                  name: club.name,
                 ),
+          ),
           caption: locationLabel,
           title: club.name,
           titleMaxLines: 2,
@@ -377,7 +373,7 @@ class ClubHeroModule extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: CatchTextStyles.clubDisplay(
                 context,
-                size: CatchLayout.clubDetailHeroExpandedTitleSize,
+                step: CatchDisplayStep.l,
                 height: CatchLayout.clubDetailHeroExpandedTitleLineHeight,
                 color: t.ink,
               ),
@@ -440,7 +436,7 @@ class ClubHeroModule extends StatelessWidget {
                 child: SizedBox(
                   height: mediaHeight,
                   child: CatchDetailHeroBackdrop(
-                    imageUrl: _clubHeroPrimaryPhotoUrl(club),
+                    imageUrl: club.primaryClubPhotoUrl,
                     semanticLabel: context.l10n
                         .clubsClubHeroAppBarSemanticlabelNameCoverPhoto(
                           name: club.name,
@@ -480,7 +476,7 @@ class ClubHeroModule extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: CatchTextStyles.clubDisplay(
                   context,
-                  size: CatchLayout.clubDetailHeroExpandedTitleSize,
+                  step: CatchDisplayStep.l,
                   height: CatchLayout.clubDetailHeroExpandedTitleLineHeight,
                   color: t.ink,
                 ),
@@ -513,9 +509,6 @@ class ClubHeroModule extends StatelessWidget {
     );
   }
 }
-
-String? _clubHeroPrimaryPhotoUrl(Club club) =>
-    _trimmedOrNull(club.primaryClubPhotoUrl);
 
 String? _clubHeroLogoUrl(Club club) => _trimmedOrNull(club.logoPhotoUrl);
 

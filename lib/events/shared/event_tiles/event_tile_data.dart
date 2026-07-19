@@ -64,12 +64,4 @@ class EventTileData {
   String get spotsLabel => capacity.spotsFractionLabel;
   String get capacityLabel => capacity.goingAvailabilityLabel();
   String get attendeeConfirmedLabel => capacity.attendeeConfirmedLabel;
-  String get priceLabel => event.priceInPaise <= 0
-      ? 'Free'
-      : event.effectiveEventPolicy.usesDemandPricing
-      ? 'From ${EventFormatters.priceInPaise(event.priceInPaise, currencyCode: event.currency)}'
-      : EventFormatters.priceInPaise(
-          event.priceInPaise,
-          currencyCode: event.currency,
-        );
 }

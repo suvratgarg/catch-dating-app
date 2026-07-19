@@ -1,0 +1,667 @@
+{
+  "schemaVersion": 1,
+  "audit": {
+    "base": "1e5f49423aeccacbda3f2494ea3f8b5153136046",
+    "ours": "d69a178ea99f96113d08dd83a0d30f46c3812f10",
+    "theirs": "152fbdfa4517d293a7a3a31bde90c6a86998b40d",
+    "merged": "0d0744d0a9989c58661059783272b3464e2fe548",
+    "changedPaths": 1112,
+    "discardedPaths": 130
+  },
+  "bothDivergedReview": {
+    "count": 80,
+    "resolution": "Semantically reviewed in the integrated branch: current widget contracts were retained, Explore-specific behavior was reapplied on those contracts, governed artifacts were regenerated, and focused Flutter, design-parity, data-contract, capture, and readiness gates passed."
+  },
+  "discardedFiles": [
+    {
+      "path": ".github/workflows/tools-ci.yml",
+      "category": "discarded-ours",
+      "reason": "The integrated Explore quality-pass and data-contract side was intentionally retained after review; the widget-tip blob on this path was superseded by the audited current resolution."
+    },
+    {
+      "path": "docs/audit_registry/doc_summaries.json",
+      "category": "discarded-ours",
+      "reason": "The integrated Explore quality-pass and data-contract side was intentionally retained after review; the widget-tip blob on this path was superseded by the audited current resolution."
+    },
+    {
+      "path": "docs/design_language.md",
+      "category": "discarded-ours",
+      "reason": "The integrated Explore quality-pass and data-contract side was intentionally retained after review; the widget-tip blob on this path was superseded by the audited current resolution."
+    },
+    {
+      "path": "firestore.indexes.json",
+      "category": "discarded-ours",
+      "reason": "The integrated Explore quality-pass and data-contract side was intentionally retained after review; the widget-tip blob on this path was superseded by the audited current resolution."
+    },
+    {
+      "path": "integration_test/support/app_shell_test_harness.dart",
+      "category": "discarded-ours",
+      "reason": "The integrated Explore quality-pass and data-contract side was intentionally retained after review; the widget-tip blob on this path was superseded by the audited current resolution."
+    },
+    {
+      "path": "lib/core/widgets/catch_count_pill.dart",
+      "category": "discarded-ours",
+      "reason": "The integrated Explore quality-pass and data-contract side was intentionally retained after review; the widget-tip blob on this path was superseded by the audited current resolution."
+    },
+    {
+      "path": "lib/events/data/event_repository.dart",
+      "category": "discarded-ours",
+      "reason": "The integrated Explore quality-pass and data-contract side was intentionally retained after review; the widget-tip blob on this path was superseded by the audited current resolution."
+    },
+    {
+      "path": "lib/events/shared/event_tiles/event_tile_data.dart",
+      "category": "discarded-ours",
+      "reason": "The integrated Explore quality-pass and data-contract side was intentionally retained after review; the widget-tip blob on this path was superseded by the audited current resolution."
+    },
+    {
+      "path": "lib/explore/data/explore_recommendations_repository.dart",
+      "category": "discarded-ours",
+      "reason": "The integrated Explore quality-pass and data-contract side was intentionally retained after review; the widget-tip blob on this path was superseded by the audited current resolution."
+    },
+    {
+      "path": "lib/explore/presentation/explore_view_model.dart",
+      "category": "discarded-ours",
+      "reason": "The integrated Explore quality-pass and data-contract side was intentionally retained after review; the widget-tip blob on this path was superseded by the audited current resolution."
+    },
+    {
+      "path": "lib/explore/presentation/widgets/explore_body.dart",
+      "category": "discarded-ours",
+      "reason": "The integrated Explore quality-pass and data-contract side was intentionally retained after review; the widget-tip blob on this path was superseded by the audited current resolution."
+    },
+    {
+      "path": "lib/explore/presentation/widgets/explore_filter_rail.dart",
+      "category": "discarded-ours",
+      "reason": "The integrated Explore quality-pass and data-contract side was intentionally retained after review; the widget-tip blob on this path was superseded by the audited current resolution."
+    },
+    {
+      "path": "lib/labs/design_fixtures/matches_chat_surface_fixtures.dart",
+      "category": "discarded-ours",
+      "reason": "The integrated Explore quality-pass and data-contract side was intentionally retained after review; the widget-tip blob on this path was superseded by the audited current resolution."
+    },
+    {
+      "path": "test/chats/chat_inbox_screen_test.dart",
+      "category": "discarded-ours",
+      "reason": "The integrated Explore quality-pass and data-contract side was intentionally retained after review; the widget-tip blob on this path was superseded by the audited current resolution."
+    },
+    {
+      "path": "test/chats/chat_screen_test.dart",
+      "category": "discarded-ours",
+      "reason": "The integrated Explore quality-pass and data-contract side was intentionally retained after review; the widget-tip blob on this path was superseded by the audited current resolution."
+    },
+    {
+      "path": "test/events/event_discovery_repository_test.dart",
+      "category": "discarded-ours",
+      "reason": "The integrated Explore quality-pass and data-contract side was intentionally retained after review; the widget-tip blob on this path was superseded by the audited current resolution."
+    },
+    {
+      "path": "test/events/external_event_repository_test.dart",
+      "category": "discarded-ours",
+      "reason": "The integrated Explore quality-pass and data-contract side was intentionally retained after review; the widget-tip blob on this path was superseded by the audited current resolution."
+    },
+    {
+      "path": "test/routing/router_widgets_test.dart",
+      "category": "discarded-ours",
+      "reason": "The integrated Explore quality-pass and data-contract side was intentionally retained after review; the widget-tip blob on this path was superseded by the audited current resolution."
+    },
+    {
+      "path": ".github/workflows/flutter-ci.yml",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "copy/structured_domain_copy_en.json",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "design/components/catch.components.schema.json",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "docs/audit_registry/consolidation_candidates.json",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "docs/audit_registry/definition_catalog.json",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "docs/audit_registry/flutter_field_surface_adoption.json",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "docs/audit_registry/flutter_field_surface_inventory.json",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "docs/audit_registry/l10n_key_usage.json",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "docs/audit_registry/test_inventory.json",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "docs/audit_registry/widget_consolidation_receipts.md",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "docs/design_parity/widget_consolidation/codex_worklog.md",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "docs/design_parity/widget_consolidation/consolidation_rules.md",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "docs/design_parity/widget_consolidation/decisions.json",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "docs/design_parity/widget_consolidation/pattern_families.json",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "docs/design_parity/widgetbook_coverage_report.json",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "docs/generated/provider_graph/README.md",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "docs/generated/provider_graph/provider_graph.html",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "docs/generated/provider_graph/provider_graph.json",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "docs/plans/catch_system_stretch_spec.md",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/chats/presentation/inbox/chat_inbox_screen.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/chats/presentation/inbox/widgets/chats_list.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/clubs/presentation/detail/widgets/club_host_section.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/core/forms/catch_form_descriptors.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/core/schema_contracts/generated/INDEX.md",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/core/widgets/catch_empty_state.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/core/widgets/catch_field.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/core/widgets/catch_field_edit.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/core/widgets/catch_field_lanes.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/core/widgets/catch_field_row_modes.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/core/widgets/catch_field_state.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/core/widgets/catch_section_layout.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/core/widgets/catch_top_bar.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/event_success/domain/event_success_defaults.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/event_success/domain/event_success_defaults.freezed.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/event_success/domain/event_success_defaults.g.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/event_success/domain/event_success_feature_state.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/event_success/domain/event_success_models.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/event_success/domain/event_success_structure.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_defaults_panel.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_feature_blocks.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_setup_body.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/events/presentation/calendar/calendar_screen.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/events/shared/event_tiles/event_tile_atoms.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/explore/presentation/widgets/explore_header.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/event_management/widgets/when_step.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/host_event_edit_screen_state.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/host_event_manage_screen.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/host_event_manage_screen_state.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_club_edit_helpers.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_events_list.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_inline_editors.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_today.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations_screen.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/widgets/host_loading_skeletons.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/hosts/presentation/widgets/host_team_management_section.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/onboarding/presentation/pages/gender_interest_page.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/onboarding/presentation/pages/running_prefs_page.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/payments/presentation/payment_history_screen.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/reviews/shared/reviews_section.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/safety/presentation/settings_screen.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/swipes/shared/profile_surface/profile_surface.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/user_profile/presentation/profile_screen.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "package.json",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "test/core/catch_top_bar_test.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "test/core/widgets/catch_field/control_test.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "test/core/widgets/catch_field/input_test.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "test/core/widgets/catch_field/lanes_test.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "test/core/widgets/catch_field/row_modes_test.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "test/core/widgets/catch_field/save_status_test.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "test/core/widgets/catch_field/toggle_test.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "test/core/widgets/catch_section_test.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "test/event_success/event_success_event_preview_test.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "test/event_success/event_success_lab_screen_test.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "test/event_success/event_success_manual_qa_screen_test.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "test/event_success/event_success_questionnaire_config_editor_test.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "test/hosts/edit_hosted_event_screen_test.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "test/hosts/host_create_event_screen_test.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "test/hosts/host_inbox_screen_test.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "test/hosts/host_operations_screen_test.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "test/onboarding/onboarding_widgets_test.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "test/payments/payment_confirmation_controller_test.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "test/profile/profile_widgets_test.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "tool/contracts/generate_schema_contracts.mjs",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "tool/copy/mobile_copy_allowlist.json",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "tool/design/build_widget_similarity.mjs",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "tool/design/check_component_contracts.mjs",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "tool/design/check_design_parity.mjs",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "tool/design/check_section_dividers.mjs",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "tool/design/check_section_dividers.test.mjs",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "tool/design/check_tab_root_scroll_contracts.mjs",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "tool/design/check_tab_root_scroll_contracts.test.mjs",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "tool/design/tab_root_scroll_contracts.json",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "tool/design/widgetbook_compare_server.mjs",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "widgetbook/lib/hosts/host_operations_use_cases.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "widgetbook/lib/matches/matches_chat_use_cases.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    },
+    {
+      "path": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
+      "category": "discarded-theirs",
+      "reason": "The d69 widget-system implementation is the newer canonical contract on this path; the pre-widget Explore-tip blob was intentionally not restored."
+    }
+  ]
+}

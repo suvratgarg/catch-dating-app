@@ -34,6 +34,7 @@ mixin _EventSuccessAssignmentRepository on _EventSuccessRepositoryCore {
     () => _assignmentsRef
         .where('eventId', isEqualTo: eventId)
         .where('moduleId', isEqualTo: moduleId)
+        .limit(ReadLimitPolicy.boundedWorkingSet)
         .snapshots()
         .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
     context: const BackendErrorContext(

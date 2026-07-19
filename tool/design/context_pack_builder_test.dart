@@ -79,8 +79,10 @@ from the live Flutter design system; do not edit generated files by hand.
 
 Use the design_system files to establish or refresh the organization-level design
 system. Use design_system/components.json as the allowed Catch primitive
-contract list for handoffs. Use gallery shots as per-screen taste anchors during
-a redesign chat.
+contract list for handoffs. For the live Badge + Field synchronization spike,
+use design_system/claude_design_handoff_request.json and return exactly its
+machine-checkable receipt contract. Use gallery shots as per-screen taste
+anchors during a redesign chat.
 
 Generated sources:
 - docs/design_language.md
@@ -844,9 +846,14 @@ final _styleRegistry = <_StyleEntry>[
     role: 'voice',
     parametric: true,
     samples: {
-      '24': (context) => CatchTextStyles.clubDisplay(context, size: 24),
-      '36': (context) => CatchTextStyles.clubDisplay(context, size: 36),
-      '48': (context) => CatchTextStyles.clubDisplay(context, size: 48),
+      's': (context) =>
+          CatchTextStyles.clubDisplay(context, step: CatchDisplayStep.s),
+      'm': (context) =>
+          CatchTextStyles.clubDisplay(context, step: CatchDisplayStep.m),
+      'l': (context) =>
+          CatchTextStyles.clubDisplay(context, step: CatchDisplayStep.l),
+      'xl': (context) =>
+          CatchTextStyles.clubDisplay(context, step: CatchDisplayStep.xl),
     },
   ),
   _StyleEntry(
@@ -854,9 +861,14 @@ final _styleRegistry = <_StyleEntry>[
     role: 'voice',
     parametric: true,
     samples: {
-      '24': (context) => CatchTextStyles.eventDisplay(context, size: 24),
-      '36': (context) => CatchTextStyles.eventDisplay(context, size: 36),
-      '48': (context) => CatchTextStyles.eventDisplay(context, size: 48),
+      's': (context) =>
+          CatchTextStyles.eventDisplay(context, step: CatchDisplayStep.s),
+      'm': (context) =>
+          CatchTextStyles.eventDisplay(context, step: CatchDisplayStep.m),
+      'l': (context) =>
+          CatchTextStyles.eventDisplay(context, step: CatchDisplayStep.l),
+      'xl': (context) =>
+          CatchTextStyles.eventDisplay(context, step: CatchDisplayStep.xl),
     },
   ),
   _StyleEntry.single('eventTitle', 'voice', CatchTextStyles.eventTitle),

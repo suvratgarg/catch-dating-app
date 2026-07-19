@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
-  "version": 2,
-  "updated": "2026-07-17",
+  "version": 3,
+  "updated": "2026-07-19",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -134,7 +134,14 @@
               "overflow-count",
               "standalone"
             ],
-            "file": "lib/core/widgets/catch_count_badge.dart"
+            "file": "lib/core/widgets/catch_count_badge.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.badge",
+              "parentConceptId": "catch.badge",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.badge"
+            }
           },
           {
             "id": "catch.badge.status_dot",
@@ -147,7 +154,14 @@
               "danger",
               "bordered"
             ],
-            "file": "lib/core/widgets/catch_status_dot.dart"
+            "file": "lib/core/widgets/catch_status_dot.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.badge",
+              "parentConceptId": "catch.badge",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.badge"
+            }
           },
           {
             "id": "catch.badge.inline_status",
@@ -161,7 +175,14 @@
               "live",
               "scaled"
             ],
-            "file": "lib/core/widgets/catch_inline_status.dart"
+            "file": "lib/core/widgets/catch_inline_status.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.badge",
+              "parentConceptId": "catch.badge",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.badge"
+            }
           }
         ]
       },
@@ -183,7 +204,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.badge"
       },
       "surfaces": {
         "flutter": "CatchBadge",
@@ -279,7 +302,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.ui_label"
       },
       "dart": {
         "symbol": "CatchSectionLabel",
@@ -445,7 +470,14 @@
               "disabled",
               "custom-color",
               "custom-padding"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.button",
+              "parentConceptId": "catch.button",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.button"
+            }
           },
           {
             "id": "catch.button.label",
@@ -456,7 +488,14 @@
               "label",
               "with-icon",
               "full-width"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.button",
+              "parentConceptId": "catch.button",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.button"
+            }
           },
           {
             "id": "catch.button.loading_dots",
@@ -466,7 +505,14 @@
             "states": [
               "primary",
               "light"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.button",
+              "parentConceptId": "catch.button",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.button"
+            }
           }
         ]
       },
@@ -487,7 +533,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.button"
       },
       "surfaces": {
         "flutter": "CatchButton",
@@ -695,7 +743,14 @@
               "selected",
               "disabled",
               "semantic-keys"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.chip",
+              "parentConceptId": "catch.chip",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.chip"
+            }
           }
         ]
       },
@@ -717,7 +772,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.chip"
       },
       "surfaces": {
         "flutter": "CatchChip",
@@ -858,7 +915,14 @@
               "stacked",
               "inline",
               "with-action"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.empty_state",
+              "parentConceptId": "catch.empty_state",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.empty_state"
+            }
           },
           {
             "id": "catch.empty_state.icon",
@@ -869,7 +933,14 @@
               "plain",
               "bubble",
               "sized"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.empty_state",
+              "parentConceptId": "catch.empty_state",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.empty_state"
+            }
           }
         ]
       },
@@ -892,7 +963,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.empty_state"
       },
       "surfaces": {
         "flutter": "CatchEmptyState",
@@ -1041,7 +1114,14 @@
               "default",
               "custom-icon",
               "compact"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.error_state",
+              "parentConceptId": "catch.error_state",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.error_state"
+            }
           },
           {
             "id": "catch.error_state.scaffold",
@@ -1052,7 +1132,14 @@
               "from-error",
               "with-retry",
               "custom-background"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.error_state",
+              "parentConceptId": "catch.error_state",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.error_state"
+            }
           },
           {
             "id": "catch.error_state.sliver",
@@ -1063,7 +1150,14 @@
               "box-adapter",
               "from-error",
               "with-retry"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.error_state",
+              "parentConceptId": "catch.error_state",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.error_state"
+            }
           },
           {
             "id": "catch.error_state.inline",
@@ -1074,7 +1168,14 @@
               "compact",
               "from-error",
               "with-retry"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.error_state",
+              "parentConceptId": "catch.error_state",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.error_state"
+            }
           },
           {
             "id": "catch.error_state.framework_error_view",
@@ -1086,7 +1187,14 @@
               "debug-details",
               "collapsed-details",
               "expanded-details"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.error_state",
+              "parentConceptId": "catch.error_state",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.error_state"
+            }
           },
           {
             "id": "catch.error_state.framework_error_debug_details",
@@ -1098,7 +1206,14 @@
               "expanded",
               "long-stack",
               "debug-only"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.error_state",
+              "parentConceptId": "catch.error_state",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.error_state"
+            }
           },
           {
             "id": "catch.error_state.error_body",
@@ -1110,7 +1225,14 @@
               "inline",
               "compact",
               "secondary-action"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.error_state",
+              "parentConceptId": "catch.error_state",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.error_state"
+            }
           }
         ]
       },
@@ -1134,7 +1256,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.error_state"
       },
       "surfaces": {
         "flutter": "CatchErrorState"
@@ -1227,7 +1351,14 @@
               "hidden",
               "visible",
               "with-retry"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.error_banner",
+              "parentConceptId": "catch.error_banner",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.error_banner"
+            }
           },
           {
             "id": "catch.error_banner.mutation_listener",
@@ -1238,7 +1369,14 @@
               "single-mutation",
               "pending-to-error",
               "child-pass-through"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.error_banner",
+              "parentConceptId": "catch.error_banner",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.error_banner"
+            }
           },
           {
             "id": "catch.error_banner.mutation_listeners",
@@ -1249,7 +1387,14 @@
               "multiple-mutations",
               "pending-to-error",
               "child-pass-through"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.error_banner",
+              "parentConceptId": "catch.error_banner",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.error_banner"
+            }
           }
         ]
       },
@@ -1273,7 +1418,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.error_banner"
       },
       "surfaces": {
         "flutter": "CatchErrorBanner"
@@ -1387,7 +1534,14 @@
               "persistent",
               "queued",
               "multiple"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.notice",
+              "parentConceptId": "catch.notice",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.notice"
+            }
           }
         ]
       },
@@ -1410,7 +1564,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.notice"
       },
       "surfaces": {
         "flutter": "CatchNotice"
@@ -1901,7 +2057,14 @@
               "flush-divided",
               "contained-edge-overlap"
             ],
-            "file": "lib/core/widgets/catch_field.dart"
+            "file": "lib/core/widgets/catch_field.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            }
           },
           {
             "id": "catch.field.form_field_label",
@@ -1914,7 +2077,14 @@
               "error",
               "large"
             ],
-            "file": "lib/core/widgets/catch_form_field_label.dart"
+            "file": "lib/core/widgets/catch_form_field_label.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.field"
+            }
           },
           {
             "id": "catch.field.row",
@@ -1927,7 +2097,14 @@
               "add",
               "tappable"
             ],
-            "file": "lib/core/widgets/catch_field.dart"
+            "file": "lib/core/widgets/catch_field.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            }
           },
           {
             "id": "catch.field.trailing",
@@ -1942,7 +2119,14 @@
               "valid",
               "custom"
             ],
-            "file": "lib/core/widgets/catch_field.dart"
+            "file": "lib/core/widgets/catch_field.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            }
           },
           {
             "id": "catch.field.content_row",
@@ -1954,7 +2138,14 @@
               "empty-body",
               "two-three-clamp"
             ],
-            "file": "lib/core/widgets/catch_field.dart"
+            "file": "lib/core/widgets/catch_field.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            }
           },
           {
             "id": "catch.field.support_row",
@@ -1965,7 +2156,14 @@
               "counter",
               "error"
             ],
-            "file": "lib/core/widgets/catch_field.dart"
+            "file": "lib/core/widgets/catch_field.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            }
           },
           {
             "id": "catch.field.explicit_save_control",
@@ -1976,7 +2174,14 @@
               "feedback",
               "secondary-action"
             ],
-            "file": "lib/core/widgets/catch_field.dart"
+            "file": "lib/core/widgets/catch_field.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.field"
+            }
           },
           {
             "id": "catch.field.action_bar",
@@ -1988,7 +2193,14 @@
               "leading",
               "wrapped"
             ],
-            "file": "lib/core/widgets/catch_field.dart"
+            "file": "lib/core/widgets/catch_field.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            }
           },
           {
             "id": "catch.field.disclosure_drawer",
@@ -1998,7 +2210,14 @@
               "closed",
               "open"
             ],
-            "file": "lib/core/widgets/catch_field.dart"
+            "file": "lib/core/widgets/catch_field.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            }
           },
           {
             "id": "catch.field.spinner",
@@ -2008,7 +2227,14 @@
               "field",
               "commit"
             ],
-            "file": "lib/core/widgets/catch_field.dart"
+            "file": "lib/core/widgets/catch_field.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            }
           },
           {
             "id": "catch.field.focus_outline",
@@ -2018,7 +2244,14 @@
               "hidden",
               "visible"
             ],
-            "file": "lib/core/widgets/catch_field.dart"
+            "file": "lib/core/widgets/catch_field.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            }
           },
           {
             "id": "catch.field.choice_control",
@@ -2031,7 +2264,14 @@
               "retain-final-selection",
               "wrapped"
             ],
-            "file": "lib/core/widgets/catch_field.dart"
+            "file": "lib/core/widgets/catch_field.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.field"
+            }
           },
           {
             "id": "catch.field.option_card_control",
@@ -2042,7 +2282,14 @@
               "unselected",
               "disabled"
             ],
-            "file": "lib/core/widgets/catch_field.dart"
+            "file": "lib/core/widgets/catch_field.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.field"
+            }
           },
           {
             "id": "catch.field.choice_chip",
@@ -2055,7 +2302,14 @@
               "pressed",
               "keyboard-focused"
             ],
-            "file": "lib/core/widgets/catch_field.dart"
+            "file": "lib/core/widgets/catch_field.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.field"
+            }
           },
           {
             "id": "catch.field.stepper",
@@ -2068,7 +2322,14 @@
               "repeating",
               "keyboard-focused"
             ],
-            "file": "lib/core/widgets/catch_field.dart"
+            "file": "lib/core/widgets/catch_field.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.field"
+            }
           },
           {
             "id": "catch.field.commit_button",
@@ -2081,7 +2342,14 @@
               "disabled",
               "keyboard-focused"
             ],
-            "file": "lib/core/widgets/catch_field.dart"
+            "file": "lib/core/widgets/catch_field.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.field"
+            }
           },
           {
             "id": "catch.field.toggle",
@@ -2094,7 +2362,14 @@
               "disabled",
               "keyboard-focused"
             ],
-            "file": "lib/core/widgets/catch_field.dart"
+            "file": "lib/core/widgets/catch_field.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.field"
+            }
           },
           {
             "id": "catch.field.repeat_button",
@@ -2107,7 +2382,14 @@
               "repeating",
               "keyboard-focused"
             ],
-            "file": "lib/core/widgets/catch_field.dart"
+            "file": "lib/core/widgets/catch_field.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.field"
+            }
           },
           {
             "id": "catch.field.form_field_label.optional_badge",
@@ -2117,7 +2399,14 @@
             "states": [
               "default",
               "error"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.field"
+            }
           }
         ]
       },
@@ -2156,7 +2445,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.field"
       },
       "dart": {
         "symbol": "CatchField",
@@ -2494,7 +2785,14 @@
               "heavy",
               "trailing",
               "custom-padding"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section",
+              "parentConceptId": "catch.section",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.section"
+            }
           },
           {
             "id": "catch.section.label",
@@ -2507,7 +2805,14 @@
               "accented",
               "truncated",
               "multi-line"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section",
+              "parentConceptId": "catch.section",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.section"
+            }
           },
           {
             "id": "catch.section.focus_surface",
@@ -2520,7 +2825,14 @@
               "error",
               "field-rows-child-active",
               "field-rows-explicit-focused"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section",
+              "parentConceptId": "catch.section",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.section"
+            }
           },
           {
             "id": "catch.section.day_header",
@@ -2533,7 +2845,14 @@
               "sticky",
               "animated-count",
               "delegate"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section",
+              "parentConceptId": "catch.section",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.section"
+            }
           },
           {
             "id": "catch.section.day_header_count",
@@ -2545,7 +2864,14 @@
               "double-digit",
               "color-override",
               "animated-change"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section",
+              "parentConceptId": "catch.section",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.section"
+            }
           },
           {
             "id": "catch.section.horizontal_rail",
@@ -2558,7 +2884,14 @@
               "with-divider",
               "without-divider",
               "intrinsic-height"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section",
+              "parentConceptId": "catch.section",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.section"
+            }
           },
           {
             "id": "catch.section.vertical_section",
@@ -2570,7 +2903,14 @@
               "custom-spacing",
               "empty",
               "many-items"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section",
+              "parentConceptId": "catch.section",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.section"
+            }
           }
         ]
       },
@@ -2598,7 +2938,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.section"
       },
       "dart": {
         "symbol": "CatchSection",
@@ -2616,11 +2958,11 @@
       }
     },
     {
-      "id": "catch.loading",
+      "id": "catch.skeleton",
       "name": "CatchSkeleton",
       "status": "active",
       "kind": "pattern",
-      "summary": "Canonical loading family for content-shaped skeletons, skeleton lists, compact spinners, and async screen/sliver loading placements.",
+      "summary": "Content-shaped placeholder concept for known loading layouts, including list and screen/sliver placement adapters.",
       "dart": {
         "symbol": "CatchSkeleton",
         "file": "lib/core/widgets/catch_skeleton.dart",
@@ -2636,7 +2978,7 @@
       "design": {
         "figma": {
           "status": "unmapped",
-          "componentName": "Catch/Loading",
+          "componentName": "Catch/Skeleton",
           "componentUrl": null
         },
         "codeConnect": {
@@ -2645,7 +2987,7 @@
           "template": null
         },
         "claude": {
-          "handoffName": "Loading",
+          "handoffName": "Skeleton",
           "allowed": true
         }
       },
@@ -2701,7 +3043,6 @@
           "circle",
           "custom",
           "list",
-          "spinner",
           "async-screen",
           "async-sliver"
         ],
@@ -2729,19 +3070,15 @@
           "CatchSkeleton.circle",
           "CatchSkeleton.custom",
           "CatchSkeletonList",
-          "CatchLoadingIndicator",
-          "CatchAsyncValueView",
-          "CatchAsyncValueSliver",
           "CatchAsyncScreenLoading",
           "CatchAsyncSliverLoading",
-          "CatchStartupLoadingScreen",
           "CatchScreenBody",
           "CatchSliverPageBody"
         ],
         "goldens": [],
         "members": [
           {
-            "id": "catch.loading.skeleton_list",
+            "id": "catch.skeleton.list",
             "symbol": "CatchSkeletonList",
             "file": "lib/core/widgets/catch_skeleton.dart",
             "summary": "Vertical list of content-shaped skeleton cards with standard spacing.",
@@ -2750,21 +3087,17 @@
               "custom-count",
               "custom-height",
               "custom-spacing"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.skeleton",
+              "parentConceptId": "catch.skeleton",
+              "qualifier": "layout",
+              "decisionRef": "pattern-family:loading-concept-decompression"
+            }
           },
           {
-            "id": "catch.loading.indicator",
-            "symbol": "CatchLoadingIndicator",
-            "file": "lib/core/widgets/catch_loading_indicator.dart",
-            "summary": "Compact centered spinner for unknown or tiny inline work where a content-shaped skeleton is not useful.",
-            "states": [
-              "default",
-              "small",
-              "tinted"
-            ]
-          },
-          {
-            "id": "catch.loading.async_screen",
+            "id": "catch.skeleton.async_screen",
             "symbol": "CatchAsyncScreenLoading",
             "file": "lib/core/widgets/catch_async_value_view.dart",
             "summary": "Screen-body placement adapter that composes CatchSkeletonList with CatchScreenBody.",
@@ -2774,10 +3107,17 @@
               "non-scroll",
               "custom-count",
               "custom-height"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.skeleton",
+              "parentConceptId": "catch.skeleton",
+              "qualifier": "adapter",
+              "decisionRef": "pattern-family:loading-concept-decompression"
+            }
           },
           {
-            "id": "catch.loading.async_sliver",
+            "id": "catch.skeleton.async_sliver",
             "symbol": "CatchAsyncSliverLoading",
             "file": "lib/core/widgets/catch_async_value_view.dart",
             "summary": "Sliver placement adapter that composes CatchSkeletonList with CatchSliverPageBody.",
@@ -2786,45 +3126,14 @@
               "custom-padding",
               "custom-count",
               "custom-height"
-            ]
-          },
-          {
-            "id": "catch.loading.async_value_view",
-            "symbol": "CatchAsyncValueView",
-            "file": "lib/core/widgets/catch_async_value_view.dart",
-            "summary": "Generic AsyncValue boundary for route and section bodies with branded loading and error defaults.",
-            "states": [
-              "data",
-              "loading",
-              "error",
-              "skip-loading-on-refresh",
-              "custom-builders"
-            ]
-          },
-          {
-            "id": "catch.loading.async_value_sliver",
-            "symbol": "CatchAsyncValueSliver",
-            "file": "lib/core/widgets/catch_async_value_view.dart",
-            "summary": "Sliver-native AsyncValue boundary for CustomScrollView bodies with branded loading and error defaults.",
-            "states": [
-              "data-sliver",
-              "loading-sliver",
-              "error-sliver",
-              "skip-loading-on-refresh",
-              "custom-builders"
-            ]
-          },
-          {
-            "id": "catch.loading.startup_screen",
-            "symbol": "CatchStartupLoadingScreen",
-            "file": "lib/core/widgets/catch_startup_loading_screen.dart",
-            "summary": "Branded app-start loading screen with Catch logo asset and bounded loading indicator.",
-            "states": [
-              "startup",
-              "safe-area",
-              "primary-fill",
-              "bounded-spinner"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.skeleton",
+              "parentConceptId": "catch.skeleton",
+              "qualifier": "adapter",
+              "decisionRef": "pattern-family:loading-concept-decompression"
+            }
           }
         ]
       },
@@ -2835,23 +3144,344 @@
         ],
         "notes": [
           "Prefer content-shaped skeletons when the eventual layout is known.",
-          "Use CatchLoadingIndicator only for tiny inline operations, platform/plugin waits, or unknown one-off work.",
-          "Async loading members are placement adapters over CatchSkeletonList and should not become separate visual systems."
+          "Async screen and sliver loading are placement adapters over CatchSkeletonList, not separate visual concepts."
         ]
       },
       "governance": {
         "role": "pattern",
-        "canonicalFamily": "catch.loading",
+        "canonicalFamily": "catch.skeleton",
         "publicApi": true,
         "stateOwnership": "display-state-only",
         "asyncOwnership": "display-state-only",
         "layoutOwnership": "slot-layout",
         "actionOwnership": "none",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.skeleton"
       },
       "surfaces": {
         "flutter": "CatchSkeleton"
+      }
+    },
+    {
+      "id": "catch.loading_indicator",
+      "name": "CatchLoadingIndicator",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Indeterminate progress indicator for unknown, compact, or one-off work where content-shaped placeholders are not useful.",
+      "dart": {
+        "symbol": "CatchLoadingIndicator",
+        "file": "lib/core/widgets/catch_loading_indicator.dart",
+        "constructors": [
+          "CatchLoadingIndicator"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/LoadingIndicator",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "LoadingIndicator",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "strokeWidth",
+            "type": "number",
+            "required": false,
+            "dartType": "double?"
+          },
+          {
+            "name": "color",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          }
+        ],
+        "states": [
+          "default",
+          "small",
+          "tinted"
+        ],
+        "slots": [],
+        "tokens": [],
+        "dartRoles": [
+          "CircularProgressIndicator",
+          "Center"
+        ],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Use for tiny inline operations, platform or plugin waits, and unknown one-off work.",
+          "Use catch.skeleton when the eventual content layout is known."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.loading_indicator",
+        "publicApi": true,
+        "stateOwnership": "display-state-only",
+        "asyncOwnership": "display-state-only",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.loading_indicator"
+      },
+      "surfaces": {
+        "flutter": "CatchLoadingIndicator"
+      }
+    },
+    {
+      "id": "catch.async_value",
+      "name": "CatchAsyncValueView",
+      "status": "active",
+      "kind": "pattern",
+      "summary": "AsyncValue data, loading, and error boundary with branded defaults for box and sliver layouts.",
+      "dart": {
+        "symbol": "CatchAsyncValueView",
+        "file": "lib/core/widgets/catch_async_value_view.dart",
+        "constructors": [
+          "CatchAsyncValueView"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/AsyncValue",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "AsyncValue",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "value",
+            "type": "object",
+            "required": true,
+            "dartType": "AsyncValue<T>"
+          },
+          {
+            "name": "builder",
+            "type": "callback",
+            "required": true,
+            "dartType": "CatchAsyncValueDataBuilder<T>"
+          },
+          {
+            "name": "loadingBuilder",
+            "type": "callback",
+            "required": false,
+            "dartType": "CatchAsyncValueLoadingBuilder?"
+          },
+          {
+            "name": "errorBuilder",
+            "type": "callback",
+            "required": false,
+            "dartType": "CatchAsyncValueErrorBuilder?"
+          },
+          {
+            "name": "onRetry",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "skipLoadingOnReload",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "skipLoadingOnRefresh",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool"
+          },
+          {
+            "name": "skipError",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          }
+        ],
+        "states": [
+          "data",
+          "loading",
+          "error",
+          "skip-loading-on-refresh",
+          "custom-builders"
+        ],
+        "slots": [
+          {
+            "name": "data",
+            "kind": "builder-output"
+          },
+          {
+            "name": "loading",
+            "kind": "builder-output"
+          },
+          {
+            "name": "error",
+            "kind": "builder-output"
+          }
+        ],
+        "tokens": [],
+        "dartRoles": [
+          "CatchAsyncValueView",
+          "CatchAsyncValueSliver",
+          "CatchLoadingIndicator",
+          "CatchErrorState",
+          "CatchSliverErrorState"
+        ],
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.async_value.sliver",
+            "symbol": "CatchAsyncValueSliver",
+            "file": "lib/core/widgets/catch_async_value_view.dart",
+            "summary": "Sliver-native AsyncValue boundary for CustomScrollView bodies with branded loading and error defaults.",
+            "states": [
+              "data-sliver",
+              "loading-sliver",
+              "error-sliver",
+              "skip-loading-on-refresh",
+              "custom-builders"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.async_value",
+              "parentConceptId": "catch.async_value",
+              "qualifier": "adapter",
+              "decisionRef": "pattern-family:loading-concept-decompression"
+            }
+          }
+        ]
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.loading_indicator",
+          "catch.error_state"
+        ],
+        "notes": [
+          "This concept owns async data-state switching, not a loading visual system.",
+          "Use the sliver member only inside sliver-native scroll layouts."
+        ]
+      },
+      "governance": {
+        "role": "pattern",
+        "canonicalFamily": "catch.async_value",
+        "publicApi": true,
+        "stateOwnership": "display-state-only",
+        "asyncOwnership": "display-state-only",
+        "layoutOwnership": "slot-layout",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.async_value"
+      },
+      "surfaces": {
+        "flutter": "CatchAsyncValueView"
+      }
+    },
+    {
+      "id": "catch.startup_loading_screen",
+      "name": "CatchStartupLoadingScreen",
+      "status": "active",
+      "kind": "composite",
+      "summary": "Branded app-start composition with the Catch logo and a delayed bounded loading indicator.",
+      "dart": {
+        "symbol": "CatchStartupLoadingScreen",
+        "file": "lib/core/widgets/catch_startup_loading_screen.dart",
+        "constructors": [
+          "CatchStartupLoadingScreen"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/StartupLoadingScreen",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "StartupLoadingScreen",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [],
+        "states": [
+          "startup",
+          "safe-area",
+          "primary-fill",
+          "bounded-spinner"
+        ],
+        "slots": [],
+        "tokens": [
+          "theme.light.color.bg",
+          "theme.light.color.ink"
+        ],
+        "dartRoles": [
+          "CatchStartupLoadingScreen.lightIconAsset",
+          "CatchStartupLoadingScreen.darkIconAsset",
+          "CatchLoadingIndicator",
+          "CatchMotion.startupIndicatorDelay"
+        ],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.loading_indicator"
+        ],
+        "notes": [
+          "This is a reusable branded startup composition, not a fourth loading concept.",
+          "The delayed indicator prevents brief startup work from flashing progress chrome."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.startup_loading_screen",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "composition",
+        "decisionRef": "pattern-family:loading-concept-decompression"
+      },
+      "surfaces": {
+        "flutter": "CatchStartupLoadingScreen"
       }
     },
     {
@@ -2939,6 +3569,9 @@
           "CatchTextStyles.kickerLg",
           "CatchTextStyles.fieldSectionKicker",
           "CatchTextStyles.monoLabel",
+          "CatchTextStyles.clubDisplay",
+          "CatchTextStyles.eventDisplay",
+          "CatchDisplayStep",
           "CatchMonoLabel"
         ],
         "goldens": [],
@@ -2952,7 +3585,14 @@
               "metadata",
               "tinted",
               "truncated"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.typography",
+              "parentConceptId": "catch.typography",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.typography"
+            }
           }
         ]
       },
@@ -2972,7 +3612,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.typography"
       },
       "surfaces": {
         "flutter": "CatchKicker"
@@ -3083,7 +3725,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.mini_bar_chart"
       },
       "surfaces": {
         "flutter": "CatchMiniBarChart"
@@ -3215,7 +3859,14 @@
               "with-icon",
               "mono-value",
               "surfaced"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.metric_strip",
+              "parentConceptId": "catch.metric_strip",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.metric_strip"
+            }
           },
           {
             "id": "catch.metric_strip.meta_dot_row",
@@ -3228,7 +3879,14 @@
               "with-trailing",
               "custom-color",
               "truncated"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.metric_strip",
+              "parentConceptId": "catch.metric_strip",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.metric_strip"
+            }
           },
           {
             "id": "catch.metric_strip.meta_entry_flow",
@@ -3241,7 +3899,14 @@
               "with-trailing",
               "wrapped",
               "truncated"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.metric_strip",
+              "parentConceptId": "catch.metric_strip",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.metric_strip"
+            }
           },
           {
             "id": "catch.metric_strip.meta_entry_view",
@@ -3254,7 +3919,14 @@
               "strong",
               "custom-color",
               "truncated"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.metric_strip",
+              "parentConceptId": "catch.metric_strip",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.metric_strip"
+            }
           },
           {
             "id": "catch.metric_strip.cell",
@@ -3266,7 +3938,14 @@
               "with-unit",
               "long-label",
               "color-overrides"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.metric_strip",
+              "parentConceptId": "catch.metric_strip",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.metric_strip"
+            }
           },
           {
             "id": "catch.metric_strip.divider",
@@ -3276,7 +3955,14 @@
             "states": [
               "default",
               "color-override"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.metric_strip",
+              "parentConceptId": "catch.metric_strip",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.metric_strip"
+            }
           }
         ]
       },
@@ -3298,7 +3984,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.metric_strip"
       },
       "surfaces": {
         "flutter": "CatchMetricStrip"
@@ -3452,7 +4140,14 @@
               "default",
               "wide",
               "tall"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.sheet",
+              "parentConceptId": "catch.sheet",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.sheet"
+            }
           },
           {
             "id": "catch.sheet.draggable_shell",
@@ -3465,7 +4160,14 @@
               "with-shadow",
               "without-shadow",
               "custom-radius"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.sheet",
+              "parentConceptId": "catch.sheet",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.sheet"
+            }
           },
           {
             "id": "catch.sheet.share_card",
@@ -3478,7 +4180,14 @@
               "share-error",
               "custom-width",
               "custom-copy"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.sheet",
+              "parentConceptId": "catch.sheet",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.sheet"
+            }
           },
           {
             "id": "catch.sheet.plain_header",
@@ -3489,7 +4198,14 @@
               "title-subtitle",
               "trailing",
               "title-only"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.sheet",
+              "parentConceptId": "catch.sheet",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.sheet"
+            }
           },
           {
             "id": "catch.sheet.branded_header",
@@ -3500,7 +4216,14 @@
               "title-subtitle",
               "trailing",
               "title-only"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.sheet",
+              "parentConceptId": "catch.sheet",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.sheet"
+            }
           }
         ]
       },
@@ -3526,7 +4249,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.sheet"
       },
       "surfaces": {
         "flutter": "CatchBottomSheetScaffold"
@@ -3666,7 +4391,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.icon_button"
       },
       "surfaces": {
         "flutter": "CatchIconButton",
@@ -3769,7 +4496,14 @@
               "danger",
               "with-icon",
               "with-sublabel"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.menu",
+              "parentConceptId": "catch.menu",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.menu"
+            }
           },
           {
             "id": "catch.menu.action_menu",
@@ -3782,7 +4516,14 @@
               "disabled",
               "selected-row",
               "danger-row"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.menu",
+              "parentConceptId": "catch.menu",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.menu"
+            }
           }
         ]
       },
@@ -3805,7 +4546,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.menu"
       },
       "surfaces": {
         "flutter": "CatchMenu"
@@ -3925,7 +4668,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.icon_tile"
       },
       "surfaces": {
         "flutter": "CatchIconTile"
@@ -4093,7 +4838,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.control_shell"
       },
       "surfaces": {
         "flutter": "CatchControlShell"
@@ -4232,7 +4979,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.number_stepper"
       },
       "surfaces": {
         "flutter": "CatchNumberStepper"
@@ -4335,7 +5084,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.option_card"
       },
       "surfaces": {
         "flutter": "CatchOptionCard",
@@ -4516,7 +5267,14 @@
               "danger",
               "with-action"
             ],
-            "file": "lib/core/widgets/src/catch_inline_message_surface.dart"
+            "file": "lib/core/widgets/src/catch_inline_message_surface.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.surface",
+              "parentConceptId": "catch.surface",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.surface"
+            }
           }
         ]
       },
@@ -4542,7 +5300,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.surface"
       },
       "surfaces": {
         "flutter": "CatchSurface"
@@ -4727,7 +5487,14 @@
               "subtitle",
               "leading",
               "actions"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.top_bar",
+              "parentConceptId": "catch.top_bar",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.top_bar"
+            }
           },
           {
             "id": "catch.top_bar.screen_top_bar",
@@ -4740,7 +5507,14 @@
               "with-search",
               "with-leading",
               "with-actions"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.top_bar",
+              "parentConceptId": "catch.top_bar",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.top_bar"
+            }
           },
           {
             "id": "catch.top_bar.collapsed_sliver_title",
@@ -4751,7 +5525,14 @@
               "mid-scroll",
               "expanded",
               "no-settings"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.top_bar",
+              "parentConceptId": "catch.top_bar",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.top_bar"
+            }
           },
           {
             "id": "catch.top_bar.icon_action",
@@ -4762,7 +5543,14 @@
               "disabled",
               "custom-color",
               "plain"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.top_bar",
+              "parentConceptId": "catch.top_bar",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.top_bar"
+            }
           },
           {
             "id": "catch.top_bar.menu_action",
@@ -4774,7 +5562,14 @@
               "selected-row",
               "disabled-row",
               "danger-row"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.top_bar",
+              "parentConceptId": "catch.top_bar",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.top_bar"
+            }
           },
           {
             "id": "catch.top_bar.tab_bar",
@@ -4785,7 +5580,14 @@
               "cupertino",
               "selected",
               "overflow-label"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.top_bar",
+              "parentConceptId": "catch.top_bar",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.top_bar"
+            }
           },
           {
             "id": "catch.top_bar.text_action",
@@ -4795,7 +5597,14 @@
               "default",
               "disabled",
               "custom-color"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.top_bar",
+              "parentConceptId": "catch.top_bar",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.top_bar"
+            }
           }
         ]
       },
@@ -4820,7 +5629,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.top_bar"
       },
       "surfaces": {
         "flutter": "CatchTopBar"
@@ -4907,7 +5718,12 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "member",
+        "conceptId": "catch.badge",
+        "parentConceptId": "catch.badge",
+        "qualifier": "recipe",
+        "decisionRef": "pattern-family:badge-status"
       },
       "surfaces": {
         "flutter": "CatchPrivacyBadge"
@@ -4990,7 +5806,14 @@
             "states": [
               "default",
               "accented"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.journey_steps",
+              "parentConceptId": "catch.journey_steps",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.journey_steps"
+            }
           }
         ]
       },
@@ -5010,7 +5833,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.journey_steps"
       },
       "surfaces": {
         "flutter": "CatchJourneySteps"
@@ -5126,7 +5951,14 @@
               "default",
               "no-gutter",
               "custom-padding"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
           },
           {
             "id": "catch.screen_body.page_body",
@@ -5136,7 +5968,14 @@
               "default",
               "custom-padding",
               "no-gutter"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
           },
           {
             "id": "catch.screen_body.sliver_page_body",
@@ -5146,7 +5985,14 @@
               "default",
               "custom-padding",
               "fill-remaining"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
           }
         ]
       },
@@ -5171,7 +6017,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.screen_body"
       },
       "surfaces": {
         "flutter": "CatchScreenBody"
@@ -5272,7 +6120,14 @@
               "detail-gutter",
               "section-owned-rhythm",
               "custom-gap"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section_stack",
+              "parentConceptId": "catch.section_stack",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.section_stack"
+            }
           },
           {
             "id": "catch.section_stack.section_list",
@@ -5283,7 +6138,14 @@
               "zero-gap",
               "custom-gap",
               "main-min"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section_stack",
+              "parentConceptId": "catch.section_stack",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.section_stack"
+            }
           }
         ]
       },
@@ -5309,7 +6171,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.section_stack"
       },
       "surfaces": {
         "flutter": "CatchSectionStack"
@@ -5409,7 +6273,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.roster_tiles"
       },
       "surfaces": {
         "flutter": "CatchRosterTiles"
@@ -5554,7 +6420,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.roster_row"
       },
       "surfaces": {
         "flutter": "CatchRosterRow"
@@ -5678,7 +6546,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.roster_table"
       },
       "surfaces": {
         "flutter": "CatchRosterTable"
@@ -5818,7 +6688,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.activity_art"
       },
       "surfaces": {
         "flutter": "CatchActivityArt"
@@ -5935,7 +6807,14 @@
               "default",
               "custom-icon",
               "custom-color"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.network_image",
+              "parentConceptId": "catch.network_image",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.network_image"
+            }
           }
         ]
       },
@@ -5955,7 +6834,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.network_image"
       },
       "surfaces": {
         "flutter": "CatchNetworkImage"
@@ -6042,7 +6923,14 @@
               "label",
               "tappable"
             ],
-            "file": "lib/core/widgets/catch_distance_ring.dart"
+            "file": "lib/core/widgets/catch_distance_ring.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.distance_ring",
+              "parentConceptId": "catch.distance_ring",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.distance_ring"
+            }
           }
         ]
       },
@@ -6061,7 +6949,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.distance_ring"
       },
       "surfaces": {
         "flutter": "CatchDistanceRing"
@@ -6175,7 +7065,14 @@
               "complete",
               "autofocus",
               "submitted"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.code_input",
+              "parentConceptId": "catch.code_input",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.code_input"
+            }
           },
           {
             "id": "catch.code_input.row",
@@ -6186,7 +7083,14 @@
               "empty",
               "partial",
               "custom-prefix"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.code_input",
+              "parentConceptId": "catch.code_input",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.code_input"
+            }
           },
           {
             "id": "catch.code_input.cell",
@@ -6197,7 +7101,14 @@
               "digit",
               "active-caret",
               "inactive-empty"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.code_input",
+              "parentConceptId": "catch.code_input",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.code_input"
+            }
           },
           {
             "id": "catch.code_input.caret",
@@ -6207,7 +7118,14 @@
             "states": [
               "default",
               "accent"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.code_input",
+              "parentConceptId": "catch.code_input",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.code_input"
+            }
           }
         ]
       },
@@ -6227,7 +7145,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.code_input"
       },
       "surfaces": {
         "flutter": "CatchCodeInput"
@@ -6354,7 +7274,14 @@
               "selected",
               "unselected",
               "mono"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.option_group",
+              "parentConceptId": "catch.option_group",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.option_group"
+            }
           }
         ]
       },
@@ -6376,7 +7303,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.option_group"
       },
       "surfaces": {
         "flutter": "CatchOptionGroup",
@@ -6468,7 +7397,14 @@
               "first-selected",
               "second-selected",
               "swipe-interpolated"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.option_group",
+              "parentConceptId": "catch.option_group",
+              "qualifier": "adapter",
+              "decisionRef": "concept-boundary:option-group-tab-rail"
+            }
           }
         ]
       },
@@ -6489,7 +7425,12 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "member",
+        "conceptId": "catch.option_group",
+        "parentConceptId": "catch.option_group",
+        "qualifier": "adapter",
+        "decisionRef": "concept-boundary:option-group-tab-rail"
       },
       "surfaces": {
         "flutter": "CatchTabRail"
@@ -6643,7 +7584,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.search_field"
       },
       "surfaces": {
         "flutter": "CatchSearchField",
@@ -6770,7 +7713,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.range_slider"
       },
       "surfaces": {
         "flutter": "CatchRangeSlider"
@@ -6868,7 +7813,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.toggle"
       },
       "surfaces": {
         "flutter": "CatchToggle"
@@ -6967,7 +7914,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.status_bar"
       },
       "surfaces": {
         "flutter": "CatchStatusBar"
@@ -7106,7 +8055,14 @@
               "partial",
               "complete"
             ],
-            "file": "lib/core/widgets/catch_step_progress.dart"
+            "file": "lib/core/widgets/catch_step_progress.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.step_header",
+              "parentConceptId": "catch.step_header",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.step_header"
+            }
           }
         ]
       },
@@ -7130,7 +8086,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.step_header"
       },
       "surfaces": {
         "flutter": "CatchStepHeader"
@@ -7226,7 +8184,14 @@
               "selected",
               "unselected",
               "badge"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.tab_bar",
+              "parentConceptId": "catch.tab_bar",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.tab_bar"
+            }
           },
           {
             "id": "catch.tab_bar.icon",
@@ -7237,7 +8202,14 @@
               "plain",
               "badge",
               "large-badge"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.tab_bar",
+              "parentConceptId": "catch.tab_bar",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.tab_bar"
+            }
           }
         ]
       },
@@ -7258,7 +8230,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.tab_bar"
       },
       "surfaces": {
         "flutter": "CatchTabBar"
@@ -7360,7 +8334,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "none",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.bottom_dock"
       },
       "surfaces": {
         "flutter": "CatchBottomDock"
@@ -7459,7 +8435,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.confirm_dialog"
       },
       "surfaces": {
         "flutter": "CatchConfirmDialog"
@@ -7576,7 +8554,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.form_dialog"
       },
       "surfaces": {
         "flutter": "CatchFormDialog"
@@ -7695,7 +8675,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.count_pill"
       },
       "surfaces": {
         "flutter": "CatchCountPill"
@@ -7809,7 +8791,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.page_dots"
       },
       "surfaces": {
         "flutter": "CatchPageDots"
@@ -7968,7 +8952,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "composition",
+        "decisionRef": "contract-note:product-composition-not-generic-bottom-bar"
       },
       "surfaces": {
         "flutter": "ClubDetailDock"
@@ -8136,184 +9122,12 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.cover_story"
       },
       "surfaces": {
         "flutter": "CatchCoverStory"
-      }
-    },
-    {
-      "id": "catch.cross_paths_card",
-      "name": "CatchCrossPathsCard",
-      "status": "active",
-      "kind": "composite",
-      "summary": "Explore person-in-feed card with postcard/photo variants, activity-gradient fallback, quote, attribution, CTA, and like action.",
-      "dart": {
-        "symbol": "CatchCrossPathsCard",
-        "file": "lib/explore/presentation/widgets/catch_cross_paths_card.dart",
-        "constructors": [
-          "CatchCrossPathsCard"
-        ]
-      },
-      "design": {
-        "figma": {
-          "status": "unmapped",
-          "componentName": "Catch/CrossPathsCard",
-          "componentUrl": null
-        },
-        "codeConnect": {
-          "status": "planned",
-          "snippetLanguage": "dart",
-          "template": null
-        },
-        "claude": {
-          "handoffName": "CrossPathsCard",
-          "allowed": true
-        }
-      },
-      "contract": {
-        "props": [
-          {
-            "name": "activityKind",
-            "type": "enum",
-            "required": true,
-            "dartType": "ActivityKind",
-            "values": [
-              "socialRun",
-              "running",
-              "walking",
-              "pickleball",
-              "padel",
-              "tennis",
-              "badminton",
-              "cycling",
-              "spinClass",
-              "yoga",
-              "strengthTraining",
-              "pubQuiz",
-              "barCrawl",
-              "dinner",
-              "singlesMixer",
-              "openActivity"
-            ]
-          },
-          {
-            "name": "quote",
-            "type": "string",
-            "required": true,
-            "dartType": "String"
-          },
-          {
-            "name": "displayName",
-            "type": "string",
-            "required": true,
-            "dartType": "String"
-          },
-          {
-            "name": "variant",
-            "type": "enum",
-            "required": false,
-            "default": "postcard",
-            "dartType": "CatchCrossPathsVariant",
-            "values": [
-              "postcard",
-              "photo"
-            ]
-          },
-          {
-            "name": "kicker",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "age",
-            "type": "number",
-            "required": false,
-            "dartType": "int?"
-          },
-          {
-            "name": "meta",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "photoUrl",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "cta",
-            "type": "string",
-            "required": false,
-            "default": "Join her there",
-            "dartType": "String"
-          },
-          {
-            "name": "onJoin",
-            "type": "callback",
-            "required": false,
-            "dartType": "VoidCallback?"
-          },
-          {
-            "name": "onLike",
-            "type": "callback",
-            "required": false,
-            "dartType": "VoidCallback?"
-          }
-        ],
-        "states": [
-          "postcard",
-          "photo-row",
-          "no-photo-fallback",
-          "with-like",
-          "long-copy"
-        ],
-        "slots": [],
-        "tokens": [
-          "space.s2",
-          "space.s3",
-          "space.s4",
-          "space.s5",
-          "radius.md",
-          "radius.lg",
-          "theme.light.color.bg",
-          "theme.light.color.ink",
-          "theme.light.color.line",
-          "theme.light.color.surface"
-        ],
-        "dartRoles": [
-          "CatchCrossPathsVariant",
-          "CatchButton",
-          "CatchGradedImage",
-          "CatchTextStyles.profileAnswer"
-        ],
-        "goldens": []
-      },
-      "handoff": {
-        "allowedChildren": [
-          "catch.button",
-          "catch.icon_button"
-        ],
-        "notes": [
-          "Product composition for Explore; validate a production call site before making broader feed-row claims."
-        ]
-      },
-      "governance": {
-        "role": "composition",
-        "canonicalFamily": "catch.cross_paths_card",
-        "publicApi": true,
-        "stateOwnership": "slot-state-only",
-        "asyncOwnership": "none",
-        "layoutOwnership": "slot-layout",
-        "actionOwnership": "callbacks-only",
-        "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
-      },
-      "surfaces": {
-        "flutter": "CatchCrossPathsCard"
       }
     },
     {
@@ -8490,7 +9304,14 @@
               "overflow-count",
               "empty",
               "square"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.person_avatar",
+              "parentConceptId": "catch.person_avatar",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.person_avatar"
+            }
           },
           {
             "id": "catch.person_avatar.shell",
@@ -8500,7 +9321,14 @@
             "states": [
               "circle",
               "square"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.person_avatar",
+              "parentConceptId": "catch.person_avatar",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.person_avatar"
+            }
           },
           {
             "id": "catch.person_avatar.obscured_content",
@@ -8509,7 +9337,14 @@
             "summary": "Direct obscured-avatar content renderer.",
             "states": [
               "default"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.person_avatar",
+              "parentConceptId": "catch.person_avatar",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.person_avatar"
+            }
           },
           {
             "id": "catch.person_avatar.veiled",
@@ -8519,7 +9354,14 @@
             "states": [
               "run",
               "dinner"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.person_avatar",
+              "parentConceptId": "catch.person_avatar",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.person_avatar"
+            }
           },
           {
             "id": "catch.person_avatar.activity_initials",
@@ -8530,7 +9372,14 @@
               "initials",
               "dim",
               "empty"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.person_avatar",
+              "parentConceptId": "catch.person_avatar",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.person_avatar"
+            }
           },
           {
             "id": "catch.person_avatar.initials",
@@ -8541,7 +9390,14 @@
               "derived",
               "explicit",
               "empty"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.person_avatar",
+              "parentConceptId": "catch.person_avatar",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.person_avatar"
+            }
           }
         ]
       },
@@ -8561,7 +9417,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.person_avatar"
       },
       "surfaces": {
         "flutter": "CatchPersonAvatar"
@@ -8652,7 +9510,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.row_press_surface"
       },
       "surfaces": {
         "flutter": "CatchRowPressSurface"
@@ -8750,7 +9610,14 @@
               "typing",
               "unread",
               "long-copy"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.person_row",
+              "parentConceptId": "catch.person_row",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.person_row"
+            }
           },
           {
             "id": "catch.person_row.chat_trailing",
@@ -8761,7 +9628,14 @@
               "timestamp",
               "unread",
               "new-dot"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.person_row",
+              "parentConceptId": "catch.person_row",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.person_row"
+            }
           },
           {
             "id": "catch.person_row.unread_count_pill",
@@ -8772,7 +9646,14 @@
               "single",
               "many",
               "capped"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.person_row",
+              "parentConceptId": "catch.person_row",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.person_row"
+            }
           },
           {
             "id": "catch.person_row.new_match_dot",
@@ -8781,7 +9662,14 @@
             "summary": "Direct new-match dot renderer used by chat rows.",
             "states": [
               "default"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.person_row",
+              "parentConceptId": "catch.person_row",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.person_row"
+            }
           },
           {
             "id": "catch.person_row.roster_layout",
@@ -8792,7 +9680,14 @@
               "meta",
               "context",
               "long-copy"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.person_row",
+              "parentConceptId": "catch.person_row",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.person_row"
+            }
           }
         ]
       },
@@ -8814,7 +9709,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.person_row"
       },
       "surfaces": {
         "flutter": "CatchPersonRow"
@@ -8983,7 +9880,14 @@
               "bottom-scrim",
               "full-scrim",
               "no-scrim"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.event_card",
+              "parentConceptId": "catch.event_card",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.event_card"
+            }
           },
           {
             "id": "catch.event_card.activity_backdrop",
@@ -8994,7 +9898,14 @@
               "dense",
               "full-artwork",
               "activity-pigment"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.event_card",
+              "parentConceptId": "catch.event_card",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.event_card"
+            }
           },
           {
             "id": "catch.event_card.activity_stamp",
@@ -9005,7 +9916,14 @@
               "default",
               "custom-size",
               "activity-variants"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.event_card",
+              "parentConceptId": "catch.event_card",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.event_card"
+            }
           },
           {
             "id": "catch.event_card.perforated_divider",
@@ -9014,7 +9932,14 @@
             "summary": "Ticket-card divider member for the event ticket metaphor.",
             "states": [
               "default"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.event_card",
+              "parentConceptId": "catch.event_card",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.event_card"
+            }
           },
           {
             "id": "catch.event_card.clock_mark",
@@ -9024,7 +9949,14 @@
             "states": [
               "default",
               "accented"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.event_card",
+              "parentConceptId": "catch.event_card",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.event_card"
+            }
           },
           {
             "id": "catch.event_card.status_pill",
@@ -9035,7 +9967,14 @@
               "light",
               "dark",
               "long-copy"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.event_card",
+              "parentConceptId": "catch.event_card",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.event_card"
+            }
           },
           {
             "id": "catch.event_card.date_rail",
@@ -9049,7 +9988,33 @@
               "strip-middle",
               "strip-last",
               "text-scale"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.event_card",
+              "parentConceptId": "catch.event_card",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.event_card"
+            }
+          },
+          {
+            "id": "catch.event_card.ticket_stub",
+            "symbol": "EventTicketStub",
+            "file": "lib/events/shared/event_tiles/event_date_rail_card.dart",
+            "summary": "Shared responsive ticket decision row for time, capacity, status, and trailing price copy.",
+            "states": [
+              "inline",
+              "stacked",
+              "with-status",
+              "long-price"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.event_card",
+              "parentConceptId": "catch.event_card",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.event_card"
+            }
           },
           {
             "id": "catch.event_card.event_thumbnail.activity_fallback",
@@ -9060,7 +10025,14 @@
               "run",
               "dinner",
               "large-icon"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.event_card",
+              "parentConceptId": "catch.event_card",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.event_card"
+            }
           },
           {
             "id": "catch.event_card.event_thumbnail.scrim",
@@ -9070,7 +10042,14 @@
             "states": [
               "bottom",
               "full"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.event_card",
+              "parentConceptId": "catch.event_card",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.event_card"
+            }
           }
         ]
       },
@@ -9095,7 +10074,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.event_card"
       },
       "surfaces": {
         "flutter": "CatchEventCard"
@@ -9189,7 +10170,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.graded_image"
       },
       "surfaces": {
         "flutter": "CatchGradedImage"
@@ -9271,7 +10254,14 @@
             "summary": "Direct detail-hero fallback renderer for no-photo media states.",
             "states": [
               "gradient"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.detail_media",
+              "parentConceptId": "catch.detail_media",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.detail_media"
+            }
           },
           {
             "id": "catch.detail_media.scrim",
@@ -9282,7 +10272,14 @@
               "detail-hero",
               "photo-frame",
               "hero-tint"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.detail_media",
+              "parentConceptId": "catch.detail_media",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.detail_media"
+            }
           }
         ]
       },
@@ -9305,7 +10302,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "none",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.detail_media"
       },
       "surfaces": {
         "flutter": "CatchDetailHeroBackdrop"
@@ -9430,7 +10429,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "none",
         "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.activity_map_pin"
       },
       "surfaces": {
         "flutter": "CatchActivityMapPin"
@@ -9592,7 +10593,11 @@
               "spotlight-dark",
               "saved",
               "calendar-available"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "screen",
+              "decisionRef": "contract-kind:screen-contract"
+            }
           },
           {
             "id": "catch.event_detail_sections.ticket_stub",
@@ -9604,7 +10609,11 @@
               "two-cells",
               "three-cells",
               "long-location"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "screen",
+              "decisionRef": "contract-kind:screen-contract"
+            }
           },
           {
             "id": "catch.event_detail_sections.hint_list",
@@ -9615,7 +10624,11 @@
               "two-hints",
               "long-hint",
               "empty"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "screen",
+              "decisionRef": "contract-kind:screen-contract"
+            }
           },
           {
             "id": "catch.event_detail_sections.itinerary",
@@ -9626,7 +10639,11 @@
               "standard",
               "single-step",
               "long-detail"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "screen",
+              "decisionRef": "contract-kind:screen-contract"
+            }
           },
           {
             "id": "catch.event_detail_sections.photo_strip",
@@ -9637,7 +10654,11 @@
               "three-photos",
               "partial-photos",
               "hidden"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "screen",
+              "decisionRef": "contract-kind:screen-contract"
+            }
           },
           {
             "id": "catch.event_detail_sections.map_card",
@@ -9649,7 +10670,11 @@
               "pin-drops-morning-of",
               "tap-enabled",
               "tap-disabled"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "screen",
+              "decisionRef": "contract-kind:screen-contract"
+            }
           },
           {
             "id": "catch.event_detail_sections.mechanism_list",
@@ -9661,7 +10686,11 @@
               "approval",
               "waitlist",
               "demand-pricing"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "screen",
+              "decisionRef": "contract-kind:screen-contract"
+            }
           },
           {
             "id": "catch.event_detail_sections.good_to_know",
@@ -9673,7 +10702,11 @@
               "expectations",
               "booking-policy",
               "no-requirements"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "screen",
+              "decisionRef": "contract-kind:screen-contract"
+            }
           },
           {
             "id": "catch.event_detail_sections.hosts",
@@ -9686,7 +10719,11 @@
               "error",
               "content",
               "message-enabled"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "screen",
+              "decisionRef": "contract-kind:screen-contract"
+            }
           },
           {
             "id": "catch.event_detail_sections.social",
@@ -9699,7 +10736,11 @@
               "reviews-hidden",
               "reviews-visible",
               "can-review"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "screen",
+              "decisionRef": "contract-kind:screen-contract"
+            }
           },
           {
             "id": "catch.event_detail_sections.companion_entry",
@@ -9711,7 +10752,11 @@
               "loading",
               "error",
               "available"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "screen",
+              "decisionRef": "contract-kind:screen-contract"
+            }
           },
           {
             "id": "catch.event_detail_sections.booking_dock",
@@ -9728,7 +10773,11 @@
               "past",
               "pending",
               "error"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "screen",
+              "decisionRef": "contract-kind:screen-contract"
+            }
           },
           {
             "id": "catch.event_detail_sections.avatar_stack",
@@ -9740,7 +10789,11 @@
               "revealed",
               "empty",
               "overflow"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "screen",
+              "decisionRef": "contract-kind:screen-contract"
+            }
           }
         ]
       },
@@ -9769,7 +10822,9 @@
         "layoutOwnership": "screen-layout",
         "actionOwnership": "route-owned",
         "allowedDependencyLevel": "route-boundary",
-        "reviewPolicy": "screen-contract-canonical"
+        "reviewPolicy": "screen-contract-canonical",
+        "conceptRole": "screen",
+        "decisionRef": "contract-kind:screen-contract"
       },
       "surfaces": {
         "flutter": "EventDetailBody"
@@ -9908,7 +10963,9 @@
         "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "composition",
+        "decisionRef": "concept-boundary:notification-row-field-composition"
       },
       "surfaces": {
         "flutter": "NotificationRow"
@@ -10032,7 +11089,7 @@
         "allowedChildren": [
           "catch.field",
           "catch.icon_button",
-          "catch.loading",
+          "catch.loading_indicator",
           "catch.control_shell"
         ],
         "notes": [
@@ -10051,7 +11108,10 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.chat_composer",
+        "decisionRef": "naming-exception:legacy-feature-api-chat-input-bar"
       },
       "dart": {
         "symbol": "ChatInputBar",
@@ -10206,7 +11266,14 @@
               "scrolled",
               "restored",
               "terminal-clearance"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.tabbed_screen",
+              "parentConceptId": "catch.tabbed_screen",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.tabbed_screen"
+            }
           }
         ]
       },
@@ -10229,7 +11296,9 @@
         "layoutOwnership": "screen-layout",
         "actionOwnership": "none",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.tabbed_screen"
       },
       "dart": {
         "symbol": "CatchTabbedScreenScaffold",
@@ -10384,7 +11453,14 @@
               "footnote",
               "loading",
               "disabled"
-            ]
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.bottom_action",
+              "parentConceptId": "catch.bottom_action",
+              "qualifier": "variant",
+              "decisionRef": "contract-family:catch.bottom_action"
+            }
           }
         ]
       },
@@ -10408,7 +11484,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.bottom_action"
       },
       "dart": {
         "symbol": "CatchBottomAction",
@@ -10568,7 +11646,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.host_row"
       },
       "dart": {
         "symbol": "CatchHostRow",
@@ -10684,7 +11764,9 @@
         "layoutOwnership": "internal-only",
         "actionOwnership": "none",
         "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical"
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.map_preview"
       },
       "dart": {
         "symbol": "CatchMapPreview",
@@ -10695,6 +11777,324 @@
       },
       "surfaces": {
         "flutter": "CatchMapPreview"
+      }
+    },
+    {
+      "id": "catch.meta_row",
+      "name": "CatchMetaRow",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Single icon-and-label metadata line for compact factual context; distinct from structural section labels.",
+      "dart": {
+        "symbol": "CatchMetaRow",
+        "file": "lib/core/widgets/catch_meta_row.dart",
+        "constructors": [
+          "CatchMetaRow"
+        ]
+      },
+      "surfaces": {
+        "flutter": "CatchMetaRow"
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Meta Row",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "MetaRow",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "icon",
+            "type": "object",
+            "required": true,
+            "dartType": "IconData"
+          },
+          {
+            "name": "label",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "color",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "labelColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          }
+        ],
+        "states": [
+          "default",
+          "semantic-icon",
+          "semantic-label",
+          "truncated"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s2",
+          "theme.light.color.primary",
+          "theme.light.color.ink2"
+        ],
+        "dartRoles": [
+          "CatchMetaRow",
+          "CatchTextStyles.labelM",
+          "CatchIcon.sm"
+        ],
+        "goldens": []
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.meta_row",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.meta_row",
+        "decisionRef": "ledger:c003-catch-meta-row"
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Use for a factual icon-and-label line; use catch.ui_label for structural section hierarchy.",
+          "The CatchMetaRow/StageSectionLabel ledger decision is an intentional false-positive boundary."
+        ]
+      }
+    },
+    {
+      "id": "catch.index_row",
+      "name": "CatchIndexRow",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Canonical hairline index row for compact directories and browse lists with optional leading and trailing content.",
+      "dart": {
+        "symbol": "CatchIndexRow",
+        "file": "lib/core/widgets/catch_index_row.dart",
+        "constructors": [
+          "CatchIndexRow"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/IndexRow",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "IndexRow",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "title",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "onTap",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "leading",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "trailing",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "selected",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "semanticLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          }
+        ],
+        "states": [
+          "default",
+          "selected",
+          "leading",
+          "trailing",
+          "disabled"
+        ],
+        "slots": [
+          {
+            "name": "leading",
+            "kind": "optional-leading-widget"
+          },
+          {
+            "name": "trailing",
+            "kind": "optional-trailing-widget"
+          }
+        ],
+        "tokens": [
+          "space.s3",
+          "space.s4",
+          "theme.light.color.line",
+          "theme.light.color.ink",
+          "theme.light.color.ink2"
+        ],
+        "dartRoles": [
+          "CatchTextStyles.titleL",
+          "CatchLayout.eventTypeIndexRowHeight"
+        ],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [
+          "catch.ui_label"
+        ],
+        "notes": [
+          "Use for quiet browse and directory indexes; richer selectable controls belong to catch.option_group."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.index_row",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.index_row"
+      },
+      "surfaces": {
+        "flutter": "CatchIndexRow"
+      }
+    },
+    {
+      "id": "catch.club_cover",
+      "name": "CatchClubCover",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "Canonical club-cover resolver for uploaded photos, the global image grade, deterministic club artwork, and compact fallbacks.",
+      "dart": {
+        "symbol": "CatchClubCover",
+        "file": "lib/clubs/shared/catch_club_cover.dart",
+        "constructors": [
+          "CatchClubCover"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/ClubCover",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "ClubCover",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "club",
+            "type": "object",
+            "required": true,
+            "dartType": "Club"
+          },
+          {
+            "name": "compact",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "semanticLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          }
+        ],
+        "states": [
+          "photo",
+          "fallback",
+          "compact",
+          "error-fallback"
+        ],
+        "slots": [],
+        "tokens": [
+          "theme.light.color.surface",
+          "theme.light.color.ink",
+          "theme.light.color.primary"
+        ],
+        "dartRoles": [
+          "Club.primaryClubPhotoUrl",
+          "CatchGradedImage",
+          "CatchNetworkImage",
+          "ClubPolaroidArtwork"
+        ],
+        "goldens": []
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Use whenever a club cover is rendered; do not resolve imageUrl, clubPhotos, or fallback artwork independently at call sites."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.club_cover",
+        "publicApi": true,
+        "stateOwnership": "slot-state-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.club_cover"
+      },
+      "surfaces": {
+        "flutter": "CatchClubCover"
       }
     }
   ]

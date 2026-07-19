@@ -1519,7 +1519,7 @@ class _FakeEventSuccessRepository extends Fake
   Future<EventSuccessPlan?> fetchPlan(String eventId) async => null;
 }
 
-class _FakeActivityNotificationRepository
+class _FakeActivityNotificationRepository extends Fake
     implements ActivityNotificationRepository {
   _FakeActivityNotificationRepository(this.notifications);
 

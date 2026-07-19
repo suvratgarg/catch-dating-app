@@ -2,8 +2,8 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
-import 'package:flutter/material.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:flutter/material.dart';
 
 const double _dateMarkerRadius = CatchSpacing.s3;
 const double _monthMarkerHeight = CatchSpacing.s10;

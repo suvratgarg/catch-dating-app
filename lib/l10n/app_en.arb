@@ -2663,6 +2663,13 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
+  "exploreExploreScreenActionLoadMorePlans": "Load more plans",
+  "@exploreExploreScreenActionLoadMorePlans": {
+    "description": "Button that advances the cursor-paginated Explore discovery window.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen"
+  },
   "exploreExploreScreenTitleNoClubsMatchThis": "No clubs match this search",
   "@exploreExploreScreenTitleNoClubsMatchThis": {
     "description": "Product copy used by lib/explore/presentation/explore_screen.dart (title).",
@@ -2726,6 +2733,13 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
+  "exploreExploreScreenLabelChangeCity": "Change city",
+  "@exploreExploreScreenLabelChangeCity": {
+    "description": "Recovery action shown when the selected Explore city has no clubs.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen"
+  },
   "exploreCatchCoverStoryMessageChangeLocation": "Change location",
   "@exploreCatchCoverStoryMessageChangeLocation": {
     "description": "Product copy used by lib/explore/presentation/widgets/catch_cover_story.dart (message).",
@@ -2739,20 +2753,6 @@
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.catch_cover_story"
-  },
-  "exploreCatchCrossPathsCardTextToYou": "TO: YOU",
-  "@exploreCatchCrossPathsCardTextToYou": {
-    "description": "Product copy used by lib/explore/presentation/widgets/catch_cross_paths_card.dart (Text).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "explore.presentation.widgets.catch_cross_paths_card"
-  },
-  "exploreCatchCrossPathsCardTooltipLike": "Like",
-  "@exploreCatchCrossPathsCardTooltipLike": {
-    "description": "Product copy used by lib/explore/presentation/widgets/catch_cross_paths_card.dart (tooltip).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "explore.presentation.widgets.catch_cross_paths_card"
   },
   "exploreExploreCityPickerTextCity": "City",
   "@exploreExploreCityPickerTextCity": {
@@ -2796,16 +2796,46 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_filter_rail"
   },
-  "exploreExploreFilterRailLabelDone": "Done",
-  "@exploreExploreFilterRailLabelDone": {
-    "description": "Product copy used by lib/explore/presentation/widgets/explore_filter_rail.dart (label).",
+  "exploreExploreFilterRailLabelUpdatingPlans": "Updating plans",
+  "@exploreExploreFilterRailLabelUpdatingPlans": {
+    "description": "Filter sheet footer while the current Explore result count is loading.",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_filter_rail"
   },
-  "exploreExploreFilterRailTextDistance": "DISTANCE",
-  "@exploreExploreFilterRailTextDistance": {
-    "description": "Product copy used by lib/explore/presentation/widgets/explore_filter_rail.dart (Text).",
+  "exploreExploreFilterRailLabelShowPlans": "{count, plural, =1{Show 1 plan} other{Show {count} plans}}",
+  "@exploreExploreFilterRailLabelShowPlans": {
+    "description": "Filter sheet footer with the exhaustive live Explore result count.",
+    "placeholders": {
+      "count": {"type": "int"}
+    },
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.widgets.explore_filter_rail"
+  },
+  "exploreExploreFilterRailLabelShowPlansPlus": "Show {count}+ plans",
+  "@exploreExploreFilterRailLabelShowPlansPlus": {
+    "description": "Filter sheet footer with the lower-bound live Explore result count when more pages exist.",
+    "placeholders": {
+      "count": {"type": "int"}
+    },
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.widgets.explore_filter_rail"
+  },
+  "exploreExploreFilterRailTextDistanceEventsOnly": "DISTANCE · EVENTS ONLY",
+  "@exploreExploreFilterRailTextDistanceEventsOnly": {
+    "description": "Explore filter heading clarifying that club cards do not carry distance coordinates.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.widgets.explore_filter_rail"
+  },
+  "exploreExploreFilterRailAppliedDistance": "{distance} · events only",
+  "@exploreExploreFilterRailAppliedDistance": {
+    "description": "Applied distance-filter chip clarifying its event-only scope.",
+    "placeholders": {
+      "distance": {}
+    },
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_filter_rail"
@@ -12670,11 +12700,40 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
-  "exploreExploreScreenStateCtalabelClaimASeat": "Claim a seat",
-  "@exploreExploreScreenStateCtalabelClaimASeat": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (ctaLabel).",
+  "exploreExploreScreenStateCtaViewAndBook": "View and book",
+  "@exploreExploreScreenStateCtaViewAndBook": {
+    "description": "Explore cover-story CTA for an event the viewer can book after opening its details.",
     "x-audience": "consumer",
+    "x-copy-kind": "action",
     "x-owner": "product",
+    "x-product-role": "member",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateCtaViewAndRequest": "View and request",
+  "@exploreExploreScreenStateCtaViewAndRequest": {
+    "description": "Explore cover-story CTA for an event that requires an attendance request.",
+    "x-audience": "consumer",
+    "x-copy-kind": "action",
+    "x-owner": "product",
+    "x-product-role": "member",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateCtaViewWaitlist": "View waitlist",
+  "@exploreExploreScreenStateCtaViewWaitlist": {
+    "description": "Explore cover-story CTA for an event whose waitlist can be viewed from details.",
+    "x-audience": "consumer",
+    "x-copy-kind": "action",
+    "x-owner": "product",
+    "x-product-role": "member",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateCtaViewEvent": "View event",
+  "@exploreExploreScreenStateCtaViewEvent": {
+    "description": "Explore cover-story CTA for an event that has no immediate booking action.",
+    "x-audience": "consumer",
+    "x-copy-kind": "action",
+    "x-owner": "product",
+    "x-product-role": "member",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateActionlabelOpen": "Open",
@@ -12698,18 +12757,13 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
-  "exploreExploreScreenStateActionlabelPreview": "Preview",
-  "@exploreExploreScreenStateActionlabelPreview": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).",
+  "exploreExploreScreenStateLabelHostedBy": "Hosted by",
+  "@exploreExploreScreenStateLabelHostedBy": {
+    "description": "Eyebrow above the host identity shown on an Explore club polaroid.",
     "x-audience": "consumer",
+    "x-copy-kind": "label",
     "x-owner": "product",
-    "x-surface": "explore.presentation.explore_screen_state"
-  },
-  "exploreExploreScreenStateActionlabelViewClub": "View club",
-  "@exploreExploreScreenStateActionlabelViewClub": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).",
-    "x-audience": "consumer",
-    "x-owner": "product",
+    "x-product-role": "member",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateTitleNoEventsMatchThis": "No events match this search",
@@ -12743,13 +12797,6 @@
   "exploreExploreScreenStateMessageTheNextGoodFit": "The next good fit may be over the weekend.",
   "@exploreExploreScreenStateMessageTheNextGoodFit": {
     "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (message).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "explore.presentation.explore_screen_state"
-  },
-  "exploreExploreScreenStateActionlabelSeeWeekend": "See weekend",
-  "@exploreExploreScreenStateActionlabelSeeWeekend": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
@@ -13825,9 +13872,31 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_filter_rail"
   },
-  "exploreExploreFilterRailLabelAnytime": "Anytime",
-  "@exploreExploreFilterRailLabelAnytime": {
-    "description": "Product copy used by lib/explore/presentation/widgets/explore_filter_rail.dart (label).",
+  "exploreExploreFilterRailLabelAny": "Any",
+  "@exploreExploreFilterRailLabelAny": {
+    "description": "Compact final option in the Explore seven-day date strip.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.widgets.explore_filter_rail"
+  },
+  "exploreExploreFilterRailDateSupply": "{label} · {count}",
+  "@exploreExploreFilterRailDateSupply": {
+    "description": "Explore date-strip label paired with the current supply count.",
+    "placeholders": {
+      "label": {},
+      "count": {"type": "int"}
+    },
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.widgets.explore_filter_rail"
+  },
+  "exploreExploreFilterRailDateSupplyPlus": "{label} · {count}+",
+  "@exploreExploreFilterRailDateSupplyPlus": {
+    "description": "Explore date-strip label with a lower-bound supply count when more discovery pages exist.",
+    "placeholders": {
+      "label": {},
+      "count": {"type": "int"}
+    },
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_filter_rail"
@@ -16434,9 +16503,32 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
+  "exploreExploreScreenStateVisiblecopyCountPlusNoun": "{count}+ {noun}",
+  "@exploreExploreScreenStateVisiblecopyCountPlusNoun": {
+    "description": "Honest Explore result count while more cursor pages are available.",
+    "placeholders": {
+      "count": {},
+      "noun": {}
+    },
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
   "exploreExploreScreenStateVisiblecopyCountNounDatespan": "{count} {noun} · {dateSpan}",
   "@exploreExploreScreenStateVisiblecopyCountNounDatespan": {
     "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "placeholders": {
+      "count": {},
+      "noun": {},
+      "dateSpan": {}
+    },
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateVisiblecopyCountPlusNounDatespan": "{count}+ {noun} · {dateSpan}",
+  "@exploreExploreScreenStateVisiblecopyCountPlusNounDatespan": {
+    "description": "Honest dated Explore result count while more cursor pages are available.",
     "placeholders": {
       "count": {},
       "noun": {},
@@ -16526,13 +16618,6 @@
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_event_rows"
-  },
-  "exploreRecommendCardVisiblecopyFree": "Free",
-  "@exploreRecommendCardVisiblecopyFree": {
-    "description": "Product copy used by lib/explore/presentation/widgets/recommend_card.dart (visibleCopy).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "explore.presentation.widgets.recommend_card"
   },
   "hostsCreateClubScreenVisiblecopyRestoredYourClubDraft": "Restored your club draft",
   "@hostsCreateClubScreenVisiblecopyRestoredYourClubDraft": {
@@ -19514,13 +19599,6 @@
     "x-owner": "product",
     "x-surface": "core.widgets.catch_field"
   },
-  "eventsEventDateRailCardVisiblecopyFree": "Free",
-  "@eventsEventDateRailCardVisiblecopyFree": {
-    "description": "Fallback price copy used by the shared event DateTicket.",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "events.shared.event_tiles.event_date_rail_card"
-  },
   "exploreExploreMapScreenLabelWithinDistance": "Within {distanceKm} km",
   "@exploreExploreMapScreenLabelWithinDistance": {
     "description": "Compact visible label attached to the Explore map distance ring.",
@@ -19936,5 +20014,199 @@
   "paymentsHistorySupportMessage": "Please contact Catch support for assistance with this booking.",
   "@paymentsHistorySupportMessage": {"description": "Guidance when a payment-history booking needs support.", "x-audience": "consumer", "x-owner": "product", "x-surface": "payments.presentation.payment_history_screen"},
   "safetyAccountUnblockedMessage": "Account unblocked.",
-  "@safetyAccountUnblockedMessage": {"description": "Confirmation after removing an account block.", "x-audience": "consumer", "x-owner": "product", "x-surface": "safety.presentation.settings_screen"}
+  "@safetyAccountUnblockedMessage": {"description": "Confirmation after removing an account block.", "x-audience": "consumer", "x-owner": "product", "x-surface": "safety.presentation.settings_screen"},
+  "eventsEventPriceCopyFree": "Free",
+  "@eventsEventPriceCopyFree": {
+    "description": "Canonical zero-price label shared by event cards and Explore.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "events.shared.event_price_copy"
+  },
+  "eventsEventPriceCopyFromPrice": "From {price}",
+  "@eventsEventPriceCopyFromPrice": {
+    "description": "Canonical demand-priced event label when only the base price is known.",
+    "placeholders": {"price": {}},
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "events.shared.event_price_copy"
+  },
+  "eventsEventPriceCopyPriceOnSource": "Price on source",
+  "@eventsEventPriceCopyPriceOnSource": {
+    "description": "Fallback price label for external events whose source has no parsed price.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "events.shared.event_price_copy"
+  },
+  "coreCatchCountCopyEvents": "{count, plural, =0{No events} =1{1 event} other{{count} events}}",
+  "@coreCatchCountCopyEvents": {
+    "description": "Shared localized event-count copy for indexes and semantic labels.",
+    "placeholders": {"count": {"type": "int"}},
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "core.formatters.catch_count_copy"
+  },
+  "coreCatchDistanceFormatterMetersAway": "{meters} m away",
+  "@coreCatchDistanceFormatterMetersAway": {
+    "description": "Shared distance label for a place less than one kilometre away.",
+    "placeholders": {"meters": {"type": "int"}},
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "core.formatters.catch_distance_formatter"
+  },
+  "coreCatchDistanceFormatterKilometersAway": "{distance} km away",
+  "@coreCatchDistanceFormatterKilometersAway": {
+    "description": "Shared distance label for a place at least one kilometre away.",
+    "placeholders": {"distance": {"type": "String"}},
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "core.formatters.catch_distance_formatter"
+  },
+  "exploreExploreScreenStateAvailabilityOpen": "Open",
+  "@exploreExploreScreenStateAvailabilityOpen": {
+    "description": "Explore availability label for an event open to the viewer.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateAvailabilityApprovedToJoin": "Approved to join",
+  "@exploreExploreScreenStateAvailabilityApprovedToJoin": {
+    "description": "Explore availability label after a viewer is approved.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateAvailabilityRequestRequired": "Request required",
+  "@exploreExploreScreenStateAvailabilityRequestRequired": {
+    "description": "Explore availability label when a join request is required.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateAvailabilityWaitlistOpen": "Waitlist open",
+  "@exploreExploreScreenStateAvailabilityWaitlistOpen": {
+    "description": "Explore availability label when only the waitlist is open.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateAvailabilityFull": "Full",
+  "@exploreExploreScreenStateAvailabilityFull": {
+    "description": "Explore availability label for a full event.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateAvailabilityFullForYou": "Your group is full",
+  "@exploreExploreScreenStateAvailabilityFullForYou": {
+    "description": "Explore availability label when viewer-specific inventory is full.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateAvailabilityInviteRequired": "Invite required",
+  "@exploreExploreScreenStateAvailabilityInviteRequired": {
+    "description": "Explore availability label for an invite-only event.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateAvailabilityMembersOnly": "Members only",
+  "@exploreExploreScreenStateAvailabilityMembersOnly": {
+    "description": "Explore availability label for a members-only event.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateAvailabilitySetPreferences": "Set preferences",
+  "@exploreExploreScreenStateAvailabilitySetPreferences": {
+    "description": "Explore availability label when run preferences are missing.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateAvailabilityEnded": "Ended",
+  "@exploreExploreScreenStateAvailabilityEnded": {
+    "description": "Explore availability label for a past event.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateAvailabilityCancelled": "Cancelled",
+  "@exploreExploreScreenStateAvailabilityCancelled": {
+    "description": "Explore availability label for a cancelled event.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateAvailabilityAgeRestricted": "Age restricted",
+  "@exploreExploreScreenStateAvailabilityAgeRestricted": {
+    "description": "Explore availability fallback for an age-restricted event.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateAvailabilityMinimumAge": "Must be {minAge}+",
+  "@exploreExploreScreenStateAvailabilityMinimumAge": {
+    "description": "Explore availability label for a minimum-age restriction.",
+    "placeholders": {"minAge": {"type": "int"}},
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateAvailabilityMaximumAge": "Max age {maxAge}",
+  "@exploreExploreScreenStateAvailabilityMaximumAge": {
+    "description": "Explore availability label for a maximum-age restriction.",
+    "placeholders": {"maxAge": {"type": "int"}},
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateAvailabilitySpotsLeft": "{spots, plural, =1{1 spot left} other{{spots} spots left}}",
+  "@exploreExploreScreenStateAvailabilitySpotsLeft": {
+    "description": "Explore low-inventory availability label.",
+    "placeholders": {"spots": {"type": "int"}},
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateGoingCount": "{count, plural, =1{1 going} other{{count} going}}",
+  "@exploreExploreScreenStateGoingCount": {
+    "description": "Explore event attendance count.",
+    "placeholders": {"count": {"type": "int"}},
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateGoingAvailability": "{goingLabel} · {availabilityLabel}",
+  "@exploreExploreScreenStateGoingAvailability": {
+    "description": "Explore attendance and availability decision line.",
+    "placeholders": {"goingLabel": {}, "availabilityLabel": {}},
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateClubRatingReviews": "{rating} · {reviewCount, plural, =0{NO REVIEWS} =1{1 REVIEW} other{{reviewCount} REVIEWS}}",
+  "@exploreExploreScreenStateClubRatingReviews": {
+    "description": "Compact club rating and review-count line on Explore cards.",
+    "placeholders": {"rating": {}, "reviewCount": {"type": "int"}},
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.explore_screen_state"
+  },
+  "exploreExploreScreenStateClubCardSemantics": "{title}, {caption}, {supportingLabel}, {memberCountLabel}, {ratingReviewLabel}",
+  "@exploreExploreScreenStateClubCardSemantics": {
+    "description": "Composed screen-reader label for an Explore club card.",
+    "placeholders": {"title": {}, "caption": {}, "supportingLabel": {}, "memberCountLabel": {}, "ratingReviewLabel": {}},
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.widgets.explore_club_cards"
+  },
+  "exploreExploreScreenStateExternalEventSemantics": "{title}, {sourceLabel}, {statusLabel}, {supportingLabel}, {timePriceLabel}, {readOnlySupplyLabel}",
+  "@exploreExploreScreenStateExternalEventSemantics": {
+    "description": "Composed screen-reader summary for an external Explore event row.",
+    "placeholders": {"title": {}, "sourceLabel": {}, "statusLabel": {}, "supportingLabel": {}, "timePriceLabel": {}, "readOnlySupplyLabel": {}},
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "explore.presentation.widgets.explore_event_rows"
+  }
 }

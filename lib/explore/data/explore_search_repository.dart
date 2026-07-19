@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -16,7 +17,7 @@ abstract interface class ExploreSearchRepository {
   Future<ExploreSearchResult> searchExplore({
     required String query,
     required String cityName,
-    int limit = 20,
+    int limit = ReadLimitPolicy.searchResults,
   });
 }
 
@@ -29,7 +30,7 @@ class FirebaseExploreSearchRepository implements ExploreSearchRepository {
   Future<ExploreSearchResult> searchExplore({
     required String query,
     required String cityName,
-    int limit = 20,
+    int limit = ReadLimitPolicy.searchResults,
   }) => withBackendErrorContext(
     () async {
       final result = await _functions.httpsCallable('exploreSearch').call({

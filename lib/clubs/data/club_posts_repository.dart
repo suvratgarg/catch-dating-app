@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/clubs/data/club_callable_responses.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show CreateClubPostCallableRequest;
@@ -37,6 +38,7 @@ class ClubPostsRepository {
     return withBackendErrorStream(
       () => _postsRef(clubId)
           .where('createdAt', isGreaterThanOrEqualTo: windowStart)
+          .limit(ReadLimitPolicy.boundedWorkingSet)
           .snapshots()
           .map((snap) {
             final activeCount = snap.docs

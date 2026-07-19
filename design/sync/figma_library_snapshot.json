@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "status": "unavailable",
+  "capturedAt": null,
+  "source": {
+    "eventType": null,
+    "fileKey": null,
+    "fileName": null,
+    "fileVersion": null,
+    "lastModified": null,
+    "webhookId": null,
+    "publishedComponentKeys": []
+  },
+  "components": [],
+  "reviewSnapshots": [],
+  "snapshotDigest": null
+}

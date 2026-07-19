@@ -216,10 +216,10 @@
       "casePolicy": "mixed",
       "parametric": true,
       "samples": {
-        "24": {
+        "s": {
           "role": "voice",
           "family": "Archivo",
-          "size": 24.0,
+          "size": 22.0,
           "weight": 600,
           "lineHeight": 1.0,
           "tracking": 0.0,
@@ -239,10 +239,10 @@
             }
           ]
         },
-        "36": {
+        "m": {
           "role": "voice",
           "family": "Archivo",
-          "size": 36.0,
+          "size": 27.0,
           "weight": 600,
           "lineHeight": 1.0,
           "tracking": 0.0,
@@ -262,10 +262,33 @@
             }
           ]
         },
-        "48": {
+        "l": {
           "role": "voice",
           "family": "Archivo",
-          "size": 48.0,
+          "size": 32.0,
+          "weight": 600,
+          "lineHeight": 1.0,
+          "tracking": 0.0,
+          "fontStyle": "normal",
+          "defaultColor": {
+            "light": "#16140F",
+            "dark": "#F4F0E8"
+          },
+          "fontVariations": [
+            {
+              "axis": "wght",
+              "value": 600.0
+            },
+            {
+              "axis": "wdth",
+              "value": 78.0
+            }
+          ]
+        },
+        "xl": {
+          "role": "voice",
+          "family": "Archivo",
+          "size": 38.0,
           "weight": 600,
           "lineHeight": 1.0,
           "tracking": 0.0,
@@ -292,10 +315,10 @@
       "casePolicy": "mixed",
       "parametric": true,
       "samples": {
-        "24": {
+        "s": {
           "role": "voice",
           "family": "Archivo",
-          "size": 24.0,
+          "size": 22.0,
           "weight": 600,
           "lineHeight": 1.0,
           "tracking": 0.0,
@@ -315,10 +338,10 @@
             }
           ]
         },
-        "36": {
+        "m": {
           "role": "voice",
           "family": "Archivo",
-          "size": 36.0,
+          "size": 27.0,
           "weight": 600,
           "lineHeight": 1.0,
           "tracking": 0.0,
@@ -338,10 +361,33 @@
             }
           ]
         },
-        "48": {
+        "l": {
           "role": "voice",
           "family": "Archivo",
-          "size": 48.0,
+          "size": 32.0,
+          "weight": 600,
+          "lineHeight": 1.0,
+          "tracking": 0.0,
+          "fontStyle": "normal",
+          "defaultColor": {
+            "light": "#16140F",
+            "dark": "#F4F0E8"
+          },
+          "fontVariations": [
+            {
+              "axis": "wght",
+              "value": 600.0
+            },
+            {
+              "axis": "wdth",
+              "value": 78.0
+            }
+          ]
+        },
+        "xl": {
+          "role": "voice",
+          "family": "Archivo",
+          "size": 38.0,
           "weight": 600,
           "lineHeight": 1.0,
           "tracking": 0.0,

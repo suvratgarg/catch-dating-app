@@ -11,7 +11,6 @@ export 'presentation/explore_map_screen.dart'; // public-api: route entry point 
 export 'presentation/explore_screen.dart'; // public-api: route entry point exposed to app routing
 export 'presentation/explore_view_model.dart'; // public-api: read-model seam for route composition
 export 'presentation/widgets/catch_cover_story.dart'; // public-api: shared presentation component used outside this feature
-export 'presentation/widgets/catch_cross_paths_card.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/explore_body.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/explore_city_picker.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/explore_event_type_browse_grid.dart'; // public-api: shared presentation component used outside this feature

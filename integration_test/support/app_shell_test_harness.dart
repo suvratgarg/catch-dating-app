@@ -13,6 +13,7 @@ import 'package:catch_dating_app/clubs/domain/club_draft.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/core/data/cursor_page.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
@@ -56,6 +57,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' show User;
 import 'package:flutter/widgets.dart';
@@ -566,6 +568,14 @@ class FakeShellEventDiscoveryRepository implements EventDiscoveryRepository {
           event,
     ];
   }
+
+  @override
+  Future<CursorPage<Event, DocumentSnapshot<Event>>>
+  fetchDiscoverableEventsPage(
+    EventDiscoveryQuery query, {
+    DocumentSnapshot<Event>? startAfter,
+  }) async =>
+      CursorPage(items: await fetchDiscoverableEvents(query), hasMore: false);
 }
 
 class RecordingFcmService extends FcmService {

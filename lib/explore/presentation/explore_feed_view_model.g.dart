@@ -8,6 +8,62 @@ part of 'explore_feed_view_model.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Shared wall-clock snapshot for one mounted Explore surface.
+///
+/// Keeping the query window and date-strip labels on the same provider avoids
+/// midnight drift and gives capture/tests one explicit deterministic seam.
+
+@ProviderFor(exploreDiscoveryReferenceNow)
+final exploreDiscoveryReferenceNowProvider =
+    ExploreDiscoveryReferenceNowProvider._();
+
+/// Shared wall-clock snapshot for one mounted Explore surface.
+///
+/// Keeping the query window and date-strip labels on the same provider avoids
+/// midnight drift and gives capture/tests one explicit deterministic seam.
+
+final class ExploreDiscoveryReferenceNowProvider
+    extends $FunctionalProvider<DateTime, DateTime, DateTime>
+    with $Provider<DateTime> {
+  /// Shared wall-clock snapshot for one mounted Explore surface.
+  ///
+  /// Keeping the query window and date-strip labels on the same provider avoids
+  /// midnight drift and gives capture/tests one explicit deterministic seam.
+  ExploreDiscoveryReferenceNowProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'exploreDiscoveryReferenceNowProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$exploreDiscoveryReferenceNowHash();
+
+  @$internal
+  @override
+  $ProviderElement<DateTime> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  DateTime create(Ref ref) {
+    return exploreDiscoveryReferenceNow(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(DateTime value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<DateTime>(value),
+    );
+  }
+}
+
+String _$exploreDiscoveryReferenceNowHash() =>
+    r'a1729036b2bf1839fc9346fabae727c629c54e4f';
 
 @ProviderFor(exploreViewerCohortId)
 final exploreViewerCohortIdProvider = ExploreViewerCohortIdProvider._();
@@ -105,7 +161,7 @@ final class ExploreFeedViewModelProvider
 }
 
 String _$exploreFeedViewModelHash() =>
-    r'e26301d010ea90000aa073cd2c83e6f98678a74c';
+    r'7130485302b84e8517b0dbc15696cfd26ae5e7c5';
 
 @ProviderFor(exploreRecommendations)
 final exploreRecommendationsProvider = ExploreRecommendationsProvider._();
@@ -158,4 +214,4 @@ final class ExploreRecommendationsProvider
 }
 
 String _$exploreRecommendationsHash() =>
-    r'a9102dea96e5510ac59d36c6bef388025ed7d57a';
+    r'8a1d78eceb2d9b596797bce2e761e1c132f07d51';

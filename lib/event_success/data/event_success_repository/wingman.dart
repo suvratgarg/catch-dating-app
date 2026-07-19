@@ -26,6 +26,7 @@ mixin _EventSuccessWingmanRepository on _EventSuccessRepositoryCore {
           isEqualTo: EventSuccessWingmanRequestStatus.active.name,
         )
         .where('hostVisibleConsent', isEqualTo: true)
+        .limit(ReadLimitPolicy.boundedWorkingSet)
         .snapshots()
         .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
     context: const BackendErrorContext(

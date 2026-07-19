@@ -56,6 +56,15 @@
         "byRole",
         "byDecision",
         "byCatalogStatus"
+        ,"conceptCount",
+        "memberClassCount",
+        "compositionClassCount",
+        "screenClassCount",
+        "unclassifiedCount",
+        "byConceptRole",
+        "collisionGroupCount",
+        "collisions",
+        "widgetbookCoverage"
       ],
       "additionalProperties": false,
       "properties": {
@@ -99,6 +108,41 @@
             "type": "integer",
             "minimum": 0
           }
+        },
+        "conceptCount": {"type": "integer", "minimum": 0},
+        "memberClassCount": {"type": "integer", "minimum": 0},
+        "compositionClassCount": {"type": "integer", "minimum": 0},
+        "screenClassCount": {"type": "integer", "minimum": 0},
+        "unclassifiedCount": {"type": "integer", "minimum": 0},
+        "byConceptRole": {
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 0}
+        },
+        "collisionGroupCount": {"type": "integer", "minimum": 0},
+        "collisions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["key", "names"],
+            "additionalProperties": false,
+            "properties": {
+              "key": {"type": "string", "minLength": 1},
+              "names": {"type": "array", "items": {"type": "string"}, "minItems": 2, "uniqueItems": true}
+            }
+          }
+        },
+        "widgetbookCoverage": {
+          "type": "object",
+          "required": ["conceptPrimaries", "conceptPrimariesCataloged", "memberClasses", "memberClassesCataloged", "compositionsCataloged", "screensCataloged"],
+          "additionalProperties": false,
+          "properties": {
+            "conceptPrimaries": {"type": "integer", "minimum": 0},
+            "conceptPrimariesCataloged": {"type": "integer", "minimum": 0},
+            "memberClasses": {"type": "integer", "minimum": 0},
+            "memberClassesCataloged": {"type": "integer", "minimum": 0},
+            "compositionsCataloged": {"type": "integer", "minimum": 0},
+            "screensCataloged": {"type": "integer", "minimum": 0}
+          }
         }
       }
     },
@@ -123,6 +167,12 @@
         "publicApi",
         "catalogStatus",
         "contractId",
+        "conceptRole",
+        "conceptId",
+        "parentConceptId",
+        "qualifier",
+        "collisionKey",
+        "decisionRef",
         "allowedDependencyLevel",
         "stateOwnership",
         "asyncOwnership",
@@ -182,6 +232,15 @@
           "type": ["string", "null"],
           "pattern": "^catch\\.[a-z0-9_.-]+$"
         },
+        "conceptRole": {
+          "type": ["string", "null"],
+          "enum": ["concept", "member", "composition", "screen", "unclassified", null]
+        },
+        "conceptId": {"type": ["string", "null"], "pattern": "^catch\\.[a-z0-9_.-]+$"},
+        "parentConceptId": {"type": ["string", "null"], "pattern": "^catch\\.[a-z0-9_.-]+$"},
+        "qualifier": {"type": ["string", "null"], "enum": ["variant", "anatomy", "adapter", "recipe", "layout", null]},
+        "collisionKey": {"type": ["string", "null"]},
+        "decisionRef": {"type": ["string", "null"]},
         "allowedDependencyLevel": {
           "enum": [
             "tokens-and-primitives",

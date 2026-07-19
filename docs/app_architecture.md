@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.4.37
-updated: 2026-07-18
+version: 1.4.40
+updated: 2026-07-19
 owner: recursive_audit_loop
 status: active
 ---
@@ -176,6 +176,43 @@ The first folder-boundary cleanup applied after this spec uses these owners:
 - Shared activity/event visual primitives used by core widgets live in
   `lib/core/widgets`, not under `events/presentation/widgets`.
 - Club display-name lookup is a data/provider seam in `lib/clubs/data`.
+
+### Explore discovery scope and filter boundary
+
+Explore's visible date strip is an intent selector, not a set of overlapping
+weekly taxonomies. `Tonight`, the next six local dates, and `Any` are the only
+production strip options. The bounded date options share one seven-day
+discovery request; the feed view model filters that cached supply in memory and
+publishes per-date density counts. Counts use a `+` suffix whenever the cursor
+window is not exhaustive. `Any` keeps the accumulated cursor path. Pull refresh
+and tab re-entry invalidate the shared Explore clock snapshot before rebuilding
+the request, keeping query bounds and visible labels aligned across midnight.
+
+`ExploreScreen` remains the provider boundary for the filter sheet. It watches
+the current filter selection and feed while the sheet is open, then passes a
+plain `ExploreFilterSheetState` into the provider-free rail/sheet widgets. The
+map distance ring and sheet distance choice both mutate
+`exploreFiltersProvider`; do not introduce a map-only distance state. Distance
+is labeled as events-only because club cards do not own exact coordinates.
+Empty-market recovery reuses the same provider-free city picker sheet as the
+header trigger.
+
+Cover promotion is a separate display decision from feed ordering. Resolve the
+cover through `selectExploreFeaturedEventId`, which reuses recommendation
+ranking, prioritizes joinable availability plus bounded attendance strength,
+and excludes hosted, joined, blocked, ineligible, cancelled, and past supply.
+Store the selected id on `ExploreFeedViewModel`; never infer the cover from
+`items.first`, and never remove the promoted event from the chronological body.
+Cover copy may describe only the next detail-page action available to that
+viewer; it must not promise a booking or waitlist mutation that the CTA does not
+execute.
+
+Explore social proof must not create profile reads per event row. The discovery
+ticket may render `signedUpCount` through veiled activity avatars using the
+shared Event Detail privacy contract. Identified people, mutuals, or Cross Paths
+require an explicit consent-safe relationship source and batched provider seam;
+without one, keep the proposal retired. Club cards may reuse already-loaded
+club host and aggregate rating data through shared club identity atoms.
 
 ## Dependency Direction
 
@@ -2373,6 +2410,41 @@ CatchFormRowList<UpdateUserProfilePatch>(
   errorText: _profileSaveErrorText,
 )
 ```
+
+### Exhibit ARCH-DATA-CURSOR-001: Bounded Cursor Read Window
+
+<!-- exhibit-freshness: ARCH-DATA-CURSOR-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+
+Reference implementation:
+
+- `lib/core/data/cursor_page.dart` owns `limit + 1`, opaque document cursors,
+  and honest `hasMore` state.
+- `lib/explore/presentation/explore_discovery_window_controller.dart` is the
+  reference provider family: the normalized query pair is its identity, the
+  notifier alone accumulates pages, and views receive immutable state.
+- `lib/events/data/event_discovery_repository.dart` and
+  `lib/events/data/external_event_repository.dart` retain raw Firestore cursors
+  through client-side post-filtering so rejected documents are never fetched
+  repeatedly or skipped.
+- `lib/core/data/read_limit_policy.dart` owns every numeric Firestore page or
+  working-set ceiling. Repository code does not introduce numeric literals.
+
+Adopters follow these constraints:
+
+1. Realtime history listeners expose only the newest bounded page; older
+   history has an explicit repository cursor method.
+2. A page cursor points at the final returned Firestore document, never the
+   final post-filtered domain item.
+3. Query identity includes every city, time, activity, availability, cohort,
+   distance, and page-size input that changes server results.
+4. UI count copy distinguishes an exhaustive total from a partial `N+` window,
+   and loading-more failures preserve the previously loaded window.
+5. Working sets without pagination require a named exception in
+   `docs/data_contracts.md` and remain capped by `ReadLimitPolicy`.
+
+The enforcement loop is `node tool/run.mjs check
+contracts:firestore-read-limits`, focused repository/controller tests, and the
+Firestore index-parity check whenever query shape changes.
 
 ## Migration Plan
 

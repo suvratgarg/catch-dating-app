@@ -5,8 +5,8 @@
   "files": [
     {
       "path": "README.txt",
-      "sha256": "ad53ab02bb8c8d895b01d877b804cc15579f16bf06d629e6aee6dad5dbf9b3a7",
-      "bytes": 950
+      "sha256": "06640609e89e692b758836697c87efdde55ac557eb5933cd1821350edd8376cd",
+      "bytes": 1112
     },
     {
       "path": "design_system/activity_palette.json",
@@ -14,14 +14,19 @@
       "bytes": 4368
     },
     {
+      "path": "design_system/claude_design_handoff_request.json",
+      "sha256": "b5c40173384991bd5bf3fde276760e3f0f1393d2cba6f88681e49043c1716b9d",
+      "bytes": 4596
+    },
+    {
       "path": "design_system/components.json",
-      "sha256": "788a195ec9de32c060a6133e25d2f668c3d14aa8b5d450c5f799b3fd99e658a0",
-      "bytes": 325454
+      "sha256": "e6a039c5c2959de4fed2a3ce0ddb75d5b5e4aa66ed64eee4d812d774a5c19313",
+      "bytes": 375941
     },
     {
       "path": "design_system/design_language.txt",
-      "sha256": "1c3de8eaf60b166ee4dd9a2c098475862d9a00bcfd82bbe4f8289faa6af77f09",
-      "bytes": 20189
+      "sha256": "6473caca190431d8c982c692d0ccd69d3af4826f5ec01cc3e384ffe395be566e",
+      "bytes": 20210
     },
     {
       "path": "design_system/specimens/catch_design_system.html",
@@ -30,18 +35,18 @@
     },
     {
       "path": "design_system/tokens.json",
-      "sha256": "b8df96e7ed402145c52940454cbcd7035a118943bb2459ffbd215954eef8ba41",
-      "bytes": 26518
+      "sha256": "609b613f2d15580333a794c1be5b4de2ac4c404722608beb13dbdd8e8327511c",
+      "bytes": 26854
     },
     {
       "path": "design_system/typography.json",
-      "sha256": "7f4017e4338022a1ff88f7a5513125c271a24f54a27cdfd938933e0f08c84b11",
-      "bytes": 26166
+      "sha256": "afd617a255484d2093306891b763165658af3ee61bb970157675ff8787654fbb",
+      "bytes": 27244
     },
     {
       "path": "gallery/manifest.json",
-      "sha256": "b11362a06a9e0cdb45e924271f4838293d2be4659a95b7c3e510c6a7cca27ed5",
-      "bytes": 251728
+      "sha256": "e48c1812ca658baec83aa453e50da4eff911aa9fe92fd4ac6edb755bb3426213",
+      "bytes": 252146
     }
   ]
 }

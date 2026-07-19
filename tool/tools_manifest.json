@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-16",
+  "updated": "2026-07-18",
   "tools": [
     {
       "id": "tool:runner",
@@ -1185,6 +1185,59 @@
       "checks": [
         "node --check tool/contracts/check_firestore_contract.mjs"
       ]
+    },
+    {
+      "id": "contracts:firestore-query-indexes",
+      "category": "contracts",
+      "path": "tool/contracts/check_firestore_query_indexes.mjs",
+      "command": "node tool/contracts/check_firestore_query_indexes.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Checks repository-owned composite Firestore query contracts against firestore.indexes.json and rejects uncontracted composite query builders.",
+      "checks": [
+        "node --check tool/contracts/check_firestore_query_indexes.mjs",
+        "node --test tool/contracts/check_firestore_query_indexes.test.mjs",
+        "node tool/contracts/check_firestore_query_indexes.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "FIRESTORE-INDEX-PARITY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/contracts/check_firestore_query_indexes.test.mjs",
+        "contains": [
+          "known-bad missing composite index is detected",
+          "known-bad uncontracted composite query builder is detected"
+        ]
+      }
+    },
+    {
+      "id": "contracts:firestore-read-limits",
+      "category": "contracts",
+      "path": "tool/contracts/check_firestore_read_limits.mjs",
+      "command": "node tool/contracts/check_firestore_read_limits.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Rejects numeric repository read limits and unbounded Firestore collection reads outside the canonical ReadLimitPolicy and reviewed-exception contracts.",
+      "checks": [
+        "node --check tool/contracts/check_firestore_read_limits.mjs",
+        "node --test tool/contracts/check_firestore_read_limits.test.mjs",
+        "node tool/contracts/check_firestore_read_limits.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "FIRESTORE-READ-LIMIT-POLICY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/contracts/check_firestore_read_limits.test.mjs",
+        "contains": [
+          "known-bad numeric repository limit is detected",
+          "known-bad numeric limit default is detected",
+          "unbounded collection reads are detected"
+        ]
+      }
     },
     {
       "id": "contracts:storage-contract",
@@ -3229,10 +3282,35 @@
       "status": "active",
       "description": "Validates the Catch component contract registry used by Figma, Claude Design, and Code Connect handoffs.",
       "checks": [
+        "node --check tool/design/component_concepts.mjs",
+        "node --test tool/design/component_concepts.test.mjs",
         "node --check tool/design/check_component_contracts.mjs",
         "node tool/design/check_component_contracts.mjs"
       ],
       "role": "finder"
+    },
+    {
+      "id": "design:component-concepts",
+      "category": "design",
+      "path": "tool/design/component_concepts.mjs",
+      "command": "node --test tool/design/component_concepts.test.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Provides deterministic component-concept identity, collision-key, topology, and metric helpers.",
+      "checks": [
+        "node --check tool/design/component_concepts.mjs",
+        "node --test tool/design/component_concepts.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/component_concepts.test.mjs",
+        "contains": [
+          "normalization deliberately forces comparable names into one namespace",
+          "known-bad duplicate primaries and missing parents are rejected",
+          "metrics count concepts rather than public contracts"
+        ]
+      }
     },
     {
       "id": "design:widget-classification-generate",
@@ -3245,6 +3323,83 @@
       "checks": [
         "node --check tool/design/generate_widget_classification.mjs"
       ]
+    },
+    {
+      "id": "design:figma-library-snapshot",
+      "category": "design",
+      "path": "tool/design/import_figma_library_snapshot.mjs",
+      "command": "node tool/design/import_figma_library_snapshot.mjs --check",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Normalizes a Figma LIBRARY_PUBLISH webhook plus hydrated file response into deterministic component-node, property-definition, variable-binding, and review-snapshot evidence.",
+      "checks": [
+        "node --check tool/design/import_figma_library_snapshot.mjs",
+        "node tool/design/import_figma_library_snapshot.mjs --self-test",
+        "node tool/design/import_figma_library_snapshot.mjs --check"
+      ],
+      "role": "generator",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/design/import_figma_library_snapshot.mjs --self-test"
+      }
+    },
+    {
+      "id": "design:claude-handoff-contract",
+      "category": "design",
+      "path": "tool/design/claude_design_handoff.mjs",
+      "command": "node --check tool/design/claude_design_handoff.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "role": "generator",
+      "description": "Generates the deterministic Badge + Field Claude Design request and validates a referenced receipt against source, concept, and supported-state digests.",
+      "checks": [
+        "node --check tool/design/claude_design_handoff.mjs"
+      ]
+    },
+    {
+      "id": "design:sync-manifest",
+      "category": "design",
+      "path": "tool/design/build_design_sync_manifest.mjs",
+      "command": "node tool/design/build_design_sync_manifest.mjs --check",
+      "safety": "local",
+      "status": "active",
+      "description": "Builds and validates generated current/stale/missing Figma mappings, property drift, Code Connect readiness, Claude context parity, and a referenced Claude Design receipt for the Badge + Field live spike.",
+      "checks": [
+        "node --check tool/design/claude_design_handoff.mjs",
+        "node --check tool/design/build_design_sync_manifest.mjs",
+        "node --test tool/design/build_design_sync_manifest.test.mjs",
+        "node tool/design/build_design_sync_manifest.mjs --check"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/build_design_sync_manifest.test.mjs",
+        "contains": [
+          "known-bad mapped entries without node URLs fail",
+          "live spike gate stays red when Figma and Code Connect are unavailable",
+          "snapshot names generate current mappings without hand-edited URLs",
+          "known-bad Figma property drift is deterministic",
+          "known-bad stale Claude context fails",
+          "known-bad Claude Design state receipt fails",
+          "require-live rejects missing visual proof and unpublished templates",
+          "fully evidenced Badge and Field spike passes the live gate",
+          "real Badge and Field contract projection round-trips and fails on one removed property"
+        ]
+      }
+    },
+    {
+      "id": "design:widget-concept-report",
+      "category": "design",
+      "path": "tool/design/build_widget_concept_report.mjs",
+      "command": "node tool/design/build_widget_concept_report.mjs --check",
+      "safety": "local",
+      "status": "active",
+      "description": "Generates machine-readable and Markdown metrics for concept/class deltas, members, unclassified entries, collisions, ledger and Widgetbook coverage, Figma health, Claude parity, and owner-review queue size.",
+      "checks": [
+        "node --check tool/design/build_widget_concept_report.mjs",
+        "node tool/design/build_widget_concept_report.mjs --check"
+      ],
+      "role": "finder"
     },
     {
       "id": "design:widget-classification-check",
@@ -3392,10 +3547,17 @@
       "command": "node tool/design/check_widgetbook_coverage.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Scans production Flutter widget classes against generated Widgetbook component listings and the widget decision ledger.",
+      "description": "Enforces role-derived Widgetbook evidence for concepts, members, contracted compositions, feature-owned compositions, and screen-owned widgets.",
       "checks": [
-        "node --check tool/design/check_widgetbook_coverage.mjs"
-      ]
+        "node --check tool/design/check_widgetbook_coverage.mjs",
+        "node tool/design/check_widgetbook_coverage.mjs --self-test",
+        "node tool/design/check_widgetbook_coverage.mjs --check"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/design/check_widgetbook_coverage.mjs --self-test"
+      }
     },
     {
       "id": "design:widgetbook-compare-build",
@@ -3688,7 +3850,7 @@
       "command": "node tool/design/check_design_parity.mjs --check",
       "safety": "local",
       "status": "active",
-      "description": "Runs the standard local design parity gate across component contracts, widget classification, routes, captures, screen contracts, todo summaries, Widgetbook refs, and advisory hygiene scanners.",
+      "description": "Runs the standard local design parity gate from freshly extracted temporary widget fingerprints across concept topology, component contracts, widget classification, decision coverage, pattern families, Figma/Claude sync drift, routes, captures, screen contracts, todo summaries, Widgetbook refs, and advisory hygiene scanners.",
       "checks": [
         "node --check tool/design/check_design_parity.mjs",
         "node tool/design/check_design_parity.mjs --check"
@@ -3823,7 +3985,7 @@
       "safety": "local",
       "status": "active",
       "role": "gate",
-      "description": "Runs seeded structural probes for the widget dedupe fingerprint extractor and similarity clustering.",
+      "description": "Runs seeded structural, concept-primary, member-parent, composition-identity, and deterministic collision probes for widget consolidation.",
       "checks": [
         "node --check tool/design/check_widget_dedupe_probes.mjs",
         "node tool/design/check_widget_dedupe_probes.mjs"

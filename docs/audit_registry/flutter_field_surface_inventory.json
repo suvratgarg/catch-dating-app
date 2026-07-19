@@ -7,7 +7,7 @@
     "routeInventory": "tool/ui_capture/route_inventory.json",
     "routeInventorySha256": "06791556d5d634a08f5b60481c7c258a8ecbd0eb7828b63033a5fc020d16c03c",
     "screenContracts": "design/screens/catch.screens.json",
-    "screenContractsSha256": "758abb78d0f928b602ed3cf582524fde78ba7771a6fde527187b76173073fe14"
+    "screenContractsSha256": "2faface104983bfc0e0952231564557657250d5dfb40a5d01c1c63871eee8d89"
   },
   "summary": {
     "candidateCount": 10,
@@ -469,11 +469,11 @@
           "expected": 5,
           "observed": 5,
           "lines": [
-            190,
-            209,
-            216,
-            235,
-            258
+            270,
+            289,
+            296,
+            315,
+            338
           ]
         }
       ]

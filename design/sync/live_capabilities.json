@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "checked": "2026-07-18",
+  "figma": {
+    "account": "suvrat.garg@gmail.com",
+    "planName": "Suvrat Garg's team",
+    "planKey": "team::1405093093235380166",
+    "tier": "starter",
+    "fileKey": null,
+    "fileUrl": null
+  },
+  "codeConnect": {
+    "status": "blocked-plan-tier",
+    "requiredTier": "organization-or-enterprise",
+    "note": "Repository templates and drift checks may be prepared, but published Code Connect mappings must not be claimed on the current Starter tier."
+  }
+}

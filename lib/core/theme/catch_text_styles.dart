@@ -2,6 +2,17 @@ import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
+enum CatchDisplayStep {
+  s(22),
+  m(27),
+  l(32),
+  xl(38);
+
+  const CatchDisplayStep(this.size);
+
+  final double size;
+}
+
 /// Catch's typographic scale — one principled hierarchy across three roles:
 /// Archivo for *voice/head* (brand display, heroes, deliberate poster moments),
 /// the platform system font for *function* (body, controls, names, dense UI),
@@ -81,34 +92,32 @@ abstract final class CatchTextStyles {
         color: color,
       );
 
-  /// Editorial club identity treatment (parametric size) shared by Explore club
-  /// cards and the club detail hero/collapsed header.
+  /// Editorial club identity treatment on the named display-step scale.
   static TextStyle clubDisplay(
     BuildContext context, {
-    required double size,
+    required CatchDisplayStep step,
     double height = 1.0,
     Color? color,
     FontWeight weight = FontWeight.w600,
   }) {
     return CatchFonts.voice(
-      fontSize: size,
+      fontSize: step.size,
       fontWeight: weight,
       height: height,
       color: color ?? CatchTokens.of(context).ink,
     );
   }
 
-  /// Ticket/event identity treatment (parametric size) shared by Explore event
-  /// cards and detail headers.
+  /// Ticket/event identity treatment on the named display-step scale.
   static TextStyle eventDisplay(
     BuildContext context, {
-    required double size,
+    required CatchDisplayStep step,
     double height = 1.0,
     Color? color,
     FontWeight weight = FontWeight.w600,
   }) {
     return CatchFonts.voice(
-      fontSize: size,
+      fontSize: step.size,
       fontWeight: weight,
       height: height,
       color: color ?? CatchTokens.of(context).ink,

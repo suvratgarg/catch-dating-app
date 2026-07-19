@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-07-16",
+  "updated": "2026-07-19",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -994,6 +994,7 @@
         {
           "id": "club_detail_member",
           "status": "captured",
+          "capturedAt": "2026-07-18",
           "notes": "Authenticated member-state capture with upcoming events and reviews."
         },
         {
@@ -1633,14 +1634,14 @@
           "kind": "claude",
           "status": "available",
           "path": "/Users/suvratgarg/Downloads/Catch Design System (1)/components/explore",
-          "notes": "CoverStory, CountPill, and CrossPathsCard Explore primitive contracts."
+          "notes": "CoverStory and CountPill contracts plus the retired CrossPathsCard proposal."
         },
         {
           "id": "claude.explore-spec-v2",
           "kind": "claude",
           "status": "available",
           "path": "/Users/suvratgarg/Downloads/Catch Design System (1)/explorations/screen-specs/Explore Spec.html",
-          "notes": "Explore v2 product model and behavior spec dated 2026-07-08. Open choices remain owner-blocked in EXPLORE-PRODUCT-DECISIONS-2026-07-10 until accepted."
+          "notes": "Explore v2 product model and behavior spec dated 2026-07-08. The owner accepted the quality-pass defaults on 2026-07-19; the completed backlog receipt records the resolution."
         },
         {
           "id": "repo.explore-capture-catalog",
@@ -1661,7 +1662,14 @@
         {
           "id": "member_event_discovery",
           "status": "captured",
+          "capturedAt": "2026-07-18",
           "notes": "Guest/member discovery feed fixture with deterministic clubs, events, city, and feed provider overrides."
+        },
+        {
+          "id": "explore_cover_contrast_floor",
+          "status": "captured",
+          "capturedAt": "2026-07-18",
+          "notes": "Worst-case pale activity glow fixture proving the cover-story contrast scrim in both themes."
         },
         {
           "id": "explore_joined_clubs",
@@ -1846,6 +1854,7 @@
           "source": "Explore feed with production cover-story header, time filter rail, mixed event/club cards, type browse grid, and floating map count pill. The member_event_discovery fixture now mirrors the Claude Bandra/Khar pub-quiz reference scenario.",
           "captureIds": [
             "member_event_discovery",
+            "explore_cover_contrast_floor",
             "explore_joined_clubs"
           ],
           "previewIds": [
@@ -2168,8 +2177,7 @@
             "claudeComponents": [
               "CoverStory",
               "DateTicket",
-              "ClubPolaroid",
-              "CrossPathsCard"
+              "ClubPolaroid"
             ],
             "flutter": {
               "file": "lib/explore/presentation/widgets/explore_events_section.dart",
@@ -2180,7 +2188,6 @@
             "dependencies": [
               "catch.button",
               "catch.cover_story",
-              "catch.cross_paths_card",
               "catch.event_card",
               "catch.surface"
             ],
@@ -2195,7 +2202,7 @@
             "previewIds": [
               "ExploreEventsSection/Feed states"
             ],
-            "migration": "ExploreFeedSectionState now owns mixed feed card selection, result-count copy, club intermix ranking, and This Week promotion. ExploreCoverStoryState owns cover-story kicker, title, CTA, time/price, and attendance copy with an injected clock for tests. ExploreChromeState owns search-open chrome labels and cover/header display policy. ExploreEventRowState owns event row kicker, supporting, price, capacity, and status labels. ExploreExternalEventRowState owns external event source/supporting/time-price/action/read-only labels. ExploreClubCardState owns club member/caption/supporting/action/tag labels for the mixed feed polaroid and row. DateTicket/EventTicket handoff roles map to the registered event-card/date-ticket families; the retired map/peek ticket adapters are deleted and replacement selected-card coverage is tracked by handoff item 1.B5. ClubPolaroid stays screen-section local through ExploreClubPolaroidCard plus ClubPolaroidArtwork until a second screen needs the same card contract. CrossPathsCard maps to the registered catch.cross_paths_card contract but is catalog-only for Explore feed until product adds a live person-card feed item."
+            "migration": "ExploreFeedSectionState owns mixed feed card selection, result-count copy, club intermix ranking, and This Week promotion. ExploreCoverStoryState owns the ranked cover-story identity and availability-aware CTA copy with an injected clock for tests. Explore event tickets reuse the consent-safe veiled attendee stack, while ExploreClubCardState owns host and rating context for the mixed-feed polaroid and row. DateTicket/EventTicket handoff roles map to the registered event-card/date-ticket family; the retired map/peek ticket adapters are deleted and replacement selected-card coverage is tracked by handoff item 1.B5. ClubPolaroid stays screen-section local through ExploreClubPolaroidCard plus ClubPolaroidArtwork until a second screen needs the same card contract. The catalog-only CrossPathsCard proposal was retired because no relationship or consent source existed."
           },
           {
             "id": "section.explore.cover_story",
@@ -2357,12 +2364,12 @@
         {
           "id": "DS-EXPLORE-001",
           "status": "closed",
-          "nextAction": "Closed by registering Explore browse chrome, filter rail, mixed feed, cover story, map launcher, map route, empty/error, and activity-grid sections in the screen registry, while mapping reusable handoff compounds to formal component contracts: catch.cover_story, catch.count_pill, catch.cross_paths_card, and catch.event_card. DateTicket/EventTicket roles map to catch.event_card ticket states; ClubPolaroid remains section-local through ExploreClubPolaroidCard and ClubPolaroidArtwork until reuse justifies a global component contract."
+          "nextAction": "Closed by registering Explore browse chrome, filter rail, mixed feed, cover story, map launcher, map route, empty/error, and activity-grid sections in the screen registry, while mapping reusable handoff compounds to formal component contracts: catch.cover_story, catch.count_pill, and catch.event_card. DateTicket/EventTicket roles map to catch.event_card ticket states; ClubPolaroid remains section-local through ExploreClubPolaroidCard and ClubPolaroidArtwork until reuse justifies a global component contract."
         },
         {
           "id": "DS-EXPLORE-002",
           "status": "closed",
-          "nextAction": "Widgetbook entries now cover browse chrome, filter rail/sheet content, CoverStory, CrossPathsCard, mixed feed states, empty/error states, map count pill, activity grid, full Explore screen states, and the map route."
+          "nextAction": "Widgetbook entries cover browse chrome, filter rail/sheet content, CoverStory, mixed feed states, empty/error states, map count pill, activity grid, full Explore screen states, and the map route."
         },
         {
           "id": "DS-EXPLORE-003",
@@ -2372,7 +2379,7 @@
         {
           "id": "DS-EXPLORE-004",
           "status": "closed",
-          "nextAction": "Closed by ExploreDiscoveryScreenState, which maps route provider-wave inputs into map launcher state, route body branch state, and empty-state copy/action before ExploreScreen renders visual slivers. Existing provider-free section states own feed-card planning, cover/search-open/event/external/club/map-sheet/filter/chrome labels, and map labels. CrossPaths remains a registered catalog-only component until product adds a live Explore person-card feed item."
+          "nextAction": "Closed by ExploreDiscoveryScreenState, which maps route provider-wave inputs into map launcher state, route body branch state, and empty-state copy/action before ExploreScreen renders visual slivers. Existing provider-free section states own feed-card planning, cover/search-open/event/external/club/map-sheet/filter/chrome labels, and map labels. The catalog-only CrossPaths proposal was retired; live attendee signals now use the established veiled-avatar privacy contract."
         }
       ]
     },

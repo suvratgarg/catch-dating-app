@@ -15,6 +15,7 @@ import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_d
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule_section.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_tile.dart';
+import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
 import 'package:catch_dating_app/clubs/shared/catch_polaroid.dart';
 import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
@@ -23,11 +24,14 @@ import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
@@ -37,10 +41,12 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
+import 'package:catch_dating_app/core/widgets/catch_network_image.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -150,7 +156,12 @@ Future<void> _pumpClubsSlivers(
       ],
       child: MaterialApp(
         theme: AppTheme.light,
-        home: Scaffold(body: CustomScrollView(slivers: slivers)),
+        home: Scaffold(
+          body: CustomScrollView(
+            key: const ValueKey('explore-test-scroll-view'),
+            slivers: slivers,
+          ),
+        ),
       ),
     ),
   );
@@ -173,6 +184,7 @@ Widget _exploreBodySliverGroup({
   VoidCallback onRetryClubs = _noop,
   VoidCallback onClearSearch = _noop,
   VoidCallback onClearFilters = _noop,
+  VoidCallback? onLoadMore,
   ValueChanged<ExploreTimeFilter> onSetTimeFilter = _noopTimeFilter,
   ValueChanged<ActivityKind> onActivitySelected = _noopActivityKind,
   ExploreEventSelected onEventSelected = _noopExploreEventSelected,
@@ -194,6 +206,7 @@ Widget _exploreBodySliverGroup({
         onRetryClubs: onRetryClubs,
         onClearSearch: onClearSearch,
         onClearFilters: onClearFilters,
+        onLoadMore: onLoadMore,
         onSetTimeFilter: onSetTimeFilter,
         onActivitySelected: onActivitySelected,
         onEventSelected: onEventSelected,
@@ -328,7 +341,7 @@ void main() {
       );
 
       final title = tester.widget<Text>(find.text('Neighbourhood Club'));
-      expect(title.style?.fontSize, CatchLayout.clubPolaroidTitleSize);
+      expect(title.style?.fontSize, CatchDisplayStep.s.size);
       expect(title.style?.fontStyle, isNot(FontStyle.italic));
       expect(find.byIcon(CatchIcons.forwardArrow), findsOneWidget);
 
@@ -527,6 +540,43 @@ void main() {
       }
 
       expect(find.text('Club directory'), findsOneWidget);
+    });
+
+    testWidgets('Explore body exposes an honest load-more action', (
+      tester,
+    ) async {
+      final club = buildClub(id: 'cursor-club', name: 'Cursor Club');
+      final event = event_test.buildEvent(
+        id: 'cursor-event',
+        clubId: club.id,
+        startTime: DateTime.now().add(const Duration(days: 1)),
+      );
+      var loadMoreCalls = 0;
+
+      await _pumpClubsSlivers(tester, [
+        _exploreBodySliverGroup(
+          clubsViewModel: const ExploreViewModel(joinedClubs: [], allClubs: []),
+          feedAsync: AsyncData(
+            ExploreFeedViewModel(
+              items: [ExploreEventItem(event: event, club: club)],
+              isExhaustive: false,
+            ),
+          ),
+          onLoadMore: () => loadMoreCalls += 1,
+        ),
+      ]);
+
+      await tester.scrollUntilVisible(
+        find.text('Load more plans'),
+        250,
+        scrollable: find.descendant(
+          of: find.byKey(const ValueKey('explore-test-scroll-view')),
+          matching: find.byType(Scrollable),
+        ),
+      );
+      await tester.tap(find.text('Load more plans'));
+
+      expect(loadMoreCalls, 1);
     });
 
     testWidgets('ExploreEventsSection renders event-first content', (
@@ -953,7 +1003,7 @@ void main() {
 
       expect(find.text(event.title), findsOneWidget);
 
-      await tester.tap(find.text('Claim a seat'));
+      await tester.tap(find.text('View and book'));
       await tester.pump();
 
       expect(selectedItem?.event.id, 'event-cover');
@@ -1111,15 +1161,15 @@ void main() {
       expect(find.text('Mumbai'), findsOneWidget);
       expect(find.text('Find an event worth showing up for.'), findsNothing);
       expect(find.byType(CatchCoverStory), findsNothing);
-      final cityMaterial = tester.widget<Material>(
+      final cityButton = tester.widget<CatchButton>(
         find
             .descendant(
               of: find.byType(ExploreCityPicker),
-              matching: find.byType(Material),
+              matching: find.byType(CatchButton),
             )
             .first,
       );
-      expect(cityMaterial.color, CatchTokens.light.surface);
+      expect(cityButton.backgroundColor, CatchTokens.light.surface);
     });
 
     testWidgets('ExploreDiscoveryCoverHeader search opens the compact field', (
@@ -1247,11 +1297,147 @@ void main() {
 
       expect(find.byTooltip('Change location'), findsOneWidget);
       expect(find.bySemanticsLabel('Change location, Mumbai'), findsOneWidget);
+      expect(
+        tester
+            .getSize(
+              find
+                  .ancestor(
+                    of: find.text('MUMBAI'),
+                    matching: find.byType(CatchSurface),
+                  )
+                  .first,
+            )
+            .height,
+        greaterThanOrEqualTo(CatchIconButton.defaultSize),
+      );
 
       await tester.tap(find.text('MUMBAI'));
       await tester.pump();
 
       expect(tapped, isTrue);
+    });
+
+    testWidgets('Explore scope city trigger keeps a 44 point tap target', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: Align(
+              alignment: Alignment.topLeft,
+              child: CityTrigger(
+                city: _testCities.first,
+                focused: false,
+                presentation: ExploreCityPickerPresentation.scopeLabel,
+                onTap: () {},
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        tester.getSize(find.byType(CityTrigger)).height,
+        greaterThanOrEqualTo(CatchIconButton.defaultSize),
+      );
+    });
+
+    testWidgets('Explore club cover prefers the primary uploaded photo', (
+      tester,
+    ) async {
+      final club = buildClub(
+        id: 'club-primary-photo',
+        imageUrl: 'https://example.com/legacy.jpg',
+        clubPhotos: [
+          UploadedPhoto.fromUpload(
+            url: 'https://example.com/primary.jpg',
+            storagePath: 'clubs/primary.jpg',
+            position: 0,
+            now: DateTime(2026),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(body: CatchClubCover(club: club)),
+        ),
+      );
+
+      expect(
+        tester.widget<CatchNetworkImage>(find.byType(CatchNetworkImage)).url,
+        'https://example.com/primary.jpg',
+      );
+    });
+
+    testWidgets('Explore club card composes rating and semantics', (
+      tester,
+    ) async {
+      final club = buildClub(
+        id: 'club-semantic-card',
+        name: 'Tempo House',
+        memberCount: 42,
+        rating: 4.9,
+        reviewCount: 61,
+        nextEventLabel: 'Fri 8 PM',
+        hostName: 'Asha Shah',
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: SizedBox(
+              width: 360,
+              child: ExploreClubPolaroidCard(
+                club: club,
+                onClubSelected: (_) {},
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('4.9 · 61 REVIEWS'), findsOneWidget);
+      expect(find.text('Hosted by'), findsOneWidget);
+      expect(find.text('Asha Shah'), findsOneWidget);
+      expect(find.text('View club'), findsNothing);
+      expect(
+        find.bySemanticsLabel(RegExp('Tempo House.*42 members.*61 REVIEWS')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('external event row exposes one composed summary', (
+      tester,
+    ) async {
+      final item = ExploreExternalEventItem(
+        event: _buildExternalExploreEvent(
+          id: 'external-semantic-row',
+          title: 'Afterfly Social',
+        ),
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: ExploreExternalEventRow(
+              item: item,
+              onExternalEventOpened: (_) {},
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        find.bySemanticsLabel(
+          RegExp('Afterfly Social.*FROM DISTRICT.*READ-ONLY SUPPLY'),
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('Explore club card and detail hero share media padding', (
@@ -1375,6 +1561,9 @@ void main() {
               body: CustomScrollView(
                 slivers: [
                   _exploreEventsSection(
+                    filters: const ExploreFilterSelection(
+                      timeFilter: ExploreTimeFilter.thisWeek,
+                    ),
                     feedAsync: AsyncData(
                       ExploreFeedViewModel(
                         items: [
@@ -1621,6 +1810,9 @@ void main() {
     ) async {
       final container = ProviderContainer();
       addTearDown(container.dispose);
+      container
+          .read(exploreFiltersProvider.notifier)
+          .setTimeFilter(ExploreTimeFilter.thisWeek);
 
       await tester.pumpWidget(
         MaterialApp(
@@ -1849,7 +2041,7 @@ void main() {
       expect(find.text('HYD'), findsNothing);
       expect(find.text('Hyderabad'), findsOneWidget);
       final triggerSize = tester.getSize(find.byType(ExploreCityPicker));
-      expect(triggerSize.height, CatchIconButton.navSize);
+      expect(triggerSize.height, CatchSpacing.s12);
       expect(triggerSize.width, greaterThan(triggerSize.height));
       expect(triggerSize.width, lessThanOrEqualTo(132));
     });
@@ -2995,7 +3187,7 @@ void main() {
       expect(find.text('Event event-42'), findsOneWidget);
     });
 
-    testWidgets('ExploreScreen renders the guest club directory with Join', (
+    testWidgets('ExploreScreen renders a navigable guest club directory', (
       tester,
     ) async {
       final club = buildClub(id: 'club-99', name: 'Pace Social');
@@ -3031,7 +3223,8 @@ void main() {
 
       expect(find.text('Club directory'), findsOneWidget);
       expect(find.text('Pace Social'), findsWidgets);
-      expect(_catchButtonWithLabel('Join'), findsOneWidget);
+      expect(find.byType(ExploreClubPolaroidCard), findsOneWidget);
+      expect(_catchButtonWithLabel('Join'), findsNothing);
     });
 
     testWidgets('ExploreScreen shows skeleton cards while loading', (
@@ -3063,8 +3256,99 @@ void main() {
       // visual choice; assert "at least one" so future tightening doesn't
       // re-break the test.
       expect(find.byType(CatchSkeleton), findsAtLeastNWidgets(1));
+      expect(find.byType(RefreshIndicator), findsOneWidget);
       expect(_topLevelSearchField(), findsOneWidget);
       expect(find.byType(TextField), findsNothing);
+    });
+
+    testWidgets('ExploreScreen revalidates when its shell tab is re-entered', (
+      tester,
+    ) async {
+      var activeIndex = appShellClubsTabIndex;
+      var feedBuilds = 0;
+      late StateSetter setShellState;
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            cityListProvider.overrideWith((ref) async => _testCities),
+            deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+            uidProvider.overrideWith((ref) => Stream.value(null)),
+            exploreSourceClubsProvider.overrideWithValue(
+              const AsyncData(<Club>[]),
+            ),
+            exploreClubsViewModelProvider.overrideWithValue(
+              const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
+            ),
+            exploreFeedViewModelProvider.overrideWith((ref) {
+              feedBuilds += 1;
+              return const AsyncData(ExploreFeedViewModel(items: []));
+            }),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: StatefulBuilder(
+              builder: (context, setState) {
+                setShellState = setState;
+                return AppShellActiveTab(
+                  index: activeIndex,
+                  child: const ExploreScreen(),
+                );
+              },
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      final initialBuilds = feedBuilds;
+
+      setShellState(() => activeIndex = appShellHomeTabIndex);
+      await tester.pump();
+      setShellState(() => activeIndex = appShellClubsTabIndex);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 60));
+
+      expect(feedBuilds, greaterThan(initialBuilds));
+    });
+
+    testWidgets('ExploreScreen pull-to-refresh revalidates the feed', (
+      tester,
+    ) async {
+      var feedBuilds = 0;
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            cityListProvider.overrideWith((ref) async => _testCities),
+            deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+            uidProvider.overrideWith((ref) => Stream.value(null)),
+            exploreSourceClubsProvider.overrideWithValue(
+              const AsyncData(<Club>[]),
+            ),
+            exploreClubsViewModelProvider.overrideWithValue(
+              const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
+            ),
+            exploreFeedViewModelProvider.overrideWith((ref) {
+              feedBuilds += 1;
+              return const AsyncData(ExploreFeedViewModel(items: []));
+            }),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const ExploreScreen(),
+          ),
+        ),
+      );
+      await tester.pump();
+      final initialBuilds = feedBuilds;
+
+      unawaited(
+        tester
+            .state<RefreshIndicatorState>(find.byType(RefreshIndicator))
+            .show(),
+      );
+      await tester.pumpAndSettle();
+
+      expect(feedBuilds, greaterThan(initialBuilds));
     });
 
     testWidgets(
@@ -3094,10 +3378,30 @@ void main() {
         await tester.pump();
 
         expect(find.byType(ExploreCityPicker), findsOneWidget);
-        expect(find.byIcon(CatchIcons.locationOnOutlined), findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.byType(ExploreCityPicker),
+            matching: find.byIcon(CatchIcons.locationOnOutlined),
+          ),
+          findsOneWidget,
+        );
         expect(_topLevelSearchField(), findsOneWidget);
         expect(find.byType(TextField), findsNothing);
         expect(find.text('No clubs in Mumbai yet'), findsOneWidget);
+        expect(find.text('Change city'), findsOneWidget);
+
+        await tester.tap(find.text('Change city'));
+        await _pumpClubUi(tester);
+        expect(find.text('City'), findsOneWidget);
+        expect(find.text('Delhi'), findsOneWidget);
+        await tester.tap(find.text('Delhi'));
+        await _pumpClubUi(tester);
+        expect(
+          ProviderScope.containerOf(
+            tester.element(find.byType(ExploreScreen)),
+          ).read(selectedExploreCityProvider).label,
+          'Delhi',
+        );
 
         await tester.tap(find.byTooltip('Search events or clubs'));
         await tester.pump();
@@ -3162,7 +3466,7 @@ void main() {
     });
 
     testWidgets(
-      'ExploreScreen restores the featured row when search replaces the cover',
+      'ExploreScreen keeps the featured event in the feed during search',
       (tester) async {
         final club = buildClub(id: 'search-cover-club', name: 'Search Social');
         final event = event_test.buildEvent(
@@ -3188,6 +3492,7 @@ void main() {
               exploreFeedViewModelProvider.overrideWithValue(
                 AsyncData(
                   ExploreFeedViewModel(
+                    featuredEventId: event.id,
                     items: [
                       ExploreEventItem(
                         event: event,
@@ -3208,7 +3513,7 @@ void main() {
         await _pumpClubUi(tester);
 
         expect(find.byType(CatchCoverStory), findsOneWidget);
-        expect(find.byType(EventDateRailCard), findsNothing);
+        expect(find.byType(EventDateRailCard), findsOneWidget);
         expect(find.textContaining('1 PLAN'), findsOneWidget);
 
         await tester.tap(find.byTooltip('Search events or clubs'));
@@ -3231,7 +3536,7 @@ void main() {
         await tester.pump();
 
         expect(find.byType(CatchCoverStory), findsOneWidget);
-        expect(find.byType(EventDateRailCard), findsNothing);
+        expect(find.byType(EventDateRailCard), findsOneWidget);
       },
     );
 
@@ -3261,6 +3566,7 @@ void main() {
             exploreFeedViewModelProvider.overrideWithValue(
               AsyncData(
                 ExploreFeedViewModel(
+                  featuredEventId: event.id,
                   items: [
                     ExploreEventItem(
                       event: event,
@@ -3285,7 +3591,7 @@ void main() {
       );
       await _pumpClubUi(tester);
 
-      expect(find.text(event.title), findsOneWidget);
+      expect(find.text(event.title), findsWidgets);
       expect(find.byType(CatchCoverStory), findsOneWidget);
       expect(find.text('Map'), findsOneWidget);
       expect(
@@ -3388,9 +3694,9 @@ void main() {
       // the right-aligned filter glyph.
       expect(find.text('Tonight'), findsOneWidget);
       expect(find.text('Tomorrow'), findsOneWidget);
-      expect(find.text('Weekend'), findsOneWidget);
-      expect(find.text('This week'), findsOneWidget);
-      expect(find.text('Anytime'), findsOneWidget);
+      expect(find.text('Weekend'), findsNothing);
+      expect(find.text('This week'), findsNothing);
+      expect(find.text('Any'), findsOneWidget);
       expect(
         find.byKey(const ValueKey('explore-filter-button')),
         findsOneWidget,
@@ -3406,7 +3712,7 @@ void main() {
       expect(find.text('Joined clubs'), findsNothing);
       expect(find.text('Rated 4.5+'), findsNothing);
 
-      await tester.tap(find.text('Tonight'));
+      await tester.tap(find.text('Tomorrow'));
       await _pumpClubUi(tester);
 
       expect(find.text('1'), findsOneWidget);
@@ -3415,6 +3721,8 @@ void main() {
       await _pumpClubUi(tester);
 
       expect(find.text('Explore filters'), findsOneWidget);
+      expect(find.text('DISTANCE · EVENTS ONLY'), findsOneWidget);
+      expect(find.text('Show 0 plans'), findsOneWidget);
       expect(find.text('3 km'), findsOneWidget);
       expect(find.text('Joined clubs'), findsOneWidget);
       expect(find.text('Following'), findsNothing);
@@ -3520,6 +3828,11 @@ void main() {
             body: ExploreFilterRail(
               filters: filters,
               state: ExploreFilterRailState.from(filters, l10n: _l10n),
+              dateStripState: ExploreDateStripState.from(
+                viewModel: null,
+                l10n: _l10n,
+                now: DateTime(2026, 5, 26, 10),
+              ),
             ),
           ),
         ),
@@ -3529,17 +3842,177 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(find.text('Tonight'), findsOneWidget);
       expect(find.text('Tomorrow'), findsOneWidget);
-      expect(find.text('Weekend'), findsOneWidget);
-      expect(find.text('This week'), findsOneWidget);
-      expect(find.text('Anytime'), findsOneWidget);
+      expect(find.text('Thu 28'), findsOneWidget);
+      expect(find.text('Mon 1'), findsOneWidget);
+      expect(find.text('Weekend'), findsNothing);
+      expect(find.text('This week'), findsNothing);
+      expect(find.text('Any'), findsOneWidget);
       expect(find.byIcon(CatchIcons.tuneRounded), findsOneWidget);
       expect(find.text('Filters'), findsNothing);
       expect(find.text('1'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('explore-applied-filter-row')),
+        findsOneWidget,
+      );
+      expect(find.text('Rated 4.5+'), findsOneWidget);
 
       final iconCenter = tester.getCenter(find.byIcon(CatchIcons.tuneRounded));
       final badgeCenter = tester.getCenter(find.text('1'));
       expect(badgeCenter.dx, greaterThan(iconCenter.dx));
       expect(badgeCenter.dy, lessThan(iconCenter.dy));
+    });
+
+    testWidgets('ExploreFilterRail removes visible applied filters', (
+      tester,
+    ) async {
+      var filters = const ExploreFilterSelection(
+        distanceFilter: ExploreDistanceFilter.threeKm,
+        area: 'Bandra',
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (context, setState) => ExploreFilterRail(
+                filters: filters,
+                onDistanceFilterSelected: (distance) => setState(
+                  () => filters = filters.copyWith(distanceFilter: distance),
+                ),
+                onToggleArea: (area) =>
+                    setState(() => filters = filters.copyWith(area: null)),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('3 km · events only'), findsOneWidget);
+      expect(find.text('Bandra'), findsOneWidget);
+
+      await tester.tap(find.byKey(const ValueKey('explore-applied-distance')));
+      await tester.pump();
+
+      expect(filters.distanceFilter, ExploreDistanceFilter.any);
+      expect(find.text('3 km · events only'), findsNothing);
+      expect(find.text('Bandra'), findsOneWidget);
+    });
+
+    testWidgets('ExploreFilterSheet updates its live result count', (
+      tester,
+    ) async {
+      final club = buildClub(id: 'filter-count-club');
+      final first = ExploreEventItem(
+        event: event_test.buildEvent(id: 'filter-count-1', clubId: club.id),
+        club: club,
+      );
+      final second = ExploreEventItem(
+        event: event_test.buildEvent(id: 'filter-count-2', clubId: club.id),
+        club: club,
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            exploreFeedViewModelProvider.overrideWith((ref) {
+              final filters = ref.watch(exploreFiltersProvider);
+              return AsyncData(
+                ExploreFeedViewModel(
+                  items: filters.highRatedOnly ? [first] : [first, second],
+                ),
+              );
+            }),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: Consumer(
+                builder: (context, ref, _) {
+                  final filters = ref.watch(exploreFiltersProvider);
+                  final initialSheetState = ExploreFilterSheetState.from(
+                    filters: filters,
+                    sourceClubs: [club],
+                    l10n: _l10n,
+                  );
+                  return ExploreFilterRail(
+                    filters: filters,
+                    sheetState: initialSheetState,
+                    onToggleHighRatedOnly: () => ref
+                        .read(exploreFiltersProvider.notifier)
+                        .toggleHighRatedOnly(),
+                    onOpenFilters: () => unawaited(
+                      showCatchBottomSheet<void>(
+                        context: context,
+                        builder: (_) => Consumer(
+                          builder: (sheetContext, ref, _) {
+                            final liveFilters = ref.watch(
+                              exploreFiltersProvider,
+                            );
+                            final liveFeed = ref.watch(
+                              exploreFeedViewModelProvider,
+                            );
+                            return ExploreFilterSheet(
+                              filters: liveFilters,
+                              state: initialSheetState.withLiveResults(
+                                filters: liveFilters,
+                                viewModel: liveFeed.asData?.value,
+                                feedLoading: liveFeed.isLoading,
+                                l10n: _l10n,
+                              ),
+                              onToggleHighRatedOnly: () => ref
+                                  .read(exploreFiltersProvider.notifier)
+                                  .toggleHighRatedOnly(),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.byKey(const ValueKey('explore-filter-button')));
+      await _pumpClubUi(tester);
+      expect(find.text('Show 2 plans'), findsOneWidget);
+
+      await tester.tap(_selectChip('Rated 4.5+'));
+      await _pumpClubUi(tester);
+      expect(find.text('Show 1 plan'), findsOneWidget);
+    });
+
+    testWidgets('ExploreFeedEventRow demotes ineligible plans with a reason', (
+      tester,
+    ) async {
+      final club = buildClub(id: 'ineligible-club');
+      final item = ExploreEventItem(
+        event: event_test.buildEvent(id: 'ineligible-event', clubId: club.id),
+        club: club,
+        availability: const ViewerEventAvailability(
+          status: ViewerEventAvailabilityStatus.fullForViewer,
+          spotsRemaining: 0,
+          isSaved: false,
+          isHosted: false,
+          isClubMember: false,
+        ),
+      );
+
+      await pumpTestApp(tester, ExploreFeedEventRow(item: item));
+
+      final opacity = tester.widget<Opacity>(
+        find.byKey(const ValueKey('explore-ineligible-event-ineligible-event')),
+      );
+      expect(opacity.opacity, CatchOpacity.discoveryIneligible);
+      expect(
+        find.textContaining('YOUR GROUP IS FULL', findRichText: true),
+        findsOneWidget,
+      );
     });
 
     testWidgets('ExploreScreen map pill opens the map route', (tester) async {

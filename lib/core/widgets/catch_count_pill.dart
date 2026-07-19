@@ -89,7 +89,7 @@ class CatchCountPill extends StatelessWidget {
     final pill = CatchSurface(
       radius: CatchRadius.pill,
       elevation: CatchSurfaceElevation.raised,
-      backgroundColor: t.surface.withValues(alpha: 0.94),
+      backgroundColor: t.floatingPillFill,
       borderColor: t.line2,
       padding: EdgeInsets.only(
         left: CatchSpacing.s4,

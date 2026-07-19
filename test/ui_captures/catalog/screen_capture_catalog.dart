@@ -105,6 +105,7 @@ import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.da
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
@@ -811,7 +812,13 @@ List<Object> _exploreProviderOverrides({
         ),
       );
   final effectiveFeed =
-      feed ?? AsyncData(ExploreFeedViewModel(items: _memberDiscoveryItems));
+      feed ??
+      AsyncData(
+        ExploreFeedViewModel(
+          items: _memberDiscoveryItems,
+          featuredEventId: _memberDiscoveryItems.first.event.id,
+        ),
+      );
 
   return [
     cityListProvider.overrideWith((ref) async => _memberDiscoveryCities),
@@ -861,8 +868,8 @@ class _CaptureBandraDeviceLocation extends DeviceLocation {
       const LocationCoordinate(19.064, 72.835);
 }
 
-class _CaptureMatchRepository implements MatchRepository {
-  const _CaptureMatchRepository({required this.matches});
+class _CaptureMatchRepository extends Fake implements MatchRepository {
+  _CaptureMatchRepository({required this.matches});
 
   final List<Match> matches;
 
@@ -9991,6 +9998,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         _memberDiscoveryCities.first,
       ),
       deviceLocationProvider.overrideWith(_CaptureDeviceLocation.new),
+      exploreDiscoveryReferenceNowProvider.overrideWithValue(
+        DateTime(2026, 6, 11, 10),
+      ),
       uidProvider.overrideWith((ref) => Stream.value(null)),
       watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
       exploreSourceClubsProvider.overrideWithValue(
@@ -10005,10 +10015,46 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         ),
       ),
       exploreFeedViewModelProvider.overrideWithValue(
-        AsyncData(ExploreFeedViewModel(items: _memberDiscoveryItems)),
+        AsyncData(
+          ExploreFeedViewModel(
+            items: [_memberDiscoveryItems.first],
+            featuredEventId: _memberDiscoveryItems.first.event.id,
+            dateSupplyCounts: {
+              ExploreTimeFilter.tonight: 1,
+              ExploreTimeFilter.tomorrow: 1,
+              ExploreTimeFilter.dayTwo: 1,
+              ExploreTimeFilter.dayThree: 0,
+              ExploreTimeFilter.dayFour: 1,
+              ExploreTimeFilter.dayFive: 0,
+              ExploreTimeFilter.daySix: 1,
+              ExploreTimeFilter.anytime: _memberDiscoveryItems.length,
+            },
+          ),
+        ),
       ),
     ],
     builder: (context) => const ExploreScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'explore_cover_contrast_floor',
+    routeIds: const <String>['exploreScreen'],
+    device: CaptureDevice.reviewPhone,
+    builder: (context) => const Align(
+      alignment: Alignment.topCenter,
+      child: SizedBox(
+        width: double.infinity,
+        height: CatchLayout.exploreDiscoveryCoverHeight,
+        child: CatchCoverStory(
+          activityKind: ActivityKind.walking,
+          kicker: 'Bright activity backdrop',
+          title: 'Thursday Evening Walk',
+          body: 'A deliberately pale activity glow behind the complete story.',
+          cta: 'View and book',
+          data: '7:30 PM · Free',
+          data2: '18 going · 4 left',
+        ),
+      ),
+    ),
   ),
   ScreenCaptureEntry(
     id: 'explore_joined_clubs',

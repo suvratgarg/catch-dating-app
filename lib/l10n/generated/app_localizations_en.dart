@@ -1327,6 +1327,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreExploreScreenTooltipSavedEvents => 'Saved events';
 
   @override
+  String get exploreExploreScreenActionLoadMorePlans => 'Load more plans';
+
+  @override
   String get exploreExploreScreenTitleNoClubsMatchThis =>
       'No clubs match this search';
 
@@ -1360,16 +1363,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreExploreScreenLabelClear => 'Clear';
 
   @override
+  String get exploreExploreScreenLabelChangeCity => 'Change city';
+
+  @override
   String get exploreCatchCoverStoryMessageChangeLocation => 'Change location';
 
   @override
   String get exploreCatchCoverStoryTooltipSearch => 'Search';
-
-  @override
-  String get exploreCatchCrossPathsCardTextToYou => 'TO: YOU';
-
-  @override
-  String get exploreCatchCrossPathsCardTooltipLike => 'Like';
 
   @override
   String get exploreExploreCityPickerTextCity => 'City';
@@ -1391,10 +1391,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreExploreFilterRailLabelClear => 'Clear';
 
   @override
-  String get exploreExploreFilterRailLabelDone => 'Done';
+  String get exploreExploreFilterRailLabelUpdatingPlans => 'Updating plans';
 
   @override
-  String get exploreExploreFilterRailTextDistance => 'DISTANCE';
+  String exploreExploreFilterRailLabelShowPlans({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Show $count plans',
+      one: 'Show 1 plan',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String exploreExploreFilterRailLabelShowPlansPlus({required int count}) {
+    return 'Show $count+ plans';
+  }
+
+  @override
+  String get exploreExploreFilterRailTextDistanceEventsOnly =>
+      'DISTANCE · EVENTS ONLY';
+
+  @override
+  String exploreExploreFilterRailAppliedDistance({required Object distance}) {
+    return '$distance · events only';
+  }
 
   @override
   String get exploreExploreFilterRailTextClubs => 'CLUBS';
@@ -6884,7 +6906,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreExploreScreenStateLabel10Km => '10 km';
 
   @override
-  String get exploreExploreScreenStateCtalabelClaimASeat => 'Claim a seat';
+  String get exploreExploreScreenStateCtaViewAndBook => 'View and book';
+
+  @override
+  String get exploreExploreScreenStateCtaViewAndRequest => 'View and request';
+
+  @override
+  String get exploreExploreScreenStateCtaViewWaitlist => 'View waitlist';
+
+  @override
+  String get exploreExploreScreenStateCtaViewEvent => 'View event';
 
   @override
   String get exploreExploreScreenStateActionlabelOpen => 'Open';
@@ -6896,10 +6927,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreExploreScreenStateCaptionClubToKnow => 'Club to know';
 
   @override
-  String get exploreExploreScreenStateActionlabelPreview => 'Preview';
-
-  @override
-  String get exploreExploreScreenStateActionlabelViewClub => 'View club';
+  String get exploreExploreScreenStateLabelHostedBy => 'Hosted by';
 
   @override
   String get exploreExploreScreenStateTitleNoEventsMatchThis =>
@@ -6919,9 +6947,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get exploreExploreScreenStateMessageTheNextGoodFit =>
       'The next good fit may be over the weekend.';
-
-  @override
-  String get exploreExploreScreenStateActionlabelSeeWeekend => 'See weekend';
 
   @override
   String get exploreExploreScreenStateTitleNothingTomorrow =>
@@ -7528,7 +7553,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreExploreFilterRailLabelThisWeek => 'This week';
 
   @override
-  String get exploreExploreFilterRailLabelAnytime => 'Anytime';
+  String get exploreExploreFilterRailLabelAny => 'Any';
+
+  @override
+  String exploreExploreFilterRailDateSupply({
+    required Object label,
+    required int count,
+  }) {
+    return '$label · $count';
+  }
+
+  @override
+  String exploreExploreFilterRailDateSupplyPlus({
+    required Object label,
+    required int count,
+  }) {
+    return '$label · $count+';
+  }
 
   @override
   String get dashboardNotificationsListStateVisiblecopyMarking => 'Marking...';
@@ -9050,12 +9091,29 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String exploreExploreScreenStateVisiblecopyCountPlusNoun({
+    required Object count,
+    required Object noun,
+  }) {
+    return '$count+ $noun';
+  }
+
+  @override
   String exploreExploreScreenStateVisiblecopyCountNounDatespan({
     required Object count,
     required Object noun,
     required Object dateSpan,
   }) {
     return '$count $noun · $dateSpan';
+  }
+
+  @override
+  String exploreExploreScreenStateVisiblecopyCountPlusNounDatespan({
+    required Object count,
+    required Object noun,
+    required Object dateSpan,
+  }) {
+    return '$count+ $noun · $dateSpan';
   }
 
   @override
@@ -9107,9 +9165,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return 'COMING UP · $length';
   }
-
-  @override
-  String get exploreRecommendCardVisiblecopyFree => 'Free';
 
   @override
   String get hostsCreateClubScreenVisiblecopyRestoredYourClubDraft =>
@@ -10746,9 +10801,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get eventsEventDateRailCardVisiblecopyFree => 'Free';
-
-  @override
   String exploreExploreMapScreenLabelWithinDistance({required int distanceKm}) {
     return 'Within $distanceKm km';
   }
@@ -11198,4 +11250,162 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get safetyAccountUnblockedMessage => 'Account unblocked.';
+
+  @override
+  String get eventsEventPriceCopyFree => 'Free';
+
+  @override
+  String eventsEventPriceCopyFromPrice({required Object price}) {
+    return 'From $price';
+  }
+
+  @override
+  String get eventsEventPriceCopyPriceOnSource => 'Price on source';
+
+  @override
+  String coreCatchCountCopyEvents({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count events',
+      one: '1 event',
+      zero: 'No events',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String coreCatchDistanceFormatterMetersAway({required int meters}) {
+    return '$meters m away';
+  }
+
+  @override
+  String coreCatchDistanceFormatterKilometersAway({required String distance}) {
+    return '$distance km away';
+  }
+
+  @override
+  String get exploreExploreScreenStateAvailabilityOpen => 'Open';
+
+  @override
+  String get exploreExploreScreenStateAvailabilityApprovedToJoin =>
+      'Approved to join';
+
+  @override
+  String get exploreExploreScreenStateAvailabilityRequestRequired =>
+      'Request required';
+
+  @override
+  String get exploreExploreScreenStateAvailabilityWaitlistOpen =>
+      'Waitlist open';
+
+  @override
+  String get exploreExploreScreenStateAvailabilityFull => 'Full';
+
+  @override
+  String get exploreExploreScreenStateAvailabilityFullForYou =>
+      'Your group is full';
+
+  @override
+  String get exploreExploreScreenStateAvailabilityInviteRequired =>
+      'Invite required';
+
+  @override
+  String get exploreExploreScreenStateAvailabilityMembersOnly => 'Members only';
+
+  @override
+  String get exploreExploreScreenStateAvailabilitySetPreferences =>
+      'Set preferences';
+
+  @override
+  String get exploreExploreScreenStateAvailabilityEnded => 'Ended';
+
+  @override
+  String get exploreExploreScreenStateAvailabilityCancelled => 'Cancelled';
+
+  @override
+  String get exploreExploreScreenStateAvailabilityAgeRestricted =>
+      'Age restricted';
+
+  @override
+  String exploreExploreScreenStateAvailabilityMinimumAge({
+    required int minAge,
+  }) {
+    return 'Must be $minAge+';
+  }
+
+  @override
+  String exploreExploreScreenStateAvailabilityMaximumAge({
+    required int maxAge,
+  }) {
+    return 'Max age $maxAge';
+  }
+
+  @override
+  String exploreExploreScreenStateAvailabilitySpotsLeft({required int spots}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      spots,
+      locale: localeName,
+      other: '$spots spots left',
+      one: '1 spot left',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String exploreExploreScreenStateGoingCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count going',
+      one: '1 going',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String exploreExploreScreenStateGoingAvailability({
+    required Object goingLabel,
+    required Object availabilityLabel,
+  }) {
+    return '$goingLabel · $availabilityLabel';
+  }
+
+  @override
+  String exploreExploreScreenStateClubRatingReviews({
+    required Object rating,
+    required int reviewCount,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      reviewCount,
+      locale: localeName,
+      other: '$reviewCount REVIEWS',
+      one: '1 REVIEW',
+      zero: 'NO REVIEWS',
+    );
+    return '$rating · $_temp0';
+  }
+
+  @override
+  String exploreExploreScreenStateClubCardSemantics({
+    required Object title,
+    required Object caption,
+    required Object supportingLabel,
+    required Object memberCountLabel,
+    required Object ratingReviewLabel,
+  }) {
+    return '$title, $caption, $supportingLabel, $memberCountLabel, $ratingReviewLabel';
+  }
+
+  @override
+  String exploreExploreScreenStateExternalEventSemantics({
+    required Object title,
+    required Object sourceLabel,
+    required Object statusLabel,
+    required Object supportingLabel,
+    required Object timePriceLabel,
+    required Object readOnlySupplyLabel,
+  }) {
+    return '$title, $sourceLabel, $statusLabel, $supportingLabel, $timePriceLabel, $readOnlySupplyLabel';
+  }
 }
