@@ -1,7 +1,7 @@
 ---
 doc_id: widget_concept_report
 version: 2.0.0
-updated: 2026-07-18
+updated: 2026-07-19
 owner: widget_consolidation
 status: generated
 generated_by: tool/design/build_widget_concept_report.mjs
@@ -20,8 +20,8 @@ design-sync manifest. Do not edit it by hand. The machine-readable companion is
 |---|---:|---:|---|
 | Top-level contract entries | 64 | 69 | Contracts may remain useful without claiming concept identity. |
 | Independent concepts | 64 proxy | 63 | 1 fewer than the old top-level proxy (1.56%); count accuracy, not reduction, is the objective. |
-| Contracted public widget classes | — | 196 | Primaries and members are counted separately from concepts. |
-| Member APIs | — | 116 (1.84 per concept) | Public seams do not inflate concept count. |
+| Contracted public widget classes | — | 198 | Primaries and members are counted separately from concepts. |
+| Member APIs | — | 118 (1.87 per concept) | Public seams do not inflate concept count. |
 | Unclassified contracted entries | — | 0 | Must remain zero. |
 | Production widget/state classes | — | 1094 | Exhaustive generated inventory. |
 | Instantiated concept primaries | — | 62 | One contracted primary is not a runtime Widget declaration. |
@@ -110,7 +110,7 @@ publish snapshot, plan tier, and generated mappings satisfy the prerequisites.
 | 3. Resolve owner-gated semantic decisions | proven | 0 unresolved semantic owner question(s) |
 | 4. Verify accepted changes and stamp receipts | proven | Focused checks and audit receipt widget-concept-owner-decisions-2026-07-19 are recorded |
 | 5. Give every cataloged entry exactly one governed role | proven | 0 unclassified contracts and 0 unclassified production entries |
-| 6. Report concept and class counts separately | proven | 63 concepts, 196 contracted public classes, 1094 production widget/state classes |
+| 6. Report concept and class counts separately | proven | 63 concepts, 198 contracted public classes, 1094 production widget/state classes |
 | 7. Complete live Figma/Claude Badge + Field round trip | pending | awaiting-figma-file-approval; Code Connect blocked-plan-tier; Claude context current; Claude Design receipt missing |
 | 8. Reduce remaining work to a bounded queue | proven | 3 generated owner/live gates and 55 advisory ranked-pair candidates |
 

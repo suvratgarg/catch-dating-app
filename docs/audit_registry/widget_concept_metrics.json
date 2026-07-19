@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-18",
+  "updated": "2026-07-19",
   "sourceOfTruth": {
     "componentContracts": "design/components/catch.components.json",
     "classification": "docs/audit_registry/widget_classification.json",
@@ -14,10 +14,10 @@
     "topLevelContracts": 69,
     "concepts": 63,
     "conceptDelta": -1,
-    "publicContractClasses": 196,
+    "publicContractClasses": 198,
     "productionWidgetAndStateClasses": 1094,
-    "members": 116,
-    "membersPerConcept": 1.84,
+    "members": 118,
+    "membersPerConcept": 1.87,
     "unclassifiedContractEntries": 0,
     "unclassifiedProductionEntries": 0,
     "unresolvedCollisionFamilies": 0,
@@ -48,12 +48,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "6e83f0859a061f46d68e8561f64cb9c093485b31007595233ac87442f021b9c4",
-    "contractDigest": "6e83f0859a061f46d68e8561f64cb9c093485b31007595233ac87442f021b9c4"
+    "digest": "efc8791cff04beee5d5545af6c8670d082d18f05bb7a628acd8278f4f9462d51",
+    "contractDigest": "efc8791cff04beee5d5545af6c8670d082d18f05bb7a628acd8278f4f9462d51"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "9a6916bf64a44c9239b5ae3f15f6fb02c9050b57f3269b13e7e1b6812eebf27d",
+    "handoffRequestDigest": "b787fa99f262f2bfe7f6327ffc3ea60085d146ea95dd4810d81d915eb89b602c",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -300,7 +300,7 @@
     {
       "requirement": "6. Report concept and class counts separately",
       "status": "proven",
-      "evidence": "63 concepts, 196 contracted public classes, 1094 production widget/state classes"
+      "evidence": "63 concepts, 198 contracted public classes, 1094 production widget/state classes"
     },
     {
       "requirement": "7. Complete live Figma/Claude Badge + Field round trip",

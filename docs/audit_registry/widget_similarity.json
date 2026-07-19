@@ -72,7 +72,7 @@
       "hammingBucket": "35-39",
       "pairs": 131,
       "jaccardMin": 0.0219,
-      "jaccardMean": 0.3254,
+      "jaccardMean": 0.3246,
       "jaccardMax": 0.5946
     },
     {
@@ -84,23 +84,23 @@
     },
     {
       "hammingBucket": "45-49",
-      "pairs": 786,
+      "pairs": 785,
       "jaccardMin": 0,
-      "jaccardMean": 0.1433,
+      "jaccardMean": 0.1435,
       "jaccardMax": 0.4706
     },
     {
       "hammingBucket": "50-54",
-      "pairs": 1719,
+      "pairs": 1717,
       "jaccardMin": 0,
       "jaccardMean": 0.0874,
       "jaccardMax": 0.4412
     },
     {
       "hammingBucket": "55-59",
-      "pairs": 2928,
+      "pairs": 2935,
       "jaccardMin": 0,
-      "jaccardMean": 0.0542,
+      "jaccardMean": 0.0541,
       "jaccardMax": 0.2813
     },
     {
@@ -112,7 +112,7 @@
     },
     {
       "hammingBucket": "65-69",
-      "pairs": 1935,
+      "pairs": 1932,
       "jaccardMin": 0,
       "jaccardMean": 0.0221,
       "jaccardMax": 0.2
@@ -128,7 +128,7 @@
       "hammingBucket": "75-79",
       "pairs": 100,
       "jaccardMin": 0,
-      "jaccardMean": 0.01,
+      "jaccardMean": 0.0098,
       "jaccardMax": 0.0816
     },
     {
@@ -147,7 +147,7 @@
     }
   ],
   "summary": {
-    "widgets": 962,
+    "widgets": 964,
     "fingerprintFailures": 1,
     "exactClusters": 2,
     "clusters": 43,
@@ -208,7 +208,7 @@
           {
             "a": "ClubShareCard",
             "b": "EventShareCard",
-            "rank": 113,
+            "rank": 112,
             "score": 0.5778,
             "containment": 0.5778,
             "jaccard": 0.2203
@@ -242,7 +242,7 @@
           {
             "a": "DashboardFocusLoadingCard",
             "b": "HostPaymentAccountLoadingCard",
-            "rank": 117,
+            "rank": 116,
             "score": 0.5556,
             "containment": 0.5556,
             "jaccard": 0.2381
@@ -1987,11 +1987,11 @@
       "name": "CatchFieldDisclosureDrawer",
       "file": "lib/core/widgets/catch_field_lanes.dart",
       "role": "composition",
-      "shapeHash": "1b7acf93760ba989e193b87c852aa1d9f967bb642579850b24b8066d87cf49f0",
-      "coarseShapeHash": "778249ba5b05d3cb114c6623548b6ec6df0516a43d0d5ad7c2345edf5bdc6df7",
-      "simhash128": "a641fb0da3971ecba708b6e9e83375f5",
-      "tokenStreamLength": 76,
-      "coarseTokenStreamLength": 76,
+      "shapeHash": "f1f22ea4b95007d7df8ce9c6c34356dfddcd356953348d5949e46f9ccd1149ec",
+      "coarseShapeHash": "91453ed63291025a375fdcb4c1bd71ae16f5fd6002f1ade0650fabf55d0f6be9",
+      "simhash128": "9661fb8ca1961af9e380bea3e81355f1",
+      "tokenStreamLength": 88,
+      "coarseTokenStreamLength": 88,
       "usageCountRaw": 6,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -2071,6 +2071,19 @@
       "tokenStreamLength": 12,
       "coarseTokenStreamLength": 12,
       "usageCountRaw": 5,
+      "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
+      "hasWidgetHelpers": false
+    },
+    {
+      "name": "CatchFieldStatusIndicator",
+      "file": "lib/core/widgets/catch_field_lanes.dart",
+      "role": "composition",
+      "shapeHash": "b5662568a81a1387ea7d655547dcda9c6d918c158330c7d5c31b4f6c9b506c97",
+      "coarseShapeHash": "871edb904f9c35399ca42b3de0ad1449939850cb53851d8cd655ff6784efd9d4",
+      "simhash128": "26c16d171ffd6e4bef77cd8ef91b75ee",
+      "tokenStreamLength": 117,
+      "coarseTokenStreamLength": 117,
+      "usageCountRaw": 2,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -3362,6 +3375,19 @@
       "hasWidgetHelpers": false
     },
     {
+      "name": "CatchSliverContentWidth",
+      "file": "lib/core/widgets/catch_tabbed_screen.dart",
+      "role": "pattern",
+      "shapeHash": "62da50d16fe3a2c8ddb2b107c85f9db031189b02ada8b2e807f0e130fe5bce69",
+      "coarseShapeHash": "4bd0192084541bb7c08ce304bba8bfecd6f32844eab91251cb2254e9c269133c",
+      "simhash128": "ba1f3a8cf770ff4a41d371c40e289463",
+      "tokenStreamLength": 22,
+      "coarseTokenStreamLength": 22,
+      "usageCountRaw": 1,
+      "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
+      "hasWidgetHelpers": false
+    },
+    {
       "name": "CatchSliverEmptyState",
       "file": "lib/core/widgets/catch_empty_state.dart",
       "role": "composition",
@@ -3573,11 +3599,11 @@
       "name": "CatchTabbedPageScrollView",
       "file": "lib/core/widgets/catch_tabbed_screen.dart",
       "role": "pattern",
-      "shapeHash": "2c44edab0e436a2cc0c629b863fe8d16c0e1c348da1ee223933ce35b62e5e78b",
-      "coarseShapeHash": "4dfd859dd9dbde1bea9dcb15e34b3e7c176ecc501c12d5cea511e0a91889ceed",
-      "simhash128": "b8a9ea9dca3707d7af28ffbda9633936",
-      "tokenStreamLength": 20,
-      "coarseTokenStreamLength": 20,
+      "shapeHash": "ceff1d17d999187913e2f4c6cee167fc6b93e4ebba1a82719cb9a031ce956d7b",
+      "coarseShapeHash": "bf0a655db9eb7a2b0d01b3d6d0291eb10aec8824bf58060b0055404b0a3a2383",
+      "simhash128": "b884ea9dc6950696b708ecbf8be7a9bc",
+      "tokenStreamLength": 24,
+      "coarseTokenStreamLength": 24,
       "usageCountRaw": 6,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -8045,11 +8071,11 @@
       "name": "HostClubsScaffold",
       "file": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
       "role": "composition",
-      "shapeHash": "c8d72b52a7b48ed99705baf27233590f971c65353fe438580cca1545f5a9779c",
-      "coarseShapeHash": "d82a7910609ff4d45e90d7dae990deec34bf2c99d3504fc4dbe834b8415a6ac4",
-      "simhash128": "f06900b98c135a67b432f084b898adfa",
-      "tokenStreamLength": 150,
-      "coarseTokenStreamLength": 150,
+      "shapeHash": "292e1c35fc5a06e913f9deaf4fd9c56b44a36099713a978f95d55b8b42b04395",
+      "coarseShapeHash": "e7e5343e6e82f33a041d1c752919562ebebfb5bddb71be34548a193f8a23f008",
+      "simhash128": "787d02b88cf15a27bc32f084389a8ffa",
+      "tokenStreamLength": 138,
+      "coarseTokenStreamLength": 138,
       "usageCountRaw": 2,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -14824,32 +14850,6 @@
     },
     {
       "rank": 29,
-      "a": "CatchTabbedPageScrollView",
-      "b": "ProfileTabScrollView",
-      "jaccard": 0.2759,
-      "containment": 0.4444,
-      "score": 0.4444,
-      "smallWidgetMultisetJaccard": 0.4286,
-      "hamming": 39,
-      "flags": [
-        "cross-role"
-      ],
-      "detectors": [
-        "name"
-      ],
-      "signals": [],
-      "nameStems": [
-        "ScrollView"
-      ],
-      "visualHamming": null,
-      "selectionSources": [
-        "name-family"
-      ],
-      "absorbCandidate": true,
-      "decisionRefs": []
-    },
-    {
-      "rank": 30,
       "a": "EventDateRailCard",
       "b": "EventPolicyScenarioCard",
       "jaccard": 0.088,
@@ -14877,7 +14877,7 @@
       ]
     },
     {
-      "rank": 31,
+      "rank": 30,
       "a": "OrderedPhotoAddTile",
       "b": "OrderedPhotoTile",
       "jaccard": 0.161,
@@ -14903,7 +14903,7 @@
       ]
     },
     {
-      "rank": 32,
+      "rank": 31,
       "a": "CatchFieldContentRow",
       "b": "CatchFieldSupportRow",
       "jaccard": 0.1077,
@@ -14927,7 +14927,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 33,
+      "rank": 32,
       "a": "EventDetailFactList",
       "b": "EventDetailHintList",
       "jaccard": 0.1667,
@@ -14951,7 +14951,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 34,
+      "rank": 33,
       "a": "CatchIndexRow",
       "b": "ClubIndexRow",
       "jaccard": 0.1667,
@@ -14966,6 +14966,32 @@
       "signals": [],
       "nameStems": [
         "IndexRow"
+      ],
+      "visualHamming": null,
+      "selectionSources": [
+        "name-family"
+      ],
+      "absorbCandidate": true,
+      "decisionRefs": []
+    },
+    {
+      "rank": 34,
+      "a": "CatchTabbedPageScrollView",
+      "b": "ProfileTabScrollView",
+      "jaccard": 0.1714,
+      "containment": 0.3158,
+      "score": 0.3158,
+      "smallWidgetMultisetJaccard": 0.375,
+      "hamming": 39,
+      "flags": [
+        "cross-role"
+      ],
+      "detectors": [
+        "name"
+      ],
+      "signals": [],
+      "nameStems": [
+        "ScrollView"
       ],
       "visualHamming": null,
       "selectionSources": [
@@ -16582,30 +16608,6 @@
     },
     {
       "rank": 96,
-      "a": "HostClubSpokeScaffold",
-      "b": "HostClubsScaffold",
-      "jaccard": 0.2177,
-      "containment": 0.8182,
-      "score": 0.8182,
-      "smallWidgetMultisetJaccard": 0,
-      "hamming": 50,
-      "flags": [],
-      "detectors": [
-        "name"
-      ],
-      "signals": [],
-      "nameStems": [
-        "HostScaffold"
-      ],
-      "visualHamming": null,
-      "selectionSources": [
-        "name-family"
-      ],
-      "absorbCandidate": false,
-      "decisionRefs": []
-    },
-    {
-      "rank": 97,
       "a": "EventCheckInCelebrationScreen",
       "b": "EventJoinedCelebrationScreen",
       "jaccard": 0.4103,
@@ -16632,7 +16634,7 @@
       ]
     },
     {
-      "rank": 98,
+      "rank": 97,
       "a": "ProfileSurfaceFactsSkeleton",
       "b": "ProfileSurfaceRunningSkeleton",
       "jaccard": 0.375,
@@ -16658,7 +16660,7 @@
       ]
     },
     {
-      "rank": 99,
+      "rank": 98,
       "a": "ProfileMultiEnumEntry",
       "b": "ProfileSingleEnumEntry",
       "jaccard": 0.52,
@@ -16685,7 +16687,7 @@
       ]
     },
     {
-      "rank": 100,
+      "rank": 99,
       "a": "RevealGroupSlotRow",
       "b": "RevealSlotRow",
       "jaccard": 0.3333,
@@ -16712,7 +16714,7 @@
       ]
     },
     {
-      "rank": 101,
+      "rank": 100,
       "a": "ChatPersonRowSkeleton",
       "b": "NotificationRowSkeleton",
       "jaccard": 0.375,
@@ -16738,7 +16740,7 @@
       ]
     },
     {
-      "rank": 102,
+      "rank": 101,
       "a": "CelebrationIcon",
       "b": "PaperCelebrationIcon",
       "jaccard": 0.4091,
@@ -16764,7 +16766,7 @@
       ]
     },
     {
-      "rank": 103,
+      "rank": 102,
       "a": "CelebrationDetailsCard",
       "b": "PaperCelebrationDetailsCard",
       "jaccard": 0.4211,
@@ -16791,7 +16793,7 @@
       ]
     },
     {
-      "rank": 104,
+      "rank": 103,
       "a": "ClubHostLoadingSkeleton",
       "b": "ClubStatsLoadingSkeleton",
       "jaccard": 0.3684,
@@ -16818,7 +16820,7 @@
       ]
     },
     {
-      "rank": 105,
+      "rank": 104,
       "a": "EventRecapLoadingBody",
       "b": "EventSuccessCompanionLoadingBody",
       "jaccard": 0.3871,
@@ -16845,7 +16847,7 @@
       ]
     },
     {
-      "rank": 106,
+      "rank": 105,
       "a": "ClubEventSuccessDefaultsStep",
       "b": "ClubHostDefaultsStep",
       "jaccard": 0.3571,
@@ -16872,7 +16874,7 @@
       ]
     },
     {
-      "rank": 107,
+      "rank": 106,
       "a": "EventDetailTicketSurface",
       "b": "EventPhotoHeroSurface",
       "jaccard": 0.1802,
@@ -16896,7 +16898,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 108,
+      "rank": 107,
       "a": "OnboardingGenderInterestStep",
       "b": "OnboardingRunningPrefsStep",
       "jaccard": 0.2667,
@@ -16922,7 +16924,7 @@
       ]
     },
     {
-      "rank": 109,
+      "rank": 108,
       "a": "EventDetailsStep",
       "b": "EventPolicyStep",
       "jaccard": 0.4286,
@@ -16946,7 +16948,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 110,
+      "rank": 109,
       "a": "GroupOverrideMemberEditor",
       "b": "GroupOverrideUnitEditor",
       "jaccard": 0.1463,
@@ -16972,7 +16974,7 @@
       ]
     },
     {
-      "rank": 111,
+      "rank": 110,
       "a": "CelebrationDetailRow",
       "b": "PaperCelebrationDetailRow",
       "jaccard": 0.3235,
@@ -16998,7 +17000,7 @@
       ]
     },
     {
-      "rank": 112,
+      "rank": 111,
       "a": "HostAnalyticsReviewsPanel",
       "b": "HostClubManagementPanel",
       "jaccard": 0.125,
@@ -17022,7 +17024,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 113,
+      "rank": 112,
       "a": "ClubShareCard",
       "b": "EventShareCard",
       "jaccard": 0.2203,
@@ -17048,7 +17050,7 @@
       ]
     },
     {
-      "rank": 114,
+      "rank": 113,
       "a": "ExploreListEmptyState",
       "b": "ExploreScreenEmptyState",
       "jaccard": 0.4054,
@@ -17077,7 +17079,7 @@
       ]
     },
     {
-      "rank": 115,
+      "rank": 114,
       "a": "StageCueLine",
       "b": "StagePrivacyLine",
       "jaccard": 0.3111,
@@ -17103,7 +17105,7 @@
       ]
     },
     {
-      "rank": 116,
+      "rank": 115,
       "a": "PaperCelebrationDetailRow",
       "b": "PaperExpectationRow",
       "jaccard": 0.2941,
@@ -17129,7 +17131,7 @@
       ]
     },
     {
-      "rank": 117,
+      "rank": 116,
       "a": "DashboardFocusLoadingCard",
       "b": "HostPaymentAccountLoadingCard",
       "jaccard": 0.2381,
@@ -17155,7 +17157,7 @@
       "decisionRefs": []
     },
     {
-      "rank": 118,
+      "rank": 117,
       "a": "ClubDetailsStep",
       "b": "EventDetailsStep",
       "jaccard": 0.1897,
@@ -17179,6 +17181,30 @@
       "decisionRefs": [
         "ranked-pair: ClubDetailsStep/EventDetailsStep"
       ]
+    },
+    {
+      "rank": 118,
+      "a": "HostClubSpokeScaffold",
+      "b": "HostClubsScaffold",
+      "jaccard": 0.1395,
+      "containment": 0.5455,
+      "score": 0.5455,
+      "smallWidgetMultisetJaccard": 0,
+      "hamming": 58,
+      "flags": [],
+      "detectors": [
+        "name"
+      ],
+      "signals": [],
+      "nameStems": [
+        "HostScaffold"
+      ],
+      "visualHamming": null,
+      "selectionSources": [
+        "name-family"
+      ],
+      "absorbCandidate": false,
+      "decisionRefs": []
     },
     {
       "rank": 119,
