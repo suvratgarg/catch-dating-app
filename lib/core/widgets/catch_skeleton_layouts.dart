@@ -133,17 +133,17 @@ class CatchSkeletonChips extends StatelessWidget {
       runSpacing: CatchSpacing.s2,
       children: [
         CatchSkeleton.box(
-          width: CatchSpacing.s16 + CatchSpacing.s6,
+          width: CatchLayout.skeletonChipMediumWidth,
           height: height,
           radius: CatchRadius.pill,
         ),
         CatchSkeleton.box(
-          width: CatchSpacing.s16 + CatchSpacing.s10,
+          width: CatchLayout.skeletonChipWideWidth,
           height: height,
           radius: CatchRadius.pill,
         ),
         CatchSkeleton.box(
-          width: CatchSpacing.s16 + CatchSpacing.s4,
+          width: CatchLayout.skeletonChipNarrowWidth,
           height: height,
           radius: CatchRadius.pill,
         ),

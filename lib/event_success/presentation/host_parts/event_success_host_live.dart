@@ -290,7 +290,11 @@ class LiveTab extends StatelessWidget {
                 .eventSuccessEventSuccessHostLiveSubtitleControlsThatStayAvailable,
           ),
           gapH10,
-          CatchSectionList(gap: CatchSpacing.s4, children: supportingCards),
+          CatchSectionList(
+            emptyStateOmitted: true,
+            gap: CatchSpacing.s4,
+            children: supportingCards,
+          ),
         ],
         if (!compactLiveControls) ...[
           gapH20,
@@ -415,7 +419,11 @@ class LiveNowConsole extends StatelessWidget {
                 .eventSuccessEventSuccessHostLiveSubtitleHandleTheseBeforeMoving,
           ),
           gapH10,
-          CatchSectionList(gap: CatchSpacing.s4, children: currentStepControls),
+          CatchSectionList(
+            emptyStateOmitted: true,
+            gap: CatchSpacing.s4,
+            children: currentStepControls,
+          ),
         ],
       ],
     );

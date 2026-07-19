@@ -69,6 +69,7 @@ class EventPolicyStep extends StatelessWidget {
         padding: CatchInsets.formStepBody,
         children: [
           CatchSectionList(
+            emptyStateOmitted: true,
             gap: 0,
             children: [
               CatchSection.plain(

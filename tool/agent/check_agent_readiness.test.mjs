@@ -2,8 +2,28 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   dependencyBaselineGrowthWarnings,
+  extractCommandPaths,
   extractDependencyBaselineSnapshot,
 } from "./check_agent_readiness.mjs";
+
+test("extractCommandPaths validates Functions build outputs through tracked sources", () => {
+  assert.deepEqual(
+    extractCommandPaths(
+      "npm --prefix functions run build && node --test functions/lib/operations/projectionImporter.test.js functions/test/operations-import-shadow-projection.test.cjs",
+    ),
+    [
+      "functions/src/operations/projectionImporter.test.ts",
+      "functions/test/operations-import-shadow-projection.test.cjs",
+    ],
+  );
+});
+
+test("extractCommandPaths keeps Functions lib paths without a declared build", () => {
+  assert.deepEqual(
+    extractCommandPaths("node --test functions/lib/operations/projectionImporter.test.js"),
+    ["functions/lib/operations/projectionImporter.test.js"],
+  );
+});
 
 test("extractDependencyBaselineSnapshot reads readiness baseline metrics", () => {
   const snapshot = extractDependencyBaselineSnapshot({

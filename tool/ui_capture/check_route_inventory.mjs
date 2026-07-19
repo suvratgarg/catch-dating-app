@@ -68,7 +68,7 @@ function listInventory() {
 function buildInventory() {
   const source = fs.readFileSync(routerPath, "utf8");
   const enumBlock = extractBalancedBlock(source, "enum Routes", "{", "}");
-  const goRouterBlock = extractGoRouterReturnBlock(source);
+  const goRouterBlock = extractGoRouterConfigurationBlock(source);
   const routeGraph = extractRuntimeRouteGraph(source, goRouterBlock);
   const routes = extractRouteEnumEntries(enumBlock.body);
   const runtimeRoutes = extractRuntimeRouteEntries(routeGraph.text, routes);
@@ -563,12 +563,23 @@ function isDevRoute(routePath) {
   return routePath.startsWith("/dev/");
 }
 
-function extractGoRouterReturnBlock(source) {
-  const returnIndex = source.indexOf("return GoRouter(");
-  if (returnIndex === -1) {
-    throw new Error("Could not find `return GoRouter(` in lib/routing/go_router.dart.");
+export function extractGoRouterConfigurationBlock(source) {
+  const constructorMatch =
+    /\b(?:return\s+|(?:final|var)\s+[A-Za-z_$][\w$]*\s*=\s*)GoRouter\s*\(/u.exec(
+      source,
+    );
+  if (constructorMatch == null) {
+    throw new Error(
+      "Could not find a returned or locally owned `GoRouter(` configuration in lib/routing/go_router.dart.",
+    );
   }
-  return extractBalancedBlock(source, "return GoRouter", "(", ")", returnIndex);
+  return extractBalancedBlock(
+    source,
+    "GoRouter",
+    "(",
+    ")",
+    constructorMatch.index,
+  );
 }
 
 function extractBalancedBlock(source, label, openChar, closeChar, startAt = null) {

@@ -32,7 +32,7 @@ class ChatBlastComposerSheet extends StatelessWidget {
               Center(
                 child: CatchSurface(
                   width: CatchSpacing.s10,
-                  height: CatchStroke.hairline * 3,
+                  height: CatchLayout.sheetHairlineGrabberHeight,
                   radius: CatchRadius.pill,
                   backgroundColor: t.line,
                   borderWidth: 0,

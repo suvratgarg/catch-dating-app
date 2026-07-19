@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.5.7
+version: 1.5.8
 updated: 2026-07-19
 owner: ui_elevation_initiative
 status: active — identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -315,6 +315,14 @@ the link in the same change.
 Run `node tool/run.mjs check design:component-lexicon`. The checker remains a
 repo-level JavaScript gate, including for Flutter symbol existence; do not move
 this contract into the `catch_ui_lints` analyzer plugin.
+
+Every component contract also carries either an `enforcement` decision or an
+expiring `waiver`. Enforcement metadata is executable: it generates raw-widget
+steering tables and seeded probes for the Catch analyzer plugin, while a
+bidirectional coverage gate rejects catalog components without a decision and
+implemented `catch_*` diagnostics without a catalog owner. Screen composition
+is registered separately with shell, top-bar, and state policies and validated
+with analyzer resolution.
 
 Structural labels and status badges are separate semantic families. Use
 `catch.ui_label` (`CatchSectionLabel`, website `UiLabel`, admin

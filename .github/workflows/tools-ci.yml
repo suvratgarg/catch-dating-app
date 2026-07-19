@@ -82,15 +82,15 @@ jobs:
       matrix:
         include:
           - name: core-audit
-            categories: meta audit remote-ops branding
+            categories: meta audit remote-ops branding agent architecture
           - name: lint-scanners
-            categories: lint scanners
+            categories: lint test
           - name: contracts-data
-            categories: contracts data demo firebase
+            categories: contracts data demo firebase operations
           - name: platform-env
-            categories: env platform migrations
+            categories: env platform generator
           - name: marketing-design
-            categories: marketing ui-capture design
+            categories: marketing ui-capture design analytics
           - name: host-discovery
             categories: host-discovery
 

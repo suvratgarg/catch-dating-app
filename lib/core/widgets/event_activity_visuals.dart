@@ -217,6 +217,7 @@ class EventActivityBackdrop extends StatelessWidget {
         CustomPaint(
           painter: _ActivityPatternPainter(
             pattern: visual.pattern,
+            // color-sweep:allow: theme-independent art uses white pigment.
             color: Colors.white.withValues(alpha: patternOpacity),
           ),
         ),
@@ -227,6 +228,7 @@ class EventActivityBackdrop extends StatelessWidget {
             child: Icon(
               visual.icon,
               size: iconSize,
+              // color-sweep:allow: theme-independent art uses white pigment.
               color: Colors.white.withValues(alpha: iconOpacity),
             ),
           ),

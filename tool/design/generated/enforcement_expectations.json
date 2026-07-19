@@ -1,0 +1,212 @@
+{
+  "version": 1,
+  "generatedFrom": "design/components/catch.components.json",
+  "registryUpdated": "2026-07-19",
+  "codeToComponents": {
+    "catch_async_requires_state_surface": [
+      "catch.async_value"
+    ],
+    "catch_event_detail_prefers_photo_thumbnail": [
+      "catch.event_detail_sections"
+    ],
+    "catch_field_requires_section_context": [
+      "catch.field"
+    ],
+    "catch_icon_button_requires_tooltip": [
+      "catch.icon_button"
+    ],
+    "catch_mutation_pending_requires_error": [
+      "catch.async_value"
+    ],
+    "catch_no_allow_debt": [
+      "catch.button"
+    ],
+    "catch_no_async_flush_hack": [
+      "catch.async_value"
+    ],
+    "catch_no_brittle_pump_timing": [
+      "catch.skeleton"
+    ],
+    "catch_no_direct_font_builder": [
+      "catch.typography"
+    ],
+    "catch_no_legacy_spacing_token": [
+      "catch.screen_body"
+    ],
+    "catch_no_local_design_constant": [
+      "catch.screen_body"
+    ],
+    "catch_no_low_level_typography_role": [
+      "catch.typography"
+    ],
+    "catch_no_nested_rounded_rectangles": [
+      "catch.section",
+      "catch.surface"
+    ],
+    "catch_no_positional_widget_finder": [
+      "catch.row_press_surface"
+    ],
+    "catch_no_presentation_platform_import": [
+      "catch.chat_composer"
+    ],
+    "catch_no_presentation_repository_reach": [
+      "catch.chat_composer"
+    ],
+    "catch_no_raw_alpha": [
+      "catch.control_shell"
+    ],
+    "catch_no_raw_asset_path": [
+      "catch.network_image"
+    ],
+    "catch_no_raw_breakpoint": [
+      "catch.tabbed_screen"
+    ],
+    "catch_no_raw_button_control": [
+      "catch.button",
+      "catch.menu",
+      "catch.range_slider",
+      "catch.toggle"
+    ],
+    "catch_no_raw_color": [
+      "catch.typography"
+    ],
+    "catch_no_raw_content_dimension": [
+      "catch.screen_body"
+    ],
+    "catch_no_raw_error_surface": [
+      "catch.async_value",
+      "catch.error_state"
+    ],
+    "catch_no_raw_font_drift": [
+      "catch.typography"
+    ],
+    "catch_no_raw_icon_size": [
+      "catch.icon_button"
+    ],
+    "catch_no_raw_icon_source": [
+      "catch.icon_button"
+    ],
+    "catch_no_raw_letter_spacing": [
+      "catch.typography"
+    ],
+    "catch_no_raw_material_control": [
+      "catch.badge",
+      "catch.chip",
+      "catch.top_bar"
+    ],
+    "catch_no_raw_motion": [
+      "catch.loading_indicator"
+    ],
+    "catch_no_raw_network_image": [
+      "catch.network_image"
+    ],
+    "catch_no_raw_radius": [
+      "catch.control_shell"
+    ],
+    "catch_no_raw_shadow": [
+      "catch.control_shell"
+    ],
+    "catch_no_raw_stroke_width": [
+      "catch.control_shell"
+    ],
+    "catch_no_raw_surface_shell": [
+      "catch.surface"
+    ],
+    "catch_no_raw_text_style": [
+      "catch.typography"
+    ],
+    "catch_no_raw_ui_spacing": [
+      "catch.screen_body"
+    ],
+    "catch_no_shell_local_measurement": [
+      "catch.screen_body"
+    ],
+    "catch_no_token_arithmetic": [
+      "catch.screen_body"
+    ],
+    "catch_no_tokens_prop_drilling": [
+      "catch.field"
+    ],
+    "catch_no_widget_returning_method": [
+      "catch.event_detail_sections"
+    ],
+    "catch_prefer_semantic_insets": [
+      "catch.screen_body"
+    ],
+    "catch_screen_gutter_uses_semantic_insets": [
+      "catch.screen_body"
+    ],
+    "catch_screen_nested_scaffold": [
+      "catch.tabbed_screen"
+    ],
+    "catch_screen_registry_conformance": [
+      "catch.screen_body"
+    ],
+    "catch_screen_top_bar_conformance": [
+      "catch.top_bar"
+    ],
+    "catch_section_list_requires_empty_policy": [
+      "catch.section_stack"
+    ],
+    "catch_shell_owns_tab_scaffold": [
+      "catch.tabbed_screen"
+    ],
+    "catch_text_requires_style": [
+      "catch.typography"
+    ],
+    "catch_top_bar_requires_action_group": [
+      "catch.top_bar"
+    ],
+    "catch_use_named_catch_field_constructor": [
+      "catch.field"
+    ],
+    "catch_use_named_catch_section_constructor": [
+      "catch.section"
+    ],
+    "catch_use_section_list": [
+      "catch.section"
+    ]
+  },
+  "generatedProbeMinimums": {
+    "catch_no_raw_button_control": 5,
+    "catch_no_raw_material_control": 4
+  },
+  "generatedProbeComponents": [
+    {
+      "component": "catch.badge",
+      "code": "catch_no_raw_material_control"
+    },
+    {
+      "component": "catch.button",
+      "code": "catch_no_raw_button_control"
+    },
+    {
+      "component": "catch.chip",
+      "code": "catch_no_raw_material_control"
+    },
+    {
+      "component": "catch.field",
+      "code": "catch_no_raw_button_control"
+    },
+    {
+      "component": "catch.menu",
+      "code": "catch_no_raw_button_control"
+    },
+    {
+      "component": "catch.surface",
+      "code": "catch_no_raw_material_control"
+    },
+    {
+      "component": "catch.top_bar",
+      "code": "catch_no_raw_material_control"
+    },
+    {
+      "component": "catch.range_slider",
+      "code": "catch_no_raw_button_control"
+    },
+    {
+      "component": "catch.toggle",
+      "code": "catch_no_raw_button_control"
+    }
+  ]
+}

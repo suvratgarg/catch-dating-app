@@ -1,8 +1,32 @@
 {
-  "version": 40,
-  "updated": "2026-07-19",
+  "version": 51,
+  "updated": "2026-07-20",
   "owner": "agent_operating_model",
   "entries": [
+    {
+      "id": "REG-CATCH-UI-LINT-VACUITY-001",
+      "title": "Catch UI lint gates pass after the analyzer plugin silently skips or fails setup",
+      "status": "active",
+      "applies_to": [
+        "packages/catch_ui_lints/**",
+        "tool/check_catch_ui_lints.sh",
+        "tool/check_catch_ui_lint_drift.sh",
+        "design/components/catch.components.json",
+        ".github/workflows/flutter-ci.yml"
+      ],
+      "symptom": "flutter analyze or a targeted dart analyze reports a clean tree even though the Catch plugin did not load, or a generated steering rule exists without a seeded violation.",
+      "guard": {
+        "type": "command",
+        "command": "bash tool/check_catch_ui_lints.sh && bash tool/check_catch_ui_lint_drift.sh --check && node tool/design/check_component_enforcement_coverage.mjs",
+        "guardEvidence": "fresh-plugin setup errors are fatal, all 49 plugin codes have manual or generated probes, every count is ratcheted, and every implemented code maps to a catalog owner"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "tool/README.md",
+        "design/components/README.md"
+      ],
+      "notes": "Catch plugin proof is repository-root dart analyze through the wrappers; flutter analyze remains a separate generic analyzer gate."
+    },
     {
       "id": "REG-STATE-VIEWPORT-001",
       "title": "Empty and error states center behind floating shell chrome",
@@ -197,7 +221,7 @@
       "symptom": "The local agent completes a run and exports valid stages, but no trusted path imports that exact inventory into the Firestore projection read by the admin UI, or page-sized counts are presented as full-run totals.",
       "guard": {
         "type": "command",
-        "command": "node --test functions/lib/operations/projectionImporter.test.js",
+        "command": "npm --prefix functions run build && node --test functions/lib/operations/projectionImporter.test.js",
         "guardEvidence": "applies items before the run and replays the same artifact"
       },
       "owner_docs": [
@@ -2059,6 +2083,275 @@
         "docs/plans/catch_system_stretch_spec.md"
       ],
       "notes": "Flutter owns interaction names and behavior. React implementations remain native; only the semantic vocabulary and adoption evidence are shared."
+    },
+    {
+      "id": "REG-TOOL-FILTER-VACUITY-001",
+      "title": "Filtered tool checks pass without selecting any tools",
+      "status": "active",
+      "applies_to": [
+        "tool/run.mjs",
+        "tool/tools_manifest.json",
+        ".github/workflows/tools-ci.yml"
+      ],
+      "symptom": "A renamed or invented CI category selects zero manifest tools, exits successfully, and creates a green lane that executed no checks.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/run.test.mjs tool/ci/check_tool_category_coverage.test.mjs && node tool/ci/check_tool_category_coverage.mjs",
+        "guardEvidence": "known-bad empty selections and category omissions fail while the checked workflow declares every active manifest category"
+      },
+      "owner_docs": [
+        "tool/README.md",
+        "docs/agent_operating_model.md"
+      ],
+      "notes": "Filtered list and check invocations fail with usage exit 64. Impact routing additionally fails when a changed path has no root relationship."
+    },
+    {
+      "id": "REG-WIDGETBOOK-CONSUMER-COMPILE-001",
+      "title": "Widgetbook metadata passes while its real consumer no longer compiles",
+      "status": "active",
+      "applies_to": [
+        "widgetbook/**",
+        "lib/core/widgets/**",
+        ".github/workflows/flutter-ci.yml"
+      ],
+      "symptom": "Use-case annotations and generated directories remain structurally current while a stale widget constructor, callback return type, or generated route breaks the Widgetbook application.",
+      "guard": {
+        "type": "command",
+        "command": "(cd widgetbook && flutter analyze --no-fatal-warnings --no-fatal-infos && flutter build web --release)",
+        "guardEvidence": "Flutter CI analyzes and compiles the path-dependent Widgetbook package as a web application"
+      },
+      "owner_docs": [
+        "widgetbook/README.md",
+        "docs/design_parity/README.md"
+      ],
+      "notes": "Consumer compilation complements, rather than replaces, component-contract and use-case coverage scanners."
+    },
+    {
+      "id": "REG-REPO-HYGIENE-SYMLINK-001",
+      "title": "Repository hygiene crashes on dependency symlinks or tracked retention evidence",
+      "status": "active",
+      "applies_to": [
+        "tool/repository_hygiene.mjs",
+        "tool/repository_root_manifest.json",
+        "docs/visual_references/**",
+        "widgetbook/**",
+        "ios/Pods/**"
+      ],
+      "symptom": "A dry run follows a nested dependency symlink, rejects a tracked child of a mixed evidence directory, or omits a large secondary-package cache.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/repository_hygiene.test.mjs && node tool/repository_hygiene.mjs --json",
+        "guardEvidence": "nested symlinks are counted without traversal, candidate-root symlinks are rejected, tracked evidence is preserved, and Widgetbook cache targets are reported"
+      },
+      "owner_docs": [
+        "tool/README.md",
+        "artifacts/README.md"
+      ],
+      "notes": "The cleaner remains dry-run by default and never deletes tracked paths or follows symlink targets."
+    },
+    {
+      "id": "REG-OPERATIONS-COMPATIBILITY-RETIREMENT-001",
+      "title": "Legacy workflow artifacts survive without enforceable retirement metadata",
+      "status": "active",
+      "applies_to": [
+        "operations/src/workflows/**",
+        "contracts/operations/workflow_manifest.schema.json",
+        "tool/organizer_intake/**",
+        "tool/marketing/event_guide/**"
+      ],
+      "symptom": "Supply Intake consumes a legacy artifact path that is absent from its workflow manifest, so the compatibility seam gains new orchestration or never reaches a coordinated deletion point.",
+      "guard": {
+        "type": "command",
+        "command": "node --test operations/test/workflow-manifest.test.mjs && node operations/scripts/check-workflow-manifest.mjs",
+        "guardEvidence": "the registry's consumed artifact patterns must exactly equal manifest compatibility inputs, each of which names a replacement owner, forbids new orchestration, and carries retirement criteria"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "contracts/operations/README.md"
+      ],
+      "notes": "Retire the producer, adapter, manifest entry, and generated artifact family together only after shadow-equivalence criteria are proved."
+    },
+    {
+      "id": "REG-APP-SHELL-INTEGRATION-RUNNER-001",
+      "title": "App-shell integration passes only through a foregrounded desktop process",
+      "status": "active",
+      "applies_to": [
+        "integration_test/**",
+        "test/integration/**",
+        "tool/test_app_shell_integration.sh",
+        ".github/workflows/visual-integration-ci.yml",
+        "lib/app.dart",
+        "lib/routing/go_router.dart"
+      ],
+      "symptom": "Native macOS foregrounding stalls the suite, repeated app containers retain router or localization state, mounted timers make event-queue drains never finish, or consumer tests continue asserting host-only and retired Dashboard actions.",
+      "guard": {
+        "type": "command",
+        "command": "bash tool/test_app_shell_integration.sh && flutter test --concurrency=1 test/core/catch_primitives_test.dart --plain-name 'CatchTabBar keeps four animated destinations within 390px'",
+        "guardEvidence": "headless wrappers run all current routed consumer journeys with fresh router/provider lifecycles and bounded clocks; the four-destination shell cannot overflow its 390px viewport"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/release_operations.md",
+        "TESTS.md"
+      ],
+      "notes": "Native execution remains available by passing a device id. Host-only creation and attendance are owned by host surface/controller tests, while recommendations are owned by Explore."
+    },
+    {
+      "id": "REG-ROUTE-INVENTORY-ROUTER-OWNERSHIP-001",
+      "title": "Route inventory assumes the router constructor is returned inline",
+      "status": "active",
+      "applies_to": [
+        "lib/routing/go_router.dart",
+        "tool/ui_capture/check_route_inventory.mjs",
+        "tool/ui_capture/route_inventory.json",
+        "test/routing/route_chrome_policy_test.dart"
+      ],
+      "symptom": "Giving GoRouter an explicit lifecycle owner requires assigning the constructor before return and routing child pages through keys.root or a helper's rootNavigatorKey parameter, while source scanners or chrome-policy tests still recognize only the former inline constructor and _rootNavigatorKey spelling.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/ui_capture/check_route_inventory_test.mjs && node tool/ui_capture/check_route_inventory.mjs --check && flutter test --concurrency=1 test/routing/route_chrome_policy_test.dart",
+        "guardEvidence": "known-good inline-return and lifecycle-owned constructor fixtures both parse, the source-derived route inventory remains current, and every shell child route targets the lifecycle-owned root navigator key directly or through the typed helper parameter"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/design_parity/README.md"
+      ],
+      "notes": "The scanner accepts only a locally owned final or var assignment or an inline return; it still fails closed when no GoRouter configuration can be found. Source-policy assertions must follow the lifecycle-owned keys.root contract and its rootNavigatorKey helper parameter instead of restoring the removed global key."
+    },
+    {
+      "id": "REG-GOLDEN-HOSTED-MACOS-RASTER-001",
+      "title": "Reviewed macOS goldens fail on hosted-runner antialiasing noise",
+      "status": "active",
+      "applies_to": [
+        "test/goldens/**",
+        ".github/workflows/visual-integration-ci.yml"
+      ],
+      "symptom": "The pinned hosted macOS runner changes a small number of anti-aliased text and icon edge pixels even though layout, color, content, and component geometry are unchanged, causing the exact comparator to skip the app-shell integration stage.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/goldens",
+        "guardEvidence": "CatchGoldenFileComparator allows at most 0.30% differing pixels; its focused test proves 0.25% passes and 0.50% fails, and CI retains native Flutter diff artifacts above the threshold"
+      },
+      "owner_docs": [
+        "test/goldens/README.md",
+        "docs/release_operations.md",
+        "TESTS.md"
+      ],
+      "notes": "The 0.30% ceiling is grounded in PR #94 run 29701230738, where hosted-macOS differences peaked at 0.29% and visual inspection localized them to anti-aliased edges."
+    },
+    {
+      "id": "REG-AGENT-READINESS-BUILD-OUTPUT-001",
+      "title": "Agent readiness passes only after local Functions build residue exists",
+      "status": "active",
+      "applies_to": [
+        "tool/agent/check_agent_readiness.mjs",
+        "tool/agent/check_agent_readiness.test.mjs",
+        "docs/agent_regression_ledger.json",
+        "functions/src/**"
+      ],
+      "symptom": "A guard builds Functions and then runs compiled functions/lib tests, but readiness checks the ignored build output itself, so a dirty developer checkout passes while a clean CI checkout fails.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/agent/check_agent_readiness.test.mjs && node tool/agent/check_agent_readiness.mjs",
+        "guardEvidence": "focused extraction tests prove declared Functions build outputs resolve to tracked TypeScript sources while an undeclared generated path still fails closed"
+      },
+      "owner_docs": [
+        "docs/agent_operating_model.md",
+        "tool/README.md"
+      ],
+      "notes": "Guard commands remain executable against compiled JavaScript; only readiness's static path proof maps build outputs back to their tracked source contract."
+    },
+    {
+      "id": "REG-FIELD-SURFACE-INVENTORY-IMPACT-001",
+      "title": "Flutter field inventory is stale after an unrelated product-source edit",
+      "status": "active",
+      "applies_to": [
+        "lib/**",
+        "design/screens/catch.screens.json",
+        "tool/ui_capture/route_inventory.json",
+        "docs/audit_registry/flutter_field_surface_inventory.json",
+        "tool/repository_root_manifest.json",
+        "tool/run.mjs"
+      ],
+      "symptom": "The field-surface inventory hashes route and screen contracts and records source line anchors, but impacted checks omit its generator after a product-source edit, so local impacted verification passes and the full design CI bucket later reports stale evidence.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/run.test.mjs && node tool/design/generate_flutter_field_surface_inventory.mjs --check",
+        "guardEvidence": "the impact-routing fixture proves a Flutter product path selects design:flutter-field-surface-inventory, and the generator verifies current source hashes and line anchors"
+      },
+      "owner_docs": [
+        "tool/README.md",
+        "docs/design_parity/README.md"
+      ],
+      "notes": "The design-system relationship already covers lib consumers; this regression binds the field inventory gate to that relationship instead of relying on agents to remember a hidden transitive hash dependency."
+    },
+    {
+      "id": "REG-TAB-ROOT-ROUTER-OWNERSHIP-001",
+      "title": "Tab-root scroll contracts assume file-global shell navigator keys",
+      "status": "active",
+      "applies_to": [
+        "lib/routing/go_router.dart",
+        "tool/design/check_tab_root_scroll_contracts.mjs",
+        "tool/design/check_tab_root_scroll_contracts.test.mjs",
+        "tool/design/tab_root_scroll_contracts.json"
+      ],
+      "symptom": "Router navigator identity moves into a lifecycle-owned key object, but the tab-root scanner parses only a bare identifier and its manifest retains retired file-global key names, so every real shell branch is simultaneously reported missing and unregistered.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/design/check_tab_root_scroll_contracts.test.mjs && node tool/design/check_tab_root_scroll_contracts.mjs --check",
+        "guardEvidence": "the focused lifecycle-owned member-access fixture passes while the existing unregistered-branch fixture still proves new branches fail closed"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/design_parity/README.md"
+      ],
+      "notes": "The manifest records the typed lifecycle expression used at each StatefulShellBranch callsite, such as keys.dashboard, instead of restoring disposed-container-sensitive globals."
+    },
+    {
+      "id": "REG-ADMIN-BUNDLE-CLEAN-CHECKOUT-001",
+      "title": "Admin bundle budget passes only when a local dist artifact already exists",
+      "status": "active",
+      "applies_to": [
+        "admin/package.json",
+        "admin/scripts/checkBundleBudget.mjs",
+        "tool/tools_manifest.json",
+        ".github/workflows/tools-ci.yml"
+      ],
+      "symptom": "The test tool category invokes the admin bundle ratchet against ignored dist output without first producing a release build, so developer residue passes while a clean CI checkout fails on a missing Vite manifest.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin run build",
+        "guardEvidence": "the production build writes dist/.vite/manifest.json and immediately runs the bundle-budget ratchet through the admin build script"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/release_operations.md"
+      ],
+      "notes": "The manifest classifies this gate as build-artifact-producing and invokes the owning build instead of allowing local dist state to become an implicit prerequisite."
+    },
+    {
+      "id": "REG-WEBSITE-STORYBOOK-CLEAN-CHECKOUT-001",
+      "title": "Website Storybook visuals pass only when local static output already exists",
+      "status": "active",
+      "applies_to": [
+        "website/package.json",
+        "website/.storybook/**",
+        "website/src/**/*.stories.tsx",
+        "tool/web/check_storybook_visuals.mjs",
+        "tool/tools_manifest.json",
+        ".github/workflows/tools-ci.yml"
+      ],
+      "symptom": "The website visual gate reads website/storybook-static/index.json without invoking the owning Storybook build, or runs in a browserless CI bucket, so local generated output and a machine-installed browser mask clean-checkout failures before screenshot comparison completes.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check",
+        "guardEvidence": "the design-category gate runs in the Playwright-prepared marketing-design CI bucket; the marketing Storybook build produces the indexed static bundle immediately consumed by all 208 current-platform visual comparisons"
+      },
+      "owner_docs": [
+        "docs/marketing_website_architecture.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "The manifest classifies the visual gate as build-artifact-producing and routes it through the browser-prepared design category; screenshot comparison depends on neither an ignored Storybook directory nor an undeclared machine browser."
     }
   ]
 }

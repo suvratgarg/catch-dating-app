@@ -130,6 +130,7 @@ class OnboardingPhotosStep extends StatelessWidget {
       ),
       children: [
         CatchSectionList(
+          emptyStateOmitted: true,
           gap: CatchSpacing.s3,
           children: [
             CatchSection.plain(

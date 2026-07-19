@@ -48,6 +48,17 @@ test("live spike gate stays red when Figma and Code Connect are unavailable", ()
   const failures = validateDesignSyncManifest(manifest, {requireLive: true}).join("\n");
   assert.match(failures, /catch\.badge: current live Figma mapping is required/u);
   assert.match(failures, /blocked by live account capability/u);
+  assert.equal(manifest.operationalStatus.structural, "current");
+  assert.equal(manifest.operationalStatus.live, "incomplete-external");
+  assert.deepEqual(
+    manifest.operationalStatus.blockers.map((blocker) => blocker.id),
+    [
+      "figma-file-unconfigured",
+      "figma-spike-evidence-incomplete",
+      "claude-design-receipt-incomplete",
+      "code-connect-unavailable",
+    ],
+  );
 });
 
 test("snapshot names generate current mappings without hand-edited URLs", () => {
@@ -195,6 +206,7 @@ test("fully evidenced Badge and Field spike passes the live gate", () => {
   });
   assert.deepEqual(validateDesignSyncManifest(manifest, {requireLive: true}), []);
   assert.equal(manifest.spike.status, "figma-claude-round-trip-ready");
+  assert.equal(manifest.operationalStatus.live, "ready");
 });
 
 test("real Badge and Field contract projection round-trips and fails on one removed property", () => {

@@ -292,9 +292,9 @@ class RecapHeroSkeleton extends StatelessWidget {
         children: [
           CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
           gapH10,
-          CatchSkeleton.text(width: CatchSpacing.s16 * 2),
+          CatchSkeleton.text(width: CatchLayout.skeletonTextTertiaryWidth),
           gapH4,
-          CatchSkeleton.text(width: CatchSpacing.s16 * 3),
+          CatchSkeleton.text(width: CatchLayout.skeletonTextDescriptionWidth),
           gapH18,
           const Row(
             children: [

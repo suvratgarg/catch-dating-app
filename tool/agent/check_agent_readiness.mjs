@@ -363,12 +363,23 @@ export function dependencyBaselineGrowthWarnings(entries, currentSnapshot) {
   ];
 }
 
-function extractCommandPaths(command) {
-  return String(command)
+export function extractCommandPaths(command) {
+  const source = String(command);
+  const buildsFunctions = source.includes("npm --prefix functions run build");
+
+  return source
     .split(/\s+/)
     .map((token) => token.replace(/^['"]|['"]$/g, "").replace(/,$/, ""))
     .flatMap((token) => token.split(","))
     .map((token) => token.replace(/^\.\//, ""))
+    .map((token) => {
+      if (buildsFunctions && /^functions\/lib\/.+\.js$/u.test(token)) {
+        return token
+          .replace(/^functions\/lib\//u, "functions/src/")
+          .replace(/\.js$/u, ".ts");
+      }
+      return token;
+    })
     .filter((token) => {
       if (!token || token.includes("*")) return false;
       return /^(AGENTS\.md|docs\/|tool\/|operations\/|lib\/|test\/|functions\/|contracts\/|widgetbook\/|website\/|packages\/web-config\/|design\/website\/|\.github\/|ios\/|android\/|firebase\.json|\.firebaserc|firestore\.rules|storage\.rules)/.test(token);

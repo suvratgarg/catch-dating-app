@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
@@ -99,6 +100,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
         draft.structureConfig.unitKind != EventSuccessUnitKind.wholeGroup;
 
     return CatchSectionList(
+      emptyStateOmitted: true,
       children: [
         CatchSection.fieldRows(
           first: true,
@@ -165,6 +167,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                         widget.attendeePrompt,
                       ),
                     ),
+                style: CatchTextStyles.supporting(context),
               ),
               inputFormatters: [LengthLimitingTextInputFormatter(300)],
               minLines: 2,

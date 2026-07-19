@@ -133,6 +133,7 @@ class CatchesHubContent extends StatelessWidget {
                     ),
                   ),
                   CatchSectionList(
+                    emptyStateOmitted: true,
                     gap: CatchSpacing.s3,
                     children: [
                       for (final row in state.rows)

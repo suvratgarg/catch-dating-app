@@ -29,6 +29,7 @@ class ProfileTabSkeletonSliverBody extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   CatchSectionList(
+                    emptyStateOmitted: true,
                     gap: 0,
                     children: [
                       const ProfilePhotosSkeletonSection(),

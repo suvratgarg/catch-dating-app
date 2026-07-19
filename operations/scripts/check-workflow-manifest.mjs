@@ -268,6 +268,9 @@ function compareDescriptor(
     manifest.sourceProfiles, descriptor.sourceProfileIds);
   compareOrdered(findings, contract("loaded-source-profiles"),
     loadedSourceProfileIds, descriptor.sourceProfileIds);
+  compareOrdered(findings, contract("compatibility-artifacts"),
+    (manifest.compatibilityInputs ?? []).flatMap((entry) =>
+      entry.artifacts ?? []), descriptor.compatibilityArtifactPatterns);
   compareValue(findings, contract("capabilities"), manifest.capabilities,
     descriptor.capabilities);
   compareCapabilityCeiling(findings,

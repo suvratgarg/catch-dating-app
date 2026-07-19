@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.4.41
+version: 1.4.43
 updated: 2026-07-19
 owner: recursive_audit_loop
 status: active
@@ -150,6 +150,23 @@ Allowed exceptions:
 - `lib/firebase_options_*.dart` and generated config files.
 - Intentional in-development feature folders documented by audit rules, such
   as `event_policies` and `event_success`.
+
+### Exhibit ARCH-ROUTER-LIFECYCLE-001: App Router And Integration-Test Lifecycle
+
+`goRouterProvider` owns both its `GoRouter` disposal and a fresh set of
+`GlobalKey<NavigatorState>` instances for that provider-container lifecycle.
+Navigator keys must not be file-level singletons: a disposed app/test container
+must be able to mount a new router without retaining navigation state.
+
+App-shell integration suites use keyed `ProviderScope` roots, bounded frame
+advancement, and deterministic repository/provider overrides. They run through
+the wrappers in `test/integration/` for headless CI; the original
+`integration_test/` files remain the optional native-device entrypoints. Do not
+use `pumpAndSettle` or process event-queue drains while the mounted app owns
+timers. Do not add an asynchronous localization delegate when the requested
+behavior is already the component's nonlocalized fallback.
+
+<!-- exhibit-freshness: ARCH-ROUTER-LIFECYCLE-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
 
 Do not create parallel top-level folders such as `services`, `repositories`,
 `view_models`, or `widgets` for feature-owned code. If code is genuinely shared,
@@ -680,7 +697,9 @@ node tool/design/check_component_contracts.mjs
 Catch-owned UI rules use the local analyzer plugin package
 `packages/catch_ui_lints`. Do not add new `custom_lint` rules. Deterministic
 UI invariants should be implemented as `analysis_server_plugin` diagnostics so
-the IDE, `dart analyze`, and `flutter analyze` see the same signal.
+the IDE and repository-root `dart analyze` can surface the same signal. In the
+current toolchain, `flutter analyze` and `dart analyze lib` do not load the
+Catch plugin; they remain useful generic checks but are not Catch lint proof.
 
 The current lint scope is all handwritten `lib/**` Dart except
 `lib/core/theme/**`, generated code, and schema-generated contracts. Theme files
@@ -696,18 +715,40 @@ design constants/icon source/icon size/alpha/shadow/motion/breakpoint/surface
 shell/stroke/asset path, icon-button tooltip requirements, allow-debt blocking,
 and widget-returning method blocking.
 
+Placement rules additionally cover top-bar action ownership, shell-owned tab
+scaffolds, field/section context, explicit collection empty-state policy,
+AsyncValue loading/error coverage, raw error surfaces, and feature-local shell
+measurement. These rules begin as INFO findings behind a decrease-only drift
+ratchet. `CatchSectionList` makes the empty-state decision explicit in its API:
+callers provide `emptyBuilder` or name the deliberate
+`emptyStateOmitted: true` opt-out.
+
+Cross-file rules use
+`tool/architecture/check_ui_composition_contracts.dart`, which resolves every
+registered source before checking its symbol, state policy, top-bar contract,
+and shell-owned Scaffold boundary. Component enforcement metadata generates
+the plugin steering tables and probe corpus; the bidirectional coverage gate
+requires every primitive to have enforcement or an unexpired waiver and every
+implemented `catch_*` code to have a catalog owner.
+
 Verification commands:
 
 ```sh
 bash tool/check_catch_ui_lints.sh
-bash tool/check_catch_ui_lint_drift.sh --count
+bash tool/check_catch_ui_lint_drift.sh --check
 bash tool/check_catch_ui_lint_drift.sh --all --json /private/tmp/catch-ui-lint-drift.json
+node tool/design/build_lint_enforcement_tables.mjs --check
+node tool/design/check_component_enforcement_coverage.mjs
+dart run tool/architecture/check_ui_composition_contracts.dart --check
 bash tool/check_sizing.sh --count
 bash tool/check_ui_local_constant_wrappers.sh --summary
 bash tool/check_ui_system_raw_values.sh --count
 bash tool/check_ui_allow_debt.sh --summary
 flutter analyze --no-fatal-infos
 ```
+
+The final command is intentionally listed as the generic analyzer complement,
+not as proof that the Catch analyzer plugin loaded.
 
 ## Async State Boundary Taxonomy
 

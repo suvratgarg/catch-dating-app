@@ -112,7 +112,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
                 // padding. Subtract the stroke so the visible outer inset is
                 // exactly s2 on every edge.
                 padding: const EdgeInsets.all(
-                  CatchSpacing.s2 - CatchStroke.underline,
+                  CatchLayout.chatInputInnerPadding,
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.end,

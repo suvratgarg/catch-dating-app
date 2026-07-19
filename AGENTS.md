@@ -1,6 +1,6 @@
 ---
 doc_id: agent_entrypoint
-version: 1.4.9
+version: 1.4.10
 updated: 2026-07-16
 owner: agent_operating_model
 status: active
@@ -41,6 +41,7 @@ the right verification loop.
 | App architecture, feature folders, controllers, async, error UI, widget ownership | `docs/app_architecture.md`, `docs/audit_registry/architecture_pattern_adoption.json` | Prototype one reference implementation first; update the architecture exhibit and pattern-adoption tracker; `dart tool/audit_registry.dart refresh`; focused tests/analyzer; relevant scanners |
 | Documentation cleanup | `docs/README.md`, `docs/audit_registry/doc_versions.json` | Update owner doc; remove or mark superseded docs; run readiness gate |
 | Design-system or UI implementation | `docs/design_language.md`, `docs/design_parity/README.md`, `docs/widget_catalog.md` | Widgetbook/contract coverage where relevant; design checks; focused Flutter tests |
+| Catch UI lint or composition enforcement | `docs/app_architecture.md`, `design/components/README.md`, `design/screens/catch.screens.json` | Verify with `bash tool/check_catch_ui_lints.sh`, the root-only drift helper, generated enforcement coverage, and the resolved composition checker. `flutter analyze` and targeted `dart analyze lib` do not prove the Catch plugin loaded. |
 | Data contracts, Firestore, Functions writes | `docs/data_contracts.md`, `docs/backend_operation_catalog.md` | `./tool/check_data_contract.sh` when contract/rules behavior changed |
 | Durable business workflows, workers, autonomous agents, run queues, leases, receipts, or workflow learning | `docs/operations_platform.md`, `contracts/operations/README.md`, and the owning `operations/src/workflows/<workflow>/` README/manifest | Keep `tool/` limited to utilities and compatibility producers; use shadow-safe defaults; validate operation schemas; dry-run any admin projection import before an explicitly confirmed apply; run `npm --prefix operations test`, `npm --prefix operations run check`, focused Functions/admin checks, manifest validation, and readiness |
 | Release, deploy, CI, environment config | `docs/release_operations.md`, `docs/web_surface_architecture.md` | Local CI-equivalent checks; verify workflow/deploy state before declaring done |

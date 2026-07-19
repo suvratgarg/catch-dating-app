@@ -5,9 +5,9 @@
     "manifest": "docs/audit_registry/flutter_field_surface_adoption.json",
     "manifestSha256": "56ceae1445f117cad56c0d09bc86cc50f1d8d8a995727d7123f25171f180507a",
     "routeInventory": "tool/ui_capture/route_inventory.json",
-    "routeInventorySha256": "06791556d5d634a08f5b60481c7c258a8ecbd0eb7828b63033a5fc020d16c03c",
+    "routeInventorySha256": "2e07af70390e9ab6b5430555bc3404789dcb11e5ee010468002554aaf8516885",
     "screenContracts": "design/screens/catch.screens.json",
-    "screenContractsSha256": "2faface104983bfc0e0952231564557657250d5dfb40a5d01c1c63871eee8d89"
+    "screenContractsSha256": "2925ca86759abbf274d95ef3132b24e48edbb33f2f4f0226ed434d78541058dd"
   },
   "summary": {
     "candidateCount": 10,
@@ -128,12 +128,12 @@
           "expected": 6,
           "observed": 6,
           "lines": [
-            417,
-            472,
-            538,
-            1000,
-            1200,
-            1251
+            418,
+            473,
+            539,
+            1001,
+            1201,
+            1252
           ]
         },
         {
@@ -143,8 +143,8 @@
           "expected": 2,
           "observed": 2,
           "lines": [
-            1087,
-            1138
+            1088,
+            1139
           ]
         },
         {
@@ -154,9 +154,9 @@
           "expected": 3,
           "observed": 3,
           "lines": [
-            421,
-            432,
-            501
+            422,
+            433,
+            502
           ]
         },
         {
@@ -166,17 +166,17 @@
           "expected": 11,
           "observed": 11,
           "lines": [
-            475,
-            520,
-            544,
-            606,
-            1010,
-            1021,
-            1053,
-            1089,
-            1103,
-            1140,
-            1155
+            476,
+            521,
+            545,
+            607,
+            1011,
+            1022,
+            1054,
+            1090,
+            1104,
+            1141,
+            1156
           ]
         },
         {
@@ -186,7 +186,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            584
+            585
           ]
         },
         {
@@ -196,8 +196,8 @@
           "expected": 2,
           "observed": 2,
           "lines": [
-            1043,
-            1178
+            1044,
+            1179
           ]
         },
         {
@@ -207,7 +207,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            444
+            445
           ]
         },
         {
@@ -217,8 +217,8 @@
           "expected": 2,
           "observed": 2,
           "lines": [
-            1076,
-            1129
+            1077,
+            1130
           ]
         },
         {
@@ -228,14 +228,14 @@
           "expected": 8,
           "observed": 8,
           "lines": [
-            1121,
-            1203,
-            1211,
-            1219,
-            1229,
-            1234,
-            1254,
-            1259
+            1122,
+            1204,
+            1212,
+            1220,
+            1230,
+            1235,
+            1255,
+            1260
           ]
         }
       ]
