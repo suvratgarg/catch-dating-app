@@ -27,6 +27,16 @@ test("accepts a tab root that delegates scroll ownership to the shared shell", (
   assert.deepEqual(result.findings, []);
 });
 
+test("accepts lifecycle-owned StatefulShellBranch key member access", () => {
+  const root = fixtureRoot({
+    ownerSource:
+      "SafeArea(bottom: false, child: CustomScrollView(slivers: [CatchSliverTerminalPadding()]));",
+    routerBranchKey: "keys.home",
+  });
+  const result = checkTabRootScrollContracts({root});
+  assert.deepEqual(result.findings, []);
+});
+
 test("flags the known-bad tab root fixture when terminal padding is missing", () => {
   const root = fixtureRoot({
     ownerSource: "SafeArea(bottom: false, child: CustomScrollView());",
@@ -102,6 +112,7 @@ function fixtureRoot({
   shellSource = "return CatchAdaptiveTabScaffold(body: navigationShell);",
   extraRouterSource = "",
   stateSource,
+  routerBranchKey = "_homeShellKey",
   requires = [
     {text: "bottom: false", minimumOccurrences: 1},
     {text: "CatchSliverTerminalPadding", minimumOccurrences: 1},
@@ -113,7 +124,7 @@ function fixtureRoot({
     "lib/routing/go_router.dart",
     `
       StatefulShellBranch(
-        navigatorKey: _homeShellKey,
+        navigatorKey: ${routerBranchKey},
         routes: [GoRoute(name: Routes.home.name)],
       ),
       ${extraRouterSource}
@@ -139,7 +150,7 @@ function fixtureRoot({
       ],
       branches: [
         {
-          branchKey: "_homeShellKey",
+          branchKey: routerBranchKey,
           routeName: "Routes.home.name",
           owners: [
             {

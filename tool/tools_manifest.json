@@ -4653,8 +4653,9 @@
       "vacuityProof": {
         "type": "test",
         "path": "tool/design/check_tab_root_scroll_contracts.test.mjs",
-        "contains": [
-          "flags the known-bad tab root fixture when terminal padding is missing",
+      "contains": [
+        "accepts lifecycle-owned StatefulShellBranch key member access",
+        "flags the known-bad tab root fixture when terminal padding is missing",
           "flags a new StatefulShellBranch until it is registered",
           "flags a raw SliverFillRemaining empty state in presentation code"
         ]

@@ -1,5 +1,5 @@
 {
-  "version": 47,
+  "version": 48,
   "updated": "2026-07-20",
   "owner": "agent_operating_model",
   "entries": [
@@ -2284,6 +2284,28 @@
         "docs/design_parity/README.md"
       ],
       "notes": "The design-system relationship already covers lib consumers; this regression binds the field inventory gate to that relationship instead of relying on agents to remember a hidden transitive hash dependency."
+    },
+    {
+      "id": "REG-TAB-ROOT-ROUTER-OWNERSHIP-001",
+      "title": "Tab-root scroll contracts assume file-global shell navigator keys",
+      "status": "active",
+      "applies_to": [
+        "lib/routing/go_router.dart",
+        "tool/design/check_tab_root_scroll_contracts.mjs",
+        "tool/design/check_tab_root_scroll_contracts.test.mjs",
+        "tool/design/tab_root_scroll_contracts.json"
+      ],
+      "symptom": "Router navigator identity moves into a lifecycle-owned key object, but the tab-root scanner parses only a bare identifier and its manifest retains retired file-global key names, so every real shell branch is simultaneously reported missing and unregistered.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/design/check_tab_root_scroll_contracts.test.mjs && node tool/design/check_tab_root_scroll_contracts.mjs --check",
+        "guardEvidence": "the focused lifecycle-owned member-access fixture passes while the existing unregistered-branch fixture still proves new branches fail closed"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/design_parity/README.md"
+      ],
+      "notes": "The manifest records the typed lifecycle expression used at each StatefulShellBranch callsite, such as keys.dashboard, instead of restoring disposed-container-sensitive globals."
     }
   ]
 }
