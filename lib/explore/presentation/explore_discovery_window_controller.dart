@@ -140,9 +140,9 @@ class ExploreDiscoveryWindow extends _$ExploreDiscoveryWindow {
           hasMoreExternal: externalPage.hasMore,
         ),
       );
-    } catch (error, stackTrace) {
+    } catch (_) {
       state = AsyncData(current.copyWith(isLoadingMore: false));
-      Error.throwWithStackTrace(error, stackTrace);
+      rethrow;
     }
   }
 }

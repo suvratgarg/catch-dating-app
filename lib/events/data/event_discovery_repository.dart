@@ -173,6 +173,11 @@ class EventDiscoveryRepository {
         final page = await firestoreQuery.fetchDocumentCursorPage(
           limit: query.limit,
           startAfter: startAfter,
+          errorContext: const BackendErrorContext(
+            service: BackendService.firestore,
+            action: 'fetch event discovery',
+            resource: _collectionPath,
+          ),
         );
         final events =
             page.items

@@ -12703,28 +12703,36 @@
   "exploreExploreScreenStateCtaViewAndBook": "View and book",
   "@exploreExploreScreenStateCtaViewAndBook": {
     "description": "Explore cover-story CTA for an event the viewer can book after opening its details.",
+    "x-audience": "consumer",
     "x-copy-kind": "action",
+    "x-owner": "product",
     "x-product-role": "member",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateCtaViewAndRequest": "View and request",
   "@exploreExploreScreenStateCtaViewAndRequest": {
     "description": "Explore cover-story CTA for an event that requires an attendance request.",
+    "x-audience": "consumer",
     "x-copy-kind": "action",
+    "x-owner": "product",
     "x-product-role": "member",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateCtaViewWaitlist": "View waitlist",
   "@exploreExploreScreenStateCtaViewWaitlist": {
     "description": "Explore cover-story CTA for an event whose waitlist can be viewed from details.",
+    "x-audience": "consumer",
     "x-copy-kind": "action",
+    "x-owner": "product",
     "x-product-role": "member",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateCtaViewEvent": "View event",
   "@exploreExploreScreenStateCtaViewEvent": {
     "description": "Explore cover-story CTA for an event that has no immediate booking action.",
+    "x-audience": "consumer",
     "x-copy-kind": "action",
+    "x-owner": "product",
     "x-product-role": "member",
     "x-surface": "explore.presentation.explore_screen_state"
   },
@@ -12752,22 +12760,10 @@
   "exploreExploreScreenStateLabelHostedBy": "Hosted by",
   "@exploreExploreScreenStateLabelHostedBy": {
     "description": "Eyebrow above the host identity shown on an Explore club polaroid.",
+    "x-audience": "consumer",
     "x-copy-kind": "label",
+    "x-owner": "product",
     "x-product-role": "member",
-    "x-surface": "explore.presentation.explore_screen_state"
-  },
-  "exploreExploreScreenStateActionlabelPreview": "Preview",
-  "@exploreExploreScreenStateActionlabelPreview": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "explore.presentation.explore_screen_state"
-  },
-  "exploreExploreScreenStateActionlabelViewClub": "View club",
-  "@exploreExploreScreenStateActionlabelViewClub": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).",
-    "x-audience": "consumer",
-    "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateTitleNoEventsMatchThis": "No events match this search",
@@ -16623,13 +16619,6 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_event_rows"
   },
-  "exploreRecommendCardVisiblecopyFree": "Free",
-  "@exploreRecommendCardVisiblecopyFree": {
-    "description": "Product copy used by lib/explore/presentation/widgets/recommend_card.dart (visibleCopy).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "explore.presentation.widgets.recommend_card"
-  },
   "hostsCreateClubScreenVisiblecopyRestoredYourClubDraft": "Restored your club draft",
   "@hostsCreateClubScreenVisiblecopyRestoredYourClubDraft": {
     "description": "Product copy used by lib/hosts/presentation/club_management/create/create_club_screen.dart (visibleCopy).",
@@ -19610,13 +19599,6 @@
     "x-owner": "product",
     "x-surface": "core.widgets.catch_field"
   },
-  "eventsEventDateRailCardVisiblecopyFree": "Free",
-  "@eventsEventDateRailCardVisiblecopyFree": {
-    "description": "Fallback price copy used by the shared event DateTicket.",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "events.shared.event_tiles.event_date_rail_card"
-  },
   "exploreExploreMapScreenLabelWithinDistance": "Within {distanceKm} km",
   "@exploreExploreMapScreenLabelWithinDistance": {
     "description": "Compact visible label attached to the Explore map distance ring.",
@@ -20226,61 +20208,5 @@
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_event_rows"
-  },
-  "exploreExploreScreenStateStatusJoined": "You''re in",
-  "@exploreExploreScreenStateStatusJoined": {
-    "description": "Explore card status after joining.",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "explore.presentation.explore_screen_state"
-  },
-  "exploreExploreScreenStateStatusSaved": "Saved",
-  "@exploreExploreScreenStateStatusSaved": {
-    "description": "Explore card status for a saved event.",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "explore.presentation.explore_screen_state"
-  },
-  "exploreExploreScreenStateStatusRecommended": "Recommended",
-  "@exploreExploreScreenStateStatusRecommended": {
-    "description": "Explore card status for a recommended event.",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "explore.presentation.explore_screen_state"
-  },
-  "exploreExploreScreenStateStatusHosted": "Hosted",
-  "@exploreExploreScreenStateStatusHosted": {
-    "description": "Explore card status for an event hosted by the viewer.",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "explore.presentation.explore_screen_state"
-  },
-  "exploreExploreScreenStateStatusWaitlisted": "Waitlisted",
-  "@exploreExploreScreenStateStatusWaitlisted": {
-    "description": "Explore card status for a waitlisted viewer.",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "explore.presentation.explore_screen_state"
-  },
-  "exploreExploreScreenStateStatusAttended": "Attended",
-  "@exploreExploreScreenStateStatusAttended": {
-    "description": "Explore card status for an attended event.",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "explore.presentation.explore_screen_state"
-  },
-  "exploreExploreScreenStateStatusPast": "Past",
-  "@exploreExploreScreenStateStatusPast": {
-    "description": "Explore card status for a past event.",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "explore.presentation.explore_screen_state"
-  },
-  "exploreExploreScreenStateStatusNotEligible": "Not eligible",
-  "@exploreExploreScreenStateStatusNotEligible": {
-    "description": "Explore card status when a viewer is not eligible.",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "explore.presentation.explore_screen_state"
   }
 }

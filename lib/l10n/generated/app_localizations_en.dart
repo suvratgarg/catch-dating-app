@@ -6930,12 +6930,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreExploreScreenStateLabelHostedBy => 'Hosted by';
 
   @override
-  String get exploreExploreScreenStateActionlabelPreview => 'Preview';
-
-  @override
-  String get exploreExploreScreenStateActionlabelViewClub => 'View club';
-
-  @override
   String get exploreExploreScreenStateTitleNoEventsMatchThis =>
       'No events match this search';
 
@@ -9173,9 +9167,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get exploreRecommendCardVisiblecopyFree => 'Free';
-
-  @override
   String get hostsCreateClubScreenVisiblecopyRestoredYourClubDraft =>
       'Restored your club draft';
 
@@ -10810,9 +10801,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get eventsEventDateRailCardVisiblecopyFree => 'Free';
-
-  @override
   String exploreExploreMapScreenLabelWithinDistance({required int distanceKm}) {
     return 'Within $distanceKm km';
   }
@@ -11420,28 +11408,4 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return '$title, $sourceLabel, $statusLabel, $supportingLabel, $timePriceLabel, $readOnlySupplyLabel';
   }
-
-  @override
-  String get exploreExploreScreenStateStatusJoined => 'You\'re in';
-
-  @override
-  String get exploreExploreScreenStateStatusSaved => 'Saved';
-
-  @override
-  String get exploreExploreScreenStateStatusRecommended => 'Recommended';
-
-  @override
-  String get exploreExploreScreenStateStatusHosted => 'Hosted';
-
-  @override
-  String get exploreExploreScreenStateStatusWaitlisted => 'Waitlisted';
-
-  @override
-  String get exploreExploreScreenStateStatusAttended => 'Attended';
-
-  @override
-  String get exploreExploreScreenStateStatusPast => 'Past';
-
-  @override
-  String get exploreExploreScreenStateStatusNotEligible => 'Not eligible';
 }

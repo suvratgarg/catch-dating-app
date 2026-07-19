@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
@@ -80,19 +82,24 @@ extension FirestoreCursorQuery<T> on Query<T> {
   fetchDocumentCursorPage({
     required int limit,
     DocumentSnapshot<T>? startAfter,
+    required BackendErrorContext errorContext,
   }) async {
     if (limit <= 0) {
       throw ArgumentError.value(limit, 'limit', 'Must be greater than zero.');
     }
 
-    final windowed = startAfter == null ? this : startAfterDocument(startAfter);
-    final snapshot = await windowed.limit(limit + 1).get();
-    final hasMore = snapshot.docs.length > limit;
-    final visibleDocs = snapshot.docs.take(limit).toList();
-    return CursorPage(
-      items: List.unmodifiable(visibleDocs),
-      nextCursor: hasMore && visibleDocs.isNotEmpty ? visibleDocs.last : null,
-      hasMore: hasMore,
-    );
+    return withBackendErrorContext(() async {
+      final windowed = startAfter == null
+          ? this
+          : startAfterDocument(startAfter);
+      final snapshot = await windowed.limit(limit + 1).get();
+      final hasMore = snapshot.docs.length > limit;
+      final visibleDocs = snapshot.docs.take(limit).toList();
+      return CursorPage(
+        items: List.unmodifiable(visibleDocs),
+        nextCursor: hasMore && visibleDocs.isNotEmpty ? visibleDocs.last : null,
+        hasMore: hasMore,
+      );
+    }, context: errorContext);
   }
 }

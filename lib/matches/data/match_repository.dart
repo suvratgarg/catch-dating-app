@@ -189,7 +189,15 @@ class MatchRepository {
         .where(field, isEqualTo: uid)
         .where('status', isEqualTo: 'active')
         .orderBy('createdAt', descending: true)
-        .fetchDocumentCursorPage(limit: limit, startAfter: startAfter);
+        .fetchDocumentCursorPage(
+          limit: limit,
+          startAfter: startAfter,
+          errorContext: const BackendErrorContext(
+            service: BackendService.firestore,
+            action: 'fetch matches page',
+            resource: _collectionPath,
+          ),
+        );
     return CursorPage(
       items: List.unmodifiable(page.items.map((document) => document.data())),
       nextCursor: page.nextCursor,

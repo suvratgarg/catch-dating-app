@@ -1,5 +1,5 @@
 {
-  "version": 33,
+  "version": 35,
   "updated": "2026-07-19",
   "owner": "agent_operating_model",
   "entries": [
@@ -707,7 +707,7 @@
       "guard": {
         "type": "command",
         "command": "flutter test test/explore/explore_view_model_test.dart",
-        "guardEvidence": "focused state tests prove recommendation rank beats chronology, blocked events cannot hero, CTA copy follows availability, and the selected cover id stays in the feed"
+        "guardEvidence": "ranked hero beats chronology and stays in the feed"
       },
       "owner_docs": [
         "docs/app_architecture.md",
@@ -755,6 +755,25 @@
         "docs/plans/ui_capture_visual_qa.md"
       ],
       "notes": "Keep capture settling bounded because loading indicators may animate indefinitely; the extra CatchMotion.base beat targets second-order implicit animations without using pumpAndSettle."
+    },
+    {
+      "id": "REG-EXPLORE-007",
+      "title": "Explore load-more failures are rolled back and swallowed",
+      "status": "active",
+      "applies_to": [
+        "lib/explore/presentation/explore_discovery_window_controller.dart",
+        "test/explore/explore_discovery_window_controller_test.dart"
+      ],
+      "symptom": "A failed cursor page leaves Explore stuck in a loading-more state, replaces the last successful page, or completes silently so the caller cannot surface or log the failure.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/explore/explore_discovery_window_controller_test.dart --plain-name 'loadNext restores the current page and rethrows failures'"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/audit_registry/architecture_pattern_adoption.json"
+      ],
+      "notes": "Rollback only the transient isLoadingMore flag, preserve the last successful cursor window, and rethrow with the original stack so the invoking mutation or UI boundary owns presentation."
     },
     {
       "id": "REG-MAP-001",

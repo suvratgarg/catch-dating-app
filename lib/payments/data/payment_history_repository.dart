@@ -57,7 +57,15 @@ class PaymentHistoryRepository {
       final page = await _paymentsRef
           .where('userId', isEqualTo: userId)
           .orderBy('createdAt', descending: true)
-          .fetchDocumentCursorPage(limit: limit, startAfter: startAfter);
+          .fetchDocumentCursorPage(
+            limit: limit,
+            startAfter: startAfter,
+            errorContext: const BackendErrorContext(
+              service: BackendService.firestore,
+              action: 'fetch payment history page',
+              resource: _collectionPath,
+            ),
+          );
       return CursorPage(
         items: List.unmodifiable(page.items.map((document) => document.data())),
         nextCursor: page.nextCursor,

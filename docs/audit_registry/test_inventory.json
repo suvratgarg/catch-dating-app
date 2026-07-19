@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 521,
+  "total": 530,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -24,7 +24,7 @@
       ]
     },
     "flutter_unit_widget": {
-      "count": 252,
+      "count": 257,
       "files": [
         "test/activity/activity_taxonomy_test.dart",
         "test/analytics/app_analytics_test.dart",
@@ -38,6 +38,7 @@
         "test/auth/presentation/auth_screen_test.dart",
         "test/calendar/calendar_screen_state_test.dart",
         "test/calendar/calendar_screen_test.dart",
+        "test/chats/chat_blast_composer_sheet_test.dart",
         "test/chats/chat_controller_test.dart",
         "test/chats/chat_event_context_header_test.dart",
         "test/chats/chat_inbox_screen_test.dart",
@@ -78,12 +79,15 @@
         "test/core/catch_field_accordion_test.dart",
         "test/core/catch_field_focus_semantics_test.dart",
         "test/core/catch_font_licenses_test.dart",
+        "test/core/catch_formatters_test.dart",
         "test/core/catch_host_row_test.dart",
+        "test/core/catch_index_row_test.dart",
         "test/core/catch_person_row_test.dart",
         "test/core/catch_primitives_test.dart",
         "test/core/catch_top_bar_test.dart",
         "test/core/city_catalog_test.dart",
         "test/core/city_repository_test.dart",
+        "test/core/cursor_page_test.dart",
         "test/core/device_location_test.dart",
         "test/core/domain_fixture_parity_test.dart",
         "test/core/external_links_test.dart",
@@ -161,6 +165,7 @@
         "test/events/viewer_event_availability_test.dart",
         "test/exceptions/error_logger_test.dart",
         "test/explore/explore_city_controller_test.dart",
+        "test/explore/explore_discovery_window_controller_test.dart",
         "test/explore/explore_view_model_test.dart",
         "test/explore/explore_widgets_test.dart",
         "test/force_update/app_version_config_provider_test.dart",
@@ -382,7 +387,7 @@
       ]
     },
     "tooling": {
-      "count": 118,
+      "count": 122,
       "files": [
         "tool/agent/check_agent_readiness.test.mjs",
         "tool/architecture/check_adopted_architecture_boundaries.test.mjs",
@@ -394,6 +399,8 @@
         "tool/audit/check_fn_readme_inventory.test.mjs",
         "tool/check_enforcement_integrity.test.mjs",
         "tool/check_repository_root_hygiene.test.mjs",
+        "tool/contracts/check_firestore_query_indexes.test.mjs",
+        "tool/contracts/check_firestore_read_limits.test.mjs",
         "tool/contracts/check_migration_contracts.test.mjs",
         "tool/contracts/check_schema_fixtures.test.mjs",
         "tool/copy/check_l10n_key_usage.test.mjs",
@@ -416,6 +423,7 @@
         "tool/demo/demo_seed_scenario_catalog.test.mjs",
         "tool/demo/seed_demo_data_append.test.mjs",
         "tool/demo/seed_demo_data_schema.test.mjs",
+        "tool/design/build_design_sync_manifest.test.mjs",
         "tool/design/check_component_lexicon.test.mjs",
         "tool/design/check_host_event_field_contracts.test.mjs",
         "tool/design/check_option_group_usage.test.mjs",
@@ -428,6 +436,7 @@
         "tool/design/check_tab_root_scroll_contracts.test.mjs",
         "tool/design/check_terminal_padding.test.mjs",
         "tool/design/check_widget_pattern_families.test.mjs",
+        "tool/design/component_concepts.test.mjs",
         "tool/design/context_pack_builder_test.dart",
         "tool/design/generate_flutter_field_surface_inventory.test.mjs",
         "tool/docs/check_doc_version_monotonic.test.mjs",

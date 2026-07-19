@@ -10907,18 +10907,6 @@ abstract class AppLocalizations {
   /// **'Hosted by'**
   String get exploreExploreScreenStateLabelHostedBy;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).
-  ///
-  /// In en, this message translates to:
-  /// **'Preview'**
-  String get exploreExploreScreenStateActionlabelPreview;
-
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).
-  ///
-  /// In en, this message translates to:
-  /// **'View club'**
-  String get exploreExploreScreenStateActionlabelViewClub;
-
   /// Product copy used by lib/explore/presentation/explore_screen_state.dart (title).
   ///
   /// In en, this message translates to:
@@ -14237,12 +14225,6 @@ abstract class AppLocalizations {
     required Object length,
   });
 
-  /// Product copy used by lib/explore/presentation/widgets/recommend_card.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Free'**
-  String get exploreRecommendCardVisiblecopyFree;
-
   /// Product copy used by lib/hosts/presentation/club_management/create/create_club_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
@@ -16780,12 +16762,6 @@ abstract class AppLocalizations {
   /// **'Add {fieldLabel}'**
   String coreCatchFieldVisiblecopyAddFieldLabel({required Object fieldLabel});
 
-  /// Fallback price copy used by the shared event DateTicket.
-  ///
-  /// In en, this message translates to:
-  /// **'Free'**
-  String get eventsEventDateRailCardVisiblecopyFree;
-
   /// Compact visible label attached to the Explore map distance ring.
   ///
   /// In en, this message translates to:
@@ -17688,54 +17664,6 @@ abstract class AppLocalizations {
     required Object timePriceLabel,
     required Object readOnlySupplyLabel,
   });
-
-  /// Explore card status after joining.
-  ///
-  /// In en, this message translates to:
-  /// **'You\'\'re in'**
-  String get exploreExploreScreenStateStatusJoined;
-
-  /// Explore card status for a saved event.
-  ///
-  /// In en, this message translates to:
-  /// **'Saved'**
-  String get exploreExploreScreenStateStatusSaved;
-
-  /// Explore card status for a recommended event.
-  ///
-  /// In en, this message translates to:
-  /// **'Recommended'**
-  String get exploreExploreScreenStateStatusRecommended;
-
-  /// Explore card status for an event hosted by the viewer.
-  ///
-  /// In en, this message translates to:
-  /// **'Hosted'**
-  String get exploreExploreScreenStateStatusHosted;
-
-  /// Explore card status for a waitlisted viewer.
-  ///
-  /// In en, this message translates to:
-  /// **'Waitlisted'**
-  String get exploreExploreScreenStateStatusWaitlisted;
-
-  /// Explore card status for an attended event.
-  ///
-  /// In en, this message translates to:
-  /// **'Attended'**
-  String get exploreExploreScreenStateStatusAttended;
-
-  /// Explore card status for a past event.
-  ///
-  /// In en, this message translates to:
-  /// **'Past'**
-  String get exploreExploreScreenStateStatusPast;
-
-  /// Explore card status when a viewer is not eligible.
-  ///
-  /// In en, this message translates to:
-  /// **'Not eligible'**
-  String get exploreExploreScreenStateStatusNotEligible;
 }
 
 class _AppLocalizationsDelegate

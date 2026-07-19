@@ -78,7 +78,15 @@ class ChatRepository {
     () async {
       final page = await _messagesRef(matchId)
           .orderBy('sentAt', descending: true)
-          .fetchDocumentCursorPage(limit: limit, startAfter: startAfter);
+          .fetchDocumentCursorPage(
+            limit: limit,
+            startAfter: startAfter,
+            errorContext: const BackendErrorContext(
+              service: BackendService.firestore,
+              action: 'fetch chat message page',
+              resource: _matchesCollectionPath,
+            ),
+          );
       return CursorPage(
         items: List.unmodifiable(page.items.map((document) => document.data())),
         nextCursor: page.nextCursor,

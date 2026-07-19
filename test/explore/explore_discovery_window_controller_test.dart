@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/data/cursor_page.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
@@ -94,14 +96,87 @@ void main() {
       expect(externalRepository.calls, 1);
     },
   );
+
+  test('loadNext restores the current page and rethrows failures', () async {
+    final now = DateTime(2026, 7, 18, 10);
+    final firstEvent = buildEvent(
+      id: 'event-1',
+      clubId: 'club-1',
+      startTime: now.add(const Duration(days: 1)),
+    );
+    final cursorFirestore = FakeFirebaseFirestore();
+    await cursorFirestore
+        .collection('events')
+        .doc('cursor')
+        .set(firstEvent.toJson());
+    final internalCursor = await cursorFirestore
+        .collection('events')
+        .withDocumentIdConverter<Event>(
+          idField: 'id',
+          fromJson: Event.fromJson,
+          toJson: (event) => event.toJson(),
+        )
+        .doc('cursor')
+        .get();
+    final internalRepository = _PagedEventDiscoveryRepository(
+      first: CursorPage(
+        items: [firstEvent],
+        nextCursor: internalCursor,
+        hasMore: true,
+      ),
+      second: const CursorPage(items: [], hasMore: false),
+      secondError: StateError('page failed'),
+    );
+    final container = ProviderContainer(
+      overrides: [
+        eventDiscoveryRepositoryProvider.overrideWithValue(internalRepository),
+        externalEventRepositoryProvider.overrideWithValue(
+          _PagedExternalEventRepository(
+            const CursorPage(items: [], hasMore: false),
+          ),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final request = ExploreDiscoveryWindowRequest(
+      internalQuery: EventDiscoveryQuery.forCity(
+        marketId: 'in-mh-mumbai',
+        startAt: now,
+      ),
+      externalQuery: ExternalEventDiscoveryQuery.forCity(
+        citySlug: 'mumbai',
+        startAt: now,
+      ),
+    );
+    final provider = exploreDiscoveryWindowProvider(request);
+    final subscription = container.listen(provider, (_, _) {});
+    addTearDown(subscription.close);
+    await container.read(provider.future);
+
+    await expectLater(
+      container.read(provider.notifier).loadNext(),
+      throwsA(isA<ParallelWaitError>()),
+    );
+
+    final restored = container.read(provider).requireValue;
+    expect(restored.internalEvents.map((event) => event.id), ['event-1']);
+    expect(restored.isLoadingMore, isFalse);
+    expect(restored.hasMore, isTrue);
+  });
 }
 
 class _PagedEventDiscoveryRepository extends Fake
     implements EventDiscoveryRepository {
-  _PagedEventDiscoveryRepository({required this.first, required this.second});
+  _PagedEventDiscoveryRepository({
+    required this.first,
+    required this.second,
+    this.secondError,
+  });
 
   final CursorPage<Event, DocumentSnapshot<Event>> first;
   final CursorPage<Event, DocumentSnapshot<Event>> second;
+  final Object? secondError;
   final List<DocumentSnapshot<Event>?> startAfterCalls = [];
 
   @override
@@ -111,6 +186,8 @@ class _PagedEventDiscoveryRepository extends Fake
     DocumentSnapshot<Event>? startAfter,
   }) async {
     startAfterCalls.add(startAfter);
+    final error = secondError;
+    if (startAfter != null && error != null) throw error;
     return startAfter == null ? first : second;
   }
 }

@@ -60,7 +60,15 @@ class ActivityNotificationRepository {
     () async {
       final page = await _itemsRef(uid)
           .orderBy('createdAt', descending: true)
-          .fetchDocumentCursorPage(limit: limit, startAfter: startAfter);
+          .fetchDocumentCursorPage(
+            limit: limit,
+            startAfter: startAfter,
+            errorContext: const BackendErrorContext(
+              service: BackendService.firestore,
+              action: 'fetch activity notification page',
+              resource: _rootCollectionPath,
+            ),
+          );
       return CursorPage(
         items: List.unmodifiable(
           page.items

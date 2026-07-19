@@ -127,6 +127,11 @@ class ReviewsRepository {
       final page = await query.fetchDocumentCursorPage(
         limit: limit,
         startAfter: startAfter,
+        errorContext: BackendErrorContext(
+          service: BackendService.firestore,
+          action: action,
+          resource: _collectionPath,
+        ),
       );
       return CursorPage(
         items: List.unmodifiable(page.items.map((document) => document.data())),
