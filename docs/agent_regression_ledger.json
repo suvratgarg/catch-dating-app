@@ -1,5 +1,5 @@
 {
-  "version": 44,
+  "version": 45,
   "updated": "2026-07-19",
   "owner": "agent_operating_model",
   "entries": [
@@ -2203,19 +2203,20 @@
       "applies_to": [
         "lib/routing/go_router.dart",
         "tool/ui_capture/check_route_inventory.mjs",
-        "tool/ui_capture/route_inventory.json"
+        "tool/ui_capture/route_inventory.json",
+        "test/routing/route_chrome_policy_test.dart"
       ],
-      "symptom": "Giving GoRouter an explicit lifecycle owner requires assigning the constructor before return, while the route scanner only recognizes an inline return and can no longer validate or refresh the capture inventory.",
+      "symptom": "Giving GoRouter an explicit lifecycle owner requires assigning the constructor before return and routing child pages through keys.root or a helper's rootNavigatorKey parameter, while source scanners or chrome-policy tests still recognize only the former inline constructor and _rootNavigatorKey spelling.",
       "guard": {
         "type": "command",
-        "command": "node --test tool/ui_capture/check_route_inventory_test.mjs && node tool/ui_capture/check_route_inventory.mjs --check",
-        "guardEvidence": "known-good inline-return and lifecycle-owned constructor fixtures both parse, and the source-derived route inventory remains current"
+        "command": "node --test tool/ui_capture/check_route_inventory_test.mjs && node tool/ui_capture/check_route_inventory.mjs --check && flutter test --concurrency=1 test/routing/route_chrome_policy_test.dart",
+        "guardEvidence": "known-good inline-return and lifecycle-owned constructor fixtures both parse, the source-derived route inventory remains current, and every shell child route targets the lifecycle-owned root navigator key directly or through the typed helper parameter"
       },
       "owner_docs": [
         "docs/app_architecture.md",
         "docs/design_parity/README.md"
       ],
-      "notes": "The scanner accepts only a locally owned final or var assignment or an inline return; it still fails closed when no GoRouter configuration can be found."
+      "notes": "The scanner accepts only a locally owned final or var assignment or an inline return; it still fails closed when no GoRouter configuration can be found. Source-policy assertions must follow the lifecycle-owned keys.root contract and its rootNavigatorKey helper parameter instead of restoring the removed global key."
     },
     {
       "id": "REG-GOLDEN-HOSTED-MACOS-RASTER-001",
