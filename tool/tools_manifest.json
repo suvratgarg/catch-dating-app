@@ -4278,14 +4278,14 @@
       "id": "web:admin-bundle-budget",
       "category": "test",
       "path": "admin/scripts/checkBundleBudget.mjs",
-      "command": "node admin/scripts/checkBundleBudget.mjs --check",
-      "safety": "local-readonly",
+      "command": "npm --workspace catch-admin run build",
+      "safety": "local-writes-build-artifacts",
       "status": "active",
-      "description": "Ratchets the Vite-manifest JavaScript entry and largest async chunk for the admin production build.",
+      "description": "Builds the admin production surface, then ratchets the generated Vite-manifest JavaScript entry and largest async chunk.",
       "checks": [
         "node --check admin/scripts/checkBundleBudget.mjs",
         "node admin/scripts/checkBundleBudget.mjs --self-test",
-        "node admin/scripts/checkBundleBudget.mjs --check"
+        "npm --workspace catch-admin run build"
       ],
       "role": "ratchet",
       "rules": [

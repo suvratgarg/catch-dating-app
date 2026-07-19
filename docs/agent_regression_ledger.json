@@ -1,5 +1,5 @@
 {
-  "version": 48,
+  "version": 49,
   "updated": "2026-07-20",
   "owner": "agent_operating_model",
   "entries": [
@@ -2306,6 +2306,28 @@
         "docs/design_parity/README.md"
       ],
       "notes": "The manifest records the typed lifecycle expression used at each StatefulShellBranch callsite, such as keys.dashboard, instead of restoring disposed-container-sensitive globals."
+    },
+    {
+      "id": "REG-ADMIN-BUNDLE-CLEAN-CHECKOUT-001",
+      "title": "Admin bundle budget passes only when a local dist artifact already exists",
+      "status": "active",
+      "applies_to": [
+        "admin/package.json",
+        "admin/scripts/checkBundleBudget.mjs",
+        "tool/tools_manifest.json",
+        ".github/workflows/tools-ci.yml"
+      ],
+      "symptom": "The test tool category invokes the admin bundle ratchet against ignored dist output without first producing a release build, so developer residue passes while a clean CI checkout fails on a missing Vite manifest.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin run build",
+        "guardEvidence": "the production build writes dist/.vite/manifest.json and immediately runs the bundle-budget ratchet through the admin build script"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/release_operations.md"
+      ],
+      "notes": "The manifest classifies this gate as build-artifact-producing and invokes the owning build instead of allowing local dist state to become an implicit prerequisite."
     }
   ]
 }
