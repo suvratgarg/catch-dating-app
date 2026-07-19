@@ -1,5 +1,5 @@
 {
-  "version": 36,
+  "version": 37,
   "updated": "2026-07-19",
   "owner": "agent_operating_model",
   "entries": [
@@ -795,6 +795,25 @@
         "tool/tools_manifest.json"
       ],
       "notes": "The gate extracts current fingerprints into a temporary directory, compares the tracked registry under its canonical source label, and removes the temporary input on every exit. The ignored default cache remains a local acceleration artifact, never a CI prerequisite."
+    },
+    {
+      "id": "REG-DESIGN-PARITY-002",
+      "title": "Widgetbook coverage depends on local ripgrep availability",
+      "status": "active",
+      "applies_to": [
+        "tool/design/check_widgetbook_coverage.mjs"
+      ],
+      "symptom": "The Widgetbook coverage gate passes on a developer machine with ripgrep but crashes on a clean CI image because spawnSync returns no stdout when rg is unavailable.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/design/check_widgetbook_coverage.mjs --self-test && node tool/design/check_widgetbook_coverage.mjs --check",
+        "guardEvidence": "the scanner walks tracked Dart source with Node filesystem APIs, its parser self-test rejects non-widget classes, and the full coverage inventory completes without external search binaries"
+      },
+      "owner_docs": [
+        "docs/design_parity/README.md",
+        "tool/tools_manifest.json"
+      ],
+      "notes": "Design enforcement must be clean-runner portable. Keep the source scan inside the Node process unless an external binary is explicitly provisioned by every supported CI environment."
     },
     {
       "id": "REG-MAP-001",

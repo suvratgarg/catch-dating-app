@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import fs from "node:fs";
-import {spawnSync} from "node:child_process";
+import path from "node:path";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 
 const args = process.argv.slice(2);
@@ -207,6 +207,18 @@ function runSelfTest() {
   if (composition.status !== "FEATURE_REVIEW_OWNED") {
     throw new Error("uncontracted composition must stay with feature review");
   }
+  const widgetClass = parseWidgetSourceLine(
+    "class CatchBadge extends StatelessWidget {",
+  );
+  if (
+    widgetClass?.name !== "CatchBadge" ||
+    widgetClass.base !== "StatelessWidget"
+  ) {
+    throw new Error("widget source lines must retain their class and base names");
+  }
+  if (parseWidgetSourceLine("class CatchBadge extends Object {") !== null) {
+    throw new Error("non-widget source lines must not enter the inventory");
+  }
   console.log("Widgetbook role-derived coverage self-test passed.");
 }
 
@@ -227,37 +239,45 @@ function classifyMechanicalCoverage({
 }
 
 function scanWidgetClasses() {
-  const pattern =
-    String.raw`class _?[A-Z][A-Za-z0-9_]+ extends (StatelessWidget|StatefulWidget|ConsumerWidget|ConsumerStatefulWidget|HookWidget|HookConsumerWidget)`;
-  const scan = spawnSync("rg", ["-n", pattern, "lib", "--glob", "*.dart"], {
-    cwd: fromRepo(),
-    encoding: "utf8",
-  });
-
-  if (scan.status !== 0 && scan.stdout.trim() === "") {
-    console.error(scan.stderr || "Failed to scan widget classes with rg.");
-    process.exit(scan.status ?? 1);
-  }
-
   const entries = [];
-  for (const line of scan.stdout.trim().split("\n")) {
-    if (!line) continue;
-    const match =
-      /^(.*?):(\d+):.*?class\s+(_?[A-Z][A-Za-z0-9_]+)\s+extends\s+([A-Za-z0-9_]+)/u.exec(
-        line,
-      );
-    if (!match) continue;
-    const [, file, lineNumber, name, base] = match;
-    entries.push({
-      file,
-      line: Number(lineNumber),
-      name,
-      base,
-      area: areaFor(file),
-      visibility: name.startsWith("_") ? "private" : "public",
-    });
+  for (const absolutePath of listDartFiles(fromRepo("lib"))) {
+    const file = relativeToRepo(absolutePath).replaceAll("\\", "/");
+    const lines = fs.readFileSync(absolutePath, "utf8").split(/\r?\n/u);
+    for (const [index, line] of lines.entries()) {
+      const widgetClass = parseWidgetSourceLine(line);
+      if (widgetClass === null) continue;
+      entries.push({
+        file,
+        line: index + 1,
+        ...widgetClass,
+        area: areaFor(file),
+        visibility: widgetClass.name.startsWith("_") ? "private" : "public",
+      });
+    }
   }
   return entries.sort((a, b) => a.file.localeCompare(b.file) || a.line - b.line);
+}
+
+function listDartFiles(directory) {
+  const files = [];
+  for (const entry of fs.readdirSync(directory, {withFileTypes: true})) {
+    const absolutePath = path.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...listDartFiles(absolutePath));
+    } else if (entry.isFile() && entry.name.endsWith(".dart")) {
+      files.push(absolutePath);
+    }
+  }
+  return files;
+}
+
+function parseWidgetSourceLine(line) {
+  const match =
+    /\bclass\s+(_?[A-Z][A-Za-z0-9_]+)\s+extends\s+(StatelessWidget|StatefulWidget|ConsumerWidget|ConsumerStatefulWidget|HookWidget|HookConsumerWidget)\b/u.exec(
+      line,
+    );
+  if (match === null) return null;
+  return {name: match[1], base: match[2]};
 }
 
 function parseWidgetbookComponentNames() {
