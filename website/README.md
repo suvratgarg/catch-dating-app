@@ -39,10 +39,12 @@ Firebase Hosting deploys run
 deploys should also validate
 `--expected-project-id catch-dating-app-64e51` in CI or an equivalent manual
 preflight, so the marketing site cannot ship with missing App Check or Firebase
-config. Production marketing deploys additionally require HTTPS
-`VITE_APP_STORE_URL` and `VITE_PLAY_STORE_URL` product links on the official
-Apple and Google hosts. Empty links remain valid only for local/preview builds
-that intentionally show the existing fallback state.
+config. Production marketing deploys also require an explicit store-link state:
+`VITE_STORE_LINKS_MODE=prelaunch` requires both store URLs to remain empty and
+serves the existing coming-soon/waitlist CTA, while `live` requires official
+HTTPS `VITE_APP_STORE_URL` and `VITE_PLAY_STORE_URL` product links. The deploy
+workflow defaults an unset GitHub Environment mode to `prelaunch`; set
+`VITE_STORE_LINKS_MODE=live` in `prod-hosting` only when both listings exist.
 
 The production deploy job also runs a read-only claim-target sync against the
 selected Firebase project and writes a temporary readiness receipt. Organizer

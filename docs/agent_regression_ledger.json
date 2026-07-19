@@ -1,5 +1,5 @@
 {
-  "version": 39,
+  "version": 40,
   "updated": "2026-07-19",
   "owner": "agent_operating_model",
   "entries": [
@@ -959,7 +959,7 @@
     },
     {
       "id": "REG-WEB-004",
-      "title": "Production marketing deploy falls back to unavailable store links",
+      "title": "Production marketing deploy misrepresents store-link readiness",
       "status": "active",
       "applies_to": [
         "tool/env/check_web_hosting_env.mjs",
@@ -968,7 +968,7 @@
         "firebase.json",
         "website/env.example"
       ],
-      "symptom": "A production marketing Hosting deploy succeeds with empty, placeholder, non-HTTPS, or non-official App Store and Google Play product URLs.",
+      "symptom": "A production marketing Hosting deploy publishes fake or non-official store links, prelaunch mode accepts a nonempty store URL, or live mode accepts missing or invalid product URLs.",
       "guard": {
         "type": "command",
         "command": "node --test tool/env/check_web_hosting_env.test.mjs && node tool/run.mjs check env:check-web-hosting"
@@ -977,7 +977,7 @@
         "docs/release_operations.md",
         "website/README.md"
       ],
-      "notes": "Local and preview builds may intentionally omit store links; production marketing predeploy requires official HTTPS product URLs and both deploy workflows forward the GitHub Environment variables."
+      "notes": "Prelaunch requires both store URLs to be empty and renders the existing coming-soon/waitlist CTA. Live requires both official HTTPS product URLs. Deploy workflows default an absent mode to prelaunch and allow an environment-level live cutover."
     },
     {
       "id": "REG-WEB-005",

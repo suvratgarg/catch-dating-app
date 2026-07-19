@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.10.3
-updated: 2026-07-16
+version: 1.10.4
+updated: 2026-07-19
 owner: recursive_audit_loop
 status: active
 ---
@@ -391,10 +391,13 @@ Marketing and admin Hosting deploys require explicit Vite Firebase/App Check
 environment variables. Firebase Hosting predeploy runs
 `tool/env/check_web_hosting_env.mjs` for both targets so a deployment fails
 before build if the site would fall back to dev Firebase config, sample admin
-mode, or missing App Check. Marketing production deploys also require validated
-HTTPS `VITE_APP_STORE_URL` and `VITE_PLAY_STORE_URL` product links on
-`apps.apple.com` and `play.google.com`; local preview builds may leave them
-unset and use the preview-only fallback state.
+mode, or missing App Check. Marketing production deploys also require an
+explicit store-link contract. `VITE_STORE_LINKS_MODE=prelaunch` requires both
+store URLs to remain empty and preserves the honest coming-soon/waitlist CTA;
+`live` requires validated HTTPS `VITE_APP_STORE_URL` and
+`VITE_PLAY_STORE_URL` product links on `apps.apple.com` and `play.google.com`.
+The automatic workflow defaults an unset mode to `prelaunch`, so the website
+can deploy before the mobile listings exist without publishing fake links.
 
 Both Hosting workflows use the approval-free `prod-hosting` GitHub Environment
 and deploy automatically after their validation job succeeds on a matching
@@ -420,13 +423,16 @@ variables into Firebase Hosting predeploys when `hosting` is selected:
 `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`,
 `VITE_FIREBASE_MESSAGING_SENDER_ID`, `VITE_FIREBASE_APP_ID`,
 `VITE_FIREBASE_MEASUREMENT_ID`, `VITE_WEBSITE_APPCHECK_SITE_KEY`,
-`VITE_APP_STORE_URL`, `VITE_PLAY_STORE_URL`,
+`VITE_STORE_LINKS_MODE`, `VITE_APP_STORE_URL`, `VITE_PLAY_STORE_URL`,
 `VITE_ADMIN_DATA_MODE`, `VITE_ADMIN_FIREBASE_ENV`, and
 `VITE_ADMIN_APPCHECK_SITE_KEY`. `VITE_GTM_ID` is optional until the production
 GTM container exists; paid-acquisition readiness still requires setting it and
 validating consent-aware tags. The environment-specific values must match the
 selected Firebase alias; for prod, `VITE_FIREBASE_PROJECT_ID` must be
 `catch-dating-app-64e51` and `VITE_ADMIN_FIREBASE_ENV` must be `prod`.
+For marketing Hosting, an absent environment-level `VITE_STORE_LINKS_MODE`
+defaults to `prelaunch`; cut over by setting it to `live` only after setting
+both official product URLs in the same GitHub Environment.
 
 If the automatic dev deploy fails, fix the branch with a new PR rather than
 rerunning deploys against a stale commit. Use the manual `Firebase Deploy`
