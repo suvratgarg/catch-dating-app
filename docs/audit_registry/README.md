@@ -1,6 +1,6 @@
 ---
 doc_id: audit_registry
-version: 2.6.9
+version: 2.7.0
 updated: 2026-07-19
 owner: recursive_audit_loop
 status: active
@@ -45,6 +45,16 @@ The inventory includes native Android, iOS, macOS, Flutter web, and Functions
 operator scripts in addition to Dart, tests, tooling, design, and documentation,
 so release identity and trusted operations changes receive the same pass history
 as application code.
+
+Paths governed as aggregate evidence, generated platform assets, or vendored
+packages in
+`tool/repository_root_manifest.json#auditPolicies` remain inventoried, but use
+the `aggregate` status instead of inflating the file-level unreviewed queue.
+Their owning manifest, digest, build, or platform check is the review unit;
+product source, native manifests/build settings, and other critical
+configuration retain file-level pass history. Each aggregate record preserves
+its prior `file_status` and `file_kind` so narrowing or removing a policy does
+not erase earlier review state.
 
 ## Enforcement Metadata
 

@@ -298,16 +298,20 @@ Page<void> _eventDetailPage(BuildContext _, GoRouterState state) {
   );
 }
 
-// Navigator keys are file-level so they are created once for the app lifetime.
-final _rootNavigatorKey = GlobalKey<NavigatorState>();
-final _dashboardShellKey = GlobalKey<NavigatorState>();
-final _exploreShellKey = GlobalKey<NavigatorState>();
-final _chatsShellKey = GlobalKey<NavigatorState>();
-final _profileShellKey = GlobalKey<NavigatorState>();
-final _hostTodayShellKey = GlobalKey<NavigatorState>();
-final _hostEventsShellKey = GlobalKey<NavigatorState>();
-final _hostInboxShellKey = GlobalKey<NavigatorState>();
-final _hostOrganizerShellKey = GlobalKey<NavigatorState>();
+/// Navigator identity belongs to one [GoRouter] lifecycle. Keeping these keys
+/// beside the provider instance prevents disposed test/app containers from
+/// retaining navigators that block a fresh router from mounting.
+class _RouterNavigatorKeys {
+  final root = GlobalKey<NavigatorState>();
+  final dashboard = GlobalKey<NavigatorState>();
+  final explore = GlobalKey<NavigatorState>();
+  final chats = GlobalKey<NavigatorState>();
+  final profile = GlobalKey<NavigatorState>();
+  final hostToday = GlobalKey<NavigatorState>();
+  final hostEvents = GlobalKey<NavigatorState>();
+  final hostInbox = GlobalKey<NavigatorState>();
+  final hostOrganizer = GlobalKey<NavigatorState>();
+}
 
 const _fromQueryParam = 'from';
 const _onboardingIntentQueryParam = 'intent';
@@ -329,6 +333,7 @@ GoRouter goRouter(Ref ref) {
   final analytics = ref.read(appAnalyticsProvider);
   final appRole = AppConfig.appRole;
   final isHostApp = appRole.isHost;
+  final keys = _RouterNavigatorKeys();
 
   ref.listen(uidProvider, (_, _) => notifier.notify());
   ref.listen(authControllerProvider, (previous, next) {
@@ -342,8 +347,8 @@ GoRouter goRouter(Ref ref) {
 
   ref.onDispose(notifier.dispose);
 
-  return GoRouter(
-    navigatorKey: _rootNavigatorKey,
+  final router = GoRouter(
+    navigatorKey: keys.root,
     initialLocation: ref.watch(initialAppLocationProvider),
     refreshListenable: notifier,
     observers: [AnalyticsRouteObserver(analytics)],
@@ -499,9 +504,9 @@ GoRouter goRouter(Ref ref) {
           ),
         ),
       ],
-      if (isHostApp) ..._hostUtilityRoutes(),
+      if (isHostApp) ..._hostUtilityRoutes(keys.root),
       if (isHostApp)
-        _hostShellRoute(analytics)
+        _hostShellRoute(analytics, keys)
       else
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) =>
@@ -509,7 +514,7 @@ GoRouter goRouter(Ref ref) {
           branches: [
             // ── Branch 0: Home / Dashboard ───────────────────────────────
             StatefulShellBranch(
-              navigatorKey: _dashboardShellKey,
+              navigatorKey: keys.dashboard,
               observers: [AnalyticsRouteObserver(analytics)],
               routes: [
                 GoRoute(
@@ -520,13 +525,13 @@ GoRouter goRouter(Ref ref) {
                     GoRoute(
                       path: 'notifications',
                       name: Routes.notificationsScreen.name,
-                      parentNavigatorKey: _rootNavigatorKey,
+                      parentNavigatorKey: keys.root,
                       builder: (context, state) => const ActivityScreen(),
                     ),
                     GoRoute(
                       path: 'catches/:eventId/recap',
                       name: Routes.eventRecapScreen.name,
-                      parentNavigatorKey: _rootNavigatorKey,
+                      parentNavigatorKey: keys.root,
                       builder: (context, state) => EventRecapScreen(
                         eventId: state.pathParameters['eventId']!,
                       ),
@@ -534,7 +539,7 @@ GoRouter goRouter(Ref ref) {
                     GoRoute(
                       path: 'catches/:eventId',
                       name: Routes.swipeEventScreen.name,
-                      parentNavigatorKey: _rootNavigatorKey,
+                      parentNavigatorKey: keys.root,
                       builder: (context, state) => SwipeScreen(
                         eventId: state.pathParameters['eventId']!,
                         vibeIds: switch (state.extra) {
@@ -550,7 +555,7 @@ GoRouter goRouter(Ref ref) {
 
             // ── Branch 1: Explore ────────────────────────────────────────
             StatefulShellBranch(
-              navigatorKey: _exploreShellKey,
+              navigatorKey: keys.explore,
               observers: [AnalyticsRouteObserver(analytics)],
               routes: [
                 GoRoute(
@@ -561,25 +566,25 @@ GoRouter goRouter(Ref ref) {
                     GoRoute(
                       path: 'map',
                       name: Routes.exploreMapScreen.name,
-                      parentNavigatorKey: _rootNavigatorKey,
+                      parentNavigatorKey: keys.root,
                       pageBuilder: _exploreMapPage,
                     ),
                     GoRoute(
                       path: ':clubId',
                       name: Routes.clubDetailScreen.name,
-                      parentNavigatorKey: _rootNavigatorKey,
+                      parentNavigatorKey: keys.root,
                       pageBuilder: _clubDetailPage,
                       routes: [
                         GoRoute(
                           path: 'events/:eventId',
                           name: Routes.eventDetailScreen.name,
-                          parentNavigatorKey: _rootNavigatorKey,
+                          parentNavigatorKey: keys.root,
                           pageBuilder: _eventDetailPage,
                           routes: [
                             GoRoute(
                               path: 'companion',
                               name: Routes.eventSuccessCompanionScreen.name,
-                              parentNavigatorKey: _rootNavigatorKey,
+                              parentNavigatorKey: keys.root,
                               builder: (context, state) =>
                                   EventSuccessCompanionRouteScreen(
                                     clubId: state.pathParameters['clubId']!,
@@ -601,7 +606,7 @@ GoRouter goRouter(Ref ref) {
 
             // ── Branch 2: Chats ──────────────────────────────────────────
             StatefulShellBranch(
-              navigatorKey: _chatsShellKey,
+              navigatorKey: keys.chats,
               observers: [AnalyticsRouteObserver(analytics)],
               routes: [
                 GoRoute(
@@ -612,7 +617,7 @@ GoRouter goRouter(Ref ref) {
                     GoRoute(
                       path: ':matchId',
                       name: Routes.chatScreen.name,
-                      parentNavigatorKey: _rootNavigatorKey,
+                      parentNavigatorKey: keys.root,
                       builder: (context, state) => ChatScreen(
                         matchId: state.pathParameters['matchId']!,
                         otherProfile: switch (state.extra) {
@@ -628,7 +633,7 @@ GoRouter goRouter(Ref ref) {
 
             // ── Branch 3: Profile ────────────────────────────────────────
             StatefulShellBranch(
-              navigatorKey: _profileShellKey,
+              navigatorKey: keys.profile,
               observers: [AnalyticsRouteObserver(analytics)],
               routes: [
                 GoRoute(
@@ -642,6 +647,8 @@ GoRouter goRouter(Ref ref) {
         ),
     ],
   );
+  ref.onDispose(router.dispose);
+  return router;
 }
 
 class _RouteLoadingScreen extends StatelessWidget {
@@ -673,7 +680,7 @@ class _RouteLoadingScreen extends StatelessWidget {
   }
 }
 
-List<RouteBase> _hostUtilityRoutes() {
+List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
   return [
     GoRoute(
       path: '/host/organizer/:clubId/insights',
@@ -720,7 +727,7 @@ List<RouteBase> _hostUtilityRoutes() {
         GoRoute(
           path: ':clubId',
           name: Routes.hostClubDetailScreen.name,
-          parentNavigatorKey: _rootNavigatorKey,
+          parentNavigatorKey: rootNavigatorKey,
           pageBuilder: _clubDetailPage,
           routes: [
             GoRoute(
@@ -753,7 +760,7 @@ List<RouteBase> _hostUtilityRoutes() {
             GoRoute(
               path: 'events/:eventId',
               name: Routes.hostAppEventDetailScreen.name,
-              parentNavigatorKey: _rootNavigatorKey,
+              parentNavigatorKey: rootNavigatorKey,
               pageBuilder: _eventDetailPage,
             ),
             GoRoute(
@@ -838,13 +845,16 @@ String hostEditClubLegacyRedirect(String clubId) => Uri(
   queryParameters: {'clubId': clubId, 'tab': HostClubTab.edit.name},
 ).toString();
 
-StatefulShellRoute _hostShellRoute(AppAnalytics analytics) {
+StatefulShellRoute _hostShellRoute(
+  AppAnalytics analytics,
+  _RouterNavigatorKeys keys,
+) {
   return StatefulShellRoute.indexedStack(
     builder: (context, state, navigationShell) =>
         HostAppShell(navigationShell: navigationShell),
     branches: [
       StatefulShellBranch(
-        navigatorKey: _hostTodayShellKey,
+        navigatorKey: keys.hostToday,
         observers: [AnalyticsRouteObserver(analytics)],
         routes: [
           GoRoute(
@@ -857,7 +867,7 @@ StatefulShellRoute _hostShellRoute(AppAnalytics analytics) {
         ],
       ),
       StatefulShellBranch(
-        navigatorKey: _hostEventsShellKey,
+        navigatorKey: keys.hostEvents,
         observers: [AnalyticsRouteObserver(analytics)],
         routes: [
           GoRoute(
@@ -869,7 +879,7 @@ StatefulShellRoute _hostShellRoute(AppAnalytics analytics) {
         ],
       ),
       StatefulShellBranch(
-        navigatorKey: _hostInboxShellKey,
+        navigatorKey: keys.hostInbox,
         observers: [AnalyticsRouteObserver(analytics)],
         routes: [
           GoRoute(
@@ -889,7 +899,7 @@ StatefulShellRoute _hostShellRoute(AppAnalytics analytics) {
               GoRoute(
                 path: ':matchId',
                 name: Routes.hostChatScreen.name,
-                parentNavigatorKey: _rootNavigatorKey,
+                parentNavigatorKey: keys.root,
                 builder: (context, state) => ChatScreen(
                   matchId: state.pathParameters['matchId']!,
                   otherProfile: switch (state.extra) {
@@ -903,7 +913,7 @@ StatefulShellRoute _hostShellRoute(AppAnalytics analytics) {
         ],
       ),
       StatefulShellBranch(
-        navigatorKey: _hostOrganizerShellKey,
+        navigatorKey: keys.hostOrganizer,
         observers: [AnalyticsRouteObserver(analytics)],
         routes: [
           GoRoute(

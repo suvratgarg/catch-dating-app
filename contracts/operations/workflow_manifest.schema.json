@@ -18,7 +18,8 @@
     "lifecycleStatuses",
     "lifecycleSemantics",
     "maxWorkItemsPerRun",
-    "sourceProfiles"
+    "sourceProfiles",
+    "compatibilityInputs"
   ],
   "properties": {
     "schemaVersion": {"type": "integer", "const": 1},
@@ -151,6 +152,54 @@
       "items": {
         "type": "string",
         "pattern": "^[a-z][a-z0-9-]{0,99}$"
+      }
+    },
+    "compatibilityInputs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "producer",
+          "artifacts",
+          "adapter",
+          "status",
+          "replacementOwner",
+          "newOrchestrationAllowed",
+          "retirementCriteria"
+        ],
+        "properties": {
+          "producer": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{1,99}$"
+          },
+          "artifacts": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^(tool|operations)/[A-Za-z0-9_./{}-]+$"
+            }
+          },
+          "adapter": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{1,99}$"
+          },
+          "status": {"const": "compatibility-only"},
+          "replacementOwner": {
+            "type": "string",
+            "pattern": "^operations/src/workflows/[a-z][a-z0-9-]*$"
+          },
+          "newOrchestrationAllowed": {"const": false},
+          "retirementCriteria": {
+            "type": "array",
+            "minItems": 3,
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 20}
+          }
+        }
       }
     }
   }

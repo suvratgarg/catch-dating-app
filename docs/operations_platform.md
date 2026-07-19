@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.1.2
-updated: 2026-07-14
+version: 1.2.0
+updated: 2026-07-19
 owner: operations_platform
 status: active
 ---
@@ -32,6 +32,15 @@ another workflow engine.
 operations-runtime imports and for durable-workflow signals aggregated by tool
 subtree. File-count ceilings remain as an additional ratchet for the three
 known legacy artifact producers.
+
+Supply Intake's `manifest.json#compatibilityInputs` is the enforced retirement
+ledger for those producers. Each entry names the exact artifact family, the
+only allowed adapter, its replacement owner, a ban on new orchestration, and
+testable retirement criteria. The workflow registry exports the adapter's live
+artifact patterns, and the workflow-manifest check fails when code consumption
+and retirement metadata drift. Compatibility files may be deleted only when
+all listed criteria are proved and the producer, adapter, manifest entry, and
+generated artifacts are retired together.
 
 ## Reference Layout
 

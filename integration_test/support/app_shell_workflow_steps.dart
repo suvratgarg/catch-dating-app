@@ -1,5 +1,3 @@
-import 'dart:ui' as ui;
-
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
@@ -8,9 +6,8 @@ import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart' show Icons, TextField;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:image_picker/image_picker.dart';
 
-import '../../test/test_pump_helpers.dart';
+import 'app_shell_test_harness.dart';
 
 Future<void> submitValidEvent(WidgetTester tester) async {
   await fillCreateEventBasicsStep(tester);
@@ -55,9 +52,9 @@ Future<void> selectClubCity(WidgetTester tester, String label) async {
   final cityDropdownIcon = find.byIcon(Icons.expand_more_rounded);
   await tester.ensureVisible(cityDropdownIcon);
   await tester.tap(cityDropdownIcon);
-  await pumpFeatureUi(tester);
+  await pumpAppShellFrames(tester);
   await tester.tap(find.text(label).hitTestable());
-  await pumpFeatureUi(tester);
+  await pumpAppShellFrames(tester);
 }
 
 Future<void> fillCreateEventBasicsStep(WidgetTester tester) async {
@@ -68,12 +65,12 @@ Future<void> fillCreateEventBasicsStep(WidgetTester tester) async {
     CreateEventFormKeys.description,
     'Social pacing with a coffee stop.',
   );
-  await pumpFeatureUi(tester);
+  await pumpAppShellFrames(tester);
 }
 
 Future<void> pickCreateEventMapPoint(WidgetTester tester) async {
   await tester.tap(find.byKey(CreateEventFormKeys.mapPicker));
-  await pumpFeatureUi(tester);
+  await pumpAppShellFrames(tester);
 
   const selectedPoint = LocationCoordinate(19.12345, 72.98765);
   final pickerContext = tester.element(find.byType(LocationPickerScreen));
@@ -84,25 +81,25 @@ Future<void> pickCreateEventMapPoint(WidgetTester tester) async {
       address: 'Bandra Fort',
     ),
   );
-  await pumpFeatureUi(tester);
+  await pumpAppShellFrames(tester);
 }
 
 Future<void> pickFutureEventDate(WidgetTester tester) async {
   await tester.tap(find.byKey(CreateEventFormKeys.datePicker));
-  await pumpFeatureUi(tester);
+  await pumpAppShellFrames(tester);
   await tester.tap(find.byTooltip('Next month'));
-  await pumpFeatureUi(tester);
+  await pumpAppShellFrames(tester);
   await tester.tap(find.text('1').hitTestable());
-  await pumpFeatureUi(tester);
+  await pumpAppShellFrames(tester);
   await tester.tap(find.text('OK'));
-  await pumpFeatureUi(tester);
+  await pumpAppShellFrames(tester);
 }
 
 Future<void> acceptInitialEventTime(WidgetTester tester) async {
   await tester.tap(find.byKey(CreateEventFormKeys.timePicker));
-  await pumpFeatureUi(tester);
+  await pumpAppShellFrames(tester);
   await tester.tap(find.text('OK'));
-  await pumpFeatureUi(tester);
+  await pumpAppShellFrames(tester);
 }
 
 Future<void> enterCreateEventText(
@@ -122,25 +119,5 @@ Future<void> tapCatchButton(WidgetTester tester, String label) async {
   final buttonFinder = find.widgetWithText(CatchButton, label);
   await tester.ensureVisible(buttonFinder);
   await tester.tap(buttonFinder);
-  await pumpFeatureUi(tester);
-}
-
-Future<void> tapCreateClub(WidgetTester tester) async {
-  final createClub = find.bySemanticsLabel('Create club').first;
-  await tester.tap(createClub);
-  await pumpFeatureUi(tester);
-}
-
-Future<XFile> generatedPngXFile(String name) async {
-  final recorder = ui.PictureRecorder();
-  final canvas = ui.Canvas(recorder);
-  canvas.drawColor(const ui.Color(0xFFFF6B4A), ui.BlendMode.src);
-  final picture = recorder.endRecording();
-  final image = await picture.toImage(2, 2);
-  final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-  return XFile.fromData(
-    byteData!.buffer.asUint8List(),
-    name: name,
-    mimeType: 'image/png',
-  );
+  await pumpAppShellFrames(tester);
 }

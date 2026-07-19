@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 1.10.4
+version: 1.10.5
 updated: 2026-07-19
 owner: recursive_audit_loop
 status: active
@@ -972,6 +972,16 @@ release runbook. Run the split local suite with:
 ```bash
 node tool/run.mjs run test:app-shell-integration
 ```
+
+Pull requests that touch Flutter integration or golden surfaces run
+`.github/workflows/visual-integration-ci.yml` on macOS. It executes the exact
+desktop goldens and all deterministic app-shell wrappers sequentially, retains
+failure diffs, and also runs on a weekday schedule so platform drift cannot
+hide behind path filtering. `bash tool/test_app_shell_integration.sh <device>`
+remains the explicit native-device lane. The main Flutter workflow separately
+analyzes and builds `widgetbook/` for web. These are repository integration
+gates; the live service/device evidence below remains separately required for
+affected releases.
 
 The split suite covers app-shell launch/routing plus focused club, event,
 dashboard, Catches, chat, settings, review, and regression flows with service

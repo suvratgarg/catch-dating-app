@@ -39,11 +39,11 @@ design-sync manifest. Do not edit it by hand. The machine-readable companion is
 |---|---:|
 | Derived contracted collision groups | 32 |
 | Production collision groups | 32 |
-| Structural similarity clusters | 43 |
-| Clusters with exact normalized-member-set decisions | 43/43 |
-| Unresolved collision families | 0 |
-| Ranked pairs covered by a ledger decision | 145/200 |
-| Unresolved ranked pairs | 55 |
+| Structural similarity clusters | 42 |
+| Clusters with exact normalized-member-set decisions | 41/42 |
+| Unresolved collision families | 1 |
+| Ranked pairs covered by a ledger decision | 144/200 |
+| Unresolved ranked pairs | 56 |
 | Ledger decisions indexed | 315 |
 
 Similarity is discovery evidence only. A collision or unresolved pair is a
@@ -105,14 +105,14 @@ publish snapshot, plan tier, and generated mappings satisfy the prerequisites.
 
 | Requirement | Status | Authoritative evidence |
 |---|---|---|
-| 1. Reconcile the existing decision ledger | proven | 43/43 exact normalized-member-set cluster decisions |
+| 1. Reconcile the existing decision ledger | pending | 41/42 exact normalized-member-set cluster decisions |
 | 2. Prove all four vertical-slice outcomes | proven | Generated per-family deltas plus role-derived Widgetbook evidence cover member, separation, composition/recipe, and decompression cases |
 | 3. Resolve owner-gated semantic decisions | proven | 0 unresolved semantic owner question(s) |
 | 4. Verify accepted changes and stamp receipts | proven | Focused checks and audit receipt widget-concept-owner-decisions-2026-07-19 are recorded |
 | 5. Give every cataloged entry exactly one governed role | proven | 0 unclassified contracts and 0 unclassified production entries |
 | 6. Report concept and class counts separately | proven | 63 concepts, 198 contracted public classes, 1094 production widget/state classes |
 | 7. Complete live Figma/Claude Badge + Field round trip | pending | awaiting-figma-file-approval; Code Connect blocked-plan-tier; Claude context current; Claude Design receipt missing |
-| 8. Reduce remaining work to a bounded queue | proven | 3 generated owner/live gates and 55 advisory ranked-pair candidates |
+| 8. Reduce remaining work to a bounded queue | proven | 3 generated owner/live gates and 56 advisory ranked-pair candidates |
 
 The proposal is not complete while any row is `pending`. The local semantic
 implementation and the live, published Badge + Field evidence are independent

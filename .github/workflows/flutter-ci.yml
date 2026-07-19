@@ -179,7 +179,9 @@ jobs:
           SHARD_INDEX: ${{ matrix.shard_index }}
           SHARD_TOTAL: ${{ matrix.shard_total }}
         run: |
-          find test -name '*_test.dart' -not -path 'test/goldens/*' | sort \
+          find test -name '*_test.dart' \
+            -not -path 'test/goldens/*' \
+            -not -path 'test/integration/*' | sort \
             | awk -v shard="${SHARD_INDEX}" -v total="${SHARD_TOTAL}" '((NR - 1) % total) == shard' \
             > /tmp/flutter_test_files.txt
 
@@ -196,12 +198,35 @@ jobs:
           # antialiasing noise. Run them locally with `flutter test test/goldens`.
           flutter test --concurrency=1 --exclude-tags=golden "${files[@]}"
 
+  widgetbook:
+    name: Widgetbook analyze & build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup-flutter
+
+      - name: Resolve Widgetbook dependencies
+        working-directory: widgetbook
+        run: flutter pub get
+
+      - name: Analyze executable previews
+        working-directory: widgetbook
+        run: flutter analyze --no-fatal-warnings --no-fatal-infos
+
+      - name: Build Widgetbook web app
+        working-directory: widgetbook
+        run: flutter build web --release
+
   analyze-and-test:
     name: Analyze & test
     runs-on: ubuntu-latest
     needs:
       - analysis-gates
       - flutter-test-shards
+      - widgetbook
     if: always()
     timeout-minutes: 5
 
@@ -210,9 +235,11 @@ jobs:
         env:
           GATES_RESULT: ${{ needs['analysis-gates'].result }}
           TESTS_RESULT: ${{ needs['flutter-test-shards'].result }}
+          WIDGETBOOK_RESULT: ${{ needs.widgetbook.result }}
         run: |
           echo "analysis gates: ${GATES_RESULT}"
           echo "test shards: ${TESTS_RESULT}"
-          if [[ "${GATES_RESULT}" != "success" || "${TESTS_RESULT}" != "success" ]]; then
+          echo "widgetbook: ${WIDGETBOOK_RESULT}"
+          if [[ "${GATES_RESULT}" != "success" || "${TESTS_RESULT}" != "success" || "${WIDGETBOOK_RESULT}" != "success" ]]; then
             exit 1
           fi
