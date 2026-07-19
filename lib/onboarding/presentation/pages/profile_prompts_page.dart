@@ -159,6 +159,7 @@ class OnboardingProfilePromptsStep extends StatelessWidget {
       ),
       children: [
         CatchSectionList(
+          emptyStateOmitted: true,
           gap: CatchSpacing.s3,
           children: [
             for (var index = 0; index < maxProfilePromptAnswers; index += 1)

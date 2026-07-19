@@ -77,9 +77,7 @@ class ClubHeroLoadingSkeleton extends StatelessWidget {
       child: Padding(
         padding: clubInteractionMediaPadding,
         child: CatchSurface(
-          height:
-              CatchLayout.clubDetailHeroNoCoverPhoneHeight +
-              CatchLayout.clubDetailHeroCaptionExtent,
+          height: CatchLayout.clubDetailHeroLoadingExtent,
           borderColor: t.line,
           radius: CatchLayout.clubPolaroidRadius,
           elevation: CatchSurfaceElevation.card,
@@ -101,7 +99,9 @@ class ClubHeroLoadingSkeleton extends StatelessWidget {
               gapH10,
               CatchSkeleton.text(width: CatchLayout.skeletonTextShortWidth),
               gapH4,
-              CatchSkeleton.text(width: CatchSpacing.s16 * 3),
+              CatchSkeleton.text(
+                width: CatchLayout.skeletonTextDescriptionWidth,
+              ),
             ],
           ),
         ),
@@ -187,7 +187,9 @@ class ClubHostLoadingSkeleton extends StatelessWidget {
               children: [
                 CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
                 gapH6,
-                CatchSkeleton.text(width: CatchSpacing.s16 * 2),
+                CatchSkeleton.text(
+                  width: CatchLayout.skeletonTextTertiaryWidth,
+                ),
               ],
             ),
           ),

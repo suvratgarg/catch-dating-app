@@ -35,6 +35,7 @@ class EventSuccessHostTabBody extends StatelessWidget {
   Widget build(BuildContext context) {
     if (embedded) {
       return CatchSectionList(
+        emptyStateOmitted: true,
         gap: 0,
         mainAxisSize: MainAxisSize.min,
         children: children,
@@ -44,6 +45,7 @@ class EventSuccessHostTabBody extends StatelessWidget {
       physics: const AlwaysScrollableScrollPhysics(),
       padding: CatchInsets.contentRelaxed,
       child: CatchSectionList(
+        emptyStateOmitted: true,
         gap: 0,
         mainAxisSize: MainAxisSize.min,
         children: children,

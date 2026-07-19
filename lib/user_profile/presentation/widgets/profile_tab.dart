@@ -200,6 +200,7 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
 
     return widget.builder(context, [
       CatchSectionList(
+        emptyStateOmitted: true,
         gap: 0,
         children: [
           ProfilePhotosSection(

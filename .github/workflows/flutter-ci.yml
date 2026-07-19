@@ -66,6 +66,74 @@ jobs:
       - name: Catch UI lint plugin smoke check
         run: bash tool/check_catch_ui_lints.sh
 
+      - name: Collect Catch UI analyzer diagnostics
+        run: |
+          set +e
+          dart analyze --format machine > /tmp/catch-ui-analyze.machine 2>&1
+          status=$?
+          set -e
+          if [[ "$status" != "0" && "$status" != "2" ]]; then
+            cat /tmp/catch-ui-analyze.machine
+            exit "$status"
+          fi
+          if grep -q 'An error occurred while executing an analyzer plugin' /tmp/catch-ui-analyze.machine; then
+            cat /tmp/catch-ui-analyze.machine
+            exit 1
+          fi
+          echo "$status" > /tmp/catch-ui-analyze.status
+          echo 'CATCH_UI_ANALYZE_OUTPUT_PATH=/tmp/catch-ui-analyze.machine' >> "$GITHUB_ENV"
+          echo "CATCH_UI_ANALYZE_STATUS=$status" >> "$GITHUB_ENV"
+
+      - name: Catch UI spacing warning gate
+        run: bash tool/check_catch_ui_lint_drift.sh --code 'catch_no_raw_ui_spacing|catch_use_section_list' --label spacing
+
+      - name: Catch UI color warning gate
+        run: bash tool/check_catch_ui_lint_drift.sh --code catch_no_raw_color --label color
+
+      - name: Catch UI typography warning gate
+        run: bash tool/check_catch_ui_lint_drift.sh --code 'catch_no_raw_text_style|catch_no_raw_font_drift|catch_no_direct_font_builder|catch_no_raw_letter_spacing|catch_text_requires_style' --label typography
+
+      - name: Catch UI radius and fixed-dimension warning gate
+        run: bash tool/check_catch_ui_lint_drift.sh --code 'catch_no_raw_radius|catch_no_raw_content_dimension|catch_no_local_design_constant' --label geometry
+
+      - name: Catch UI token-arithmetic warning gate
+        run: bash tool/check_catch_ui_lint_drift.sh --code catch_no_token_arithmetic --label token-arithmetic
+
+      - name: Catch UI field and section warning gate
+        run: bash tool/check_catch_ui_lint_drift.sh --code 'catch_use_named_catch_field_constructor|catch_use_named_catch_section_constructor' --label field-section-anatomy
+
+      - name: Catch UI event-thumbnail warning gate
+        run: bash tool/check_catch_ui_lint_drift.sh --code catch_event_detail_prefers_photo_thumbnail --label event-thumbnail
+
+      - name: Catch UI promoted scanner warning gate
+        run: bash tool/check_catch_ui_lint_drift.sh --code 'catch_no_raw_network_image|catch_no_presentation_platform_import|catch_no_tokens_prop_drilling|catch_no_legacy_spacing_token|catch_screen_gutter_uses_semantic_insets|catch_no_async_flush_hack' --label promoted-scanners
+
+      - name: Catch UI info drift ratchet
+        run: bash tool/check_catch_ui_lint_drift.sh --check
+
+      - name: Catch UI enforcement generation and coverage
+        run: |
+          node tool/design/build_lint_enforcement_tables.mjs --check
+          node tool/design/check_component_enforcement_coverage.mjs
+
+      - name: Catch UI resolved composition contracts
+        run: dart run tool/architecture/check_ui_composition_contracts.dart --check --json /tmp/catch-ui-composition.json
+
+      - name: Widget cleanup remaining scanner ratchet
+        run: bash tool/widget_cleanup_scan.sh --check
+
+      - name: Export Catch UI lint drift artifact
+        run: bash tool/check_catch_ui_lint_drift.sh --all --json /tmp/catch-ui-lint-drift.json
+
+      - name: Upload Catch UI enforcement drift
+        uses: actions/upload-artifact@v7
+        with:
+          name: catch-ui-enforcement-drift
+          path: |
+            /tmp/catch-ui-lint-drift.json
+            /tmp/catch-ui-composition.json
+          if-no-files-found: error
+
       - name: Sizing doctrine check
         run: bash tool/check_sizing.sh
 
@@ -74,9 +142,6 @@ jobs:
 
       - name: UI allow-debt gate
         run: bash tool/check_ui_allow_debt.sh
-
-      - name: Raw network image guard
-        run: bash tool/check_no_raw_network_image.sh
 
       # Schema/codegen drift is covered by Contracts CI, which installs the
       # Node dependencies required by the schema generator.

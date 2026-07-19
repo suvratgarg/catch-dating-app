@@ -1,8 +1,32 @@
 {
-  "version": 39,
+  "version": 40,
   "updated": "2026-07-19",
   "owner": "agent_operating_model",
   "entries": [
+    {
+      "id": "REG-CATCH-UI-LINT-VACUITY-001",
+      "title": "Catch UI lint gates pass after the analyzer plugin silently skips or fails setup",
+      "status": "active",
+      "applies_to": [
+        "packages/catch_ui_lints/**",
+        "tool/check_catch_ui_lints.sh",
+        "tool/check_catch_ui_lint_drift.sh",
+        "design/components/catch.components.json",
+        ".github/workflows/flutter-ci.yml"
+      ],
+      "symptom": "flutter analyze or a targeted dart analyze reports a clean tree even though the Catch plugin did not load, or a generated steering rule exists without a seeded violation.",
+      "guard": {
+        "type": "command",
+        "command": "bash tool/check_catch_ui_lints.sh && bash tool/check_catch_ui_lint_drift.sh --check && node tool/design/check_component_enforcement_coverage.mjs",
+        "guardEvidence": "fresh-plugin setup errors are fatal, all 49 plugin codes have manual or generated probes, every count is ratcheted, and every implemented code maps to a catalog owner"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "tool/README.md",
+        "design/components/README.md"
+      ],
+      "notes": "Catch plugin proof is repository-root dart analyze through the wrappers; flutter analyze remains a separate generic analyzer gate."
+    },
     {
       "id": "REG-STATE-VIEWPORT-001",
       "title": "Empty and error states center behind floating shell chrome",

@@ -325,7 +325,7 @@ class CatchesTopOverlaySkeleton extends StatelessWidget {
               Expanded(
                 child: Center(
                   child: CatchSkeleton.box(
-                    width: CatchSpacing.s16 * 3,
+                    width: CatchLayout.skeletonTextDescriptionWidth,
                     height: CatchSpacing.s9,
                     radius: CatchRadius.pill,
                     borderColor: t.line.withValues(

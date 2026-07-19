@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 4.6.2
-updated: 2026-07-18
+version: 4.6.3
+updated: 2026-07-19
 owner: recursive_audit_loop
 status: active
 ---
@@ -97,6 +97,7 @@ durable owners above or closed in code.
 | `event_success_theatrical_experience_tracker.md` | Event Success live ceremony polish is active: native sensory cues, attendee moment theatre, host showtime console, invite-loop follow-up, private afterglow recap planning, and the optional First Hello arrival ritual. |
 | `sales_demo_seed_tracker.md` | Sales-grade synthetic supply is active: canonical personas/assets, cohort scope, image production, U.S./India market packs, host sales scenario, event policy coverage, and migration of lower-quality demo surfaces remain. |
 | `plans/repository_root_hygiene_spec.md` | Proposed Fable/owner review spec for classifying all project-root entries, reclaiming reproducible local output safely, retiring legacy artifacts, consolidating root docs, and adding manifest-backed root hygiene/cleanup enforcement. Delete or mark implemented after accepted policy moves into owner docs, tooling, and the audit registry. |
+| `plans/catch_ui_enforcement_system_spec.md` | Implemented historical receipt for the generated Catch UI analyzer/API/checker enforcement system. Current policy lives in `docs/app_architecture.md`, `design/components/README.md`, `design/screens/catch.screens.json`, and `tool/README.md`. |
 
 Completed temporary trackers removed or folded into owner docs after code
 verification include `dashboard_run_focus_tracker.md`,

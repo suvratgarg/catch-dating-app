@@ -369,8 +369,8 @@ class HostTodayClubPill extends StatelessWidget {
                   : const SizedBox(width: CatchLayout.menuRowCheckSize),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(
-                  minWidth: CatchLayout.actionMenuWidth - CatchSpacing.s16,
-                  maxWidth: CatchLayout.actionMenuWidth - CatchSpacing.s16,
+                  minWidth: CatchLayout.actionMenuContentWidth,
+                  maxWidth: CatchLayout.actionMenuContentWidth,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

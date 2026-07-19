@@ -43,9 +43,7 @@ class CatchTabBar<T> extends StatelessWidget {
   static double reservedBottomInset(BuildContext context) {
     if (!floatsFor(context)) return 0;
     final bottom = MediaQuery.maybeOf(context)?.padding.bottom ?? 0;
-    return CatchLayout.tabBarExtent +
-        CatchLayout.tabBarFloatingBottomInset +
-        bottom;
+    return CatchLayout.tabBarReservedBottomInset(bottom);
   }
 
   @override

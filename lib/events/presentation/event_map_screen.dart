@@ -211,14 +211,14 @@ class EventMapLoadingBody extends StatelessWidget {
             ),
             Center(
               child: CatchSkeleton.circle(
-                size: CatchSpacing.s12 + CatchSpacing.s4,
+                size: CatchLayout.eventMapLoadingPinExtent,
               ),
             ),
             Positioned(
               left: CatchSpacing.s5,
               top: CatchSpacing.s5,
               child: CatchSkeleton.box(
-                width: CatchSpacing.s16 * 2,
+                width: CatchLayout.eventMapLoadingLabelWidth,
                 height: CatchSpacing.s9,
                 radius: CatchRadius.pill,
                 borderColor: t.line,

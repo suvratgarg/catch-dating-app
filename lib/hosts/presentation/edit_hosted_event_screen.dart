@@ -394,6 +394,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
             padding: CatchInsets.pageBody,
             children: [
               CatchSectionList(
+                emptyStateOmitted: true,
                 gap: 0,
                 children: [
                   CatchSection.plain(

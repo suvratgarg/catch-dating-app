@@ -35,6 +35,7 @@ class HostClubLiveGuideScreen extends StatelessWidget {
           builder: (context, defaults, apply, errorMessage, _) {
             final currentActivity = defaults.primaryActivityKind;
             return CatchSectionList(
+              emptyStateOmitted: true,
               children: [
                 EventSuccessDefaultsPanel(
                   defaults: defaults.eventSuccessForActivity(currentActivity),

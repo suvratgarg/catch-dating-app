@@ -10,13 +10,15 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  bash tool/check_catch_ui_lint_drift.sh [--summary|--count|--json [PATH]|--code CODE|--label LABEL|--all|--self-test|--help]
+  bash tool/check_catch_ui_lint_drift.sh [--summary|--count|--json [PATH]|--check|--baseline PATH|--code CODE|--label LABEL|--all|--self-test|--help]
 
 Modes:
   default    Print summary plus matching diagnostics. Exit 1 if drift remains.
   --summary  Print summary only. Exit 1 if drift remains.
   --count    Print only the numeric drift count. Always exit 0.
   --json     Print a JSON count artifact. Optionally also write it to PATH. Always exit 0.
+  --check    Fail when any catch_* count exceeds the checked ratchet baseline.
+  --baseline Override tool/audit/catch_ui_lint_drift_baseline.json.
   --self-test  Verify machine diagnostic parsing and completion semantics.
   --code     Count one Catch UI lint code.
   --label    Human-readable label for summary output.
@@ -32,6 +34,8 @@ CODE_REGEX="catch_no_raw_color|catch_no_raw_text_style|catch_no_raw_font_drift"
 LABEL="color/text/font"
 JSON_PATH=""
 SELF_TEST="false"
+dart_bin="${DART_BIN:-dart}"
+BASELINE_PATH="tool/audit/catch_ui_lint_drift_baseline.json"
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -42,6 +46,20 @@ while [ $# -gt 0 ]; do
     --count)
       MODE="count"
       shift
+      ;;
+    --check)
+      MODE="check"
+      CODE_REGEX="catch_[a-z0-9_]+"
+      LABEL="all Catch UI lints"
+      shift
+      ;;
+    --baseline)
+      if [ $# -lt 2 ]; then
+        usage >&2
+        exit 2
+      fi
+      BASELINE_PATH="$2"
+      shift 2
       ;;
     --json)
       MODE="json"
@@ -105,7 +123,7 @@ analysis_is_complete() {
   local status="$1"
   local output="$2"
   if { [[ "$status" -eq 0 ]] || [[ "$status" -eq 2 ]]; } &&
-    ! grep -Eq '^ERROR\|' <<<"$output"; then
+    ! grep -Eq '^ERROR\||An error occurred while executing an analyzer plugin' <<<"$output"; then
     echo "true"
   else
     echo "false"
@@ -136,10 +154,19 @@ if [[ "$SELF_TEST" == "true" ]]; then
   exit 0
 fi
 
-set +e
-analyze_output="$(dart analyze --format machine 2>&1)"
-analyze_status=$?
-set -e
+if [[ -n "${CATCH_UI_ANALYZE_OUTPUT_PATH:-}" ]]; then
+  if [[ ! -f "$CATCH_UI_ANALYZE_OUTPUT_PATH" ]]; then
+    echo "Cached analyzer output does not exist: $CATCH_UI_ANALYZE_OUTPUT_PATH" >&2
+    exit 1
+  fi
+  analyze_output="$(cat "$CATCH_UI_ANALYZE_OUTPUT_PATH")"
+  analyze_status="${CATCH_UI_ANALYZE_STATUS:-2}"
+else
+  set +e
+  analyze_output="$("$dart_bin" analyze --format machine 2>&1)"
+  analyze_status=$?
+  set -e
+fi
 
 analyze_complete="$(analysis_is_complete "$analyze_status" "$analyze_output")"
 
@@ -157,6 +184,18 @@ fi
 if [ "$MODE" = "count" ]; then
   echo "$total"
   exit 0
+fi
+
+if [ "$MODE" = "check" ]; then
+  if [[ "$analyze_complete" != "true" ]]; then
+    echo "Catch UI lint ratchet cannot run because dart analyze was incomplete." >&2
+    echo "$analyze_output" >&2
+    exit 1
+  fi
+  node tool/design/check_ui_lint_drift_ratchet.mjs \
+    --diagnostics "$tmp" \
+    --baseline "$BASELINE_PATH"
+  exit $?
 fi
 
 json_escape() {

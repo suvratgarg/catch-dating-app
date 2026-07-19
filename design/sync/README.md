@@ -1,7 +1,7 @@
 ---
 doc_id: design_sync_pipeline
-version: 1.2.0
-updated: 2026-07-18
+version: 1.3.0
+updated: 2026-07-19
 owner: design_system
 status: active
 ---
@@ -18,6 +18,11 @@ identity, APIs, states, or mapping metadata. CI runs the same command with
 `--check`. Use `--require-live` only in a release environment that has a Figma
 file and a Code Connect-capable plan; it is intentionally red while either
 Badge or Field lacks current published evidence.
+
+The normal check proves only that repository-owned structural evidence is
+current. The generated manifest separately records `operationalStatus.live`
+as `ready` or `incomplete-external`, including machine-readable owner-tagged
+blockers. A structural pass must never be reported as a completed live sync.
 
 The manifest records a digest per contract, generated mapping metadata, Figma
 property drift, concept metrics, Claude eligibility, and the Badge + Field

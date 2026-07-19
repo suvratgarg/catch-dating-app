@@ -441,6 +441,7 @@
       "checks": [
         "bash -n tool/widget_cleanup_scan.sh",
         "node --test tool/lib/widget_cleanup_ratchet.test.mjs",
+        "node tool/design/check_ui_lint_promotion_parity.mjs",
         "bash tool/widget_cleanup_scan.sh --check"
       ],
       "role": "ratchet",
@@ -889,11 +890,14 @@
       "description": "Verifies Catch UI analysis_server_plugin diagnostics across seeded violation and clean allowance probes.",
       "checks": [
         "bash -n tool/check_catch_ui_lints.sh",
+        "node tool/design/build_lint_enforcement_tables.mjs --check",
+        "node tool/design/check_ui_lint_promotion_parity.mjs",
         "bash tool/check_catch_ui_lints.sh"
       ],
       "role": "gate",
       "rules": [
-        "UI-LINT-001"
+        "UI-LINT-001",
+        "IMAGE-NETWORK-PRIMITIVE-001"
       ],
       "vacuityProof": {
         "type": "probe-harness",
@@ -916,9 +920,18 @@
       "checks": [
         "bash -n tool/check_catch_ui_lint_drift.sh",
         "bash tool/check_catch_ui_lint_drift.sh --self-test",
-        "bash tool/check_catch_ui_lint_drift.sh --count"
+        "node --test tool/design/check_ui_lint_drift_ratchet.test.mjs",
+        "bash tool/check_catch_ui_lint_drift.sh --check"
       ],
-      "role": "finder"
+      "role": "gate",
+      "baseline": "tool/audit/catch_ui_lint_drift_baseline.json",
+      "rules": [
+        "UI-LINT-001"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "bash tool/check_catch_ui_lint_drift.sh --self-test"
+      }
     },
     {
       "id": "scanner:sizing",
@@ -1012,27 +1025,119 @@
       ]
     },
     {
-      "id": "scanner:no-raw-network-image",
+      "id": "lint:catch-ui-drift-ratchet-engine",
       "category": "lint",
-      "path": "tool/check_no_raw_network_image.sh",
-      "command": "bash tool/check_no_raw_network_image.sh",
+      "path": "tool/design/check_ui_lint_drift_ratchet.mjs",
+      "command": "node --test tool/design/check_ui_lint_drift_ratchet.test.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Blocks raw Image.network widgets outside the shared CatchNetworkImage primitive.",
+      "description": "Parses Catch analyzer machine diagnostics and enforces exact, decrease-only coverage for every declared plugin code.",
       "checks": [
-        "bash -n tool/check_no_raw_network_image.sh",
-        "bash tool/check_no_raw_network_image.sh"
+        "node --check tool/design/check_ui_lint_drift_ratchet.mjs",
+        "node --test tool/design/check_ui_lint_drift_ratchet.test.mjs"
       ],
       "role": "gate",
+      "baseline": "tool/audit/catch_ui_lint_drift_baseline.json",
       "rules": [
-        "IMAGE-NETWORK-PRIMITIVE-001"
+        "UI-LINT-001"
       ],
       "vacuityProof": {
         "type": "test",
-        "path": "tool/check_no_raw_network_image.sh",
+        "path": "tool/design/check_ui_lint_drift_ratchet.test.mjs",
         "contains": [
-          "Image\\.network",
-          "exit 1"
+          "ratchet fails increases, missing codes, and stale codes"
+        ]
+      }
+    },
+    {
+      "id": "design:lint-enforcement-generate",
+      "category": "design",
+      "path": "tool/design/build_lint_enforcement_tables.mjs",
+      "command": "node tool/design/build_lint_enforcement_tables.mjs --check",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Generates analyzer steering tables, contract expectations, and seeded steering probes from the component registry.",
+      "checks": [
+        "node --check tool/design/build_lint_enforcement_tables.mjs",
+        "node tool/design/build_lint_enforcement_tables.mjs --check"
+      ],
+      "role": "generator",
+      "rules": [
+        "UI-LINT-001"
+      ]
+    },
+    {
+      "id": "design:component-enforcement-coverage",
+      "category": "design",
+      "path": "tool/design/check_component_enforcement_coverage.mjs",
+      "command": "node tool/design/check_component_enforcement_coverage.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Requires every component to have enforcement or an unexpired waiver and every plugin/checker code to have a catalog owner.",
+      "checks": [
+        "node --test tool/design/check_component_enforcement_coverage.test.mjs",
+        "node tool/design/check_component_enforcement_coverage.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "UI-LINT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_component_enforcement_coverage.test.mjs",
+        "contains": [
+          "requires decisions, live waivers, ownership, and probes"
+        ]
+      }
+    },
+    {
+      "id": "design:ui-lint-promotion-parity",
+      "category": "design",
+      "path": "tool/design/check_ui_lint_promotion_parity.mjs",
+      "command": "node tool/design/check_ui_lint_promotion_parity.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Proves promoted regex scanner categories have seeded analyzer-plugin fixtures before retirement.",
+      "checks": [
+        "node --test tool/design/check_ui_lint_promotion_parity.test.mjs",
+        "node tool/design/check_ui_lint_promotion_parity.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "UI-LINT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_ui_lint_promotion_parity.test.mjs",
+        "contains": [
+          "rejects retired categories and missing seeded fixtures"
+        ]
+      }
+    },
+    {
+      "id": "architecture:ui-composition-contracts",
+      "category": "architecture",
+      "path": "tool/architecture/check_ui_composition_contracts.dart",
+      "command": "dart run tool/architecture/check_ui_composition_contracts.dart --check",
+      "safety": "local-build-test",
+      "status": "active",
+      "description": "Uses analyzer resolution to validate screen source, state, top-bar, and shell composition contracts with a nested-scaffold ratchet.",
+      "checks": [
+        "dart format --output=none --set-exit-if-changed tool/architecture/check_ui_composition_contracts.dart test/tool/ui_composition_contracts_test.dart",
+        "flutter test --concurrency=1 test/tool/ui_composition_contracts_test.dart",
+        "dart run tool/architecture/check_ui_composition_contracts.dart --check"
+      ],
+      "role": "gate",
+      "baseline": "tool/architecture/ui_composition_baseline.json",
+      "rules": [
+        "UI-LINT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "test/tool/ui_composition_contracts_test.dart",
+        "contains": [
+          "flags a nested scaffold on a shell-reachable screen",
+          "requires the registered top-bar expression"
         ]
       }
     },

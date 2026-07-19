@@ -127,6 +127,7 @@ void main() {
       const Directionality(
         textDirection: TextDirection.ltr,
         child: CatchSectionList(
+          emptyStateOmitted: true,
           children: [Text('First section'), Text('Second section')],
         ),
       ),
@@ -139,6 +140,23 @@ void main() {
     );
 
     expect(gap.height, CatchGaps.section);
+  });
+
+  testWidgets('CatchSectionList renders its explicit empty-state owner', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: CatchSectionList(
+          emptyStateOmitted: false,
+          emptyBuilder: (context) => const Text('No sections yet'),
+          children: const <Widget>[],
+        ),
+      ),
+    );
+
+    expect(find.text('No sections yet'), findsOneWidget);
   });
 
   testWidgets(

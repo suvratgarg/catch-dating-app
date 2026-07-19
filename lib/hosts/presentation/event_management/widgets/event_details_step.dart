@@ -99,6 +99,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
         padding: CatchInsets.formStepBody,
         children: [
           CatchSectionList(
+            emptyStateOmitted: true,
             gap: 0,
             children: [
               CreateEventPhotoPicker(
