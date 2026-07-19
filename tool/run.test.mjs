@@ -26,6 +26,15 @@ test("impact routing reports the owning relationship and checks", () => {
   assert.deepEqual(payload.unmatchedPaths, []);
 });
 
+test("impact routing includes field inventory for Flutter design consumers", () => {
+  const result = run(["impacted", "--paths", "lib/routing/go_router.dart", "--json"]);
+  assert.equal(result.status, 0, result.stderr);
+  const payload = JSON.parse(result.stdout);
+  assert.ok(payload.relationships.includes("design-system"));
+  assert.ok(payload.toolIds.includes("design:flutter-field-surface-inventory"));
+  assert.deepEqual(payload.unmatchedPaths, []);
+});
+
 test("impact routing fails closed for an unmapped changed path", () => {
   const result = run(["impacted", "--paths", "unowned/example.txt", "--json"]);
   assert.equal(result.status, 1);

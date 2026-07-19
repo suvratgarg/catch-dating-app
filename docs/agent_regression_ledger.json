@@ -1,5 +1,5 @@
 {
-  "version": 46,
+  "version": 47,
   "updated": "2026-07-20",
   "owner": "agent_operating_model",
   "entries": [
@@ -2260,6 +2260,30 @@
         "tool/README.md"
       ],
       "notes": "Guard commands remain executable against compiled JavaScript; only readiness's static path proof maps build outputs back to their tracked source contract."
+    },
+    {
+      "id": "REG-FIELD-SURFACE-INVENTORY-IMPACT-001",
+      "title": "Flutter field inventory is stale after an unrelated product-source edit",
+      "status": "active",
+      "applies_to": [
+        "lib/**",
+        "design/screens/catch.screens.json",
+        "tool/ui_capture/route_inventory.json",
+        "docs/audit_registry/flutter_field_surface_inventory.json",
+        "tool/repository_root_manifest.json",
+        "tool/run.mjs"
+      ],
+      "symptom": "The field-surface inventory hashes route and screen contracts and records source line anchors, but impacted checks omit its generator after a product-source edit, so local impacted verification passes and the full design CI bucket later reports stale evidence.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/run.test.mjs && node tool/design/generate_flutter_field_surface_inventory.mjs --check",
+        "guardEvidence": "the impact-routing fixture proves a Flutter product path selects design:flutter-field-surface-inventory, and the generator verifies current source hashes and line anchors"
+      },
+      "owner_docs": [
+        "tool/README.md",
+        "docs/design_parity/README.md"
+      ],
+      "notes": "The design-system relationship already covers lib consumers; this regression binds the field inventory gate to that relationship instead of relying on agents to remember a hidden transitive hash dependency."
     }
   ]
 }

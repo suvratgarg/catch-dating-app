@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-19",
+  "updated": "2026-07-20",
   "tools": [
     {
       "id": "tool:runner",
@@ -24,6 +24,7 @@
         "contains": [
           "filtered checks fail when a category matches no tools",
           "impact routing reports the owning relationship and checks",
+          "impact routing includes field inventory for Flutter design consumers",
           "impact routing fails closed for an unmapped changed path",
           "impact routing includes untracked files"
         ]
