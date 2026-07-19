@@ -3850,7 +3850,7 @@
       "command": "node tool/design/check_design_parity.mjs --check",
       "safety": "local",
       "status": "active",
-      "description": "Runs the standard local design parity gate across concept topology, component contracts, widget classification, decision coverage, pattern families, Figma/Claude sync drift, routes, captures, screen contracts, todo summaries, Widgetbook refs, and advisory hygiene scanners.",
+      "description": "Runs the standard local design parity gate from freshly extracted temporary widget fingerprints across concept topology, component contracts, widget classification, decision coverage, pattern families, Figma/Claude sync drift, routes, captures, screen contracts, todo summaries, Widgetbook refs, and advisory hygiene scanners.",
       "checks": [
         "node --check tool/design/check_design_parity.mjs",
         "node tool/design/check_design_parity.mjs --check"

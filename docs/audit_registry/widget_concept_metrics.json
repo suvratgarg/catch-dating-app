@@ -20,16 +20,16 @@
     "membersPerConcept": 1.84,
     "unclassifiedContractEntries": 0,
     "unclassifiedProductionEntries": 0,
-    "unresolvedCollisionFamilies": 0,
+    "unresolvedCollisionFamilies": 1,
     "ownerReviewQueueSize": 3
   },
   "ledgerCoverage": {
-    "normalizedMemberSetCoveredClusters": 43,
+    "normalizedMemberSetCoveredClusters": 42,
     "totalClusters": 43,
-    "unresolvedClusters": 0,
-    "rankedPairsCovered": 146,
+    "unresolvedClusters": 1,
+    "rankedPairsCovered": 144,
     "totalRankedPairs": 200,
-    "unresolvedRankedPairs": 54,
+    "unresolvedRankedPairs": 56,
     "decisionsIndexed": 314
   },
   "widgetbookEvidence": {
@@ -274,8 +274,8 @@
   "completionAudit": [
     {
       "requirement": "1. Reconcile the existing decision ledger",
-      "status": "proven",
-      "evidence": "43/43 exact normalized-member-set cluster decisions"
+      "status": "pending",
+      "evidence": "42/43 exact normalized-member-set cluster decisions"
     },
     {
       "requirement": "2. Prove all four vertical-slice outcomes",
@@ -310,7 +310,7 @@
     {
       "requirement": "8. Reduce remaining work to a bounded queue",
       "status": "proven",
-      "evidence": "3 generated owner/live gates and 54 advisory ranked-pair candidates"
+      "evidence": "3 generated owner/live gates and 56 advisory ranked-pair candidates"
     }
   ]
 }

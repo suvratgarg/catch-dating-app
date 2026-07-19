@@ -15,13 +15,14 @@ const shouldCheck = args.includes("--check");
 const shouldJson = args.includes("--json");
 const fingerprintsPath =
   valueAfter("--fingerprints") ?? "artifacts/widget_dedupe/fingerprints.json";
+const fingerprintsLabel = valueAfter("--fingerprints-label") ?? fingerprintsPath;
 const outputPath = valueAfter("--out") ?? "docs/audit_registry/widget_similarity.json";
 const visualPath = valueAfter("--visual");
 const today = new Date().toISOString().slice(0, 10);
 
 if (args.includes("--help") || args.includes("-h")) {
   console.log(`Usage:
-  node tool/design/build_widget_similarity.mjs [--fingerprints path] [--out path] [--visual path] [--check] [--json]
+  node tool/design/build_widget_similarity.mjs [--fingerprints path] [--fingerprints-label path] [--out path] [--visual path] [--check] [--json]
 
 Builds the mechanical widget similarity registry from Phase A fingerprints.
 `);
@@ -211,7 +212,7 @@ function buildRegistry() {
     updated: today,
     sourceOfTruth: {
       generator: "tool/design/build_widget_similarity.mjs",
-      fingerprints: fingerprintsPath,
+      fingerprints: fingerprintsLabel,
       visualSignal: visual.signal,
       stream: "coarse",
       usageCountReceipt:

@@ -1,5 +1,5 @@
 {
-  "version": 35,
+  "version": 36,
   "updated": "2026-07-19",
   "owner": "agent_operating_model",
   "entries": [
@@ -774,6 +774,27 @@
         "docs/audit_registry/architecture_pattern_adoption.json"
       ],
       "notes": "Rollback only the transient isLoadingMore flag, preserve the last successful cursor window, and rethrow with the original stack so the invoking mutation or UI boundary owns presentation."
+    },
+    {
+      "id": "REG-DESIGN-PARITY-001",
+      "title": "Design parity passes only on machines with an ignored widget fingerprint cache",
+      "status": "active",
+      "applies_to": [
+        "tool/design/check_design_parity.mjs",
+        "tool/design/build_widget_similarity.mjs",
+        "docs/audit_registry/widget_similarity.json",
+        "docs/audit_registry/widget_concept_metrics.json"
+      ],
+      "symptom": "The design-parity gate is green locally but a clean GitHub runner fails with ENOENT for artifacts/widget_dedupe/fingerprints.json, or the tracked similarity registry is compared against yesterday's ignored cache.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/design/check_design_parity.mjs --check"
+      },
+      "owner_docs": [
+        "docs/design_parity/README.md",
+        "tool/tools_manifest.json"
+      ],
+      "notes": "The gate extracts current fingerprints into a temporary directory, compares the tracked registry under its canonical source label, and removes the temporary input on every exit. The ignored default cache remains a local acceleration artifact, never a CI prerequisite."
     },
     {
       "id": "REG-MAP-001",
