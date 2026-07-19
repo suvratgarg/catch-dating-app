@@ -71,8 +71,8 @@
   },
   "agent_operating_model": {
     "path": "docs/agent_operating_model.md",
-    "version": "1.2.2",
-    "updated": "2026-07-02",
+    "version": "1.2.3",
+    "updated": "2026-07-20",
     "status": "active",
     "read_policy": "Read before broad AI-assisted cleanup, architecture refactors, repeated pattern rollouts, design implementation, doc consolidation, workflow-harness changes, parallel worktree delegation, or enforcement-integrity metadata changes including manifest roles and ratchet baseline receipts."
   },
@@ -85,8 +85,8 @@
   },
   "agent_regression_ledger": {
     "path": "docs/agent_regression_ledger.json",
-    "version": "45",
-    "updated": "2026-07-19",
+    "version": "46",
+    "updated": "2026-07-20",
     "status": "active",
     "read_policy": "Use before touching a scope with hard-won prior fixes; context packs surface matching active/watch regression guards, including section-ownership drift, parallel-delegation ownership, enforcement-integrity drift, and reconciliation merges that can hide dropped conflict-resolution intent."
   },

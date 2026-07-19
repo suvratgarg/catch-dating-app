@@ -1,6 +1,6 @@
 {
-  "version": 45,
-  "updated": "2026-07-19",
+  "version": 46,
+  "updated": "2026-07-20",
   "owner": "agent_operating_model",
   "entries": [
     {
@@ -221,7 +221,7 @@
       "symptom": "The local agent completes a run and exports valid stages, but no trusted path imports that exact inventory into the Firestore projection read by the admin UI, or page-sized counts are presented as full-run totals.",
       "guard": {
         "type": "command",
-        "command": "node --test functions/lib/operations/projectionImporter.test.js",
+        "command": "npm --prefix functions run build && node --test functions/lib/operations/projectionImporter.test.js",
         "guardEvidence": "applies items before the run and replays the same artifact"
       },
       "owner_docs": [
@@ -2238,6 +2238,28 @@
         "TESTS.md"
       ],
       "notes": "The 0.30% ceiling is grounded in PR #94 run 29701230738, where hosted-macOS differences peaked at 0.29% and visual inspection localized them to anti-aliased edges."
+    },
+    {
+      "id": "REG-AGENT-READINESS-BUILD-OUTPUT-001",
+      "title": "Agent readiness passes only after local Functions build residue exists",
+      "status": "active",
+      "applies_to": [
+        "tool/agent/check_agent_readiness.mjs",
+        "tool/agent/check_agent_readiness.test.mjs",
+        "docs/agent_regression_ledger.json",
+        "functions/src/**"
+      ],
+      "symptom": "A guard builds Functions and then runs compiled functions/lib tests, but readiness checks the ignored build output itself, so a dirty developer checkout passes while a clean CI checkout fails.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/agent/check_agent_readiness.test.mjs && node tool/agent/check_agent_readiness.mjs",
+        "guardEvidence": "focused extraction tests prove declared Functions build outputs resolve to tracked TypeScript sources while an undeclared generated path still fails closed"
+      },
+      "owner_docs": [
+        "docs/agent_operating_model.md",
+        "tool/README.md"
+      ],
+      "notes": "Guard commands remain executable against compiled JavaScript; only readiness's static path proof maps build outputs back to their tracked source contract."
     }
   ]
 }
