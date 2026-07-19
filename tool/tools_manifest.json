@@ -4320,7 +4320,7 @@
     },
     {
       "id": "web:storybook-visuals",
-      "category": "test",
+      "category": "design",
       "path": "tool/web/check_storybook_visuals.mjs",
       "command": "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check",
       "safety": "local-writes-build-artifacts",

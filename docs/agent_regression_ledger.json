@@ -1,5 +1,5 @@
 {
-  "version": 50,
+  "version": 51,
   "updated": "2026-07-20",
   "owner": "agent_operating_model",
   "entries": [
@@ -2341,17 +2341,17 @@
         "tool/tools_manifest.json",
         ".github/workflows/tools-ci.yml"
       ],
-      "symptom": "The website visual gate reads website/storybook-static/index.json without invoking the owning Storybook build, so a local generated directory masks a clean-checkout CI failure before any screenshot comparison runs.",
+      "symptom": "The website visual gate reads website/storybook-static/index.json without invoking the owning Storybook build, or runs in a browserless CI bucket, so local generated output and a machine-installed browser mask clean-checkout failures before screenshot comparison completes.",
       "guard": {
         "type": "command",
         "command": "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check",
-        "guardEvidence": "the marketing Storybook build produces the indexed static bundle immediately consumed by all 208 current-platform visual comparisons"
+        "guardEvidence": "the design-category gate runs in the Playwright-prepared marketing-design CI bucket; the marketing Storybook build produces the indexed static bundle immediately consumed by all 208 current-platform visual comparisons"
       },
       "owner_docs": [
         "docs/marketing_website_architecture.md",
         "docs/web_surface_architecture.md"
       ],
-      "notes": "The manifest classifies the visual gate as build-artifact-producing; screenshot comparison never depends on an ignored Storybook directory from an earlier local run."
+      "notes": "The manifest classifies the visual gate as build-artifact-producing and routes it through the browser-prepared design category; screenshot comparison depends on neither an ignored Storybook directory nor an undeclared machine browser."
     }
   ]
 }
