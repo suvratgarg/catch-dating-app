@@ -2373,7 +2373,7 @@
       "name": "forceUpdateRefreshProvider",
       "kind": "generated-function",
       "path": "lib/app.dart",
-      "line": 37,
+      "line": 36,
       "feature": "app",
       "layer": "app",
       "keepAlive": true,
@@ -2397,7 +2397,7 @@
       "name": "goRouterProvider",
       "kind": "generated-function",
       "path": "lib/routing/go_router.dart",
-      "line": 326,
+      "line": 330,
       "feature": "routing",
       "layer": "routing",
       "keepAlive": true,
@@ -2577,7 +2577,7 @@
       "name": "initialAppLocationProvider",
       "kind": "generated-function",
       "path": "lib/routing/go_router.dart",
-      "line": 318,
+      "line": 322,
       "feature": "routing",
       "layer": "routing",
       "keepAlive": true,
@@ -4456,7 +4456,7 @@
       "id": "consumer:lib/app.dart#MyApp.build",
       "owner": "MyApp.build",
       "path": "lib/app.dart",
-      "line": 44,
+      "line": 43,
       "feature": "app",
       "layer": "app"
     },
@@ -4464,7 +4464,7 @@
       "id": "consumer:lib/app.dart#_ForceUpdateGateState.didChangeAppLifecycleState",
       "owner": "_ForceUpdateGateState.didChangeAppLifecycleState",
       "path": "lib/app.dart",
-      "line": 129,
+      "line": 125,
       "feature": "app",
       "layer": "app"
     },
@@ -4472,7 +4472,7 @@
       "id": "consumer:lib/app.dart#_refreshForceUpdateGate",
       "owner": "_refreshForceUpdateGate",
       "path": "lib/app.dart",
-      "line": 174,
+      "line": 170,
       "feature": "app",
       "layer": "app"
     },
@@ -5320,7 +5320,7 @@
       "id": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState._pickLocation",
       "owner": "_EditHostedEventScreenState._pickLocation",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 713,
+      "line": 714,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5328,7 +5328,7 @@
       "id": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState._saveChanges",
       "owner": "_EditHostedEventScreenState._saveChanges",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 812,
+      "line": 813,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5544,7 +5544,7 @@
       "id": "consumer:lib/hosts/presentation/host_operations/host_club_spoke_screens.dart#HostClubSpokeResolver.build",
       "owner": "HostClubSpokeResolver.build",
       "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
-      "line": 64,
+      "line": 65,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -5552,7 +5552,7 @@
       "id": "consumer:lib/hosts/presentation/host_operations/host_club_spoke_screens.dart#_HostClubDefaultsEditorState._createSaver",
       "owner": "_HostClubDefaultsEditorState._createSaver",
       "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
-      "line": 178,
+      "line": 179,
       "feature": "hosts",
       "layer": "presentation"
     },
@@ -8414,7 +8414,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/routing/go_router.dart",
-      "line": 329
+      "line": 333
     },
     {
       "source": "goRouterProvider",
@@ -8423,7 +8423,7 @@
       "targetKind": "provider",
       "operation": "listen",
       "path": "lib/routing/go_router.dart",
-      "line": 334
+      "line": 339
     },
     {
       "source": "goRouterProvider",
@@ -8432,7 +8432,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/routing/go_router.dart",
-      "line": 356
+      "line": 361
     },
     {
       "source": "goRouterProvider",
@@ -8441,34 +8441,34 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/routing/go_router.dart",
-      "line": 347
-    },
-    {
-      "source": "goRouterProvider",
-      "sourceKind": "provider",
-      "target": "uidProvider",
-      "targetKind": "provider",
-      "operation": "listen",
-      "path": "lib/routing/go_router.dart",
-      "line": 333
-    },
-    {
-      "source": "goRouterProvider",
-      "sourceKind": "provider",
-      "target": "uidProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/routing/go_router.dart",
       "line": 352
     },
     {
       "source": "goRouterProvider",
       "sourceKind": "provider",
+      "target": "uidProvider",
+      "targetKind": "provider",
+      "operation": "listen",
+      "path": "lib/routing/go_router.dart",
+      "line": 338
+    },
+    {
+      "source": "goRouterProvider",
+      "sourceKind": "provider",
+      "target": "uidProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/routing/go_router.dart",
+      "line": 357
+    },
+    {
+      "source": "goRouterProvider",
+      "sourceKind": "provider",
       "target": "watchUserProfileProvider",
       "targetKind": "provider",
       "operation": "listen",
       "path": "lib/routing/go_router.dart",
-      "line": 340
+      "line": 345
     },
     {
       "source": "goRouterProvider",
@@ -8477,7 +8477,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/routing/go_router.dart",
-      "line": 355
+      "line": 360
     },
     {
       "source": "healthActivityRepositoryProvider",
@@ -10117,21 +10117,12 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/app.dart",
-      "line": 72
+      "line": 68
     },
     {
       "source": "consumer:lib/app.dart#MyApp.build",
       "sourceKind": "consumer",
       "target": "forceUpdateRequiredProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/app.dart",
-      "line": 47
-    },
-    {
-      "source": "consumer:lib/app.dart#MyApp.build",
-      "sourceKind": "consumer",
-      "target": "goRouterProvider",
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/app.dart",
@@ -10140,11 +10131,20 @@
     {
       "source": "consumer:lib/app.dart#MyApp.build",
       "sourceKind": "consumer",
+      "target": "goRouterProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/app.dart",
+      "line": 45
+    },
+    {
+      "source": "consumer:lib/app.dart#MyApp.build",
+      "sourceKind": "consumer",
       "target": "profileLocationInitializerProvider",
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/app.dart",
-      "line": 48
+      "line": 47
     },
     {
       "source": "consumer:lib/app.dart#_ForceUpdateGateState.didChangeAppLifecycleState",
@@ -10153,7 +10153,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/app.dart",
-      "line": 136
+      "line": 132
     },
     {
       "source": "consumer:lib/app.dart#_refreshForceUpdateGate",
@@ -10162,7 +10162,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/app.dart",
-      "line": 201
+      "line": 197
     },
     {
       "source": "consumer:lib/app.dart#_refreshForceUpdateGate",
@@ -10171,7 +10171,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/app.dart",
-      "line": 199
+      "line": 195
     },
     {
       "source": "consumer:lib/app.dart#_refreshForceUpdateGate",
@@ -10180,7 +10180,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/app.dart",
-      "line": 193
+      "line": 189
     },
     {
       "source": "consumer:lib/app.dart#_refreshForceUpdateGate",
@@ -10189,7 +10189,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/app.dart",
-      "line": 180
+      "line": 176
     },
     {
       "source": "consumer:lib/app.dart#_refreshForceUpdateGate",
@@ -10198,7 +10198,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/app.dart",
-      "line": 203
+      "line": 199
     },
     {
       "source": "consumer:lib/app_bootstrap.dart#runCatchApp",
@@ -13825,7 +13825,7 @@
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 714
+      "line": 715
     },
     {
       "source": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState._saveChanges",
@@ -13834,7 +13834,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 867
+      "line": 868
     },
     {
       "source": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState._saveChanges",
@@ -13843,7 +13843,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 876
+      "line": 877
     },
     {
       "source": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState._saveChanges",
@@ -13852,7 +13852,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 875
+      "line": 876
     },
     {
       "source": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState.build",
@@ -14320,7 +14320,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
-      "line": 85
+      "line": 86
     },
     {
       "source": "consumer:lib/hosts/presentation/host_operations/host_club_spoke_screens.dart#HostClubSpokeResolver.build",
@@ -14329,7 +14329,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
-      "line": 93
+      "line": 94
     },
     {
       "source": "consumer:lib/hosts/presentation/host_operations/host_club_spoke_screens.dart#HostClubSpokeResolver.build",
@@ -14338,7 +14338,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
-      "line": 78
+      "line": 79
     },
     {
       "source": "consumer:lib/hosts/presentation/host_operations/host_club_spoke_screens.dart#HostClubSpokeResolver.build",
@@ -14347,7 +14347,7 @@
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
-      "line": 72
+      "line": 73
     },
     {
       "source": "consumer:lib/hosts/presentation/host_operations/host_club_spoke_screens.dart#HostClubSpokeResolver.build",
@@ -14356,7 +14356,7 @@
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
-      "line": 66
+      "line": 67
     },
     {
       "source": "consumer:lib/hosts/presentation/host_operations/host_club_spoke_screens.dart#_HostClubDefaultsEditorState._createSaver",
@@ -14365,7 +14365,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
-      "line": 181
+      "line": 182
     },
     {
       "source": "consumer:lib/hosts/presentation/host_operations/host_club_team_screen.dart#_HostClubTeamScreenState._createHostProfile",
@@ -16291,7 +16291,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/user_profile/presentation/widgets/profile_tab.dart",
-      "line": 226
+      "line": 227
     },
     {
       "source": "consumer:lib/user_profile/presentation/widgets/profile_tab.dart#_ProfileTabContentState.build",
@@ -16300,7 +16300,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/user_profile/presentation/widgets/profile_tab.dart",
-      "line": 239
+      "line": 240
     }
   ],
   "mutationEdges": [
@@ -17157,7 +17157,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 867
+      "line": 868
     },
     {
       "source": "consumer:lib/hosts/presentation/edit_hosted_event_screen.dart#_EditHostedEventScreenState.build",
@@ -17364,7 +17364,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
-      "line": 181
+      "line": 182
     },
     {
       "source": "consumer:lib/hosts/presentation/host_operations/host_club_team_screen.dart#_HostClubTeamScreenState._createHostProfile",
@@ -17976,7 +17976,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/user_profile/presentation/widgets/profile_tab.dart",
-      "line": 226
+      "line": 227
     },
     {
       "source": "consumer:lib/user_profile/presentation/widgets/profile_tab.dart#_ProfileTabContentState.build",
@@ -17985,7 +17985,7 @@
       "targetKind": "mutation",
       "operation": "mutation-run",
       "path": "lib/user_profile/presentation/widgets/profile_tab.dart",
-      "line": 239
+      "line": 240
     },
     {
       "source": "publicProfileScreenStateProvider",
