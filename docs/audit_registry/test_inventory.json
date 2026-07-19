@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 530,
+  "total": 532,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -24,7 +24,7 @@
       ]
     },
     "flutter_unit_widget": {
-      "count": 257,
+      "count": 258,
       "files": [
         "test/activity/activity_taxonomy_test.dart",
         "test/analytics/app_analytics_test.dart",
@@ -113,6 +113,7 @@
         "test/core/widgets/catch_field/save_status_test.dart",
         "test/core/widgets/catch_field/toggle_test.dart",
         "test/core/widgets/catch_section_test.dart",
+        "test/core/widgets/catch_tabbed_screen_test.dart",
         "test/dashboard/dashboard_full_view_model_test.dart",
         "test/dashboard/dashboard_screen_test.dart",
         "test/dashboard/empty_hero_card_test.dart",
@@ -387,7 +388,7 @@
       ]
     },
     "tooling": {
-      "count": 122,
+      "count": 123,
       "files": [
         "tool/agent/check_agent_readiness.test.mjs",
         "tool/architecture/check_adopted_architecture_boundaries.test.mjs",
@@ -438,6 +439,7 @@
         "tool/design/check_widget_pattern_families.test.mjs",
         "tool/design/component_concepts.test.mjs",
         "tool/design/context_pack_builder_test.dart",
+        "tool/design/generate_field_inventory.test.mjs",
         "tool/design/generate_flutter_field_surface_inventory.test.mjs",
         "tool/docs/check_doc_version_monotonic.test.mjs",
         "tool/env/check_web_hosting_env.test.mjs",

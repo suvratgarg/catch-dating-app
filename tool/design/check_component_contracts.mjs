@@ -81,7 +81,7 @@ function validateRoot(value) {
     failures.push("registry root must be an object");
     return;
   }
-  if (value.version !== 3) failures.push("registry.version must be 3");
+  if (value.version !== 4) failures.push("registry.version must be 4");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value.updated ?? "")) {
     failures.push("registry.updated must be YYYY-MM-DD");
   }

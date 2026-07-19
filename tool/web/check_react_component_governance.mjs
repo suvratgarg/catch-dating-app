@@ -2040,6 +2040,7 @@ const componentFamilies = [
 const args = parseArgs(process.argv.slice(2));
 const violations = [];
 const overrideNotes = [];
+const interactionContractErrors = [];
 
 if (args.selfTest) {
   runSelfTest();
@@ -2054,6 +2055,25 @@ const selectedSurfaces = args.surface === "all" ?
   Object.keys(surfaces) :
   [args.surface];
 
+if (selectedSurfaces.includes("admin")) {
+  const componentContracts = JSON.parse(
+    fs.readFileSync(fromRepo("design/components/catch.components.json"), "utf8"),
+  );
+  const adminRegistry = JSON.parse(
+    fs.readFileSync(fromRepo("design/admin/components.json"), "utf8"),
+  );
+  interactionContractErrors.push(
+    ...validateAdminInteractionContracts({
+      componentContracts,
+      adminRegistry,
+      readSource: (sourcePath) => {
+        const absolutePath = fromRepo(sourcePath);
+        return fs.existsSync(absolutePath) ? fs.readFileSync(absolutePath, "utf8") : null;
+      },
+    }),
+  );
+}
+
 for (const surfaceName of selectedSurfaces) {
   const surface = surfaces[surfaceName];
   const root = fromRepo(surface.root);
@@ -2065,20 +2085,26 @@ for (const surfaceName of selectedSurfaces) {
   }
 }
 
-if (violations.length > 0) {
-  console.error("React component governance violations:");
-  for (const violation of violations) {
+if (violations.length > 0 || interactionContractErrors.length > 0) {
+  if (violations.length > 0) {
+    console.error("React component governance violations:");
+    for (const violation of violations) {
+      console.error(
+        `- ${violation.path}:${violation.line}: ${violation.description} bypasses the shared ${violation.family} primitive.`
+      );
+    }
+    console.error("");
+    for (const family of componentFamilies) {
+      console.error(`- ${family.family}: ${family.guidance}`);
+    }
     console.error(
-      `- ${violation.path}:${violation.line}: ${violation.description} bypasses the shared ${violation.family} primitive.`
+      `\nTemporary exceptions require an adjacent ${overrideToken}: <DEBT-ID-001> <removal note> comment.`,
     );
   }
-  console.error("");
-  for (const family of componentFamilies) {
-    console.error(`- ${family.family}: ${family.guidance}`);
+  if (interactionContractErrors.length > 0) {
+    console.error("Admin interaction contract violations:");
+    for (const error of interactionContractErrors) console.error(`- ${error}`);
   }
-  console.error(
-    `\nTemporary exceptions require an adjacent ${overrideToken}: <DEBT-ID-001> <removal note> comment.`
-  );
   process.exit(1);
 }
 
@@ -2233,6 +2259,74 @@ function relativeToRepo(filePath) {
   return path.relative(fromRepo("."), filePath).split(path.sep).join("/");
 }
 
+export function validateAdminInteractionContracts({
+  componentContracts,
+  adminRegistry,
+  readSource,
+}) {
+  const errors = [];
+  const fieldRow = componentContracts?.interactionContracts?.field_row;
+  const allowedModes = new Set(fieldRow?.modes ?? []);
+  if (allowedModes.size === 0) {
+    return ["design/components/catch.components.json has no field_row modes"];
+  }
+
+  const registryComponents = new Map();
+  for (const component of adminRegistry?.components ?? []) {
+    if (registryComponents.has(component.exportName)) {
+      errors.push(`duplicate admin component export ${component.exportName}`);
+    }
+    registryComponents.set(component.exportName, component);
+    const declaration = component.interactionContract;
+    if (!declaration) continue;
+    if (declaration.concept !== "field_row") {
+      errors.push(`${component.exportName}: unsupported interaction concept ${declaration.concept}`);
+    }
+    if (!allowedModes.has(declaration.mode)) {
+      errors.push(
+        `${component.exportName}: interaction mode ${declaration.mode} is not declared by field_row`,
+      );
+    }
+  }
+
+  const adoptions = adminRegistry?.interactionContractAdoptions ?? [];
+  if (adoptions.length === 0) {
+    errors.push("design/admin/components.json has no interaction contract adoption");
+  }
+  const adoptionIds = new Set();
+  for (const adoption of adoptions) {
+    if (adoptionIds.has(adoption.id)) errors.push(`duplicate interaction adoption ${adoption.id}`);
+    adoptionIds.add(adoption.id);
+    if (adoption.concept !== "field_row") {
+      errors.push(`${adoption.id}: unsupported interaction concept ${adoption.concept}`);
+      continue;
+    }
+    const source = readSource(adoption.source);
+    if (source === null) {
+      errors.push(`${adoption.id}: adoption source does not exist: ${adoption.source}`);
+      continue;
+    }
+    for (const exportName of adoption.components ?? []) {
+      const component = registryComponents.get(exportName);
+      if (!component) {
+        errors.push(`${adoption.id}: ${exportName} is not registered as an admin component`);
+        continue;
+      }
+      if (!component.interactionContract) {
+        errors.push(`${adoption.id}: ${exportName} must declare an interaction contract mode`);
+        continue;
+      }
+      if (component.interactionContract.concept !== adoption.concept) {
+        errors.push(`${adoption.id}: ${exportName} does not implement ${adoption.concept}`);
+      }
+      if (!new RegExp(`<${exportName}\\b`, "u").test(source)) {
+        errors.push(`${adoption.id}: ${exportName} is not used by ${adoption.source}`);
+      }
+    }
+  }
+  return errors;
+}
+
 function parseArgs(argv) {
   const parsed = {familiesJson: false, selfTest: false, surface: "all", summary: false};
   for (let index = 0; index < argv.length; index += 1) {
@@ -2365,6 +2459,32 @@ function runSelfTest() {
   assert.equal(violations.length, 1);
   assert.equal(violations[0].family, "website-choice-controls");
   assert.equal(violations[0].line, 2);
+
+  const interactionFixture = {
+    componentContracts: {
+      interactionContracts: {field_row: {modes: ["input"]}},
+    },
+    adminRegistry: {
+      interactionContractAdoptions: [
+        {
+          id: "known_bad_form",
+          concept: "field_row",
+          source: "admin/src/features/example/Form.tsx",
+          components: ["TextField"],
+        },
+      ],
+      components: [{exportName: "TextField"}],
+    },
+    readSource: () => "export const Form = () => <TextField />;",
+  };
+  assert.deepEqual(validateAdminInteractionContracts(interactionFixture), [
+    "known_bad_form: TextField must declare an interaction contract mode",
+  ]);
+  interactionFixture.adminRegistry.components[0].interactionContract = {
+    concept: "field_row",
+    mode: "input",
+  };
+  assert.deepEqual(validateAdminInteractionContracts(interactionFixture), []);
 
   console.log("React component governance scanner self-test passed.");
 }

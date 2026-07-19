@@ -1,0 +1,1799 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "tool/design/generate_field_inventory.mjs",
+  "source": {
+    "catchField": "lib/core/widgets/catch_field.dart",
+    "catchFieldApiSha256": "0fac6d089ab840d5d035941cc6c10606dde16fb45a481144938db3dcdf3247ba",
+    "catchSection": "lib/core/widgets/catch_section_layout.dart",
+    "catchSectionApiSha256": "3b2165551c0c70af07a22324dc82669e42abda9ed6222636fb3be3859d28af5d",
+    "interactionContracts": "design/components/catch.components.json"
+  },
+  "summary": {
+    "facadeCount": 13,
+    "modeCount": 13,
+    "slotCount": 15,
+    "saveStateCount": 3,
+    "sectionVariantCount": 5,
+    "forbiddenSurfaceCount": 4
+  },
+  "forbiddenSurfaces": [
+    {
+      "id": "browse",
+      "reason": "Browse surfaces tell a product story and must use their owning editorial or card composition."
+    },
+    {
+      "id": "discovery",
+      "reason": "Discovery surfaces must preserve their feed and recommendation hierarchy instead of adopting form chrome."
+    },
+    {
+      "id": "celebration",
+      "reason": "Celebration surfaces use outcome-specific composition rather than data-management fields and sections."
+    },
+    {
+      "id": "insight-scorecard",
+      "reason": "Insight and scorecard surfaces communicate analysis and must not be flattened into form rows."
+    }
+  ],
+  "facades": [
+    {
+      "facade": "CatchField.read",
+      "mode": "read",
+      "kind": "factory",
+      "parameters": [
+        {
+          "name": "key",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "title",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "body",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "action",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "titleMaxLines",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "bodyMaxLines",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "emphasis",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "tone",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "icon",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "iconColor",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "leading",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "leadingExtent",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "valueText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "valueMaxLines",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "placeholder",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "valid",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "status",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "divider",
+          "required": false,
+          "hasDefault": false
+        }
+      ],
+      "slots": [
+        "title",
+        "body",
+        "leading",
+        "value",
+        "placeholder",
+        "action",
+        "status"
+      ],
+      "useWhen": "Display a non-interactive value row with optional validity and save status."
+    },
+    {
+      "facade": "CatchField.content",
+      "mode": "content",
+      "kind": "factory",
+      "parameters": [
+        {
+          "name": "key",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "title",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "body",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "action",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onTap",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "titleMaxLines",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "bodyMaxLines",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "emphasis",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "tone",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "icon",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "iconColor",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "leading",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "leadingExtent",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "valueText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "valueMaxLines",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "showChevron",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "isOptional",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "valid",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "status",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "divider",
+          "required": false,
+          "hasDefault": false
+        }
+      ],
+      "slots": [
+        "title",
+        "body",
+        "leading",
+        "value",
+        "action",
+        "status"
+      ],
+      "useWhen": "Display title and supporting copy as a stable content row with an optional action."
+    },
+    {
+      "facade": "CatchField.nav",
+      "mode": "nav",
+      "kind": "factory",
+      "parameters": [
+        {
+          "name": "key",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "title",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "body",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "action",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onTap",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "titleMaxLines",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "bodyMaxLines",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "emphasis",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "tone",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "icon",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "iconColor",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "leading",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "leadingExtent",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "valueText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "valueMaxLines",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "showChevron",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "placeholder",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "error",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "errorText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "valid",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "status",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "divider",
+          "required": false,
+          "hasDefault": false
+        }
+      ],
+      "slots": [
+        "title",
+        "body",
+        "leading",
+        "value",
+        "placeholder",
+        "action",
+        "status",
+        "error"
+      ],
+      "useWhen": "Open another destination or picker from a row that may show a current value."
+    },
+    {
+      "facade": "CatchField.action",
+      "mode": "action",
+      "kind": "factory",
+      "parameters": [
+        {
+          "name": "key",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "title",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "body",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "action",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onTap",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "titleMaxLines",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "bodyMaxLines",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "emphasis",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "tone",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "icon",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "iconColor",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "leading",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "leadingExtent",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "valueText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "valueMaxLines",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "placeholder",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "error",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "errorText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "valid",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "status",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "divider",
+          "required": false,
+          "hasDefault": false
+        }
+      ],
+      "slots": [
+        "title",
+        "body",
+        "leading",
+        "value",
+        "placeholder",
+        "action",
+        "status",
+        "error"
+      ],
+      "useWhen": "Run a non-navigation row action without implying inline value editing."
+    },
+    {
+      "facade": "CatchField.toggle",
+      "mode": "toggle",
+      "kind": "factory",
+      "parameters": [
+        {
+          "name": "key",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "title",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "body",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "value",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "onChanged",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "titleMaxLines",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "bodyMaxLines",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "emphasis",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "tone",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "icon",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "iconColor",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "helperText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "badgeLabel",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "badgeTone",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "status",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "divider",
+          "required": false,
+          "hasDefault": false
+        }
+      ],
+      "slots": [
+        "title",
+        "body",
+        "leading",
+        "value",
+        "support",
+        "badge",
+        "status"
+      ],
+      "useWhen": "Edit one boolean value with a row-owned toggle control."
+    },
+    {
+      "facade": "CatchField.input",
+      "mode": "input",
+      "kind": "factory",
+      "parameters": [
+        {
+          "name": "key",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "title",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "placeholder",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "emptyValueText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "inputHint",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "controller",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "initialValue",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onChanged",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onSubmitted",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onBlur",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onFocusChanged",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "focusNode",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "retainFocusOnSubmitted",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "validator",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "keyboardType",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "textInputAction",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "textCapitalization",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "inputFormatters",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "autofillHints",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "obscureText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "maxLines",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "minLines",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "maxLength",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "readOnly",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "autofocus",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "enabled",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "isOptional",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "showLabel",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "helperText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "helperTone",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "size",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "textAlign",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "focused",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "status",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "mono",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "prefixIcon",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "prefixText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "suffixIcon",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "suffixText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "showClearButton",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "floatingLabel",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "variant",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "icon",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "iconColor",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "leadingUnit",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "action",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "error",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "errorText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "divider",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onTap",
+          "required": false,
+          "hasDefault": false
+        }
+      ],
+      "slots": [
+        "title",
+        "leading",
+        "value",
+        "placeholder",
+        "support",
+        "action",
+        "prefix",
+        "suffix",
+        "status",
+        "error"
+      ],
+      "useWhen": "Edit text directly in a field with validation, helper copy, and optional adornments."
+    },
+    {
+      "facade": "CatchField.control",
+      "mode": "control",
+      "kind": "factory",
+      "parameters": [
+        {
+          "name": "key",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "title",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "body",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "control",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "open",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "initiallyOpen",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onOpenChanged",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onCancel",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onSubmit",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "isLoading",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "status",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "enabled",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "addable",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "isOptional",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "helperText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "titleMaxLines",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "bodyMaxLines",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "emphasis",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "tone",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "icon",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "iconColor",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "placeholder",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "emptyValueText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "error",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "errorText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "divider",
+          "required": false,
+          "hasDefault": false
+        }
+      ],
+      "slots": [
+        "title",
+        "body",
+        "leading",
+        "placeholder",
+        "control",
+        "support",
+        "status",
+        "error",
+        "actions"
+      ],
+      "useWhen": "Reveal a caller-supplied inline control while the field owns disclosure and commit chrome."
+    },
+    {
+      "facade": "CatchField.choices",
+      "mode": "choices",
+      "kind": "static-facade",
+      "parameters": [
+        {
+          "name": "key",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "title",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "body",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "values",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "itemLabel",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "selected",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "onSelectionChanged",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "multi",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "allowEmptySelection",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "open",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "initiallyOpen",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "onOpenChanged",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onCancel",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onSubmit",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "isLoading",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "status",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "enabled",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "addable",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "isOptional",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "helperText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "itemAccent",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "icon",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "iconColor",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "tone",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "emptyValueText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "error",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "errorText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "divider",
+          "required": false,
+          "hasDefault": true
+        }
+      ],
+      "slots": [
+        "title",
+        "body",
+        "leading",
+        "value",
+        "placeholder",
+        "control",
+        "support",
+        "status",
+        "error",
+        "actions"
+      ],
+      "useWhen": "Choose terse single- or multi-select labels in a field-owned disclosure control."
+    },
+    {
+      "facade": "CatchField.optionCards",
+      "mode": "optionCards",
+      "kind": "static-facade",
+      "parameters": [
+        {
+          "name": "key",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "title",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "body",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "values",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "itemTitle",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "itemDescription",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "selected",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "onChanged",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "open",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "initiallyOpen",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "onOpenChanged",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onCancel",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onSubmit",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "isLoading",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "status",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "enabled",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "helperText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "icon",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "iconColor",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "tone",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "error",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "errorText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "divider",
+          "required": false,
+          "hasDefault": true
+        }
+      ],
+      "slots": [
+        "title",
+        "body",
+        "leading",
+        "value",
+        "control",
+        "support",
+        "status",
+        "error",
+        "actions"
+      ],
+      "useWhen": "Choose one explanatory option when each choice needs a title and supporting description."
+    },
+    {
+      "facade": "CatchField.stepper",
+      "mode": "stepper",
+      "kind": "static-facade",
+      "parameters": [
+        {
+          "name": "key",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "title",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "body",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "value",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "onChanged",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "min",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "max",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "step",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "unit",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "formatter",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "decreaseSemanticLabel",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "increaseSemanticLabel",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "open",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "initiallyOpen",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "onOpenChanged",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onCancel",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onSubmit",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "isLoading",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "status",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "enabled",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "addable",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "isOptional",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "icon",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "iconColor",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "tone",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "emptyValueText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "error",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "errorText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "divider",
+          "required": false,
+          "hasDefault": true
+        }
+      ],
+      "slots": [
+        "title",
+        "body",
+        "leading",
+        "value",
+        "placeholder",
+        "status",
+        "error",
+        "actions"
+      ],
+      "useWhen": "Edit a bounded numeric value with the canonical decrement and increment control."
+    },
+    {
+      "facade": "CatchField.inputActions",
+      "mode": "inputActions",
+      "kind": "factory",
+      "parameters": [
+        {
+          "name": "key",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "title",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "controller",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "open",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "onOpenChanged",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "onCancel",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "onSubmit",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "placeholder",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "emptyValueText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "inputHint",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "supporting",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "secondaryAction",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "feedback",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "isLoading",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "status",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "keyboardType",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "textInputAction",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "textCapitalization",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "inputFormatters",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "autofillHints",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "maxLines",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "minLines",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "maxLength",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "enabled",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "icon",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "iconColor",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "tone",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "error",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "divider",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onChanged",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onSubmitted",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onBlur",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onFocusChanged",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "focusNode",
+          "required": false,
+          "hasDefault": false
+        }
+      ],
+      "slots": [
+        "title",
+        "leading",
+        "value",
+        "placeholder",
+        "support",
+        "feedback",
+        "status",
+        "error",
+        "actions"
+      ],
+      "useWhen": "Edit text in a controlled disclosure row with explicit cancel and submit actions."
+    },
+    {
+      "facade": "CatchField.add",
+      "mode": "add",
+      "kind": "factory",
+      "parameters": [
+        {
+          "name": "key",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "title",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "onTap",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "icon",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "tone",
+          "required": false,
+          "hasDefault": false
+        }
+      ],
+      "slots": [
+        "title",
+        "leading"
+      ],
+      "useWhen": "Offer a compact field-shaped action for adding a missing value or item."
+    },
+    {
+      "facade": "CatchField.select",
+      "mode": "select",
+      "kind": "static-facade",
+      "parameters": [
+        {
+          "name": "key",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "title",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "values",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "itemLabel",
+          "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "value",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "hintText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "prefixIcon",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "onChanged",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "validator",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "enabled",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "showLabel",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "size",
+          "required": false,
+          "hasDefault": true
+        },
+        {
+          "name": "helperText",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "helperTone",
+          "required": false,
+          "hasDefault": true
+        }
+      ],
+      "slots": [
+        "title",
+        "value",
+        "placeholder",
+        "control",
+        "support",
+        "prefix",
+        "error"
+      ],
+      "useWhen": "Choose one value from a conventional select control with field-owned label and support copy."
+    }
+  ]
+}

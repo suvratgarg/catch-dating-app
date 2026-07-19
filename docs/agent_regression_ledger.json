@@ -1,5 +1,5 @@
 {
-  "version": 38,
+  "version": 39,
   "updated": "2026-07-19",
   "owner": "agent_operating_model",
   "entries": [
@@ -2034,6 +2034,31 @@
         "design/sync/README.md"
       ],
       "notes": "Count primary concept ids, not files, classes, or top-level contract entries. Preserve useful public adapters and recipes as members. Feature composition and screens remain documented but never claim a concept id. A collision is a review candidate, not a merge instruction."
+    },
+    {
+      "id": "REG-INTERACTION-CONTRACT-001",
+      "title": "Cross-stack field vocabulary drifts from the Flutter-owned API",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_field.dart",
+        "lib/core/widgets/catch_section_layout.dart",
+        "design/components/catch.components.json",
+        "design/admin/components.json",
+        "tool/design/generate_field_inventory.mjs",
+        "tool/web/check_react_component_governance.mjs"
+      ],
+      "symptom": "A CatchField facade, semantic slot, save state, or CatchSection variant changes without refreshing the machine-readable vocabulary; or a React admin form claims parity without declaring and using a valid native mode mapping.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check design:field-facade-inventory web:react-component-governance web:admin-components",
+        "guardEvidence": "seeded deleted-facade and added-slot probes change the generated inventory, missing use-when metadata fails, source-derived modes/save states/section variants and slots must exactly match the contract, and the Organizer Publishing adoption rejects missing or invalid component mode declarations"
+      },
+      "owner_docs": [
+        "docs/design_language.md",
+        "docs/web_surface_architecture.md",
+        "docs/plans/catch_system_stretch_spec.md"
+      ],
+      "notes": "Flutter owns interaction names and behavior. React implementations remain native; only the semantic vocabulary and adoption evidence are shared."
     }
   ]
 }

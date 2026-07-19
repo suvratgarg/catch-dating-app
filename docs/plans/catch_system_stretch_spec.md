@@ -52,7 +52,7 @@ Goals:
    compile.
 4. S4 — accessibility + dynamic-type invariants in the Phase A matrix.
 5. S5/S6 — cross-stack interaction contract + agent-legible registry,
-   specified here, still trigger-gated (§7/§8).
+   implemented and enforced after owner activation (§7/§8).
 6. §9 — the same canonicalization standard applied to the adjacent
    super-configurable surfaces found in the 2026-07-17 survey: the top bar
    family, the async/error/loading family, and terminal padding.
@@ -69,8 +69,8 @@ Non-goals:
 - No changes to `packages/catch_ui_lints` (plugin edits crash local
   analyze — repo memory). New checks ship as `.mjs`/Dart tools in the
   manifest.
-- S5 and S6 remain UNBUILT until their §7/§8 triggers fire — this doc
-  specifies them so activation is cheap, it does not activate them.
+- S5 and S6 are governance-only additions: they do not alter Flutter visuals
+  or behavior, and React shares interaction semantics rather than widget code.
 - No second row/top-bar/error system anywhere. Consolidation only.
 
 ## 2. Cross-cutting rules
@@ -297,10 +297,10 @@ much of it, given the focus-semantics suite), the fixes, and the new test
 groups. No API changes expected; if one is needed, it must go through the
 catalog per doctrine.
 
-## 7. Phase S5 — Cross-stack interaction contract (SPECIFIED, NOT ACTIVATED)
+## 7. Phase S5 — Cross-stack interaction contract (IMPLEMENTED 2026-07-19)
 
 Trigger (unchanged from base §14): the next substantial admin-forms work
-order. Do not build before it fires. When it does:
+order. The owner explicitly activated this gate on 2026-07-19.
 
 1. Extend `design/components/catch.components.json` with an
    `interactionContracts` block for two concepts:
@@ -308,14 +308,14 @@ order. Do not build before it fires. When it does:
    ```json
    "interactionContracts": {
      "field_row": {
-       "modes": ["read", "nav", "toggle", "input", "select", "choices", "stepper", "control", "add", "content", "action", "inputActions"],
-       "slots": ["icon", "title", "body", "helperText", "badge", "value", "trailing", "support", "error"],
+       "modes": ["read", "content", "nav", "action", "toggle", "input", "control", "choices", "optionCards", "stepper", "inputActions", "add", "select"],
+       "slots": ["title", "body", "leading", "value", "placeholder", "control", "support", "badge", "action", "prefix", "suffix", "feedback", "status", "error", "actions"],
        "saveStates": ["idle", "saving", "saved"],
        "rules": ["one expanded editor per group", "row owns its divider", "empty editable rows use canonical add copy"]
      },
      "field_section": {
-       "variants": ["divided", "fieldRows", "containedFieldRows", "plain"],
-       "slots": ["title", "count", "trailing", "footer"]
+       "variants": ["divided", "fieldRows", "containedFieldRows", "contained", "plain"],
+       "slots": ["title", "subtitle", "trailing", "count", "footer", "children", "child"]
      }
    }
    ```
@@ -331,10 +331,19 @@ order. Do not build before it fires. When it does:
    passes the extended checker; the lexicon registry validates against its
    schema; no Flutter changes.
 
-## 8. Phase S6 — Agent-legible field registry (SPECIFIED, NOT ACTIVATED)
+Implementation receipt: the exact current Flutter API yields 13 field modes
+(including `optionCards`), 15 semantic slots, three save states, and five
+section variants. Organizer Publishing is the native React adoption; its
+`TextField`, `TextareaField`, `SelectField`, and `CheckboxField` registry
+entries declare `input`, `select`, and `toggle` mappings. The component
+governance checker validates declarations and live family usage. No Flutter
+source changed.
+
+## 8. Phase S6 — Agent-legible field registry (IMPLEMENTED 2026-07-19)
 
 Trigger (unchanged): field-system corrections become a recurring review
-theme in agent work orders. When it fires:
+theme in agent work orders. The owner explicitly activated this gate on
+2026-07-19.
 
 1. `tool/design/generate_field_inventory.mjs`: parse
    `lib/core/widgets/catch_field.dart` (constructor names + parameters via
@@ -348,6 +357,13 @@ theme in agent work orders. When it fires:
    `forbiddenSurfaces` so agents consume rules as data.
 4. Acceptance: deleting a facade or adding a slot without regenerating
    fails CI; the seeded-probe rule applies (prove the check fires).
+
+Implementation receipt: `tool/design/generate_field_inventory.mjs` parses the
+live public factory and static-facade declarations plus CatchSection variants,
+validates the cross-stack vocabulary, and emits the committed inventory. Its
+test suite seeds a deleted facade, an added semantic slot, and a missing
+owner-reviewed use-when line. The manifest registers the check in the design
+lane.
 
 ## 9. Adjacent canonical surfaces (2026-07-17 survey findings — ACTIVE work)
 

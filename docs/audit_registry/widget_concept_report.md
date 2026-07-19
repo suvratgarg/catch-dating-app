@@ -23,14 +23,14 @@ design-sync manifest. Do not edit it by hand. The machine-readable companion is
 | Contracted public widget classes | — | 196 | Primaries and members are counted separately from concepts. |
 | Member APIs | — | 116 (1.84 per concept) | Public seams do not inflate concept count. |
 | Unclassified contracted entries | — | 0 | Must remain zero. |
-| Production widget/state classes | — | 1091 | Exhaustive generated inventory. |
+| Production widget/state classes | — | 1094 | Exhaustive generated inventory. |
 | Instantiated concept primaries | — | 62 | One contracted primary is not a runtime Widget declaration. |
-| Public member widget classes | — | 114 | Role is inherited from the component contract. |
+| Public member widget classes | — | 116 | Role is inherited from the component contract. |
 | Public composition widget classes | — | 514 | Excluded from concept count. |
 | Public screen widget classes | — | 268 | Excluded from concept count. |
 | Unclassified public widgets | — | 0 | Must remain zero. |
 | Widgetbook-complete concept primaries | — | 62/62 | Evidence is role-derived. |
-| Widgetbook-covered member classes | — | 114/114 | Reviewed directly or under the parent family. |
+| Widgetbook-covered member classes | — | 116/116 | Reviewed directly or under the parent family. |
 | Owner/live gate queue | — | 3 | Unresolved semantic decisions and externally gated design-tool proof appear here. |
 
 ## Collision and ledger coverage
@@ -110,7 +110,7 @@ publish snapshot, plan tier, and generated mappings satisfy the prerequisites.
 | 3. Resolve owner-gated semantic decisions | proven | 0 unresolved semantic owner question(s) |
 | 4. Verify accepted changes and stamp receipts | proven | Focused checks and audit receipt widget-concept-owner-decisions-2026-07-19 are recorded |
 | 5. Give every cataloged entry exactly one governed role | proven | 0 unclassified contracts and 0 unclassified production entries |
-| 6. Report concept and class counts separately | proven | 63 concepts, 196 contracted public classes, 1091 production widget/state classes |
+| 6. Report concept and class counts separately | proven | 63 concepts, 196 contracted public classes, 1094 production widget/state classes |
 | 7. Complete live Figma/Claude Badge + Field round trip | pending | awaiting-figma-file-approval; Code Connect blocked-plan-tier; Claude context current; Claude Design receipt missing |
 | 8. Reduce remaining work to a bounded queue | proven | 3 generated owner/live gates and 55 advisory ranked-pair candidates |
 

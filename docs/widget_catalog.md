@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.655
+version: 2.5.656
 updated: 2026-07-19
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,14 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.656
+
+- Published the Flutter-owned `field_row` and `field_section` interaction
+  vocabulary for native React mappings without sharing implementation.
+- Added a generated CatchField facade inventory with exact modes, parameters,
+  semantic slots, reviewed use cases, forbidden storytelling surfaces, and
+  seeded drift probes for deleted facades and new slots.
 
 ### 2.5.655
 

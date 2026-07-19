@@ -756,6 +756,11 @@
           "docAnchor": "docs/widget_catalog.md"
         },
         {
+          "tool": "design:field-facade-inventory",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/design_language.md#73-catchfield-doctrine"
+        },
+        {
           "stage": "manual",
           "docAnchor": "docs/audit_registry/rules.json"
         }
@@ -2599,7 +2604,7 @@
         "website/src/shared/ui/**",
         "packages/web-ui/**"
       ],
-      "instruction": "Every declared component surface symbol must exist in its implementation owner. Surface registry entries marked lexicon=true must reference a real catch.components id and exactly match that contract's surface symbol.",
+      "instruction": "Every declared component surface symbol must exist in its implementation owner. Surface registry entries marked lexicon=true must reference a real catch.components id and exactly match that contract's surface symbol. Adopted cross-stack form primitives must declare a valid Flutter-owned interaction mode, while each stack retains its native implementation.",
       "sunset_when": [
         "Catch no longer ships more than one UI implementation stack"
       ],
@@ -2613,6 +2618,16 @@
           "tool": "design:component-lexicon",
           "stage": "scanner-gate",
           "docAnchor": "docs/design_language.md#cross-stack-component-lexicon"
+        },
+        {
+          "tool": "web:react-component-governance",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/web_surface_architecture.md"
+        },
+        {
+          "tool": "design:field-facade-inventory",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/design_language.md#73-catchfield-doctrine"
         }
       ]
     },

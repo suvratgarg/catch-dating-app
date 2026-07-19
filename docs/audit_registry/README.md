@@ -1,7 +1,7 @@
 ---
 doc_id: audit_registry
-version: 2.6.8
-updated: 2026-07-16
+version: 2.6.9
+updated: 2026-07-19
 owner: recursive_audit_loop
 status: active
 ---
@@ -103,6 +103,7 @@ node tool/run.mjs check --category meta
     npm run design:widgets:check
     npm run design:widgets:new
     npm run design:fields:inventory:check
+    npm run design:fields:facades:check
     ```
 
    Private helper widgets are not an allowed destination. A widget that is too
@@ -114,6 +115,11 @@ node tool/run.mjs check --category meta
    `flutter_field_surface_adoption.json`; the inventory check validates its
    route/screen bindings, exact callsite anchors, and zero unclassified legacy
    product callsites before handoff.
+
+   The separate generated `field_facade_inventory.json` describes every live
+   `CatchField` facade, parameter list, semantic slot, owner-reviewed use case,
+   and forbidden storytelling surface. Its check also pins the cross-stack
+   `field_row` modes and slots plus the live `CatchSection` variants.
 
    The broad widget cleanup inventory is a live ratchet, not a stored-zero
    assertion. `bash tool/widget_cleanup_scan.sh --check` compares every current
