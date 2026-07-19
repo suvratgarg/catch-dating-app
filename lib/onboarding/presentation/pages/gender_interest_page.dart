@@ -121,6 +121,7 @@ class OnboardingGenderInterestStep extends StatelessWidget {
         ),
         children: [
           CatchSectionList(
+            emptyStateOmitted: true,
             gap: CatchSpacing.s4,
             children: [
               CatchSection.fieldRows(

@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.656
+version: 2.5.657
 updated: 2026-07-19
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,15 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.657
+
+- Made `CatchSectionList` collection-state ownership explicit: callers provide
+  `emptyBuilder` or the named `emptyStateOmitted: true` opt-out.
+- Added generated component-enforcement ownership for all 69 catalog entries,
+  analyzer steering tables/probes, and bidirectional plugin/checker coverage.
+- Registered shell, top-bar, and state policy for all 32 screen contracts and
+  added the resolved cross-file composition ratchet.
 
 ### 2.5.656
 

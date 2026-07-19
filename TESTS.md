@@ -21,3 +21,21 @@ node tool/run.mjs check --category meta
 ```
 
 Use focused tests while iterating, then run the owning surface's full gate before handoff. Never run multiple Flutter analyzer/test processes concurrently. Add regression coverage beside the owned surface and make recurring architectural rules enforceable through the tool manifest.
+
+## Catch UI enforcement
+
+`flutter analyze` remains the generic Flutter/Dart analysis gate, but it does
+not load the local Catch UI analyzer plugin in this workspace. A targeted
+`dart analyze lib` also skips the plugin. Catch lint verification must run from
+the repository root through the checked wrappers:
+
+```sh
+bash tool/check_catch_ui_lints.sh
+bash tool/check_catch_ui_lint_drift.sh --check
+node tool/design/check_component_enforcement_coverage.mjs
+dart run tool/architecture/check_ui_composition_contracts.dart --check
+```
+
+The first command rebuilds and seeds the plugin, including generated steering
+probes. The drift ratchet rejects analyzer-plugin setup errors and baseline
+increases; the resolved checker owns cross-file screen/shell conformance.

@@ -977,12 +977,16 @@
         "analysis_options.yaml",
         "packages/catch_ui_lints/**",
         "tool/check_catch_ui_lints.sh",
+        "tool/check_catch_ui_lint_drift.sh",
+        "tool/design/build_lint_enforcement_tables.mjs",
+        "tool/design/check_component_enforcement_coverage.mjs",
+        "tool/architecture/check_ui_composition_contracts.dart",
         "tool/check_riverpod_lint.sh",
         ".github/workflows/**",
         "lib/**",
         "lib/core/widgets/**"
       ],
-      "instruction": "When a UI surface invariant is deterministic, move it into packages/catch_ui_lints as an analysis_server_plugin diagnostic that runs across handwritten lib/** by default. Exempt only semantic source-of-truth folders such as lib/core/theme/** and generated code. Do not add new custom_lint rules. Keep broad scanners only for triage and migration discovery.",
+      "instruction": "When a UI surface invariant is deterministic, move it into packages/catch_ui_lints as an analysis_server_plugin diagnostic that runs across handwritten lib/** by default. Verify Catch diagnostics with the seeded harness or repository-root dart analyze, never flutter analyze or a targeted subdirectory analysis. Generate steering tables from component contracts, use the resolved checker for cross-file composition, exempt only semantic source-of-truth folders or generated code, and keep broad scanners only for triage and migration discovery.",
       "sunset_when": [
         "All high-value UI scanner findings either migrate into analyzer plugin diagnostics or are documented as intentionally broad triage queues",
         "New audited screens stay covered by strict UI diagnostics without custom one-off scripts"
@@ -1001,6 +1005,36 @@
         {
           "tool": "lint:catch-ui-plugin-smoke",
           "stage": "analyzer-warning",
+          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
+        },
+        {
+          "tool": "lint:catch-ui-drift",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
+        },
+        {
+          "tool": "lint:catch-ui-drift-ratchet-engine",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
+        },
+        {
+          "tool": "design:lint-enforcement-generate",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
+        },
+        {
+          "tool": "design:component-enforcement-coverage",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
+        },
+        {
+          "tool": "design:ui-lint-promotion-parity",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
+        },
+        {
+          "tool": "architecture:ui-composition-contracts",
+          "stage": "scanner-ratchet",
           "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
         },
         {
@@ -2212,7 +2246,7 @@
       "sunset_signals": [
         {
           "type": "tool-exists",
-          "tool": "scanner:no-raw-network-image"
+          "tool": "lint:catch-ui-plugin-smoke"
         }
       ],
       "sunset_review": {
@@ -2222,8 +2256,8 @@
       },
       "enforcement": [
         {
-          "tool": "scanner:no-raw-network-image",
-          "stage": "scanner-gate",
+          "tool": "lint:catch-ui-plugin-smoke",
+          "stage": "analyzer-warning",
           "docAnchor": "docs/app_architecture.md#widget-ownership"
         }
       ]
@@ -2965,6 +2999,6 @@
       ]
     }
   },
-  "version": "2.7.20",
+  "version": "2.7.22",
   "updated": "2026-07-19"
 }

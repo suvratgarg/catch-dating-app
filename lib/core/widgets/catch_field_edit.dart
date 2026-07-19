@@ -84,6 +84,11 @@ extension _CatchFieldEdit on _CatchFieldState {
                     inputHintWidgetOverride: inlineAddAtRest
                         ? Text.rich(
                             _inlineAddTextSpan(t),
+                            style: _fieldValueTextStyle(
+                              context,
+                              color: t.ink3,
+                              fontWeight: FontWeight.w500,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           )
@@ -533,7 +538,7 @@ extension _CatchFieldEdit on _CatchFieldState {
           PositionedDirectional(
             start: 0,
             end: 0,
-            bottom: -(CatchStroke.underline - CatchStroke.hairline),
+            bottom: -CatchFieldTokens.underlineSweepBottomOffset,
             height: CatchStroke.underline,
             child: LayoutBuilder(
               builder: (context, constraints) => TweenAnimationBuilder<double>(

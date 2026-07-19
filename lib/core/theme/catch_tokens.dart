@@ -1649,6 +1649,8 @@ abstract final class CatchFieldTokens {
 
   static const double focusRingWidth = CatchStroke.focusRing;
   static const double focusRingOffset = CatchSpacing.micro2;
+  static const double underlineSweepBottomOffset =
+      CatchStroke.underline - CatchStroke.hairline;
 
   static const double activeTintAlpha = 0.04;
   static const double pressedTintAlpha = 0.06;
@@ -1686,6 +1688,9 @@ abstract final class CatchLayout {
   /// Content max-width clamp for large phones / foldables.
   /// Wrap full-bleed page bodies in [ConstrainedBox] with this maxWidth, centered.
   static const double maxContentWidth = 600;
+  static const double pageBodyHorizontalGutters = CatchSpacing.screenPx * 2;
+  static const double tabbedPageMaxExtent =
+      maxContentWidth + pageBodyHorizontalGutters;
 
   /// Plot height for the compact host demand/bookings trend.
   static const double analyticsTrendHeight = 120;
@@ -1769,6 +1774,8 @@ abstract final class CatchLayout {
       clubDetailHeroLocationLineExtent +
       clubDetailHeroTitleBottomPadding +
       clubDetailHeroCaptionSlack;
+  static const double clubDetailHeroLoadingExtent =
+      clubDetailHeroNoCoverPhoneHeight + clubDetailHeroCaptionExtent;
   static double clubDetailHeroLocationTextWidthFor(double captionWidth) =>
       (captionWidth - CatchIcon.md - CatchSpacing.micro6)
           .clamp(0.0, double.infinity)
@@ -1830,6 +1837,9 @@ abstract final class CatchLayout {
   static const double activityMapPinNativeCanvasPadding = 4.0;
   static const double activityMapPinShadowBlur = 3.0;
   static const double activityMapPinShadowDy = 2.0;
+  static const double eventMapLoadingPinExtent =
+      CatchSpacing.s12 + CatchSpacing.s4;
+  static const double eventMapLoadingLabelWidth = CatchSpacing.s16 * 2;
   static const double distanceRingDefaultSize = 170.0;
   static const double distanceRingStrokeWidth = 1.2;
   static const double distanceRingLabelOverhang = 10.0;
@@ -1923,6 +1933,8 @@ abstract final class CatchLayout {
   static const double rosterHeaderIdentityInset = 42.0;
   static const double chatListAvatarExtent = CatchSpacing.s11;
   static const double chatListTextGap = CatchSpacing.s3;
+  static const double chatInputInnerPadding =
+      CatchSpacing.s2 - CatchStroke.underline;
 
   /// Left inset for the chat-row hairline divider so it starts past the avatar
   /// and aligns with the text column. Kept in terms of the avatar extent + the
@@ -1937,6 +1949,8 @@ abstract final class CatchLayout {
   static const double horizontalRailHeight = 92.0;
   static const double horizontalRailDividerHeight = CatchSpacing.s6;
   static const double actionMenuWidth = 192.0;
+  static const double actionMenuContentWidth =
+      actionMenuWidth - CatchSpacing.s16;
   static const double actionMenuAlignmentX = -160.0;
   static const double avatarStatusDotExtent = 9.0;
   static const double eventHeroBackdropIconSize = 220.0;
@@ -1953,12 +1967,15 @@ abstract final class CatchLayout {
   static const double eventHeroBadgeIconSize = 26.0;
   static const double eventDetailTicketStubBandHeight = 72.0;
   static const double eventDetailHintDotExtent = 7.0;
+  static const double eventDetailHintDotTopInset = 7.0;
   static const double eventDetailMapCardHeight = 126.0;
   static const double eventDetailPhotoStripTileHeight = 108.0;
   static const double eventDetailHairlineDividerHeight = 25.0;
   static const double eventDetailItineraryTimeColumnWidth = 50.0;
   static const double eventDetailItineraryRailColumnWidth = 20.0;
   static const double eventDetailItineraryDotExtent = 9.0;
+  static const double eventDetailItineraryDotTopInset = 3.0;
+  static const double eventDetailItineraryRailVerticalInset = 2.0;
   // JourneySteps (design-system components/events/JourneySteps) — numbered
   // node-rail sequence shared by the first-run dashboard and onboarding.
   static const double dashboardEmptyHeroHeight = 370.0;
@@ -2019,6 +2036,7 @@ abstract final class CatchLayout {
   static const double sheetGrabberWidth = CatchSpacing.s10;
   static const double sheetGrabberWideWidth = CatchSpacing.s12;
   static const double sheetGrabberHeight = CatchSpacing.s1;
+  static const double sheetHairlineGrabberHeight = CatchStroke.hairline * 3;
   static const double sheetGrabberTallHeight = 5.0;
   static const double sheetTopPadding = CatchSpacing.micro10;
   static const double sheetHorizontalPadding = 22.0;
@@ -2074,6 +2092,13 @@ abstract final class CatchLayout {
   static const double skeletonTextHeroWideWidth = 230.0;
   static const double skeletonTextPageTitleWidth = 232.0;
   static const double skeletonTextBannerWidth = 240.0;
+  static const double skeletonTextDescriptionWidth = CatchSpacing.s16 * 3;
+  static const double skeletonChipNarrowWidth =
+      CatchSpacing.s16 + CatchSpacing.s4;
+  static const double skeletonChipMediumWidth =
+      CatchSpacing.s16 + CatchSpacing.s6;
+  static const double skeletonChipWideWidth =
+      CatchSpacing.s16 + CatchSpacing.s10;
   static const double skeletonStatusPillWidth = 82.0;
   static const double startupLogoExtent = 96.0;
   static const double startupIndicatorExtent = CatchSpacing.s7;
@@ -2108,6 +2133,20 @@ abstract final class CatchLayout {
   static const double exploreSheetPeekSize = 0.11;
   static const double exploreSheetMapSize = 0.70;
   static const double exploreSheetFullSize = 1.0;
+
+  static double tabBarReservedBottomInset(double bottomSafeArea) =>
+      tabBarExtent + tabBarFloatingBottomInset + bottomSafeArea;
+
+  static double distanceRingAvailableDiameterFor(Size viewport) {
+    final shortestSide = viewport.width < viewport.height
+        ? viewport.width
+        : viewport.height;
+    return shortestSide * 0.9;
+  }
+
+  static double activityMapPinAnchorOffset(bool selected) => selected
+      ? activityMapPinSelectedSize + CatchSpacing.s5
+      : activityMapPinRestingSize / 2;
   static const double exploreSheetRevealOvershootSize = 0.655;
   static const double exploreHeaderContentHeight = 60.0;
   static const double exploreFilterRailHeight = 66.0;

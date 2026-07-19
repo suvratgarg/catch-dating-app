@@ -201,18 +201,28 @@ class CatchSectionList extends StatelessWidget {
   const CatchSectionList({
     super.key,
     required this.children,
+    required this.emptyStateOmitted,
+    this.emptyBuilder,
     this.gap = CatchGaps.section,
     this.crossAxisAlignment = CrossAxisAlignment.stretch,
     this.mainAxisSize = MainAxisSize.max,
-  });
+  }) : assert(
+         emptyStateOmitted || emptyBuilder != null,
+         'CatchSectionList requires emptyBuilder or emptyStateOmitted: true.',
+       );
 
   final List<Widget> children;
+  final bool emptyStateOmitted;
+  final WidgetBuilder? emptyBuilder;
   final double gap;
   final CrossAxisAlignment crossAxisAlignment;
   final MainAxisSize mainAxisSize;
 
   @override
   Widget build(BuildContext context) {
+    if (children.isEmpty) {
+      return emptyBuilder?.call(context) ?? const SizedBox.shrink();
+    }
     final spacedChildren = <Widget>[];
     for (final child in children) {
       if (spacedChildren.isNotEmpty && gap > 0) {
@@ -249,7 +259,11 @@ class CatchSectionStack extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: padding,
-      child: CatchSectionList(gap: gap, children: children),
+      child: CatchSectionList(
+        emptyStateOmitted: true,
+        gap: gap,
+        children: children,
+      ),
     );
   }
 }
@@ -1072,7 +1086,11 @@ class CatchDetailSliverSectionList extends StatelessWidget {
         bottomPadding,
       ),
       sliver: SliverToBoxAdapter(
-        child: CatchSectionList(gap: gap, children: sections),
+        child: CatchSectionList(
+          emptyStateOmitted: true,
+          gap: gap,
+          children: sections,
+        ),
       ),
     );
   }

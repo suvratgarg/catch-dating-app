@@ -353,6 +353,7 @@ class EventSuccessPostEventReport extends StatelessWidget {
     final scorecard = resolvedBrief.scorecard;
 
     return CatchSectionList(
+      emptyStateOmitted: true,
       children: [
         CatchSection.plain(
           title: context

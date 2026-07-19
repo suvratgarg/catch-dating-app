@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.4.41
+version: 1.4.43
 updated: 2026-07-19
 owner: recursive_audit_loop
 status: active
@@ -680,7 +680,9 @@ node tool/design/check_component_contracts.mjs
 Catch-owned UI rules use the local analyzer plugin package
 `packages/catch_ui_lints`. Do not add new `custom_lint` rules. Deterministic
 UI invariants should be implemented as `analysis_server_plugin` diagnostics so
-the IDE, `dart analyze`, and `flutter analyze` see the same signal.
+the IDE and repository-root `dart analyze` can surface the same signal. In the
+current toolchain, `flutter analyze` and `dart analyze lib` do not load the
+Catch plugin; they remain useful generic checks but are not Catch lint proof.
 
 The current lint scope is all handwritten `lib/**` Dart except
 `lib/core/theme/**`, generated code, and schema-generated contracts. Theme files
@@ -696,18 +698,40 @@ design constants/icon source/icon size/alpha/shadow/motion/breakpoint/surface
 shell/stroke/asset path, icon-button tooltip requirements, allow-debt blocking,
 and widget-returning method blocking.
 
+Placement rules additionally cover top-bar action ownership, shell-owned tab
+scaffolds, field/section context, explicit collection empty-state policy,
+AsyncValue loading/error coverage, raw error surfaces, and feature-local shell
+measurement. These rules begin as INFO findings behind a decrease-only drift
+ratchet. `CatchSectionList` makes the empty-state decision explicit in its API:
+callers provide `emptyBuilder` or name the deliberate
+`emptyStateOmitted: true` opt-out.
+
+Cross-file rules use
+`tool/architecture/check_ui_composition_contracts.dart`, which resolves every
+registered source before checking its symbol, state policy, top-bar contract,
+and shell-owned Scaffold boundary. Component enforcement metadata generates
+the plugin steering tables and probe corpus; the bidirectional coverage gate
+requires every primitive to have enforcement or an unexpired waiver and every
+implemented `catch_*` code to have a catalog owner.
+
 Verification commands:
 
 ```sh
 bash tool/check_catch_ui_lints.sh
-bash tool/check_catch_ui_lint_drift.sh --count
+bash tool/check_catch_ui_lint_drift.sh --check
 bash tool/check_catch_ui_lint_drift.sh --all --json /private/tmp/catch-ui-lint-drift.json
+node tool/design/build_lint_enforcement_tables.mjs --check
+node tool/design/check_component_enforcement_coverage.mjs
+dart run tool/architecture/check_ui_composition_contracts.dart --check
 bash tool/check_sizing.sh --count
 bash tool/check_ui_local_constant_wrappers.sh --summary
 bash tool/check_ui_system_raw_values.sh --count
 bash tool/check_ui_allow_debt.sh --summary
 flutter analyze --no-fatal-infos
 ```
+
+The final command is intentionally listed as the generic analyzer complement,
+not as proof that the Catch analyzer plugin loaded.
 
 ## Async State Boundary Taxonomy
 

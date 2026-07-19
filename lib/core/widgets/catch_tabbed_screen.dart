@@ -265,8 +265,7 @@ class CatchSliverContentWidth extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pageExtent =
-        CatchLayout.maxContentWidth + CatchInsets.pageBody.horizontal;
+    const pageExtent = CatchLayout.tabbedPageMaxExtent;
     return SliverLayoutBuilder(
       builder: (context, constraints) {
         if (constraints.crossAxisExtent <= pageExtent) return sliver;

@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import Ajv2020 from "ajv/dist/2020.js";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 
 const registryPath = fromRepo("design/screens/catch.screens.json");
+const schemaPath = fromRepo("design/screens/catch.screens.schema.json");
 const routeInventoryPath = fromRepo("tool/ui_capture/route_inventory.json");
 const captureCatalogPath = fromRepo("test/ui_captures/catalog/screen_capture_catalog.dart");
 const componentRegistryPath = fromRepo("design/components/catch.components.json");
@@ -25,6 +27,7 @@ if (command === "--help" || command === "-h" || command === "help") {
 
 function checkContracts({summary = false} = {}) {
   const registry = readJson(registryPath);
+  const schema = readJson(schemaPath);
   const routeInventory = readJson(routeInventoryPath);
   const componentRegistry = readJson(componentRegistryPath);
   const captureCatalog = parseCaptureCatalog(fs.readFileSync(captureCatalogPath, "utf8"));
@@ -35,6 +38,13 @@ function checkContracts({summary = false} = {}) {
     componentRegistry,
     captureCatalog,
   });
+  const ajv = new Ajv2020({allErrors: true, strict: false});
+  const validate = ajv.compile(schema);
+  if (!validate(registry)) {
+    for (const error of validate.errors ?? []) {
+      errors.unshift(`schema ${error.instancePath || "/"}: ${error.message}`);
+    }
+  }
 
   if (summary || errors.length === 0) {
     printSummary(registry);

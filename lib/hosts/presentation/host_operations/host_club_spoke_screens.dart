@@ -15,6 +15,7 @@ class HostClubEventDefaultsScreen extends StatelessWidget {
               club: club,
               builder: (context, defaults, apply, errorMessage, _) =>
                   CatchSectionList(
+                    emptyStateOmitted: true,
                     children: [
                       ClubPolicyDefaultsCard(
                         defaults: defaults.eventPolicy,

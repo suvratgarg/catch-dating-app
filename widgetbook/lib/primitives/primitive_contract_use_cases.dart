@@ -3140,6 +3140,7 @@ Widget catchSectionContractStates(BuildContext context) {
         label: 'field-list',
         child: _FieldWidth(
           child: CatchSectionList(
+            emptyStateOmitted: true,
             gap: CatchSpacing.s4,
             children: [
               CatchSection.fieldRows(
@@ -4394,6 +4395,7 @@ Widget catchScreenBodyContractStates(BuildContext context) {
         child: _BodyFrame(
           child: CatchScreenBody(
             child: CatchSectionList(
+              emptyStateOmitted: true,
               gap: CatchGaps.section,
               children: const [
                 _BodySpec(label: 'Top section'),
@@ -4536,6 +4538,7 @@ Widget catchSectionListContractStates(BuildContext context) {
         child: SizedBox(
           width: 360,
           child: CatchSectionList(
+            emptyStateOmitted: true,
             children: [
               _BodySpec(label: 'First semantic section'),
               _BodySpec(label: 'Second semantic section'),
@@ -4549,6 +4552,7 @@ Widget catchSectionListContractStates(BuildContext context) {
         child: SizedBox(
           width: 360,
           child: CatchSectionList(
+            emptyStateOmitted: true,
             gap: 0,
             children: [
               _BodySpec(label: 'A'),
@@ -4562,6 +4566,7 @@ Widget catchSectionListContractStates(BuildContext context) {
         child: SizedBox(
           width: 360,
           child: CatchSectionList(
+            emptyStateOmitted: true,
             gap: CatchSpacing.s3,
             children: [
               _BodySpec(label: 'Compact section'),
@@ -4575,6 +4580,7 @@ Widget catchSectionListContractStates(BuildContext context) {
         child: SizedBox(
           width: 360,
           child: CatchSectionList(
+            emptyStateOmitted: true,
             mainAxisSize: MainAxisSize.min,
             children: [
               _BodySpec(label: 'Content-sized list'),

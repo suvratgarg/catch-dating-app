@@ -55,7 +55,9 @@ node tool/run.mjs run demo:ops --help
 The old UI/design shell scanners have been retired. Their stable root wrapper
 names remain because cleanup passes, docs, and CI still call them, but the
 matching policy now lives in `packages/catch_ui_lints` and is reported from
-normal `flutter analyze --no-fatal-infos` output.
+repository-root `dart analyze --format machine` output. In this workspace,
+`flutter analyze` and `dart analyze lib` do not load the Catch plugin; never
+use either command as proof that a Catch UI rule is clean.
 
 Use `--summary` for review-friendly output, `--count` for cheap automated
 checks that only need a numeric debt signal, and
@@ -65,16 +67,17 @@ The drift helper parses the machine analyzer diagnostic-code field; it must not
 count `catch_*` text from filenames, symbol names, or diagnostic messages.
 
 `bash tool/widget_cleanup_scan.sh --check` is the checked broad-cleanup ratchet.
-Its baseline stores current maximum counts rather than claiming that the repo is
-globally clean; new categories and count increases fail until they are fixed or
-reviewed in an explicit baseline update.
+Only the eight remaining regex-only categories live there. Promoted categories
+are analyzer rules with seeded fixture parity, and
+`tool/audit/catch_ui_lint_drift_baseline.json` owns their decrease-only counts.
 
 ## Analyzer Plugin Lints
 
 Catch-owned UI lints live in `packages/catch_ui_lints` and use Dart's
 `analysis_server_plugin` API. They are enabled from the top-level `plugins`
-section in `analysis_options.yaml`, so violations surface through the normal
-`flutter analyze` and IDE analyzer path instead of a separate scanner pass.
+section in `analysis_options.yaml`. The deterministic CLI load path is a
+repository-root `dart analyze`; CI caches that one machine-diagnostic census
+and applies each severity gate to the exact diagnostic-code field.
 The Catch UI plugin runs across handwritten `lib/**` while exempting
 `lib/core/theme/**` token definitions and generated code.
 
@@ -92,6 +95,12 @@ standalone scanners:
 - `tool/check_ui_allow_debt.sh`
 - `tool/check_ui_local_constant_wrappers.sh`
 - `tool/check_ui_system_raw_values.sh`
+
+The component registry generates the plugin steering tables and steering
+probes through `tool/design/build_lint_enforcement_tables.mjs`. The
+bidirectional coverage gate rejects undecided components, orphan codes, stale
+generated output, and expired waivers. Cross-file shell/top-bar/state policy is
+resolved by `tool/architecture/check_ui_composition_contracts.dart`.
 
 ## Where Enforcement Lives
 

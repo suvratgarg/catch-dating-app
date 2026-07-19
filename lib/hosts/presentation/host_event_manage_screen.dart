@@ -1544,6 +1544,7 @@ class HostEventActionsSection extends StatelessWidget {
     ];
 
     return CatchSectionList(
+      emptyStateOmitted: true,
       gap: 0,
       children: [
         CatchSection.fieldRows(

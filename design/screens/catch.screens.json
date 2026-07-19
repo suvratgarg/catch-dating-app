@@ -12,6 +12,29 @@
   "screens": [
     {
       "id": "screen.event.detail",
+        "shell": {
+          "owner": "host",
+          "nestedScaffoldAllowed": false,
+          "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "media-hero",
+          "expression": "SliverAppBar",
+          "owner": "registered media-hero",
+          "reason": "The registered collapsing media hero owns route chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Event Detail",
       "owner": "events",
       "priority": "P1",
@@ -920,6 +943,29 @@
     },
     {
       "id": "screen.club.detail",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "media-hero",
+          "expression": "SliverAppBar",
+          "owner": "registered media-hero",
+          "reason": "The registered collapsing media hero owns route chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Club Detail",
       "owner": "clubs",
       "priority": "P1",
@@ -1561,6 +1607,28 @@
     },
     {
       "id": "screen.explore.discovery",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Explore Discovery",
       "owner": "explore",
       "priority": "P1",
@@ -2385,6 +2453,29 @@
     },
     {
       "id": "screen.dashboard.home",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Dashboard Home",
       "owner": "dashboard",
       "priority": "P1",
@@ -3049,6 +3140,29 @@
     },
     {
       "id": "screen.event_success.companion",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "compact",
+          "expression": "CatchTopBar",
+          "owner": "CatchTopBar",
+          "reason": "The source owns canonical compact route chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Event Success Companion",
       "owner": "event_success",
       "priority": "P1",
@@ -4131,6 +4245,28 @@
     },
     {
       "id": "screen.catches.hub",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Catches Hub",
       "owner": "swipes",
       "priority": "P1",
@@ -4554,6 +4690,29 @@
     },
     {
       "id": "screen.catches.event",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Catches Event Deck",
       "owner": "swipes",
       "priority": "P1",
@@ -5242,6 +5401,28 @@
     },
     {
       "id": "screen.matches.list",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Matches List",
       "owner": "matches",
       "priority": "P1",
@@ -5804,6 +5985,29 @@
     },
     {
       "id": "screen.matches.chat",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "identity",
+          "expression": "CatchTopBar.identity",
+          "owner": "CatchTopBar",
+          "reason": "The source owns identity-aware canonical top-bar chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Match Chat",
       "owner": "chats",
       "priority": "P1",
@@ -6634,6 +6838,28 @@
     },
     {
       "id": "screen.profile.self",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "inline",
+          "expression": "CatchScreenHeaderTitle",
+          "owner": "CatchScreenHeaderTitle",
+          "reason": "The route uses canonical inline screen identity below shell chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Self Profile",
       "owner": "user_profile",
       "priority": "P1",
@@ -7338,6 +7564,28 @@
     },
     {
       "id": "screen.profile.public",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "compact",
+          "expression": "CatchTopBar",
+          "owner": "CatchTopBar",
+          "reason": "The source owns canonical compact route chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Public Profile",
       "owner": "public_profile",
       "priority": "P1",
@@ -7925,6 +8173,28 @@
     },
     {
       "id": "screen.host.home",
+        "shell": {
+          "owner": "host",
+          "nestedScaffoldAllowed": false,
+          "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Host Home",
       "owner": "hosts",
       "priority": "P1",
@@ -8545,6 +8815,29 @@
     },
     {
       "id": "screen.host.clubs",
+        "shell": {
+          "owner": "host",
+          "nestedScaffoldAllowed": false,
+          "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Host Clubs",
       "owner": "hosts",
       "priority": "P1",
@@ -10257,6 +10550,28 @@
     },
     {
       "id": "screen.host.club.detail",
+        "shell": {
+          "owner": "host",
+          "nestedScaffoldAllowed": false,
+          "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "media-hero",
+          "expression": "SliverAppBar",
+          "owner": "registered media-hero",
+          "reason": "The registered collapsing media hero owns route chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Host Club Detail",
       "owner": "hosts",
       "priority": "P1",
@@ -11033,6 +11348,29 @@
     },
     {
       "id": "screen.host.event.create",
+        "shell": {
+          "owner": "host",
+          "nestedScaffoldAllowed": false,
+          "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Host Create Event",
       "owner": "hosts",
       "priority": "P1",
@@ -12281,6 +12619,29 @@
     },
     {
       "id": "screen.host.event.manage",
+        "shell": {
+          "owner": "host",
+          "nestedScaffoldAllowed": false,
+          "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "compact",
+          "expression": "CatchTopBar",
+          "owner": "CatchTopBar",
+          "reason": "The source owns canonical compact route chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Host Event Manage",
       "owner": "hosts",
       "priority": "P1",
@@ -14054,6 +14415,28 @@
     },
     {
       "id": "screen.host.inbox",
+        "shell": {
+          "owner": "host",
+          "nestedScaffoldAllowed": false,
+          "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Host Inbox",
       "owner": "hosts",
       "priority": "P1",
@@ -14938,6 +15321,29 @@
     },
     {
       "id": "screen.host.chat",
+        "shell": {
+          "owner": "host",
+          "nestedScaffoldAllowed": false,
+          "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "identity",
+          "expression": "CatchTopBar.identity",
+          "owner": "CatchTopBar",
+          "reason": "The source owns identity-aware canonical top-bar chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Host Chat",
       "owner": "hosts",
       "priority": "P1",
@@ -15866,6 +16272,23 @@
     },
     {
       "id": "screen.start.welcome",
+        "shell": {
+          "owner": "standalone",
+          "nestedScaffoldAllowed": true,
+          "reason": "The route is presented outside the tab shell."
+        },
+        "topBar": {
+          "role": "none",
+          "expression": "none",
+          "owner": "standalone route",
+          "reason": "This standalone entry route intentionally has no app top bar."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Start Welcome",
       "owner": "onboarding",
       "priority": "P2",
@@ -16113,6 +16536,25 @@
     },
     {
       "id": "screen.auth.phone_entry",
+        "shell": {
+          "owner": "standalone",
+          "nestedScaffoldAllowed": true,
+          "reason": "The route is presented outside the tab shell."
+        },
+        "topBar": {
+          "role": "none",
+          "expression": "none",
+          "owner": "standalone route",
+          "reason": "This standalone entry route intentionally has no app top bar."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "error",
+            "mutation"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Auth Phone Entry",
       "owner": "auth",
       "priority": "P2",
@@ -16531,6 +16973,26 @@
     },
     {
       "id": "screen.onboarding.flow",
+        "shell": {
+          "owner": "standalone",
+          "nestedScaffoldAllowed": true,
+          "reason": "The route is presented outside the tab shell."
+        },
+        "topBar": {
+          "role": "step-flow",
+          "expression": "CatchStepHeader",
+          "owner": "CatchStepHeader",
+          "reason": "The step flow owns progress and navigation through the canonical header."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "mutation"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Onboarding Flow",
       "owner": "onboarding",
       "priority": "P2",
@@ -17250,6 +17712,27 @@
     },
     {
       "id": "screen.calendar.home",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "screen",
+          "expression": "CatchScreenTopBar",
+          "owner": "CatchScreenTopBar",
+          "reason": "The source owns canonical screen-level top-bar chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Calendar Home",
       "owner": "calendar",
       "priority": "P2",
@@ -17639,6 +18122,27 @@
     },
     {
       "id": "screen.saved_events.list",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "compact",
+          "expression": "CatchTopBar",
+          "owner": "CatchTopBar",
+          "reason": "The source owns canonical compact route chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Saved Events List",
       "owner": "events",
       "priority": "P2",
@@ -17979,6 +18483,27 @@
     },
     {
       "id": "screen.filters.preferences",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "compact",
+          "expression": "CatchTopBar",
+          "owner": "CatchTopBar",
+          "reason": "The source owns canonical compact route chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "error",
+            "loading",
+            "mutation",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Filters Preferences",
       "owner": "swipes",
       "priority": "P2",
@@ -18432,6 +18957,26 @@
     },
     {
       "id": "screen.event.recap",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "compact",
+          "expression": "CatchTopBar",
+          "owner": "CatchTopBar",
+          "reason": "The source owns canonical compact route chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Event Recap",
       "owner": "swipes",
       "priority": "P2",
@@ -18852,6 +19397,27 @@
     },
     {
       "id": "screen.host.club.create",
+        "shell": {
+          "owner": "host",
+          "nestedScaffoldAllowed": false,
+          "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "error",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Host Create Club",
       "owner": "hosts",
       "priority": "P2",
@@ -19400,6 +19966,29 @@
     },
     {
       "id": "screen.host.event.edit",
+        "shell": {
+          "owner": "host",
+          "nestedScaffoldAllowed": false,
+          "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "compact",
+          "expression": "CatchTopBar",
+          "owner": "CatchTopBar",
+          "reason": "The source owns canonical compact route chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Host Edit Event",
       "owner": "hosts",
       "priority": "P2",
@@ -19984,6 +20573,27 @@
     },
     {
       "id": "screen.event.location_map",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Event Location Map",
       "owner": "events",
       "priority": "P3",
@@ -20381,6 +20991,28 @@
     },
     {
       "id": "screen.notifications.list",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "screen",
+          "expression": "CatchScreenTopBar",
+          "owner": "CatchScreenTopBar",
+          "reason": "The source owns canonical screen-level top-bar chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Notifications List",
       "owner": "dashboard",
       "priority": "P3",
@@ -20846,6 +21478,28 @@
     },
     {
       "id": "screen.reviews.history",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "screen",
+          "expression": "CatchScreenTopBar",
+          "owner": "CatchScreenTopBar",
+          "reason": "The source owns canonical screen-level top-bar chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Reviews History",
       "owner": "reviews",
       "priority": "P3",
@@ -21285,6 +21939,28 @@
     },
     {
       "id": "screen.settings.account",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "screen",
+          "expression": "CatchScreenTopBar",
+          "owner": "CatchScreenTopBar",
+          "reason": "The source owns canonical screen-level top-bar chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Settings Account",
       "owner": "safety",
       "priority": "P3",
@@ -21997,6 +22673,29 @@
     },
     {
       "id": "screen.payments.history",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "screen",
+          "expression": "CatchScreenTopBar",
+          "owner": "CatchScreenTopBar",
+          "reason": "The source owns canonical screen-level top-bar chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Payment History",
       "owner": "payments",
       "priority": "P3",

@@ -1,33 +1,15 @@
 {
   "version": 1,
-  "updated": "2026-07-12",
-  "description": "Live widget cleanup candidate maxima. Counts may shrink; increases and unbaselined categories fail the ratchet.",
+  "updated": "2026-07-19",
+  "description": "Remaining regex-only widget cleanup candidate maxima after analyzer-backed categories were retired. Counts may shrink; increases and unbaselined categories fail the ratchet.",
   "maxCounts": {
-    "centralized_widget_timing": 10,
-    "async_unit_flush": 0,
-    "positional_widget_finders": 1,
-    "presentation_repository_reaches": 0,
-    "catch_tokens_prop_drilling": 0,
     "raw_material_button_candidates": 0,
     "raw_text_input_candidates": 0,
-    "profile_bottom_sheet_editor_candidates": 1,
-    "profile_inline_chip_label_candidates": 0,
-    "profile_inline_chip_clear_action_candidates": 0,
-    "profile_stacked_text_tile_editor_candidates": 0,
-    "profile_stacked_chip_tile_editor_candidates": 0,
     "fixed_white_pill_cta_candidates": 0,
     "raw_range_slider_candidates": 0,
     "raw_number_stepper_candidates": 0,
     "feature_tappable_candidates": 0,
     "literal_sized_box_spacing_candidates": 0,
-    "raw_decorated_surface_candidates": 2,
-    "unstyled_text_candidates": 32,
-    "low_level_typography_role_candidates": 2,
-    "nonzero_letter_spacing_candidates": 0,
-    "raw_text_style_candidates": 1,
-    "legacy_spacing_canonical_candidates": 0,
-    "fine_grained_spacing_compatibility": 0,
-    "presentation_plugin_imports": 0,
-    "raw_error_surface_candidates": 0
+    "raw_text_style_candidates": 1
   }
 }

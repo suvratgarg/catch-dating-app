@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "updated": "2026-07-19",
+  "description": "Resolved analyzer-CLI composition findings. Counts may decrease only; registered top-bar, source, and state-policy drift is zero-baseline and fails directly.",
+  "maxCounts": {
+    "catch_screen_nested_scaffold": 27
+  }
+}
