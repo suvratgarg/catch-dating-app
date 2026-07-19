@@ -1,7 +1,7 @@
 {
   "audit_registry": {
     "path": "docs/audit_registry/README.md",
-    "version": "2.6.9",
+    "version": "2.7.0",
     "updated": "2026-07-19",
     "status": "active",
     "read_policy": "Read first for recursive audit workflow, registry files, enforcement metadata, manifest role requirements, allowedFindings/maxCounts baseline receipts, architecture pattern-adoption tracker, screen-gap-aware next queue, completion criteria, pruning policy, agent metrics ledger, and parallel delegation outcome recording."
@@ -36,7 +36,7 @@
   },
   "architecture_pattern_adoption": {
     "path": "docs/audit_registry/architecture_pattern_adoption.json",
-    "version": "1.5.45",
+    "version": "1.5.46",
     "updated": "2026-07-19",
     "status": "active",
     "read_policy": "Use for architecture reference implementation exhibits, prototype files, adopter status, variants, exceptions, screen-boundary candidates, provider-free state-adapter registration, and back-propagation obligations before repeated migration work."
@@ -85,7 +85,7 @@
   },
   "agent_regression_ledger": {
     "path": "docs/agent_regression_ledger.json",
-    "version": "40",
+    "version": "43",
     "updated": "2026-07-19",
     "status": "active",
     "read_policy": "Use before touching a scope with hard-won prior fixes; context packs surface matching active/watch regression guards, including section-ownership drift, parallel-delegation ownership, enforcement-integrity drift, and reconciliation merges that can hide dropped conflict-resolution intent."
@@ -226,8 +226,8 @@
   },
   "operations_platform": {
     "path": "docs/operations_platform.md",
-    "version": "1.1.2",
-    "updated": "2026-07-14",
+    "version": "1.2.0",
+    "updated": "2026-07-19",
     "status": "active",
     "read_policy": "Read before adding or changing durable business workflow runs, work items, leases, budgets, decisions, receipts, source learning, publication plans, or the boundary between operations and repository tooling."
   },
@@ -282,8 +282,8 @@
   },
   "release_operations": {
     "path": "docs/release_operations.md",
-    "version": "1.9.5",
-    "updated": "2026-07-13",
+    "version": "1.10.5",
+    "updated": "2026-07-19",
     "status": "active",
     "read_policy": "Read before changing CI workflows, Firebase deploy ordering, release gates, environment setup, store readiness, app-shell integration coverage, host TestFlight setup, or release evidence."
   },
@@ -422,12 +422,12 @@
   },
   "repository_root_hygiene_spec": {
     "path": "docs/plans/repository_root_hygiene_spec.md",
-    "version": "0.2.0",
-    "updated": "2026-07-12",
-    "status": "proposed",
-    "read_policy": "Read before deleting, moving, reclassifying, or adding project-root entries; cleaning local caches, logs, artifacts, or worktrees; consolidating root docs; changing Firebase default/deploy safety; or implementing root manifest, retention, portability, test-inventory, and protected-cleanup tooling. Fable review recorded 2026-07-12 in section 14; rows marked pending-owner must be resolved before the affected phase begins."
+    "version": "1.0.0",
+    "updated": "2026-07-19",
+    "status": "implemented",
+    "read_policy": "Historical implementation closeout only. Current root ownership, relationship, cleanup, retention, portability, test-inventory, and worktree policy lives in executable tooling and its owning active docs."
   },
-  "version": "4.6.213",
+  "version": "4.7.0",
   "admin_components": {
     "path": "design/admin/components.json",
     "version": "34",

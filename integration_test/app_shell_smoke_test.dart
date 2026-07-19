@@ -1,20 +1,20 @@
 import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart' show TextField;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 
 import '../test/clubs/clubs_test_helpers.dart' as club_helpers;
 import '../test/events/events_test_helpers.dart' as event_helpers;
 import '../test/onboarding/onboarding_test_helpers.dart' as onboarding_helpers;
 import '../test/support/profile_readiness_fixtures.dart';
-import '../test/test_pump_helpers.dart';
+import 'support/app_shell_test_binding.dart';
 import 'support/app_shell_test_harness.dart';
 import 'support/app_shell_workflow_steps.dart';
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  ensureAppShellTestBinding();
 
   testWidgets('unauthenticated launch opens public Explore discovery', (
     tester,
@@ -57,21 +57,21 @@ void main() {
     );
 
     await openClubDetail(tester, club);
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
     await tapCatchButton(tester, 'Sign in to join');
 
     await tester.enterText(find.byKey(AuthFormKeys.phoneField), '9876543210');
     await tester.tap(find.byKey(AuthFormKeys.sendCode));
-    await flushTestEventQueue();
-    await pumpFeatureUi(tester);
+    await flushAppShellCallbacks(tester);
+    await pumpAppShellFrames(tester);
 
     expect(authRepository.verifyPhoneNumberCallCount, 1);
     expect(authRepository.verifiedPhoneNumber, '+19876543210');
     expect(find.text('Enter the code'), findsOneWidget);
 
     await tester.enterText(find.byType(TextField).last, '123456');
-    await flushTestEventQueue();
-    await pumpFeatureUi(tester);
+    await flushAppShellCallbacks(tester);
+    await pumpAppShellFrames(tester);
 
     expect(authRepository.otpVerificationId, 'verification-id');
     expect(authRepository.otpSmsCode, '123456');
@@ -98,8 +98,7 @@ void main() {
           initializeFcm: true,
         ),
       );
-      await flushTestEventQueue();
-      await pumpFeatureUi(tester);
+      await pumpAppShellFrames(tester);
 
       expect(fcmService.initializedUids, [user.uid]);
       expect(crashReporter.customKeys['user_id'], user.uid);
@@ -116,12 +115,12 @@ void main() {
       overrides: appShellTestOverrides(uid: user.uid, user: user),
     );
 
-    expect(find.text('WELCOME TO CATCH'), findsOneWidget);
     expect(find.text('Find an event near me'), findsOneWidget);
+    expect(find.byKey(AppShellKeys.navigationBar), findsOneWidget);
     expect(find.text('Home'), findsOneWidget);
   });
 
-  testWidgets('authenticated shell loads the five primary feature tabs', (
+  testWidgets('authenticated shell loads the four primary feature tabs', (
     tester,
   ) async {
     final user = buildSocialReadyUser(name: 'Suvrat Garg');
@@ -132,14 +131,6 @@ void main() {
       startTime: DateTime.now().add(const Duration(hours: 3)),
       bookedCount: 1,
     );
-    final attendedRun = event_helpers.buildEvent(
-      id: 'attended-run-1',
-      clubId: joinedClub.id,
-      startTime: DateTime.now().subtract(const Duration(hours: 11)),
-      endTime: DateTime.now().subtract(const Duration(hours: 10)),
-      checkedInCount: 2,
-    );
-
     await pumpCatchAppShell(
       tester,
       overrides: appShellTestOverrides(
@@ -148,26 +139,20 @@ void main() {
         clubs: [joinedClub],
         joinedClubIds: {joinedClub.id},
         signedUpEvents: [nextRun],
-        attendedEvents: [attendedRun],
       ),
     );
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
 
     expect(find.text('Event Focus'), findsOneWidget);
 
     await openAppTab(tester, 'Explore');
     expect(find.text('Explore'), findsWidgets);
 
-    await openAppTab(tester, 'Catches');
-    expect(find.text('After the event'), findsOneWidget);
-    expect(find.text('Start catching'), findsOneWidget);
-
     await openAppTab(tester, 'Chats');
     expect(find.text('Chats'), findsWidgets);
     expect(find.text('No catches yet'), findsOneWidget);
 
-    await openAppTab(tester, 'Profile');
-    expect(find.text('Profile'), findsWidgets);
-    expect(find.text('Display name'), findsOneWidget);
+    await openAppTab(tester, 'You');
+    expect(find.text('Your profile'), findsOneWidget);
   });
 }

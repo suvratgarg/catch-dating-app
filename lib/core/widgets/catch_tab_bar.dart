@@ -62,11 +62,14 @@ class CatchTabBar<T> extends StatelessWidget {
             : MainAxisAlignment.spaceAround,
         children: [
           for (final item in items)
-            CatchTabBarButton<T>(
-              item: item,
-              selected: item.id == active,
-              materialInk: !isFloating,
-              onTap: onChanged == null ? null : () => onChanged!(item.id),
+            Expanded(
+              flex: item.id == active ? 2 : 1,
+              child: CatchTabBarButton<T>(
+                item: item,
+                selected: item.id == active,
+                materialInk: !isFloating,
+                onTap: onChanged == null ? null : () => onChanged!(item.id),
+              ),
             ),
         ],
       ),
@@ -180,45 +183,49 @@ class CatchTabBarButton<T> extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             icon,
-            AnimatedSwitcher(
-              duration: duration,
-              switchInCurve: CatchMotion.standardCurve,
-              switchOutCurve: CatchMotion.easeInCubicCurve,
-              transitionBuilder: (child, animation) {
-                final offsetAnimation = Tween<Offset>(
-                  begin: const Offset(-0.08, 0),
-                  end: Offset.zero,
-                ).animate(animation);
-                return FadeTransition(
-                  opacity: animation,
-                  child: SlideTransition(
-                    position: offsetAnimation,
-                    child: child,
-                  ),
-                );
-              },
-              child: selected
-                  ? ExcludeSemantics(
-                      key: ValueKey('catch_tab_bar.label.${item.label}'),
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          left: CatchLayout.tabBarLabelGap,
-                        ),
-                        child: Text(
-                          item.label,
-                          maxLines: 1,
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: CatchTextStyles.buttonSm(
-                            context,
-                            color: t.ink,
-                          ),
-                        ),
+            Flexible(
+              child: ClipRect(
+                child: AnimatedSwitcher(
+                  duration: duration,
+                  switchInCurve: CatchMotion.standardCurve,
+                  switchOutCurve: CatchMotion.easeInCubicCurve,
+                  transitionBuilder: (child, animation) {
+                    final offsetAnimation = Tween<Offset>(
+                      begin: const Offset(-0.08, 0),
+                      end: Offset.zero,
+                    ).animate(animation);
+                    return FadeTransition(
+                      opacity: animation,
+                      child: SlideTransition(
+                        position: offsetAnimation,
+                        child: child,
                       ),
-                    )
-                  : const SizedBox.shrink(
-                      key: ValueKey('catch_tab_bar.label.hidden'),
-                    ),
+                    );
+                  },
+                  child: selected
+                      ? ExcludeSemantics(
+                          key: ValueKey('catch_tab_bar.label.${item.label}'),
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              left: CatchLayout.tabBarLabelGap,
+                            ),
+                            child: Text(
+                              item.label,
+                              maxLines: 1,
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                              style: CatchTextStyles.buttonSm(
+                                context,
+                                color: t.ink,
+                              ),
+                            ),
+                          ),
+                        )
+                      : const SizedBox.shrink(
+                          key: ValueKey('catch_tab_bar.label.hidden'),
+                        ),
+                ),
+              ),
             ),
           ],
         ),
@@ -277,7 +284,6 @@ class CatchTabBarIcon extends StatelessWidget {
       height: CatchLayout.appShellNavigationBadgeHeight,
       child: CatchCountBadge(
         count: badgeCount,
-        alignment: Alignment.topRight,
         offset: const Offset(-1, 2),
         child: Align(alignment: Alignment.bottomCenter, child: glyph),
       ),

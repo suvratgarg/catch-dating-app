@@ -5394,7 +5394,6 @@ class _HostTeamProfileFrame extends StatefulWidget {
 }
 
 class _HostTeamProfileFrameState extends State<_HostTeamProfileFrame> {
-  final _formKey = GlobalKey<FormState>();
   final _displayNameController = TextEditingController();
   final _roleTitleController = TextEditingController();
   final _bioController = TextEditingController();
@@ -5437,12 +5436,11 @@ class _HostTeamProfileFrameState extends State<_HostTeamProfileFrame> {
                   creatingProfile: widget.creatingProfile,
                   onRetry: () {},
                   onCreateProfile: () {},
-                  formKey: _formKey,
                   displayNameController: _displayNameController,
                   roleTitleController: _roleTitleController,
                   bioController: _bioController,
                   savingProfile: false,
-                  onSaveProfile: () {},
+                  onSaveProfile: () async => true,
                 ),
               ],
             ),

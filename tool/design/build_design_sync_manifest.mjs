@@ -73,9 +73,38 @@ export function buildDesignSyncManifest({
       : claudeReceiptStatus !== "current"
         ? "awaiting-claude-design-receipt"
         : "figma-claude-round-trip-ready";
+  const liveBlockers = [];
+  if (!capabilities.figma.fileKey) {
+    liveBlockers.push({
+      id: "figma-file-unconfigured",
+      owner: "design-system-owner",
+      detail: "No approved Figma file key has been captured in live_capabilities.json.",
+    });
+  }
+  if (!spikeFigmaReady) {
+    liveBlockers.push({
+      id: "figma-spike-evidence-incomplete",
+      owner: "design-system-owner",
+      detail: "Badge and Field do not yet have current variable-bound component and review-snapshot evidence.",
+    });
+  }
+  if (claudeReceiptStatus !== "current") {
+    liveBlockers.push({
+      id: "claude-design-receipt-incomplete",
+      owner: "design-system-owner",
+      detail: `The Claude Design receipt is ${claudeReceiptStatus}.`,
+    });
+  }
+  if (capabilities.codeConnect.status !== "available") {
+    liveBlockers.push({
+      id: "code-connect-unavailable",
+      owner: "account-owner",
+      detail: `Code Connect is ${capabilities.codeConnect.status}.`,
+    });
+  }
 
   return {
-    version: 2,
+    version: 3,
     updated: new Date().toISOString().slice(0, 10),
     sourceOfTruth: {
       behavior: "Flutter sources named by design/components/catch.components.json",
@@ -90,6 +119,12 @@ export function buildDesignSyncManifest({
       generator: "tool/design/build_design_sync_manifest.mjs",
     },
     sourceDigest,
+    operationalStatus: {
+      structural: "current",
+      live: liveBlockers.length === 0 ? "ready" : "incomplete-external",
+      liveScope: spikeIds,
+      blockers: liveBlockers,
+    },
     claudeContext: {
       status: claudeContextStatus,
       digest: claudeContextDigest,
@@ -375,7 +410,9 @@ function main() {
       fail([`${relativeToRepo(outputPath)} is stale; run node tool/design/build_design_sync_manifest.mjs`]);
     }
     console.log(
-      `Design sync manifest check passed (${manifest.metrics.conceptCount} concepts; ` +
+      `Structural design-sync check passed; live sync ${manifest.operationalStatus.live} ` +
+      `(${manifest.operationalStatus.blockers.length} blockers; ` +
+      `${manifest.metrics.conceptCount} concepts; ` +
       `${manifest.metrics.figmaMappingStates.current ?? 0} current, ` +
       `${manifest.metrics.figmaMappingStates.stale ?? 0} stale, ` +
       `${manifest.metrics.figmaMappingStates.missing ?? 0} missing Figma mappings; ` +

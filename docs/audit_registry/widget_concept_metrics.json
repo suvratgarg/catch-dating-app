@@ -20,16 +20,16 @@
     "membersPerConcept": 1.87,
     "unclassifiedContractEntries": 0,
     "unclassifiedProductionEntries": 0,
-    "unresolvedCollisionFamilies": 0,
+    "unresolvedCollisionFamilies": 1,
     "ownerReviewQueueSize": 3
   },
   "ledgerCoverage": {
-    "normalizedMemberSetCoveredClusters": 43,
-    "totalClusters": 43,
-    "unresolvedClusters": 0,
-    "rankedPairsCovered": 145,
+    "normalizedMemberSetCoveredClusters": 41,
+    "totalClusters": 42,
+    "unresolvedClusters": 1,
+    "rankedPairsCovered": 144,
     "totalRankedPairs": 200,
-    "unresolvedRankedPairs": 55,
+    "unresolvedRankedPairs": 56,
     "decisionsIndexed": 315
   },
   "widgetbookEvidence": {
@@ -48,12 +48,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "efc8791cff04beee5d5545af6c8670d082d18f05bb7a628acd8278f4f9462d51",
-    "contractDigest": "efc8791cff04beee5d5545af6c8670d082d18f05bb7a628acd8278f4f9462d51"
+    "digest": "028dff00c4a320e45a3adbc65e85f97287fcb845a29f293491d402be0d6a09be",
+    "contractDigest": "028dff00c4a320e45a3adbc65e85f97287fcb845a29f293491d402be0d6a09be"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "b787fa99f262f2bfe7f6327ffc3ea60085d146ea95dd4810d81d915eb89b602c",
+    "handoffRequestDigest": "05678800b0bbdf837ec1bab2824d962774a4e926d8adf318c8367e0a0ee8657e",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -274,8 +274,8 @@
   "completionAudit": [
     {
       "requirement": "1. Reconcile the existing decision ledger",
-      "status": "proven",
-      "evidence": "43/43 exact normalized-member-set cluster decisions"
+      "status": "pending",
+      "evidence": "41/42 exact normalized-member-set cluster decisions"
     },
     {
       "requirement": "2. Prove all four vertical-slice outcomes",
@@ -310,7 +310,7 @@
     {
       "requirement": "8. Reduce remaining work to a bounded queue",
       "status": "proven",
-      "evidence": "3 generated owner/live gates and 55 advisory ranked-pair candidates"
+      "evidence": "3 generated owner/live gates and 56 advisory ranked-pair candidates"
     }
   ]
 }

@@ -3,18 +3,17 @@ import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/widgets.dart' show Scrollable;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 
 import '../test/clubs/clubs_test_helpers.dart' as club_helpers;
 import '../test/events/events_test_helpers.dart' as event_helpers;
 import '../test/support/profile_readiness_fixtures.dart';
-import '../test/test_pump_helpers.dart';
+import 'support/app_shell_test_binding.dart';
 import 'support/app_shell_test_harness.dart';
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  ensureAppShellTestBinding();
 
-  testWidgets('catches tab opens the swipe deck for an attended event', (
+  testWidgets('home event focus opens the swipe deck for an attended event', (
     tester,
   ) async {
     final user = buildSocialReadyUser(name: 'Suvrat Garg');
@@ -39,9 +38,8 @@ void main() {
       ),
     );
 
-    await openAppTab(tester, 'Catches');
-    await tester.tap(find.byKey(SwipeKeys.activeCatchWindowCard));
-    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Start catching'));
+    await pumpAppShellFrames(tester);
 
     expect(find.text('No more attendees'), findsOneWidget);
     expect(find.text('Join more events to meet new people'), findsOneWidget);
@@ -83,9 +81,8 @@ void main() {
       ),
     );
 
-    await openAppTab(tester, 'Catches');
-    await tester.tap(find.byKey(SwipeKeys.activeCatchWindowCard));
-    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Start catching'));
+    await pumpAppShellFrames(tester);
 
     expect(find.text('Taylor, 30'), findsOneWidget);
 
@@ -97,7 +94,7 @@ void main() {
     await tester.drag(find.byType(Scrollable).first, const Offset(0, -180));
     await tester.pump();
     await tester.tap(promptLikeButton);
-    await flushTestEventQueue();
+    await flushAppShellCallbacks(tester);
     await pumpMutationUi(tester);
 
     expect(swipeRepository.recordedSwipes, hasLength(1));
@@ -111,8 +108,8 @@ void main() {
     expect(find.text('Riya, 30'), findsOneWidget);
 
     await tester.tap(find.byKey(SwipeKeys.passButton));
-    await flushTestEventQueue();
-    await pumpFeatureUi(tester);
+    await flushAppShellCallbacks(tester);
+    await pumpAppShellFrames(tester);
 
     expect(swipeRepository.recordedSwipes, hasLength(2));
     expect(swipeRepository.recordedSwipes.last.targetId, secondCandidate.uid);

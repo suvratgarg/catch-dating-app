@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'lib/audit_inventory_policy.dart';
 import 'lib/audit_registry_gap_classifier.dart';
 
 const registryDir = 'docs/audit_registry';
@@ -11,6 +12,7 @@ const backlogPath = '$registryDir/backlog.json';
 const docSummariesPath = '$registryDir/doc_summaries.json';
 const rulesPath = '$registryDir/rules.json';
 const screenContractsPath = 'design/screens/catch.screens.json';
+const rootManifestPath = 'tool/repository_root_manifest.json';
 
 const trackedPaths = [
   'AGENTS.md',
@@ -49,6 +51,7 @@ const trackedPaths = [
   'firestore.indexes.json',
   'PROJECT_CONTEXT.md',
   'README.md',
+  'TESTS.md',
 ];
 
 void main(List<String> args) {
@@ -104,15 +107,36 @@ void _refresh() {
   Directory(registryDir).createSync(recursive: true);
   final existing = _readFileEntries();
   final paths = _trackedFiles();
+  final rootManifest = _readJsonFile(rootManifestPath);
   final entries = <Map<String, dynamic>>[];
 
   for (final path in paths) {
     final previous = existing[path] ?? <String, dynamic>{};
+    final policy = auditPolicyFor(path, rootManifest);
+    final reviewPolicy = policy?['review'] as String? ?? 'file';
+    final previousStatus = previous['status'];
+    final previousReviewPolicy = previous['audit_policy'];
+    final fileStatus =
+        previous['file_status'] ??
+        (previousStatus == 'aggregate'
+            ? previous['last_pass_id'] == null
+                  ? 'unreviewed'
+                  : 'reviewed'
+            : previousStatus ?? 'unreviewed');
+    final fileKind =
+        previous['file_kind'] ??
+        (previousReviewPolicy == 'aggregate'
+            ? _kindFor(path)
+            : previous['kind'] ?? _kindFor(path));
     entries.add({
       'path': path,
       'area': previous['area'] ?? _areaFor(path),
-      'kind': previous['kind'] ?? _kindFor(path),
-      'status': previous['status'] ?? 'unreviewed',
+      'kind': policy?['kind'] ?? fileKind,
+      'status': reviewPolicy == 'aggregate' ? 'aggregate' : fileStatus,
+      if (reviewPolicy != 'file') 'audit_policy': reviewPolicy,
+      if (policy?['owner'] != null) 'audit_owner': policy?['owner'],
+      if (reviewPolicy == 'aggregate') 'file_status': fileStatus,
+      if (reviewPolicy == 'aggregate') 'file_kind': fileKind,
       'last_pass_id': previous['last_pass_id'],
       'doc_versions': previous['doc_versions'] ?? <String, dynamic>{},
       'rules_applied': previous['rules_applied'] ?? <dynamic>[],

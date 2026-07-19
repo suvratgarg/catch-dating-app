@@ -1,9 +1,9 @@
 ---
 doc_id: repository_root_hygiene_spec
-version: 0.2.0
-updated: 2026-07-12
+version: 1.0.0
+updated: 2026-07-19
 owner: repository_hygiene
-status: proposed
+status: implemented
 reviewers:
   - Fable
   - repository owner
@@ -11,12 +11,11 @@ reviewers:
 
 # Repository Root Hygiene & Cleanup — Fable Review Spec
 
-## 0. Review request
+## 0. Historical review request
 
-This document converts the 2026-07-12 project-root audit into an executable
-cleanup and governance proposal. It is intentionally **review-first**. No
-source, cache, artifact, environment file, or worktree should be deleted merely
-because it appears in this spec.
+This document converted the 2026-07-12 project-root audit into an executable
+cleanup and governance proposal. It is retained as historical review evidence;
+current behavior is owned by the enforcement and owner docs named in §18.
 
 Fable is being asked to review:
 
@@ -29,14 +28,13 @@ Fable is being asked to review:
 5. whether any proposed deletion should instead become a labeled historical
    reference.
 
-Engineering implementation should begin only after the dispositions in
-§14 are recorded. Items that Fable explicitly defers must remain open rather
-than being treated as optional.
+Engineering implementation began after the dispositions in §14 were recorded
+and the remaining owner choices were closed on 2026-07-19.
 
 > Review recorded 2026-07-12 (spec v0.2.0): Fable dispositions are filled in
 > §14 and the corrections/additions from that review are folded into §§1, 2,
-> 7, 9, 11, 12, 13, and 16. Rows marked `pending-owner` still require the
-> repository owner's confirmation before the affected phase begins.
+> 7, 9, 11, 12, 13, and 16. The former `pending-owner` rows were resolved in
+> the closeout column below.
 
 ## 1. Executive summary
 
@@ -702,14 +700,13 @@ Do not combine all phases into one large patch.
 ## 14. Fable and owner decision ledger
 
 Fable recorded its dispositions on 2026-07-12 (spec v0.2.0). Every `change`
-row has its replacement direction folded into the referenced section. Rows
-marked `pending-owner` require the repository owner's decision before the
-affected phase begins.
+row has its replacement direction folded into the referenced section. The
+repository owner closed the remaining decisions on 2026-07-19.
 
 | Decision id | Question | Recommended default | Disposition |
 |---|---|---|---|
 | `FABLE-ROOT-001` | Is the two-track model—local cleanup plus tracked governance—correct? | Accept. | `accept` (Fable 2026-07-12) |
-| `FABLE-ROOT-002` | May `codex_audit/` be deleted after owner confirmation? | Delete it; do not create another archive folder. | `accept` (Fable); `pending-owner` for the log/zip deletion confirmation |
+| `FABLE-ROOT-002` | May `codex_audit/` be deleted after owner confirmation? | Delete it; do not create another archive folder. | `closed` — path is absent and prohibited by the root manifest; no archive replacement |
 | `FABLE-ROOT-003` | Does `artifacts/host-page-render/` retain active design value? | Delete; if valuable, migrate only selected references with a historical label. | `accept` (Fable) — zero references verified outside this spec; delete without migration |
 | `FABLE-ROOT-004` | Should `design_context_pack/` remain a tracked root deliverable? | Keep in place for this tranche. | `accept` (Fable) |
 | `FABLE-ROOT-005` | Is the proposed tracked/generated artifact split and 14-day capture retention appropriate? | Accept as initial local default; CI should not enforce local size/age. | `change` (Fable) — add the retention executor and repo-wide evidence lanes in §9, else the policy is ceremonial |
@@ -720,8 +717,8 @@ affected phase begins.
 | `FABLE-ROOT-010` | Should the Firebase default become dev and raw deploys be wrapper-gated? | Yes; review separately as release behavior. | `change` (Fable) — direction right, framing corrected: CI is already wrapper-gated, so scope is local scripts; include the `logs`-script and hosting-target side effects now in §12 |
 | `FABLE-ROOT-011` | Should `.env.example`, `.editorconfig`, `.kotlin/` ignore, and empty DevTools cleanup proceed? | Accept all four unless a DevTools extension owner is identified. | `accept` (Fable) — `devtools_options.yaml` confirmed empty; toolchain-version contract additionally promoted to a firm Phase 5 item |
 | `FABLE-ROOT-012` | Are any other root files/folders intentionally missing from this spec? | Add them before implementation; unknown root entries must not be silently grandfathered. | `change` (Fable) — added: worktree placement policy (§7), repo-wide evidence lanes (§9), extra dynamic patterns and the `catch-dating-app/` prohibition (§11); see `FABLE-ROOT-013`/`014` |
-| `FABLE-ROOT-013` | Should worktrees be required to live in a durable location (never `/private/tmp`), with the prunable-registration count reported locally? | Yes; adopt the placement policy in `ROOT-HYGIENE-002`. | `accept` (Fable); `pending-owner` for the canonical location choice |
-| `FABLE-ROOT-014` | Should shared agent assets (`.claude/settings.json`, shared skills) become tracked via narrow `.gitignore` negations as the team/agent count grows? | Decide deliberately; today's default is machine-local. | `pending-owner` |
+| `FABLE-ROOT-013` | Should worktrees be required to live in a durable location (never `/private/tmp`), with the prunable-registration count reported locally? | Yes; adopt the placement policy in `ROOT-HYGIENE-002`. | `closed` — canonical local location is ignored `.claude/worktrees/` |
+| `FABLE-ROOT-014` | Should shared agent assets (`.claude/settings.json`, shared skills) become tracked via narrow `.gitignore` negations as the team/agent count grows? | Decide deliberately; today's default is machine-local. | `closed` — remain machine-local until an explicit team distribution requirement exists |
 
 ### Recorded Fable responses (2026-07-12)
 
@@ -870,8 +867,14 @@ commands rather than leaving stale instructions in the spec.
 
 ## 18. Completion and lifecycle
 
-This spec remains `proposed` until all §14 decisions are resolved. After Fable
-and owner review:
+Implementation closed on 2026-07-19. The owner accepted `.claude/worktrees/` as
+the durable worktree location, retained shared `.claude` assets as machine-local
+until a team distribution need exists, and confirmed that the already-absent
+`codex_audit/` must remain prohibited rather than be recreated. Permanent
+policy now lives in the owner docs, root manifest, executable checks, generated
+test inventory, and audit registry.
+
+The historical closeout sequence was:
 
 1. append the accepted dispositions to §14;
 2. bump the spec version;

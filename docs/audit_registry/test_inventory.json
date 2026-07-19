@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 532,
+  "total": 547,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -24,7 +24,7 @@
       ]
     },
     "flutter_unit_widget": {
-      "count": 258,
+      "count": 267,
       "files": [
         "test/activity/activity_taxonomy_test.dart",
         "test/analytics/app_analytics_test.dart",
@@ -208,6 +208,13 @@
         "test/image_uploads/photo_grid_test.dart",
         "test/image_uploads/photo_upload_controller_test.dart",
         "test/image_uploads/profile_photo_editor_screen_test.dart",
+        "test/integration/app_shell_catches_flows_test.dart",
+        "test/integration/app_shell_chat_settings_review_flows_test.dart",
+        "test/integration/app_shell_club_flows_test.dart",
+        "test/integration/app_shell_dashboard_flows_test.dart",
+        "test/integration/app_shell_event_flows_test.dart",
+        "test/integration/app_shell_regression_test.dart",
+        "test/integration/app_shell_smoke_test.dart",
         "test/l10n/app_localizations_test.dart",
         "test/launch_access/launch_access_application_screen_test.dart",
         "test/launch_access/launch_access_application_test.dart",
@@ -272,8 +279,10 @@
         "test/swipes/swipe_repository_test.dart",
         "test/swipes/swipe_screen_test.dart",
         "test/swipes/swipe_window_test.dart",
+        "test/tool/audit_inventory_policy_test.dart",
         "test/tool/audit_registry_gap_classifier_test.dart",
         "test/tool/provider_graph_test.dart",
+        "test/tool/ui_composition_contracts_test.dart",
         "test/tooling/catch_ui_lints_mutation_pending_test.dart",
         "test/tooling/catch_ui_lints_raw_motion_test.dart",
         "test/tooling/catch_ui_lints_typography_test.dart",
@@ -388,7 +397,7 @@
       ]
     },
     "tooling": {
-      "count": 123,
+      "count": 129,
       "files": [
         "tool/agent/check_agent_readiness.test.mjs",
         "tool/architecture/check_adopted_architecture_boundaries.test.mjs",
@@ -400,6 +409,7 @@
         "tool/audit/check_fn_readme_inventory.test.mjs",
         "tool/check_enforcement_integrity.test.mjs",
         "tool/check_repository_root_hygiene.test.mjs",
+        "tool/ci/check_tool_category_coverage.test.mjs",
         "tool/contracts/check_firestore_query_indexes.test.mjs",
         "tool/contracts/check_firestore_read_limits.test.mjs",
         "tool/contracts/check_migration_contracts.test.mjs",
@@ -425,6 +435,7 @@
         "tool/demo/seed_demo_data_append.test.mjs",
         "tool/demo/seed_demo_data_schema.test.mjs",
         "tool/design/build_design_sync_manifest.test.mjs",
+        "tool/design/check_component_enforcement_coverage.test.mjs",
         "tool/design/check_component_lexicon.test.mjs",
         "tool/design/check_host_event_field_contracts.test.mjs",
         "tool/design/check_option_group_usage.test.mjs",
@@ -436,6 +447,8 @@
         "tool/design/check_section_headers.test.mjs",
         "tool/design/check_tab_root_scroll_contracts.test.mjs",
         "tool/design/check_terminal_padding.test.mjs",
+        "tool/design/check_ui_lint_drift_ratchet.test.mjs",
+        "tool/design/check_ui_lint_promotion_parity.test.mjs",
         "tool/design/check_widget_pattern_families.test.mjs",
         "tool/design/component_concepts.test.mjs",
         "tool/design/context_pack_builder_test.dart",
@@ -510,6 +523,8 @@
         "tool/platform/verify_app_store_build.test.mjs",
         "tool/platform/verify_ios_processing_receipts.test.mjs",
         "tool/platform/verify_ios_release_identity.test.mjs",
+        "tool/repository_hygiene.test.mjs",
+        "tool/run.test.mjs",
         "tool/test_inventory.test.mjs",
         "tool/web/react_dependency_graph.test.mjs",
         "tool/widget_dedupe/test/fingerprint_extractor_test.dart"

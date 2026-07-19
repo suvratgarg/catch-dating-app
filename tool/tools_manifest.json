@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-18",
+  "updated": "2026-07-19",
   "tools": [
     {
       "id": "tool:runner",
@@ -9,10 +9,25 @@
       "command": "node tool/run.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Lists, validates, and dispatches repo tools.",
+      "description": "Lists, validates, dispatches, and impact-selects repo tools while failing closed on empty filtered selections.",
+      "role": "gate",
+      "rules": [
+        "AGENT-HARNESS-001"
+      ],
       "checks": [
-        "node --check tool/run.mjs"
-      ]
+        "node --check tool/run.mjs",
+        "node --test tool/run.test.mjs"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/run.test.mjs",
+        "contains": [
+          "filtered checks fail when a category matches no tools",
+          "impact routing reports the owning relationship and checks",
+          "impact routing fails closed for an unmapped changed path",
+          "impact routing includes untracked files"
+        ]
+      }
     },
     {
       "id": "meta:enforcement-integrity",
@@ -1046,6 +1061,32 @@
         "path": "tool/design/check_ui_lint_drift_ratchet.test.mjs",
         "contains": [
           "ratchet fails increases, missing codes, and stale codes"
+        ]
+      }
+    },
+    {
+      "id": "meta:ci-tool-category-coverage",
+      "category": "meta",
+      "path": "tool/ci/check_tool_category_coverage.mjs",
+      "command": "node tool/ci/check_tool_category_coverage.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Requires every active tool-manifest category to be scheduled by Tools CI and rejects unknown workflow categories.",
+      "checks": [
+        "node --check tool/ci/check_tool_category_coverage.mjs",
+        "node --test tool/ci/check_tool_category_coverage.test.mjs",
+        "node tool/ci/check_tool_category_coverage.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "AGENT-HARNESS-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/check_tool_category_coverage.test.mjs",
+        "contains": [
+          "coverage fails for both unknown workflow and missing active categories",
+          "coverage passes when every active category is declared exactly"
         ]
       }
     },
@@ -4626,7 +4667,7 @@
       "safety": "local",
       "status": "active",
       "role": "gate",
-      "description": "Enforces manifest-backed repository-root ownership, Git expectations, protected cleanup boundaries, and portable Markdown links.",
+      "description": "Enforces manifest-backed repository ownership and impact relationships, Git expectations, protected cleanup boundaries, audit policies, and portable Markdown links.",
       "checks": [
         "node --test tool/check_repository_root_hygiene.test.mjs",
         "node tool/check_repository_root_hygiene.mjs"
@@ -4649,7 +4690,9 @@
       "role": "operator",
       "description": "Reports regenerable repository state and deletes only manifest-allowlisted paths after explicit apply and scope flags.",
       "checks": [
-        "node --check tool/repository_hygiene.mjs"
+        "node --check tool/repository_hygiene.mjs",
+        "node --test tool/repository_hygiene.test.mjs",
+        "node tool/repository_hygiene.mjs --json"
       ]
     },
     {

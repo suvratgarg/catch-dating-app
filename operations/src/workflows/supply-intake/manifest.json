@@ -42,5 +42,41 @@
     "expiredStatuses": ["expired"]
   },
   "maxWorkItemsPerRun": 10000,
-  "sourceProfiles": ["cntraveller", "luma"]
+  "sourceProfiles": ["cntraveller", "luma"],
+  "compatibilityInputs": [
+    {
+      "producer": "event-guide",
+      "artifacts": [
+        "tool/marketing/event_guide/generated/{market}/{reviewedRun}/event_intake_bridge.json"
+      ],
+      "adapter": "legacy-intake-artifacts-v1",
+      "status": "compatibility-only",
+      "replacementOwner": "operations/src/workflows/supply-intake",
+      "newOrchestrationAllowed": false,
+      "retirementCriteria": [
+        "Supply Intake owns event discovery and candidate normalization without reading the bridge artifact.",
+        "At least two production-equivalent shadow runs match the legacy bridge outputs within the approved reconciliation thresholds.",
+        "The event-guide producer, compatibility adapter, manifest entry, and generated artifact family are removed in one reviewed change."
+      ]
+    },
+    {
+      "producer": "organizer-intake",
+      "artifacts": [
+        "tool/organizer_intake/generated/publication_review_packets.json",
+        "tool/organizer_intake/generated/organizer_operator_action_queue.json",
+        "tool/organizer_intake/generated/organizer_operational_health.json",
+        "tool/organizer_intake/generated/source_mention_llm_prompt_queue.json",
+        "tool/organizer_intake/generated/event_crawl_run_plan.json"
+      ],
+      "adapter": "legacy-intake-artifacts-v1",
+      "status": "compatibility-only",
+      "replacementOwner": "operations/src/workflows/supply-intake",
+      "newOrchestrationAllowed": false,
+      "retirementCriteria": [
+        "Supply Intake owns organizer resolution, review packets, queues, health summaries, prompts, and crawl intents without reading organizer-intake artifacts.",
+        "At least two production-equivalent shadow runs match the legacy outputs within the approved reconciliation thresholds.",
+        "The organizer-intake producer, compatibility adapter, manifest entry, and generated artifact family are removed in one reviewed change."
+      ]
+    }
+  ]
 }

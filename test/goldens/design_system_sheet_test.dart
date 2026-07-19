@@ -16,6 +16,14 @@ import 'support/golden_pump.dart';
 void main() {
   testWidgets('design system sheet (light + dark)', (tester) async {
     await matchCatchGolden(tester, 'design_system_sheet', builder: _sheet);
+    final headline = find.text('Tonight in Bandra.');
+    final clubDisplay = find.text('Sundowner Run Club');
+    expect(headline, findsOneWidget);
+    expect(clubDisplay, findsOneWidget);
+    final headlineRect = tester.getRect(headline);
+    final clubRect = tester.getRect(clubDisplay);
+    expect(headlineRect.height, greaterThan(30));
+    expect(headlineRect.bottom, lessThanOrEqualTo(clubRect.top));
   }, tags: const ['golden']);
 }
 

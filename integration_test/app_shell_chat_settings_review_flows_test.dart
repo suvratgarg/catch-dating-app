@@ -1,19 +1,20 @@
+import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/reviews/shared/review_keys.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
-import 'package:flutter/material.dart' show TextButton, TextField;
+import 'package:flutter/material.dart' show TextField;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 
 import '../test/clubs/clubs_test_helpers.dart' as club_helpers;
 import '../test/events/events_test_helpers.dart' as event_helpers;
 import '../test/support/profile_readiness_fixtures.dart';
-import '../test/test_pump_helpers.dart';
+import 'support/app_shell_test_binding.dart';
 import 'support/app_shell_test_harness.dart';
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  ensureAppShellTestBinding();
 
   testWidgets('matches list opens chat and resets unread state', (
     tester,
@@ -54,7 +55,7 @@ void main() {
     expect(find.text('See you at the event'), findsOneWidget);
 
     await tester.tap(find.text('Taylor'));
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
 
     expect(find.text('Say hi to Taylor!'), findsOneWidget);
     expect(
@@ -62,10 +63,17 @@ void main() {
       contains(('match-1', user.uid)),
     );
 
-    await tester.enterText(find.byType(TextField), '  See you there  ');
-    await tester.tap(find.byTooltip('Send message'));
-    await flushTestEventQueue();
-    await pumpFeatureUi(tester);
+    await tester.enterText(
+      find.descendant(
+        of: find.byKey(ChatInputBar.fieldLaneKey),
+        matching: find.byType(TextField),
+      ),
+      '  See you there  ',
+    );
+    await tester.pump();
+    await tester.tap(find.byKey(ChatInputBar.sendButtonKey));
+    await flushAppShellCallbacks(tester);
+    await pumpAppShellFrames(tester);
 
     expect(
       conversationRepository.sentTextMessages,
@@ -79,22 +87,22 @@ void main() {
     );
 
     await tester.tap(find.byTooltip('Chat actions'));
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
     await tester.tap(find.text('Report'));
-    await flushTestEventQueue();
-    await pumpFeatureUi(tester);
+    await flushAppShellCallbacks(tester);
+    await pumpAppShellFrames(tester);
 
     expect(safetyRepository.reportedUserId, profile.uid);
     expect(safetyRepository.reportContextId, match.id);
     expect(find.text('Report submitted for Taylor.'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Chat actions'));
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
     await tester.tap(find.text('Block'));
-    await pumpFeatureUi(tester);
-    await tester.tap(find.widgetWithText(TextButton, 'Block'));
-    await flushTestEventQueue();
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
+    await tester.tap(find.widgetWithText(CatchButton, 'Block'));
+    await flushAppShellCallbacks(tester);
+    await pumpAppShellFrames(tester);
 
     expect(safetyRepository.blockedUserId, profile.uid);
   });
@@ -107,16 +115,15 @@ void main() {
       overrides: appShellTestOverrides(uid: user.uid, user: user),
     );
 
-    await openAppTab(tester, 'Profile');
+    await openAppTab(tester, 'You');
     await tester.tap(find.byTooltip('Settings'));
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
 
     expect(find.text('Settings'), findsOneWidget);
-    expect(find.text('Account'), findsOneWidget);
     expect(find.byKey(SettingsKeys.paymentHistoryRow), findsOneWidget);
 
     await tester.tap(find.byKey(SettingsKeys.paymentHistoryRow));
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
     expect(find.text('Payment history'), findsOneWidget);
     expect(find.text('No payments yet'), findsOneWidget);
   });
@@ -129,12 +136,12 @@ void main() {
       overrides: appShellTestOverrides(uid: user.uid, user: user),
     );
 
-    await openAppTab(tester, 'Profile');
+    await openAppTab(tester, 'You');
     await tester.tap(find.byTooltip('Settings'));
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
 
     await tester.tap(find.byKey(SettingsKeys.reviewHistoryRow));
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
     expect(find.text('Review history'), findsOneWidget);
     expect(find.text('No reviews yet'), findsOneWidget);
   });
@@ -169,20 +176,20 @@ void main() {
 
     await openAppTab(tester, 'Explore');
     await openClubDetail(tester, club);
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
     await openEventDetail(tester, club: club, event: run);
     await tester.scrollUntilVisible(
       find.byKey(ReviewKeys.writeReviewButton),
       300,
     );
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
     await tester.tap(find.byKey(ReviewKeys.writeReviewButton));
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
 
     await tester.tap(find.byKey(ReviewKeys.ratingStar(4)));
     await tester.enterText(find.byType(TextField), '  Friendly crew.  ');
     await tester.tap(find.byKey(ReviewKeys.submitReviewButton));
-    await flushTestEventQueue();
+    await flushAppShellCallbacks(tester);
     await pumpMutationUi(tester);
 
     expect(reviewsRepository.addedReview?.clubId, club.id);
@@ -225,33 +232,33 @@ void main() {
       ),
     );
 
-    await openAppTab(tester, 'Profile');
+    await openAppTab(tester, 'You');
     await tester.tap(find.byTooltip('Settings'));
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
     await tester.tap(find.byKey(SettingsKeys.reviewHistoryRow));
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
 
     expect(find.text('Good route.'), findsOneWidget);
 
     await tester.tap(find.byKey(ReviewKeys.editReviewButton(review.id)));
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
     await tester.enterText(find.byType(TextField), '  Even better now.  ');
     await tester.tap(find.byKey(ReviewKeys.ratingStar(5)));
     await tester.tap(find.byKey(ReviewKeys.submitReviewButton));
-    await flushTestEventQueue();
-    await pumpFeatureUi(tester);
+    await flushAppShellCallbacks(tester);
+    await pumpAppShellFrames(tester);
 
     expect(reviewsRepository.updatedReview?.id, review.id);
     expect(reviewsRepository.updatedReview?.rating, 5);
     expect(reviewsRepository.updatedReview?.comment, 'Even better now.');
 
     await tester.tap(find.byKey(ReviewKeys.editReviewButton(review.id)));
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
     await tester.tap(find.byKey(ReviewKeys.deleteReviewButton));
-    await pumpFeatureUi(tester);
-    await tester.tap(find.widgetWithText(TextButton, 'Delete'));
-    await flushTestEventQueue();
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
+    await tester.tap(find.widgetWithText(CatchButton, 'Delete'));
+    await flushAppShellCallbacks(tester);
+    await pumpAppShellFrames(tester);
 
     expect(reviewsRepository.deletedReviewId, review.id);
   });
@@ -269,16 +276,17 @@ void main() {
       ),
     );
 
-    await openAppTab(tester, 'Profile');
+    await openAppTab(tester, 'You');
     await tester.tap(find.byTooltip('Settings'));
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
 
     expect(find.text('Settings'), findsOneWidget);
-    expect(find.text('Account'), findsOneWidget);
     expect(find.byKey(SettingsKeys.signOutRow), findsOneWidget);
+    await tester.ensureVisible(find.byKey(SettingsKeys.signOutRow));
+    await pumpAppShellFrames(tester);
     await tester.tap(find.byKey(SettingsKeys.signOutRow));
-    await flushTestEventQueue();
-    await pumpFeatureUi(tester);
+    await flushAppShellCallbacks(tester);
+    await pumpAppShellFrames(tester);
 
     expect(authRepository.signOutCallCount, 1);
   });
@@ -315,26 +323,26 @@ void main() {
         ),
       );
 
-      await openAppTab(tester, 'Profile');
+      await openAppTab(tester, 'You');
       await tester.tap(find.byTooltip('Settings'));
-      await pumpFeatureUi(tester);
+      await pumpAppShellFrames(tester);
       await tester.scrollUntilVisible(
         find.byKey(SettingsKeys.weeklyDigestSwitch),
         240,
       );
-      await pumpFeatureUi(tester);
+      await pumpAppShellFrames(tester);
       await tester.tap(find.byKey(SettingsKeys.weeklyDigestSwitch));
-      await flushTestEventQueue();
-      await pumpFeatureUi(tester);
+      await flushAppShellCallbacks(tester);
+      await pumpAppShellFrames(tester);
 
       expect(userProfileRepository.updatedUid, user.uid);
       expect(userProfileRepository.updatedFields, {'prefsWeeklyDigest': true});
 
       await tester.scrollUntilVisible(find.text('Riya'), 240);
-      await pumpFeatureUi(tester);
+      await pumpAppShellFrames(tester);
       await tester.tap(find.byKey(SettingsKeys.unblockButton('blocked-1')));
-      await flushTestEventQueue();
-      await pumpFeatureUi(tester);
+      await flushAppShellCallbacks(tester);
+      await pumpAppShellFrames(tester);
 
       expect(safetyRepository.unblockedUserId, 'blocked-1');
       expect(find.text('Account unblocked.'), findsOneWidget);
@@ -356,22 +364,22 @@ void main() {
       ),
     );
 
-    await openAppTab(tester, 'Profile');
+    await openAppTab(tester, 'You');
     await tester.tap(find.byTooltip('Settings'));
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
     await tester.scrollUntilVisible(
       find.byKey(SettingsKeys.deleteAccountRow),
       320,
     );
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
     await tester.tap(find.byKey(SettingsKeys.deleteAccountRow));
-    await pumpFeatureUi(tester);
+    await pumpAppShellFrames(tester);
 
     expect(find.text('Delete account?'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(TextButton, 'Delete'));
-    await flushTestEventQueue();
-    await pumpFeatureUi(tester);
+    await tester.tap(find.widgetWithText(CatchButton, 'Delete'));
+    await flushAppShellCallbacks(tester);
+    await pumpAppShellFrames(tester);
 
     expect(safetyRepository.requestDeletionCallCount, 1);
   });
