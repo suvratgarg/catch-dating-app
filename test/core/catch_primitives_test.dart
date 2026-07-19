@@ -1696,6 +1696,44 @@ void main() {
     expect(find.text('99+'), findsOneWidget);
   });
 
+  testWidgets('CatchTabBar keeps four animated destinations within 390px', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    var active = 'home';
+    await tester.pumpWidget(
+      _wrap(
+        StatefulBuilder(
+          builder: (context, setState) => CatchTabBar<String>(
+            active: active,
+            items: const [
+              CatchTabBarItem(id: 'home', icon: Icons.home, label: 'Home'),
+              CatchTabBarItem(
+                id: 'explore',
+                icon: Icons.explore,
+                label: 'Explore',
+              ),
+              CatchTabBarItem(id: 'chats', icon: Icons.chat, label: 'Chats'),
+              CatchTabBarItem(id: 'profile', icon: Icons.person, label: 'You'),
+            ],
+            onChanged: (next) => setState(() => active = next),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.bySemanticsLabel('Explore'));
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(tester.takeException(), isNull);
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(tester.takeException(), isNull);
+    expect(find.text('Explore'), findsOneWidget);
+  });
+
   testWidgets('CatchHorizontalRail is embedded and chromeless by default', (
     tester,
   ) async {

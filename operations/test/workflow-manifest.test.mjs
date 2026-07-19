@@ -28,6 +28,16 @@ test("workflow manifest fails when a live CLI command is omitted", async () => {
     finding.contract?.endsWith(":cli-commands")));
 });
 
+test("workflow manifest binds every legacy compatibility artifact", async () => {
+  const manifest = await canonicalManifest();
+  manifest.compatibilityInputs[1].artifacts =
+    manifest.compatibilityInputs[1].artifacts.slice(1);
+  const result = await checkWorkflowManifest({manifest});
+  assert.equal(result.ok, false);
+  assert.ok(result.findings.some((finding) =>
+    finding.contract?.endsWith(":compatibility-artifacts")));
+});
+
 test("workflow manifest fails on stage or lifecycle ordering drift", async () => {
   const manifest = await canonicalManifest();
   manifest.primaryStages = [...manifest.primaryStages].reverse();

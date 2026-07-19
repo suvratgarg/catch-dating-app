@@ -73,6 +73,9 @@ jobs:
       - name: Validate tool manifest
         run: node tool/run.mjs check --manifest-only
 
+      - name: Validate tool category CI coverage
+        run: node tool/ci/check_tool_category_coverage.mjs
+
   tool-buckets:
     name: Tool checks (${{ matrix.name }})
     runs-on: ubuntu-latest
@@ -82,13 +85,13 @@ jobs:
       matrix:
         include:
           - name: core-audit
-            categories: meta audit remote-ops branding
-          - name: lint-scanners
-            categories: lint scanners
+            categories: meta audit remote-ops branding agent
+          - name: lint-test
+            categories: lint test
           - name: contracts-data
-            categories: contracts data demo firebase
+            categories: contracts data demo firebase analytics
           - name: platform-env
-            categories: env platform migrations
+            categories: env platform generator operations
           - name: marketing-design
             categories: marketing ui-capture design
           - name: host-discovery

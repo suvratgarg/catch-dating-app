@@ -96,7 +96,7 @@ durable owners above or closed in code.
 | `config_cicd_platform_audit_2026-05-21.md` | Config/CI/CD/platform hardening is mostly closed, but Crashlytics script noise, analytics plist verification, contract-source migration, and Razorpay env guard follow-ups remain. |
 | `event_success_theatrical_experience_tracker.md` | Event Success live ceremony polish is active: native sensory cues, attendee moment theatre, host showtime console, invite-loop follow-up, private afterglow recap planning, and the optional First Hello arrival ritual. |
 | `sales_demo_seed_tracker.md` | Sales-grade synthetic supply is active: canonical personas/assets, cohort scope, image production, U.S./India market packs, host sales scenario, event policy coverage, and migration of lower-quality demo surfaces remain. |
-| `plans/repository_root_hygiene_spec.md` | Proposed Fable/owner review spec for classifying all project-root entries, reclaiming reproducible local output safely, retiring legacy artifacts, consolidating root docs, and adding manifest-backed root hygiene/cleanup enforcement. Delete or mark implemented after accepted policy moves into owner docs, tooling, and the audit registry. |
+| `plans/repository_root_hygiene_spec.md` | Implemented historical closeout for root classification, safe regenerable cleanup, retention, portable docs, test inventory, and worktree policy. Current policy lives in `tool/repository_root_manifest.json`, `tool/README.md`, `artifacts/README.md`, and `docs/agent_operating_model.md`; do not treat the plan as a live source of truth. |
 
 Completed temporary trackers removed or folded into owner docs after code
 verification include `dashboard_run_focus_tracker.md`,

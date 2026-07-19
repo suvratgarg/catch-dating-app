@@ -21,6 +21,8 @@ import {
   SUPPLY_INTAKE_WORKFLOW_ID,
   SUPPLY_INTAKE_WORKFLOW_VERSION,
 } from "./supply-intake/workflow.mjs";
+import {LEGACY_ARTIFACT_PATTERNS} from
+  "./supply-intake/adapters/legacy-artifacts.mjs";
 
 export const WORKFLOW_REGISTRY = Object.freeze([
   Object.freeze({
@@ -37,6 +39,7 @@ export const WORKFLOW_REGISTRY = Object.freeze([
     allowedTransitions: SUPPLY_INTAKE_TRANSITIONS,
     maxWorkItemsPerRun: MAX_WORK_ITEMS_PER_RUN,
     sourceProfileIds: SOURCE_PROFILE_IDS,
+    compatibilityArtifactPatterns: LEGACY_ARTIFACT_PATTERNS,
     loadSourceProfiles,
     createWorkflow: (options) => new SupplyIntakeWorkflow(options),
     createLearner: (options) => new SupplyIntakeLearner(options),

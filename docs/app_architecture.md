@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.4.41
+version: 1.4.42
 updated: 2026-07-19
 owner: recursive_audit_loop
 status: active
@@ -150,6 +150,23 @@ Allowed exceptions:
 - `lib/firebase_options_*.dart` and generated config files.
 - Intentional in-development feature folders documented by audit rules, such
   as `event_policies` and `event_success`.
+
+### Exhibit ARCH-ROUTER-LIFECYCLE-001: App Router And Integration-Test Lifecycle
+
+`goRouterProvider` owns both its `GoRouter` disposal and a fresh set of
+`GlobalKey<NavigatorState>` instances for that provider-container lifecycle.
+Navigator keys must not be file-level singletons: a disposed app/test container
+must be able to mount a new router without retaining navigation state.
+
+App-shell integration suites use keyed `ProviderScope` roots, bounded frame
+advancement, and deterministic repository/provider overrides. They run through
+the wrappers in `test/integration/` for headless CI; the original
+`integration_test/` files remain the optional native-device entrypoints. Do not
+use `pumpAndSettle` or process event-queue drains while the mounted app owns
+timers. Do not add an asynchronous localization delegate when the requested
+behavior is already the component's nonlocalized fallback.
+
+<!-- exhibit-freshness: ARCH-ROUTER-LIFECYCLE-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
 
 Do not create parallel top-level folders such as `services`, `repositories`,
 `view_models`, or `widgets` for feature-owned code. If code is genuinely shared,

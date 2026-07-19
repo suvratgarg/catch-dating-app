@@ -170,6 +170,16 @@
           "tool": "git:audit-merge-drops",
           "stage": "scanner-gate",
           "docAnchor": "docs/agent_operating_model.md#git-preservation-and-reconciliation-contract"
+        },
+        {
+          "tool": "tool:runner",
+          "stage": "scanner-gate",
+          "docAnchor": "tool/README.md#tooling"
+        },
+        {
+          "tool": "meta:ci-tool-category-coverage",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/agent_operating_model.md#enforcement-integrity"
         }
       ]
     },
@@ -2965,6 +2975,6 @@
       ]
     }
   },
-  "version": "2.7.20",
+  "version": "2.7.21",
   "updated": "2026-07-19"
 }

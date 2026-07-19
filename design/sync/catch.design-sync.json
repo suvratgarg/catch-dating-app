@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "updated": "2026-07-19",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
@@ -14,6 +14,36 @@
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
   "sourceDigest": "efc8791cff04beee5d5545af6c8670d082d18f05bb7a628acd8278f4f9462d51",
+  "operationalStatus": {
+    "structural": "current",
+    "live": "incomplete-external",
+    "liveScope": [
+      "catch.badge",
+      "catch.field"
+    ],
+    "blockers": [
+      {
+        "id": "figma-file-unconfigured",
+        "owner": "design-system-owner",
+        "detail": "No approved Figma file key has been captured in live_capabilities.json."
+      },
+      {
+        "id": "figma-spike-evidence-incomplete",
+        "owner": "design-system-owner",
+        "detail": "Badge and Field do not yet have current variable-bound component and review-snapshot evidence."
+      },
+      {
+        "id": "claude-design-receipt-incomplete",
+        "owner": "design-system-owner",
+        "detail": "The Claude Design receipt is missing."
+      },
+      {
+        "id": "code-connect-unavailable",
+        "owner": "account-owner",
+        "detail": "Code Connect is blocked-plan-tier."
+      }
+    ]
+  },
   "claudeContext": {
     "status": "current",
     "digest": "efc8791cff04beee5d5545af6c8670d082d18f05bb7a628acd8278f4f9462d51",

@@ -1,0 +1,59 @@
+name: Flutter Visual & Integration CI
+
+on:
+  pull_request:
+    paths:
+      - "assets/**"
+      - "integration_test/**"
+      - "lib/**"
+      - "test/goldens/**"
+      - "test/integration/**"
+      - "tool/test_app_shell_integration.sh"
+      - ".github/workflows/visual-integration-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "assets/**"
+      - "integration_test/**"
+      - "lib/**"
+      - "test/goldens/**"
+      - "test/integration/**"
+      - "tool/test_app_shell_integration.sh"
+      - ".github/workflows/visual-integration-ci.yml"
+  schedule:
+    - cron: "17 3 * * 1-5"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  visual-and-integration:
+    name: macOS goldens & app-shell integration
+    runs-on: macos-15
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup-flutter
+
+      - run: flutter config --enable-macos-desktop
+
+      - run: flutter pub get
+
+      - name: Exact Flutter goldens
+        run: flutter test --concurrency=1 test/goldens
+
+      - name: Deterministic app-shell integration suites
+        run: bash tool/test_app_shell_integration.sh
+
+      - name: Retain golden failure diffs
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: flutter-golden-failures-${{ github.run_id }}
+          path: test/goldens/failures/
+          if-no-files-found: ignore
+          retention-days: 14

@@ -21,8 +21,20 @@ node tool/run.mjs check --manifest-only
 node tool/run.mjs check audit:backend-errors
 npm run audit:backend-errors:check
 node tool/run.mjs check --category demo
+node tool/run.mjs impacted --paths contracts/firestore/users.schema.json --json
+node tool/run.mjs impacted --check
 node tool/run.mjs run demo:ops --help
 ```
+
+Filtered `list` and `check` commands fail with exit 64 when no active tool
+matches; an empty category can never count as a successful CI lane. Tools CI
+declares every active manifest category and validates that matrix before fanout.
+
+`impacted` joins changed paths through
+`tool/repository_root_manifest.json#relationships` to their source, generated
+output, and consumer surfaces. It reports the owning checks and workflows,
+fails when any changed path is unmapped, and runs the union of manifest checks
+with `--check`. This graph is the canonical cross-root integration map.
 
 ## Layout
 
@@ -140,9 +152,13 @@ and obsolete review entries.
 `tool/repository_root_manifest.json` is the exact ownership contract for every
 repository-root entry. The gate rejects unclassified or multiply classified
 entries, prohibited roots, unsafe cleanup targets, and machine-local Markdown
-links. The cleaner is dry-run by default and refuses tracked, protected,
-symlinked, or path-escaping targets; mutation additionally requires an explicit
-scope.
+links. Its relationship graph binds sources, generated outputs, consumers,
+checks, and CI workflows, while audit policies identify generated/vendor trees
+reviewed as aggregate units. The cleaner is dry-run by default, preserves
+tracked children in mixed retention directories, refuses candidate-root
+symlinks while counting nested dependency symlinks without following them, and
+rejects protected or path-escaping targets; mutation additionally requires an
+explicit scope.
 
 ```sh
 node tool/check_repository_root_hygiene.mjs

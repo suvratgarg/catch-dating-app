@@ -1,5 +1,5 @@
 {
-  "version": 39,
+  "version": 42,
   "updated": "2026-07-19",
   "owner": "agent_operating_model",
   "entries": [
@@ -2059,6 +2059,139 @@
         "docs/plans/catch_system_stretch_spec.md"
       ],
       "notes": "Flutter owns interaction names and behavior. React implementations remain native; only the semantic vocabulary and adoption evidence are shared."
+    },
+    {
+      "id": "REG-TOOL-FILTER-VACUITY-001",
+      "title": "Filtered tool checks pass without selecting any tools",
+      "status": "active",
+      "applies_to": [
+        "tool/run.mjs",
+        "tool/tools_manifest.json",
+        ".github/workflows/tools-ci.yml"
+      ],
+      "symptom": "A renamed or invented CI category selects zero manifest tools, exits successfully, and creates a green lane that executed no checks.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/run.test.mjs tool/ci/check_tool_category_coverage.test.mjs && node tool/ci/check_tool_category_coverage.mjs",
+        "guardEvidence": "known-bad empty selections and category omissions fail while the checked workflow declares every active manifest category"
+      },
+      "owner_docs": [
+        "tool/README.md",
+        "docs/agent_operating_model.md"
+      ],
+      "notes": "Filtered list and check invocations fail with usage exit 64. Impact routing additionally fails when a changed path has no root relationship."
+    },
+    {
+      "id": "REG-WIDGETBOOK-CONSUMER-COMPILE-001",
+      "title": "Widgetbook metadata passes while its real consumer no longer compiles",
+      "status": "active",
+      "applies_to": [
+        "widgetbook/**",
+        "lib/core/widgets/**",
+        ".github/workflows/flutter-ci.yml"
+      ],
+      "symptom": "Use-case annotations and generated directories remain structurally current while a stale widget constructor, callback return type, or generated route breaks the Widgetbook application.",
+      "guard": {
+        "type": "command",
+        "command": "(cd widgetbook && flutter analyze --no-fatal-warnings --no-fatal-infos && flutter build web --release)",
+        "guardEvidence": "Flutter CI analyzes and compiles the path-dependent Widgetbook package as a web application"
+      },
+      "owner_docs": [
+        "widgetbook/README.md",
+        "docs/design_parity/README.md"
+      ],
+      "notes": "Consumer compilation complements, rather than replaces, component-contract and use-case coverage scanners."
+    },
+    {
+      "id": "REG-REPO-HYGIENE-SYMLINK-001",
+      "title": "Repository hygiene crashes on dependency symlinks or tracked retention evidence",
+      "status": "active",
+      "applies_to": [
+        "tool/repository_hygiene.mjs",
+        "tool/repository_root_manifest.json",
+        "docs/visual_references/**",
+        "widgetbook/**",
+        "ios/Pods/**"
+      ],
+      "symptom": "A dry run follows a nested dependency symlink, rejects a tracked child of a mixed evidence directory, or omits a large secondary-package cache.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/repository_hygiene.test.mjs && node tool/repository_hygiene.mjs --json",
+        "guardEvidence": "nested symlinks are counted without traversal, candidate-root symlinks are rejected, tracked evidence is preserved, and Widgetbook cache targets are reported"
+      },
+      "owner_docs": [
+        "tool/README.md",
+        "artifacts/README.md"
+      ],
+      "notes": "The cleaner remains dry-run by default and never deletes tracked paths or follows symlink targets."
+    },
+    {
+      "id": "REG-OPERATIONS-COMPATIBILITY-RETIREMENT-001",
+      "title": "Legacy workflow artifacts survive without enforceable retirement metadata",
+      "status": "active",
+      "applies_to": [
+        "operations/src/workflows/**",
+        "contracts/operations/workflow_manifest.schema.json",
+        "tool/organizer_intake/**",
+        "tool/marketing/event_guide/**"
+      ],
+      "symptom": "Supply Intake consumes a legacy artifact path that is absent from its workflow manifest, so the compatibility seam gains new orchestration or never reaches a coordinated deletion point.",
+      "guard": {
+        "type": "command",
+        "command": "node --test operations/test/workflow-manifest.test.mjs && node operations/scripts/check-workflow-manifest.mjs",
+        "guardEvidence": "the registry's consumed artifact patterns must exactly equal manifest compatibility inputs, each of which names a replacement owner, forbids new orchestration, and carries retirement criteria"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "contracts/operations/README.md"
+      ],
+      "notes": "Retire the producer, adapter, manifest entry, and generated artifact family together only after shadow-equivalence criteria are proved."
+    },
+    {
+      "id": "REG-APP-SHELL-INTEGRATION-RUNNER-001",
+      "title": "App-shell integration passes only through a foregrounded desktop process",
+      "status": "active",
+      "applies_to": [
+        "integration_test/**",
+        "test/integration/**",
+        "tool/test_app_shell_integration.sh",
+        ".github/workflows/visual-integration-ci.yml",
+        "lib/app.dart",
+        "lib/routing/go_router.dart"
+      ],
+      "symptom": "Native macOS foregrounding stalls the suite, repeated app containers retain router or localization state, mounted timers make event-queue drains never finish, or consumer tests continue asserting host-only and retired Dashboard actions.",
+      "guard": {
+        "type": "command",
+        "command": "bash tool/test_app_shell_integration.sh && flutter test --concurrency=1 test/core/catch_primitives_test.dart --plain-name 'CatchTabBar keeps four animated destinations within 390px'",
+        "guardEvidence": "headless wrappers run all current routed consumer journeys with fresh router/provider lifecycles and bounded clocks; the four-destination shell cannot overflow its 390px viewport"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/release_operations.md",
+        "TESTS.md"
+      ],
+      "notes": "Native execution remains available by passing a device id. Host-only creation and attendance are owned by host surface/controller tests, while recommendations are owned by Explore."
+    },
+    {
+      "id": "REG-ROUTE-INVENTORY-ROUTER-OWNERSHIP-001",
+      "title": "Route inventory assumes the router constructor is returned inline",
+      "status": "active",
+      "applies_to": [
+        "lib/routing/go_router.dart",
+        "tool/ui_capture/check_route_inventory.mjs",
+        "tool/ui_capture/route_inventory.json"
+      ],
+      "symptom": "Giving GoRouter an explicit lifecycle owner requires assigning the constructor before return, while the route scanner only recognizes an inline return and can no longer validate or refresh the capture inventory.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/ui_capture/check_route_inventory_test.mjs && node tool/ui_capture/check_route_inventory.mjs --check",
+        "guardEvidence": "known-good inline-return and lifecycle-owned constructor fixtures both parse, and the source-derived route inventory remains current"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/design_parity/README.md"
+      ],
+      "notes": "The scanner accepts only a locally owned final or var assignment or an inline return; it still fails closed when no GoRouter configuration can be found."
     }
   ]
 }

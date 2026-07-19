@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-18",
+  "updated": "2026-07-19",
   "tools": [
     {
       "id": "tool:runner",
@@ -9,10 +9,25 @@
       "command": "node tool/run.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Lists, validates, and dispatches repo tools.",
+      "description": "Lists, validates, dispatches, and impact-selects repo tools while failing closed on empty filtered selections.",
       "checks": [
-        "node --check tool/run.mjs"
+        "node --check tool/run.mjs",
+        "node --test tool/run.test.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "AGENT-HARNESS-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/run.test.mjs",
+      "contains": [
+        "filtered checks fail when a category matches no tools",
+        "impact routing reports the owning relationship and checks",
+        "impact routing fails closed for an unmapped changed path",
+        "impact routing includes untracked files"
       ]
+      }
     },
     {
       "id": "meta:enforcement-integrity",
@@ -67,6 +82,32 @@
         "contains": [
           "classifyMergeTrees reports exact discards, divergence, equivalence, add, and delete",
           "CLI audits temporary Git refs and strict mode rejects then accepts a receipt"
+        ]
+      }
+    },
+    {
+      "id": "meta:ci-tool-category-coverage",
+      "category": "meta",
+      "path": "tool/ci/check_tool_category_coverage.mjs",
+      "command": "node tool/ci/check_tool_category_coverage.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "role": "gate",
+      "rules": [
+        "AGENT-HARNESS-001"
+      ],
+      "description": "Fails when Tools CI names an unknown category or omits an active tool-manifest category.",
+      "checks": [
+        "node --check tool/ci/check_tool_category_coverage.mjs",
+        "node --test tool/ci/check_tool_category_coverage.test.mjs",
+        "node tool/ci/check_tool_category_coverage.mjs"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/check_tool_category_coverage.test.mjs",
+        "contains": [
+          "coverage fails for both unknown workflow and missing active categories",
+          "coverage passes when every active category is declared exactly"
         ]
       }
     },
@@ -4281,7 +4322,7 @@
       "rules": [
         "OPERATIONS-PLATFORM-001"
       ],
-      "description": "Binds each durable workflow manifest to its live CLI commands, ordered stage and lifecycle contracts, source profiles, disabled capabilities, and platform capacity.",
+      "description": "Binds each durable workflow manifest to its live CLI commands, ordered stage and lifecycle contracts, source profiles, legacy compatibility retirement metadata, disabled capabilities, and platform capacity.",
       "checks": [
         "node --check operations/scripts/check-workflow-manifest.mjs",
         "node --test operations/test/workflow-manifest.test.mjs",
@@ -4292,6 +4333,7 @@
         "path": "operations/test/workflow-manifest.test.mjs",
         "contains": [
           "workflow manifest fails when a live CLI command is omitted",
+          "workflow manifest binds every legacy compatibility artifact",
           "workflow manifest fails on stage or lifecycle ordering drift",
           "workflow manifest fails when the loaded source inventory drifts"
         ]
@@ -4544,7 +4586,9 @@
       "role": "operator",
       "description": "Reports regenerable repository state and deletes only manifest-allowlisted paths after explicit apply and scope flags.",
       "checks": [
-        "node --check tool/repository_hygiene.mjs"
+        "node --check tool/repository_hygiene.mjs",
+        "node --test tool/repository_hygiene.test.mjs",
+        "node tool/repository_hygiene.mjs --json"
       ]
     },
     {

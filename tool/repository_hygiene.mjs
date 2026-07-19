@@ -24,46 +24,61 @@ function isTracked(relative) {
   const tracked = execFileSync("git", ["ls-files", "--", relative], {cwd: repoRoot, encoding: "utf8"}).trim().split("\n").filter(Boolean);
   return tracked.some((file) => fs.existsSync(path.join(repoRoot, file)));
 }
-function sizeOf(target) {
+export function sizeOf(target, {candidateRoot = true} = {}) {
   const stat = fs.lstatSync(target);
-  if (stat.isSymbolicLink()) throw new Error(`refusing symlink: ${path.relative(repoRoot, target)}`);
+  if (stat.isSymbolicLink()) {
+    if (candidateRoot) {
+      throw new Error(`refusing symlink candidate: ${path.relative(repoRoot, target)}`);
+    }
+    return stat.size;
+  }
   if (!stat.isDirectory()) return stat.size;
-  return fs.readdirSync(target).reduce((sum, name) => sum + sizeOf(path.join(target, name)), 0);
+  return fs.readdirSync(target).reduce(
+    (sum, name) => sum + sizeOf(path.join(target, name), {candidateRoot: false}),
+    0,
+  );
 }
 function selectRetentionChildren(target, days) {
   const cutoff = Date.now() - days * 86400000;
   return fs.readdirSync(target).map((name) => path.join(target, name)).filter((child) => fs.lstatSync(child).mtimeMs < cutoff);
 }
 
-const candidates = [];
-for (const target of manifest.cleanupTargets) {
-  if (!scopeAliases[requestedScope].has(target.scope)) continue;
-  const absolute = path.resolve(repoRoot, target.path);
-  if (absolute !== repoRoot && !absolute.startsWith(`${repoRoot}${path.sep}`)) throw new Error(`path escapes repository: ${target.path}`);
-  if (!fs.existsSync(absolute)) continue;
-  const selected = target.contentsOnly ? selectRetentionChildren(absolute, target.retentionDays ?? 14) : [absolute];
-  for (const item of selected) {
-    const relative = path.relative(repoRoot, item);
-    if (!relative || relative.startsWith("..")) throw new Error(`refusing unsafe path: ${relative}`);
-    if (manifest.protectedPaths.some((p) => relative === p || relative.startsWith(`${p}/`))) throw new Error(`refusing protected path: ${relative}`);
-    if (isTracked(relative)) throw new Error(`refusing tracked path: ${relative}`);
-    candidates.push({path: relative, bytes: sizeOf(item), reason: target.reason, scope: target.scope});
+function main() {
+  const candidates = [];
+  for (const target of manifest.cleanupTargets) {
+    if (!scopeAliases[requestedScope].has(target.scope)) continue;
+    const absolute = path.resolve(repoRoot, target.path);
+    if (absolute !== repoRoot && !absolute.startsWith(`${repoRoot}${path.sep}`)) throw new Error(`path escapes repository: ${target.path}`);
+    if (!fs.existsSync(absolute)) continue;
+    const selected = target.contentsOnly ? selectRetentionChildren(absolute, target.retentionDays ?? 14) : [absolute];
+    for (const item of selected) {
+      const relative = path.relative(repoRoot, item);
+      if (!relative || relative.startsWith("..")) throw new Error(`refusing unsafe path: ${relative}`);
+      if (manifest.protectedPaths.some((p) => relative === p || relative.startsWith(`${p}/`))) throw new Error(`refusing protected path: ${relative}`);
+      if (isTracked(relative)) {
+        if (target.contentsOnly) continue;
+        throw new Error(`refusing tracked path: ${relative}`);
+      }
+      candidates.push({path: relative, bytes: sizeOf(item), reason: target.reason, scope: target.scope});
+    }
+  }
+  for (const pattern of manifest.patterns.filter((entry) => entry.cleanable && scopeAliases[requestedScope].has(entry.scope))) {
+    const regex = new RegExp(`^${pattern.pattern.replace(/[.+^${}()|[\]\\]/g, "\\$&").replaceAll("*", ".*").replaceAll("?", ".")}$`);
+    for (const name of fs.readdirSync(repoRoot)) {
+      if (!regex.test(name)) continue;
+      const absolute = path.join(repoRoot, name);
+      if (isTracked(name)) throw new Error(`refusing tracked path: ${name}`);
+      candidates.push({path: name, bytes: sizeOf(absolute), reason: `Generated ${pattern.kind}`, scope: pattern.scope});
+    }
+  }
+  const unique = [...new Map(candidates.map((entry) => [entry.path, entry])).values()].sort((a, b) => a.path.localeCompare(b.path));
+  if (apply) for (const entry of unique) fs.rmSync(path.join(repoRoot, entry.path), {recursive: true, force: true});
+  const result = {mode: apply ? "apply" : "dry-run", scope: requestedScope, candidates: unique, totalBytes: unique.reduce((sum, entry) => sum + entry.bytes, 0)};
+  if (json) console.log(JSON.stringify(result, null, 2));
+  else {
+    console.log(`Repository hygiene ${result.mode} (${requestedScope}): ${unique.length} paths, ${result.totalBytes} bytes`);
+    for (const entry of unique) console.log(`- ${entry.path} (${entry.bytes} bytes): ${entry.reason}`);
   }
 }
-for (const pattern of manifest.patterns.filter((entry) => entry.cleanable && scopeAliases[requestedScope].has(entry.scope))) {
-  const regex = new RegExp(`^${pattern.pattern.replace(/[.+^${}()|[\]\\]/g, "\\$&").replaceAll("*", ".*").replaceAll("?", ".")}$`);
-  for (const name of fs.readdirSync(repoRoot)) {
-    if (!regex.test(name)) continue;
-    const absolute = path.join(repoRoot, name);
-    if (isTracked(name)) throw new Error(`refusing tracked path: ${name}`);
-    candidates.push({path: name, bytes: sizeOf(absolute), reason: `Generated ${pattern.kind}`, scope: pattern.scope});
-  }
-}
-const unique = [...new Map(candidates.map((entry) => [entry.path, entry])).values()].sort((a, b) => a.path.localeCompare(b.path));
-if (apply) for (const entry of unique) fs.rmSync(path.join(repoRoot, entry.path), {recursive: true, force: true});
-const result = {mode: apply ? "apply" : "dry-run", scope: requestedScope, candidates: unique, totalBytes: unique.reduce((sum, entry) => sum + entry.bytes, 0)};
-if (json) console.log(JSON.stringify(result, null, 2));
-else {
-  console.log(`Repository hygiene ${result.mode} (${requestedScope}): ${unique.length} paths, ${result.totalBytes} bytes`);
-  for (const entry of unique) console.log(`- ${entry.path} (${entry.bytes} bytes): ${entry.reason}`);
-}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) main();

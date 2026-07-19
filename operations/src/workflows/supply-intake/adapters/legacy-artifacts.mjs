@@ -3,13 +3,18 @@ import path from "node:path";
 import {hashText} from "../../../platform/canonical-json.mjs";
 import {OperationsError, invariant} from "../../../platform/errors.mjs";
 
-const LEGACY_ARTIFACTS = Object.freeze({
+export const LEGACY_ARTIFACTS = Object.freeze({
   organizerPublicationPackets: "tool/organizer_intake/generated/publication_review_packets.json",
   organizerActionQueue: "tool/organizer_intake/generated/organizer_operator_action_queue.json",
   organizerHealth: "tool/organizer_intake/generated/organizer_operational_health.json",
   llmPromptQueue: "tool/organizer_intake/generated/source_mention_llm_prompt_queue.json",
   crawlRunPlan: "tool/organizer_intake/generated/event_crawl_run_plan.json",
 });
+
+export const LEGACY_ARTIFACT_PATTERNS = Object.freeze([
+  "tool/marketing/event_guide/generated/{market}/{reviewedRun}/event_intake_bridge.json",
+  ...Object.values(LEGACY_ARTIFACTS),
+]);
 
 export class LegacyIntakeArtifactAdapter {
   constructor({repoRoot}) {
