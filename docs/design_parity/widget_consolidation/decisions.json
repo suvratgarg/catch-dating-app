@@ -6364,6 +6364,18 @@
       "decidedBy": "owner-approved -> codex",
       "date": "2026-07-19",
       "status": "recorded-concept-reconciliation"
+    },
+    {
+      "clusterId": "concept-discovery:club-cover-vs-directory-image",
+      "decision": "keep-distinct",
+      "members": [
+        {"name": "CatchClubCover", "action": "keep"},
+        {"name": "ClubImage", "action": "keep"}
+      ],
+      "rationale": "K3 already-sharing-internals: both delegate graded network rendering and fallback artwork to CatchGradedImage, CatchNetworkImage, and ClubPolaroidArtwork. CatchClubCover resolves the editorial cover policy (club photo first, then legacy image) and owns optional image semantics; discovery's ClubImage resolves cover-only or profile-preferred media for directory and avatar compositions. Those source-selection policies remain feature adapters over the shared renderer, not duplicate primitive concepts.",
+      "decidedBy": "codex-rule:K3 -> prior-reviewed-ledger:handoff-2.3",
+      "date": "2026-07-19",
+      "status": "recorded-concept-reconciliation"
     }
   ]
 }

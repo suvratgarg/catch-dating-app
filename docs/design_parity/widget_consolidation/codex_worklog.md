@@ -2061,21 +2061,24 @@ Implemented scope:
    namespace, the eventless Chats preview is explicitly
    `ChatBlastComposerSheet`, and the Catches pass/reaction adapters now render
    through `CatchIconButton` while retaining feature behavior.
+8. The Explore integration's new `CatchClubCover` contract is reconciled with
+   discovery's `ClubImage` through K3: the two retain distinct media-selection
+   policies while sharing the canonical image, grading, and fallback internals.
 
 Current quantified result:
 
-- 68 top-level handoff contracts represent 62 independent concepts, 115 member
+- 69 top-level handoff contracts represent 63 independent concepts, 116 member
   APIs, 3 top-level compositions, and 1 contracted screen boundary.
-- The former 64-entry top-level proxy becomes 62 concepts (delta -2); the
+- The former 64-entry top-level proxy becomes 63 concepts (delta -1); the
   decompressed loading family increases concept accuracy without changing its
   eight stable public Dart classes.
-- 1,094 generated widget/state classifications contain zero unclassified
-  entries; 61/61 instantiated concept primaries and 113/113 member classes have
+- 1,091 generated widget/state classifications contain zero unclassified
+  entries; 62/62 instantiated concept primaries and 114/114 member classes have
   role-derived Widgetbook evidence.
 - Similarity reconciliation is 43/43 exact clusters with zero unresolved
   collision families; ranked-pair discovery remains a separately reported
   bounded queue and is not treated as merge authorization.
-- Claude context is current; Figma is honestly 0 current, 0 stale, and 68
+- Claude context is current; Figma is honestly 0 current, 0 stale, and 69
   missing until the live file is approved and published.
 
 Owner-approved defaults implemented on 2026-07-19:

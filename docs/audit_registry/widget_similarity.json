@@ -159,11 +159,11 @@
     "screenClusters": 11,
     "skippedTrivial": 114,
     "absorbCandidates": 7,
-    "ledgerDecisions": 314,
-    "exactClusterDecisionCoverage": 42,
-    "unresolvedClusters": 1,
-    "rankedPairDecisionCoverage": 144,
-    "unresolvedRankedPairs": 56
+    "ledgerDecisions": 315,
+    "exactClusterDecisionCoverage": 43,
+    "unresolvedClusters": 0,
+    "rankedPairDecisionCoverage": 145,
+    "unresolvedRankedPairs": 55
   },
   "groundTruthRecall": [
     {
@@ -12983,7 +12983,7 @@
       ],
       "visualBridges": [],
       "scope": "widget",
-      "decisionRef": null
+      "decisionRef": "concept-discovery:club-cover-vs-directory-image"
     },
     {
       "id": "c005-dialog",
@@ -14615,7 +14615,9 @@
         "top-score"
       ],
       "absorbCandidate": true,
-      "decisionRefs": []
+      "decisionRefs": [
+        "concept-discovery:club-cover-vs-directory-image"
+      ]
     },
     {
       "rank": 21,
