@@ -3,7 +3,7 @@
   "$id": "https://catch.local/design/components/catch.components.schema.json",
   "title": "Catch Component Contract Registry",
   "type": "object",
-  "required": ["version", "updated", "sourceOfTruth", "components"],
+  "required": ["version", "updated", "sourceOfTruth", "interactionContracts", "components"],
   "additionalProperties": false,
   "properties": {
     "$schema": {
@@ -33,6 +33,73 @@
         },
         "handoff": {
           "type": "string"
+        }
+      }
+    },
+    "interactionContracts": {
+      "type": "object",
+      "required": ["field_row", "field_section"],
+      "additionalProperties": false,
+      "properties": {
+        "field_row": {
+          "type": "object",
+          "required": ["owner", "source", "modes", "slots", "saveStates", "rules"],
+          "additionalProperties": false,
+          "properties": {
+            "owner": {"const": "CatchField"},
+            "source": {"const": "lib/core/widgets/catch_field.dart"},
+            "modes": {
+              "type": "array",
+              "minItems": 1,
+              "items": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]*$"},
+              "uniqueItems": true
+            },
+            "slots": {
+              "type": "array",
+              "minItems": 1,
+              "items": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+              "uniqueItems": true
+            },
+            "saveStates": {
+              "type": "array",
+              "minItems": 1,
+              "items": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+              "uniqueItems": true
+            },
+            "rules": {
+              "type": "array",
+              "minItems": 1,
+              "items": {"type": "string", "minLength": 1},
+              "uniqueItems": true
+            }
+          }
+        },
+        "field_section": {
+          "type": "object",
+          "required": ["owner", "source", "variants", "slots", "rules"],
+          "additionalProperties": false,
+          "properties": {
+            "owner": {"const": "CatchSection"},
+            "source": {"const": "lib/core/widgets/catch_section_layout.dart"},
+            "variants": {
+              "type": "array",
+              "minItems": 1,
+              "items": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]*$"},
+              "uniqueItems": true
+            },
+            "slots": {
+              "type": "array",
+              "minItems": 1,
+              "items": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+              "uniqueItems": true
+            },
+            "rules": {
+              "type": "array",
+              "minItems": 1,
+              "items": {"type": "string", "minLength": 1},
+              "uniqueItems": true
+            }
+          }
         }
       }
     },

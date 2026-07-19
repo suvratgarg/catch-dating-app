@@ -62,6 +62,8 @@
     "design:widgets:variants:check": "node tool/design/generate_widget_variant_inventory.mjs --check",
     "design:fields:inventory": "node tool/design/generate_flutter_field_surface_inventory.mjs",
     "design:fields:inventory:check": "node tool/design/generate_flutter_field_surface_inventory.mjs --check",
+    "design:fields:facades": "node tool/design/generate_field_inventory.mjs",
+    "design:fields:facades:check": "node tool/design/generate_field_inventory.mjs --check",
     "design:todo-summary:check": "node tool/design/check_comprehensive_todo_summary.mjs --check",
     "design:parity:check": "node tool/design/check_design_parity.mjs --check",
     "web:admin-feature-exports:check": "node tool/run.mjs check web:admin-feature-exports"

@@ -1208,7 +1208,10 @@ void main() {
     Finder tab(String label) =>
         find.descendant(of: tabRail, matching: find.text(label));
 
-    void expectSharedChrome({bool switcherVisible = true}) {
+    void expectSharedChrome({
+      bool switcherVisible = true,
+      bool constrainToContentWidth = true,
+    }) {
       expect(find.byType(CatchTabbedScreenScaffold), findsOneWidget);
       expect(find.byType(NestedScrollView), findsOneWidget);
       expect(find.byType(SliverOverlapAbsorber), findsOneWidget);
@@ -1237,6 +1240,7 @@ void main() {
         find.byType(CatchTabbedPageScrollView),
       );
       expect(currentPage.includeTerminalPadding, isTrue);
+      expect(currentPage.constrainToContentWidth, constrainToContentWidth);
     }
 
     expectSharedChrome();
@@ -1336,7 +1340,7 @@ void main() {
     await tester.tap(tab('Preview'));
     await pumpFeatureUi(tester);
 
-    expectSharedChrome(switcherVisible: false);
+    expectSharedChrome(switcherVisible: false, constrainToContentWidth: false);
     expect(
       find.byKey(const ValueKey('club-detail-hero-module')),
       findsOneWidget,

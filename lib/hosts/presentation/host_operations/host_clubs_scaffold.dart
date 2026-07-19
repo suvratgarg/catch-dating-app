@@ -156,6 +156,7 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
         children: [
           CatchTabbedPageScrollView(
             scrollStateController: _pageScrollControllers[HostClubTab.edit],
+            constrainToContentWidth: true,
             scrollKey: PageStorageKey(
               'host-club-${selectedClub.id}-edit-scroll',
             ),
@@ -163,24 +164,16 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
               SliverToBoxAdapter(
                 child: Padding(
                   padding: CatchInsets.pageBody.copyWith(bottom: 0),
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        maxWidth: CatchLayout.maxContentWidth,
-                      ),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: KeyedSubtree(
-                          key: _profileSectionsKey,
-                          child: HostClubEditTab(
-                            key: ValueKey('host-club-${selectedClub.id}-edit'),
-                            club: selectedClub,
-                            currentUid: _state.currentUid,
-                            isOwner: _state.selectedClubIsOwner,
-                            initialExpandedField:
-                                widget.initialExpandedEditField,
-                          ),
-                        ),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: KeyedSubtree(
+                      key: _profileSectionsKey,
+                      child: HostClubEditTab(
+                        key: ValueKey('host-club-${selectedClub.id}-edit'),
+                        club: selectedClub,
+                        currentUid: _state.currentUid,
+                        isOwner: _state.selectedClubIsOwner,
+                        initialExpandedField: widget.initialExpandedEditField,
                       ),
                     ),
                   ),
@@ -190,6 +183,7 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
           ),
           CatchTabbedPageScrollView(
             scrollStateController: _pageScrollControllers[HostClubTab.insights],
+            constrainToContentWidth: true,
             onRefresh: _insightsRefreshController.refresh,
             scrollKey: PageStorageKey(
               'host-club-${selectedClub.id}-insights-scroll',
@@ -198,21 +192,12 @@ class _HostClubsScaffoldState extends State<HostClubsScaffold>
               SliverPadding(
                 padding: CatchInsets.pageBody.copyWith(bottom: 0),
                 sliver: SliverToBoxAdapter(
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        maxWidth: CatchLayout.maxContentWidth,
-                      ),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: HostClubInsightsPane(
-                          key: ValueKey(
-                            'host-club-${selectedClub.id}-insights',
-                          ),
-                          club: selectedClub,
-                          refreshController: _insightsRefreshController,
-                        ),
-                      ),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: HostClubInsightsPane(
+                      key: ValueKey('host-club-${selectedClub.id}-insights'),
+                      club: selectedClub,
+                      refreshController: _insightsRefreshController,
                     ),
                   ),
                 ),

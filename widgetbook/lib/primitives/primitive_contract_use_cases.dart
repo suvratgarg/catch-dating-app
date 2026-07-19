@@ -2834,6 +2834,7 @@ Widget catchFieldTrailingContractStates(BuildContext context) {
       'fixed-chevron',
       'rotating-chevron',
       'toggle',
+      'status',
       'clear',
       'valid',
       'custom',
@@ -2863,6 +2864,10 @@ Widget catchFieldTrailingContractStates(BuildContext context) {
           onChanged: (_) {},
           semanticLabel: 'Allow reminders',
         ),
+      ),
+      _StateCard(
+        label: 'status',
+        child: CatchFieldTrailing.status(status: CatchFieldStatus.saved),
       ),
       _StateCard(
         label: 'clear',
@@ -6535,6 +6540,15 @@ Widget catchTabbedScreenContractStates(BuildContext context) {
   path: '[Core primitives]/Navigation',
 )
 Widget catchTabbedPageContractStates(BuildContext context) {
+  return const _TabbedScreenContractUseCase();
+}
+
+@widgetbook.UseCase(
+  name: 'Readable sliver width',
+  type: CatchSliverContentWidth,
+  path: '[Core primitives]/Navigation',
+)
+Widget catchSliverContentWidthContractStates(BuildContext context) {
   return const _TabbedScreenContractUseCase();
 }
 

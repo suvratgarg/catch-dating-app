@@ -706,13 +706,17 @@ void main() {
     setExpanded(true);
     await tester.pump();
     await tester.pump(
-      Duration(milliseconds: CatchFieldTokens.reveal.inMilliseconds ~/ 2),
+      Duration(milliseconds: CatchMotion.base.inMilliseconds ~/ 2),
     );
     final midpointHeight = tester.getSize(field).height;
     expect(midpointHeight, greaterThan(collapsedHeight));
+    final midpointSlide = tester.widget<Transform>(
+      find.byKey(const ValueKey('catch-field-control-slide')),
+    );
+    expect(midpointSlide.transform.getTranslation().y, inExclusiveRange(0, 8));
 
     await tester.pump(
-      Duration(milliseconds: CatchFieldTokens.reveal.inMilliseconds ~/ 2),
+      Duration(milliseconds: CatchMotion.base.inMilliseconds ~/ 2),
     );
     final expandedHeight = tester.getSize(field).height;
     expect(midpointHeight, lessThan(expandedHeight));
@@ -721,18 +725,19 @@ void main() {
     setExpanded(false);
     await tester.pump();
     await tester.pump(
-      Duration(milliseconds: CatchFieldTokens.reveal.inMilliseconds ~/ 2),
+      Duration(milliseconds: CatchMotion.base.inMilliseconds ~/ 2),
     );
     final collapsingHeight = tester.getSize(field).height;
     expect(collapsingHeight, greaterThan(collapsedHeight));
     expect(collapsingHeight, lessThan(expandedHeight));
 
     await tester.pump(
-      Duration(milliseconds: CatchFieldTokens.reveal.inMilliseconds ~/ 2),
+      Duration(milliseconds: CatchMotion.base.inMilliseconds ~/ 2),
     );
     await tester.pump();
     expect(tester.getSize(field).height, collapsedHeight);
     expect(tester.getTopLeft(field).dy, anchoredTop);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('CatchField cancels an in-flight reveal when it closes', (
@@ -788,7 +793,7 @@ void main() {
     setOpen(false);
     await tester.pump();
     final offsetAfterClose = scrollController.offset;
-    await tester.pump(CatchFieldTokens.reveal);
+    await tester.pump(CatchMotion.base);
 
     expect(scrollController.offset, lessThanOrEqualTo(offsetAfterClose + 0.1));
   });
@@ -845,7 +850,7 @@ void main() {
     expect(scrollController.position.isScrollingNotifier.value, isTrue);
     final offsetDuringDrag = scrollController.offset;
     await tester.pump(
-      Duration(milliseconds: CatchFieldTokens.reveal.inMilliseconds ~/ 2),
+      Duration(milliseconds: CatchMotion.base.inMilliseconds ~/ 2),
     );
     expect(scrollController.offset, closeTo(offsetDuringDrag, 0.1));
 
@@ -907,7 +912,7 @@ void main() {
       lessThanOrEqualTo(472.1),
     );
     final offsetAfterReveal = scrollController.offset;
-    await tester.pump(CatchFieldTokens.reveal);
+    await tester.pump(CatchMotion.base);
     expect(scrollController.offset, closeTo(offsetAfterReveal, 0.1));
   });
 
@@ -940,7 +945,7 @@ void main() {
 
     await tester.tap(find.byType(TextField));
     await tester.pump();
-    await tester.pump(CatchMotion.fast);
+    await tester.pump(CatchMotion.base);
     expect(find.text('Event title'), findsOneWidget);
     expect(find.text('Short and memorable'), findsOneWidget);
     expect(find.text('Shows on event cards'), findsOneWidget);
@@ -1039,6 +1044,12 @@ void main() {
         find.byKey(const ValueKey('catch-field-control-opacity')),
       );
       expect(opacity.duration, Duration.zero);
+      await tester.pump();
+      final slide = tester.widget<Transform>(
+        find.byKey(const ValueKey('catch-field-control-slide')),
+      );
+      expect(slide.transform.getTranslation().y, 0);
+      expect(tester.takeException(), isNull);
     },
   );
 
@@ -1222,7 +1233,7 @@ Widget _wrap(Widget child, {ThemeData? theme, double textScale = 1}) {
 
 Future<void> _pumpCatchFieldMotion(WidgetTester tester) async {
   await tester.pump();
-  await tester.pump(CatchFieldTokens.reveal);
+  await tester.pump(CatchMotion.base);
   await tester.pump();
 }
 

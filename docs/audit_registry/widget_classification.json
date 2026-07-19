@@ -1,7 +1,7 @@
 {
   "$schema": "./widget_classification.schema.json",
   "version": 2,
-  "updated": "2026-07-18",
+  "updated": "2026-07-19",
   "sourceOfTruth": {
     "scope": "Generated inventory for production Flutter widget and widget-state classes under lib/**. Widgetbook/test scaffolds are intentionally out of scope.",
     "canonicalContracts": "design/components/catch.components.json owns canonical global component contracts and governance metadata.",
@@ -10,43 +10,43 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1091,
-    "widgetClasses": 963,
-    "stateClasses": 128,
-    "publicClasses": 958,
-    "privateClasses": 133,
+    "total": 1094,
+    "widgetClasses": 965,
+    "stateClasses": 129,
+    "publicClasses": 960,
+    "privateClasses": 134,
     "byRole": {
       "atom": 57,
-      "composition": 350,
+      "composition": 351,
       "feature-adapter": 284,
-      "pattern": 16,
+      "pattern": 17,
       "screen": 256,
-      "widget-state": 128
+      "widget-state": 129
     },
     "byDecision": {
-      "keep-canonical-contract": 193,
+      "keep-canonical-contract": 195,
       "keep-public-cataloged": 703,
-      "keep-widget-state": 128,
+      "keep-widget-state": 129,
       "review-catalog-coverage": 43,
       "review-promote-or-consolidate": 19,
       "review-promote-or-inline": 5
     },
     "byCatalogStatus": {
       "cataloged": 666,
-      "contracted": 193,
-      "not-applicable": 128,
+      "contracted": 195,
+      "not-applicable": 129,
       "route-covered": 54,
       "uncataloged": 50
     },
     "conceptCount": 62,
-    "memberClassCount": 114,
+    "memberClassCount": 116,
     "compositionClassCount": 514,
     "screenClassCount": 268,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 514,
       "concept": 62,
-      "member": 114,
+      "member": 116,
       "screen": 268
     },
     "collisionGroupCount": 32,
@@ -178,6 +178,7 @@
           "CatchFieldRepeatButton",
           "CatchFieldRow",
           "CatchFieldSpinner",
+          "CatchFieldStatusIndicator",
           "CatchFieldStepper",
           "CatchFieldSupportRow",
           "CatchFieldToggle",
@@ -334,6 +335,7 @@
       {
         "key": "catch.tabbed_screen",
         "names": [
+          "CatchSliverContentWidth",
           "CatchTabbedPageScrollView",
           "CatchTabbedScreenScaffold"
         ]
@@ -361,8 +363,8 @@
     "widgetbookCoverage": {
       "conceptPrimaries": 62,
       "conceptPrimariesCataloged": 62,
-      "memberClasses": 114,
-      "memberClassesCataloged": 114,
+      "memberClasses": 116,
+      "memberClassesCataloged": 116,
       "compositionsCataloged": 469,
       "screensCataloged": 214
     }
@@ -5555,6 +5557,35 @@
       "flags": []
     },
     {
+      "name": "_CatchFieldStatusIndicatorState",
+      "file": "lib/core/widgets/catch_field_lanes.dart",
+      "classKind": "widget-state",
+      "baseClass": "State<CatchFieldStatusIndicator>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.catch_field_status_indicator",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "conceptRole": null,
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": null,
+      "decisionRef": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
       "name": "CatchFieldActionBar",
       "file": "lib/core/widgets/catch_field_lanes.dart",
       "classKind": "widget",
@@ -5743,6 +5774,35 @@
       "conceptId": "catch.field",
       "parentConceptId": "catch.field",
       "qualifier": "layout",
+      "collisionKey": "catch.field",
+      "decisionRef": "contract-family:catch.field",
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-canonical-contract",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CatchFieldStatusIndicator",
+      "file": "lib/core/widgets/catch_field_lanes.dart",
+      "classKind": "widget",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.field",
+      "publicApi": true,
+      "catalogStatus": "contracted",
+      "contractId": "catch.field.status_indicator",
+      "conceptRole": "member",
+      "conceptId": "catch.field",
+      "parentConceptId": "catch.field",
+      "qualifier": "anatomy",
       "collisionKey": "catch.field",
       "decisionRef": "contract-family:catch.field",
       "allowedDependencyLevel": "primitives-and-slots",
@@ -8927,6 +8987,35 @@
       "remediationOptions": [
         "moveStateToController",
         "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CatchSliverContentWidth",
+      "file": "lib/core/widgets/catch_tabbed_screen.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "pattern",
+      "canonicalFamily": "catch.tabbed_screen",
+      "publicApi": true,
+      "catalogStatus": "contracted",
+      "contractId": "catch.tabbed_screen.sliver_content_width",
+      "conceptRole": "member",
+      "conceptId": "catch.tabbed_screen",
+      "parentConceptId": "catch.tabbed_screen",
+      "qualifier": "layout",
+      "collisionKey": "catch.tabbed_screen",
+      "decisionRef": "contract-family:catch.tabbed_screen",
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "keep-canonical-contract",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
       ],
       "flags": []
     },

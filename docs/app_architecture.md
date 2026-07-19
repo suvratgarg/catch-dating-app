@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.4.40
+version: 1.4.41
 updated: 2026-07-19
 owner: recursive_audit_loop
 status: active
@@ -586,6 +586,13 @@ For `NestedScrollView` plus pinned tab rows:
   title group.
 - Each tab body starts with the matching `SliverOverlapInjector`.
 - Body padding belongs to the tab body, not to the pinned tab row.
+- Route-owned tab pages use `CatchTabbedPageScrollView`. Box-content pages opt
+  into `constrainToContentWidth`; it preserves the canonical 600 px content
+  lane plus page gutters only when the viewport has surplus width. Phone-width
+  pages remain direct slivers. Full-bleed or intrinsically sliver-native pages
+  such as embedded Club Preview leave the option false.
+- The overlap injector and terminal-padding sliver remain full-viewport even
+  when page content is width constrained.
 - If a tab body contains an independently scrollable child and its top gap must
   remain visible when that child returns to offset zero, put the gap inside that
   filled child.
@@ -601,6 +608,29 @@ For `NestedScrollView` plus pinned tab rows:
   the drive, direct user scrolling wins, reduced motion jumps immediately, and
   a zero-duration final correction covers any residual clamp. Do not add a
   second `ScrollController` inside the `NestedScrollView` to implement this.
+
+#### Exhibit: ARCH-TABBED-SCREEN-001 route-owned nested tab screen shell
+
+Host Clubs is the reference for mixing bounded box content with a sliver-native
+preview under one route-owned tab shell:
+
+```dart
+CatchTabbedPageScrollView(
+  scrollKey: editScrollKey,
+  constrainToContentWidth: true,
+  slivers: editSlivers,
+)
+
+CatchTabbedPageScrollView(
+  scrollKey: previewScrollKey,
+  slivers: previewSlivers, // Full-bleed and sliver-native.
+)
+```
+
+`CatchTabbedPageScrollView` owns overlap injection, focus isolation, independent
+offset restoration, and terminal clearance. Feature pages own their slivers,
+refresh policy, controllers, and typed tab state. Do not reintroduce
+feature-local `Center`/`ConstrainedBox` wrappers or box the Preview slivers.
 
 ### Current Screen Layout Decisions
 

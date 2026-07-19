@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-07-18",
+  "updated": "2026-07-19",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
@@ -13,15 +13,15 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "6e83f0859a061f46d68e8561f64cb9c093485b31007595233ac87442f021b9c4",
+  "sourceDigest": "efc8791cff04beee5d5545af6c8670d082d18f05bb7a628acd8278f4f9462d51",
   "claudeContext": {
     "status": "current",
-    "digest": "6e83f0859a061f46d68e8561f64cb9c093485b31007595233ac87442f021b9c4",
-    "contractDigest": "6e83f0859a061f46d68e8561f64cb9c093485b31007595233ac87442f021b9c4"
+    "digest": "efc8791cff04beee5d5545af6c8670d082d18f05bb7a628acd8278f4f9462d51",
+    "contractDigest": "efc8791cff04beee5d5545af6c8670d082d18f05bb7a628acd8278f4f9462d51"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "9a6916bf64a44c9239b5ae3f15f6fb02c9050b57f3269b13e7e1b6812eebf27d",
+    "handoffRequestDigest": "b787fa99f262f2bfe7f6327ffc3ea60085d146ea95dd4810d81d915eb89b602c",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -54,15 +54,15 @@
   },
   "metrics": {
     "contractCount": 69,
-    "publicClassCount": 196,
+    "publicClassCount": 198,
     "conceptCount": 63,
-    "memberCount": 116,
-    "membersPerConcept": 1.84,
+    "memberCount": 118,
+    "membersPerConcept": 1.87,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 63,
-      "member": 116,
+      "member": 118,
       "screen": 14
     },
     "collisionCount": 32,
@@ -195,6 +195,7 @@
           "CatchFieldRepeatButton",
           "CatchFieldRow",
           "CatchFieldSpinner",
+          "CatchFieldStatusIndicator",
           "CatchFieldStepper",
           "CatchFieldSupportRow",
           "CatchFieldToggle",
@@ -351,6 +352,7 @@
       {
         "key": "catch.tabbed_screen",
         "symbols": [
+          "CatchSliverContentWidth",
           "CatchTabbedPageScrollView",
           "CatchTabbedScreenScaffold"
         ]
@@ -656,7 +658,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Field",
       "claudeAllowed": true,
-      "contractDigest": "3148d6c32017cf29e685054804e872e6dd034faf888fb5f91db22b1402db30db"
+      "contractDigest": "eb36b56973b578a54428b726bb7557f211e2ff37bce4ac09afe404c25bebcf8e"
     },
     {
       "contractId": "catch.section",
@@ -2114,7 +2116,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TabbedScreen",
       "claudeAllowed": true,
-      "contractDigest": "66a7cc78bdc731bd362aed412ce64e76f5b41c14a0b458d810a35c17045f1d9b"
+      "contractDigest": "3adb124e999c138a921b376e460d0a1c4bc788f5b056f50b70cafe6c3b2c29bf"
     },
     {
       "contractId": "catch.bottom_action",

@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.7.151
-updated: 2026-07-16
+version: 0.7.152
+updated: 2026-07-19
 owner: web_platform
 status: active
 ---
@@ -170,6 +170,13 @@ through `docs/agent_skills/catch-react-surface-refactor.md`.
   admin primitives, and admin feedback providers must also be declared in
   `design/admin/components.json`; run
   `node tool/run.mjs check web:admin-components` when touching those exports.
+  Admin form primitives adopted into the shared Flutter/React interaction
+  vocabulary declare an `interactionContract` mode in that registry. Adopted
+  form families are listed in `interactionContractAdoptions`; the React
+  component-governance gate verifies that every listed component implements a
+  valid `field_row` mode and is actually used by the declared family source.
+  Organizer Publishing is the reference adoption. React keeps native controls
+  and styling; only the interaction semantics are shared.
   Admin registry entries marked `preview.status: "ready"` must point at
   Storybook exports under `admin/src/stories`; run
   `node tool/run.mjs check web:admin-storybook` whenever admin preview coverage

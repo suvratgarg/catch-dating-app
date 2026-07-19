@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-07-18T21:13:32.139Z",
+  "generatedAt": "2026-07-19T09:35:49.089Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 862,
-    "components": 811,
-    "stateCards": 1773,
+    "useCases": 864,
+    "components": 813,
+    "stateCards": 1774,
     "reviewCandidates": 43,
-    "oversizedUseCases": 42,
+    "oversizedUseCases": 43,
     "multiUseCaseComponents": 45
   },
   "reviewCandidates": [
@@ -8937,6 +8937,77 @@
       ]
     },
     {
+      "component": "CatchFieldTrailing",
+      "useCaseCount": 1,
+      "stateCardCount": 8,
+      "paths": [
+        "[Core primitives]/Inputs"
+      ],
+      "labels": [
+        "clear",
+        "custom",
+        "fixed-chevron",
+        "rotating-chevron",
+        "status",
+        "toggle",
+        "valid",
+        "value-text"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [
+          "canonical-contract-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "catchFieldTrailingContractStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Contract states",
+          "functionName": "catchFieldTrailingContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Inputs",
+          "stateCardCount": 8,
+          "stateCards": [
+            {
+              "label": "value-text",
+              "normalizedLabel": "value text"
+            },
+            {
+              "label": "fixed-chevron",
+              "normalizedLabel": "fixed chevron"
+            },
+            {
+              "label": "rotating-chevron",
+              "normalizedLabel": "rotating chevron"
+            },
+            {
+              "label": "toggle",
+              "normalizedLabel": "toggle"
+            },
+            {
+              "label": "status",
+              "normalizedLabel": "status"
+            },
+            {
+              "label": "clear",
+              "normalizedLabel": "clear"
+            },
+            {
+              "label": "valid",
+              "normalizedLabel": "valid"
+            },
+            {
+              "label": "custom",
+              "normalizedLabel": "custom"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchNotice",
       "useCaseCount": 1,
       "stateCardCount": 8,
@@ -9144,68 +9215,6 @@
             {
               "label": "expanding-expanded",
               "normalizedLabel": "expanding expanded"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "CatchFieldTrailing",
-      "useCaseCount": 1,
-      "stateCardCount": 7,
-      "paths": [
-        "[Core primitives]/Inputs"
-      ],
-      "labels": [
-        "clear",
-        "custom",
-        "fixed-chevron",
-        "rotating-chevron",
-        "toggle",
-        "valid",
-        "value-text"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Contract states",
-          "functionName": "catchFieldTrailingContractStates",
-          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-          "path": "[Core primitives]/Inputs",
-          "stateCardCount": 7,
-          "stateCards": [
-            {
-              "label": "value-text",
-              "normalizedLabel": "value text"
-            },
-            {
-              "label": "fixed-chevron",
-              "normalizedLabel": "fixed chevron"
-            },
-            {
-              "label": "rotating-chevron",
-              "normalizedLabel": "rotating chevron"
-            },
-            {
-              "label": "toggle",
-              "normalizedLabel": "toggle"
-            },
-            {
-              "label": "clear",
-              "normalizedLabel": "clear"
-            },
-            {
-              "label": "valid",
-              "normalizedLabel": "valid"
-            },
-            {
-              "label": "custom",
-              "normalizedLabel": "custom"
             }
           ]
         }
@@ -22646,7 +22655,7 @@
           ]
         },
         {
-          "name": "Current vs proposed",
+          "name": "Approved production",
           "functionName": "catchFieldMotionReview",
           "file": "widgetbook/lib/primitives/field_motion_use_cases.dart",
           "path": "[Review gates]/Field motion",
@@ -29943,6 +29952,31 @@
       ]
     },
     {
+      "component": "CatchFieldStatusIndicator",
+      "useCaseCount": 1,
+      "stateCardCount": 0,
+      "paths": [
+        "[Core primitives]/Fields"
+      ],
+      "labels": [],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Saving and saved",
+          "functionName": "catchFieldStatusIndicatorContract",
+          "file": "widgetbook/lib/primitives/field_motion_use_cases.dart",
+          "path": "[Core primitives]/Fields",
+          "stateCardCount": 0,
+          "stateCards": []
+        }
+      ]
+    },
+    {
       "component": "CatchFormMultiChoiceRowEditor",
       "useCaseCount": 1,
       "stateCardCount": 0,
@@ -30062,6 +30096,31 @@
           "functionName": "catchFormTextRowEditorStates",
           "file": "widgetbook/lib/profiles/profile_use_cases.dart",
           "path": "[P1 product surfaces]/Profiles/Inline Editors",
+          "stateCardCount": 0,
+          "stateCards": []
+        }
+      ]
+    },
+    {
+      "component": "CatchSliverContentWidth",
+      "useCaseCount": 1,
+      "stateCardCount": 0,
+      "paths": [
+        "[Core primitives]/Navigation"
+      ],
+      "labels": [],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Readable sliver width",
+          "functionName": "catchSliverContentWidthContractStates",
+          "file": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+          "path": "[Core primitives]/Navigation",
           "stateCardCount": 0,
           "stateCards": []
         }

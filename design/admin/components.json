@@ -1,7 +1,7 @@
 {
   "$schema": "./admin.components.schema.json",
-  "version": 33,
-  "updated": "2026-07-16",
+  "version": 34,
+  "updated": "2026-07-19",
   "owner": "admin_dashboard",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -46,6 +46,19 @@
       "provider"
     ]
   },
+  "interactionContractAdoptions": [
+    {
+      "id": "organizer_publishing_form",
+      "concept": "field_row",
+      "source": "admin/src/features/organizers/ui/organizerDetailPanels.tsx",
+      "components": [
+        "TextField",
+        "TextareaField",
+        "SelectField",
+        "CheckboxField"
+      ]
+    }
+  ],
   "components": [
     {
       "id": "provider_admin_feedback_provider",
@@ -4713,6 +4726,10 @@
       "owner": "shared/ui",
       "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
       "exportName": "CheckboxField",
+      "interactionContract": {
+        "concept": "field_row",
+        "mode": "toggle"
+      },
       "css": [
         "admin/src/styles.css"
       ],
@@ -5006,6 +5023,10 @@
       "owner": "shared/ui",
       "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
       "exportName": "SelectField",
+      "interactionContract": {
+        "concept": "field_row",
+        "mode": "select"
+      },
       "css": [
         "admin/src/styles.css"
       ],
@@ -5126,6 +5147,10 @@
       "owner": "shared/ui",
       "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
       "exportName": "TextareaField",
+      "interactionContract": {
+        "concept": "field_row",
+        "mode": "input"
+      },
       "css": [
         "admin/src/styles.css"
       ],
@@ -5160,7 +5185,11 @@
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
       "exportName": "TextField",
       "lexicon": true,
-      "lexiconId": "catch.field"
+      "lexiconId": "catch.field",
+      "interactionContract": {
+        "concept": "field_row",
+        "mode": "input"
+      }
     },
     {
       "id": "workspace_event_intake",

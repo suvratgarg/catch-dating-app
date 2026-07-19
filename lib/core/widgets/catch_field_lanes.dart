@@ -255,8 +255,8 @@ class CatchFieldTrailing extends StatelessWidget {
     topPadding: topPadding,
     builder: (context) => AnimatedRotation(
       turns: open ? 0.5 : 0,
-      duration: _fieldDuration(context, CatchFieldTokens.reveal),
-      curve: CatchFieldTokens.curve,
+      duration: _fieldDuration(context, CatchMotion.base),
+      curve: CatchMotion.standardCurve,
       child: Icon(
         CatchIcons.expandMoreRounded,
         size: CatchFieldTokens.disclosureGlyphExtent,
@@ -278,20 +278,7 @@ class CatchFieldTrailing extends StatelessWidget {
     builder: (context) => Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (status == CatchFieldStatus.saving)
-          SizedBox.square(
-            dimension: CatchFieldTokens.spinnerExtent,
-            child: CatchFieldSpinner(color: CatchTokens.of(context).ink3),
-          )
-        else if (status == CatchFieldStatus.saved)
-          Icon(
-            CatchIcons.checkCircleFilled,
-            key: const ValueKey('catch-field-saved'),
-            size: CatchFieldTokens.disclosureGlyphExtent,
-            color: CatchTokens.of(context).success,
-          ),
-        if (status != CatchFieldStatus.idle)
-          const SizedBox(width: CatchFieldTokens.trailingGap),
+        CatchFieldStatusIndicator(status: status, includeTrailingGap: true),
         CatchFieldToggle(
           value: value,
           semanticLabel: semanticLabel,
@@ -301,37 +288,15 @@ class CatchFieldTrailing extends StatelessWidget {
     ),
   );
 
-  factory CatchFieldTrailing.saving({Key? key, double topPadding = 0}) =>
-      CatchFieldTrailing._(
-        key: key,
-        topPadding: topPadding,
-        builder: (context) => Semantics(
-          label: context.l10n.coreCatchFieldSemanticSaving,
-          child: ExcludeSemantics(
-            child: SizedBox.square(
-              dimension: CatchFieldTokens.spinnerExtent,
-              child: CatchFieldSpinner(color: CatchTokens.of(context).ink3),
-            ),
-          ),
-        ),
-      );
-
-  factory CatchFieldTrailing.saved({Key? key, double topPadding = 0}) =>
-      CatchFieldTrailing._(
-        key: key,
-        topPadding: topPadding,
-        builder: (context) => Semantics(
-          label: context.l10n.coreCatchFieldSemanticSaved,
-          child: ExcludeSemantics(
-            child: Icon(
-              CatchIcons.checkCircleFilled,
-              key: const ValueKey('catch-field-saved'),
-              size: CatchFieldTokens.disclosureGlyphExtent,
-              color: CatchTokens.of(context).success,
-            ),
-          ),
-        ),
-      );
+  factory CatchFieldTrailing.status({
+    Key? key,
+    required CatchFieldStatus status,
+    double topPadding = 0,
+  }) => CatchFieldTrailing._(
+    key: key,
+    topPadding: topPadding,
+    builder: (context) => CatchFieldStatusIndicator(status: status),
+  );
 
   factory CatchFieldTrailing.clear({
     Key? key,
@@ -386,6 +351,147 @@ class CatchFieldTrailing extends StatelessWidget {
     padding: EdgeInsets.only(top: topPadding),
     child: builder(context),
   );
+}
+
+/// Animated saving/saved feedback for the [CatchField] trailing lane.
+///
+/// Product surfaces normally receive this through [CatchFieldTrailing.status]
+/// or [CatchFieldTrailing.toggle]. It is public so the field family keeps a
+/// cataloged, directly testable status contract instead of a private widget
+/// destination.
+class CatchFieldStatusIndicator extends StatefulWidget {
+  const CatchFieldStatusIndicator({
+    super.key,
+    required this.status,
+    this.includeTrailingGap = false,
+  });
+
+  final CatchFieldStatus status;
+  final bool includeTrailingGap;
+
+  @override
+  State<CatchFieldStatusIndicator> createState() =>
+      _CatchFieldStatusIndicatorState();
+}
+
+class _CatchFieldStatusIndicatorState extends State<CatchFieldStatusIndicator> {
+  late CatchFieldStatus _displayedStatus;
+  bool _appeared = false;
+  bool _appearanceScheduled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _displayedStatus = widget.status;
+    _scheduleAppearance();
+  }
+
+  void _scheduleAppearance() {
+    if (_displayedStatus == CatchFieldStatus.idle || _appearanceScheduled) {
+      return;
+    }
+    _appearanceScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _appearanceScheduled = false;
+      if (!mounted || _displayedStatus == CatchFieldStatus.idle) return;
+      setState(() => _appeared = true);
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant CatchFieldStatusIndicator oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _displayedStatus = widget.status;
+    if (oldWidget.status != widget.status) {
+      _appeared = false;
+      _scheduleAppearance();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final duration = _fieldDuration(context, CatchMotion.base);
+    final child = switch (_displayedStatus) {
+      CatchFieldStatus.idle => const SizedBox.shrink(
+        key: ValueKey('catch-field-status-idle'),
+      ),
+      CatchFieldStatus.saving => Semantics(
+        key: const ValueKey('catch-field-status-saving'),
+        label: context.l10n.coreCatchFieldSemanticSaving,
+        child: ExcludeSemantics(
+          child: AnimatedOpacity(
+            key: const ValueKey('catch-field-status-entry-opacity'),
+            duration: duration,
+            curve: CatchMotion.standardCurve,
+            opacity: _appeared ? 1 : 0,
+            child: SizedBox.square(
+              dimension: CatchFieldTokens.spinnerExtent,
+              child: CatchFieldSpinner(color: t.ink3),
+            ),
+          ),
+        ),
+      ),
+      CatchFieldStatus.saved => Semantics(
+        key: const ValueKey('catch-field-status-saved'),
+        label: context.l10n.coreCatchFieldSemanticSaved,
+        child: ExcludeSemantics(
+          child: AnimatedOpacity(
+            key: const ValueKey('catch-field-status-entry-opacity'),
+            duration: duration,
+            curve: CatchMotion.standardCurve,
+            opacity: _appeared ? 1 : 0,
+            child: AnimatedScale(
+              duration: duration,
+              curve: CatchMotion.easeOutBackCurve,
+              scale: _appeared ? 1 : 0.85,
+              child: Icon(
+                CatchIcons.checkCircleFilled,
+                key: const ValueKey('catch-field-saved'),
+                size: CatchFieldTokens.disclosureGlyphExtent,
+                color: t.success,
+              ),
+            ),
+          ),
+        ),
+      ),
+    };
+    final gappedChild =
+        widget.includeTrailingGap && _displayedStatus != CatchFieldStatus.idle
+        ? Padding(
+            key: child.key,
+            padding: const EdgeInsetsDirectional.only(
+              end: CatchFieldTokens.trailingGap,
+            ),
+            child: KeyedSubtree(child: child),
+          )
+        : child;
+
+    return AnimatedSwitcher(
+      key: const ValueKey('catch-field-status-switcher'),
+      duration: duration,
+      transitionBuilder: (child, animation) {
+        final fade = CurvedAnimation(
+          parent: animation,
+          curve: CatchMotion.standardCurve,
+          reverseCurve: CatchMotion.standardCurve,
+        );
+        final faded = FadeTransition(opacity: fade, child: child);
+        if (child.key != const ValueKey('catch-field-status-saved')) {
+          return faded;
+        }
+        final scale = Tween<double>(begin: 0.85, end: 1).animate(
+          CurvedAnimation(
+            parent: animation,
+            curve: CatchMotion.easeOutBackCurve,
+            reverseCurve: CatchMotion.standardCurve,
+          ),
+        );
+        return ScaleTransition(scale: scale, child: faded);
+      },
+      child: gappedChild,
+    );
+  }
 }
 
 /// Field helper/error and optional counter row.
@@ -602,6 +708,14 @@ class CatchFieldDisclosureDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final animationsDisabled =
+        MediaQuery.maybeOf(context)?.disableAnimations == true;
+    final resolvedRevealDuration = animationsDisabled
+        ? Duration.zero
+        : revealDuration;
+    final resolvedOpacityDuration = animationsDisabled
+        ? Duration.zero
+        : opacityDuration;
     final revealedContent = KeyedSubtree(
       key: revealTargetKey,
       child: GestureDetector(
@@ -638,8 +752,8 @@ class CatchFieldDisclosureDrawer extends StatelessWidget {
           ignoring: !open,
           child: TweenAnimationBuilder<double>(
             key: const ValueKey('catch-field-expansion'),
-            duration: revealDuration,
-            curve: CatchFieldTokens.curve,
+            duration: resolvedRevealDuration,
+            curve: CatchMotion.standardCurve,
             tween: Tween<double>(end: open ? 1 : 0),
             onEnd: onRevealEnd,
             child: revealedContent,
@@ -649,13 +763,17 @@ class CatchFieldDisclosureDrawer extends StatelessWidget {
                 clipper: const _CatchFieldDisclosureClipper(),
                 child: AnimatedOpacity(
                   key: const ValueKey('catch-field-control-opacity'),
-                  duration: opacityDuration,
-                  curve: CatchFieldTokens.curve,
+                  duration: resolvedOpacityDuration,
+                  curve: CatchMotion.standardCurve,
                   opacity: open ? 1 : 0,
                   child: Align(
                     alignment: Alignment.topCenter,
                     heightFactor: reveal,
-                    child: child,
+                    child: Transform.translate(
+                      key: const ValueKey('catch-field-control-slide'),
+                      offset: Offset(0, CatchSpacing.s2 * (1 - reveal)),
+                      child: child,
+                    ),
                   ),
                 ),
               ),

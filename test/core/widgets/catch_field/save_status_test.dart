@@ -225,10 +225,120 @@ void main() {
     expect(find.text('Height control'), findsOneWidget);
   });
 
-  testWidgets('CatchField status lane transitions idle to saving to saved', (
+  testWidgets(
+    'CatchField status lane cross-fades saving, scales saved, and drains motion',
+    (tester) async {
+      var status = CatchFieldStatus.idle;
+      late StateSetter update;
+      await tester.pumpWidget(
+        _wrap(
+          StatefulBuilder(
+            builder: (context, setState) {
+              update = setState;
+              return CatchField.read(title: 'Club name', status: status);
+            },
+          ),
+        ),
+      );
+
+      expect(find.byKey(const ValueKey('catch-field-spinner')), findsNothing);
+      expect(find.byKey(const ValueKey('catch-field-saved')), findsNothing);
+
+      update(() => status = CatchFieldStatus.saving);
+      await tester.pump();
+      await tester.pump();
+      expect(find.byKey(const ValueKey('catch-field-spinner')), findsOneWidget);
+      expect(
+        tester
+            .widget<AnimatedSwitcher>(
+              find.byKey(const ValueKey('catch-field-status-switcher')),
+            )
+            .duration,
+        CatchMotion.base,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('catch-field-status-switcher')),
+          matching: find.byType(FadeTransition),
+        ),
+        findsWidgets,
+      );
+
+      update(() => status = CatchFieldStatus.saved);
+      await tester.pump();
+      expect(find.byKey(const ValueKey('catch-field-saved')), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('catch-field-status-switcher')),
+          matching: find.byType(ScaleTransition),
+        ),
+        findsWidgets,
+      );
+      await tester.pump(CatchMotion.base);
+      await tester.pump(CatchMotion.base);
+      expect(find.byKey(const ValueKey('catch-field-spinner')), findsNothing);
+
+      update(() => status = CatchFieldStatus.idle);
+      await tester.pump();
+      expect(find.byKey(const ValueKey('catch-field-saved')), findsOneWidget);
+      await tester.pump(CatchMotion.base);
+      await tester.pump(CatchMotion.base);
+      await tester.pump(CatchMotion.base);
+      await tester.pump();
+      expect(find.byKey(const ValueKey('catch-field-saved')), findsNothing);
+      expect(find.byKey(const ValueKey('catch-field-spinner')), findsNothing);
+      expect(tester.binding.hasScheduledFrame, isFalse);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('CatchField status motion becomes a plain reduced-motion swap', (
     tester,
   ) async {
     var status = CatchFieldStatus.idle;
+    late StateSetter update;
+    await tester.pumpWidget(
+      _wrap(
+        MediaQuery(
+          data: const MediaQueryData(disableAnimations: true),
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              update = setState;
+              return CatchField.read(title: 'Club name', status: status);
+            },
+          ),
+        ),
+      ),
+    );
+
+    update(() => status = CatchFieldStatus.saving);
+    await tester.pump();
+    await tester.pump();
+    expect(find.byKey(const ValueKey('catch-field-spinner')), findsOneWidget);
+    expect(
+      tester
+          .widget<AnimatedSwitcher>(
+            find.byKey(const ValueKey('catch-field-status-switcher')),
+          )
+          .duration,
+      Duration.zero,
+    );
+    update(() => status = CatchFieldStatus.saved);
+    await tester.pump();
+    expect(find.byKey(const ValueKey('catch-field-spinner')), findsNothing);
+    expect(find.byKey(const ValueKey('catch-field-saved')), findsOneWidget);
+
+    update(() => status = CatchFieldStatus.idle);
+    await tester.pump();
+    await tester.pump();
+    expect(find.byKey(const ValueKey('catch-field-saved')), findsNothing);
+    expect(tester.binding.hasScheduledFrame, isFalse);
+  });
+
+  testWidgets('CatchField cancels a pending status dismissal on dispose', (
+    tester,
+  ) async {
+    var status = CatchFieldStatus.saved;
     late StateSetter update;
     await tester.pumpWidget(
       _wrap(
@@ -241,17 +351,13 @@ void main() {
       ),
     );
 
-    expect(find.byKey(const ValueKey('catch-field-spinner')), findsNothing);
-    expect(find.byKey(const ValueKey('catch-field-saved')), findsNothing);
-
-    update(() => status = CatchFieldStatus.saving);
+    update(() => status = CatchFieldStatus.idle);
     await tester.pump();
-    expect(find.byKey(const ValueKey('catch-field-spinner')), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump(CatchMotion.base);
 
-    update(() => status = CatchFieldStatus.saved);
-    await tester.pump();
-    expect(find.byKey(const ValueKey('catch-field-spinner')), findsNothing);
-    expect(find.byKey(const ValueKey('catch-field-saved')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    expect(tester.binding.hasScheduledFrame, isFalse);
   });
 
   testWidgets('CatchField announces each save transition exactly once', (
@@ -338,7 +444,7 @@ Widget _wrap(Widget child, {ThemeData? theme, double textScale = 1}) {
 
 Future<void> _pumpCatchFieldMotion(WidgetTester tester) async {
   await tester.pump();
-  await tester.pump(CatchFieldTokens.reveal);
+  await tester.pump(CatchMotion.base);
   await tester.pump();
 }
 

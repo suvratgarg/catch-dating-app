@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-18T21:22:26.215Z",
+  "generatedAt": "2026-07-19T09:35:58.011Z",
   "baseRef": "HEAD^",
   "baseStatus": "git-ref",
   "baseWarning": null,
@@ -10,16 +10,16 @@
     "policy": "New public widget classes need Widgetbook and widget catalog coverage. New private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets."
   },
   "summary": {
-    "addedWidgetClasses": 3,
-    "addedPublicWidgetClasses": 3,
+    "addedWidgetClasses": 2,
+    "addedPublicWidgetClasses": 2,
     "addedPrivateWidgetClasses": 0,
     "addedWidgetReturningHelpers": 0,
     "movedWidgetClasses": 0,
     "movedWidgetReturningHelpers": 0,
-    "coveredNewWidgets": 3,
+    "coveredNewWidgets": 2,
     "unresolved": 0,
     "widgetsByStatus": {
-      "covered": 3
+      "covered": 2
     },
     "helpersByStatus": {},
     "issues": {}
@@ -28,12 +28,12 @@
   "movedWidgetHelpers": [],
   "addedWidgets": [
     {
-      "name": "CatchClubCover",
-      "baseClass": "StatelessWidget",
+      "name": "CatchFieldStatusIndicator",
+      "baseClass": "StatefulWidget",
       "visibility": "public",
-      "line": 8,
-      "file": "lib/clubs/shared/catch_club_cover.dart",
-      "library": "lib/clubs/shared/catch_club_cover.dart",
+      "line": 362,
+      "file": "lib/core/widgets/catch_field_lanes.dart",
+      "library": "lib/core/widgets/catch_field.dart",
       "widgetbookCovered": true,
       "catalogMentioned": true,
       "status": "covered",
@@ -41,25 +41,12 @@
       "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
     },
     {
-      "name": "CatchIndexRow",
+      "name": "CatchSliverContentWidth",
       "baseClass": "StatelessWidget",
       "visibility": "public",
-      "line": 7,
-      "file": "lib/core/widgets/catch_index_row.dart",
-      "library": "lib/core/widgets/catch_index_row.dart",
-      "widgetbookCovered": true,
-      "catalogMentioned": true,
-      "status": "covered",
-      "issues": [],
-      "recommendedAction": "Covered by Widgetbook and docs/widget_catalog.md."
-    },
-    {
-      "name": "EventTicketStub",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "line": 238,
-      "file": "lib/events/shared/event_tiles/event_date_rail_card.dart",
-      "library": "lib/events/shared/event_tiles/event_date_rail_card.dart",
+      "line": 261,
+      "file": "lib/core/widgets/catch_tabbed_screen.dart",
+      "library": "lib/core/widgets/catch_tabbed_screen.dart",
       "widgetbookCovered": true,
       "catalogMentioned": true,
       "status": "covered",
