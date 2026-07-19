@@ -1,5 +1,5 @@
 {
-  "version": 43,
+  "version": 44,
   "updated": "2026-07-19",
   "owner": "agent_operating_model",
   "entries": [
@@ -2216,6 +2216,27 @@
         "docs/design_parity/README.md"
       ],
       "notes": "The scanner accepts only a locally owned final or var assignment or an inline return; it still fails closed when no GoRouter configuration can be found."
+    },
+    {
+      "id": "REG-GOLDEN-HOSTED-MACOS-RASTER-001",
+      "title": "Reviewed macOS goldens fail on hosted-runner antialiasing noise",
+      "status": "active",
+      "applies_to": [
+        "test/goldens/**",
+        ".github/workflows/visual-integration-ci.yml"
+      ],
+      "symptom": "The pinned hosted macOS runner changes a small number of anti-aliased text and icon edge pixels even though layout, color, content, and component geometry are unchanged, causing the exact comparator to skip the app-shell integration stage.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/goldens",
+        "guardEvidence": "CatchGoldenFileComparator allows at most 0.30% differing pixels; its focused test proves 0.25% passes and 0.50% fails, and CI retains native Flutter diff artifacts above the threshold"
+      },
+      "owner_docs": [
+        "test/goldens/README.md",
+        "docs/release_operations.md",
+        "TESTS.md"
+      ],
+      "notes": "The 0.30% ceiling is grounded in PR #94 run 29701230738, where hosted-macOS differences peaked at 0.29% and visual inspection localized them to anti-aliased edges."
     }
   ]
 }

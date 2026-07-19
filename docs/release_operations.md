@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 1.10.5
+version: 1.10.6
 updated: 2026-07-19
 owner: recursive_audit_loop
 status: active
@@ -974,10 +974,12 @@ node tool/run.mjs run test:app-shell-integration
 ```
 
 Pull requests that touch Flutter integration or golden surfaces run
-`.github/workflows/visual-integration-ci.yml` on macOS. It executes the exact
-desktop goldens and all deterministic app-shell wrappers sequentially, retains
-failure diffs, and also runs on a weekday schedule so platform drift cannot
-hide behind path filtering. `bash tool/test_app_shell_integration.sh <device>`
+`.github/workflows/visual-integration-ci.yml` on macOS. It executes the desktop
+goldens with the checked 0.30% hosted-macOS raster tolerance and all deterministic
+app-shell wrappers sequentially, retains failure diffs, and also runs on a
+weekday schedule so platform drift cannot hide behind path filtering. The
+tolerance has a focused known-good/known-bad regression test and must not be
+widened to accept a visual change. `bash tool/test_app_shell_integration.sh <device>`
 remains the explicit native-device lane. The main Flutter workflow separately
 analyzes and builds `widgetbook/` for web. These are repository integration
 gates; the live service/device evidence below remains separately required for
