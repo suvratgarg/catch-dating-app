@@ -113,6 +113,41 @@ void main() {
     });
   });
 
+  group('guest public route matcher', () {
+    test('allows only the declared public discovery route shapes', () {
+      for (final location in [
+        '/start',
+        '/auth',
+        '/organizers',
+        '/organizers/map',
+        '/organizers/club-1',
+        '/organizers/club-1/events/event-1',
+        '/events/event-1/location',
+      ]) {
+        expect(
+          isGuestPublicRoute(location),
+          isTrue,
+          reason: '$location should remain guest-public.',
+        );
+      }
+    });
+
+    test('rejects nested account routes under public organizer paths', () {
+      for (final location in [
+        '/saved-events',
+        '/organizers/club-1/events/event-1/companion',
+        '/organizers/club-1/events/event-1/manage',
+        '/organizers/club-1/settings',
+      ]) {
+        expect(
+          isGuestPublicRoute(location),
+          isFalse,
+          reason: '$location must remain account-only.',
+        );
+      }
+    });
+  });
+
   group('legacy Host clubs redirect', () {
     test('organizer settings spokes use canonical top-level routes', () {
       expect(
@@ -403,6 +438,18 @@ void main() {
           matchedLocation: Routes.eventDetailScreen.path,
         ),
         null,
+      );
+    });
+
+    test('event companion deep links require authentication', () {
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(null),
+          userProfileAsync: const AsyncData(null),
+          location: '/organizers/club-1/events/event-1/companion',
+          matchedLocation: Routes.eventSuccessCompanionScreen.path,
+        ),
+        '/start?from=%2Forganizers%2Fclub-1%2Fevents%2Fevent-1%2Fcompanion',
       );
     });
 

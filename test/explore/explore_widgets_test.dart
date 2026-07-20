@@ -56,6 +56,7 @@ import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
@@ -3211,6 +3212,13 @@ void main() {
       );
       await _pumpClubUi(tester);
 
+      expect(find.byTooltip('Saved events'), findsNothing);
+      await tester.tap(find.byKey(const ValueKey('explore-filter-button')));
+      await _pumpClubUi(tester);
+      expect(find.byKey(const ValueKey('explore-filter-joined')), findsNothing);
+      Navigator.of(tester.element(find.byType(ExploreFilterSheet))).pop();
+      await _pumpClubUi(tester);
+
       expect(find.text('Your clubs'), findsNothing);
       for (
         var index = 0;
@@ -3225,6 +3233,79 @@ void main() {
       expect(find.text('Pace Social'), findsWidgets);
       expect(find.byType(ExploreClubPolaroidCard), findsOneWidget);
       expect(_catchButtonWithLabel('Join'), findsNothing);
+    });
+
+    testWidgets('ExploreScreen hides account controls while auth resolves', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            cityListProvider.overrideWith((ref) async => _testCities),
+            deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+            uidProvider.overrideWithValue(const AsyncLoading<String?>()),
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
+            exploreSourceClubsProvider.overrideWithValue(
+              const AsyncData(<Club>[]),
+            ),
+            exploreClubsViewModelProvider.overrideWithValue(
+              const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
+            ),
+            exploreRecommendationsProvider.overrideWithValue(
+              const AsyncData(<ExploreEventRecommendation>[]),
+            ),
+            _emptyExploreFeedOverride,
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const ExploreScreen(),
+          ),
+        ),
+      );
+      await _pumpClubUi(tester);
+
+      expect(find.byTooltip('Saved events'), findsNothing);
+      await tester.tap(find.byKey(const ValueKey('explore-filter-button')));
+      await _pumpClubUi(tester);
+      expect(find.byKey(const ValueKey('explore-filter-joined')), findsNothing);
+    });
+
+    testWidgets('ExploreScreen shows account controls after sign-in resolves', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            cityListProvider.overrideWith((ref) async => _testCities),
+            deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
+            exploreSourceClubsProvider.overrideWithValue(
+              const AsyncData(<Club>[]),
+            ),
+            exploreClubsViewModelProvider.overrideWithValue(
+              const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: [])),
+            ),
+            exploreRecommendationsProvider.overrideWithValue(
+              const AsyncData(<ExploreEventRecommendation>[]),
+            ),
+            _emptyExploreFeedOverride,
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const ExploreScreen(),
+          ),
+        ),
+      );
+      await _pumpClubUi(tester);
+
+      expect(find.byTooltip('Saved events'), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('explore-filter-button')));
+      await _pumpClubUi(tester);
+      expect(
+        find.byKey(const ValueKey('explore-filter-joined')),
+        findsOneWidget,
+      );
     });
 
     testWidgets('ExploreScreen shows skeleton cards while loading', (
@@ -3860,6 +3941,30 @@ void main() {
       final badgeCenter = tester.getCenter(find.text('1'));
       expect(badgeCenter.dx, greaterThan(iconCenter.dx));
       expect(badgeCenter.dy, lessThan(iconCenter.dy));
+    });
+
+    testWidgets('ExploreFilterRail suppresses account-only joined controls', (
+      tester,
+    ) async {
+      const filters = ExploreFilterSelection(joinedOnly: true);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: ExploreFilterRail(filters: filters, showJoinedOnly: false),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(
+        find.byKey(const ValueKey('explore-applied-joined')),
+        findsNothing,
+      );
+      await tester.tap(find.byKey(const ValueKey('explore-filter-button')));
+      await _pumpClubUi(tester);
+      expect(find.byKey(const ValueKey('explore-filter-joined')), findsNothing);
     });
 
     testWidgets('ExploreFilterRail removes visible applied filters', (
