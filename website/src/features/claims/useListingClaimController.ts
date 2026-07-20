@@ -3,7 +3,7 @@ import {type FormEvent, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
 import {claimFirebaseConfigured} from "../../firebaseConfig";
 import type {FormStatus} from "../../shared/forms/types";
-import {isPublicApiEnabled} from "../organizers/selectors";
+import {organizerPolicyForListing} from "../organizers/organizerPolicy";
 import type {HostListing} from "../organizers/types";
 import {
   claimContactValidationMessage,
@@ -17,7 +17,8 @@ import {
 } from "./useClaimRequestMutation";
 
 export function useListingClaimController(listing: HostListing) {
-  const publicApiEnabled = isPublicApiEnabled(listing);
+  const policy = organizerPolicyForListing(listing);
+  const publicApiEnabled = policy.canRequestClaim;
   const [status, setStatus] = useState<FormStatus>({
     message: "",
     tone: "",
@@ -40,7 +41,7 @@ export function useListingClaimController(listing: HostListing) {
     event.preventDefault();
     if (!publicApiEnabled) {
       setStatus({
-        message: listing.publicApi.reason,
+        message: policy.claimRequestReason,
         tone: "is-error",
       });
       return;
@@ -124,7 +125,7 @@ export function useListingClaimController(listing: HostListing) {
     isConfigured: claimFirebaseConfigured && publicApiEnabled,
     notConfiguredReason: publicApiEnabled ?
       "Claim submission needs the website Firebase/App Check config." :
-      listing.publicApi.reason,
+      policy.claimRequestReason,
     publicApiEnabled,
     isSigningIn,
     isSubmitting: claimRequestMutation.isPending,

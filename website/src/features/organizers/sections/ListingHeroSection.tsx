@@ -7,6 +7,7 @@ import {
 } from "../OrganizerIdentity";
 import {activityForListing} from "../publicDiscovery";
 import {isVerifiedListing} from "../selectors";
+import {organizerPolicyForListing} from "../organizerPolicy";
 import type {HostListing} from "../types";
 import {
   ActionGroup,
@@ -29,6 +30,7 @@ import {trackOrganizerAnalytics} from "../analytics";
 import {trackCtaClick} from "../../marketing/tracking";
 
 export function ListingHeroSection({
+  canRequestClaim,
   claimHref,
   isAppCreated,
   isSaved,
@@ -37,6 +39,7 @@ export function ListingHeroSection({
   onShareListing,
   shareStatus,
 }: {
+  canRequestClaim?: boolean;
   claimHref: string;
   isAppCreated: boolean;
   isSaved: boolean;
@@ -46,6 +49,8 @@ export function ListingHeroSection({
   shareStatus: string;
 }) {
   const activity = activityForListing(listing);
+  const resolvedCanRequestClaim = canRequestClaim ??
+    organizerPolicyForListing(listing).canRequestClaim;
 
   return (
     <ListingHeroShell>
@@ -68,15 +73,24 @@ export function ListingHeroSection({
             ]}
           />
           <ActionGroup variant="hero">
-            <ButtonLink
-              href={claimHref}
-              onClick={() => {
-                trackCtaClick("listing_claim", claimHref);
-                trackOrganizerAnalytics(listing, "claimClick", "hero");
-              }}
-            >
-              {listing.claim.label}
-            </ButtonLink>
+            {resolvedCanRequestClaim ? (
+              <ButtonLink
+                href={claimHref}
+                onClick={() => {
+                  trackCtaClick("listing_claim", claimHref);
+                  trackOrganizerAnalytics(listing, "claimClick", "hero");
+                }}
+              >
+                {listing.claim.label}
+              </ButtonLink>
+            ) : isAppCreated ? (
+              <ButtonLink
+                href={claimHref}
+                onClick={() => trackCtaClick("listing_events", claimHref)}
+              >
+                {listing.claim.label}
+              </ButtonLink>
+            ) : null}
             <ButtonLink
               variant="ghost"
               href={isAppCreated ? "/organizers/" : "/host/"}

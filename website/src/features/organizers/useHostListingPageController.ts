@@ -7,11 +7,15 @@ import {trackOrganizerAnalytics} from "./analytics";
 import {absoluteListingUrl} from "./publicDiscovery";
 import {claimHrefForListing} from "./routing";
 import {readSavedOrganizer, writeSavedOrganizer} from "./savedOrganizerStorage";
+import {organizerPolicyForListing} from "./organizerPolicy";
 import type {HostListing} from "./types";
 
 export function useHostListingPageController(listing: HostListing) {
-  const isAppCreated = listing.listingVariant === "appCreatedClub";
-  const claimHref = isAppCreated ? listing.claim.href : claimHrefForListing(listing);
+  const policy = organizerPolicyForListing(listing);
+  const isAppCreated = policy.isCatchCreated;
+  const claimHref = policy.canRequestClaim ?
+    claimHrefForListing(listing) :
+    isAppCreated ? listing.claim.href : "/organizers/";
   const hasEventSupply = Boolean(
     listing.catchEvents?.length || listing.externalEvents?.length
   );
@@ -40,9 +44,9 @@ export function useHostListingPageController(listing: HostListing) {
   const footerLinks = useMemo<SiteNavItem[]>(() => [
     {href: "/host/", label: websiteCopy["usehostlistingpagecontroller_0494"]},
     {href: "#profile", label: websiteCopy["usehostlistingpagecontroller_0495"]},
-    {href: "#sources", label: websiteCopy["usehostlistingpagecontroller_0498"]},
-    {href: claimHref, label: websiteCopy["usehostlistingpagecontroller_0492"]},
-  ], [claimHref]);
+    ...(!isAppCreated ? [{href: "#sources", label: websiteCopy["usehostlistingpagecontroller_0498"]}] : []),
+    ...(policy.canRequestClaim ? [{href: claimHref, label: websiteCopy["usehostlistingpagecontroller_0492"]}] : []),
+  ], [claimHref, isAppCreated, policy.canRequestClaim]);
 
   const handleSaveListing = useCallback(() => {
     const nextSaved = !isSaved;
@@ -101,7 +105,9 @@ export function useHostListingPageController(listing: HostListing) {
     handleSaveListing,
     handleShareListing,
     hasEventSupply,
-    headerCtaLabel: isAppCreated ? listing.claim.label : "Claim listing",
+    headerCtaLabel: policy.canRequestClaim ?
+      "Claim listing" :
+      isAppCreated ? listing.claim.label : "Search organizers",
     isAppCreated,
     isSaved,
     nav,

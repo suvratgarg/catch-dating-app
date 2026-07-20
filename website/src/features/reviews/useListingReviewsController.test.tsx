@@ -109,6 +109,33 @@ describe("useListingReviewsController", () => {
     expect(createPublicOrganizerReview).not.toHaveBeenCalled();
   });
 
+  it("keeps public reviews enabled when only claim submission is disabled", async () => {
+    const listing = {
+      ...hostListings[0],
+      authority: {
+        claimState: "unclaimed",
+        ownershipState: "programmatic",
+        publishStatus: "published",
+        verificationStatus: "sourceBacked",
+      },
+      capabilities: {
+        claimRequest: {state: "disabled", reason: "Claim target is syncing."},
+        publicReviews: {readState: "enabled", writeState: "enabled", reason: ""},
+      },
+    } as HostListing;
+    const {wrapper} = queryHarness();
+    const {result} = renderHook(() => useListingReviewsController(listing), {wrapper});
+
+    act(() => {
+      result.current.setComment("A thoughtful evening.");
+      result.current.setReviewerName("Guest");
+    });
+    await act(async () => result.current.submitReview(submitEvent()));
+
+    expect(result.current.publicReviewWriteEnabled).toBe(true);
+    expect(result.current.status.tone).toBe("is-success");
+  });
+
   it("adds an unconfigured review locally and exposes it in the summary", async () => {
     const listing = enabledListing();
     const {wrapper} = queryHarness();
@@ -152,7 +179,10 @@ describe("useListingReviewsController", () => {
       isAnonymous: false,
       ownerResponse: null,
     };
-    createPublicOrganizerReview.mockResolvedValue({reviewId: remoteReview.id, review: remoteReview});
+    createPublicOrganizerReview.mockResolvedValue({
+      reviewId: remoteReview.id,
+      review: {...remoteReview, moderationStatus: "published"},
+    });
     const {client, wrapper} = queryHarness();
     const invalidateQueries = vi.spyOn(client, "invalidateQueries");
     const {result} = renderHook(() => useListingReviewsController(listing), {wrapper});
@@ -170,6 +200,7 @@ describe("useListingReviewsController", () => {
       isAnonymous: false,
       rating: 5,
       reviewerName: "Guest",
+      submittedFromPath: listing.path,
     }));
     expect(invalidateQueries).toHaveBeenCalledWith({
       queryKey: ["website", "reviews", "listing", listing.id],
@@ -179,5 +210,46 @@ describe("useListingReviewsController", () => {
       tone: "is-success",
     });
     expect(result.current.reviews[0]).toMatchObject({id: "review-1"});
+  });
+
+  it("acknowledges moderation-pending reviews without rendering them", async () => {
+    reviewConfig.enabled = true;
+    const listing = enabledListing();
+    const pendingReview = {
+      id: "review-pending",
+      reviewerName: "Guest",
+      rating: 2,
+      comment: "Needs moderation.",
+      createdAt: "2026-07-13T08:00:00.000Z",
+      verificationStatus: "unverified" as const,
+      source: "publicListing" as const,
+      isAnonymous: false,
+      ownerResponse: null,
+    };
+    createPublicOrganizerReview.mockResolvedValue({
+      reviewId: pendingReview.id,
+      review: {...pendingReview, moderationStatus: "pending"},
+    });
+    const {wrapper} = queryHarness();
+    const {result} = renderHook(() => useListingReviewsController(listing), {wrapper});
+
+    await waitFor(() => expect(listPublicOrganizerReviews).toHaveBeenCalled());
+    act(() => {
+      result.current.setComment("Needs moderation.");
+      result.current.setReviewerName("Guest");
+      result.current.setRating(2);
+    });
+    await act(async () => result.current.submitReview(submitEvent()));
+
+    expect(result.current.status).toEqual({
+      message: "Review submitted for moderation.",
+      tone: "is-success",
+    });
+    expect(result.current.reviews).not.toEqual(expect.arrayContaining([
+      expect.objectContaining({id: "review-pending"}),
+    ]));
+    expect(result.current.summary.displayReviewCount).toBe(
+      listing.metrics?.reviewCount ?? listing.reviews.length
+    );
   });
 });

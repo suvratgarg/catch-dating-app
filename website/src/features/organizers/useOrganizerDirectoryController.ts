@@ -8,6 +8,7 @@ import {
   defaultOrganizerDirectoryFilters,
   hasAnyEventSignal,
   hasUpcomingCatchEvent,
+  isClaimSubmissionEnabledListing,
   isUnclaimedListing,
   isVerifiedListing,
   organizerAppearanceContext,
@@ -133,7 +134,10 @@ export function useOrganizerDirectoryController() {
       if (isVerifiedListing(listing)) verifiedCount += 1;
       if (isUnclaimedListing(listing)) {
         unclaimedCount += 1;
-        if (claimableListings.length < 3) claimableListings.push(listing);
+        if (
+          claimableListings.length < 3 &&
+          isClaimSubmissionEnabledListing(listing)
+        ) claimableListings.push(listing);
       }
       if (hasAnyEventSignal(listing)) eventBackedCount += 1;
     }

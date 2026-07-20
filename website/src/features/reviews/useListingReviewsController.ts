@@ -6,14 +6,15 @@ import type {ListPublicOrganizerReviewsResponse} from "../../firebase";
 import {publicReviewsFirebaseConfigured} from "../../firebaseConfig";
 import type {FormStatus} from "../../shared/forms/types";
 import {websiteQueryKeys} from "../../shared/query/queryKeys";
-import {isPublicApiEnabled} from "../organizers/selectors";
+import {organizerPolicyForListing} from "../organizers/organizerPolicy";
 import type {HostListing, HostListingReview} from "../organizers/types";
 import {buildListingReviewSummary, mergeReviews} from "./reviewModel";
 
 export function useListingReviewsController(listing: HostListing) {
   const queryClient = useQueryClient();
   const seedReviews = useMemo(() => listing.reviews ?? [], [listing]);
-  const publicApiEnabled = isPublicApiEnabled(listing);
+  const policy = organizerPolicyForListing(listing);
+  const publicApiEnabled = policy.canWritePublicReview;
   const reviewQueryKey = useMemo(
     () => websiteQueryKeys.reviews.listing(listing.id),
     [listing.id]
@@ -31,7 +32,7 @@ export function useListingReviewsController(listing: HostListing) {
   }, [listing.id]);
 
   const reviewsQuery = useQuery({
-    enabled: publicApiEnabled && publicReviewsFirebaseConfigured,
+    enabled: policy.canReadPublicReviews && publicReviewsFirebaseConfigured,
     queryFn: async () => {
       const {listPublicOrganizerReviews} = await import("../../firebase");
       return listPublicOrganizerReviews({organizerId: listing.id});
@@ -60,11 +61,15 @@ export function useListingReviewsController(listing: HostListing) {
         comment: payload.comment,
         reviewerName: payload.reviewerName,
         isAnonymous: payload.isAnonymous,
-        submittedFromPath: window.location.pathname,
+        submittedFromPath: listing.path,
       });
+      const review = result.review as typeof result.review & {
+        moderationStatus?: "published" | "pending";
+      };
       return {
         mode: "remote" as const,
-        review: result.review,
+        moderationStatus: review.moderationStatus ?? "published",
+        review,
       };
     },
   });
@@ -86,7 +91,7 @@ export function useListingReviewsController(listing: HostListing) {
 
     if (!publicApiEnabled) {
       setStatus({
-        message: listing.publicApi.reason,
+        message: policy.publicReviewReason,
         tone: "is-error",
       });
       return;
@@ -128,6 +133,22 @@ export function useListingReviewsController(listing: HostListing) {
       });
 
       if (result.mode === "remote") {
+        if (result.moderationStatus === "pending") {
+          await queryClient.invalidateQueries({queryKey: reviewQueryKey});
+          setStatus({
+            message: "Review submitted for moderation.",
+            tone: "is-success",
+          });
+          setComment("");
+          if (isAnonymous) setReviewerName("");
+          trackMarketingEvent("listing_public_review_submitted", {
+            club_id: listing.id,
+            anonymous: isAnonymous,
+            configured: publicReviewsFirebaseConfigured,
+            moderation_status: "pending",
+          });
+          return;
+        }
         // Keep the callable's accepted review visible while the eventually
         // consistent list query catches up. mergeReviews deduplicates it once
         // the backend read returns the same id.
@@ -163,6 +184,7 @@ export function useListingReviewsController(listing: HostListing) {
         club_id: listing.id,
         anonymous: isAnonymous,
         configured: publicReviewsFirebaseConfigured,
+        moderation_status: result.mode === "remote" ? result.moderationStatus : "local",
       });
     } catch (error) {
       setStatus({
@@ -184,6 +206,8 @@ export function useListingReviewsController(listing: HostListing) {
     isAnonymous,
     isSubmitting: createReviewMutation.isPending,
     publicApiEnabled,
+    publicReviewReason: policy.publicReviewReason,
+    publicReviewWriteEnabled: policy.canWritePublicReview,
     rating,
     reviewFormId: `review-${listing.id}`,
     reviewerName,

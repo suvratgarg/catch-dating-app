@@ -3,7 +3,7 @@ import {
   StatusBadge as SharedStatusBadge,
 } from "../../shared/ui/primitives";
 import {activityForListing} from "./publicDiscovery";
-import {isVerifiedListing} from "./selectors";
+import {organizerPolicyForListing} from "./organizerPolicy";
 import type {HostListing} from "./types";
 
 export function ActivityMark({
@@ -23,17 +23,10 @@ export function StatusBadge({
   listing: HostListing;
   compact?: boolean;
 }) {
-  const isVerified = isVerifiedListing(listing);
-  const isUnclaimed = listing.status.toLowerCase() === "unclaimed";
-  const label = isVerified
-    ? compact ? "Verified" : "Verified on Catch"
-    : isUnclaimed
-      ? "Unclaimed"
-      : "Claimed";
-  const tone = isVerified ? "verified" : isUnclaimed ? "unclaimed" : "claimed";
+  const {badge} = organizerPolicyForListing(listing);
   return (
-    <SharedStatusBadge tone={tone}>
-      {label}
+    <SharedStatusBadge tone={badge.tone}>
+      {compact ? badge.compactLabel : badge.label}
     </SharedStatusBadge>
   );
 }

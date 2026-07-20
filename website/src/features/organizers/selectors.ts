@@ -1,4 +1,5 @@
 import type {HostListing, HostListingCatchEvent, HostListingExternalEvent} from "./types";
+import {organizerPolicyForListing} from "./organizerPolicy";
 
 export type OrganizerStatusFilter = "all" | "verified" | "claimed" | "unclaimed";
 export type OrganizerSort = "relevance" | "reviews" | "rating" | "upcoming" | "confidence";
@@ -190,12 +191,12 @@ export function hasAnyEventSignal(listing: HostListing) {
 }
 
 export function isVerifiedListing(listing: HostListing) {
-  return listing.listingVariant === "appCreatedClub" ||
-    listing.sourceConfidence === "first_party";
+  const policy = organizerPolicyForListing(listing);
+  return policy.isCatchCreated || policy.verificationStatus === "ownerVerified";
 }
 
 export function isUnclaimedListing(listing: HostListing) {
-  return listing.status.toLowerCase() === "unclaimed";
+  return organizerPolicyForListing(listing).claimState === "unclaimed";
 }
 
 export function isPublicApiEnabled(listing: HostListing) {
@@ -203,7 +204,7 @@ export function isPublicApiEnabled(listing: HostListing) {
 }
 
 export function isClaimSubmissionEnabledListing(listing: HostListing) {
-  return isUnclaimedListing(listing) && isPublicApiEnabled(listing);
+  return organizerPolicyForListing(listing).canRequestClaim;
 }
 
 export function hasUpcomingCatchEvent(listing: HostListing) {
