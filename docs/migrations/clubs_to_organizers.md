@@ -109,6 +109,9 @@ Complete this sequence independently in dev, staging, and production:
    repository and choose a new, unused file path within it. The backup contains
    full Firestore documents and must never be committed or stored as an ordinary
    build artifact.
+
+   On macOS/Linux, the tool verifies that directory mode is `0700` and writes
+   the new backup file as `0600`.
 4. Apply only after the environment and plan have been explicitly approved:
 
    ```sh

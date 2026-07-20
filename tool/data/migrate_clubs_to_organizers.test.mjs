@@ -73,8 +73,12 @@ test("backup path must be in an existing directory outside the repository", () =
   const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), "organizer-backup-"));
   const root = path.join(sandbox, "repo");
   const secure = path.join(sandbox, "secure");
+  const shared = path.join(sandbox, "shared");
   fs.mkdirSync(root);
-  fs.mkdirSync(secure);
+  fs.mkdirSync(secure, {mode: 0o700});
+  fs.mkdirSync(shared, {mode: 0o755});
+  fs.chmodSync(secure, 0o700);
+  fs.chmodSync(shared, 0o755);
 
   assert.equal(
     resolveBackupFile(path.join(secure, "backup.json"), {root}),
@@ -88,6 +92,12 @@ test("backup path must be in an existing directory outside the repository", () =
     () => resolveBackupFile(path.join(sandbox, "missing", "backup.json"), {root}),
     /must already exist/u
   );
+  if (process.platform !== "win32") {
+    assert.throws(
+      () => resolveBackupFile(path.join(shared, "backup.json"), {root}),
+      /owner-restricted/u
+    );
+  }
 });
 
 test("canonical organizer document writes canonical aliases and route", () => {

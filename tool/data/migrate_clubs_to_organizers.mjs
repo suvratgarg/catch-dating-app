@@ -649,7 +649,10 @@ function summarizePlan(firestorePlan, storagePlan, projectId) {
 }
 
 function writeBackup(path, payload) {
-  fs.writeFileSync(path, `${JSON.stringify(payload, null, 2)}\n`, {flag: "wx"});
+  fs.writeFileSync(path, `${JSON.stringify(payload, null, 2)}\n`, {
+    flag: "wx",
+    mode: 0o600,
+  });
   console.log(`Wrote pre-apply backup to ${path}.`);
 }
 
@@ -668,6 +671,11 @@ export function resolveBackupFile(candidate, {root = fromRepo()} = {}) {
     throw new Error(
       "--backup-file must be outside the repository because it contains " +
       "full Firestore documents."
+    );
+  }
+  if (process.platform !== "win32" && (fs.statSync(realParent).mode & 0o077) !== 0) {
+    throw new Error(
+      `Backup directory must be owner-restricted (mode 0700): ${realParent}.`
     );
   }
   return path.join(realParent, path.basename(backupPath));
