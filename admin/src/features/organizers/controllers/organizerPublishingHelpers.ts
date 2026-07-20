@@ -276,7 +276,7 @@ export function validateOrganizerPublishingForm(
     return [{
       id: "no-form",
       label: "No organizer loaded",
-      detail: "Load a canonical clubs/{id} document before publishing.",
+      detail: "Load a canonical organizers/{id} document before publishing.",
       severity: "blocker",
     }];
   }

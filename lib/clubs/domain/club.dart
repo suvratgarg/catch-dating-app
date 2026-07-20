@@ -29,6 +29,12 @@ Object? _readOrganizerType(Map<dynamic, dynamic> json, String key) {
   };
 }
 
+Object? _readOrganizerPhotos(Map<dynamic, dynamic> json, String key) =>
+    json[key] ?? json['clubPhotos'];
+
+Object? _readFollowerCount(Map<dynamic, dynamic> json, String key) =>
+    json[key] ?? json['memberCount'];
+
 @freezed
 abstract class Club with _$Club {
   const Club._();
@@ -50,10 +56,14 @@ abstract class Club with _$Club {
     @TimestampConverter() required DateTime createdAt,
     String? imageUrl,
     String? profileImageUrl,
-    @Default([]) List<UploadedPhoto> clubPhotos,
+    @JsonKey(name: 'organizerPhotos', readValue: _readOrganizerPhotos)
+    @Default([])
+    List<UploadedPhoto> clubPhotos,
     UploadedPhoto? logoPhoto,
     @Default([]) List<String> tags,
-    @Default(0) int memberCount,
+    @JsonKey(name: 'followerCount', readValue: _readFollowerCount)
+    @Default(0)
+    int memberCount,
     @Default(0.0) double rating,
     @Default(0) int reviewCount,
     @NullableTimestampConverter() DateTime? nextEventAt,
@@ -113,6 +123,10 @@ abstract class Club with _$Club {
     if (clubPhotos.isNotEmpty) return clubPhotos.first.url;
     return imageUrl;
   }
+
+  List<UploadedPhoto> get organizerPhotos => clubPhotos;
+
+  int get followerCount => memberCount;
 
   String? get logoPhotoUrl => logoPhoto?.thumbnailOrUrl ?? profileImageUrl;
 

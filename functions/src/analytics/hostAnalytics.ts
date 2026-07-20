@@ -72,6 +72,7 @@ interface AnalyticsRecords {
 interface EventMetricAccumulator {
   eventId: string;
   clubId: string;
+  organizerId: string;
   title: string;
   startTime: Date;
   status: string;
@@ -303,9 +304,11 @@ export function buildHostAnalyticsFromRecords(
       preset: range.preset,
     },
     scope: {
+      organizerIds: clubIds,
       clubIds,
       eventIds,
       clubName: resolveClubName(records, rows),
+      organizerName: resolveClubName(records, rows),
       eventTitle: resolveEventTitle(records, eventMetrics),
     },
     summaryCards: [
@@ -409,6 +412,8 @@ export function buildHostAnalyticsFromRecords(
     topEvents: topEvents.map((event) => ({
       eventId: event.eventId,
       clubId: event.clubId,
+
+      organizerId: event.organizerId ?? event.clubId,
       title: event.title,
       startTime: event.startTime.toISOString(),
       status: event.status,
@@ -501,7 +506,7 @@ export function hostAnalyticsSnapshotId(
   clubs: ClubRecord[]
 ): string {
   const scopeHash = createHash("sha256").update(JSON.stringify({
-    clubId: payload.clubId ?? null,
+    organizerId: payload.organizerId ?? payload.clubId ?? null,
     eventId: payload.eventId ?? null,
     clubIds: clubs.map((club) => club.id).sort(),
     start: range.start.toISOString(),
@@ -607,6 +612,7 @@ function normalizeAnalyticsPayload(data: unknown): unknown {
   return {
     ...input,
     clubId: nullableTrimmedString(input.clubId),
+    organizerId: nullableTrimmedString(input.organizerId),
     eventId: nullableTrimmedString(input.eventId),
     startDate: nullableTrimmedString(input.startDate),
     endDate: nullableTrimmedString(input.endDate),
@@ -626,19 +632,20 @@ async function resolveClubs(
       throw new HttpsError("not-found", "Event not found.");
     }
     const event = eventSnap.data() as EventDocument;
-    const club = await getClubRecord(db, event.clubId);
+    const club = await getClubRecord(db, event.organizerId ?? event.clubId);
     assertCanReadClub(club, scope, uid);
     return [club];
   }
 
-  if (payload.clubId) {
-    const club = await getClubRecord(db, payload.clubId);
+  const requestedOrganizerId = payload.organizerId ?? payload.clubId;
+  if (requestedOrganizerId) {
+    const club = await getClubRecord(db, requestedOrganizerId);
     assertCanReadClub(club, scope, uid);
     return [club];
   }
 
   if (scope === "admin") {
-    const snap = await db.collection("clubs").limit(maxAdminClubs).get();
+    const snap = await db.collection("organizers").limit(maxAdminClubs).get();
     return snap.docs.map((doc) => ({
       id: doc.id,
       data: doc.data() as ClubDocument,
@@ -646,15 +653,15 @@ async function resolveClubs(
   }
 
   const snapshots = await Promise.all([
-    db.collection("clubs")
+    db.collection("organizers")
       .where("hostUserIds", "array-contains", uid)
       .limit(maxHostClubs)
       .get(),
-    db.collection("clubs")
+    db.collection("organizers")
       .where("ownerUserId", "==", uid)
       .limit(maxHostClubs)
       .get(),
-    db.collection("clubs")
+    db.collection("organizers")
       .where("hostUserId", "==", uid)
       .limit(maxHostClubs)
       .get(),
@@ -681,7 +688,7 @@ async function resolveEvents(
     return [{id: snap.id, data: snap.data() as EventDocument}];
   }
 
-  if (scope === "admin" && !payload.clubId) {
+  if (scope === "admin" && !payload.organizerId && !payload.clubId) {
     const snap = await db.collection("events")
       .where("startTime", ">=", admin.firestore.Timestamp.fromDate(
         range.start
@@ -699,7 +706,7 @@ async function resolveEvents(
 
   const eventSnapshots = await Promise.all(
     clubs.map((club) => db.collection("events")
-      .where("clubId", "==", club.id)
+      .where("organizerId", "==", club.id)
       .limit(maxHostEventsPerClub)
       .get())
   );
@@ -716,7 +723,7 @@ async function getClubRecord(
   db: FirebaseFirestore.Firestore,
   clubId: string
 ): Promise<ClubRecord> {
-  const clubSnap = await db.collection("clubs").doc(clubId).get();
+  const clubSnap = await db.collection("organizers").doc(clubId).get();
   if (!clubSnap.exists) {
     throw new HttpsError("not-found", "Club not found.");
   }
@@ -751,6 +758,7 @@ function eventMetricsFromRows(
       byEvent.set(row.eventId, {
         eventId: row.eventId,
         clubId: row.clubId,
+        organizerId: fallbackEvent?.data.organizerId ?? row.clubId,
         title: row.eventTitle ?? fallbackEventTitle(fallbackEvent),
         startTime: parseDate(row.eventStartTime) ??
           timestampToDate(fallbackEvent?.data.startTime) ??
@@ -1438,7 +1446,8 @@ function adminAnalyticsTargetPath(
   payload: HostAnalyticsQueryCallablePayload
 ): string {
   if (payload.eventId) return `events/${payload.eventId}/analytics`;
-  if (payload.clubId) return `clubs/${payload.clubId}/analytics`;
+  const organizerId = payload.organizerId ?? payload.clubId;
+  if (organizerId) return `organizers/${organizerId}/analytics`;
   return "admin/hostAnalytics";
 }
 

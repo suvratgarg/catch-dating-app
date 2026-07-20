@@ -221,11 +221,12 @@ export function buildChatSignalFacts(params: {
 export function buildAttendanceSignalFact(params: {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   uid: string;
   attended: boolean;
   sourceId: string;
 }): ParticipantSignalFactInput {
-  const {eventId, clubId, uid, attended, sourceId} = params;
+  const {eventId, clubId, organizerId, uid, attended, sourceId} = params;
   const type = attended ? "event_attended" : "event_attendance_removed";
   return {
     id: participantSignalFactId(type, uid, sourceId),
@@ -235,6 +236,7 @@ export function buildAttendanceSignalFact(params: {
     direction: "self",
     eventId,
     clubId,
+    organizerId: organizerId ?? clubId,
     visibility: "aggregateSafe",
   };
 }

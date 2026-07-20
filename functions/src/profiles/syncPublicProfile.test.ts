@@ -250,10 +250,14 @@ test("syncUserProfileProjectionsHandler deletes profiles below social-ready",
   }
 );
 
-test("syncHostedClubHostProfile updates every club hosted by the user",
+test("syncHostedClubHostProfile updates canonical and legacy organizer hosts",
   async () => {
     const firestore = new FakeFirestore({
-      "clubs/club-1": {hostUserId: "host-1", hostName: "Old 1"},
+      "organizers/club-1": {
+        ownerUserId: "host-1",
+        hostUserId: "host-1",
+        hostName: "Old 1",
+      },
       "clubs/club-2": {hostUserId: "host-1", hostName: "Old 2"},
       "clubs/club-3": {hostUserId: "host-2", hostName: "Other"},
     });
@@ -264,22 +268,23 @@ test("syncHostedClubHostProfile updates every club hosted by the user",
       {firestore: () => firestore as never}
     );
 
-    assert.equal(firestore.get("clubs/club-1")?.hostName, "New Host");
+    assert.equal(firestore.get("organizers/club-1")?.hostName, "New Host");
     assert.equal(firestore.get("clubs/club-2")?.hostName, "New Host");
     assert.equal(firestore.get("clubs/club-3")?.hostName, "Other");
   }
 );
 
-test("syncHostProfileProjectionsHandler owns club host display snapshots",
+test("syncHostProfileProjectionsHandler owns organizer host display snapshots",
   async () => {
     const timestamp = {} as FirebaseFirestore.Timestamp;
     const firestore = new FakeFirestore({
-      "clubs/club-1": {
+      "organizers/club-1": {
+        ownerUserId: "host-1",
         hostUserId: "host-1",
         hostName: "Old 1",
         hostAvatarUrl: null,
       },
-      "clubs/club-2": {
+      "organizers/club-2": {
         hostUserId: "host-2",
         hostUserIds: ["host-2", "host-1"],
         hostProfiles: [
@@ -312,7 +317,8 @@ test("syncHostProfileProjectionsHandler owns club host display snapshots",
       {firestore: () => firestore as never}
     );
 
-    assert.deepEqual(firestore.get("clubs/club-1"), {
+    assert.deepEqual(firestore.get("organizers/club-1"), {
+      ownerUserId: "host-1",
       hostUserId: "host-1",
       hostName: "Asha Studio",
       hostAvatarUrl: "https://example.test/host-avatar.jpg",
@@ -323,7 +329,7 @@ test("syncHostProfileProjectionsHandler owns club host display snapshots",
         role: "owner",
       }],
     });
-    assert.deepEqual(firestore.get("clubs/club-2")?.hostProfiles, [
+    assert.deepEqual(firestore.get("organizers/club-2")?.hostProfiles, [
       {
         uid: "host-2",
         displayName: "Other",

@@ -12,11 +12,16 @@ const schemaRecordOrganizerAnalyticsEventCallablePayloadSchema = <String, Object
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
-    'clubId',
+    'organizerId',
     'eventName',
     'pagePath',
   ],
   'properties': <String, Object?>{
+    'organizerId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
     'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,

@@ -3,8 +3,8 @@ import {CallableRequest, HttpsError, onCall} from
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {
-  ClubClaimRequestDocument,
-  ClubDocument,
+  OrganizerClaimRequestDocument,
+  OrganizerDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
@@ -87,7 +87,7 @@ export async function adminListClubClaimRequestsHandler(
     adminContext.uid,
     "adminListClubClaimRequests"
   );
-  const snapshot = await db.collection("clubClaimRequests")
+  const snapshot = await db.collection("organizerClaimRequests")
     .where("status", "==", "pending")
     .limit(100)
     .get();
@@ -109,21 +109,22 @@ export async function adminGetClubClaimRequestDetailsHandler(
     adminContext.uid,
     "adminGetClubClaimRequestDetails"
   );
-  const requestRef = db.collection("clubClaimRequests").doc(payload.requestId);
+  const requestRef = db.collection("organizerClaimRequests")
+    .doc(payload.requestId);
   const requestSnapshot = await requestRef.get();
   if (!requestSnapshot.exists) {
     throw new HttpsError("not-found", "Organizer claim request not found.");
   }
-  const claimRequest = requireDoc<ClubClaimRequestDocument>(
+  const claimRequest = requireDoc<OrganizerClaimRequestDocument>(
     requestSnapshot,
-    "ClubClaimRequestDocument"
+    "OrganizerClaimRequestDocument"
   );
   const [clubSnapshot, requesterSnapshot] = await Promise.all([
-    db.collection("clubs").doc(claimRequest.clubId).get(),
+    db.collection("organizers").doc(claimRequest.organizerId).get(),
     db.collection("users").doc(claimRequest.requesterUid).get(),
   ]);
   const club = clubSnapshot.exists ?
-    requireDoc<ClubDocument>(clubSnapshot, "ClubDocument") :
+    requireDoc<OrganizerDocument>(clubSnapshot, "OrganizerDocument") :
     null;
   const requester = requesterSnapshot.exists ?
     requireDoc<UserProfileDocument>(requesterSnapshot, "UserProfileDocument") :
@@ -155,8 +156,8 @@ function claimListRow(
 ): AdminClubClaimListRow {
   return {
     requestId,
-    targetPath: `clubClaimRequests/${requestId}`,
-    clubId: stringValue(data.clubId) ?? "unknown",
+    targetPath: `organizerClaimRequests/${requestId}`,
+    clubId: stringValue(data.organizerId) ?? "unknown",
     requesterUid: stringValue(data.requesterUid) ?? "unknown",
     requesterName: stringValue(data.requesterName) ?? "Unknown requester",
     requesterRole: stringValue(data.requesterRole) ?? "unknown",
@@ -171,8 +172,8 @@ function claimListRow(
 
 function claimDetails(
   requestId: string,
-  claimRequest: ClubClaimRequestDocument,
-  club: ClubDocument | null,
+  claimRequest: OrganizerClaimRequestDocument,
+  club: OrganizerDocument | null,
   requester: UserProfileDocument | null
 ): AdminClubClaimRequestDetails {
   return {

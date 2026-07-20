@@ -282,7 +282,10 @@ function OrganizerPublishingContractPanel({
       action="clubs"
     >
       <QualityList>
-        <StateRow label="Source of truth" value="Cloud Firestore clubs/{id}" />
+        <StateRow
+          label="Source of truth"
+          value="Cloud Firestore organizers/{id}"
+        />
         <StateRow
           label="Search/list"
           value="adminListClubDetails + adminSearch.tokens"
@@ -923,7 +926,10 @@ function AppListingPreview({
   ].slice(0, 6);
   return (
     <QualityList>
-      <StateRow label="Collection" value={`clubs/${club?.clubId ?? ""}`} />
+      <StateRow
+        label="Collection"
+        value={`organizers/${club?.clubId ?? ""}`}
+      />
       <StateRow label="App visibility" value={form.appVisibility} />
       <StateRow label="Image" value={form.imageUrl ? "imageUrl set" : "missing"} />
       <StateRow

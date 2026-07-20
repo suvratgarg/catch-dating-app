@@ -4,7 +4,7 @@
   "legacyStoragePath": "clubs/{clubId}",
   "candidatePrimaryStoragePath": "organizers/{organizerId}",
   "selectedFutureName": "organizers",
-  "currentPhase": "canonical_type_dual_read",
+  "currentPhase": "backfill_and_parity",
   "reason": "Organizer is the durable product entity and club is one organizer subtype. The migration must replace club-specific storage, identifiers, relationships, routes, and client vocabulary without breaking released apps or public pages.",
   "classification": {
     "field": "organizerType",
@@ -28,17 +28,17 @@
   "phases": [
     {
       "id": "contract_and_reference_client",
-      "status": "pending",
+      "status": "complete",
       "description": "Define the organizer taxonomy, migration aliases, audited owner-editable field, and one Host app reference flow while legacy documents default to club."
     },
     {
       "id": "backend_dual_support",
-      "status": "pending",
+      "status": "complete",
       "description": "Add organizer-named callables and repositories, mirror writes into organizers, and keep bounded club-named callable wrappers for released clients."
     },
     {
       "id": "relationship_and_reference_dual_write",
-      "status": "pending",
+      "status": "complete",
       "description": "Introduce organizerId and organizer relationship collections, dual-write all dependent documents, projections, search records, analytics dimensions, and storage paths."
     },
     {
@@ -48,7 +48,7 @@
     },
     {
       "id": "client_cutover",
-      "status": "pending",
+      "status": "complete",
       "description": "Move Flutter consumer and Hosts surfaces plus React website and admin clients to organizer-named domains, identifiers, routes, and primary reads."
     },
     {

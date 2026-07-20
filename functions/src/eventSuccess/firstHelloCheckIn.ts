@@ -71,6 +71,7 @@ interface FirstHelloAnswerOption {
 interface FirstHelloMissionDocument {
   eventId: string;
   clubId: string;
+  organizerId: string;
   observerUid: string;
   targetUid: string;
   targetDisplayName: string;
@@ -201,6 +202,8 @@ export async function startEventSuccessFirstHelloMissionHandler(
   const mission = buildFirstHelloMission({
     eventId: data.eventId,
     clubId: event.clubId,
+
+    organizerId: event.organizerId ?? event.clubId,
     observerUid,
     target,
     now,
@@ -336,6 +339,8 @@ export async function completeEventSuccessFirstHelloMissionHandler(
       exists: participationSnap.exists,
       eventId: data.eventId,
       clubId: event.clubId,
+
+      organizerId: event.organizerId ?? event.clubId,
       uid: observerUid,
       status: "attended",
       genderAtSignup: participation.genderAtSignup ?? undefined,
@@ -555,6 +560,7 @@ function candidateCohortCanIncludeViewer(
 function buildFirstHelloMission(params: {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   observerUid: string;
   target: FirstHelloCandidate;
   now: FirebaseFirestore.FieldValue;
@@ -562,6 +568,7 @@ function buildFirstHelloMission(params: {
   return {
     eventId: params.eventId,
     clubId: params.clubId,
+    organizerId: params.organizerId ?? params.clubId,
     observerUid: params.observerUid,
     targetUid: params.target.uid,
     targetDisplayName: params.target.profile.name,

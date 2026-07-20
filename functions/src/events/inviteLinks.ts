@@ -25,7 +25,11 @@ import {
   validateRecordEventInviteLinkOpenCallablePayload,
 } from "../shared/generated/schemaValidators";
 import {requireAuth} from "../shared/auth";
-import {isClubHost} from "../shared/clubHosts";
+import {
+  eventOrganizerRef,
+  isEventOrganizerManager,
+  requireEventOrganizer,
+} from "../shared/eventOrganizers";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
@@ -87,15 +91,12 @@ export async function createEventInviteLinkHandler(
       throw new HttpsError("not-found", "Event not found.");
     }
     const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
-    const clubSnap = await tx.get(db.collection("clubs").doc(event.clubId));
-    if (!clubSnap.exists) {
-      throw new HttpsError("not-found", "Club not found.");
-    }
-    if (!isClubHost(clubSnap.data() as Parameters<typeof isClubHost>[0],
-      hostUid)) {
+    const organizerSnap = await tx.get(eventOrganizerRef(db, event));
+    const organizer = requireEventOrganizer(organizerSnap, event);
+    if (!isEventOrganizerManager(organizer, event, hostUid)) {
       throw new HttpsError(
         "permission-denied",
-        "Only a club host can create invite links."
+        "Only an organizer manager can create invite links."
       );
     }
 
@@ -103,6 +104,8 @@ export async function createEventInviteLinkHandler(
     tx.create(inviteRef, {
       eventId: payload.eventId,
       clubId: event.clubId,
+
+      organizerId: event.organizerId ?? event.clubId,
       hostUid,
       label,
       source,
@@ -165,15 +168,12 @@ export async function disableEventInviteLinkHandler(
       throw new HttpsError("not-found", "Event not found.");
     }
     const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
-    const clubSnap = await tx.get(db.collection("clubs").doc(event.clubId));
-    if (!clubSnap.exists) {
-      throw new HttpsError("not-found", "Club not found.");
-    }
-    if (!isClubHost(clubSnap.data() as Parameters<typeof isClubHost>[0],
-      hostUid)) {
+    const organizerSnap = await tx.get(eventOrganizerRef(db, event));
+    const organizer = requireEventOrganizer(organizerSnap, event);
+    if (!isEventOrganizerManager(organizer, event, hostUid)) {
       throw new HttpsError(
         "permission-denied",
-        "Only a club host can disable invite links."
+        "Only an organizer manager can disable invite links."
       );
     }
     if (link.disabledAt != null) return;

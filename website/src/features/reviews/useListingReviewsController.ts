@@ -2,7 +2,7 @@ import {websiteCopy} from "@content/generated";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {type FormEvent, useEffect, useMemo, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
-import type {ListPublicClubReviewsResponse} from "../../firebase";
+import type {ListPublicOrganizerReviewsResponse} from "../../firebase";
 import {publicReviewsFirebaseConfigured} from "../../firebaseConfig";
 import type {FormStatus} from "../../shared/forms/types";
 import {websiteQueryKeys} from "../../shared/query/queryKeys";
@@ -33,8 +33,8 @@ export function useListingReviewsController(listing: HostListing) {
   const reviewsQuery = useQuery({
     enabled: publicApiEnabled && publicReviewsFirebaseConfigured,
     queryFn: async () => {
-      const {listPublicClubReviews} = await import("../../firebase");
-      return listPublicClubReviews({clubId: listing.id});
+      const {listPublicOrganizerReviews} = await import("../../firebase");
+      return listPublicOrganizerReviews({organizerId: listing.id});
     },
     queryKey: reviewQueryKey,
   });
@@ -53,9 +53,9 @@ export function useListingReviewsController(listing: HostListing) {
           review: payload.localReview,
         };
       }
-      const {createPublicClubReview} = await import("../../firebase");
-      const result = await createPublicClubReview({
-        clubId: listing.id,
+      const {createPublicOrganizerReview} = await import("../../firebase");
+      const result = await createPublicOrganizerReview({
+        organizerId: listing.id,
         rating: payload.rating,
         comment: payload.comment,
         reviewerName: payload.reviewerName,
@@ -132,7 +132,7 @@ export function useListingReviewsController(listing: HostListing) {
         // consistent list query catches up. mergeReviews deduplicates it once
         // the backend read returns the same id.
         setLocalReviews((current) => mergeReviews([result.review], current));
-        queryClient.setQueryData<ListPublicClubReviewsResponse>(
+        queryClient.setQueryData<ListPublicOrganizerReviewsResponse>(
           reviewQueryKey,
           (current) => {
             const seen = new Set<string>();

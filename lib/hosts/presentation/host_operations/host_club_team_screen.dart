@@ -64,7 +64,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen> {
     final club = clubs.where((item) => item.id == widget.clubId).firstOrNull;
     if (club == null) {
       return CatchErrorScaffold.fromError(
-        StateError('Club unavailable'),
+        StateError('Organizer unavailable'),
         context: AppErrorContext.club,
         onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
       );

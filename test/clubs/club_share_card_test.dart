@@ -25,10 +25,10 @@ void main() {
       ),
     );
 
-    expect(find.text('CLUB ON CATCH'), findsOneWidget);
+    expect(find.text('ORGANIZER ON CATCH'), findsOneWidget);
     expect(find.text('Stride Social'), findsOneWidget);
     expect(find.text('Bandra, Mumbai'), findsOneWidget);
-    expect(find.text('24 members'), findsOneWidget);
+    expect(find.text('24 followers'), findsOneWidget);
     expect(find.text('CATCH'), findsOneWidget);
   });
 
@@ -57,7 +57,7 @@ void main() {
     );
     await tester.pump();
 
-    await tester.tap(find.byTooltip('Share club'));
+    await tester.tap(find.byTooltip('Share organizer'));
     await pumpFeatureUi(tester);
 
     expect(find.byKey(RichShareCardSheetKeys.cardPreview), findsOneWidget);
@@ -74,8 +74,8 @@ void main() {
     });
 
     expect(sharedParams?.subject, 'Stride Social');
-    expect(sharedParams?.text, contains('/clubs/club-1'));
+    expect(sharedParams?.text, contains('/organizers/club-1'));
     expect(sharedParams?.files, hasLength(1));
-    expect(sharedParams?.fileNameOverrides, ['catch-club-card.png']);
+    expect(sharedParams?.fileNameOverrides, ['catch-organizer-card.png']);
   });
 }

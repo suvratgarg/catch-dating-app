@@ -12,7 +12,7 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
-    'clubId',
+    'organizerId',
     'startTimeMillis',
     'endTimeMillis',
     'meetingPoint',
@@ -31,10 +31,16 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 180,
     },
+    'organizerId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
     'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'description': 'Deprecated compatibility alias for organizerId.',
     },
     'startTimeMillis': <String, Object?>{
       'type': 'integer',

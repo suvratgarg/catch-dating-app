@@ -8,7 +8,7 @@ part of 'event.dart';
 
 _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   id: json['id'] as String,
-  clubId: json['clubId'] as String,
+  clubId: _readOrganizerId(json, 'organizerId') as String,
   startTime: const TimestampConverter().fromJson(json['startTime']),
   endTime: const TimestampConverter().fromJson(json['endTime']),
   meetingPoint: json['meetingPoint'] as String,
@@ -69,7 +69,7 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
 );
 
 Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
-  'clubId': instance.clubId,
+  'organizerId': instance.clubId,
   'startTime': const TimestampConverter().toJson(instance.startTime),
   'endTime': const TimestampConverter().toJson(instance.endTime),
   'meetingPoint': instance.meetingPoint,

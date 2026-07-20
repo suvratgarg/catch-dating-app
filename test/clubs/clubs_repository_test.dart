@@ -62,7 +62,7 @@ void main() {
 
       expect(generatedId, isNotEmpty);
       final generatedDoc = await firestore
-          .collection('clubs')
+          .collection('organizers')
           .doc(generatedId)
           .get();
       expect(generatedDoc.exists, isFalse);
@@ -76,8 +76,9 @@ void main() {
         await _seedClub(firestore, club);
 
         final decoded = await repository.fetchClub(club.id);
-        final encoded = (await firestore.collection('clubs').doc(club.id).get())
-            .data()!;
+        final encoded =
+            (await firestore.collection('organizers').doc(club.id).get())
+                .data()!;
         expect(decoded?.id, 'club-88');
         expect(decoded?.name, 'Stride Social');
         expect(decoded?.appVisibility, ClubAppVisibility.discoverable);
@@ -108,7 +109,7 @@ void main() {
       () async {
         final legacy = buildClub(id: 'legacy-club');
         await firestore
-            .collection('clubs')
+            .collection('organizers')
             .doc(legacy.id)
             .set(legacy.toJson()..remove('appVisibility'));
 
@@ -285,10 +286,10 @@ void main() {
       await expectLater(repository.watchClubsOwnedBy('host-1'), emits([owned]));
     });
 
-    test('createClub delegates creation to the callable', () async {
+    test('createClub delegates creation to the organizer callable', () async {
       final callable =
-          functions.httpsCallable('createClub') as TestHttpsCallable;
-      callable.resultData = {'clubId': 'club-42'};
+          functions.httpsCallable('createOrganizer') as TestHttpsCallable;
+      callable.resultData = {'organizerId': 'club-42'};
 
       final createdId = await repository.createClub(
         clubId: 'club-42',
@@ -302,11 +303,12 @@ void main() {
       expect(createdId, 'club-42');
       expect(callable.calls, [
         {
-          'clubId': 'club-42',
+          'organizerId': 'club-42',
           'name': 'Sunset Striders',
           'description': 'Easy city loops',
           'location': 'in-mh-mumbai',
           'area': 'Bandra',
+          'organizerType': 'club',
           'imageUrl': 'https://example.com/cover.jpg',
         },
       ]);
@@ -314,8 +316,8 @@ void main() {
 
     test('createClub passes contact fields through to the callable', () async {
       final callable =
-          functions.httpsCallable('createClub') as TestHttpsCallable;
-      callable.resultData = {'clubId': 'club-42'};
+          functions.httpsCallable('createOrganizer') as TestHttpsCallable;
+      callable.resultData = {'organizerId': 'club-42'};
 
       await repository.createClub(
         clubId: 'club-42',
@@ -349,10 +351,10 @@ void main() {
       );
 
       final callable =
-          functions.httpsCallable('updateClub') as TestHttpsCallable;
+          functions.httpsCallable('updateOrganizer') as TestHttpsCallable;
       expect(callable.calls, [
         {
-          'clubId': 'club-1',
+          'organizerId': 'club-1',
           'fields': {'name': 'New Name', 'area': 'New Area'},
         },
       ]);
@@ -367,10 +369,10 @@ void main() {
         );
 
         final callable =
-            functions.httpsCallable('updateClub') as TestHttpsCallable;
+            functions.httpsCallable('updateOrganizer') as TestHttpsCallable;
         expect(callable.calls, [
           {
-            'clubId': 'club-1',
+            'organizerId': 'club-1',
             'fields': {'imageUrl': 'https://example.com/updated.jpg'},
           },
         ]);
@@ -380,19 +382,19 @@ void main() {
     test('joinClub delegates membership to the callable', () async {
       await repository.joinClub('club-1');
 
-      expect(functions.callables['joinClub']?.calls, [
-        {'clubId': 'club-1'},
+      expect(functions.callables['followOrganizer']?.calls, [
+        {'organizerId': 'club-1'},
       ]);
-      expect(functions.callables.containsKey('leaveClub'), isFalse);
+      expect(functions.callables.containsKey('unfollowOrganizer'), isFalse);
     });
 
     test('leaveClub delegates membership to the callable', () async {
       await repository.leaveClub('club-1');
 
-      expect(functions.callables['leaveClub']?.calls, [
-        {'clubId': 'club-1'},
+      expect(functions.callables['unfollowOrganizer']?.calls, [
+        {'organizerId': 'club-1'},
       ]);
-      expect(functions.callables.containsKey('joinClub'), isFalse);
+      expect(functions.callables.containsKey('followOrganizer'), isFalse);
     });
 
     test('clubsRepositoryProvider builds from firebaseFirestoreProvider', () {
@@ -492,7 +494,7 @@ void main() {
 }
 
 Future<void> _seedClub(FakeFirebaseFirestore firestore, Club club) {
-  return firestore.collection('clubs').doc(club.id).set(club.toJson());
+  return firestore.collection('organizers').doc(club.id).set(club.toJson());
 }
 
 class _IdleClubsRepository extends Fake implements ClubsRepository {

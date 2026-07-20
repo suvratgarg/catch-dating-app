@@ -72,7 +72,7 @@ Future<List<ExploreEventRecommendationCandidate>> exploreRecommendedEvents(
     for (final event in events)
       ExploreEventRecommendationCandidate(
         event: event,
-        clubName: clubsById[event.clubId]?.name ?? 'Your club',
+        clubName: clubsById[event.clubId]?.name ?? 'Your organizer',
         clubLocation: clubsById[event.clubId]?.location,
       ),
   ];
@@ -149,7 +149,7 @@ ExploreEventRecommendation _scoreRecommendation({
 }) {
   final event = candidate.event;
   var score = 0.0;
-  var reason = 'From your clubs';
+  var reason = 'From organizers you follow';
 
   final distanceReason = _distancePreferenceReason(viewer, event);
   if (distanceReason != null) {
@@ -161,21 +161,21 @@ ExploreEventRecommendation _scoreRecommendation({
 
   final paceScore = _paceFitScore(viewer, event);
   score += paceScore;
-  if (reason == 'From your clubs' && paceScore >= 18) {
+  if (reason == 'From organizers you follow' && paceScore >= 18) {
     reason = 'Fits your pace';
   }
 
   final eventTimeBucket = _EventTimeBucket.fromHour(event.startTime.hour);
   if (timePreference != null && eventTimeBucket == timePreference) {
     score += 18;
-    if (reason == 'From your clubs') {
+    if (reason == 'From organizers you follow') {
       reason = '${timePreference.label} event pattern';
     }
   }
 
   final proximityScore = _proximityScore(viewer, event);
   score += proximityScore;
-  if (reason == 'From your clubs' && proximityScore >= 14) {
+  if (reason == 'From organizers you follow' && proximityScore >= 14) {
     reason = 'Near you';
   }
 

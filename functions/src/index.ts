@@ -51,8 +51,12 @@ export {
   placesAutocomplete,
 } from "./places/placeAutocomplete";
 export {createClub} from "./clubs/createClub";
+export {createOrganizer} from "./organizers/createOrganizer";
 export {createClubPost} from "./clubs/clubPosts";
-export {startClubHostConversation} from "./clubs/clubHostConversations";
+export {
+  startClubHostConversation,
+  startOrganizerConversation,
+} from "./clubs/clubHostConversations";
 export {
   addClubHost,
   removeClubHost,
@@ -62,7 +66,10 @@ export {
   adminDecideClubClaim,
   requestClubClaim,
 } from "./clubs/clubClaims";
-export {syncClubMemberStats} from "./clubs/syncClubMemberStats";
+export {
+  syncClubMemberStats,
+  syncOrganizerFollowerStats,
+} from "./clubs/syncClubMemberStats";
 export {syncClubNextEvent} from "./clubs/syncClubNextEvent";
 export {
   joinClub,
@@ -74,6 +81,26 @@ export {
   deleteClub,
   updateClub,
 } from "./clubs/mutateClub";
+export {
+  archiveOrganizer,
+  deleteOrganizer,
+  updateOrganizer,
+} from "./organizers/mutateOrganizer";
+export {
+  followOrganizer,
+  setOrganizerNotificationPreference,
+  unfollowOrganizer,
+} from "./organizers/follows";
+export {
+  addOrganizerManager,
+  removeOrganizerManager,
+  transferOrganizerOwnership,
+} from "./organizers/manageOrganizerTeam";
+export {createOrganizerPost} from "./organizers/organizerPosts";
+export {
+  adminDecideOrganizerClaim,
+  requestOrganizerClaim,
+} from "./organizers/organizerClaims";
 export {onSwipeCreated} from "./matching/onSwipeCreated";
 export {onMatchCreated} from "./matching/onMatchCreated";
 export {onMessageCreated} from "./matching/onMessageCreated";
@@ -105,8 +132,10 @@ export {syncClubReviewStats} from "./reviews/syncClubReviewStats";
 export {
   createEventReview,
   createPublicClubReview,
+  createPublicOrganizerReview,
   deleteEventReview,
   listPublicClubReviews,
+  listPublicOrganizerReviews,
   setReviewResponse,
   updateEventReview,
 } from "./reviews/mutateReview";
@@ -121,6 +150,9 @@ export {
 export {
   generateClubLogoThumbnail,
 } from "./clubs/generateClubLogoThumbnail";
+export {
+  generateOrganizerLogoThumbnail,
+} from "./organizers/generateOrganizerLogoThumbnail";
 export {joinWaitlist} from "./waitlist/joinWaitlist";
 export {blockUser, unblockUser, onBlockCreated} from "./safety/blocking";
 export {requestAccountDeletion} from "./safety/accountDeletion";
@@ -135,6 +167,7 @@ export {exploreSearch} from "./search/exploreSearch";
 export {
   syncAlgoliaClubIndex,
   syncAlgoliaEventIndex,
+  syncAlgoliaOrganizerIndex,
 } from "./search/algoliaExploreIndex";
 export {
   adminGetAdminUserRoles,
@@ -160,8 +193,11 @@ export {
 } from "./admin/clubIndexing";
 export {
   adminGetClubDetails,
+  adminGetOrganizerDetails,
   adminListClubDetails,
+  adminListOrganizerDetails,
   adminUpdateClubDetails,
+  adminUpdateOrganizerDetails,
 } from "./admin/clubDetails";
 export {
   adminGetEventDetails,

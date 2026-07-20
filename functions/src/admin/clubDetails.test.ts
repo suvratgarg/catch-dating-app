@@ -361,7 +361,7 @@ function assertHttpsCode(error: unknown, code: string): boolean {
 test("adminGetClubDetailsHandler returns a review-safe club snapshot",
   async () => {
     const h = harness({
-      "clubs/afterfly-run-club-indore": clubDoc(),
+      "organizers/afterfly-run-club-indore": clubDoc(),
     });
 
     const result = await adminGetClubDetailsHandler(
@@ -384,8 +384,8 @@ test("adminGetClubDetailsHandler returns a review-safe club snapshot",
 test("adminListClubDetailsHandler returns canonical organizer rows",
   async () => {
     const h = harness({
-      "clubs/afterfly-run-club-indore": clubDoc(),
-      "clubs/bandra-social-run": clubDoc({
+      "organizers/afterfly-run-club-indore": clubDoc(),
+      "organizers/bandra-social-run": clubDoc({
         name: "Bandra Social Run",
         location: "in-mh-mumbai",
         locationCityId: "in-mh-mumbai",
@@ -411,7 +411,7 @@ test("adminListClubDetailsHandler returns canonical organizer rows",
       }),
       "publicRouteReservations/organizers__mumbai__bandra-social-run": {
         status: "active",
-        targetPath: "clubs/bandra-social-run",
+        targetPath: "organizers/bandra-social-run",
         routePath: "/organizers/mumbai/bandra-social-run/",
       },
     });
@@ -439,8 +439,8 @@ test(
   "adminListClubDetailsHandler supports bounded launch-city filters",
   async () => {
     const h = harness({
-      "clubs/afterfly-run-club-indore": clubDoc(),
-      "clubs/bandra-social-run": clubDoc({
+      "organizers/afterfly-run-club-indore": clubDoc(),
+      "organizers/bandra-social-run": clubDoc({
         name: "Bandra Social Run",
         location: "in-mh-mumbai",
         locationCityId: "in-mh-mumbai",
@@ -458,7 +458,7 @@ test(
           lastRenderedAt: null,
         },
       }),
-      "clubs/delhi-run-club": clubDoc({
+      "organizers/delhi-run-club": clubDoc({
         name: "Delhi Run Club",
         location: "in-dl-delhi-ncr",
         locationCityId: "in-dl-new-delhi",
@@ -495,7 +495,7 @@ test(
 
 test("adminUpdateClubDetailsHandler saves allowed cleanup fields", async () => {
   const h = harness({
-    "clubs/afterfly-run-club-indore": clubDoc(),
+    "organizers/afterfly-run-club-indore": clubDoc(),
   });
 
   const result = await adminUpdateClubDetailsHandler(
@@ -524,7 +524,7 @@ test("adminUpdateClubDetailsHandler saves allowed cleanup fields", async () => {
 
   assert.equal(result.clubId, "afterfly-run-club-indore");
   assert.equal(result.updatedFieldCount, 9);
-  const club = h.firestore.get("clubs/afterfly-run-club-indore");
+  const club = h.firestore.get("organizers/afterfly-run-club-indore");
   assert.equal(club?.name, "Afterfly Run Club");
   assert.deepEqual(club?.tags, ["social run"]);
   assert.equal(club?.email, "hello@afterfly.in");
@@ -550,10 +550,10 @@ test("adminUpdateClubDetailsHandler saves allowed cleanup fields", async () => {
 test("adminUpdateClubDetailsHandler reserves changed canonical routes",
   async () => {
     const h = harness({
-      "clubs/afterfly-run-club-indore": clubDoc(),
+      "organizers/afterfly-run-club-indore": clubDoc(),
       "publicRouteReservations/organizers__indore__afterfly-run-club": {
         status: "active",
-        targetPath: "clubs/afterfly-run-club-indore",
+        targetPath: "organizers/afterfly-run-club-indore",
         routePath: "/organizers/indore/afterfly-run-club/",
       },
     });
@@ -578,7 +578,10 @@ test("adminUpdateClubDetailsHandler reserves changed canonical routes",
       "publicRouteReservations/organizers__indore__afterfly"
     );
     assert.equal(newReservation?.status, "active");
-    assert.equal(newReservation?.targetPath, "clubs/afterfly-run-club-indore");
+    assert.equal(
+      newReservation?.targetPath,
+      "organizers/afterfly-run-club-indore"
+    );
     assert.equal(newReservation?.routePath, "/organizers/indore/afterfly/");
     assert.deepEqual(newReservation?.routeSegments, [
       "organizers",
@@ -601,7 +604,7 @@ test("adminUpdateClubDetailsHandler reserves changed canonical routes",
 test("adminUpdateClubDetailsHandler rejects reserved route conflicts",
   async () => {
     const h = harness({
-      "clubs/duplicate-afterfly": clubDoc({
+      "organizers/duplicate-afterfly": clubDoc({
         name: "Duplicate Afterfly",
         publicPage: {
           slug: "duplicate-afterfly",
@@ -617,7 +620,7 @@ test("adminUpdateClubDetailsHandler rejects reserved route conflicts",
       }),
       "publicRouteReservations/organizers__indore__claimed-route": {
         status: "active",
-        targetPath: "clubs/other-organizer",
+        targetPath: "organizers/other-organizer",
         routePath: "/organizers/indore/claimed-route/",
       },
     });
@@ -645,8 +648,8 @@ test("adminUpdateClubDetailsHandler rejects reserved route conflicts",
 test("adminUpdateClubDetailsHandler rejects duplicate canonical paths",
   async () => {
     const h = harness({
-      "clubs/afterfly-run-club-indore": clubDoc(),
-      "clubs/duplicate-afterfly": clubDoc({
+      "organizers/afterfly-run-club-indore": clubDoc(),
+      "organizers/duplicate-afterfly": clubDoc({
         name: "Duplicate Afterfly",
         publicPage: {
           slug: "duplicate-afterfly",
@@ -685,7 +688,7 @@ test("adminUpdateClubDetailsHandler rejects duplicate canonical paths",
 test("adminUpdateClubDetailsHandler rejects path and slug mismatch",
   async () => {
     const h = harness({
-      "clubs/afterfly-run-club-indore": clubDoc(),
+      "organizers/afterfly-run-club-indore": clubDoc(),
     });
 
     await assert.rejects(
@@ -710,7 +713,7 @@ test("adminUpdateClubDetailsHandler rejects path and slug mismatch",
 test("adminUpdateClubDetailsHandler rejects protected index fields",
   async () => {
     const h = harness({
-      "clubs/afterfly-run-club-indore": clubDoc(),
+      "organizers/afterfly-run-club-indore": clubDoc(),
     });
 
     await assert.rejects(
@@ -732,7 +735,7 @@ test("adminUpdateClubDetailsHandler rejects protected index fields",
 
 test("adminUpdateClubDetailsHandler requires review notes", async () => {
   const h = harness({
-    "clubs/afterfly-run-club-indore": clubDoc(),
+    "organizers/afterfly-run-club-indore": clubDoc(),
   });
 
   await assert.rejects(
@@ -749,7 +752,7 @@ test("adminUpdateClubDetailsHandler requires review notes", async () => {
 
 test("adminUpdateClubDetailsHandler blocks viewer-only admins", async () => {
   const h = harness({
-    "clubs/afterfly-run-club-indore": clubDoc(),
+    "organizers/afterfly-run-club-indore": clubDoc(),
   });
 
   await assert.rejects(

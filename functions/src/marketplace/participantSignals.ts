@@ -36,6 +36,7 @@ export interface ParticipantSignalFactInput {
   direction: ParticipantSignalDirection;
   eventId?: string;
   clubId?: string;
+  organizerId?: string;
   matchId?: string;
   peerUid?: string;
   value?: number;

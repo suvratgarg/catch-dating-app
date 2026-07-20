@@ -23,6 +23,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
         RequestSuvbotDemoOperationCallableRequest,
         SetClubNotificationPreferenceCallableRequest,
         SelfCheckInAttendanceCallableRequest,
+        StartOrganizerConversationCallableRequest,
         UnblockUserCallableRequest,
         UpdateEventCallableRequest,
         UpdateEventReviewCallableRequest,
@@ -64,6 +65,7 @@ void main() {
         'CreateEventCallablePayload',
         CreateEventCallableRequest(
           eventId: 'event-1',
+          organizerId: 'club-1',
           clubId: 'club-1',
           startTimeMillis: startTime.millisecondsSinceEpoch,
           endTimeMillis: endTime.millisecondsSinceEpoch,
@@ -145,7 +147,7 @@ void main() {
       );
     });
 
-    test('club request DTOs match generated payload schemas', () {
+    test('organizer and legacy club request DTOs match schemas', () {
       _expectValid(
         'CreateClubCallablePayload',
         const CreateClubCallableRequest(
@@ -160,7 +162,7 @@ void main() {
         ).toJson(),
       );
       _expectValid(
-        'UpdateClubCallablePayload',
+        'UpdateOrganizerCallablePayload',
         UpdateClubPatch.raw({
           'name': 'Cubbon Morning Runners',
           'tags': ['social', 'beginner'],
@@ -179,6 +181,14 @@ void main() {
         const SetClubNotificationPreferenceCallableRequest(
           clubId: 'club-1',
           enabled: true,
+        ).toJson(),
+      );
+      _expectValid(
+        'StartOrganizerConversationCallablePayload',
+        const StartOrganizerConversationCallableRequest(
+          organizerId: 'club-1',
+          hostUid: 'host-1',
+          eventId: 'event-1',
         ).toJson(),
       );
     });

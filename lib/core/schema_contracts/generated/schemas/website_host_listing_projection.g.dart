@@ -8,7 +8,7 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/public/website_host_listing_projection.schema.json',
   'title': 'WebsiteHostListingProjection',
-  'description': 'Public organizer listing projection consumed by the marketing website and future shared web/app listing surfaces. It is generated from approved organizer, seed, or demo data and is not the canonical club document.',
+  'description': 'Public organizer listing projection consumed by the marketing website and future shared web/app listing surfaces. It is generated from approved organizer, seed, or demo data and is not the canonical organizer document.',
   'type': 'object',
   'additionalProperties': false,
   'x-owner': 'website/scripts/generateOrganizerListings.mjs',

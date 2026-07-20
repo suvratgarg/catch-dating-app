@@ -11,12 +11,17 @@ export function normalizeCreateEventPayload(data: unknown): unknown {
     stringFields: [
       "eventId",
       "clubId",
+      "organizerId",
       "meetingPoint",
       "description",
       "currency",
     ],
     nullableStringFields: ["locationDetails", "photoUrl"],
   });
+  const organizerId = payload.organizerId ?? payload.clubId;
+  if (organizerId !== undefined) {
+    payload.organizerId = organizerId;
+  }
   if (isRecord(payload.privateAccess)) {
     payload.privateAccess = normalizeFields(payload.privateAccess, {
       stringFields: ["inviteCode"],

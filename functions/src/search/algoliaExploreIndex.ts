@@ -5,10 +5,15 @@ import * as logger from "firebase-functions/logger";
 import {
   ClubDocument,
   EventDocument,
+  OrganizerDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
+  EventOrganizerDocument,
+  eventOrganizerRef,
+} from "../shared/eventOrganizers";
+import {
   algoliaAppId,
-  clubsIndexName,
+  organizersIndexName,
   eventsIndexName,
   normalizeSearchMarketId,
 } from "./exploreSearch";
@@ -31,7 +36,7 @@ const defaultDeps: AlgoliaExploreIndexDeps = {
 
 export interface AlgoliaClubSearchRecord {
   objectID: string;
-  type: "club";
+  type: "club" | "organizer";
   name: string;
   description: string;
   location: string;
@@ -39,6 +44,7 @@ export interface AlgoliaClubSearchRecord {
   hostName: string;
   tags: string[];
   memberCount: number;
+  organizerType?: OrganizerDocument["organizerType"];
   rating: number;
   reviewCount: number;
   status: ClubDocument["status"];
@@ -52,6 +58,7 @@ export interface AlgoliaEventSearchRecord {
   objectID: string;
   type: "event";
   clubId: string;
+  organizerId: string;
   clubName: string;
   meetingPoint: string;
   locationDetails: string | null;
@@ -158,17 +165,34 @@ export function buildClubSearchRecord(
   };
 }
 
+/** Converts a canonical organizer document into an Algolia record. */
+export function buildOrganizerSearchRecord(
+  organizerId: string,
+  organizer: OrganizerDocument
+): AlgoliaClubSearchRecord | null {
+  const legacyShape = {
+    ...organizer,
+    memberCount: organizer.followerCount,
+  } as ClubDocument;
+  const record = buildClubSearchRecord(organizerId, legacyShape);
+  return record ? {
+    ...record,
+    type: "organizer",
+    organizerType: organizer.organizerType,
+  } : null;
+}
+
 /**
  * Converts a Firestore event document into an Algolia event record.
  * @param {string} eventId Firestore event id.
  * @param {EventDocument} event Event document data.
- * @param {ClubDocument} club Parent club document data.
+ * @param {EventOrganizerDocument} club Parent organizer document data.
  * @return {AlgoliaEventSearchRecord | null} Algolia record, or null if hidden.
  */
 export function buildEventSearchRecord(
   eventId: string,
   event: EventDocument,
-  club: ClubDocument
+  club: EventOrganizerDocument
 ): AlgoliaEventSearchRecord | null {
   const startTimeEpoch = timestampEpochSeconds(event.startTime);
   const discoveryMarketId = normalizeSearchMarketId(
@@ -193,6 +217,8 @@ export function buildEventSearchRecord(
     objectID: eventId,
     type: "event",
     clubId: event.clubId,
+
+    organizerId: event.organizerId ?? event.clubId,
     clubName: club.name,
     meetingPoint: event.meetingPoint,
     locationDetails: event.locationDetails ?? null,
@@ -224,12 +250,32 @@ export async function syncAlgoliaClubIndexHandler(
 ): Promise<void> {
   const clubRecord = club ? buildClubSearchRecord(clubId, club) : null;
   if (clubRecord) {
-    await upsertAlgoliaObject(clubsIndexName(), clubRecord, deps);
+    await upsertAlgoliaObject(organizersIndexName(), clubRecord, deps);
   } else {
-    await deleteAlgoliaObject(clubsIndexName(), clubId, deps);
+    await deleteAlgoliaObject(organizersIndexName(), clubId, deps);
   }
 
   await syncEventsForClub(clubId, clubRecord ? club : undefined, deps);
+}
+
+/** Syncs a canonical organizer and its events into Algolia. */
+export async function syncAlgoliaOrganizerIndexHandler(
+  organizerId: string,
+  organizer: OrganizerDocument | undefined,
+  deps: AlgoliaExploreIndexDeps = defaultDeps
+): Promise<void> {
+  const record = organizer ?
+    buildOrganizerSearchRecord(organizerId, organizer) : null;
+  if (record) {
+    await upsertAlgoliaObject(organizersIndexName(), record, deps);
+  } else {
+    await deleteAlgoliaObject(organizersIndexName(), organizerId, deps);
+  }
+  await syncEventsForOrganizer(
+    organizerId,
+    record ? organizer : undefined,
+    deps
+  );
 }
 
 /**
@@ -250,14 +296,16 @@ export async function syncAlgoliaEventIndexHandler(
   }
 
   const db = deps.firestore();
-  const clubSnap = await db.collection("clubs").doc(event.clubId).get();
-  const club = clubSnap.exists ?
-    clubSnap.data() as ClubDocument :
+  const organizerSnap = await eventOrganizerRef(db, event).get();
+  const club = organizerSnap.exists ?
+    organizerSnap.data() as EventOrganizerDocument :
     undefined;
   if (!club) {
-    logger.warn("Deleting Algolia event record for missing club", {
+    logger.warn("Deleting Algolia event record for missing organizer", {
       eventId,
       clubId: event.clubId,
+
+      organizerId: event.organizerId ?? event.clubId,
     });
     await deleteAlgoliaObject(eventsIndexName(), eventId, deps);
     return;
@@ -295,18 +343,40 @@ async function syncEventsForClub(
   }));
 }
 
+async function syncEventsForOrganizer(
+  organizerId: string,
+  organizer: OrganizerDocument | undefined,
+  deps: AlgoliaExploreIndexDeps
+): Promise<void> {
+  const eventsSnap = await deps.firestore()
+    .collection("events")
+    .where("organizerId", "==", organizerId)
+    .get();
+  await Promise.all(eventsSnap.docs.map((doc) => {
+    if (!organizer) {
+      return deleteAlgoliaObject(eventsIndexName(), doc.id, deps);
+    }
+    return syncEventWithClub(
+      doc.id,
+      doc.data() as EventDocument,
+      organizer,
+      deps
+    );
+  }));
+}
+
 /**
  * Upserts or deletes one event record using already-loaded club data.
  * @param {string} eventId Event id.
  * @param {EventDocument} event Event document data.
- * @param {ClubDocument} club Parent club document data.
+ * @param {EventOrganizerDocument} club Parent organizer document data.
  * @param {AlgoliaExploreIndexDeps} deps Injectable dependencies.
  * @return {Promise<void>}
  */
 async function syncEventWithClub(
   eventId: string,
   event: EventDocument,
-  club: ClubDocument,
+  club: EventOrganizerDocument,
   deps: AlgoliaExploreIndexDeps
 ): Promise<void> {
   const record = buildEventSearchRecord(eventId, event, club);
@@ -445,6 +515,21 @@ export const syncAlgoliaClubIndex = onDocumentWritten(
   async (event) => {
     const club = event.data?.after.data() as ClubDocument | undefined;
     await syncAlgoliaClubIndexHandler(event.params.clubId, club);
+  }
+);
+
+export const syncAlgoliaOrganizerIndex = onDocumentWritten(
+  {
+    document: "organizers/{organizerId}",
+    secrets: [algoliaAppId, algoliaWriteApiKey],
+  },
+  async (event) => {
+    const organizer = event.data?.after.data() as
+      OrganizerDocument | undefined;
+    await syncAlgoliaOrganizerIndexHandler(
+      event.params.organizerId,
+      organizer
+    );
   }
 );
 

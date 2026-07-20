@@ -147,6 +147,8 @@ export interface AdminAssignSafetyTriageItemResponse {
 }
 
 export interface HostAnalyticsQueryPayload {
+  organizerId?: string | null;
+  /** @deprecated Use organizerId. */
   clubId?: string | null;
   eventId?: string | null;
   rangePreset?: "7d" | "30d" | "90d" | "month" | "custom";
@@ -172,6 +174,8 @@ export interface HostAnalyticsTrendPoint {
 
 export interface HostAnalyticsEventRow {
   eventId: string;
+  organizerId?: string;
+  /** @deprecated Use organizerId. */
   clubId: string;
   title: string;
   startTime: string;
@@ -208,8 +212,12 @@ export interface HostAnalyticsResponse {
     preset?: string | null;
   };
   scope: {
+    organizerIds: string[];
+    /** @deprecated Use organizerIds. */
     clubIds: string[];
     eventIds: string[];
+    organizerName?: string | null;
+    /** @deprecated Use organizerName. */
     clubName?: string | null;
     eventTitle?: string | null;
   };

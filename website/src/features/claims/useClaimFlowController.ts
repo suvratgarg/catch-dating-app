@@ -156,7 +156,7 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
 
     try {
       const response = await claimRequestMutation.mutateAsync({
-        clubId: listing.id,
+        organizerId: listing.id,
         requesterName: requesterName.trim(),
         requesterRole,
         businessEmail: businessEmail.trim() || null,

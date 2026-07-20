@@ -408,7 +408,7 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final sourceClubIds = sourceClubs.map((club) => club.id).toSet();
   final searchResult = searchAsync.asData?.value;
   final serverEventIds = searchResult?.eventIds.toSet();
-  final serverClubIds = searchResult?.clubIds.toSet();
+  final serverClubIds = searchResult?.organizerIds.toSet();
 
   final uid = uidAsync.asData?.value;
   final viewerCohortIdAsync = uid == null

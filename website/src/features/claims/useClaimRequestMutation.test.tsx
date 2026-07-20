@@ -4,7 +4,7 @@ import type {PropsWithChildren} from "react";
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {hostListings} from "../organizers/data";
 
-const requestClubClaim = vi.hoisted(() => vi.fn());
+const requestOrganizerClaim = vi.hoisted(() => vi.fn());
 const trackMarketingEvent = vi.hoisted(() => vi.fn());
 const watchClaimAuthState = vi.hoisted(() => vi.fn((callback: (user: null) => void) => {
   callback(null);
@@ -13,7 +13,7 @@ const watchClaimAuthState = vi.hoisted(() => vi.fn((callback: (user: null) => vo
 
 vi.mock("../../analytics", () => ({trackMarketingEvent}));
 vi.mock("../../firebase", () => ({
-  requestClubClaim,
+  requestOrganizerClaim,
   signInForClaim: vi.fn(),
   signOutClaimUser: vi.fn(),
   watchClaimAuthState,
@@ -45,12 +45,12 @@ describe("useClaimRequestMutation", () => {
   });
 
   it("submits the typed claim packet and refreshes both claim query families", async () => {
-    requestClubClaim.mockResolvedValue({claimId: "claim-1", status: "pending"});
+    requestOrganizerClaim.mockResolvedValue({claimId: "claim-1", status: "pending"});
     const {client, wrapper} = queryHarness();
     const invalidateQueries = vi.spyOn(client, "invalidateQueries");
     const {result} = renderHook(() => useClaimRequestMutation("afterfly"), {wrapper});
     const payload = {
-      clubId: "afterfly",
+      organizerId: "afterfly",
       requesterName: "A Host",
       requesterRole: "owner" as const,
       businessEmail: "host@example.com",
@@ -63,7 +63,7 @@ describe("useClaimRequestMutation", () => {
       await result.current.mutateAsync(payload);
     });
 
-    expect(requestClubClaim).toHaveBeenCalledWith(payload);
+    expect(requestOrganizerClaim).toHaveBeenCalledWith(payload);
     expect(invalidateQueries).toHaveBeenCalledWith({
       queryKey: websiteQueryKeys.claims.lookup("afterfly"),
     });
@@ -90,7 +90,7 @@ describe("useClaimRequestMutation", () => {
       message: listing.publicApi.reason,
       tone: "is-error",
     });
-    expect(requestClubClaim).not.toHaveBeenCalled();
+    expect(requestOrganizerClaim).not.toHaveBeenCalled();
     expect(trackMarketingEvent).not.toHaveBeenCalledWith(
       "listing_claim_submit_attempt",
       expect.anything()

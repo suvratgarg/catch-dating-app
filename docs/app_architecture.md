@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.4.43
-updated: 2026-07-19
+version: 1.5.0
+updated: 2026-07-20
 owner: recursive_audit_loop
 status: active
 ---
@@ -43,6 +43,27 @@ This spec consolidates and normalizes guidance from:
 
 This section is intentionally explicit so architecture decisions stay in one
 place.
+
+### Organizer Domain Cutover
+
+The consumer and Hosts apps treat `Organizer` as the product entity and `club`
+as one organizer subtype. Primary repository reads use `organizers`,
+`organizerFollows`, and organizer-named callables; events carry
+`organizerId`; organizer media uploads use `organizers/{id}`; public/detail and
+Hosts routes use `/organizers` and `/host/organizers`. `/host/clubs` is a
+redirect-only compatibility route.
+
+The Hosts owner can edit the required `organizerType` field using the closed
+taxonomy `club`, `community`, `individual`, `eventProducer`, `venue`, and
+`brand`. Managers do not own this classification change. Generic visible copy
+must say organizer/follow rather than club/join; “Club” remains valid only as
+the label for the `club` subtype or as specific real-world content.
+
+`lib/organizers/` is the canonical import surface. Existing `Club` Dart model,
+repository, provider, and `lib/clubs/` filenames are transitional aliases for
+binary/source compatibility and may not justify new club-specific persistence,
+routes, or copy. Their removal follows the remote parity and released-client
+window in `docs/migrations/clubs_to_organizers.md`.
 
 1. Keep the canonical feature folder shape as `domain`, `data`, and
    `presentation`. Do not rename `data` to `repositories`.
@@ -228,8 +249,8 @@ Explore social proof must not create profile reads per event row. The discovery
 ticket may render `signedUpCount` through veiled activity avatars using the
 shared Event Detail privacy contract. Identified people, mutuals, or Cross Paths
 require an explicit consent-safe relationship source and batched provider seam;
-without one, keep the proposal retired. Club cards may reuse already-loaded
-club host and aggregate rating data through shared club identity atoms.
+without one, keep the proposal retired. Organizer cards may reuse already-loaded
+organizer-manager and aggregate rating data through shared identity atoms.
 
 ## Dependency Direction
 
@@ -1625,12 +1646,12 @@ Rules:
   graph wiring. Feature widgets should not infer role from bundle ids,
   Firebase project ids, or platform flavor strings.
 - Consumer routing must not mount host create/edit/manage screens. Consumer
-  surfaces may show host identity and public event/club information, but not
+  surfaces may show host identity and public event/organizer information, but not
   host-management affordances.
 - Host routing may show attendee, booking, roster, and operational state needed
   to run events, but it must not become a dating browse or match surface.
 - Host identity is professional and separate from dating identity:
-  `hostProfiles/{uid}` and club host snapshots own host display names, logos,
+  `hostProfiles/{uid}` and organizer-manager snapshots own host display names, logos,
   roles, verification, and operational permissions. Dating `users/{uid}` /
   `publicProfiles/{uid}` must not be the source of truth for host display.
 - The same auth user may have both a consumer dating profile and a host profile,

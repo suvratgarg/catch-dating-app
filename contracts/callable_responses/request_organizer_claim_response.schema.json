@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/request_organizer_claim_response.schema.json",
+  "title": "RequestOrganizerClaimCallableResponse",
+  "description": "Callable response returned by requestOrganizerClaim.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["requestId", "status"],
+  "properties": {
+    "requestId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "status": {"type": "string", "enum": ["pending"]}
+  }
+}

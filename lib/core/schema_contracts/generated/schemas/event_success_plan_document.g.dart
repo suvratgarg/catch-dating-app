@@ -14,7 +14,7 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
   'x-firestore-collection': 'eventSuccessPlans',
   'x-firestore-path': 'eventSuccessPlans/{eventId}',
   'x-document-id-field': 'id',
-  'x-owner': 'club host direct write; event participants read',
+  'x-owner': 'organizer manager direct write; event participants read',
   'x-internal-demo-fields': <Object?>[
     'synthetic',
     'seedPrefix',
@@ -45,6 +45,12 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
       'x-catch-ownership': 'callable-owned',
     },
     'clubId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'organizerId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

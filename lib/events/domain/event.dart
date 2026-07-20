@@ -60,12 +60,16 @@ enum EventSignUpStatus {
   ineligible,
 }
 
+Object? _readOrganizerId(Map<dynamic, dynamic> json, String key) =>
+    json[key] ?? json['clubId'];
+
 @freezed
 abstract class Event with _$Event {
   const Event._();
 
   const factory Event({
     @JsonKey(includeToJson: false) required String id,
+    @JsonKey(name: 'organizerId', readValue: _readOrganizerId)
     required String clubId,
     @TimestampConverter() required DateTime startTime,
     @TimestampConverter() required DateTime endTime,
@@ -101,6 +105,8 @@ abstract class Event with _$Event {
     // pricing quotes without reading the whole waitlist on every client view.
     @Default({}) Map<String, int> waitlistedCohortCounts,
   }) = _Event;
+
+  String get organizerId => clubId;
 
   factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
 

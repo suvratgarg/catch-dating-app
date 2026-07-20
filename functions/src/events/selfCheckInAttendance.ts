@@ -236,6 +236,8 @@ export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
       exists: currentSnap.exists,
       eventId,
       clubId: event.clubId,
+
+      organizerId: event.organizerId ?? event.clubId,
       uid: userId,
       status: "attended",
     }), {merge: true});
@@ -250,6 +252,8 @@ export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
     buildAttendanceSignalFact({
       eventId,
       clubId: event.clubId,
+
+      organizerId: event.organizerId ?? event.clubId,
       uid: userId,
       attended: true,
       sourceId: `self_check_in_${eventId}_${userId}`,

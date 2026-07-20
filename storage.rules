@@ -156,16 +156,53 @@ service firebase.storage {
         );
     }
 
+    function canWriteOrganizerMedia(organizerId) {
+      return isSignedIn()
+        && firestore.exists(
+          /databases/(default)/documents/organizers/$(organizerId)
+        )
+        && (
+          firestore.get(
+            /databases/(default)/documents/organizers/$(organizerId)
+          ).data.hostUserId == request.auth.uid
+          || firestore.get(
+            /databases/(default)/documents/organizers/$(organizerId)
+          ).data.ownerUserId == request.auth.uid
+          || (
+            firestore.get(
+              /databases/(default)/documents/organizers/$(organizerId)
+            ).data.hostUserIds is list
+            && firestore.get(
+              /databases/(default)/documents/organizers/$(organizerId)
+            ).data.hostUserIds.hasAny([request.auth.uid])
+          )
+        );
+    }
+
     function canWriteEventMedia(eventId) {
       return isSignedIn()
         && firestore.exists(/databases/(default)/documents/events/$(eventId))
-        && firestore.get(
-          /databases/(default)/documents/events/$(eventId)
-        ).data.keys().hasAny(['clubId'])
-        && canWriteClubMedia(
-          firestore.get(
-            /databases/(default)/documents/events/$(eventId)
-          ).data.clubId
+        && (
+          (
+            firestore.get(
+              /databases/(default)/documents/events/$(eventId)
+            ).data.keys().hasAny(['organizerId'])
+            && canWriteOrganizerMedia(
+              firestore.get(
+                /databases/(default)/documents/events/$(eventId)
+              ).data.organizerId
+            )
+          )
+          || (
+            !firestore.get(
+              /databases/(default)/documents/events/$(eventId)
+            ).data.keys().hasAny(['organizerId'])
+            && canWriteClubMedia(
+              firestore.get(
+                /databases/(default)/documents/events/$(eventId)
+              ).data.clubId
+            )
+          )
         );
     }
 
@@ -202,6 +239,25 @@ service firebase.storage {
     }
 
     match /clubs/{clubId}/logoThumbnails/{fileName} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /organizers/{organizerId}/photos/{fileName} {
+      allow read: if true;
+      allow write: if canWriteOrganizerMedia(organizerId)
+        && isGalleryPhotoFileName(fileName)
+        && isImage();
+    }
+
+    match /organizers/{organizerId}/logo/{fileName} {
+      allow read: if true;
+      allow write: if canWriteOrganizerMedia(organizerId)
+        && isTimestampImageFileName(fileName)
+        && isImage();
+    }
+
+    match /organizers/{organizerId}/logoThumbnails/{fileName} {
       allow read: if true;
       allow write: if false;
     }

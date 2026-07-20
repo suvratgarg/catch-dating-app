@@ -947,7 +947,489 @@ export interface ClubDocument {
 }
 
 /**
- * Canonical organizer post stored at clubs/{clubId}/posts/{postId}.
+ * Canonical organizer document stored at organizers/{organizerId}. Club is one organizerType, not the parent entity name.
+ */
+export interface OrganizerDocument {
+  name: string;
+  description: string;
+  /**
+   * Canonical launch market id. Public URL slugs live under publicPage.citySlug.
+   */
+  location: string;
+  locationCityId: string;
+  locationMarketId: string;
+  area: string;
+  /**
+   * Legacy primary host user id. Null for programmatically generated, unclaimed organizer profiles.
+   */
+  hostUserId: string | null;
+  /**
+   * Legacy host display projection. Null when the organizer has not been claimed by a Catch user.
+   */
+  hostName: string | null;
+  hostAvatarUrl: string | null;
+  /**
+   * Canonical owner user id after claim or user-created setup. Null for unclaimed programmatic profiles.
+   */
+  ownerUserId: string | null;
+  /**
+   * @maxItems 20
+   */
+  hostUserIds: string[];
+  /**
+   * @maxItems 20
+   */
+  hostProfiles: {
+    uid: string;
+    displayName: string;
+    avatarUrl: string | null;
+    role: "owner" | "host";
+  }[];
+  createdAt: FirebaseFirestore.Timestamp;
+  imageUrl: string | null;
+  profileImageUrl: string | null;
+  /**
+   * @maxItems 12
+   */
+  clubPhotos?: UploadedPhoto[];
+  /**
+   * Canonical organizer gallery. clubPhotos is tolerated only while released clients migrate.
+   *
+   * @maxItems 12
+   */
+  organizerPhotos: UploadedPhoto[];
+  logoPhoto?: UploadedPhoto | null;
+  /**
+   * @maxItems 20
+   */
+  tags: string[];
+  memberCount?: number;
+  /**
+   * Canonical active organizer follower count.
+   */
+  followerCount: number;
+  rating: number;
+  reviewCount: number;
+  /**
+   * Published reviews that are verified (attended a Catch event). Only these back the headline rating; unverified public reviews cannot move the score.
+   */
+  verifiedReviewCount?: number;
+  nextEventAt: FirebaseFirestore.Timestamp | null;
+  nextEventLabel: string | null;
+  instagramHandle: string | null;
+  phoneNumber: string | null;
+  email: string | null;
+  status: "active" | "archived";
+  archived: boolean;
+  archivedAt: FirebaseFirestore.Timestamp | null;
+  archiveReason: string | null;
+  hostDefaults?: {
+    primaryActivityKind?:
+      | "socialRun"
+      | "running"
+      | "walking"
+      | "pickleball"
+      | "padel"
+      | "tennis"
+      | "badminton"
+      | "cycling"
+      | "spinClass"
+      | "yoga"
+      | "strengthTraining"
+      | "pubQuiz"
+      | "barCrawl"
+      | "dinner"
+      | "singlesMixer"
+      | "openActivity";
+    /**
+     * @maxItems 16
+     */
+    supportedActivityKinds?: (
+      | "socialRun"
+      | "running"
+      | "walking"
+      | "pickleball"
+      | "padel"
+      | "tennis"
+      | "badminton"
+      | "cycling"
+      | "spinClass"
+      | "yoga"
+      | "strengthTraining"
+      | "pubQuiz"
+      | "barCrawl"
+      | "dinner"
+      | "singlesMixer"
+      | "openActivity"
+    )[];
+    eventPolicy?: {
+      admissionPreset?:
+        | "openCapacity"
+        | "inviteOnly"
+        | "balancedSingles"
+        | "fixedCohortCaps";
+      minAge?: number;
+      maxAge?: number;
+      maxMen?: number | null;
+      maxWomen?: number | null;
+      dynamicPricingEnabled?: boolean;
+      dynamicPricingStepInPaise?: number | null;
+      dynamicPricingMaxInPaise?: number | null;
+      cancellationPolicyId?: "flexible" | "standard" | "strict";
+    };
+    eventSuccess?: {
+      enabled?: boolean;
+      playbookId?: string;
+      /**
+       * @maxItems 24
+       */
+      selectedModuleIds?: string[];
+      moduleSelectionConfigured?: boolean;
+      structureConfig?: {
+        unitKind: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
+        unitSize: number;
+        unitCount?: number | null;
+        rotationIntervalMinutes?: number | null;
+        revealCountdownSeconds: number;
+        rotationRepeatStrategy?: "avoid" | "allowWhenExhausted";
+        maxPairMeetings?: number;
+        /**
+         * @maxItems 8
+         */
+        balanceActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
+        /**
+         * @maxItems 8
+         */
+        clusterActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
+      };
+      hostGoal?: string;
+      wingmanRequestsEnabled?: boolean;
+      contextualOpenersEnabled?: boolean;
+      compatibilityAffectsRanking?: boolean;
+      questionnaireConfig?: {
+        templateId: string;
+        customTitle?: string | null;
+        /**
+         * @maxItems 8
+         */
+        customQuestions?: {
+          id: string;
+          prompt: string;
+          /**
+           * @minItems 2
+           * @maxItems 5
+           */
+          options: {
+            id: string;
+            label: string;
+          }[];
+        }[];
+      };
+      attendeePrompt?: string | null;
+    };
+    eventSuccessByActivityKind?: {
+      [k: string]: {
+        enabled?: boolean;
+        playbookId?: string;
+        /**
+         * @maxItems 24
+         */
+        selectedModuleIds?: string[];
+        moduleSelectionConfigured?: boolean;
+        structureConfig?: {
+          unitKind: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
+          unitSize: number;
+          unitCount?: number | null;
+          rotationIntervalMinutes?: number | null;
+          revealCountdownSeconds: number;
+          rotationRepeatStrategy?: "avoid" | "allowWhenExhausted";
+          maxPairMeetings?: number;
+          /**
+           * @maxItems 8
+           */
+          balanceActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
+          /**
+           * @maxItems 8
+           */
+          clusterActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
+        };
+        hostGoal?: string;
+        wingmanRequestsEnabled?: boolean;
+        contextualOpenersEnabled?: boolean;
+        compatibilityAffectsRanking?: boolean;
+        questionnaireConfig?: {
+          templateId: string;
+          customTitle?: string | null;
+          /**
+           * @maxItems 8
+           */
+          customQuestions?: {
+            id: string;
+            prompt: string;
+            /**
+             * @minItems 2
+             * @maxItems 5
+             */
+            options: {
+              id: string;
+              label: string;
+            }[];
+          }[];
+        };
+        attendeePrompt?: string | null;
+      };
+    };
+  };
+  /**
+   * Canonical organizer subtype. Legacy documents without this field normalize to club until backfill is complete.
+   */
+  organizerType:
+    | "club"
+    | "community"
+    | "individual"
+    | "eventProducer"
+    | "venue"
+    | "brand";
+  /**
+   * Server-owned timestamp of the latest organizer type decision.
+   */
+  organizerTypeUpdatedAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * Server-owned user id that made the latest organizer type decision.
+   */
+  organizerTypeUpdatedByUid?: string | null;
+  /**
+   * Optional admin-curated public category copy. It never replaces organizerType as the classification authority.
+   */
+  publicCategoryLabel?: string | null;
+  /**
+   * Deprecated organizer classification retained only while legacy data and clients are migrated to organizerType.
+   */
+  entityKind?:
+    | "club"
+    | "venue"
+    | "eventOrganizer"
+    | "creatorCommunity"
+    | "brand";
+  /**
+   * Deprecated free-form organizer classification retained only for migration reads.
+   *
+   * @maxItems 20
+   */
+  entitySubtypes?: string[];
+  /**
+   * Deprecated reader-facing category label retained until publicCategoryLabel migration is complete.
+   */
+  displayCategory?: string | null;
+  cityName?: string | null;
+  regionName?: string | null;
+  countryCode?: string | null;
+  countryName?: string | null;
+  /**
+   * Whether the native app should show this organizer in browse surfaces. Scraped unclaimed profiles start hidden.
+   */
+  appVisibility?: "discoverable" | "hidden";
+  /**
+   * Claim-aware organizer ownership state. This is the forward-looking owner model; legacy host fields are maintained for app compatibility.
+   */
+  ownership?: {
+    state: "programmatic" | "userCreated" | "claimed" | "transferred";
+    ownerUserId: string | null;
+    primaryHostUserId: string | null;
+    /**
+     * @maxItems 20
+     */
+    hostUserIds: string[];
+    claimedAt: FirebaseFirestore.Timestamp | null;
+    claimedByUid: string | null;
+  };
+  claim?: {
+    state: "unclaimed" | "claimPending" | "claimed" | "verified" | "suppressed";
+    claimHref: string | null;
+    lastClaimRequestId: string | null;
+  };
+  publicPage?: {
+    slug: string;
+    citySlug: string;
+    canonicalPath: string;
+    publishStatus: "draft" | "qa" | "published" | "suppressed" | "removed";
+    indexStatus: "noindex" | "indexReady" | "indexed";
+    robots: "noindex, follow" | "index, follow";
+    seoTitle: string | null;
+    seoDescription: string | null;
+    lastRenderedAt: FirebaseFirestore.Timestamp | null;
+    indexReview?: {
+      reviewedAt: FirebaseFirestore.Timestamp;
+      reviewedByUid: string;
+      indexStatus: "noindex" | "indexReady" | "indexed";
+      checklist: {
+        sourceEvidenceVerified: boolean;
+        mediaRightsVerified: boolean;
+        cadenceVerified: boolean;
+        ownerContactVerified: boolean;
+      };
+      reviewNote: string | null;
+    } | null;
+  };
+  provenance?: {
+    origin: "userCreated" | "scraper" | "adminSeed" | "import";
+    sourceConfidence: "seedOnly" | "low" | "medium" | "high" | "ownerVerified";
+    verificationStatus: "unverified" | "sourceBacked" | "ownerVerified";
+    lastVerifiedAt: FirebaseFirestore.Timestamp | null;
+  };
+  /**
+   * Server-owned deterministic search projection used by admin organizer publishing. Rebuildable from canonical organizer fields; not consumed by the app.
+   */
+  adminSearch?: {
+    /**
+     * @maxItems 120
+     */
+    tokens: string[];
+    sortKey: string;
+    updatedAt: FirebaseFirestore.Timestamp;
+    updatedBySource:
+      | "adminUpdateClubDetails"
+      | "adminSetClubIndexStatus"
+      | "adminOrganizerSearchBackfill";
+  };
+  /**
+   * Public, owner-safe organizer listing content derived from sources or owner edits. Raw scrape snapshots belong in private evidence collections.
+   */
+  publicProfile?: {
+    headline?: string | null;
+    summary?: string | null;
+    sourceSummary?: string | null;
+    /**
+     * @maxItems 12
+     */
+    formats?: string[];
+    /**
+     * @maxItems 20
+     */
+    facts?: {
+      label: string;
+      value: string;
+    }[];
+    /**
+     * @maxItems 8
+     */
+    fitNotes?: string[];
+    /**
+     * @maxItems 12
+     */
+    missingEvidence?: string[];
+    /**
+     * @maxItems 12
+     */
+    eventEvidence?: {
+      title: string;
+      date: string;
+      location: string;
+      summary: string;
+      /**
+       * @maxItems 12
+       */
+      facts: string[];
+      sourceLabel: string;
+      sourceHref: string;
+    }[];
+  };
+  /**
+   * @maxItems 20
+   */
+  publicSources?: {
+    type: string;
+    label: string;
+    detail: string;
+    href: string | null;
+    confidence: "low" | "medium" | "high";
+    lastCheckedAt: FirebaseFirestore.Timestamp | null;
+  }[];
+}
+
+/**
+ * Canonical organizer post stored at organizers/{organizerId}/posts/{postId}.
+ */
+export interface OrganizerPostDocument {
+  authorUid: string;
+  text: string;
+  photoPath?: string | null;
+  eventId?: string | null;
+  audience: "followers";
+  createdAt: FirebaseFirestore.Timestamp;
+  status: "active" | "removed";
+}
+
+/**
+ * Canonical owner or manager edge stored at organizerTeamMemberships/{organizerId_uid}.
+ */
+export interface OrganizerTeamMembershipDocument {
+  organizerId: string;
+  uid: string;
+  role: "owner" | "manager";
+  status: "active" | "removed";
+  createdAt: FirebaseFirestore.Timestamp;
+  removedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Canonical consumer follow edge stored at organizerFollows/{organizerId_uid}.
+ */
+export interface OrganizerFollowDocument {
+  organizerId: string;
+  uid: string;
+  status: "active" | "inactive";
+  pushNotificationsEnabled: boolean;
+  followedAt: FirebaseFirestore.Timestamp;
+  unfollowedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Server-owned organizer listing claim request stored at organizerClaimRequests/{requestId}.
+ */
+export interface OrganizerClaimRequestDocument {
+  requestId: string;
+  organizerId: string;
+  requesterUid: string;
+  requesterName: string;
+  requesterRole:
+    | "owner"
+    | "founder"
+    | "manager"
+    | "marketer"
+    | "venueManager"
+    | "other";
+  businessEmail: string | null;
+  businessPhone: string | null;
+  /**
+   * @maxItems 8
+   */
+  proofUrls: string[];
+  message: string | null;
+  status: "pending" | "approved" | "rejected" | "withdrawn" | "superseded";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  decidedAt: FirebaseFirestore.Timestamp | null;
+  decidedByUid: string | null;
+  decisionReason: string | null;
+  previousRequestId: string | null;
+}
+
+/**
+ * Server-owned time-slot claim stored at organizerScheduleLocks/{organizerId_slot}.
+ */
+export interface OrganizerScheduleLockDocument {
+  ownerType: "organizer";
+  ownerId: string;
+  slot: number;
+  eventId: string;
+  organizerId: string;
+  startTimeMillis: number;
+  endTimeMillis: number;
+}
+
+/**
+ * Legacy organizer-post projection stored at clubs/{clubId}/posts/{postId} during the clubs-to-organizers migration.
  */
 export interface ClubPostDocument {
   authorUid: string;
@@ -1018,6 +1500,7 @@ export interface ClubClaimRequestDocument {
  */
 export interface EventDocument {
   clubId: string;
+  organizerId?: string;
   startTime: FirebaseFirestore.Timestamp;
   endTime: FirebaseFirestore.Timestamp;
   meetingPoint: string;
@@ -1233,6 +1716,7 @@ export interface ExternalEventDocument {
 export interface EventPrivateAccessDocument {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   inviteCode: string;
   createdAt: FirebaseFirestore.Timestamp;
 }
@@ -1243,6 +1727,7 @@ export interface EventPrivateAccessDocument {
 export interface EventInviteLinkDocument {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   hostUid: string;
   label: string;
   source: string | null;
@@ -1266,6 +1751,7 @@ export interface EventInviteLinkDocument {
 export interface EventParticipationDocument {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   uid: string;
   status: "signedUp" | "waitlisted" | "attended" | "cancelled" | "deleted";
   createdAt: FirebaseFirestore.Timestamp;
@@ -1314,6 +1800,7 @@ export interface EventParticipationDocument {
 export interface EventBroadcastDocument {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   actorUid: string;
   audience: "booked" | "prospective" | "everyone";
   title: string;
@@ -1357,6 +1844,7 @@ export interface EventBroadcastDocument {
 export interface EventWaitlistOfferDocument {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   uid: string;
   cohortAtOffer: string;
   status: "active" | "accepted" | "declined" | "expired" | "cancelled";
@@ -1377,6 +1865,7 @@ export interface EventWaitlistOfferDocument {
 export interface EventSuccessPlanDocument {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   playbookId: string;
   /**
    * @maxItems 24
@@ -1441,6 +1930,7 @@ export interface EventSuccessPlanDocument {
 export interface EventSuccessFeedbackDocument {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   uid: string;
   welcomeRating: number;
   structureRating: number;
@@ -1457,6 +1947,7 @@ export interface EventSuccessFeedbackDocument {
 export interface EventSuccessPreferenceDocument {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   uid: string;
   microPodsOptedOut: boolean;
   guidedRotationsOptedOut: boolean;
@@ -1470,6 +1961,7 @@ export interface EventSuccessPreferenceDocument {
 export interface EventSuccessCompatibilityResponseDocument {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   uid: string;
   /**
    * @minItems 1
@@ -1486,6 +1978,7 @@ export interface EventSuccessCompatibilityResponseDocument {
 export interface EventSuccessWingmanRequestDocument {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   requesterUid: string;
   targetUid: string;
   status: "active" | "withdrawn";
@@ -1501,6 +1994,7 @@ export interface EventSuccessWingmanRequestDocument {
 export interface EventSuccessArrivalMissionDocument {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   observerUid: string;
   targetUid: string;
   targetDisplayName: string;
@@ -1527,6 +2021,7 @@ export interface EventSuccessArrivalMissionDocument {
 export interface EventSuccessAssignmentDocument {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   uid: string;
   moduleId: "micro_pods" | "guided_rotations";
   label: string;
@@ -1667,6 +2162,7 @@ export interface EventSuccessAssignmentDocument {
 export interface EventSuccessScorecardDocument {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   bookedCount: number;
   checkedInCount: number;
   feedbackCount: number;
@@ -1721,6 +2217,7 @@ export interface EventSuccessScorecardDocument {
 export interface EventSafetyReportDocument {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   reporterUserId: string;
   feedbackId: string;
   source: "event_success_feedback";
@@ -1752,6 +2249,7 @@ export interface UserEventScheduleLockDocument {
   slot: number;
   eventId: string;
   clubId: string;
+  organizerId?: string;
   uid: string;
   startTimeMillis: number;
   endTimeMillis: number;
@@ -1899,6 +2397,7 @@ export interface MatchDocument {
   participantIds: string[];
   conversationType?: "match" | "clubHostInquiry";
   clubId?: string;
+  organizerId?: string;
 }
 
 /**
@@ -1927,7 +2426,8 @@ export interface ActivityNotificationDocument {
     | "waitlistOfferExpired"
     | "eventCancelled"
     | "eventUpdated"
-    | "clubUpdate";
+    | "clubUpdate"
+    | "organizerUpdate";
   title: string;
   body: string;
   createdAt: FirebaseFirestore.Timestamp;
@@ -1935,6 +2435,7 @@ export interface ActivityNotificationDocument {
   matchId?: string | null;
   eventId?: string | null;
   clubId?: string | null;
+  organizerId?: string | null;
   postId?: string | null;
   actorUid?: string | null;
   actorName?: string | null;
@@ -1944,7 +2445,11 @@ export interface ActivityNotificationDocument {
  * Canonical organizer review stored at reviews/{reviewId}. Verified reviews come from attended Catch events; unverified reviews can come from public listing pages.
  */
 export interface ReviewDocument {
+  /**
+   * Deprecated organizer id alias retained while released clients migrate.
+   */
   clubId: string;
+  organizerId: string;
   eventId?: string | null;
   /**
    * Catch user id for signed-in reviewers. Null for anonymous public listing reviews.
@@ -2094,8 +2599,8 @@ export interface PublicRouteReservationDocument {
    */
   routeSegments: string[];
   status: "active" | "released";
-  ownerType: "club";
-  ownerCollection: "clubs";
+  ownerType: "club" | "organizer";
+  ownerCollection: "clubs" | "organizers";
   ownerId: string;
   targetPath: string;
   slug: string;
@@ -2104,7 +2609,12 @@ export interface PublicRouteReservationDocument {
   updatedAt: FirebaseFirestore.Timestamp;
   lastVerifiedAt: FirebaseFirestore.Timestamp;
   lastVerifiedByUid: string;
-  lastVerifiedSource: "adminUpdateClubDetails" | "adminSetClubIndexStatus";
+  lastVerifiedSource:
+    | "adminUpdateClubDetails"
+    | "adminSetClubIndexStatus"
+    | "adminUpdateOrganizerDetails"
+    | "adminSetOrganizerIndexStatus"
+    | "clubsToOrganizersMigration";
   releasedAt?: FirebaseFirestore.Timestamp | null;
   releasedByUid?: string | null;
   replacementRoutePath?: string | null;

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {buildAlgoliaExploreSearchBody} from "./exploreSearch.js";
 
-test("buildAlgoliaExploreSearchBody targets club and event indices", () => {
+test("Algolia Explore targets organizer and event indices", () => {
   const body = buildAlgoliaExploreSearchBody(
     {query: "saket", cityName: "in-mp-indore", limit: 12},
     new Date("2026-05-28T10:30:00.000Z")
@@ -11,7 +11,7 @@ test("buildAlgoliaExploreSearchBody targets club and event indices", () => {
   assert.equal(body.strategy, "none");
   assert.equal(body.requests.length, 2);
   assert.deepEqual(body.requests[0], {
-    indexName: "clubs",
+    indexName: "organizers",
     query: "saket",
     hitsPerPage: 12,
     filters: "locationMarketId:\"in-mp-indore\"",

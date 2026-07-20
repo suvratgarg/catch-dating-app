@@ -826,7 +826,7 @@ test("rejects non-host pod generation", async () => {
   await assert.rejects(
     () => generateEventSuccessPodsHandler(callableRequest("runner-1"), deps),
     (error) => {
-      isHttpsError(error, "permission-denied", "Only the club host");
+      isHttpsError(error, "permission-denied", "Only an organizer manager");
       return true;
     }
   );

@@ -109,7 +109,7 @@ export async function readOrganizerRouteReservationStatus(
   const reservation = snap.data() as
     PublicRouteReservationDocument | undefined;
   if (!reservation || reservation.status !== "active") return "missing";
-  const targetPath = `clubs/${clubId}`;
+  const targetPath = `organizers/${clubId}`;
   return reservation.targetPath === targetPath &&
     reservation.routePath === normalizedOrganizerPath(canonicalPath) ?
     "reserved" :
@@ -141,7 +141,7 @@ export async function reserveOrganizerCanonicalRoute(
     routePath
   );
 
-  const targetPath = `clubs/${options.clubId}`;
+  const targetPath = `organizers/${options.clubId}`;
   const routeKey = organizerRouteReservationId(routePath);
   const reservationRef = db.collection("publicRouteReservations").doc(routeKey);
   const previousRouteKey = previousReservationId(
@@ -176,8 +176,8 @@ export async function reserveOrganizerCanonicalRoute(
     routeKind: "organizerCanonical",
     routeSegments: routePath.split("/").filter(Boolean),
     status: "active",
-    ownerType: "club",
-    ownerCollection: "clubs",
+    ownerType: "organizer",
+    ownerCollection: "organizers",
     ownerId: options.clubId,
     targetPath,
     slug: route.slug,
@@ -224,7 +224,7 @@ export async function assertOrganizerCanonicalPathAvailable(
   canonicalPath: string
 ): Promise<void> {
   const query = db
-    .collection("clubs")
+    .collection("organizers")
     .where("publicPage.canonicalPath", "==", canonicalPath)
     .limit(2);
   const existing = await tx.get(query);

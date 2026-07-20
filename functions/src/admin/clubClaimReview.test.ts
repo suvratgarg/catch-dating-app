@@ -125,6 +125,7 @@ function deps(firestore: FakeFirestore) {
 function pendingClaim(overrides: FakeData = {}): FakeData {
   return {
     requestId: "claim-1",
+    organizerId: "afterfly",
     clubId: "afterfly",
     requesterUid: "host-1",
     requesterName: "Asha Host",
@@ -158,13 +159,13 @@ test("normalizeClubClaimDetailsPayload accepts only exact request ids", () => {
 test("adminListClubClaimRequestsHandler returns pending claims newest first",
   async () => {
     const firestore = new FakeFirestore({
-      "clubClaimRequests/claim-1": pendingClaim(),
-      "clubClaimRequests/claim-2": pendingClaim({
+      "organizerClaimRequests/claim-1": pendingClaim(),
+      "organizerClaimRequests/claim-2": pendingClaim({
         requestId: "claim-2",
         requesterName: "Newer Host",
         createdAt: "2026-07-10T12:00:00.000Z",
       }),
-      "clubClaimRequests/claim-reviewed": pendingClaim({
+      "organizerClaimRequests/claim-reviewed": pendingClaim({
         requestId: "claim-reviewed",
         status: "approved",
       }),
@@ -187,8 +188,8 @@ test("adminListClubClaimRequestsHandler returns pending claims newest first",
 test("adminGetClubClaimRequestDetailsHandler returns review-safe evidence",
   async () => {
     const firestore = new FakeFirestore({
-      "clubClaimRequests/claim-1": pendingClaim(),
-      "clubs/afterfly": {
+      "organizerClaimRequests/claim-1": pendingClaim(),
+      "organizers/afterfly": {
         name: "AFTER FLY",
         claim: {state: "claimPending"},
         ownership: {state: "programmatic"},

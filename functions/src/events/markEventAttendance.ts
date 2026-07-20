@@ -25,7 +25,11 @@ import {
 import {
   incrementInviteLinkCounterBestEffort,
 } from "./inviteLinks";
-import {isClubHost} from "../shared/clubHosts";
+import {
+  eventOrganizerRef,
+  isEventOrganizerManager,
+  requireEventOrganizer,
+} from "../shared/eventOrganizers";
 import {
   allowsPushPreference,
   eventCompanionReadyNotificationCopy,
@@ -101,17 +105,12 @@ export async function markEventAttendanceHandler(
     );
   }
 
-  // Verify the caller is the host of the event's club.
-  const clubRef = db.collection("clubs").doc(event.clubId);
-  const clubSnap = await clubRef.get();
-  if (!clubSnap.exists) {
-    throw new HttpsError("not-found", "Club not found.");
-  }
-  const club = clubSnap.data() as Parameters<typeof isClubHost>[0];
-  if (!isClubHost(club, uid)) {
+  const organizerSnap = await eventOrganizerRef(db, event).get();
+  const organizer = requireEventOrganizer(organizerSnap, event);
+  if (!isEventOrganizerManager(organizer, event, uid)) {
     throw new HttpsError(
       "permission-denied",
-      "Only the club host can mark attendance."
+      "Only an organizer manager can mark attendance."
     );
   }
 
@@ -157,6 +156,8 @@ export async function markEventAttendanceHandler(
       exists: participationSnap.exists,
       eventId,
       clubId: event.clubId,
+
+      organizerId: event.organizerId ?? event.clubId,
       uid: userId,
       status: alreadyAttended ? "signedUp" : "attended",
     }), {merge: true});
@@ -178,6 +179,8 @@ export async function markEventAttendanceHandler(
     buildAttendanceSignalFact({
       eventId,
       clubId: event.clubId,
+
+      organizerId: event.organizerId ?? event.clubId,
       uid: userId,
       attended,
       sourceId: `host_attendance_${eventId}_${userId}_${attended}`,

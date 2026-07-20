@@ -1,5 +1,5 @@
 {
-  "version": 51,
+  "version": 52,
   "updated": "2026-07-20",
   "owner": "agent_operating_model",
   "entries": [
@@ -1825,7 +1825,7 @@
       "guard": {
         "type": "command",
         "command": "flutter test test/routing/router_redirect_test.dart",
-        "guardEvidence": "GoRouter keeps the create-event child route"
+        "guardEvidence": "GoRouter keeps the canonical create-event child route"
       },
       "owner_docs": [
         "docs/app_architecture.md",
@@ -2352,6 +2352,32 @@
         "docs/web_surface_architecture.md"
       ],
       "notes": "The manifest classifies the visual gate as build-artifact-producing and routes it through the browser-prepared design category; screenshot comparison depends on neither an ignored Storybook directory nor an undeclared machine browser."
+    },
+    {
+      "id": "REG-ORGANIZER-AUTHORITY-001",
+      "title": "Club compatibility names silently become product authority again",
+      "status": "active",
+      "applies_to": [
+        "contracts/**",
+        "functions/src/**",
+        "lib/**",
+        "website/src/**",
+        "admin/src/**",
+        "tool/check_organizer_nomenclature.mjs"
+      ],
+      "symptom": "A new client, contract, route, media path, callable, or generic product label uses club as the parent entity even though club is only an organizer subtype, recreating split authority after the migration.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/check_organizer_nomenclature.test.mjs && node tool/check_organizer_nomenclature.mjs",
+        "guardEvidence": "the seeded legacy callable and generic club-copy fixture fails while the canonical cross-surface fixture and current repository pass"
+      },
+      "owner_docs": [
+        "docs/migrations/clubs_to_organizers.md",
+        "docs/data_contracts.md",
+        "docs/app_architecture.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "Legacy club collections, fields, Dart aliases, and callable wrappers remain only for the released-client compatibility window; remote backfill and retirement have separate evidence gates."
     }
   ]
 }

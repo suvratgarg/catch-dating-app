@@ -9,10 +9,19 @@ import {AdminListClubDetailsCallablePayload} from
   "../shared/generated/adminListClubDetailsCallablePayload";
 import {AdminUpdateClubDetailsCallablePayload} from
   "../shared/generated/adminUpdateClubDetailsCallablePayload";
+import {AdminGetOrganizerDetailsCallablePayload} from
+  "../shared/generated/adminGetOrganizerDetailsCallablePayload";
+import {AdminListOrganizerDetailsCallablePayload} from
+  "../shared/generated/adminListOrganizerDetailsCallablePayload";
+import {AdminUpdateOrganizerDetailsCallablePayload} from
+  "../shared/generated/adminUpdateOrganizerDetailsCallablePayload";
 import {
   validateAdminGetClubDetailsCallablePayload,
   validateAdminListClubDetailsCallablePayload,
   validateAdminUpdateClubDetailsCallablePayload,
+  validateAdminGetOrganizerDetailsCallablePayload,
+  validateAdminListOrganizerDetailsCallablePayload,
+  validateAdminUpdateOrganizerDetailsCallablePayload,
 } from "../shared/generated/schemaValidators";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {requireAdminRole} from "./adminAuth";
@@ -140,6 +149,96 @@ export interface AdminUpdateClubDetailsResponse {
   updatedFieldCount: number;
 }
 
+export type AdminOrganizerDetailsSnapshot = Omit<
+  AdminClubDetailsSnapshot,
+  "clubId"
+> & {organizerId: string};
+
+export type AdminOrganizerListRow = Omit<AdminClubListRow, "clubId"> & {
+  organizerId: string;
+};
+
+export interface AdminGetOrganizerDetailsResponse {
+  organizer: AdminOrganizerDetailsSnapshot;
+}
+
+export interface AdminListOrganizerDetailsResponse {
+  generatedAt: string;
+  rows: AdminOrganizerListRow[];
+}
+
+export interface AdminUpdateOrganizerDetailsResponse {
+  organizerId: string;
+  updatedFieldCount: number;
+}
+
+/** Canonical organizer-named adapter for the legacy admin detail handler. */
+export async function adminGetOrganizerDetailsHandler(
+  request: CallableRequest<unknown>,
+  deps: ClubDetailsDeps = defaultDeps
+): Promise<AdminGetOrganizerDetailsResponse> {
+  const data = validateCallableWithAjv<AdminGetOrganizerDetailsCallablePayload>(
+    request,
+    validateAdminGetOrganizerDetailsCallablePayload,
+    normalizeAdminGetOrganizerDetailsPayload
+  );
+  const result = await adminGetClubDetailsHandler(
+    requestWithData(request, {clubId: data.organizerId}),
+    deps
+  );
+  const {clubId, ...organizer} = result.club;
+  return {organizer: {...organizer, organizerId: clubId}};
+}
+
+/** Canonical organizer-named adapter for the admin organizer directory. */
+export async function adminListOrganizerDetailsHandler(
+  request: CallableRequest<unknown>,
+  deps: ClubDetailsDeps = defaultDeps
+): Promise<AdminListOrganizerDetailsResponse> {
+  const data =
+    validateCallableWithAjv<AdminListOrganizerDetailsCallablePayload>(
+      request,
+      validateAdminListOrganizerDetailsCallablePayload,
+      normalizeAdminListClubDetailsPayload
+    );
+  const result = await adminListClubDetailsHandler(
+    requestWithData(request, data),
+    deps
+  );
+  return {
+    generatedAt: result.generatedAt,
+    rows: result.rows.map(({clubId, ...row}) => ({
+      ...row,
+      organizerId: clubId,
+    })),
+  };
+}
+
+/** Canonical organizer-named adapter for audited organizer edits. */
+export async function adminUpdateOrganizerDetailsHandler(
+  request: CallableRequest<unknown>,
+  deps: ClubDetailsDeps = defaultDeps
+): Promise<AdminUpdateOrganizerDetailsResponse> {
+  const data =
+    validateCallableWithAjv<AdminUpdateOrganizerDetailsCallablePayload>(
+      request,
+      validateAdminUpdateOrganizerDetailsCallablePayload,
+      normalizeAdminUpdateOrganizerDetailsPayload
+    );
+  const result = await adminUpdateClubDetailsHandler(
+    requestWithData(request, {
+      clubId: data.organizerId,
+      fields: data.fields,
+      reviewNote: data.reviewNote,
+    }),
+    deps
+  );
+  return {
+    organizerId: result.clubId,
+    updatedFieldCount: result.updatedFieldCount,
+  };
+}
+
 /**
  * Loads a review-safe organizer snapshot for the admin cleanup editor.
  * @param {CallableRequest<unknown>} request Callable request.
@@ -158,7 +257,7 @@ export async function adminGetClubDetailsHandler(
   );
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, adminContext.uid, "adminGetClubDetails");
-  const clubRef = db.collection("clubs").doc(data.clubId);
+  const clubRef = db.collection("organizers").doc(data.clubId);
   const clubSnap = await clubRef.get();
   if (!clubSnap.exists) {
     throw new HttpsError("not-found", "Organizer listing not found.");
@@ -168,7 +267,7 @@ export async function adminGetClubDetailsHandler(
 }
 
 /**
- * Lists canonical organizer profile rows from clubs/{clubId}.
+ * Lists canonical organizer profile rows from organizers/{organizerId}.
  * @param {CallableRequest<unknown>} request Callable request.
  * @param {ClubDetailsDeps} deps Injectable dependencies.
  * @return {Promise<AdminListClubDetailsResponse>} Organizer list rows.
@@ -191,7 +290,7 @@ export async function adminListClubDetailsHandler(
   const searchTokens = organizerAdminSearchQueryTokens(queryText);
   const hasSearchQuery = searchTokens.length > 0;
   const now = deps.now?.() ?? new Date();
-  let query: FirebaseFirestore.Query = db.collection("clubs");
+  let query: FirebaseFirestore.Query = db.collection("organizers");
   if (hasSearchQuery) {
     query = query.where(
       "adminSearch.tokens",
@@ -263,7 +362,8 @@ export async function adminUpdateClubDetailsHandler(
 
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, adminContext.uid, "adminUpdateClubDetails");
-  const clubRef = db.collection("clubs").doc(data.clubId);
+  const clubRef = db.collection("organizers").doc(data.clubId);
+  const legacyClubRef = db.collection("clubs").doc(data.clubId);
   await db.runTransaction(async (tx) => {
     const clubSnap = await tx.get(clubRef);
     if (!clubSnap.exists) {
@@ -314,6 +414,7 @@ export async function adminUpdateClubDetailsHandler(
       "adminUpdateClubDetails"
     );
     tx.update(clubRef, patch);
+    tx.set(legacyClubRef, patch, {merge: true});
     setAdminAuditLogInTransaction(tx, db, adminContext, {
       action: "adminUpdateClubDetails",
       targetPath: clubRef.path,
@@ -601,6 +702,12 @@ function normalizeAdminGetClubDetailsPayload(value: unknown): unknown {
   return {...data, clubId: normalizeString(data.clubId)};
 }
 
+function normalizeAdminGetOrganizerDetailsPayload(value: unknown): unknown {
+  if (!value || typeof value !== "object") return value;
+  const data = value as Record<string, unknown>;
+  return {...data, organizerId: normalizeString(data.organizerId)};
+}
+
 /**
  * Normalizes admin list payload filters before schema validation.
  * @param {unknown} value Raw callable data.
@@ -644,6 +751,29 @@ function normalizeAdminUpdateClubDetailsPayload(value: unknown): unknown {
     reviewNote: normalizeNullableString(data.reviewNote),
     fields: normalizeClubDetailsFields(fields as Record<string, unknown>),
   };
+}
+
+function normalizeAdminUpdateOrganizerDetailsPayload(value: unknown): unknown {
+  if (!value || typeof value !== "object") return value;
+  const data = value as Record<string, unknown>;
+  const legacyNormalized = normalizeAdminUpdateClubDetailsPayload({
+    ...data,
+    clubId: data.organizerId,
+  });
+  if (!legacyNormalized || typeof legacyNormalized !== "object") {
+    return legacyNormalized;
+  }
+  const normalized = legacyNormalized as Record<string, unknown>;
+  const canonical = {...normalized};
+  delete canonical.clubId;
+  return {...canonical, organizerId: normalized.clubId};
+}
+
+function requestWithData(
+  request: CallableRequest<unknown>,
+  data: unknown
+): CallableRequest<unknown> {
+  return {...request, data};
 }
 
 /**
@@ -938,4 +1068,19 @@ export const adminGetClubDetails = onCall(
 export const adminUpdateClubDetails = onCall(
   appCheckCallableOptions,
   (request) => adminUpdateClubDetailsHandler(request)
+);
+
+export const adminListOrganizerDetails = onCall(
+  appCheckCallableOptions,
+  (request) => adminListOrganizerDetailsHandler(request)
+);
+
+export const adminGetOrganizerDetails = onCall(
+  appCheckCallableOptions,
+  (request) => adminGetOrganizerDetailsHandler(request)
+);
+
+export const adminUpdateOrganizerDetails = onCall(
+  appCheckCallableOptions,
+  (request) => adminUpdateOrganizerDetailsHandler(request)
 );

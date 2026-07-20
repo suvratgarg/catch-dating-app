@@ -26,7 +26,8 @@ final class CreateEventPrivateAccess {
 final class CreateEventCallableRequest {
   const CreateEventCallableRequest({
     this.eventId,
-    required this.clubId,
+    required this.organizerId,
+    this.clubId,
     required this.startTimeMillis,
     required this.endTimeMillis,
     required this.meetingPoint,
@@ -50,7 +51,8 @@ final class CreateEventCallableRequest {
   });
 
   final String? eventId;
-  final String clubId;
+  final String organizerId;
+  final String? clubId;
   final int startTimeMillis;
   final int endTimeMillis;
   final String meetingPoint;
@@ -74,7 +76,8 @@ final class CreateEventCallableRequest {
 
   Map<String, Object?> toJson() => {
     'eventId': ?eventId,
-    'clubId': clubId,
+    'organizerId': organizerId,
+    'clubId': ?clubId,
     'startTimeMillis': startTimeMillis,
     'endTimeMillis': endTimeMillis,
     'meetingPoint': meetingPoint,

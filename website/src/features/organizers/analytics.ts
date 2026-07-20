@@ -36,7 +36,7 @@ export function trackOrganizerAnalytics(
 ) {
   if (!hasOrganizerAnalyticsConsent()) return;
   trackMarketingEvent(`organizer_${eventName}`, {
-    club_id: listing.id,
+    organizer_id: listing.id,
     event_id: eventId ?? null,
     source: source ?? null,
   });
@@ -44,7 +44,7 @@ export function trackOrganizerAnalytics(
   void import("../../firebase")
     .then(({recordOrganizerAnalyticsEvent}) =>
       recordOrganizerAnalyticsEvent({
-        clubId: listing.id,
+        organizerId: listing.id,
         eventId: eventId ?? null,
         eventName,
         pagePath: `${window.location.pathname}${window.location.search}`,

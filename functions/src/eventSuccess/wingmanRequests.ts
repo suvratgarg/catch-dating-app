@@ -285,6 +285,8 @@ export async function submitEventSuccessWingmanRequestHandler(
     tx.set(requestRef, {
       eventId: data.eventId,
       clubId: event.clubId,
+
+      organizerId: event.organizerId ?? event.clubId,
       requesterUid,
       targetUid: data.targetUid,
       status: "active",

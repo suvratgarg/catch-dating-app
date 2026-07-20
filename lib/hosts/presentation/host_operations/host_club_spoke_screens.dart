@@ -89,7 +89,7 @@ class HostClubSpokeResolver extends ConsumerWidget {
         final club = clubs.where((item) => item.id == clubId).firstOrNull;
         if (club == null) {
           return CatchErrorScaffold.fromError(
-            StateError('Club unavailable'),
+            StateError('Organizer unavailable'),
             context: AppErrorContext.club,
             onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
           );

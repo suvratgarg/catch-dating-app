@@ -71,6 +71,12 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         status: "active",
         pushNotificationsEnabled: true,
       },
+      "organizerFollows/club-1_runner-1": {
+        organizerId: "club-1",
+        uid: "runner-1",
+        status: "active",
+        pushNotificationsEnabled: true,
+      },
       "eventParticipations/event-1_runner-1": {
         eventId: "event-1",
         clubId: "club-1",
@@ -192,6 +198,18 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   }
 
   assert.ok(harness.deletedPublicDocs.includes("publicProfiles/runner-1"));
+  assert.ok(
+    harness.setWrites.some((write) =>
+      write.path === "organizerFollows/club-1_runner-1" &&
+      write.data.status === "inactive"
+    )
+  );
+  assert.ok(
+    harness.updateWrites.some((write) =>
+      write.path === "organizers/club-1" &&
+      write.data.followerCount !== undefined
+    )
+  );
   assert.ok(
     harness.setWrites.some((write) =>
       write.path === "clubMemberships/club-1_runner-1" &&

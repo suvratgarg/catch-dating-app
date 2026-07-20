@@ -4085,6 +4085,32 @@
       }
     },
     {
+      "id": "contracts:organizer-nomenclature",
+      "category": "contracts",
+      "path": "tool/check_organizer_nomenclature.mjs",
+      "command": "node tool/check_organizer_nomenclature.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Keeps organizers canonical across contracts, Flutter, React, Functions, routes, media, and product copy while club remains a subtype and compatibility projection.",
+      "checks": [
+        "node --check tool/check_organizer_nomenclature.mjs",
+        "node --test tool/check_organizer_nomenclature.test.mjs",
+        "node tool/check_organizer_nomenclature.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "ORGANIZER-AUTHORITY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/check_organizer_nomenclature.test.mjs",
+        "contains": [
+          "organizer nomenclature gate rejects legacy authority and generic copy",
+          "organizer nomenclature gate passes a canonical fixture"
+        ]
+      }
+    },
+    {
       "id": "audit:fn-readme-inventory",
       "category": "audit",
       "path": "tool/audit/check_fn_readme_inventory.mjs",
@@ -4503,6 +4529,34 @@
         "node --test tool/data/backfill_event_meeting_locations.test.mjs"
       ],
       "role": "generator"
+    },
+    {
+      "id": "data:migrate-clubs-to-organizers",
+      "category": "data",
+      "path": "tool/data/migrate_clubs_to_organizers.mjs",
+      "command": "node tool/data/migrate_clubs_to_organizers.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Copies legacy club data into canonical organizer authorities, splits team and follow edges, backfills organizerId references, and optionally copies organizer media without deleting legacy data.",
+      "checks": [
+        "node --check tool/data/migrate_clubs_to_organizers.mjs",
+        "node --test tool/data/migrate_clubs_to_organizers.test.mjs"
+      ],
+      "role": "generator",
+      "rules": [
+        "MIGRATION-CONTRACT-001",
+        "DENORMALIZED-DATA-001",
+        "STORAGE-CONTRACT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/data/migrate_clubs_to_organizers.test.mjs",
+        "contains": [
+          "plan splits host/member edges and patches dependent references",
+          "plan blocks conflicting target authority instead of overwriting",
+          "plan is idempotent when canonical target and reference already match"
+        ]
+      }
     },
     {
       "id": "firebase:storage-rules-firestore-iam",

@@ -8,6 +8,7 @@
 export interface EventPrivateAccessDocument {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   inviteCode: string;
   /**
    * Serialized Firestore Timestamp fixture shape.

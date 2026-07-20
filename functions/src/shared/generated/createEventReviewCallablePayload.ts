@@ -7,6 +7,7 @@
  */
 export interface CreateEventReviewCallablePayload {
   clubId: string;
+  organizerId?: string;
   eventId: string;
   rating: number;
   comment: string;

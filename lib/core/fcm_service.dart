@@ -44,21 +44,21 @@ String? hostEventManageRouteFromMessageData(Map<String, Object?> data) {
       type != 'eventHostManage') {
     return null;
   }
-  final clubId = data['clubId'];
+  final clubId = data['organizerId'] ?? data['clubId'];
   final eventId = data['eventId'];
   if (clubId is! String || clubId.isEmpty) return null;
   if (eventId is! String || eventId.isEmpty) return null;
-  return '/host/clubs/$clubId/events/$eventId/manage';
+  return '/host/organizers/$clubId/events/$eventId/manage';
 }
 
 String? eventCompanionRouteFromMessageData(Map<String, Object?> data) {
   if (AppConfig.appRole.isHost) return null;
   if (data['type'] != 'eventCompanionReady') return null;
-  final clubId = data['clubId'];
+  final clubId = data['organizerId'] ?? data['clubId'];
   final eventId = data['eventId'];
   if (clubId is! String || clubId.isEmpty) return null;
   if (eventId is! String || eventId.isEmpty) return null;
-  return '/clubs/$clubId/events/$eventId/companion';
+  return '/organizers/$clubId/events/$eventId/companion';
 }
 
 String? eventDetailRouteFromMessageData(Map<String, Object?> data) {
@@ -74,18 +74,28 @@ String? eventDetailRouteFromMessageData(Map<String, Object?> data) {
     'eventUpdated',
   };
   if (!eventActivityTypes.contains(data['type'])) return null;
-  final clubId = data['clubId'];
+  final clubId = data['organizerId'] ?? data['clubId'];
   final eventId = data['eventId'];
   if (clubId is! String || clubId.isEmpty) return null;
   if (eventId is! String || eventId.isEmpty) return null;
-  return '/clubs/$clubId/events/$eventId';
+  return '/organizers/$clubId/events/$eventId';
+}
+
+String? organizerRouteFromMessageData(Map<String, Object?> data) {
+  if (AppConfig.appRole.isHost || data['type'] != 'organizerUpdate') {
+    return null;
+  }
+  final organizerId = data['organizerId'] ?? data['clubId'];
+  if (organizerId is! String || organizerId.isEmpty) return null;
+  return '/organizers/$organizerId';
 }
 
 String? routeFromMessageData(Map<String, Object?> data) =>
     hostEventManageRouteFromMessageData(data) ??
     chatRouteFromMessageData(data) ??
     eventCompanionRouteFromMessageData(data) ??
-    eventDetailRouteFromMessageData(data);
+    eventDetailRouteFromMessageData(data) ??
+    organizerRouteFromMessageData(data);
 
 void navigateToMessageRoute(GoRouter router, Map<String, Object?> data) {
   final route = routeFromMessageData(data);

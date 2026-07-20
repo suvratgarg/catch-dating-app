@@ -6,14 +6,14 @@ import {hostListings} from "../organizers/data";
 import type {HostListing} from "../organizers/types";
 
 const reviewConfig = vi.hoisted(() => ({enabled: false}));
-const createPublicClubReview = vi.hoisted(() => vi.fn());
-const listPublicClubReviews = vi.hoisted(() => vi.fn());
+const createPublicOrganizerReview = vi.hoisted(() => vi.fn());
+const listPublicOrganizerReviews = vi.hoisted(() => vi.fn());
 const trackMarketingEvent = vi.hoisted(() => vi.fn());
 
 vi.mock("../../analytics", () => ({trackMarketingEvent}));
 vi.mock("../../firebase", () => ({
-  createPublicClubReview,
-  listPublicClubReviews,
+  createPublicOrganizerReview,
+  listPublicOrganizerReviews,
 }));
 vi.mock("../../firebaseConfig", () => ({
   get publicReviewsFirebaseConfigured() {
@@ -60,7 +60,7 @@ describe("useListingReviewsController", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     reviewConfig.enabled = false;
-    listPublicClubReviews.mockResolvedValue({reviews: []});
+    listPublicOrganizerReviews.mockResolvedValue({reviews: []});
   });
 
   it("keeps disabled listing routes read-only", async () => {
@@ -78,12 +78,12 @@ describe("useListingReviewsController", () => {
       message: listing.publicApi.reason,
       tone: "is-error",
     });
-    expect(createPublicClubReview).not.toHaveBeenCalled();
+    expect(createPublicOrganizerReview).not.toHaveBeenCalled();
   });
 
   it("surfaces listing-review query failures without hiding seeded content", async () => {
     reviewConfig.enabled = true;
-    listPublicClubReviews.mockRejectedValue(new Error("Reviews are temporarily unavailable."));
+    listPublicOrganizerReviews.mockRejectedValue(new Error("Reviews are temporarily unavailable."));
     const listing = enabledListing();
     const {wrapper} = queryHarness();
     const {result} = renderHook(() => useListingReviewsController(listing), {wrapper});
@@ -106,7 +106,7 @@ describe("useListingReviewsController", () => {
       message: "Add your name, or choose anonymous.",
       tone: "is-error",
     });
-    expect(createPublicClubReview).not.toHaveBeenCalled();
+    expect(createPublicOrganizerReview).not.toHaveBeenCalled();
   });
 
   it("adds an unconfigured review locally and exposes it in the summary", async () => {
@@ -152,20 +152,20 @@ describe("useListingReviewsController", () => {
       isAnonymous: false,
       ownerResponse: null,
     };
-    createPublicClubReview.mockResolvedValue({reviewId: remoteReview.id, review: remoteReview});
+    createPublicOrganizerReview.mockResolvedValue({reviewId: remoteReview.id, review: remoteReview});
     const {client, wrapper} = queryHarness();
     const invalidateQueries = vi.spyOn(client, "invalidateQueries");
     const {result} = renderHook(() => useListingReviewsController(listing), {wrapper});
 
-    await waitFor(() => expect(listPublicClubReviews).toHaveBeenCalledWith({clubId: listing.id}));
+    await waitFor(() => expect(listPublicOrganizerReviews).toHaveBeenCalledWith({organizerId: listing.id}));
     act(() => {
       result.current.setComment("Would attend again.");
       result.current.setReviewerName("Guest");
     });
     await act(async () => result.current.submitReview(submitEvent()));
 
-    expect(createPublicClubReview).toHaveBeenCalledWith(expect.objectContaining({
-      clubId: listing.id,
+    expect(createPublicOrganizerReview).toHaveBeenCalledWith(expect.objectContaining({
+      organizerId: listing.id,
       comment: "Would attend again.",
       isAnonymous: false,
       rating: 5,

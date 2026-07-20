@@ -568,13 +568,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/clubs/presentation/detail/club_detail_screen.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Club not found'**
+  /// **'Organizer not found'**
   String get clubsClubDetailScreenTitleClubNotFound;
 
   /// Product copy used by lib/clubs/presentation/detail/club_detail_screen.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'This club is no longer available.'**
+  /// **'This organizer is no longer available.'**
   String get clubsClubDetailScreenMessageThisClubIsNo;
 
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_contact_section.dart (title).
@@ -598,7 +598,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_body.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'From the club'**
+  /// **'From the organizer'**
   String get clubsClubDetailBodyTitleFromTheClub;
 
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_body.dart (title).
@@ -622,13 +622,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_dock.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Disable club push notifications'**
+  /// **'Disable organizer push notifications'**
   String get clubsClubDetailDockLabelDisableClubPushNotifications;
 
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_dock.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Enable club push notifications'**
+  /// **'Enable organizer push notifications'**
   String get clubsClubDetailDockLabelEnableClubPushNotifications;
 
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart (tooltip).
@@ -640,7 +640,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart (tooltip).
   ///
   /// In en, this message translates to:
-  /// **'Share club'**
+  /// **'Share organizer'**
   String get clubsClubHeroAppBarTooltipShareClub;
 
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_host_section.dart (message).
@@ -652,7 +652,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_photo_strip.dart (Text).
   ///
   /// In en, this message translates to:
-  /// **'FROM THE CLUB'**
+  /// **'FROM THE ORGANIZER'**
   String get clubsClubPhotoStripTextFromTheClub;
 
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_schedule_section.dart (title).
@@ -670,13 +670,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/clubs/presentation/discovery/widgets/club_avatar_rail.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Your clubs'**
+  /// **'Your organizers'**
   String get clubsClubAvatarRailTitleYourClubs;
 
   /// Product copy used by lib/clubs/presentation/discovery/widgets/club_discover_list.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Club directory'**
+  /// **'Organizer directory'**
   String get clubsClubDiscoverListTitleClubDirectory;
 
   /// Product copy used by lib/clubs/shared/club_identity_atoms.dart (label).
@@ -892,7 +892,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/dashboard/presentation/widgets/club_posts_home_section.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Club updates'**
+  /// **'Organizer updates'**
   String get dashboardClubPostsHomeSectionTitleClubUpdates;
 
   /// Product copy used by lib/dashboard/presentation/widgets/club_posts_home_section.dart (Text).
@@ -1793,7 +1793,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/events/presentation/event_map_screen.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'Join clubs, book events, or save future events to see starting points here.'**
+  /// **'Follow organizers, book events, or save future events to see starting points here.'**
   String get eventsEventMapScreenMessageJoinClubsBookEvents;
 
   /// Product copy used by lib/events/presentation/location_picker_screen.dart (title).
@@ -2339,31 +2339,31 @@ abstract class AppLocalizations {
   /// Product copy used by lib/explore/presentation/explore_screen.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'No clubs match this search'**
+  /// **'No organizers match this search'**
   String get exploreExploreScreenTitleNoClubsMatchThis;
 
   /// Product copy used by lib/explore/presentation/explore_screen.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'Clear the search or filters to bring nearby clubs back into view.'**
+  /// **'Clear the search or filters to bring nearby organizers back into view.'**
   String get exploreExploreScreenMessageClearTheSearchOr;
 
   /// Product copy used by lib/explore/presentation/explore_screen.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'Try another club, neighborhood, host, or tag.'**
+  /// **'Try another organizer, neighborhood, host, or tag.'**
   String get exploreExploreScreenMessageTryAnotherClubNeighborhood;
 
   /// Product copy used by lib/explore/presentation/explore_screen.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'No clubs match these filters'**
+  /// **'No organizers match these filters'**
   String get exploreExploreScreenTitleNoClubsMatchThese;
 
   /// Product copy used by lib/explore/presentation/explore_screen.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'Clear one or more filters to bring nearby clubs back into view.'**
+  /// **'Clear one or more filters to bring nearby organizers back into view.'**
   String get exploreExploreScreenMessageClearOneOrMore;
 
   /// Product copy used by lib/explore/presentation/explore_screen.dart (label).
@@ -2477,13 +2477,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/explore/presentation/widgets/explore_filter_rail.dart (Text).
   ///
   /// In en, this message translates to:
-  /// **'CLUBS'**
+  /// **'ORGANIZERS'**
   String get exploreExploreFilterRailTextClubs;
 
   /// Product copy used by lib/explore/presentation/widgets/explore_filter_rail.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Joined clubs'**
+  /// **'Followed organizers'**
   String get exploreExploreFilterRailLabelJoinedClubs;
 
   /// Product copy used by lib/explore/presentation/widgets/explore_filter_rail.dart (label).
@@ -2507,31 +2507,31 @@ abstract class AppLocalizations {
   /// Product copy used by lib/explore/presentation/widgets/explore_list.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'No clubs match this search'**
+  /// **'No organizers match this search'**
   String get exploreExploreListTitleNoClubsMatchThis;
 
   /// Product copy used by lib/explore/presentation/widgets/explore_list.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'Clear the search or filters to bring nearby clubs back into view.'**
+  /// **'Clear the search or filters to bring nearby organizers back into view.'**
   String get exploreExploreListMessageClearTheSearchOr;
 
   /// Product copy used by lib/explore/presentation/widgets/explore_list.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'Try another club, neighborhood, host, or tag.'**
+  /// **'Try another organizer, neighborhood, host, or tag.'**
   String get exploreExploreListMessageTryAnotherClubNeighborhood;
 
   /// Product copy used by lib/explore/presentation/widgets/explore_list.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'No clubs match these filters'**
+  /// **'No organizers match these filters'**
   String get exploreExploreListTitleNoClubsMatchThese;
 
   /// Product copy used by lib/explore/presentation/widgets/explore_list.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'Clear one or more filters to bring nearby clubs back into view.'**
+  /// **'Clear one or more filters to bring nearby organizers back into view.'**
   String get exploreExploreListMessageClearOneOrMore;
 
   /// Product copy used by lib/force_update/presentation/update_required_screen.dart (Text).
@@ -2549,13 +2549,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/club_management/create/create_club_screen.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Club basics'**
+  /// **'Organizer basics'**
   String get hostsCreateClubScreenTitleClubBasics;
 
   /// Product copy used by lib/hosts/presentation/club_management/create/create_club_screen.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Club details'**
+  /// **'Organizer details'**
   String get hostsCreateClubScreenTitleClubDetails;
 
   /// Product copy used by lib/hosts/presentation/club_management/create/create_club_screen.dart (title).
@@ -2573,7 +2573,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/club_basics_step.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Club name'**
+  /// **'Organizer name'**
   String get hostsClubBasicsStepTitleClubName;
 
   /// Canonical organizer classification field shown to organizer owners.
@@ -2766,19 +2766,19 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (Text).
   ///
   /// In en, this message translates to:
-  /// **'A square logo, shown on your club profile and every event.'**
+  /// **'A square logo, shown on your organizer profile and every event.'**
   String get hostsCreateClubPhotosPickerTextASquareLogoShown;
 
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Change club profile image'**
+  /// **'Change organizer profile image'**
   String get hostsCreateClubPhotosPickerLabelChangeClubProfileImage;
 
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Add club profile image'**
+  /// **'Add organizer profile image'**
   String get hostsCreateClubPhotosPickerLabelAddClubProfileImage;
 
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (Text).
@@ -3114,7 +3114,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/event_management/create/create_event_success_screen.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Back to club'**
+  /// **'Back to organizer'**
   String get hostsCreateEventSuccessScreenLabelBackToClub;
 
   /// Product copy used by lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart (title).
@@ -3126,7 +3126,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart (body).
   ///
   /// In en, this message translates to:
-  /// **'Loading club'**
+  /// **'Loading organizer'**
   String get hostsHostCreateEventRouteLoadingScreenBodyLoadingClub;
 
   /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (title).
@@ -3156,7 +3156,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'Saved drafts for this club will appear here.'**
+  /// **'Saved drafts for this organizer will appear here.'**
   String get hostsDraftPickerSheetMessageSavedDraftsForThis;
 
   /// Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (message).
@@ -3576,7 +3576,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/host_event_manage_screen.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Club'**
+  /// **'Organizer'**
   String get hostsHostEventManageScreenLabelClub;
 
   /// Product copy used by lib/hosts/presentation/host_event_manage_screen.dart (label).
@@ -3750,7 +3750,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (Text).
   ///
   /// In en, this message translates to:
-  /// **'Manage this club, publish events, and track upcoming demand.'**
+  /// **'Manage this organizer, publish events, and track upcoming demand.'**
   String get hostsHostClubToolsTextManageThisClubPublish;
 
   /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).
@@ -3804,7 +3804,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Edit club'**
+  /// **'Edit organizer'**
   String get hostsHostClubToolsLabelEditClub;
 
   /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (title).
@@ -3834,7 +3834,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (placeholder).
   ///
   /// In en, this message translates to:
-  /// **'Share a route note, meetup detail, or club update.'**
+  /// **'Share a route note, meetup detail, or organizer update.'**
   String get hostsHostClubToolsPlaceholderShareARouteNote;
 
   /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (Text).
@@ -4825,7 +4825,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/safety/presentation/settings_screen.dart (body).
   ///
   /// In en, this message translates to:
-  /// **'Manage events and clubs'**
+  /// **'Manage events and organizers'**
   String get safetySettingsScreenBodyManageEventsAndClubs;
 
   /// Product copy used by lib/safety/presentation/settings_screen.dart (title).
@@ -4903,7 +4903,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/safety/presentation/settings_screen.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Club announcements'**
+  /// **'Organizer announcements'**
   String get safetySettingsScreenTitleClubAnnouncements;
 
   /// Product copy used by lib/safety/presentation/settings_screen.dart (title).
@@ -5419,7 +5419,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_share_card.dart (Text).
   ///
   /// In en, this message translates to:
-  /// **'CLUB ON CATCH'**
+  /// **'ORGANIZER ON CATCH'**
   String get clubsClubShareCardTextClubOnCatch;
 
   /// Product copy used by lib/dashboard/presentation/widgets/dashboard_empty.dart (title).
@@ -5643,13 +5643,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Club photos'**
+  /// **'Organizer photos'**
   String get hostsCreateClubPhotosPickerLabelClubPhotos;
 
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Club profile image'**
+  /// **'Organizer profile image'**
   String get hostsCreateClubPhotosPickerLabelClubProfileImage;
 
   /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).
@@ -5733,13 +5733,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/event_management/host_create_event_screen.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Club not found'**
+  /// **'Organizer not found'**
   String get hostsHostCreateEventScreenTitleClubNotFound;
 
   /// Product copy used by lib/hosts/presentation/event_management/host_create_event_screen.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'This club is no longer available.'**
+  /// **'This organizer is no longer available.'**
   String get hostsHostCreateEventScreenMessageThisClubIsNo;
 
   /// Product copy used by lib/hosts/presentation/event_management/host_create_event_screen.dart (title).
@@ -5751,7 +5751,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/event_management/host_create_event_screen.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'Only this club\'\'s host team can create events for this club.'**
+  /// **'Only this organizer\'\'s host team can create events for this organizer.'**
   String get hostsHostCreateEventScreenMessageOnlyThisClubS;
 
   /// Product copy used by lib/hosts/presentation/event_management/widgets/create_event_photo_picker.dart (label).
@@ -5889,7 +5889,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Club'**
+  /// **'Organizer'**
   String get hostsHostClubToolsLabelClub;
 
   /// Product copy used by lib/hosts/presentation/widgets/host_event_tools.dart (label).
@@ -6376,7 +6376,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/explore/presentation/explore_screen.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'No clubs in {cityLabel} yet'**
+  /// **'No organizers in {cityLabel} yet'**
   String exploreExploreScreenTitleNoClubsInCitylabel({
     required Object cityLabel,
   });
@@ -6429,7 +6429,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/explore/presentation/widgets/explore_list.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'No clubs in {cityLabel} yet'**
+  /// **'No organizers in {cityLabel} yet'**
   String exploreExploreListTitleNoClubsInCitylabel({required Object cityLabel});
 
   /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (title).
@@ -7213,7 +7213,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/clubs/presentation/discovery/widgets/club_list_tile_parts/avatar_chip.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Open {name} club'**
+  /// **'Open {name} organizer'**
   String clubsAvatarChipLabelOpenNameClub({required Object name});
 
   /// Product copy used by lib/clubs/presentation/discovery/widgets/club_list_tile_parts/avatar_chip.dart (Text).
@@ -7225,19 +7225,19 @@ abstract class AppLocalizations {
   /// Product copy used by lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Open {name} club'**
+  /// **'Open {name} organizer'**
   String clubsDirectoryCardLabelOpenNameClub({required Object name});
 
   /// Product copy used by lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Joined'**
+  /// **'Following'**
   String get clubsDirectoryCardLabelJoined;
 
   /// Product copy used by lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Join'**
+  /// **'Follow'**
   String get clubsDirectoryCardLabelJoin;
 
   /// Product copy used by lib/dashboard/presentation/dashboard_empty_home_screen.dart (label).
@@ -9150,13 +9150,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Clubs you host'**
+  /// **'Organizers you host'**
   String get hostsHostClubTeamScreenTitleClubsYouHost;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (Text).
   ///
   /// In en, this message translates to:
-  /// **'No host clubs yet.'**
+  /// **'No hosted organizers yet.'**
   String get hostsHostClubTeamScreenTextNoHostClubsYet;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_analytics.dart (label).
@@ -9495,7 +9495,7 @@ abstract class AppLocalizations {
   /// Coach suggestion shown when no repeat attendee appears across at least three events.
   ///
   /// In en, this message translates to:
-  /// **'No repeat attendees this period. Club posts and follows help people come back.'**
+  /// **'No repeat attendees this period. Organizer posts and follows help people come back.'**
   String get hostsHostAnalyticsCoachNoRepeatAttendees;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_auth_required_screen.dart (title).
@@ -9535,7 +9535,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Club name'**
+  /// **'Organizer name'**
   String get hostsHostClubProfileLabelClubName;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).
@@ -9595,7 +9595,7 @@ abstract class AppLocalizations {
   /// Section heading for organizer configuration destinations.
   ///
   /// In en, this message translates to:
-  /// **'Club settings'**
+  /// **'Organizer settings'**
   String get hostsHostClubEditTabTitleClubSettings;
 
   /// Navigation row to club event defaults.
@@ -9667,13 +9667,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (kicker).
   ///
   /// In en, this message translates to:
-  /// **'HOST CLUBS'**
+  /// **'HOST ORGANIZERS'**
   String get hostsHostClubsScaffoldKickerHostClubs;
 
   /// Accessibility label for the Host Clubs tabbed workspace.
   ///
   /// In en, this message translates to:
-  /// **'Club workspace tabs'**
+  /// **'Organizer workspace tabs'**
   String get hostsHostClubsScaffoldLabelClubWorkspaceTabs;
 
   /// Accessibility hint for switching Host Clubs workspace pages.
@@ -9703,31 +9703,31 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (tooltip).
   ///
   /// In en, this message translates to:
-  /// **'Switch club'**
+  /// **'Switch organizer'**
   String get hostsHostClubsScaffoldTooltipSwitchClub;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'No host clubs yet'**
+  /// **'No hosted organizers yet'**
   String get hostsHostClubsScaffoldTitleNoHostClubsYet;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (body).
   ///
   /// In en, this message translates to:
-  /// **'Create a club or accept a host invite to start managing events.'**
+  /// **'Create an organizer or accept a host invite to start managing events.'**
   String get hostsHostClubsScaffoldBodyCreateAClubOr;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Create club'**
+  /// **'Create organizer'**
   String get hostsHostClubsScaffoldLabelCreateClub;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_clubs_screen.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Clubs'**
+  /// **'Organizers'**
   String get hostsHostClubsScreenTitleClubs;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (Text).
@@ -9757,19 +9757,19 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/host_operations/host_events_scaffold.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Create your first club'**
+  /// **'Create your first organizer'**
   String get hostsHostEventsScaffoldTitleCreateYourFirstClub;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_events_scaffold.dart (body).
   ///
   /// In en, this message translates to:
-  /// **'Create a club to publish events, manage attendees, and run Event Success.'**
+  /// **'Create an organizer to publish events, manage attendees, and run Event Success.'**
   String get hostsHostEventsScaffoldBodyCreateAClubTo;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_events_scaffold.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Create club'**
+  /// **'Create organizer'**
   String get hostsHostEventsScaffoldLabelCreateClub;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_operations_home_screen.dart (title).
@@ -9781,7 +9781,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Members'**
+  /// **'Followers'**
   String get hostsHostOrganizerLabelMembers;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (label).
@@ -9879,7 +9879,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (tooltip).
   ///
   /// In en, this message translates to:
-  /// **'Switch club'**
+  /// **'Switch organizer'**
   String get hostsHostTodayTooltipSwitchClub;
 
   /// Product copy used by lib/hosts/presentation/host_operations/host_today.dart (Text).
@@ -9992,13 +9992,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/explore/presentation/explore_screen.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'Try another city from the location control, or create the first club when you are ready to host.'**
+  /// **'Try another city from the location control, or create the first organizer when you are ready to host.'**
   String get exploreExploreScreenMessageTryAnotherCityFrom;
 
   /// Product copy used by lib/explore/presentation/widgets/explore_list.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'Try another city from the location control, or create the first club when you are ready to host.'**
+  /// **'Try another city from the location control, or create the first organizer when you are ready to host.'**
   String get exploreExploreListMessageTryAnotherCityFrom;
 
   /// Product copy used by lib/force_update/presentation/update_required_screen.dart (Text).
@@ -10940,7 +10940,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/explore/presentation/explore_screen_state.dart (caption).
   ///
   /// In en, this message translates to:
-  /// **'Club to know'**
+  /// **'Organizer to know'**
   String get exploreExploreScreenStateCaptionClubToKnow;
 
   /// Eyebrow above the host identity shown on an Explore club polaroid.
@@ -11036,7 +11036,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/explore/presentation/explore_screen_state.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'Try a different area, a wider distance, or check the club directory below.'**
+  /// **'Try a different area, a wider distance, or check the organizer directory below.'**
   String get exploreExploreScreenStateMessageTryADifferentArea;
 
   /// Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).
@@ -11495,7 +11495,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Only active club members can book this event.'**
+  /// **'Only active organizer followers can book this event.'**
   String get eventsEventDetailDesignPrimitivesVisiblecopyOnlyActiveClubMembers;
 
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_dock.dart (visibleCopy).
@@ -11656,7 +11656,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/dashboard/presentation/widgets/dashboard_empty.dart (body).
   ///
   /// In en, this message translates to:
-  /// **'Pick a club near you. Pay the fee — or don\'\'t; some are free.'**
+  /// **'Pick an organizer near you. Pay the fee — or don\'\'t; some are free.'**
   String get dashboardDashboardEmptyBodyPickAClubNear;
 
   /// Product copy used by lib/dashboard/presentation/widgets/dashboard_empty.dart (title).
@@ -11668,7 +11668,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/dashboard/presentation/widgets/dashboard_empty.dart (body).
   ///
   /// In en, this message translates to:
-  /// **'Meet the club at the event. No cold matching happens here.'**
+  /// **'Meet the organizer at the event. No cold matching happens here.'**
   String get dashboardDashboardEmptyBodyMeetTheClubAt;
 
   /// Product copy used by lib/dashboard/presentation/widgets/dashboard_empty.dart (title).
@@ -11710,7 +11710,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'{displayName} will stay a club member but will lose host tools.'**
+  /// **'{displayName} will stay an organizer follower but will lose host tools.'**
   String hostsHostTeamManagementSectionMessageDisplaynameWillStayA({
     required Object displayName,
   });
@@ -11718,7 +11718,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (message).
   ///
   /// In en, this message translates to:
-  /// **'{displayName} will become the club owner. You will remain a host.'**
+  /// **'{displayName} will become the organizer owner. You will remain a host.'**
   String hostsHostTeamManagementSectionMessageDisplaynameWillBecomeThe({
     required Object displayName,
   });
@@ -12175,7 +12175,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_body.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'members'**
+  /// **'followers'**
   String get clubsClubDetailBodyLabelMembers;
 
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_body.dart (label).
@@ -12352,19 +12352,19 @@ abstract class AppLocalizations {
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_dock.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Sign in to join'**
+  /// **'Sign in to follow'**
   String get clubsClubDetailDockLabelSignInToJoin;
 
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_dock.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Join club'**
+  /// **'Follow organizer'**
   String get clubsClubDetailDockLabelJoinClub;
 
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_dock.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Joined'**
+  /// **'Following'**
   String get clubsClubDetailDockLabelJoined;
 
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_dock.dart (label).
@@ -13607,7 +13607,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/event_success_event_preview_body_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'This club'**
+  /// **'This organizer'**
   String get eventSuccessEventSuccessEventPreviewBodyScreenVisiblecopyThisClub;
 
   /// Product copy used by lib/event_success/presentation/event_success_structure_config_editor.dart (visibleCopy).
@@ -14070,7 +14070,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Search events or clubs'**
+  /// **'Search events or organizers'**
   String get exploreExploreScreenStateVisiblecopySearchEventsOrClubs;
 
   /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
@@ -14149,7 +14149,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'CLUB TO KNOW'**
+  /// **'ORGANIZER TO KNOW'**
   String get exploreExploreScreenStateVisiblecopyClubToKnow;
 
   /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
@@ -14270,7 +14270,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/club_management/create/create_club_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Restored your club draft'**
+  /// **'Restored your organizer draft'**
   String get hostsCreateClubScreenVisiblecopyRestoredYourClubDraft;
 
   /// Product copy used by lib/hosts/presentation/club_management/create/create_club_screen.dart (visibleCopy).
@@ -14301,7 +14301,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/club_basics_step.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Please enter a club name'**
+  /// **'Please enter an organizer name'**
   String get hostsClubBasicsStepVisiblecopyPleaseEnterAClub;
 
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/club_basics_step.dart (visibleCopy).
@@ -14331,7 +14331,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Add club photos'**
+  /// **'Add organizer photos'**
   String get hostsCreateClubPhotosPickerVisiblecopyAddClubPhotos;
 
   /// Product copy used by lib/hosts/presentation/edit_hosted_event_screen.dart (visibleCopy).
@@ -16100,7 +16100,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'{rating} FROM {reviewCount} CLUB REVIEWS'**
+  /// **'{rating} FROM {reviewCount} ORGANIZER REVIEWS'**
   String eventsEventDetailScreenStateVisiblecopyClubReviewSummary({
     required Object rating,
     required Object reviewCount,
@@ -16262,7 +16262,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Club unavailable'**
+  /// **'Organizer unavailable'**
   String get coreAppErrorMessageVisiblecopyClubUnavailable;
 
   /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
@@ -16334,7 +16334,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Reload club'**
+  /// **'Reload organizer'**
   String get coreAppErrorMessageVisiblecopyReloadClub;
 
   /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
@@ -16376,7 +16376,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Club not found'**
+  /// **'Organizer not found'**
   String get coreAppErrorMessageVisiblecopyClubNotFound;
 
   /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
@@ -16406,7 +16406,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/host_operations_screen_state.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Clubs'**
+  /// **'Organizers'**
   String get hostsHostOperationsScreenStateTitleClubs;
 
   /// Product copy used by lib/image_uploads/shared/profile_photo_editor_screen.dart (label).
@@ -16751,19 +16751,19 @@ abstract class AppLocalizations {
   /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Only a club host can edit this club.'**
+  /// **'Only an organizer manager can edit this organizer.'**
   String get coreAppErrorMessageVisiblecopyOnlyAClubHost;
 
   /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Only the club owner can edit club details.'**
+  /// **'Only the organizer owner can edit organizer details.'**
   String get coreAppErrorMessageVisiblecopyOnlyTheClubOwner;
 
   /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
-  /// **'Choose a club before creating the event.'**
+  /// **'Choose an organizer before creating the event.'**
   String get coreAppErrorMessageVisiblecopyChooseAClubBefore;
 
   /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
@@ -17109,7 +17109,7 @@ abstract class AppLocalizations {
   /// Explanation below the club share-card action.
   ///
   /// In en, this message translates to:
-  /// **'Shares a visual club card with the club link.'**
+  /// **'Shares a visual organizer card with the organizer link.'**
   String get clubsClubShareCardFootnote;
 
   /// Host attribution on a club share card.

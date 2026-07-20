@@ -67,12 +67,12 @@
     },
     "ownerType": {
       "type": "string",
-      "enum": ["club"],
+      "enum": ["club", "organizer"],
       "x-catch-ownership": "server-only"
     },
     "ownerCollection": {
       "type": "string",
-      "enum": ["clubs"],
+      "enum": ["clubs", "organizers"],
       "x-catch-ownership": "server-only"
     },
     "ownerId": {
@@ -83,7 +83,7 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 260,
-      "pattern": "^clubs/[^/]+$",
+      "pattern": "^(clubs|organizers)/[^/]+$",
       "x-catch-ownership": "server-only"
     },
     "slug": {
@@ -117,7 +117,13 @@
     },
     "lastVerifiedSource": {
       "type": "string",
-      "enum": ["adminUpdateClubDetails", "adminSetClubIndexStatus"],
+      "enum": [
+        "adminUpdateClubDetails",
+        "adminSetClubIndexStatus",
+        "adminUpdateOrganizerDetails",
+        "adminSetOrganizerIndexStatus",
+        "clubsToOrganizersMigration"
+      ],
       "x-catch-ownership": "server-only"
     },
     "releasedAt": {

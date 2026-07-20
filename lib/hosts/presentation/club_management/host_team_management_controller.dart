@@ -18,14 +18,14 @@ class HostTeamManagementController extends _$HostTeamManagementController {
     required String clubId,
     required String phoneNumber,
   }) async {
-    requireSignedInUid(ref, action: 'add a club host');
+    requireSignedInUid(ref, action: 'add an organizer manager');
     await ref
         .read(clubsRepositoryProvider)
         .addClubHost(clubId: clubId, phoneNumber: phoneNumber);
   }
 
   Future<void> removeHost({required String clubId, required String uid}) async {
-    requireSignedInUid(ref, action: 'remove a club host');
+    requireSignedInUid(ref, action: 'remove an organizer manager');
     await ref
         .read(clubsRepositoryProvider)
         .removeClubHost(clubId: clubId, uid: uid);
@@ -35,7 +35,7 @@ class HostTeamManagementController extends _$HostTeamManagementController {
     required String clubId,
     required String uid,
   }) async {
-    requireSignedInUid(ref, action: 'transfer club ownership');
+    requireSignedInUid(ref, action: 'transfer organizer ownership');
     await ref
         .read(clubsRepositoryProvider)
         .transferClubOwnership(clubId: clubId, uid: uid);

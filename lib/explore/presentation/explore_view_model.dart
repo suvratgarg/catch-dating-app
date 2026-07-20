@@ -559,7 +559,7 @@ AsyncValue<List<Club>> filteredExploreClubs(Ref ref) {
   }
 
   final searchedClubsAsync = ref.watch(
-    watchClubsByIdsProvider(ClubsByIdQuery(searchResult.clubIds)),
+    watchClubsByIdsProvider(ClubsByIdQuery(searchResult.organizerIds)),
   );
   if (searchedClubsAsync.isLoading) {
     return const AsyncLoading();
@@ -569,7 +569,7 @@ AsyncValue<List<Club>> filteredExploreClubs(Ref ref) {
   }
 
   final rankedMatches = _rankClubsById(
-    ids: searchResult.clubIds,
+    ids: searchResult.organizerIds,
     clubs: searchedClubsAsync.asData?.value ?? const <Club>[],
   );
   return AsyncData(rankedMatches);

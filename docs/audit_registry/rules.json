@@ -598,6 +598,11 @@
           "tool": "contracts:migration-contracts",
           "stage": "scanner-gate",
           "docAnchor": "docs/audit_registry/rules.json"
+        },
+        {
+          "tool": "data:migrate-clubs-to-organizers",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/migrations/clubs_to_organizers.md#environment-run-order"
         }
       ]
     },
@@ -629,6 +634,11 @@
           "tool": "contracts:storage-contract",
           "stage": "scanner-gate",
           "docAnchor": "docs/audit_registry/rules.json"
+        },
+        {
+          "tool": "data:migrate-clubs-to-organizers",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/migrations/clubs_to_organizers.md#what-the-migration-copies"
         },
         {
           "stage": "manual",
@@ -1225,6 +1235,11 @@
         {
           "stage": "manual",
           "docAnchor": "docs/audit_registry/rules.json"
+        },
+        {
+          "tool": "data:migrate-clubs-to-organizers",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/migrations/clubs_to_organizers.md#what-the-migration-copies"
         }
       ]
     },
@@ -2968,6 +2983,47 @@
         }
       ]
     },
+    "ORGANIZER-AUTHORITY-001": {
+      "title": "Organizer is the canonical entity and club is a subtype",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "clubs_to_organizers_migration",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "contracts/**",
+        "functions/src/**",
+        "lib/**",
+        "website/src/**",
+        "admin/src/**",
+        "firestore.rules",
+        "storage.rules",
+        "firestore.indexes.json"
+      ],
+      "instruction": "Use organizers, organizerId, organizer relationships, organizer callables, organizer media paths, and organizer product copy as the canonical authority. Club is allowed as organizerType club, real-world content, or an explicitly documented released-client compatibility projection only.",
+      "sunset_when": [
+        "Organizer is replaced by a separately approved canonical entity model"
+      ],
+      "sunset_signals": [
+        {
+          "type": "tool-exists",
+          "tool": "contracts:organizer-nomenclature"
+        }
+      ],
+      "sunset_review": {
+        "date": "2026-07-20",
+        "decision": "keep",
+        "note": "The local cutover is implemented but remote parity and legacy retirement are still pending."
+      },
+      "enforcement": [
+        {
+          "tool": "contracts:organizer-nomenclature",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/migrations/clubs_to_organizers.md#authority-and-compatibility"
+        }
+      ]
+    },
     "WEB-VISUAL-001": {
       "title": "Registry-ready React stories have deterministic visual baselines",
       "status": "active",
@@ -3009,6 +3065,6 @@
       ]
     }
   },
-  "version": "2.7.22",
-  "updated": "2026-07-19"
+  "version": "2.8.0",
+  "updated": "2026-07-20"
 }

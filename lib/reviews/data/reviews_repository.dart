@@ -36,14 +36,14 @@ class ReviewsRepository {
   Stream<List<Review>> watchReviewsForClub(String clubId) =>
       withBackendErrorStream(
         () => _reviewsRef
-            .where('clubId', isEqualTo: clubId)
+            .where('organizerId', isEqualTo: clubId)
             .orderBy('createdAt', descending: true)
             .limit(ReadLimitPolicy.historyPage)
             .snapshots()
             .map((s) => s.docs.map((d) => d.data()).toList()),
         context: const BackendErrorContext(
           service: BackendService.firestore,
-          action: 'watch club reviews',
+          action: 'watch organizer reviews',
           resource: _collectionPath,
         ),
       );
@@ -84,11 +84,11 @@ class ReviewsRepository {
     int limit = ReadLimitPolicy.historyPage,
   }) => _fetchReviewsPage(
     _reviewsRef
-        .where('clubId', isEqualTo: clubId)
+        .where('organizerId', isEqualTo: clubId)
         .orderBy('createdAt', descending: true),
     startAfter: startAfter,
     limit: limit,
-    action: 'fetch club review page',
+    action: 'fetch organizer review page',
   );
 
   Future<CursorPage<Review, DocumentSnapshot<Review>>> fetchEventReviewsPage({

@@ -2909,8 +2909,8 @@ void main() {
                 ),
                 onMessageHost: (buttonContext, host) async {
                   final matchId = await fakeRepository
-                      .startClubHostConversation(
-                        clubId: club.id,
+                      .startOrganizerConversation(
+                        organizerId: club.id,
                         hostUid: host.uid,
                       );
                   if (!buttonContext.mounted) return;

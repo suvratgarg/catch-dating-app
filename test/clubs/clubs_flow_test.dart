@@ -161,11 +161,11 @@ void main() {
       );
       await _pumpClubFlow(tester);
 
-      expect(find.text('Sign in to join'), findsOneWidget);
-      await tester.tap(find.text('Sign in to join'));
+      expect(find.text('Sign in to follow'), findsOneWidget);
+      await tester.tap(find.text('Sign in to follow'));
       await _pumpClubFlow(tester);
 
-      expect(find.text('Auth /clubs/${club.id}'), findsOneWidget);
+      expect(find.text('Auth /organizers/${club.id}'), findsOneWidget);
     });
 
     testWidgets(
@@ -344,16 +344,15 @@ void main() {
         membershipController.add(null);
         await _pumpClubFlow(tester);
 
-        expect(find.text('Join club'), findsOneWidget);
-        expect(find.text('Joined'), findsNothing);
+        expect(find.text('Follow organizer'), findsOneWidget);
+        expect(find.text('Following'), findsNothing);
 
         membershipController.add(_membership(clubId: club.id, uid: 'runner-2'));
         await _pumpClubFlow(tester);
 
-        expect(find.text('Join club'), findsNothing);
-        // The member dock renders the quiet "Joined" control (DS ClubDock),
-        // not a loud "Leave club" button.
-        expect(find.text('Joined'), findsOneWidget);
+        expect(find.text('Follow organizer'), findsNothing);
+        // The follower dock renders the quiet "Following" control.
+        expect(find.text('Following'), findsOneWidget);
       },
     );
   });

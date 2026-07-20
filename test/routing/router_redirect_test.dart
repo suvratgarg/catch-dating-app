@@ -100,7 +100,7 @@ void main() {
           eventId: 'event-1',
           appRole: AppRole.consumer,
         ),
-        '/clubs/club-1/events/event-1',
+        '/organizers/club-1/events/event-1',
       );
       expect(
         AppDeepLinks.inAppEventPath(
@@ -108,20 +108,23 @@ void main() {
           eventId: 'event-1',
           appRole: AppRole.host,
         ),
-        '/host/clubs/club-1/events/event-1',
+        '/host/organizers/club-1/events/event-1',
       );
     });
   });
 
   group('legacy Host clubs redirect', () {
-    test('club settings spokes keep stable top-level routes', () {
+    test('organizer settings spokes use canonical top-level routes', () {
       expect(
         Routes.hostClubEventDefaultsScreen.path,
-        '/host/clubs/event-defaults',
+        '/host/organizers/event-defaults',
       );
-      expect(Routes.hostClubLiveGuideScreen.path, '/host/clubs/live-guide');
-      expect(Routes.hostClubTeamScreen.path, '/host/clubs/team');
-      expect(Routes.hostClubPaymentsScreen.path, '/host/clubs/payments');
+      expect(
+        Routes.hostClubLiveGuideScreen.path,
+        '/host/organizers/live-guide',
+      );
+      expect(Routes.hostClubTeamScreen.path, '/host/organizers/team');
+      expect(Routes.hostClubPaymentsScreen.path, '/host/organizers/payments');
 
       for (final route in [
         Routes.hostClubEventDefaultsScreen,
@@ -159,7 +162,7 @@ void main() {
     test('redirects retired dedicated Insights into the selected tab', () {
       expect(
         hostInsightsLegacyRedirect('club-1'),
-        '/host/clubs?clubId=club-1&tab=insights',
+        '/host/organizers?clubId=club-1&tab=insights',
       );
       expect(
         hostClubsLegacyRedirect(
@@ -169,18 +172,21 @@ void main() {
       );
     });
 
-    test('preserves nested Host club operations', () {
-      for (final path in [
-        '/host/clubs/club-1',
-        '/host/clubs/club-1/edit',
-        '/host/clubs/club-1/create-event',
-        '/host/clubs/club-1/events/event-1',
-        '/host/clubs/club-1/events/event-1/manage',
-      ]) {
+    test('redirects nested legacy Host club operations', () {
+      for (final entry in {
+        '/host/clubs/club-1': '/host/organizers/club-1',
+        '/host/clubs/club-1/edit': '/host/organizers/club-1/edit',
+        '/host/clubs/club-1/create-event':
+            '/host/organizers/club-1/create-event',
+        '/host/clubs/club-1/events/event-1':
+            '/host/organizers/club-1/events/event-1',
+        '/host/clubs/club-1/events/event-1/manage':
+            '/host/organizers/club-1/events/event-1/manage',
+      }.entries) {
         expect(
-          hostClubsLegacyRedirect(Uri.parse(path)),
-          isNull,
-          reason: '$path must not be swallowed by the legacy redirect.',
+          hostClubsLegacyRedirect(Uri.parse(entry.key)),
+          entry.value,
+          reason: '${entry.key} must retain its nested destination.',
         );
       }
     });
@@ -195,9 +201,11 @@ void main() {
       },
     );
 
-    testWidgets('GoRouter keeps the create-event child route', (tester) async {
+    testWidgets('GoRouter keeps the canonical create-event child route', (
+      tester,
+    ) async {
       final router = GoRouter(
-        initialLocation: '/host/clubs/club-1/create-event',
+        initialLocation: '/host/organizers/club-1/create-event',
         routes: [
           GoRoute(
             path: Routes.hostOrganizerScreen.path,

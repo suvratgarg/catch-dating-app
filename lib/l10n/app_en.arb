@@ -607,14 +607,14 @@
     "x-owner": "product",
     "x-surface": "clubs.presentation.detail.club_detail_screen"
   },
-  "clubsClubDetailScreenTitleClubNotFound": "Club not found",
+  "clubsClubDetailScreenTitleClubNotFound": "Organizer not found",
   "@clubsClubDetailScreenTitleClubNotFound": {
     "description": "Product copy used by lib/clubs/presentation/detail/club_detail_screen.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "clubs.presentation.detail.club_detail_screen"
   },
-  "clubsClubDetailScreenMessageThisClubIsNo": "This club is no longer available.",
+  "clubsClubDetailScreenMessageThisClubIsNo": "This organizer is no longer available.",
   "@clubsClubDetailScreenMessageThisClubIsNo": {
     "description": "Product copy used by lib/clubs/presentation/detail/club_detail_screen.dart (message).",
     "x-audience": "consumer",
@@ -642,7 +642,7 @@
     "x-owner": "product",
     "x-surface": "clubs.presentation.detail.widgets.club_detail_body"
   },
-  "clubsClubDetailBodyTitleFromTheClub": "From the club",
+  "clubsClubDetailBodyTitleFromTheClub": "From the organizer",
   "@clubsClubDetailBodyTitleFromTheClub": {
     "description": "Product copy used by lib/clubs/presentation/detail/widgets/club_detail_body.dart (title).",
     "x-audience": "consumer",
@@ -670,14 +670,14 @@
     "x-owner": "product",
     "x-surface": "clubs.presentation.detail.widgets.club_detail_body"
   },
-  "clubsClubDetailDockLabelDisableClubPushNotifications": "Disable club push notifications",
+  "clubsClubDetailDockLabelDisableClubPushNotifications": "Disable organizer push notifications",
   "@clubsClubDetailDockLabelDisableClubPushNotifications": {
     "description": "Product copy used by lib/clubs/presentation/detail/widgets/club_detail_dock.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "clubs.presentation.detail.widgets.club_detail_dock"
   },
-  "clubsClubDetailDockLabelEnableClubPushNotifications": "Enable club push notifications",
+  "clubsClubDetailDockLabelEnableClubPushNotifications": "Enable organizer push notifications",
   "@clubsClubDetailDockLabelEnableClubPushNotifications": {
     "description": "Product copy used by lib/clubs/presentation/detail/widgets/club_detail_dock.dart (label).",
     "x-audience": "consumer",
@@ -691,7 +691,7 @@
     "x-owner": "product",
     "x-surface": "clubs.presentation.detail.widgets.club_hero_app_bar"
   },
-  "clubsClubHeroAppBarTooltipShareClub": "Share club",
+  "clubsClubHeroAppBarTooltipShareClub": "Share organizer",
   "@clubsClubHeroAppBarTooltipShareClub": {
     "description": "Product copy used by lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart (tooltip).",
     "x-audience": "consumer",
@@ -705,7 +705,7 @@
     "x-owner": "product",
     "x-surface": "clubs.presentation.detail.widgets.club_host_section"
   },
-  "clubsClubPhotoStripTextFromTheClub": "FROM THE CLUB",
+  "clubsClubPhotoStripTextFromTheClub": "FROM THE ORGANIZER",
   "@clubsClubPhotoStripTextFromTheClub": {
     "description": "Product copy used by lib/clubs/presentation/detail/widgets/club_photo_strip.dart (Text).",
     "x-audience": "consumer",
@@ -726,14 +726,14 @@
     "x-owner": "product",
     "x-surface": "clubs.presentation.detail.widgets.club_schedule_section"
   },
-  "clubsClubAvatarRailTitleYourClubs": "Your clubs",
+  "clubsClubAvatarRailTitleYourClubs": "Your organizers",
   "@clubsClubAvatarRailTitleYourClubs": {
     "description": "Product copy used by lib/clubs/presentation/discovery/widgets/club_avatar_rail.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "clubs.presentation.discovery.widgets.club_avatar_rail"
   },
-  "clubsClubDiscoverListTitleClubDirectory": "Club directory",
+  "clubsClubDiscoverListTitleClubDirectory": "Organizer directory",
   "@clubsClubDiscoverListTitleClubDirectory": {
     "description": "Product copy used by lib/clubs/presentation/discovery/widgets/club_discover_list.dart (title).",
     "x-audience": "consumer",
@@ -1004,7 +1004,7 @@
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.activity_section"
   },
-  "dashboardClubPostsHomeSectionTitleClubUpdates": "Club updates",
+  "dashboardClubPostsHomeSectionTitleClubUpdates": "Organizer updates",
   "@dashboardClubPostsHomeSectionTitleClubUpdates": {
     "description": "Product copy used by lib/dashboard/presentation/widgets/club_posts_home_section.dart (title).",
     "x-audience": "consumer",
@@ -2033,7 +2033,7 @@
     "x-owner": "product",
     "x-surface": "events.presentation.event_map_screen"
   },
-  "eventsEventMapScreenMessageJoinClubsBookEvents": "Join clubs, book events, or save future events to see starting points here.",
+  "eventsEventMapScreenMessageJoinClubsBookEvents": "Follow organizers, book events, or save future events to see starting points here.",
   "@eventsEventMapScreenMessageJoinClubsBookEvents": {
     "description": "Product copy used by lib/events/presentation/event_map_screen.dart (message).",
     "x-audience": "consumer",
@@ -2670,35 +2670,35 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
-  "exploreExploreScreenTitleNoClubsMatchThis": "No clubs match this search",
+  "exploreExploreScreenTitleNoClubsMatchThis": "No organizers match this search",
   "@exploreExploreScreenTitleNoClubsMatchThis": {
     "description": "Product copy used by lib/explore/presentation/explore_screen.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
-  "exploreExploreScreenMessageClearTheSearchOr": "Clear the search or filters to bring nearby clubs back into view.",
+  "exploreExploreScreenMessageClearTheSearchOr": "Clear the search or filters to bring nearby organizers back into view.",
   "@exploreExploreScreenMessageClearTheSearchOr": {
     "description": "Product copy used by lib/explore/presentation/explore_screen.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
-  "exploreExploreScreenMessageTryAnotherClubNeighborhood": "Try another club, neighborhood, host, or tag.",
+  "exploreExploreScreenMessageTryAnotherClubNeighborhood": "Try another organizer, neighborhood, host, or tag.",
   "@exploreExploreScreenMessageTryAnotherClubNeighborhood": {
     "description": "Product copy used by lib/explore/presentation/explore_screen.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
-  "exploreExploreScreenTitleNoClubsMatchThese": "No clubs match these filters",
+  "exploreExploreScreenTitleNoClubsMatchThese": "No organizers match these filters",
   "@exploreExploreScreenTitleNoClubsMatchThese": {
     "description": "Product copy used by lib/explore/presentation/explore_screen.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
-  "exploreExploreScreenMessageClearOneOrMore": "Clear one or more filters to bring nearby clubs back into view.",
+  "exploreExploreScreenMessageClearOneOrMore": "Clear one or more filters to bring nearby organizers back into view.",
   "@exploreExploreScreenMessageClearOneOrMore": {
     "description": "Product copy used by lib/explore/presentation/explore_screen.dart (message).",
     "x-audience": "consumer",
@@ -2840,14 +2840,14 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_filter_rail"
   },
-  "exploreExploreFilterRailTextClubs": "CLUBS",
+  "exploreExploreFilterRailTextClubs": "ORGANIZERS",
   "@exploreExploreFilterRailTextClubs": {
     "description": "Product copy used by lib/explore/presentation/widgets/explore_filter_rail.dart (Text).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_filter_rail"
   },
-  "exploreExploreFilterRailLabelJoinedClubs": "Joined clubs",
+  "exploreExploreFilterRailLabelJoinedClubs": "Followed organizers",
   "@exploreExploreFilterRailLabelJoinedClubs": {
     "description": "Product copy used by lib/explore/presentation/widgets/explore_filter_rail.dart (label).",
     "x-audience": "consumer",
@@ -2875,35 +2875,35 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_filter_rail"
   },
-  "exploreExploreListTitleNoClubsMatchThis": "No clubs match this search",
+  "exploreExploreListTitleNoClubsMatchThis": "No organizers match this search",
   "@exploreExploreListTitleNoClubsMatchThis": {
     "description": "Product copy used by lib/explore/presentation/widgets/explore_list.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_list"
   },
-  "exploreExploreListMessageClearTheSearchOr": "Clear the search or filters to bring nearby clubs back into view.",
+  "exploreExploreListMessageClearTheSearchOr": "Clear the search or filters to bring nearby organizers back into view.",
   "@exploreExploreListMessageClearTheSearchOr": {
     "description": "Product copy used by lib/explore/presentation/widgets/explore_list.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_list"
   },
-  "exploreExploreListMessageTryAnotherClubNeighborhood": "Try another club, neighborhood, host, or tag.",
+  "exploreExploreListMessageTryAnotherClubNeighborhood": "Try another organizer, neighborhood, host, or tag.",
   "@exploreExploreListMessageTryAnotherClubNeighborhood": {
     "description": "Product copy used by lib/explore/presentation/widgets/explore_list.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_list"
   },
-  "exploreExploreListTitleNoClubsMatchThese": "No clubs match these filters",
+  "exploreExploreListTitleNoClubsMatchThese": "No organizers match these filters",
   "@exploreExploreListTitleNoClubsMatchThese": {
     "description": "Product copy used by lib/explore/presentation/widgets/explore_list.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_list"
   },
-  "exploreExploreListMessageClearOneOrMore": "Clear one or more filters to bring nearby clubs back into view.",
+  "exploreExploreListMessageClearOneOrMore": "Clear one or more filters to bring nearby organizers back into view.",
   "@exploreExploreListMessageClearOneOrMore": {
     "description": "Product copy used by lib/explore/presentation/widgets/explore_list.dart (message).",
     "x-audience": "consumer",
@@ -2924,14 +2924,14 @@
     "x-owner": "product",
     "x-surface": "force_update.presentation.update_required_screen"
   },
-  "hostsCreateClubScreenTitleClubBasics": "Club basics",
+  "hostsCreateClubScreenTitleClubBasics": "Organizer basics",
   "@hostsCreateClubScreenTitleClubBasics": {
     "description": "Product copy used by lib/hosts/presentation/club_management/create/create_club_screen.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.club_management.create.create_club_screen"
   },
-  "hostsCreateClubScreenTitleClubDetails": "Club details",
+  "hostsCreateClubScreenTitleClubDetails": "Organizer details",
   "@hostsCreateClubScreenTitleClubDetails": {
     "description": "Product copy used by lib/hosts/presentation/club_management/create/create_club_screen.dart (title).",
     "x-audience": "host",
@@ -2952,7 +2952,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.club_management.create.create_club_screen"
   },
-  "hostsClubBasicsStepTitleClubName": "Club name",
+  "hostsClubBasicsStepTitleClubName": "Organizer name",
   "@hostsClubBasicsStepTitleClubName": {
     "description": "Product copy used by lib/hosts/presentation/club_management/create/widgets/club_basics_step.dart (title).",
     "x-audience": "host",
@@ -3176,21 +3176,21 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
   },
-  "hostsCreateClubPhotosPickerTextASquareLogoShown": "A square logo, shown on your club profile and every event.",
+  "hostsCreateClubPhotosPickerTextASquareLogoShown": "A square logo, shown on your organizer profile and every event.",
   "@hostsCreateClubPhotosPickerTextASquareLogoShown": {
     "description": "Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
   },
-  "hostsCreateClubPhotosPickerLabelChangeClubProfileImage": "Change club profile image",
+  "hostsCreateClubPhotosPickerLabelChangeClubProfileImage": "Change organizer profile image",
   "@hostsCreateClubPhotosPickerLabelChangeClubProfileImage": {
     "description": "Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
   },
-  "hostsCreateClubPhotosPickerLabelAddClubProfileImage": "Add club profile image",
+  "hostsCreateClubPhotosPickerLabelAddClubProfileImage": "Add organizer profile image",
   "@hostsCreateClubPhotosPickerLabelAddClubProfileImage": {
     "description": "Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (label).",
     "x-audience": "host",
@@ -3582,7 +3582,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.create.create_event_success_screen"
   },
-  "hostsCreateEventSuccessScreenLabelBackToClub": "Back to club",
+  "hostsCreateEventSuccessScreenLabelBackToClub": "Back to organizer",
   "@hostsCreateEventSuccessScreenLabelBackToClub": {
     "description": "Product copy used by lib/hosts/presentation/event_management/create/create_event_success_screen.dart (label).",
     "x-audience": "host",
@@ -3596,7 +3596,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.host_create_event_route_loading_screen"
   },
-  "hostsHostCreateEventRouteLoadingScreenBodyLoadingClub": "Loading club",
+  "hostsHostCreateEventRouteLoadingScreenBodyLoadingClub": "Loading organizer",
   "@hostsHostCreateEventRouteLoadingScreenBodyLoadingClub": {
     "description": "Product copy used by lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart (body).",
     "x-audience": "host",
@@ -3631,7 +3631,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.draft_picker_sheet"
   },
-  "hostsDraftPickerSheetMessageSavedDraftsForThis": "Saved drafts for this club will appear here.",
+  "hostsDraftPickerSheetMessageSavedDraftsForThis": "Saved drafts for this organizer will appear here.",
   "@hostsDraftPickerSheetMessageSavedDraftsForThis": {
     "description": "Product copy used by lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart (message).",
     "x-audience": "host",
@@ -4121,7 +4121,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen"
   },
-  "hostsHostEventManageScreenLabelClub": "Club",
+  "hostsHostEventManageScreenLabelClub": "Organizer",
   "@hostsHostEventManageScreenLabelClub": {
     "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen.dart (label).",
     "x-audience": "host",
@@ -4324,7 +4324,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.widgets.catch_roster_board"
   },
-  "hostsHostClubToolsTextManageThisClubPublish": "Manage this club, publish events, and track upcoming demand.",
+  "hostsHostClubToolsTextManageThisClubPublish": "Manage this organizer, publish events, and track upcoming demand.",
   "@hostsHostClubToolsTextManageThisClubPublish": {
     "description": "Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (Text).",
     "x-audience": "host",
@@ -4387,7 +4387,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.widgets.host_club_tools"
   },
-  "hostsHostClubToolsLabelEditClub": "Edit club",
+  "hostsHostClubToolsLabelEditClub": "Edit organizer",
   "@hostsHostClubToolsLabelEditClub": {
     "description": "Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).",
     "x-audience": "host",
@@ -4422,7 +4422,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.widgets.host_club_tools"
   },
-  "hostsHostClubToolsPlaceholderShareARouteNote": "Share a route note, meetup detail, or club update.",
+  "hostsHostClubToolsPlaceholderShareARouteNote": "Share a route note, meetup detail, or organizer update.",
   "@hostsHostClubToolsPlaceholderShareARouteNote": {
     "description": "Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (placeholder).",
     "x-audience": "host",
@@ -5580,7 +5580,7 @@
     "x-owner": "product",
     "x-surface": "safety.presentation.settings_screen"
   },
-  "safetySettingsScreenBodyManageEventsAndClubs": "Manage events and clubs",
+  "safetySettingsScreenBodyManageEventsAndClubs": "Manage events and organizers",
   "@safetySettingsScreenBodyManageEventsAndClubs": {
     "description": "Product copy used by lib/safety/presentation/settings_screen.dart (body).",
     "x-audience": "consumer",
@@ -5671,7 +5671,7 @@
     "x-owner": "product",
     "x-surface": "safety.presentation.settings_screen"
   },
-  "safetySettingsScreenTitleClubAnnouncements": "Club announcements",
+  "safetySettingsScreenTitleClubAnnouncements": "Organizer announcements",
   "@safetySettingsScreenTitleClubAnnouncements": {
     "description": "Product copy used by lib/safety/presentation/settings_screen.dart (title).",
     "x-audience": "consumer",
@@ -6273,7 +6273,7 @@
     "x-owner": "product",
     "x-surface": "clubs.presentation.detail.widgets.club_schedule_section"
   },
-  "clubsClubShareCardTextClubOnCatch": "CLUB ON CATCH",
+  "clubsClubShareCardTextClubOnCatch": "ORGANIZER ON CATCH",
   "@clubsClubShareCardTextClubOnCatch": {
     "description": "Product copy used by lib/clubs/presentation/detail/widgets/club_share_card.dart (Text).",
     "x-audience": "consumer",
@@ -6539,14 +6539,14 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.club_management.create.widgets.create_club_contact_fields"
   },
-  "hostsCreateClubPhotosPickerLabelClubPhotos": "Club photos",
+  "hostsCreateClubPhotosPickerLabelClubPhotos": "Organizer photos",
   "@hostsCreateClubPhotosPickerLabelClubPhotos": {
     "description": "Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
   },
-  "hostsCreateClubPhotosPickerLabelClubProfileImage": "Club profile image",
+  "hostsCreateClubPhotosPickerLabelClubProfileImage": "Organizer profile image",
   "@hostsCreateClubPhotosPickerLabelClubProfileImage": {
     "description": "Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (label).",
     "x-audience": "host",
@@ -6644,14 +6644,14 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.host_create_event_screen"
   },
-  "hostsHostCreateEventScreenTitleClubNotFound": "Club not found",
+  "hostsHostCreateEventScreenTitleClubNotFound": "Organizer not found",
   "@hostsHostCreateEventScreenTitleClubNotFound": {
     "description": "Product copy used by lib/hosts/presentation/event_management/host_create_event_screen.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.host_create_event_screen"
   },
-  "hostsHostCreateEventScreenMessageThisClubIsNo": "This club is no longer available.",
+  "hostsHostCreateEventScreenMessageThisClubIsNo": "This organizer is no longer available.",
   "@hostsHostCreateEventScreenMessageThisClubIsNo": {
     "description": "Product copy used by lib/hosts/presentation/event_management/host_create_event_screen.dart (message).",
     "x-audience": "host",
@@ -6665,7 +6665,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.host_create_event_screen"
   },
-  "hostsHostCreateEventScreenMessageOnlyThisClubS": "Only this club''s host team can create events for this club.",
+  "hostsHostCreateEventScreenMessageOnlyThisClubS": "Only this organizer''s host team can create events for this organizer.",
   "@hostsHostCreateEventScreenMessageOnlyThisClubS": {
     "description": "Product copy used by lib/hosts/presentation/event_management/host_create_event_screen.dart (message).",
     "x-audience": "host",
@@ -6826,7 +6826,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.widgets.host_club_tools"
   },
-  "hostsHostClubToolsLabelClub": "Club",
+  "hostsHostClubToolsLabelClub": "Organizer",
   "@hostsHostClubToolsLabelClub": {
     "description": "Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).",
     "x-audience": "host",
@@ -7431,7 +7431,7 @@
     "x-owner": "product",
     "x-surface": "events.presentation.widgets.who_is_going"
   },
-  "exploreExploreScreenTitleNoClubsInCitylabel": "No clubs in {cityLabel} yet",
+  "exploreExploreScreenTitleNoClubsInCitylabel": "No organizers in {cityLabel} yet",
   "@exploreExploreScreenTitleNoClubsInCitylabel": {
     "description": "Product copy used by lib/explore/presentation/explore_screen.dart (title).",
     "placeholders": {
@@ -7502,7 +7502,7 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_event_type_browse_grid"
   },
-  "exploreExploreListTitleNoClubsInCitylabel": "No clubs in {cityLabel} yet",
+  "exploreExploreListTitleNoClubsInCitylabel": "No organizers in {cityLabel} yet",
   "@exploreExploreListTitleNoClubsInCitylabel": {
     "description": "Product copy used by lib/explore/presentation/widgets/explore_list.dart (title).",
     "placeholders": {
@@ -8507,7 +8507,7 @@
     "x-owner": "product",
     "x-surface": "user_profile.presentation.widgets.profile_tab_skeleton"
   },
-  "clubsAvatarChipLabelOpenNameClub": "Open {name} club",
+  "clubsAvatarChipLabelOpenNameClub": "Open {name} organizer",
   "@clubsAvatarChipLabelOpenNameClub": {
     "description": "Product copy used by lib/clubs/presentation/discovery/widgets/club_list_tile_parts/avatar_chip.dart (label).",
     "placeholders": {
@@ -8524,7 +8524,7 @@
     "x-owner": "product",
     "x-surface": "clubs.presentation.discovery.widgets.club_list_tile_parts.avatar_chip"
   },
-  "clubsDirectoryCardLabelOpenNameClub": "Open {name} club",
+  "clubsDirectoryCardLabelOpenNameClub": "Open {name} organizer",
   "@clubsDirectoryCardLabelOpenNameClub": {
     "description": "Product copy used by lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart (label).",
     "placeholders": {
@@ -8534,14 +8534,14 @@
     "x-owner": "product",
     "x-surface": "clubs.presentation.discovery.widgets.club_list_tile_parts.directory_card"
   },
-  "clubsDirectoryCardLabelJoined": "Joined",
+  "clubsDirectoryCardLabelJoined": "Following",
   "@clubsDirectoryCardLabelJoined": {
     "description": "Product copy used by lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "clubs.presentation.discovery.widgets.club_list_tile_parts.directory_card"
   },
-  "clubsDirectoryCardLabelJoin": "Join",
+  "clubsDirectoryCardLabelJoin": "Follow",
   "@clubsDirectoryCardLabelJoin": {
     "description": "Product copy used by lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart (label).",
     "x-audience": "consumer",
@@ -10753,14 +10753,14 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_club_team_screen"
   },
-  "hostsHostClubTeamScreenTitleClubsYouHost": "Clubs you host",
+  "hostsHostClubTeamScreenTitleClubsYouHost": "Organizers you host",
   "@hostsHostClubTeamScreenTitleClubsYouHost": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_club_team_screen"
   },
-  "hostsHostClubTeamScreenTextNoHostClubsYet": "No host clubs yet.",
+  "hostsHostClubTeamScreenTextNoHostClubsYet": "No hosted organizers yet.",
   "@hostsHostClubTeamScreenTextNoHostClubsYet": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_team_screen.dart (Text).",
     "x-audience": "host",
@@ -11099,7 +11099,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_analytics"
   },
-  "hostsHostAnalyticsCoachNoRepeatAttendees": "No repeat attendees this period. Club posts and follows help people come back.",
+  "hostsHostAnalyticsCoachNoRepeatAttendees": "No repeat attendees this period. Organizer posts and follows help people come back.",
   "@hostsHostAnalyticsCoachNoRepeatAttendees": {
     "description": "Coach suggestion shown when no repeat attendee appears across at least three events.",
     "x-audience": "host",
@@ -11145,7 +11145,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_club_profile"
   },
-  "hostsHostClubProfileLabelClubName": "Club name",
+  "hostsHostClubProfileLabelClubName": "Organizer name",
   "@hostsHostClubProfileLabelClubName": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_club_edit_tab.dart (label).",
     "x-audience": "host",
@@ -11215,7 +11215,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_club_profile"
   },
-  "hostsHostClubEditTabTitleClubSettings": "Club settings",
+  "hostsHostClubEditTabTitleClubSettings": "Organizer settings",
   "@hostsHostClubEditTabTitleClubSettings": {
     "description": "Section heading for organizer configuration destinations.",
     "x-audience": "host",
@@ -11300,14 +11300,14 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_club_profile"
   },
-  "hostsHostClubsScaffoldKickerHostClubs": "HOST CLUBS",
+  "hostsHostClubsScaffoldKickerHostClubs": "HOST ORGANIZERS",
   "@hostsHostClubsScaffoldKickerHostClubs": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (kicker).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
   },
-  "hostsHostClubsScaffoldLabelClubWorkspaceTabs": "Club workspace tabs",
+  "hostsHostClubsScaffoldLabelClubWorkspaceTabs": "Organizer workspace tabs",
   "@hostsHostClubsScaffoldLabelClubWorkspaceTabs": {
     "description": "Accessibility label for the Host Clubs tabbed workspace.",
     "x-audience": "host",
@@ -11342,35 +11342,35 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
   },
-  "hostsHostClubsScaffoldTooltipSwitchClub": "Switch club",
+  "hostsHostClubsScaffoldTooltipSwitchClub": "Switch organizer",
   "@hostsHostClubsScaffoldTooltipSwitchClub": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (tooltip).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
   },
-  "hostsHostClubsScaffoldTitleNoHostClubsYet": "No host clubs yet",
+  "hostsHostClubsScaffoldTitleNoHostClubsYet": "No hosted organizers yet",
   "@hostsHostClubsScaffoldTitleNoHostClubsYet": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
   },
-  "hostsHostClubsScaffoldBodyCreateAClubOr": "Create a club or accept a host invite to start managing events.",
+  "hostsHostClubsScaffoldBodyCreateAClubOr": "Create an organizer or accept a host invite to start managing events.",
   "@hostsHostClubsScaffoldBodyCreateAClubOr": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
   },
-  "hostsHostClubsScaffoldLabelCreateClub": "Create club",
+  "hostsHostClubsScaffoldLabelCreateClub": "Create organizer",
   "@hostsHostClubsScaffoldLabelCreateClub": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_clubs_scaffold.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
   },
-  "hostsHostClubsScreenTitleClubs": "Clubs",
+  "hostsHostClubsScreenTitleClubs": "Organizers",
   "@hostsHostClubsScreenTitleClubs": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_clubs_screen.dart (title).",
     "x-audience": "host",
@@ -11405,21 +11405,21 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_events_list"
   },
-  "hostsHostEventsScaffoldTitleCreateYourFirstClub": "Create your first club",
+  "hostsHostEventsScaffoldTitleCreateYourFirstClub": "Create your first organizer",
   "@hostsHostEventsScaffoldTitleCreateYourFirstClub": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_events_scaffold.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_events_scaffold"
   },
-  "hostsHostEventsScaffoldBodyCreateAClubTo": "Create a club to publish events, manage attendees, and run Event Success.",
+  "hostsHostEventsScaffoldBodyCreateAClubTo": "Create an organizer to publish events, manage attendees, and run Event Success.",
   "@hostsHostEventsScaffoldBodyCreateAClubTo": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_events_scaffold.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_events_scaffold"
   },
-  "hostsHostEventsScaffoldLabelCreateClub": "Create club",
+  "hostsHostEventsScaffoldLabelCreateClub": "Create organizer",
   "@hostsHostEventsScaffoldLabelCreateClub": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_events_scaffold.dart (label).",
     "x-audience": "host",
@@ -11433,7 +11433,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_operations_home_screen"
   },
-  "hostsHostOrganizerLabelMembers": "Members",
+  "hostsHostOrganizerLabelMembers": "Followers",
   "@hostsHostOrganizerLabelMembers": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_organizer.dart (label).",
     "x-audience": "host",
@@ -11552,7 +11552,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_today"
   },
-  "hostsHostTodayTooltipSwitchClub": "Switch club",
+  "hostsHostTodayTooltipSwitchClub": "Switch organizer",
   "@hostsHostTodayTooltipSwitchClub": {
     "description": "Product copy used by lib/hosts/presentation/host_operations/host_today.dart (tooltip).",
     "x-audience": "host",
@@ -11685,14 +11685,14 @@
     "x-owner": "product",
     "x-surface": "events.presentation.widgets.booking_conflict_sheet"
   },
-  "exploreExploreScreenMessageTryAnotherCityFrom": "Try another city from the location control, or create the first club when you are ready to host.",
+  "exploreExploreScreenMessageTryAnotherCityFrom": "Try another city from the location control, or create the first organizer when you are ready to host.",
   "@exploreExploreScreenMessageTryAnotherCityFrom": {
     "description": "Product copy used by lib/explore/presentation/explore_screen.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
-  "exploreExploreListMessageTryAnotherCityFrom": "Try another city from the location control, or create the first club when you are ready to host.",
+  "exploreExploreListMessageTryAnotherCityFrom": "Try another city from the location control, or create the first organizer when you are ready to host.",
   "@exploreExploreListMessageTryAnotherCityFrom": {
     "description": "Product copy used by lib/explore/presentation/widgets/explore_list.dart (message).",
     "x-audience": "consumer",
@@ -12799,7 +12799,7 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
-  "exploreExploreScreenStateCaptionClubToKnow": "Club to know",
+  "exploreExploreScreenStateCaptionClubToKnow": "Organizer to know",
   "@exploreExploreScreenStateCaptionClubToKnow": {
     "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (caption).",
     "x-audience": "consumer",
@@ -12913,7 +12913,7 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
-  "exploreExploreScreenStateMessageTryADifferentArea": "Try a different area, a wider distance, or check the club directory below.",
+  "exploreExploreScreenStateMessageTryADifferentArea": "Try a different area, a wider distance, or check the organizer directory below.",
   "@exploreExploreScreenStateMessageTryADifferentArea": {
     "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (message).",
     "x-audience": "consumer",
@@ -13448,7 +13448,7 @@
     "x-owner": "product",
     "x-surface": "events.presentation.widgets.event_detail_design_primitives"
   },
-  "eventsEventDetailDesignPrimitivesVisiblecopyOnlyActiveClubMembers": "Only active club members can book this event.",
+  "eventsEventDetailDesignPrimitivesVisiblecopyOnlyActiveClubMembers": "Only active organizer followers can book this event.",
   "@eventsEventDetailDesignPrimitivesVisiblecopyOnlyActiveClubMembers": {
     "description": "Product copy used by lib/events/presentation/widgets/event_detail_design_primitives.dart (visibleCopy).",
     "x-audience": "consumer",
@@ -13638,7 +13638,7 @@
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.dashboard_empty"
   },
-  "dashboardDashboardEmptyBodyPickAClubNear": "Pick a club near you. Pay the fee — or don''t; some are free.",
+  "dashboardDashboardEmptyBodyPickAClubNear": "Pick an organizer near you. Pay the fee — or don''t; some are free.",
   "@dashboardDashboardEmptyBodyPickAClubNear": {
     "description": "Product copy used by lib/dashboard/presentation/widgets/dashboard_empty.dart (body).",
     "x-audience": "consumer",
@@ -13652,7 +13652,7 @@
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.dashboard_empty"
   },
-  "dashboardDashboardEmptyBodyMeetTheClubAt": "Meet the club at the event. No cold matching happens here.",
+  "dashboardDashboardEmptyBodyMeetTheClubAt": "Meet the organizer at the event. No cold matching happens here.",
   "@dashboardDashboardEmptyBodyMeetTheClubAt": {
     "description": "Product copy used by lib/dashboard/presentation/widgets/dashboard_empty.dart (body).",
     "x-audience": "consumer",
@@ -13701,7 +13701,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.widgets.host_team_management_section"
   },
-  "hostsHostTeamManagementSectionMessageDisplaynameWillStayA": "{displayName} will stay a club member but will lose host tools.",
+  "hostsHostTeamManagementSectionMessageDisplaynameWillStayA": "{displayName} will stay an organizer follower but will lose host tools.",
   "@hostsHostTeamManagementSectionMessageDisplaynameWillStayA": {
     "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (message).",
     "placeholders": {
@@ -13711,7 +13711,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.widgets.host_team_management_section"
   },
-  "hostsHostTeamManagementSectionMessageDisplaynameWillBecomeThe": "{displayName} will become the club owner. You will remain a host.",
+  "hostsHostTeamManagementSectionMessageDisplaynameWillBecomeThe": "{displayName} will become the organizer owner. You will remain a host.",
   "@hostsHostTeamManagementSectionMessageDisplaynameWillBecomeThe": {
     "description": "Product copy used by lib/hosts/presentation/widgets/host_team_management_section.dart (message).",
     "placeholders": {
@@ -14248,7 +14248,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox.host_broadcast_composer_sheet"
   },
-  "clubsClubDetailBodyLabelMembers": "members",
+  "clubsClubDetailBodyLabelMembers": "followers",
   "@clubsClubDetailBodyLabelMembers": {
     "description": "Product copy used by lib/clubs/presentation/detail/widgets/club_detail_body.dart (label).",
     "x-audience": "consumer",
@@ -14455,21 +14455,21 @@
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.event_focus_rail"
   },
-  "clubsClubDetailDockLabelSignInToJoin": "Sign in to join",
+  "clubsClubDetailDockLabelSignInToJoin": "Sign in to follow",
   "@clubsClubDetailDockLabelSignInToJoin": {
     "description": "Product copy used by lib/clubs/presentation/detail/widgets/club_detail_dock.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "clubs.presentation.detail.widgets.club_detail_dock"
   },
-  "clubsClubDetailDockLabelJoinClub": "Join club",
+  "clubsClubDetailDockLabelJoinClub": "Follow organizer",
   "@clubsClubDetailDockLabelJoinClub": {
     "description": "Product copy used by lib/clubs/presentation/detail/widgets/club_detail_dock.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "clubs.presentation.detail.widgets.club_detail_dock"
   },
-  "clubsClubDetailDockLabelJoined": "Joined",
+  "clubsClubDetailDockLabelJoined": "Following",
   "@clubsClubDetailDockLabelJoined": {
     "description": "Product copy used by lib/clubs/presentation/detail/widgets/club_detail_dock.dart (label).",
     "x-audience": "consumer",
@@ -15878,7 +15878,7 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
-  "eventSuccessEventSuccessEventPreviewBodyScreenVisiblecopyThisClub": "This club",
+  "eventSuccessEventSuccessEventPreviewBodyScreenVisiblecopyThisClub": "This organizer",
   "@eventSuccessEventSuccessEventPreviewBodyScreenVisiblecopyThisClub": {
     "description": "Product copy used by lib/event_success/presentation/event_success_event_preview_body_screen.dart (visibleCopy).",
     "x-audience": "consumer",
@@ -16425,7 +16425,7 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
-  "exploreExploreScreenStateVisiblecopySearchEventsOrClubs": "Search events or clubs",
+  "exploreExploreScreenStateVisiblecopySearchEventsOrClubs": "Search events or organizers",
   "@exploreExploreScreenStateVisiblecopySearchEventsOrClubs": {
     "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
     "x-audience": "consumer",
@@ -16520,7 +16520,7 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
-  "exploreExploreScreenStateVisiblecopyClubToKnow": "CLUB TO KNOW",
+  "exploreExploreScreenStateVisiblecopyClubToKnow": "ORGANIZER TO KNOW",
   "@exploreExploreScreenStateVisiblecopyClubToKnow": {
     "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
     "x-audience": "consumer",
@@ -16668,7 +16668,7 @@
     "x-owner": "product",
     "x-surface": "explore.presentation.widgets.explore_event_rows"
   },
-  "hostsCreateClubScreenVisiblecopyRestoredYourClubDraft": "Restored your club draft",
+  "hostsCreateClubScreenVisiblecopyRestoredYourClubDraft": "Restored your organizer draft",
   "@hostsCreateClubScreenVisiblecopyRestoredYourClubDraft": {
     "description": "Product copy used by lib/hosts/presentation/club_management/create/create_club_screen.dart (visibleCopy).",
     "x-audience": "host",
@@ -16703,7 +16703,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.club_management.create.create_club_screen"
   },
-  "hostsClubBasicsStepVisiblecopyPleaseEnterAClub": "Please enter a club name",
+  "hostsClubBasicsStepVisiblecopyPleaseEnterAClub": "Please enter an organizer name",
   "@hostsClubBasicsStepVisiblecopyPleaseEnterAClub": {
     "description": "Product copy used by lib/hosts/presentation/club_management/create/widgets/club_basics_step.dart (visibleCopy).",
     "x-audience": "host",
@@ -16738,7 +16738,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.club_management.create.widgets.create_club_photos_picker"
   },
-  "hostsCreateClubPhotosPickerVisiblecopyAddClubPhotos": "Add club photos",
+  "hostsCreateClubPhotosPickerVisiblecopyAddClubPhotos": "Add organizer photos",
   "@hostsCreateClubPhotosPickerVisiblecopyAddClubPhotos": {
     "description": "Product copy used by lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart (visibleCopy).",
     "x-audience": "host",
@@ -18814,7 +18814,7 @@
     "x-owner": "product",
     "x-surface": "events.presentation.widgets.event_stats_grid"
   },
-  "eventsEventDetailScreenStateVisiblecopyClubReviewSummary": "{rating} FROM {reviewCount} CLUB REVIEWS",
+  "eventsEventDetailScreenStateVisiblecopyClubReviewSummary": "{rating} FROM {reviewCount} ORGANIZER REVIEWS",
   "@eventsEventDetailScreenStateVisiblecopyClubReviewSummary": {
     "description": "Product copy used by lib/events/presentation/event_detail_screen_state.dart (visibleCopy).",
     "placeholders": {
@@ -19004,7 +19004,7 @@
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
-  "coreAppErrorMessageVisiblecopyClubUnavailable": "Club unavailable",
+  "coreAppErrorMessageVisiblecopyClubUnavailable": "Organizer unavailable",
   "@coreAppErrorMessageVisiblecopyClubUnavailable": {
     "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
@@ -19088,7 +19088,7 @@
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
-  "coreAppErrorMessageVisiblecopyReloadClub": "Reload club",
+  "coreAppErrorMessageVisiblecopyReloadClub": "Reload organizer",
   "@coreAppErrorMessageVisiblecopyReloadClub": {
     "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
@@ -19137,7 +19137,7 @@
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
-  "coreAppErrorMessageVisiblecopyClubNotFound": "Club not found",
+  "coreAppErrorMessageVisiblecopyClubNotFound": "Organizer not found",
   "@coreAppErrorMessageVisiblecopyClubNotFound": {
     "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
@@ -19172,7 +19172,7 @@
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
-  "hostsHostOperationsScreenStateTitleClubs": "Clubs",
+  "hostsHostOperationsScreenStateTitleClubs": "Organizers",
   "@hostsHostOperationsScreenStateTitleClubs": {
     "description": "Product copy used by lib/hosts/presentation/host_operations_screen_state.dart (title).",
     "x-audience": "host",
@@ -19579,21 +19579,21 @@
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
-  "coreAppErrorMessageVisiblecopyOnlyAClubHost": "Only a club host can edit this club.",
+  "coreAppErrorMessageVisiblecopyOnlyAClubHost": "Only an organizer manager can edit this organizer.",
   "@coreAppErrorMessageVisiblecopyOnlyAClubHost": {
     "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
-  "coreAppErrorMessageVisiblecopyOnlyTheClubOwner": "Only the club owner can edit club details.",
+  "coreAppErrorMessageVisiblecopyOnlyTheClubOwner": "Only the organizer owner can edit organizer details.",
   "@coreAppErrorMessageVisiblecopyOnlyTheClubOwner": {
     "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
-  "coreAppErrorMessageVisiblecopyChooseAClubBefore": "Choose a club before creating the event.",
+  "coreAppErrorMessageVisiblecopyChooseAClubBefore": "Choose an organizer before creating the event.",
   "@coreAppErrorMessageVisiblecopyChooseAClubBefore": {
     "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
@@ -19924,7 +19924,7 @@
   "@chatsEmptyStateNoUnreadQueriesTitle": {"description": "Host inbox unread-filter empty-state title.", "x-audience": "host", "x-owner": "product", "x-surface": "chats.presentation.inbox.widgets.chats_empty_state"},
   "chatsEmptyStateNoUnreadQueriesMessage": "New attendee questions will move here until you open their thread.",
   "@chatsEmptyStateNoUnreadQueriesMessage": {"description": "Host inbox unread-filter empty-state guidance.", "x-audience": "host", "x-owner": "product", "x-surface": "chats.presentation.inbox.widgets.chats_empty_state"},
-  "clubsClubShareCardFootnote": "Shares a visual club card with the club link.",
+  "clubsClubShareCardFootnote": "Shares a visual organizer card with the organizer link.",
   "@clubsClubShareCardFootnote": {"description": "Explanation below the club share-card action.", "x-audience": "consumer", "x-owner": "product", "x-surface": "clubs.presentation.detail.widgets.club_share_card"},
   "clubsClubShareCardHostedBy": "Hosted by {hostName}",
   "@clubsClubShareCardHostedBy": {"description": "Host attribution on a club share card.", "placeholders": {"hostName": {"type": "String"}}, "x-audience": "consumer", "x-owner": "product", "x-surface": "clubs.presentation.detail.widgets.club_share_card"},

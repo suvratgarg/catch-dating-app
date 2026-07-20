@@ -67,34 +67,34 @@ enum Routes {
   onboardingScreen('/onboarding', AppRouteAudience.consumer),
   calendarScreen('/calendar', AppRouteAudience.consumer),
   calendarEventDetailScreen(
-    '/calendar/clubs/:clubId/events/:eventId',
+    '/calendar/organizers/:clubId/events/:eventId',
     AppRouteAudience.consumer,
   ),
   savedEventsScreen('/saved-events', AppRouteAudience.consumer),
   savedEventDetailScreen(
-    '/saved-events/clubs/:clubId/events/:eventId',
+    '/saved-events/organizers/:clubId/events/:eventId',
     AppRouteAudience.consumer,
   ),
   filtersScreen('/filters', AppRouteAudience.consumer),
   dashboardEventDetailScreen(
-    '/dashboard/clubs/:clubId/events/:eventId',
+    '/dashboard/organizers/:clubId/events/:eventId',
     AppRouteAudience.consumer,
   ),
   eventLocationMapScreen('/events/:eventId/location', AppRouteAudience.shared),
   // Home / Dashboard branch (index 0)
   dashboardScreen('/', AppRouteAudience.consumer),
   notificationsScreen('/notifications', AppRouteAudience.consumer),
-  // Explore branch (index 1). The root path remains `/clubs` because club
-  // detail and event detail deep links still live under that URL namespace.
-  exploreScreen('/clubs', AppRouteAudience.consumer),
-  exploreMapScreen('/clubs/map', AppRouteAudience.consumer),
-  clubDetailScreen('/clubs/:clubId', AppRouteAudience.consumer),
+  // Explore branch (index 1). Organizer is the parent entity; club is one
+  // organizer subtype and no longer owns the public route namespace.
+  exploreScreen('/organizers', AppRouteAudience.consumer),
+  exploreMapScreen('/organizers/map', AppRouteAudience.consumer),
+  clubDetailScreen('/organizers/:clubId', AppRouteAudience.consumer),
   eventDetailScreen(
-    '/clubs/:clubId/events/:eventId',
+    '/organizers/:clubId/events/:eventId',
     AppRouteAudience.consumer,
   ),
   eventSuccessCompanionScreen(
-    '/clubs/:clubId/events/:eventId/companion',
+    '/organizers/:clubId/events/:eventId/companion',
     AppRouteAudience.consumer,
   ),
   // Legacy Catches hub path; redirects into Home after tab retirement.
@@ -114,39 +114,42 @@ enum Routes {
   hostHomeScreen('/host', AppRouteAudience.host),
   hostEventsScreen('/host/events', AppRouteAudience.host),
   hostOrganizerScreen('/host/organizer', AppRouteAudience.host),
-  hostClubsScreen('/host/clubs', AppRouteAudience.host),
+  hostClubsScreen('/host/organizers', AppRouteAudience.host),
   hostClubEventDefaultsScreen(
-    '/host/clubs/event-defaults',
+    '/host/organizers/event-defaults',
     AppRouteAudience.host,
   ),
-  hostClubLiveGuideScreen('/host/clubs/live-guide', AppRouteAudience.host),
-  hostClubTeamScreen('/host/clubs/team', AppRouteAudience.host),
-  hostClubPaymentsScreen('/host/clubs/payments', AppRouteAudience.host),
-  hostClubDetailScreen('/host/clubs/:clubId', AppRouteAudience.host),
-  hostCreateClubScreen('/host/clubs/create-club', AppRouteAudience.host),
-  hostEditClubScreen('/host/clubs/:clubId/edit', AppRouteAudience.host),
+  hostClubLiveGuideScreen('/host/organizers/live-guide', AppRouteAudience.host),
+  hostClubTeamScreen('/host/organizers/team', AppRouteAudience.host),
+  hostClubPaymentsScreen('/host/organizers/payments', AppRouteAudience.host),
+  hostClubDetailScreen('/host/organizers/:clubId', AppRouteAudience.host),
+  hostCreateClubScreen(
+    '/host/organizers/create-organizer',
+    AppRouteAudience.host,
+  ),
+  hostEditClubScreen('/host/organizers/:clubId/edit', AppRouteAudience.host),
   hostCreateEventScreen(
-    '/host/clubs/:clubId/create-event',
+    '/host/organizers/:clubId/create-event',
     AppRouteAudience.host,
   ),
   hostAppEventDetailScreen(
-    '/host/clubs/:clubId/events/:eventId',
+    '/host/organizers/:clubId/events/:eventId',
     AppRouteAudience.host,
   ),
   hostAppEventManageScreen(
-    '/host/clubs/:clubId/events/:eventId/manage',
+    '/host/organizers/:clubId/events/:eventId/manage',
     AppRouteAudience.host,
   ),
   hostAppEditEventScreen(
-    '/host/clubs/:clubId/events/:eventId/edit',
+    '/host/organizers/:clubId/events/:eventId/edit',
     AppRouteAudience.host,
   ),
   hostAppAttendanceSheet(
-    '/host/clubs/:clubId/events/:eventId/attendance',
+    '/host/organizers/:clubId/events/:eventId/attendance',
     AppRouteAudience.host,
   ),
   hostAppEventSuccessScreen(
-    '/host/clubs/:clubId/events/:eventId/success',
+    '/host/organizers/:clubId/events/:eventId/success',
     AppRouteAudience.host,
   ),
   hostInboxScreen('/host/inbox', AppRouteAudience.host),
@@ -682,6 +685,7 @@ class _RouteLoadingScreen extends StatelessWidget {
 
 List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
   return [
+    ..._legacyHostClubRoutes(),
     GoRoute(
       path: '/host/organizer/:clubId/insights',
       redirect: (context, state) =>
@@ -720,7 +724,7 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
       redirect: (context, state) => hostClubsLegacyRedirect(state.uri),
       routes: [
         GoRoute(
-          path: 'create-club',
+          path: 'create-organizer',
           name: Routes.hostCreateClubScreen.name,
           builder: (context, state) => const HostCreateClubScreen(),
         ),
@@ -821,16 +825,53 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
   ];
 }
 
+List<RouteBase> _legacyHostClubRoutes() => [
+  GoRoute(
+    path: '/host/clubs',
+    redirect: (context, state) => _legacyHostClubRedirect(state.uri),
+    routes: [
+      GoRoute(
+        path: ':clubId',
+        redirect: (context, state) => _legacyHostClubRedirect(state.uri),
+        routes: [
+          for (final path in const [
+            'edit',
+            'create-event',
+            'events/:eventId',
+            'events/:eventId/manage',
+            'events/:eventId/edit',
+            'events/:eventId/attendance',
+            'events/:eventId/success',
+          ])
+            GoRoute(
+              path: path,
+              redirect: (context, state) => _legacyHostClubRedirect(state.uri),
+            ),
+        ],
+      ),
+    ],
+  ),
+];
+
+String _legacyHostClubRedirect(Uri uri) {
+  if (uri.path == '/host/clubs') {
+    return uri.replace(path: Routes.hostOrganizerScreen.path).toString();
+  }
+  var path = uri.path.replaceFirst('/host/clubs', '/host/organizers');
+  path = path.replaceFirst('/create-club', '/create-organizer');
+  return uri.replace(path: path).toString();
+}
+
 @visibleForTesting
 String? hostClubsLegacyRedirect(Uri uri) {
-  return uri.path == Routes.hostClubsScreen.path
-      ? Uri(
-          path: Routes.hostOrganizerScreen.path,
-          queryParameters: uri.queryParameters.isEmpty
-              ? null
-              : uri.queryParameters,
-        ).toString()
-      : null;
+  if (uri.path == '/host/clubs' || uri.path.startsWith('/host/clubs/')) {
+    return _legacyHostClubRedirect(uri);
+  }
+  if (uri.path != Routes.hostClubsScreen.path) return null;
+  return Uri(
+    path: Routes.hostOrganizerScreen.path,
+    queryParameters: uri.queryParameters.isEmpty ? null : uri.queryParameters,
+  ).toString();
 }
 
 @visibleForTesting
@@ -970,7 +1011,7 @@ bool _isPublicRoute(String matchedLocation) {
   if (matchedLocation == Routes.authScreen.path) return true;
   if (matchedLocation == Routes.exploreScreen.path) return true;
 
-  if (matchedLocation.startsWith('/clubs/')) {
+  if (matchedLocation.startsWith('/organizers/')) {
     return true;
   }
 

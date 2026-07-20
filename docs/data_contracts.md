@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.3.0
-updated: 2026-07-18
+version: 1.4.0
+updated: 2026-07-20
 owner: recursive_audit_loop
 status: active
 ---
@@ -65,6 +65,23 @@ come from JSON Schema; the boundary is the timestamp representation:
 `tool/contracts/check_firestore_contract.mjs` cross-checks that the Admin SDK
 projection has the expected fields for every collection with a
 `typescriptInterface` entry.
+
+## Organizer Authority
+
+`organizers/{organizerId}` is the canonical organization entity. `club` is an
+organizer subtype, never a peer top-level entity. The required
+`organizerType` enum is `club`, `community`, `individual`, `eventProducer`,
+`venue`, or `brand`; missing legacy values default to `club`. The complete
+mapping, rollout, parity, and recovery procedure is owned by
+`docs/migrations/clubs_to_organizers.md` and
+`contracts/migrations/clubs_to_organizers.json`.
+
+New contracts use `organizerId`, `organizerTeamMemberships`,
+`organizerFollows`, `organizerClaimRequests`, `organizerScheduleLocks`, and
+`organizers/{organizerId}/posts`. The `clubs`, `clubMemberships`,
+`clubClaimRequests`, `clubScheduleLocks`, `clubId`, and club-media contracts are
+released-client compatibility projections only. They remain additive during
+the migration window and must not become the authority for new behavior.
 
 ### Required Event Meeting Location
 
@@ -244,18 +261,18 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 
 | Relationship | Source document |
 |---|---|
-| Club membership | `clubMemberships/{clubId_uid}` |
-| One hosted-club lock | `clubHostClaims/{uid}` |
+| Organizer owner/manager seat | `organizerTeamMemberships/{organizerId_uid}` |
+| Organizer follow | `organizerFollows/{organizerId_uid}` |
 | Event booking, waitlist, attendance, cancellation | `eventParticipations/{eventId_uid}` |
 | Saved events | `savedEvents/{uid_eventId}` |
 | Outgoing profile decisions | `profileDecisions/{uid}/outgoing/{targetId}` |
 | Match messages | `matches/{matchId}/messages/{messageId}` |
 | Notification timeline | `notifications/{uid}/items/{notificationId}` |
-| Club follower posts | `clubs/{clubId}/posts/{postId}` |
+| Organizer follower posts | `organizers/{organizerId}/posts/{postId}` |
 
 Retired relationship arrays must not be reintroduced into Flutter models,
 Functions writes, Firestore rules, active tooling, or tests. Parent entity docs
-keep only aggregate projections such as `memberCount`, `bookedCount`,
+keep only aggregate projections such as `followerCount`, `bookedCount`,
 `waitlistedCount`, `checkedInCount`, `genderCounts`, `rating`, `reviewCount`,
 and `nextEventAt`.
 
@@ -274,14 +291,16 @@ the installation locale when the delivery path supports per-installation
 fan-out. English remains the bundled server fallback; notification prose must
 not be stored as an unversioned remote document.
 
-## Club Follower Posts
+## Organizer Follower Posts
 
-Organizer follower posts live under `clubs/{clubId}/posts/{postId}` and are
-created only by the `createClubPost` callable. Clients may read authenticated
-posts, but direct writes are denied. The callable verifies host authority,
-validates optional linked events against the same club, enforces the rolling
-three-posts-per-seven-days club quota, writes the canonical post, and fans out
-durable `clubUpdate` activity notifications to active followers.
+Organizer follower posts live under
+`organizers/{organizerId}/posts/{postId}` and are created only by the
+`createOrganizerPost` callable. Clients may read authenticated posts, but
+direct writes are denied. The callable verifies organizer-manager authority,
+validates optional linked events against the same organizer, enforces the
+rolling three-posts-per-seven-days quota, writes the canonical post, and fans
+out durable `organizerUpdate` activity notifications to active followers.
+`createClubPost` and the nested club post are compatibility shadows.
 
 ## Event Broadcast Receipts
 
@@ -383,14 +402,15 @@ host locks:
 
 | Collection / field | Owner | Notes |
 |---|---|---|
-| `clubClaimRequests/{requestId}` | `requestClubClaim`, `adminDecideClubClaim` | Server-owned claim queue. Clients create and decide only through callables; direct Firestore reads/writes are denied. |
-| `clubs/{clubId}.claim` | claim callables and admin index-review callables | Public-page claim state, latest request id, review audit, and owner-facing status. |
-| `clubs/{clubId}.ownership` | claim callables, create/update club callables | `programmatic` before ownership, `claimed` after approval. |
-| `clubs/{clubId}.publicPage.indexReview` | `adminSetClubIndexStatus` | Audit evidence for source quality, media rights, cadence, and owner/contact verification before a page becomes indexable. |
+| `organizerClaimRequests/{requestId}` | `requestOrganizerClaim`, `adminDecideOrganizerClaim` | Server-owned claim queue. Clients create and decide only through callables; direct Firestore reads/writes are denied. |
+| `organizers/{organizerId}.claim` | organizer claim callables and admin index-review callables | Public-page claim state, latest request id, review audit, and owner-facing status. |
+| `organizers/{organizerId}.ownership` | organizer claim/create/update callables | `programmatic` before ownership, `claimed` after approval. |
+| `organizers/{organizerId}.publicPage.indexReview` | admin organizer indexing | Audit evidence for source quality, media rights, cadence, and owner/contact verification before a page becomes indexable. |
 | `reviews/{reviewId}.ownerResponse` | `setReviewResponse` | Server-owned owner response rendered by app and website review surfaces. |
 
-`clubHostClaims/{uid}` remains the one-hosted-club lock. It is not the public
-claim request queue.
+`organizerTeamMemberships` owns active owner and manager seats. Legacy
+`clubHostClaims` remains only long enough to support released club callables;
+it is not organizer claim authority.
 
 ## Event Discovery Projection
 
@@ -422,11 +442,12 @@ the direct event index. The repair is dry-run by default and requires
 `--allow-prod` when applying against prod.
 
 Admin organizer search uses a separate server-owned
-`clubs/{clubId}.adminSearch` projection for the admin Organizers canonical
-directory. It is not consumed by the app or website. `adminListClubDetails`
+`organizers/{organizerId}.adminSearch` projection for the admin Organizers
+canonical directory. It is not consumed by the app or website.
+`adminListOrganizerDetails`
 accepts either a single `citySlug` or a bounded `citySlugs` array for
-admin-only launch-city work queues such as Indore + Mumbai. Existing club docs
-can be repaired with `node tool/data/backfill_organizer_admin_search.mjs`; the
+admin-only launch-city work queues such as Indore + Mumbai. Existing organizer
+docs can be repaired with `node tool/data/backfill_organizer_admin_search.mjs`; the
 repair is dry-run by default and requires `--allow-prod` when applying against
 prod.
 
@@ -558,11 +579,12 @@ Verified in this consolidation pass from current code and registry state:
 - Relationship arrays have already been retired from active app surfaces.
 - `tool/data/validate_firestore_data.mjs` validates edge documents and parent
   aggregate drift instead of reconstructing from arrays.
-- `createEvent`, `updateEvent`, `cancelEvent`, `deleteEvent`, club mutations,
+- `createEvent`, `updateEvent`, `cancelEvent`, `deleteEvent`, organizer mutations,
   booking/waitlist/attendance, payments, reviews, safety actions, profile
   updates, Places, and event-success write paths are callable/trigger owned as
   documented in `docs/backend_operation_catalog.md`.
-- Contract schemas now cover private/public profiles, events, clubs,
+- Contract schemas now cover private/public profiles, events, organizers and
+  their explicit legacy club projections,
   relationship docs, social/payment/safety/operational docs, event-success
   documents, callable request payloads, selected responses, direct-write
   payloads, prompt catalogs, seed fixtures, and migration contracts.
@@ -572,34 +594,39 @@ Verified in this consolidation pass from current code and registry state:
   schema validation, Functions checks, rules tests, and focused Flutter
   contract tests.
 
-## Event Model Rename And Remote Cleanup
+## Historical Event Rename And Organizer Cutover
 
-Local naming has moved from run/run-club language to event/club language:
+The older run/run-club rename is complete. The current authority cutover moves
+the organization entity from `Club` to `Organizer`, with `club` retained as an
+`organizerType` value:
 
 | Old name | Current name |
 |---|---|
 | `Run` | `Event` |
-| `RunClub` | `Club` |
+| `RunClub` | `Organizer` with `organizerType: club` |
 | `RunParticipation` | `EventParticipation` |
 | `SavedRun` | `SavedEvent` |
 
-The local rename is complete across Dart feature folders, domain classes,
-repositories, routes, tests, Functions source folders, callable exports,
-generated schema types, Firestore rules, indexes, contract schemas, seed tools,
-repair tools, validation tools, and generated outputs.
+Organizer-named contracts, runtime collections, callables, routes, media paths,
+and product-facing copy are the current local authority. `Club`-named Dart
+types/folders and callable wrappers are compatibility adapters until the remote
+backfill and supported-client window are proven. They must not be used to
+introduce new club-only behavior.
 
-Remote data cleanup is intentionally not complete. Do not delete or reset
+Remote organizer backfill and legacy cleanup are intentionally not complete.
+Follow `docs/migrations/clubs_to_organizers.md`. Do not delete or reset
 Firestore data in dev, staging, or prod without a separate explicit
-destructive-action confirmation. Preserve user documents and club documents
+destructive-action confirmation. Preserve user documents and both canonical
+organizer documents and legacy club projections
 through any remote migration.
 
 If remote cleanup is approved, first export or back up existing `users`,
 `publicProfiles`, and old `runClubs` documents for each Firebase environment.
-Then copy any host organizations worth preserving into `clubs`, reset
+Then copy any host organizations worth preserving into `organizers`, reset
 event-specific legacy collections and edges such as old `runs`,
 `runParticipations`, `savedRuns`, reviews, event schedule locks, event-derived
 profile decisions, and generated demo event documents, and re-run seed/host tooling against
-the new `events` and `clubs` collections.
+the canonical `events` and `organizers` collections.
 
 ## Open Watch Items
 
@@ -610,8 +637,8 @@ the new `events` and `clubs` collections.
 - `MIGRATION-VALIDATION-001`: before applying legacy migration scripts to
   shared beta data, add or keep seeded fixture tests for duplicates, missing
   docs, deleted users, legacy chats, and count mismatches.
-- `DELETE-METHODOLOGY-QUEUE`: core account/event/club deletion is
-  relationship-doc aware; broader historical event/club deletion still needs
+- `DELETE-METHODOLOGY-QUEUE`: core account/event/organizer deletion is
+  relationship-doc aware; broader historical event/organizer deletion still needs
   product policy before expanding beyond cancel/archive/delete-unused.
 - Retired storage rename from `swipes` to `profileDecisions`: keep legacy
   migration/backfill tooling available for validation and cleanup, but do not

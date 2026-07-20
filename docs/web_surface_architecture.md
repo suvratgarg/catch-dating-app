@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.7.152
-updated: 2026-07-19
+version: 0.8.0
+updated: 2026-07-20
 owner: web_platform
 status: active
 ---
@@ -23,6 +23,20 @@ Keep the Flutter web app separate from the public website. The Flutter web app i
 the consumer app surface and should continue sharing mobile app code. The
 marketing and admin surfaces are web-native products and should use the same
 React + TypeScript stack where practical.
+
+## Organizer Entity Boundary
+
+Both React surfaces use organizer nomenclature and canonical organizer
+callables. The marketing website claims, reviews, analytics, generated listing
+records, and public routes use `organizerId` and `/organizers/...`. The admin
+Organizers workspace invokes `adminGetOrganizerDetails`,
+`adminListOrganizerDetails`, and `adminUpdateOrganizerDetails` and presents
+`organizers/{id}` as the source collection.
+
+Internal `AdminClub*` adapter types may remain during the released-client
+window, but they are compatibility types only. React code must not add a new
+`clubs/{id}` authority, club-named callable, or product-facing generic club
+label. Retirement follows `docs/migrations/clubs_to_organizers.md`.
 
 ## Current Stack
 
@@ -760,7 +774,7 @@ A future host dashboard still fits this architecture. Prefer:
 
 | Domain | Surface | Stack | Permission model |
 |---|---|---|---|
-| `hosts.catchdates.com` | Authenticated host portal for club/event management, scoped analytics, payout readiness, and event operations | React + TypeScript | Server-side Functions authorize host ownership per club/event |
+| `hosts.catchdates.com` | Authenticated host portal for organizer/event management, scoped analytics, payout readiness, and event operations | React + TypeScript | Server-side Functions authorize organizer ownership or management per organizer/event |
 
 Do not put host tools under `admin.catchdates.com`. Hosts are external operators,
 not internal admins. Keep `/host/` on `catchdates.com` as the public host
@@ -772,7 +786,7 @@ Host portal APIs should follow the same server-owned pattern as admin APIs:
 - the browser client never receives service-account credentials;
 - Functions validate Firebase Auth and host ownership;
 - mutations write audit or activity records where operationally useful;
-- analytics responses are scoped to clubs/events the signed-in host can manage.
+- analytics responses are scoped to organizers/events the signed-in host can manage.
 
 ## Why Subdomains Instead Of Paths
 

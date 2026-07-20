@@ -1,7 +1,7 @@
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {type Dispatch, type SetStateAction, useEffect, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
-import type {RequestClubClaimPayload, User} from "../../firebase";
+import type {RequestOrganizerClaimPayload, User} from "../../firebase";
 import type {FormStatus} from "../../shared/forms/types";
 import {websiteQueryKeys} from "../../shared/query/queryKeys";
 import {readableError} from "./claimModel";
@@ -90,15 +90,15 @@ export function useClaimAuthController({
 export function useClaimRequestMutation(listingId: string | null) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (payload: RequestClubClaimPayload) => {
-      const {requestClubClaim} = await import("../../firebase");
-      return requestClubClaim(payload);
+    mutationFn: async (payload: RequestOrganizerClaimPayload) => {
+      const {requestOrganizerClaim} = await import("../../firebase");
+      return requestOrganizerClaim(payload);
     },
     mutationKey: websiteQueryKeys.claims.request(listingId),
-    onSuccess: async (_response, payload: RequestClubClaimPayload) => {
+    onSuccess: async (_response, payload: RequestOrganizerClaimPayload) => {
       await Promise.all([
         queryClient.invalidateQueries({
-          queryKey: websiteQueryKeys.claims.lookup(payload.clubId),
+          queryKey: websiteQueryKeys.claims.lookup(payload.organizerId),
         }),
         queryClient.invalidateQueries({
           queryKey: websiteQueryKeys.claims.requests(),

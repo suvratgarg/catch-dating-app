@@ -312,8 +312,8 @@ class HostClubCreateState {
       isLastStep: isLastStep,
       isLoading: isLoading,
       primaryEnabled: !isLoading,
-      primaryLabel: isLastStep ? 'Create club' : 'Next',
-      lastStepLabel: 'Create club',
+      primaryLabel: isLastStep ? 'Create organizer' : 'Next',
+      lastStepLabel: 'Create organizer',
       primaryIntent: isLastStep
           ? HostClubCreatePrimaryIntent.submit
           : HostClubCreatePrimaryIntent.nextStep,

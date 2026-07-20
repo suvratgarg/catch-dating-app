@@ -6,13 +6,17 @@ import * as logger from "firebase-functions/logger";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
-import {isClubHost} from "../shared/clubHosts";
+import {
+  EventOrganizerDocument,
+  eventOrganizerRef,
+  isEventOrganizerManager,
+  requireEventOrganizer,
+} from "../shared/eventOrganizers";
 import {
   eventBroadcastDeliveryKey,
   eventBroadcastId,
 } from "../shared/eventBroadcasts";
 import {
-  ClubDocument,
   EventDocument,
   EventParticipationDocument,
   UserProfileDocument,
@@ -107,7 +111,7 @@ interface BroadcastClaim {
   isNewLogicalRequest: boolean;
   title: string;
   event: EventDocument;
-  club: ClubDocument;
+  club: EventOrganizerDocument;
   targetUids: string[];
   priorDeliveries: Record<string, DeliveryEvidence>;
   replay?: SendEventBroadcastCallableResponse;
@@ -246,16 +250,12 @@ async function claimBroadcast(params: {
       throw new HttpsError("not-found", "Event not found.");
     }
     const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
-    const clubRef = params.db.collection("clubs").doc(event.clubId);
-    const clubSnap = await tx.get(clubRef);
-    if (!clubSnap.exists) {
-      throw new HttpsError("not-found", "Club not found.");
-    }
-    const club = requireDoc<ClubDocument>(clubSnap, "ClubDocument");
-    if (!isClubHost(club, params.actorUid)) {
+    const organizerSnap = await tx.get(eventOrganizerRef(params.db, event));
+    const club = requireEventOrganizer(organizerSnap, event);
+    if (!isEventOrganizerManager(club, event, params.actorUid)) {
       throw new HttpsError(
         "permission-denied",
-        "Only a host for this event can send a broadcast."
+        "Only an organizer manager can send a broadcast."
       );
     }
     if (event.status === "cancelled" ||
@@ -327,6 +327,8 @@ async function claimBroadcast(params: {
     const leasePatch = {
       eventId: params.data.eventId,
       clubId: event.clubId,
+
+      organizerId: event.organizerId ?? event.clubId,
       actorUid: params.actorUid,
       audience: params.data.audience,
       title,

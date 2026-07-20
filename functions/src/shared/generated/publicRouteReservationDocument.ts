@@ -18,8 +18,8 @@ export interface PublicRouteReservationDocument {
    */
   routeSegments: string[];
   status: "active" | "released";
-  ownerType: "club";
-  ownerCollection: "clubs";
+  ownerType: "club" | "organizer";
+  ownerCollection: "clubs" | "organizers";
   ownerId: string;
   targetPath: string;
   slug: string;
@@ -46,7 +46,12 @@ export interface PublicRouteReservationDocument {
     _nanoseconds: number;
   };
   lastVerifiedByUid: string;
-  lastVerifiedSource: "adminUpdateClubDetails" | "adminSetClubIndexStatus";
+  lastVerifiedSource:
+    | "adminUpdateClubDetails"
+    | "adminSetClubIndexStatus"
+    | "adminUpdateOrganizerDetails"
+    | "adminSetOrganizerIndexStatus"
+    | "clubsToOrganizersMigration";
   releasedAt?: {
     _seconds: number;
     _nanoseconds: number;

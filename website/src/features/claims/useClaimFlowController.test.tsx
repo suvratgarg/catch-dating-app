@@ -14,7 +14,7 @@ const watchClaimAuthState = vi.hoisted(() => vi.fn((callback: (user: null) => vo
 
 vi.mock("../../analytics", () => ({trackMarketingEvent}));
 vi.mock("../../firebase", () => ({
-  requestClubClaim: vi.fn(),
+  requestOrganizerClaim: vi.fn(),
   signInForClaim: vi.fn(),
   signOutClaimUser: vi.fn(),
   watchClaimAuthState,

@@ -196,14 +196,17 @@ export async function adminGetOverviewHandler(
       db.collection("accessApplications").where("status", "==", "pending")
     ),
     countCollection(
-      db.collection("clubClaimRequests").where("status", "==", "pending")
+      db.collection("organizerClaimRequests").where("status", "==", "pending")
     ),
     countCollection(
-      db.collection("clubs")
+      db.collection("organizers")
         .where("publicPage.publishStatus", "==", "qa")
         .where("publicPage.indexStatus", "==", "noindex")
     ),
-    countCollection(db.collection("clubHostClaims")),
+    countCollection(
+      db.collection("organizerTeamMemberships")
+        .where("status", "==", "active")
+    ),
     countCollection(
       db.collection("events").where("status", "==", "active")
     ),
@@ -239,7 +242,7 @@ export async function adminGetOverviewHandler(
     ),
     listQueueItems(
       db,
-      "clubClaimRequests",
+      "organizerClaimRequests",
       "status",
       "pending",
       "clubClaimRequest"
@@ -284,7 +287,7 @@ export async function adminGetOverviewHandler(
         pendingClubClaimRequests
       ),
       metric("indexReviewPages", "Index review pages", indexReviewPages),
-      metric("activeHosts", "Active host claims", activeHosts),
+      metric("activeHosts", "Active organizer team seats", activeHosts),
       metric("activeEvents", "Active events", activeEvents),
       metric("completedPayments", "Completed payments", completedPayments),
       metric("failedPayments", "Failed payments", failedPayments),
@@ -413,13 +416,13 @@ async function listQueueItems(
 async function listClubIndexReviewItems(
   db: FirebaseFirestore.Firestore
 ): Promise<AdminQueueItem[]> {
-  const snapshot = await db.collection("clubs")
+  const snapshot = await db.collection("organizers")
     .where("publicPage.publishStatus", "==", "qa")
     .where("publicPage.indexStatus", "==", "noindex")
     .limit(5)
     .get();
   return snapshot.docs.map((doc) =>
-    normalizeQueueItem("clubIndexReview", `clubs/${doc.id}`, doc.data())
+    normalizeQueueItem("clubIndexReview", `organizers/${doc.id}`, doc.data())
   );
 }
 
@@ -493,7 +496,8 @@ export function normalizeQueueItem(
       id: targetPath,
       title: `Event ${stringValue(data.eventId) ?? "unknown"}`,
       detail: [
-        `club ${stringValue(data.clubId) ?? "unknown"}`,
+        `organizer ${stringValue(data.organizerId) ??
+          stringValue(data.clubId) ?? "unknown"}`,
         `reporter ${stringValue(data.reporterUserId) ?? "unknown"}`,
       ].join(" - "),
       status,

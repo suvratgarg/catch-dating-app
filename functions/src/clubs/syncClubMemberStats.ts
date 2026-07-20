@@ -2,6 +2,7 @@ import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import {
   ClubMembershipDocument,
+  OrganizerFollowDocument,
 } from "../shared/generated/firestoreAdminTypes";
 
 interface SyncClubMemberStatsDeps {
@@ -77,5 +78,55 @@ export const syncClubMemberStats = onDocumentWritten(
     const after = event.data?.after.data() as
       ClubMembershipDocument | undefined;
     await syncClubMemberStatsHandler(before, after);
+  }
+);
+
+/** Recomputes the canonical follower count for one organizer. */
+export async function refreshOrganizerFollowerStats(
+  organizerId: string,
+  deps: SyncClubMemberStatsDeps = defaultDeps
+): Promise<void> {
+  const db = deps.firestore();
+  const organizerRef = db.collection("organizers").doc(organizerId);
+  const organizerSnap = await organizerRef.get();
+  if (!organizerSnap.exists) return;
+
+  const followsSnap = await db
+    .collection("organizerFollows")
+    .where("organizerId", "==", organizerId)
+    .where("status", "==", "active")
+    .get();
+  const followerCount = followsSnap.docs.length;
+  const legacyClubRef = db.collection("clubs").doc(organizerId);
+  const batch = db.batch();
+  batch.set(organizerRef, {followerCount}, {merge: true});
+  batch.set(legacyClubRef, {memberCount: followerCount}, {merge: true});
+  await batch.commit();
+}
+
+/** Recomputes organizer follower counts affected by a follow-edge write. */
+export async function syncOrganizerFollowerStatsHandler(
+  before: OrganizerFollowDocument | undefined,
+  after: OrganizerFollowDocument | undefined,
+  deps: SyncClubMemberStatsDeps = defaultDeps
+): Promise<void> {
+  const organizerIds = new Set<string>();
+  if (before?.organizerId) organizerIds.add(before.organizerId);
+  if (after?.organizerId) organizerIds.add(after.organizerId);
+  await Promise.all(
+    Array.from(organizerIds).map((organizerId) =>
+      refreshOrganizerFollowerStats(organizerId, deps)
+    )
+  );
+}
+
+export const syncOrganizerFollowerStats = onDocumentWritten(
+  "organizerFollows/{followId}",
+  async (event) => {
+    const before = event.data?.before.data() as
+      OrganizerFollowDocument | undefined;
+    const after = event.data?.after.data() as
+      OrganizerFollowDocument | undefined;
+    await syncOrganizerFollowerStatsHandler(before, after);
   }
 );

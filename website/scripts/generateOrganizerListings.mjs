@@ -283,7 +283,9 @@ function withPublicExternalEvents(listing) {
 function publicApiForOrganizerIntake(entityId) {
   const readiness = claimTargetReadinessReceipt ?? claimTargetSyncPreview;
   const action = (readiness?.actions ?? []).find((item) =>
-    item?.entityId === entityId || item?.path === `clubs/${entityId}`
+    item?.entityId === entityId ||
+    item?.path === `organizers/${entityId}` ||
+    item?.path === `clubs/${entityId}`
   );
   if (!readiness) {
     return disabledPublicApi(
@@ -642,13 +644,13 @@ function listingFromSalesDemo(config) {
   };
 }
 
-function publicReviewsForListing(reviews, clubId) {
+function publicReviewsForListing(reviews, organizerId) {
   if (!Array.isArray(reviews)) return [];
   return reviews
     .map((entry) => {
       const review = entry?.data ?? entry;
       if (!review || typeof review !== "object") return null;
-      if (review.clubId !== clubId) return null;
+      if ((review.organizerId ?? review.clubId) !== organizerId) return null;
       if (review.moderationStatus && review.moderationStatus !== "published") {
         return null;
       }

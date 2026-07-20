@@ -77,7 +77,7 @@ class HostClubEditController implements HostClubEditActions {
     required String clubId,
     required UpdateClubPatch patch,
   }) async {
-    requireSignedInUid(_ref, action: 'edit this club');
+    requireSignedInUid(_ref, action: 'edit this organizer');
     if (patch.isEmpty) return;
     await _ref
         .read(clubsRepositoryProvider)
@@ -117,14 +117,14 @@ class HostClubEditController implements HostClubEditActions {
     List<HostClubMediaInput>? photoInputs,
     HostPickedClubLogo? logo,
   }) async {
-    final uid = requireSignedInUid(_ref, action: 'edit this club media');
+    final uid = requireSignedInUid(_ref, action: 'edit this organizer media');
     if (!club.isHostedBy(uid)) {
       throw const BackendOperationException(
         code: 'club-host-edit-required',
-        message: 'Only a club host can edit this club media.',
+        message: 'Only an organizer manager can edit this organizer media.',
         context: BackendErrorContext(
           service: BackendService.local,
-          action: 'edit club media',
+          action: 'edit organizer media',
         ),
       );
     }

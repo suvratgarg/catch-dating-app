@@ -376,6 +376,10 @@
       "type": "string",
       "enum": ["active", "archived"]
     },
+    "organizerLifecycleStatus": {
+      "type": "string",
+      "enum": ["active", "archived"]
+    },
     "organizerType": {
       "type": "string",
       "enum": [

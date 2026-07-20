@@ -1,0 +1,75 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import test from "node:test";
+import {checkOrganizerNomenclature} from "./check_organizer_nomenclature.mjs";
+
+test("organizer nomenclature gate rejects legacy authority and generic copy", () => {
+  const root = fixtureRoot();
+  write(root, "website/src/firebase.ts", "requestClubClaim");
+  write(root, "lib/l10n/app_en.arb", JSON.stringify({copy: "Join club"}));
+
+  const result = checkOrganizerNomenclature({root});
+
+  assert.equal(result.ok, false);
+  assert.ok(result.findings.some((item) =>
+    item.rule === "legacyAuthorityMarker"));
+  assert.ok(result.findings.some((item) =>
+    item.rule === "genericClubProductCopy"));
+});
+
+test("organizer nomenclature gate passes a canonical fixture", () => {
+  const root = fixtureRoot();
+  write(root, "contracts/firestore/organizers.schema.json", JSON.stringify({
+    required: ["organizerType"],
+    properties: {organizerType: {enum: [
+      "club", "community", "individual", "eventProducer", "venue", "brand",
+    ]}},
+  }));
+  write(root, "contracts/migrations/clubs_to_organizers.json", JSON.stringify({
+    selectedFutureName: "organizers",
+    currentPhase: "backfill_and_parity",
+  }));
+  for (const [file, markers] of new Map([
+    ["lib/clubs/data/clubs_repository.dart", [
+      "_collectionPath = 'organizers'", "createOrganizer",
+      "startOrganizerConversation",
+    ]],
+    ["lib/clubs/data/club_membership_repository.dart", ["organizerFollows"]],
+    ["lib/clubs/data/club_posts_repository.dart", ["createOrganizerPost"]],
+    ["lib/image_uploads/data/image_upload_repository.dart", ["organizers/"]],
+    ["lib/routing/go_router.dart", ["/host/organizers"]],
+    ["website/src/firebase.ts", [
+      "requestOrganizerClaim", "createPublicOrganizerReview",
+    ]],
+    ["admin/src/shared/api/adminApi.ts", [
+      "adminGetOrganizerDetails", "adminListOrganizerDetails",
+      "adminUpdateOrganizerDetails",
+    ]],
+    ["functions/src/index.ts", [
+      "createOrganizer", "followOrganizer", "startOrganizerConversation",
+      "adminGetOrganizerDetails",
+    ]],
+    ["tool/data/migrate_clubs_to_organizers.mjs", ["--confirm-migration"]],
+    ["docs/migrations/clubs_to_organizers.md", ["organizerType"]],
+  ])) write(root, file, markers.join("\n"));
+  write(root, "lib/l10n/app_en.arb", JSON.stringify({
+    generic: "Follow organizer",
+    hostsOrganizerTypeClub: "Club",
+  }));
+
+  const result = checkOrganizerNomenclature({root});
+
+  assert.deepEqual(result, {ok: true, findings: []});
+});
+
+function fixtureRoot() {
+  return fs.mkdtempSync(path.join(os.tmpdir(), "organizer-gate-"));
+}
+
+function write(root, relativePath, content) {
+  const filePath = path.join(root, relativePath);
+  fs.mkdirSync(path.dirname(filePath), {recursive: true});
+  fs.writeFileSync(filePath, `${content}\n`);
+}

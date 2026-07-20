@@ -358,16 +358,27 @@ class FakeClubsRepository implements ClubsRepository {
   }
 
   @override
-  Future<String> startClubHostConversation({
-    required String clubId,
+  Future<String> startOrganizerConversation({
+    required String organizerId,
     required String hostUid,
     String? eventId,
   }) async {
-    startedConversationClubId = clubId;
+    startedConversationClubId = organizerId;
     startedConversationHostUid = hostUid;
     startedConversationEventId = eventId;
     return nextHostConversationMatchId;
   }
+
+  @override
+  Future<String> startClubHostConversation({
+    required String clubId,
+    required String hostUid,
+    String? eventId,
+  }) => startOrganizerConversation(
+    organizerId: clubId,
+    hostUid: hostUid,
+    eventId: eventId,
+  );
 }
 
 class CreateClubCall {

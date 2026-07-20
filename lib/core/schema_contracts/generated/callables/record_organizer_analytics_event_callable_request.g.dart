@@ -8,7 +8,8 @@
 /// Public website analytics event for host-visible organizer metrics. The callable validates organizer scope and writes a raw, aggregate-safe event to BigQuery.
 final class RecordOrganizerAnalyticsEventCallableRequest {
   const RecordOrganizerAnalyticsEventCallableRequest({
-    required this.clubId,
+    required this.organizerId,
+    this.clubId,
     this.eventId,
     required this.eventName,
     required this.pagePath,
@@ -17,7 +18,8 @@ final class RecordOrganizerAnalyticsEventCallableRequest {
     this.platform,
   });
 
-  final String clubId;
+  final String organizerId;
+  final String? clubId;
   final String? eventId;
   final String eventName;
   final String pagePath;
@@ -26,7 +28,8 @@ final class RecordOrganizerAnalyticsEventCallableRequest {
   final String? platform;
 
   Map<String, Object?> toJson() => {
-    'clubId': clubId,
+    'organizerId': organizerId,
+    'clubId': ?clubId,
     'eventId': ?eventId,
     'eventName': eventName,
     'pagePath': pagePath,

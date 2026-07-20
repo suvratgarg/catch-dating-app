@@ -84,7 +84,7 @@ export function useListingClaimController(listing: HostListing) {
 
     try {
       await claimRequestMutation.mutateAsync({
-        clubId: listing.id,
+        organizerId: listing.id,
         requesterName,
         requesterRole,
         businessEmail,

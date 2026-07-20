@@ -356,6 +356,10 @@ class _NotificationVisual {
         icon: CatchIcons.groupsRounded,
         accent: t.ink2,
       ),
+      ActivityNotificationType.organizerUpdate => visual(
+        icon: CatchIcons.groupsRounded,
+        accent: t.ink2,
+      ),
     };
   }
 }

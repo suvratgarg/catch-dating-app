@@ -158,7 +158,7 @@ class MembershipTrailingController extends ConsumerWidget {
             context.go(
               Uri(
                 path: Routes.authScreen.path,
-                queryParameters: {'from': '/clubs/$clubId'},
+                queryParameters: {'from': '/organizers/$clubId'},
               ).toString(),
             );
             return;

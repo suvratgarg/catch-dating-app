@@ -1,6 +1,6 @@
 // Schema-conformance tests for the generated [UpdateClubPatch].
-// Catches generator drift against
-// `contracts/callables/update_club_payload.schema.json`.
+// Catches drift against the canonical
+// `contracts/callables/update_organizer_payload.schema.json`.
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
@@ -32,8 +32,8 @@ void main() {
         hostDefaults: const ClubHostDefaults(),
       );
 
-      final schema =
-          schema_contracts.schemaContractsByName['UpdateClubCallablePayload']!;
+      final schema = schema_contracts
+          .schemaContractsByName['UpdateOrganizerCallablePayload']!;
       final fieldsSchema =
           (schema['properties'] as Map<String, Object?>)['fields']
               as Map<String, Object?>;
@@ -76,7 +76,8 @@ void main() {
     test('typed host defaults serialize to schema-valid JSON', () {
       final patch = UpdateClubPatch(hostDefaults: const ClubHostDefaults());
       final schema = JsonSchema.create(
-        schema_contracts.schemaContractsByName['UpdateClubCallablePayload']!,
+        schema_contracts
+            .schemaContractsByName['UpdateOrganizerCallablePayload']!,
       );
       expect(
         schema.validate(patch.toCallableJson(clubId: 'club-1')).isValid,
@@ -87,7 +88,8 @@ void main() {
     test('raw() escape hatch produces a schema-valid patch', () {
       final patch = UpdateClubPatch.raw({'name': 'New Name'});
       final schema = JsonSchema.create(
-        schema_contracts.schemaContractsByName['UpdateClubCallablePayload']!,
+        schema_contracts
+            .schemaContractsByName['UpdateOrganizerCallablePayload']!,
       );
       expect(
         schema.validate(patch.toCallableJson(clubId: 'club-1')).isValid,

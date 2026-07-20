@@ -105,7 +105,7 @@ class CreateClubController extends _$CreateClubController {
     ClubHostDefaults hostDefaults = const ClubHostDefaults(),
     XFile? profileImage,
   }) async {
-    final uid = requireSignedInUid(ref, action: 'create a club');
+    final uid = requireSignedInUid(ref, action: 'create an organizer');
 
     final clubsRepo = ref.read(clubsRepositoryProvider);
     final selectedClubPhotoInputs = clubPhotoInputs ?? const <ClubPhotoInput>[];

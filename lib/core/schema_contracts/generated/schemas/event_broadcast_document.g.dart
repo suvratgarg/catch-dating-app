@@ -52,6 +52,12 @@ const schemaEventBroadcastDocumentSchema = <String, Object?>{
       'maxLength': 180,
       'x-catch-ownership': 'server-only',
     },
+    'organizerId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'x-catch-ownership': 'server-only',
+    },
     'actorUid': <String, Object?>{
       'type': 'string',
       'minLength': 1,

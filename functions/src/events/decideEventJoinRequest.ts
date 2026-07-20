@@ -6,7 +6,11 @@ import {
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
-import {isClubHost} from "../shared/clubHosts";
+import {
+  eventOrganizerRef,
+  isEventOrganizerManager,
+  requireEventOrganizer,
+} from "../shared/eventOrganizers";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {hasBlockingRelationshipInTransaction} from "../safety/blocking";
@@ -140,15 +144,12 @@ export async function decideEventJoinRequestHandler(
       );
     }
 
-    const clubSnap = await tx.get(db.collection("clubs").doc(event.clubId));
-    if (!clubSnap.exists) {
-      throw new HttpsError("not-found", "Club not found.");
-    }
-    if (!isClubHost(clubSnap.data() as Parameters<typeof isClubHost>[0],
-      hostUid)) {
+    const organizerSnap = await tx.get(eventOrganizerRef(db, event));
+    const organizer = requireEventOrganizer(organizerSnap, event);
+    if (!isEventOrganizerManager(organizer, event, hostUid)) {
       throw new HttpsError(
         "permission-denied",
-        "Only a club host can review event requests."
+        "Only an organizer manager can review event requests."
       );
     }
 
@@ -192,6 +193,8 @@ export async function decideEventJoinRequestHandler(
           exists: participationSnap.exists,
           eventId,
           clubId: event.clubId,
+
+          organizerId: event.organizerId ?? event.clubId,
           uid: userId,
           status: "cancelled",
           genderAtSignup: requester.gender,

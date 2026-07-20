@@ -44,7 +44,7 @@ void main() {
       find.byWidgetPredicate((widget) => widget is CatchSliverErrorState),
       findsOneWidget,
     );
-    expect(find.text('Reload club'), findsOneWidget);
+    expect(find.text('Reload organizer'), findsOneWidget);
     expect(find.byKey(const ValueKey('club-detail-hero-module')), findsNothing);
   });
 
@@ -55,7 +55,7 @@ void main() {
 
     await _pumpPreview(tester, club: club, viewModel: const AsyncData(null));
 
-    expect(find.text('Club not found'), findsOneWidget);
+    expect(find.text('Organizer not found'), findsOneWidget);
     expect(find.byKey(const ValueKey('club-detail-hero-module')), findsNothing);
   });
 
