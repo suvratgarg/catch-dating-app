@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_draft.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
@@ -136,6 +137,7 @@ class HostClubCreateDraftRequest {
     required this.name,
     required this.area,
     required this.description,
+    required this.organizerType,
     required this.location,
     required this.instagramHandle,
     required this.phoneNumber,
@@ -147,6 +149,7 @@ class HostClubCreateDraftRequest {
     required String name,
     required String area,
     required String description,
+    OrganizerType organizerType = OrganizerType.club,
     required String? selectedCity,
     required String instagramHandle,
     required String phoneNumber,
@@ -157,6 +160,7 @@ class HostClubCreateDraftRequest {
       name: _trimmedTextOrNull(name),
       area: _trimmedTextOrNull(area),
       description: _trimmedTextOrNull(description),
+      organizerType: organizerType,
       location: selectedCity,
       instagramHandle: _trimmedTextOrNull(instagramHandle),
       phoneNumber: _trimmedTextOrNull(phoneNumber),
@@ -168,6 +172,7 @@ class HostClubCreateDraftRequest {
   final String? name;
   final String? area;
   final String? description;
+  final OrganizerType organizerType;
   final String? location;
   final String? instagramHandle;
   final String? phoneNumber;
@@ -180,6 +185,7 @@ class HostClubCreateDraftRequest {
       name: name,
       area: area,
       description: description,
+      organizerType: organizerType,
       location: location,
       instagramHandle: instagramHandle,
       phoneNumber: phoneNumber,
@@ -196,6 +202,7 @@ class HostClubCreateSubmitRequest {
     required this.location,
     required this.area,
     required this.description,
+    required this.organizerType,
     required this.clubPhotoInputs,
     required this.profileImage,
     required this.instagramHandle,
@@ -209,6 +216,7 @@ class HostClubCreateSubmitRequest {
     required String? selectedCity,
     required String area,
     required String description,
+    OrganizerType organizerType = OrganizerType.club,
     required List<ClubPhotoInput>? clubPhotoInputs,
     required PickedClubProfileImage? profileImage,
     required String instagramHandle,
@@ -225,6 +233,7 @@ class HostClubCreateSubmitRequest {
       location: location,
       area: area.trim(),
       description: description.trim(),
+      organizerType: organizerType,
       clubPhotoInputs: clubPhotoInputs,
       profileImage: profileImage,
       instagramHandle: _trimmedTextOrNull(instagramHandle),
@@ -238,6 +247,7 @@ class HostClubCreateSubmitRequest {
   final String location;
   final String area;
   final String description;
+  final OrganizerType organizerType;
   final List<ClubPhotoInput>? clubPhotoInputs;
   final PickedClubProfileImage? profileImage;
   final String? instagramHandle;

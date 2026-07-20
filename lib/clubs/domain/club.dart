@@ -10,6 +10,25 @@ enum ClubLifecycleStatus { active, archived }
 
 enum ClubAppVisibility { discoverable, hidden }
 
+/// Canonical organizer classification shared by clubs, communities,
+/// individuals, event producers, venues, and brands.
+enum OrganizerType { club, community, individual, eventProducer, venue, brand }
+
+Object? _readOrganizerType(Map<dynamic, dynamic> json, String key) {
+  final organizerType = json[key];
+  if (organizerType is String &&
+      OrganizerType.values.any((value) => value.name == organizerType)) {
+    return organizerType;
+  }
+  return switch (json['entityKind']) {
+    'creatorCommunity' => OrganizerType.community.name,
+    'eventOrganizer' => OrganizerType.eventProducer.name,
+    'venue' => OrganizerType.venue.name,
+    'brand' => OrganizerType.brand.name,
+    _ => OrganizerType.club.name,
+  };
+}
+
 @freezed
 abstract class Club with _$Club {
   const Club._();
@@ -47,6 +66,10 @@ abstract class Club with _$Club {
     @NullableTimestampConverter() DateTime? archivedAt,
     String? archiveReason,
     @Default(ClubAppVisibility.discoverable) ClubAppVisibility appVisibility,
+    @JsonKey(readValue: _readOrganizerType)
+    @Default(OrganizerType.club)
+    OrganizerType organizerType,
+    String? publicCategoryLabel,
     @Default(ClubHostDefaults()) ClubHostDefaults hostDefaults,
   }) = _Club;
 

@@ -655,6 +655,7 @@ void main() {
               location: buildClub().location,
               area: 'Bandra',
               description: 'Easy social club',
+              organizerType: OrganizerType.eventProducer,
             );
 
         expect(fakeRepository.lastCreateCall, isNotNull);
@@ -663,6 +664,10 @@ void main() {
           fakeRepository.generatedId,
         );
         expect(fakeRepository.lastCreateCall!.imageUrl, isNull);
+        expect(
+          fakeRepository.lastCreateCall!.organizerType,
+          OrganizerType.eventProducer,
+        );
         expect(fakeImageUploadRepository.lastUploadClubId, isNull);
       },
     );

@@ -720,7 +720,7 @@ export interface HostProfileDocument {
 }
 
 /**
- * Canonical club document stored at clubs/{clubId}. The club id is the document id and is not stored in document data.
+ * Legacy storage contract for an organizer document stored at clubs/{clubId} during the clubs-to-organizers migration. The organizer id is the document id and is not stored in document data.
  */
 export interface ClubDocument {
   name: string;
@@ -780,7 +780,29 @@ export interface ClubDocument {
   archiveReason: string | null;
   hostDefaults?: ClubHostDefaults;
   /**
-   * Broad organizer identity. Keeps clubs as one subtype rather than forcing every host into club nomenclature.
+   * Canonical organizer subtype. Legacy documents without this field normalize to club until backfill is complete.
+   */
+  organizerType?:
+    | "club"
+    | "community"
+    | "individual"
+    | "eventProducer"
+    | "venue"
+    | "brand";
+  /**
+   * Server-owned timestamp of the latest organizer type decision.
+   */
+  organizerTypeUpdatedAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * Server-owned user id that made the latest organizer type decision.
+   */
+  organizerTypeUpdatedByUid?: string | null;
+  /**
+   * Optional admin-curated public category copy. It never replaces organizerType as the classification authority.
+   */
+  publicCategoryLabel?: string | null;
+  /**
+   * Deprecated organizer classification retained only while legacy data and clients are migrated to organizerType.
    */
   entityKind?:
     | "club"
@@ -789,11 +811,13 @@ export interface ClubDocument {
     | "creatorCommunity"
     | "brand";
   /**
+   * Deprecated free-form organizer classification retained only for migration reads.
+   *
    * @maxItems 20
    */
   entitySubtypes?: string[];
   /**
-   * Reader-facing category label for web and discovery surfaces.
+   * Deprecated reader-facing category label retained until publicCategoryLabel migration is complete.
    */
   displayCategory?: string | null;
   cityName?: string | null;

@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "logicalName": "organizers",
+  "legacyStoragePath": "clubs/{clubId}",
+  "candidatePrimaryStoragePath": "organizers/{organizerId}",
+  "selectedFutureName": "organizers",
+  "currentPhase": "canonical_type_dual_read",
+  "reason": "Organizer is the durable product entity and club is one organizer subtype. The migration must replace club-specific storage, identifiers, relationships, routes, and client vocabulary without breaking released apps or public pages.",
+  "classification": {
+    "field": "organizerType",
+    "values": [
+      "club",
+      "community",
+      "individual",
+      "eventProducer",
+      "venue",
+      "brand"
+    ],
+    "legacyDefault": "club",
+    "legacyEntityKindMapping": {
+      "club": "club",
+      "creatorCommunity": "community",
+      "eventOrganizer": "eventProducer",
+      "venue": "venue",
+      "brand": "brand"
+    }
+  },
+  "phases": [
+    {
+      "id": "contract_and_reference_client",
+      "status": "pending",
+      "description": "Define the organizer taxonomy, migration aliases, audited owner-editable field, and one Host app reference flow while legacy documents default to club."
+    },
+    {
+      "id": "backend_dual_support",
+      "status": "pending",
+      "description": "Add organizer-named callables and repositories, mirror writes into organizers, and keep bounded club-named callable wrappers for released clients."
+    },
+    {
+      "id": "relationship_and_reference_dual_write",
+      "status": "pending",
+      "description": "Introduce organizerId and organizer relationship collections, dual-write all dependent documents, projections, search records, analytics dimensions, and storage paths."
+    },
+    {
+      "id": "backfill_and_parity",
+      "status": "pending",
+      "description": "Run dry-run-first idempotent tooling that copies every legacy club as organizerType club unless a canonical mapped value exists, then prove field, document, relationship, route, and media parity."
+    },
+    {
+      "id": "client_cutover",
+      "status": "pending",
+      "description": "Move Flutter consumer and Hosts surfaces plus React website and admin clients to organizer-named domains, identifiers, routes, and primary reads."
+    },
+    {
+      "id": "new_primary_and_freeze_old",
+      "status": "pending",
+      "description": "Make organizers the only primary write target, freeze new clubs data, retain measured fallback reads, and verify released-client compatibility."
+    },
+    {
+      "id": "retire_legacy",
+      "status": "pending",
+      "description": "After remote parity and release-age evidence, remove fallback reads and legacy fields, collections, indexes, rules, storage paths, and callable wrappers through an explicitly approved cleanup."
+    }
+  ],
+  "knownConsumers": [
+    "contracts/firestore/clubs.schema.json",
+    "functions/src/clubs",
+    "functions/src/admin",
+    "lib/clubs",
+    "lib/hosts",
+    "admin/src/features/organizers",
+    "website/src",
+    "website/scripts/generateOrganizerListings.mjs",
+    "firestore.rules",
+    "firestore.indexes.json",
+    "storage.rules"
+  ],
+  "rulesAndIndexes": {
+    "firestoreRules": "Organizer collection and dependent organizerId paths must be deployed before clients switch primary reads or writes.",
+    "firestoreIndexes": "Every clubId index must gain an organizerId equivalent and pass parity checks before the old index is retired.",
+    "storageRules": "Organizer media paths must be dual-supported and copied with checksum evidence before club media paths are frozen."
+  },
+  "guards": [
+    "tool/contracts/check_migration_contracts.mjs validates phase truthfulness.",
+    "A clubs-to-organizers vocabulary scanner blocks new product-facing club authority outside explicit compatibility allowlists.",
+    "Backfill apply mode is disabled until dry-run counts, conflict reports, backups, and target environment are explicit.",
+    "Legacy deletion is a separate explicitly approved operation after parity and released-client evidence."
+  ]
+}

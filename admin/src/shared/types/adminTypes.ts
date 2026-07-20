@@ -400,6 +400,13 @@ export type OrganizerEntityKind =
   | "eventOrganizer"
   | "creatorCommunity"
   | "brand";
+export type OrganizerType =
+  | "club"
+  | "community"
+  | "individual"
+  | "eventProducer"
+  | "venue"
+  | "brand";
 export type OrganizerAppVisibility = "discoverable" | "hidden";
 export type OrganizerPublishStatus =
   | "draft"
@@ -740,6 +747,8 @@ export interface AdminClubDetails {
   email: string | null;
   imageUrl: string | null;
   profileImageUrl: string | null;
+  organizerType: OrganizerType;
+  publicCategoryLabel: string | null;
   entityKind: OrganizerEntityKind | null;
   entitySubtypes: string[];
   displayCategory: string | null;
@@ -786,6 +795,8 @@ export interface AdminGetClubDetailsResponse {
 export interface AdminClubListRow {
   clubId: string;
   name: string;
+  organizerType: OrganizerType;
+  publicCategoryLabel: string | null;
   displayCategory: string | null;
   cityName: string | null;
   citySlug: string | null;
@@ -832,6 +843,8 @@ export interface AdminUpdateClubDetailsPayload {
     email?: string | null;
     imageUrl?: string | null;
     profileImageUrl?: string | null;
+    organizerType?: OrganizerType;
+    publicCategoryLabel?: string | null;
     entityKind?: OrganizerEntityKind;
     entitySubtypes?: string[];
     displayCategory?: string | null;

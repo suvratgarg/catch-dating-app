@@ -3441,7 +3441,7 @@ export const clubDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/clubs.schema.json",
   "title": "ClubDocument",
-  "description": "Canonical club document stored at clubs/{clubId}. The club id is the document id and is not stored in document data.",
+  "description": "Legacy storage contract for an organizer document stored at clubs/{clubId} during the clubs-to-organizers migration. The organizer id is the document id and is not stored in document data.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "clubs",
@@ -4697,6 +4697,71 @@ export const clubDocumentSchema: Record<string, unknown> = {
       },
       "x-catch-ownership": "callable-owned"
     },
+    "organizerType": {
+      "type": "string",
+      "enum": [
+        "club",
+        "community",
+        "individual",
+        "eventProducer",
+        "venue",
+        "brand"
+      ],
+      "description": "Canonical organizer subtype. Legacy documents without this field normalize to club until backfill is complete.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerTypeUpdatedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Server-owned timestamp of the latest organizer type decision.",
+      "x-catch-ownership": "server-only"
+    },
+    "organizerTypeUpdatedByUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Server-owned user id that made the latest organizer type decision.",
+      "x-catch-ownership": "server-only"
+    },
+    "publicCategoryLabel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "description": "Optional admin-curated public category copy. It never replaces organizerType as the classification authority.",
+      "x-catch-ownership": "callable-owned"
+    },
     "entityKind": {
       "type": "string",
       "enum": [
@@ -4706,7 +4771,7 @@ export const clubDocumentSchema: Record<string, unknown> = {
         "creatorCommunity",
         "brand"
       ],
-      "description": "Broad organizer identity. Keeps clubs as one subtype rather than forcing every host into club nomenclature.",
+      "description": "Deprecated organizer classification retained only while legacy data and clients are migrated to organizerType.",
       "x-catch-ownership": "callable-owned"
     },
     "entitySubtypes": {
@@ -4718,6 +4783,7 @@ export const clubDocumentSchema: Record<string, unknown> = {
         "minLength": 1,
         "maxLength": 80
       },
+      "description": "Deprecated free-form organizer classification retained only for migration reads.",
       "x-catch-ownership": "callable-owned"
     },
     "displayCategory": {
@@ -4726,7 +4792,7 @@ export const clubDocumentSchema: Record<string, unknown> = {
         "null"
       ],
       "maxLength": 120,
-      "description": "Reader-facing category label for web and discovery surfaces.",
+      "description": "Deprecated reader-facing category label retained until publicCategoryLabel migration is complete.",
       "x-catch-ownership": "callable-owned"
     },
     "cityName": {
@@ -5467,7 +5533,12 @@ export const clubDocumentSchema: Record<string, unknown> = {
       "maxLength": 80,
       "description": "Internal demo-operations command name used for cleanup and diagnostics."
     }
-  }
+  },
+  "x-legacy-tolerated-fields": [
+    "entityKind",
+    "entitySubtypes",
+    "displayCategory"
+  ]
 } as const;
 
 export const clubPostDocumentSchema: Record<string, unknown> = {
@@ -16961,6 +17032,18 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
       "minLength": 1,
       "maxLength": 120
     },
+    "organizerType": {
+      "type": "string",
+      "enum": [
+        "club",
+        "community",
+        "individual",
+        "eventProducer",
+        "venue",
+        "brand"
+      ],
+      "description": "Canonical organizer classification. Club is one organizer subtype; missing legacy values normalize to club during migration."
+    },
     "imageUrl": {
       "type": [
         "string",
@@ -18106,6 +18189,18 @@ export const updateClubCallablePayloadSchema: Record<string, unknown> = {
           "type": "string",
           "minLength": 1,
           "maxLength": 120
+        },
+        "organizerType": {
+          "type": "string",
+          "enum": [
+            "club",
+            "community",
+            "individual",
+            "eventProducer",
+            "venue",
+            "brand"
+          ],
+          "description": "Canonical organizer classification. Club is one organizer subtype; missing legacy values normalize to club during migration."
         },
         "hostName": {
           "type": "string",
@@ -21621,6 +21716,25 @@ export const adminUpdateClubDetailsCallablePayloadSchema: Record<string, unknown
               "type": "null"
             }
           ]
+        },
+        "organizerType": {
+          "type": "string",
+          "enum": [
+            "club",
+            "community",
+            "individual",
+            "eventProducer",
+            "venue",
+            "brand"
+          ],
+          "description": "Canonical organizer classification. Club is one organizer subtype; missing legacy values normalize to club during migration."
+        },
+        "publicCategoryLabel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
         },
         "entityKind": {
           "type": "string",

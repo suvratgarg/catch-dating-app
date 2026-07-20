@@ -1,6 +1,7 @@
 // Schema-conformance tests for the generated [UpdateClubPatch].
 // Catches generator drift against
 // `contracts/callables/update_club_payload.schema.json`.
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
@@ -15,6 +16,7 @@ void main() {
       final allSet = UpdateClubPatch(
         name: 'X',
         description: 'X',
+        organizerType: OrganizerType.community,
         location: 'x',
         area: 'X',
         hostName: 'X',
@@ -49,6 +51,11 @@ void main() {
     test('omits parameters that were not passed', () {
       final patch = UpdateClubPatch(name: 'New Name');
       expect(patch.toFieldsJson(), {'name': 'New Name'});
+    });
+
+    test('serializes organizer type by its canonical contract name', () {
+      final patch = UpdateClubPatch(organizerType: OrganizerType.eventProducer);
+      expect(patch.toFieldsJson(), {'organizerType': 'eventProducer'});
     });
 
     test('nullable fields can be explicitly cleared via null', () {

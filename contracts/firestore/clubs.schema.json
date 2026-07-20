@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/clubs.schema.json",
   "title": "ClubDocument",
-  "description": "Canonical club document stored at clubs/{clubId}. The club id is the document id and is not stored in document data.",
+  "description": "Legacy storage contract for an organizer document stored at clubs/{clubId} during the clubs-to-organizers migration. The organizer id is the document id and is not stored in document data.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "clubs",
@@ -230,6 +230,30 @@
       "$ref": "../shared/event_common.schema.json#/definitions/clubHostDefaults",
       "x-catch-ownership": "callable-owned"
     },
+    "organizerType": {
+      "$ref": "../shared/event_common.schema.json#/definitions/organizerType",
+      "description": "Canonical organizer subtype. Legacy documents without this field normalize to club until backfill is complete.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerTypeUpdatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "description": "Server-owned timestamp of the latest organizer type decision.",
+      "x-catch-ownership": "server-only"
+    },
+    "organizerTypeUpdatedByUid": {
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        {"type": "null"}
+      ],
+      "description": "Server-owned user id that made the latest organizer type decision.",
+      "x-catch-ownership": "server-only"
+    },
+    "publicCategoryLabel": {
+      "type": ["string", "null"],
+      "maxLength": 120,
+      "description": "Optional admin-curated public category copy. It never replaces organizerType as the classification authority.",
+      "x-catch-ownership": "callable-owned"
+    },
     "entityKind": {
       "type": "string",
       "enum": [
@@ -239,7 +263,7 @@
         "creatorCommunity",
         "brand"
       ],
-      "description": "Broad organizer identity. Keeps clubs as one subtype rather than forcing every host into club nomenclature.",
+      "description": "Deprecated organizer classification retained only while legacy data and clients are migrated to organizerType.",
       "x-catch-ownership": "callable-owned"
     },
     "entitySubtypes": {
@@ -251,6 +275,7 @@
         "minLength": 1,
         "maxLength": 80
       },
+      "description": "Deprecated free-form organizer classification retained only for migration reads.",
       "x-catch-ownership": "callable-owned"
     },
     "displayCategory": {
@@ -259,7 +284,7 @@
         "null"
       ],
       "maxLength": 120,
-      "description": "Reader-facing category label for web and discovery surfaces.",
+      "description": "Deprecated reader-facing category label retained until publicCategoryLabel migration is complete.",
       "x-catch-ownership": "callable-owned"
     },
     "cityName": {
@@ -745,5 +770,10 @@
     "demoOpsCommand": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"
     }
-  }
+  },
+  "x-legacy-tolerated-fields": [
+    "entityKind",
+    "entitySubtypes",
+    "displayCategory"
+  ]
 }

@@ -124,6 +124,15 @@ void main() {
       expect(club.name, isNotEmpty);
       // hostUserId is required by both schema and Dart class.
       expect(club.hostUserId, isNotEmpty);
+      expect(club.organizerType, OrganizerType.club);
+    });
+
+    test('Club maps legacy entityKind into canonical organizerType', () {
+      final json = _loadFixture('club_doc.json', injectIdField: 'id')
+        ..remove('organizerType')
+        ..['entityKind'] = 'eventOrganizer';
+      final club = Club.fromJson(json);
+      expect(club.organizerType, OrganizerType.eventProducer);
     });
 
     test('ClubHostProfile decodes event_common fixture shape directly', () {

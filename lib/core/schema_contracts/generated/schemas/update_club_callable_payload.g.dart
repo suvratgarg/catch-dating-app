@@ -48,6 +48,18 @@ const schemaUpdateClubCallablePayloadSchema = <String, Object?>{
           'minLength': 1,
           'maxLength': 120,
         },
+        'organizerType': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'club',
+            'community',
+            'individual',
+            'eventProducer',
+            'venue',
+            'brand',
+          ],
+          'description': 'Canonical organizer classification. Club is one organizer subtype; missing legacy values normalize to club during migration.',
+        },
         'hostName': <String, Object?>{
           'type': 'string',
           'minLength': 1,

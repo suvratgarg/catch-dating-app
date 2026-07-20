@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -17,6 +18,7 @@ abstract class ClubDraft with _$ClubDraft {
     String? instagramHandle,
     String? phoneNumber,
     String? email,
+    @Default(OrganizerType.club) OrganizerType organizerType,
     @Default(ClubHostDefaults()) ClubHostDefaults hostDefaults,
   }) = _ClubDraft;
 
@@ -38,5 +40,6 @@ extension ClubDraftX on ClubDraft {
       instagramHandle == null &&
       phoneNumber == null &&
       email == null &&
+      organizerType == OrganizerType.club &&
       hostDefaults == const ClubHostDefaults();
 }

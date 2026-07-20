@@ -941,6 +941,12 @@ function sampleOrganizer(config: {
     email: null,
     imageUrl: null,
     profileImageUrl: null,
+    organizerType: config.entityKind === "eventOrganizer" ?
+      "eventProducer" :
+      config.entityKind === "creatorCommunity" ?
+        "community" :
+        config.entityKind ?? "club",
+    publicCategoryLabel: config.displayCategory,
     entityKind: config.entityKind,
     entitySubtypes: config.entitySubtypes,
     displayCategory: config.displayCategory,

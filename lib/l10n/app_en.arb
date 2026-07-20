@@ -2959,6 +2959,55 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.club_management.create.widgets.club_basics_step"
   },
+  "hostsOrganizerTypeLabel": "Organizer type",
+  "@hostsOrganizerTypeLabel": {
+    "description": "Canonical organizer classification field shown to organizer owners.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.club_management"
+  },
+  "hostsOrganizerTypeClub": "Club",
+  "@hostsOrganizerTypeClub": {
+    "description": "Organizer type option for a membership-led club.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.club_management"
+  },
+  "hostsOrganizerTypeCommunity": "Community",
+  "@hostsOrganizerTypeCommunity": {
+    "description": "Organizer type option for a community.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.club_management"
+  },
+  "hostsOrganizerTypeIndividual": "Individual organizer",
+  "@hostsOrganizerTypeIndividual": {
+    "description": "Organizer type option for an individual host or curator.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.club_management"
+  },
+  "hostsOrganizerTypeEventProducer": "Event producer",
+  "@hostsOrganizerTypeEventProducer": {
+    "description": "Organizer type option for an event production organization.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.club_management"
+  },
+  "hostsOrganizerTypeVenue": "Venue",
+  "@hostsOrganizerTypeVenue": {
+    "description": "Organizer type option for a venue.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.club_management"
+  },
+  "hostsOrganizerTypeBrand": "Brand",
+  "@hostsOrganizerTypeBrand": {
+    "description": "Organizer type option for a brand.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.club_management"
+  },
   "hostsClubBasicsStepTitleCity": "City",
   "@hostsClubBasicsStepTitleCity": {
     "description": "Product copy used by lib/hosts/presentation/club_management/create/widgets/club_basics_step.dart (title).",

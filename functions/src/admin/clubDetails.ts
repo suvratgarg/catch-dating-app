@@ -65,6 +65,8 @@ export interface AdminClubDetailsSnapshot {
   email: string | null;
   imageUrl: string | null;
   profileImageUrl: string | null;
+  organizerType: string;
+  publicCategoryLabel: string | null;
   entityKind: string | null;
   entitySubtypes: string[];
   displayCategory: string | null;
@@ -107,6 +109,8 @@ export interface AdminGetClubDetailsResponse {
 export interface AdminClubListRow {
   clubId: string;
   name: string;
+  organizerType: string;
+  publicCategoryLabel: string | null;
   displayCategory: string | null;
   cityName: string | null;
   citySlug: string | null;
@@ -241,7 +245,11 @@ export async function adminUpdateClubDetailsHandler(
       validateAdminUpdateClubDetailsCallablePayload,
       normalizeAdminUpdateClubDetailsPayload
     );
-  const patch = buildFirestorePatch(data.fields, deps.serverTimestamp());
+  const patch = buildFirestorePatch(
+    data.fields,
+    deps.serverTimestamp(),
+    adminContext.uid
+  );
   const updatedFieldCount = Object.keys(patch).length;
   if (updatedFieldCount === 0) {
     throw new HttpsError("invalid-argument", "No editable fields supplied.");
@@ -345,6 +353,9 @@ function publicClubDetails(
     email: club.email ?? null,
     imageUrl: club.imageUrl ?? null,
     profileImageUrl: club.profileImageUrl ?? null,
+    organizerType: canonicalOrganizerType(club),
+    publicCategoryLabel: club.publicCategoryLabel ??
+      club.displayCategory ?? null,
     entityKind: club.entityKind ?? null,
     entitySubtypes: club.entitySubtypes ?? [],
     displayCategory: club.displayCategory ?? null,
@@ -394,6 +405,9 @@ function publicClubListRow(
   return {
     clubId,
     name: club.name,
+    organizerType: canonicalOrganizerType(club),
+    publicCategoryLabel: club.publicCategoryLabel ??
+      club.displayCategory ?? null,
     displayCategory: club.displayCategory ?? null,
     cityName: club.cityName ?? club.area ?? null,
     citySlug: club.locationMarketId ?? club.location ?? null,
@@ -468,7 +482,8 @@ function publicRouteStatus(
  */
 function buildFirestorePatch(
   fields: ClubDetailsPatch,
-  timestamp: FirebaseFirestore.FieldValue
+  timestamp: FirebaseFirestore.FieldValue,
+  actorUid: string
 ): Record<string, unknown> {
   const patch: Record<string, unknown> = {};
   copyDefined(patch, fields, [
@@ -482,6 +497,8 @@ function buildFirestorePatch(
     "email",
     "imageUrl",
     "profileImageUrl",
+    "organizerType",
+    "publicCategoryLabel",
     "entityKind",
     "entitySubtypes",
     "displayCategory",
@@ -491,6 +508,10 @@ function buildFirestorePatch(
     "countryName",
     "appVisibility",
   ]);
+  if (fields.organizerType !== undefined) {
+    patch.organizerTypeUpdatedAt = timestamp;
+    patch.organizerTypeUpdatedByUid = actorUid;
+  }
   if (fields.location !== undefined) {
     const market = marketForIdOrAlias(fields.location);
     if (!market || !market.hostCreatable) {
@@ -639,6 +660,7 @@ function normalizeClubDetailsFields(
       "description",
       "location",
       "area",
+      "organizerType",
       "entityKind",
       "appVisibility",
     ]),
@@ -649,6 +671,7 @@ function normalizeClubDetailsFields(
     email: normalizeNullableString(fields.email),
     imageUrl: normalizeNullableString(fields.imageUrl),
     profileImageUrl: normalizeNullableString(fields.profileImageUrl),
+    publicCategoryLabel: normalizeNullableString(fields.publicCategoryLabel),
     displayCategory: normalizeNullableString(fields.displayCategory),
     cityName: normalizeNullableString(fields.cityName),
     regionName: normalizeNullableString(fields.regionName),
@@ -661,6 +684,22 @@ function normalizeClubDetailsFields(
       normalizePublicProfile
     ),
   };
+}
+
+/**
+ * Maps legacy organizer classification onto the canonical taxonomy.
+ * @param {ClubDocument} club Organizer document in the legacy collection.
+ * @return {string} Canonical organizer type.
+ */
+function canonicalOrganizerType(club: ClubDocument): string {
+  if (club.organizerType) return club.organizerType;
+  switch (club.entityKind) {
+  case "creatorCommunity": return "community";
+  case "eventOrganizer": return "eventProducer";
+  case "venue": return "venue";
+  case "brand": return "brand";
+  default: return "club";
+  }
 }
 
 /**

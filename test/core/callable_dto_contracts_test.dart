@@ -154,6 +154,7 @@ void main() {
           description: 'Weekly social runs.',
           location: 'in-ka-bengaluru',
           area: 'Cubbon Park',
+          organizerType: 'community',
           instagramHandle: 'cubbonrunners',
           email: 'hello@example.com',
         ).toJson(),

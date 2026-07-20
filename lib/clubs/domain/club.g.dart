@@ -59,6 +59,13 @@ _Club _$ClubFromJson(Map<String, dynamic> json) => _Club(
   appVisibility:
       $enumDecodeNullable(_$ClubAppVisibilityEnumMap, json['appVisibility']) ??
       ClubAppVisibility.discoverable,
+  organizerType:
+      $enumDecodeNullable(
+        _$OrganizerTypeEnumMap,
+        _readOrganizerType(json, 'organizerType'),
+      ) ??
+      OrganizerType.club,
+  publicCategoryLabel: json['publicCategoryLabel'] as String?,
   hostDefaults: json['hostDefaults'] == null
       ? const ClubHostDefaults()
       : ClubHostDefaults.fromJson(json['hostDefaults'] as Map<String, dynamic>),
@@ -98,6 +105,8 @@ Map<String, dynamic> _$ClubToJson(_Club instance) => <String, dynamic>{
   'archivedAt': const NullableTimestampConverter().toJson(instance.archivedAt),
   'archiveReason': instance.archiveReason,
   'appVisibility': _$ClubAppVisibilityEnumMap[instance.appVisibility]!,
+  'organizerType': _$OrganizerTypeEnumMap[instance.organizerType]!,
+  'publicCategoryLabel': instance.publicCategoryLabel,
   'hostDefaults': instance.hostDefaults.toJson(),
 };
 
@@ -109,6 +118,15 @@ const _$ClubLifecycleStatusEnumMap = {
 const _$ClubAppVisibilityEnumMap = {
   ClubAppVisibility.discoverable: 'discoverable',
   ClubAppVisibility.hidden: 'hidden',
+};
+
+const _$OrganizerTypeEnumMap = {
+  OrganizerType.club: 'club',
+  OrganizerType.community: 'community',
+  OrganizerType.individual: 'individual',
+  OrganizerType.eventProducer: 'eventProducer',
+  OrganizerType.venue: 'venue',
+  OrganizerType.brand: 'brand',
 };
 
 _ClubHostProfile _$ClubHostProfileFromJson(Map<String, dynamic> json) =>

@@ -1477,6 +1477,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsClubBasicsStepTitleClubName => 'Club name';
 
   @override
+  String get hostsOrganizerTypeLabel => 'Organizer type';
+
+  @override
+  String get hostsOrganizerTypeClub => 'Club';
+
+  @override
+  String get hostsOrganizerTypeCommunity => 'Community';
+
+  @override
+  String get hostsOrganizerTypeIndividual => 'Individual organizer';
+
+  @override
+  String get hostsOrganizerTypeEventProducer => 'Event producer';
+
+  @override
+  String get hostsOrganizerTypeVenue => 'Venue';
+
+  @override
+  String get hostsOrganizerTypeBrand => 'Brand';
+
+  @override
   String get hostsClubBasicsStepTitleCity => 'City';
 
   @override

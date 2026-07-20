@@ -2576,6 +2576,48 @@ abstract class AppLocalizations {
   /// **'Club name'**
   String get hostsClubBasicsStepTitleClubName;
 
+  /// Canonical organizer classification field shown to organizer owners.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer type'**
+  String get hostsOrganizerTypeLabel;
+
+  /// Organizer type option for a membership-led club.
+  ///
+  /// In en, this message translates to:
+  /// **'Club'**
+  String get hostsOrganizerTypeClub;
+
+  /// Organizer type option for a community.
+  ///
+  /// In en, this message translates to:
+  /// **'Community'**
+  String get hostsOrganizerTypeCommunity;
+
+  /// Organizer type option for an individual host or curator.
+  ///
+  /// In en, this message translates to:
+  /// **'Individual organizer'**
+  String get hostsOrganizerTypeIndividual;
+
+  /// Organizer type option for an event production organization.
+  ///
+  /// In en, this message translates to:
+  /// **'Event producer'**
+  String get hostsOrganizerTypeEventProducer;
+
+  /// Organizer type option for a venue.
+  ///
+  /// In en, this message translates to:
+  /// **'Venue'**
+  String get hostsOrganizerTypeVenue;
+
+  /// Organizer type option for a brand.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand'**
+  String get hostsOrganizerTypeBrand;
+
   /// Product copy used by lib/hosts/presentation/club_management/create/widgets/club_basics_step.dart (title).
   ///
   /// In en, this message translates to:

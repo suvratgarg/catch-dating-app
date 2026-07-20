@@ -75,8 +75,8 @@ const model = {
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/shared/event_common.schema.json",
-      "title": "Event and club common contract definitions",
-      "description": "Shared enum, scalar, and embedded definitions for event, club, participation, and saved-event contracts.",
+      "title": "Event and organizer common contract definitions",
+      "description": "Shared enum, scalar, and embedded definitions for event, organizer, participation, and saved-event contracts.",
       "definitions": {
         "demoMetadataFields": {
           "synthetic": {
@@ -527,6 +527,18 @@ const model = {
             "active",
             "archived"
           ]
+        },
+        "organizerType": {
+          "type": "string",
+          "enum": [
+            "club",
+            "community",
+            "individual",
+            "eventProducer",
+            "venue",
+            "brand"
+          ],
+          "description": "Canonical organizer classification. Club is one organizer subtype; missing legacy values normalize to club during migration."
         },
         "clubMembershipRole": {
           "type": "string",
@@ -2656,6 +2668,16 @@ const model = {
             },
             "profileImageUrl": {
               "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"
+            },
+            "organizerType": {
+              "$ref": "../shared/event_common.schema.json#/definitions/organizerType"
+            },
+            "publicCategoryLabel": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 120
             },
             "entityKind": {
               "type": "string",

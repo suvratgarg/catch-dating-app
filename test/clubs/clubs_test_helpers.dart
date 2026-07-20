@@ -218,6 +218,7 @@ class FakeClubsRepository implements ClubsRepository {
     required String description,
     required String location,
     required String area,
+    OrganizerType organizerType = OrganizerType.club,
     String? imageUrl,
     String? profileImageUrl,
     String? instagramHandle,
@@ -235,6 +236,7 @@ class FakeClubsRepository implements ClubsRepository {
       description: description,
       location: location,
       area: area,
+      organizerType: organizerType,
       imageUrl: imageUrl,
       profileImageUrl: profileImageUrl,
       instagramHandle: instagramHandle,
@@ -375,6 +377,7 @@ class CreateClubCall {
     required this.description,
     required this.location,
     required this.area,
+    this.organizerType = OrganizerType.club,
     this.imageUrl,
     this.profileImageUrl,
     this.instagramHandle,
@@ -388,6 +391,7 @@ class CreateClubCall {
   final String description;
   final String location;
   final String area;
+  final OrganizerType organizerType;
   final String? imageUrl;
   final String? profileImageUrl;
   final String? instagramHandle;

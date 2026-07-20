@@ -21,7 +21,7 @@ import type {
   AdminClubDetails,
   AdminClubListRow,
   OrganizerAppVisibility,
-  OrganizerEntityKind,
+  OrganizerType,
   OrganizerPublishStatus,
   OrganizerSourceConfidence,
   OrganizerVerificationStatus,
@@ -89,6 +89,8 @@ import type {
   OrganizerValidationIssue,
   PublishChecklistState,
 } from "../controllers/organizerPublishingHelpers";
+import {organizerTypeLabel} from
+  "../controllers/organizerPublishingHelpers";
 import {useAdminFeedback} from "../../../shared/feedback/AdminFeedbackContext";
 import {organizerDirectoryPanels} from "./organizerDirectoryPanels";
 
@@ -521,22 +523,23 @@ function OrganizerEditor({
                   value={form.name}
                 />
                 <SelectField
-                  label="Entity"
+                  label="Organizer type"
                   onChange={(value) =>
-                    update("entityKind", value as OrganizerEntityKind)}
+                    update("organizerType", value as OrganizerType)}
                   options={[
                     "club",
+                    "community",
+                    "individual",
+                    "eventProducer",
                     "venue",
-                    "eventOrganizer",
-                    "creatorCommunity",
                     "brand",
                   ]}
-                  value={form.entityKind}
+                  value={form.organizerType}
                 />
                 <TextField
-                  label="Display category"
-                  onChange={(value) => update("displayCategory", value)}
-                  value={form.displayCategory}
+                  label="Public category label"
+                  onChange={(value) => update("publicCategoryLabel", value)}
+                  value={form.publicCategoryLabel}
                 />
                 <TextField
                   label="Area"
@@ -550,20 +553,12 @@ function OrganizerEditor({
                 rows={4}
                 value={form.description}
               />
-              <AdminFieldGrid columns={2}>
-                <TextareaField
-                  label="Tags"
-                  onChange={(value) => update("tagsText", value)}
-                  rows={4}
-                  value={form.tagsText}
-                />
-                <TextareaField
-                  label="Subtypes"
-                  onChange={(value) => update("entitySubtypesText", value)}
-                  rows={4}
-                  value={form.entitySubtypesText}
-                />
-              </AdminFieldGrid>
+              <TextareaField
+                label="Tags"
+                onChange={(value) => update("tagsText", value)}
+                rows={4}
+                value={form.tagsText}
+              />
             </AdminEditorSection>
 
             <AdminEditorSection>
@@ -938,7 +933,10 @@ function AppListingPreview({
       <AdminSurfacePreview>
         <strong>{form.name || "Untitled organizer"}</strong>
         <span>
-          {[form.displayCategory, location || form.location]
+          {[
+            form.publicCategoryLabel || organizerTypeLabel(form.organizerType),
+            location || form.location,
+          ]
             .filter(Boolean)
             .join(" · ")}
         </span>

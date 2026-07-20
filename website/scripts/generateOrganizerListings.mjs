@@ -367,6 +367,33 @@ function appCreatedDemoListings() {
     .filter(Boolean);
 }
 
+function canonicalOrganizerType(club) {
+  const value = club?.organizerType;
+  if ([
+    "club",
+    "community",
+    "individual",
+    "eventProducer",
+    "venue",
+    "brand",
+  ].includes(value)) return value;
+  switch (club?.entityKind) {
+  case "creatorCommunity": return "community";
+  case "eventOrganizer": return "eventProducer";
+  case "venue": return "venue";
+  case "brand": return "brand";
+  default: return "club";
+  }
+}
+
+function organizerTypeLabel(type) {
+  switch (type) {
+  case "eventProducer": return "Event producer";
+  case "individual": return "Individual organizer";
+  default: return `${type.charAt(0).toUpperCase()}${type.slice(1)}`;
+  }
+}
+
 function listingFromClubSeed(wrapper) {
   if (!wrapper || typeof wrapper !== "object") return null;
   const {path: firestorePath, data: club} = wrapper;
@@ -395,7 +422,9 @@ function listingFromClubSeed(wrapper) {
     country: club.countryName ?? "",
     path: club.publicPage.canonicalPath,
     legacyPaths: [],
-    category: club.displayCategory ?? "Organizer",
+    category: club.publicCategoryLabel ??
+      club.displayCategory ??
+      organizerTypeLabel(canonicalOrganizerType(club)),
     status: claimState,
     indexing: club.publicPage.robots ?? "noindex, follow",
     sourceConfidence: club.provenance?.sourceConfidence ?? "low",
@@ -426,6 +455,8 @@ function listingFromClubSeed(wrapper) {
       club.name,
       city,
       club.area,
+      club.organizerType,
+      club.publicCategoryLabel,
       club.displayCategory,
       club.instagramHandle,
       ...(club.tags ?? []),

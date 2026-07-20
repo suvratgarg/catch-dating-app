@@ -1641,6 +1641,8 @@ function sampleClubListRow(club: AdminGetClubDetailsResponse["club"]):
   return {
     clubId: club.clubId,
     name: club.name,
+    organizerType: club.organizerType,
+    publicCategoryLabel: club.publicCategoryLabel,
     displayCategory: club.displayCategory,
     cityName: club.cityName ?? club.area,
     citySlug: club.location ?? club.publicPage.citySlug,

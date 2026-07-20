@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_draft.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
@@ -94,6 +95,13 @@ final class HostClubCreateCityChangedIntent extends HostClubCreateRouteIntent {
   final CityOption? city;
 }
 
+final class HostClubCreateOrganizerTypeChangedIntent
+    extends HostClubCreateRouteIntent {
+  const HostClubCreateOrganizerTypeChangedIntent(this.organizerType);
+
+  final OrganizerType organizerType;
+}
+
 final class HostClubCreateDefaultsChangedIntent
     extends HostClubCreateRouteIntent {
   const HostClubCreateDefaultsChangedIntent(this.defaults);
@@ -120,6 +128,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
 
   int _currentStep = 0;
   String? _selectedCity;
+  OrganizerType _organizerType = OrganizerType.club;
   final _clubPhotos = <_ClubPhotoDraft>[];
   var _clubPhotosTouched = false;
   var _nextPickedClubPhotoId = 0;
@@ -238,6 +247,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       _descriptionController.text = draft.description!;
     }
     if (draft.location != null) _selectedCity = draft.location;
+    _organizerType = draft.organizerType;
     if (draft.instagramHandle != null) {
       _instagramController.text = draft.instagramHandle!;
     }
@@ -377,6 +387,8 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
         _reorderClubPhoto(fromIndex, toIndex);
       case HostClubCreateCityChangedIntent(:final city):
         setState(() => _selectedCity = city?.effectiveMarketId);
+      case HostClubCreateOrganizerTypeChangedIntent(:final organizerType):
+        setState(() => _organizerType = organizerType);
       case HostClubCreateDefaultsChangedIntent(:final defaults):
         setState(() => _hostDefaults = defaults);
     }
@@ -387,6 +399,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       name: _nameController.text,
       area: _areaController.text,
       description: _descriptionController.text,
+      organizerType: _organizerType,
       selectedCity: _selectedCity,
       instagramHandle: _instagramController.text,
       phoneNumber: _phoneController.text,
@@ -423,6 +436,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
               selectedCity: _selectedCity,
               area: _areaController.text,
               description: _descriptionController.text,
+              organizerType: _organizerType,
               clubPhotoInputs: _clubPhotoInputsForSubmit,
               profileImage: _profileImage,
               instagramHandle: _instagramController.text,
@@ -437,6 +451,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                   location: request.location,
                   area: request.area,
                   description: request.description,
+                  organizerType: request.organizerType,
                   clubPhotoInputs: request.clubPhotoInputs,
                   profileImage: request.profileImage?.image,
                   instagramHandle: request.instagramHandle,
@@ -536,6 +551,13 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                     formKey: _basicsFormKey,
                     autovalidateMode: widget.formAutovalidateMode,
                     nameController: _nameController,
+                    selectedOrganizerType: _organizerType,
+                    onOrganizerTypeChanged: (organizerType) =>
+                        _handleRouteIntent(
+                          HostClubCreateOrganizerTypeChangedIntent(
+                            organizerType,
+                          ),
+                        ),
                     selectedCity: screenState.fields.selectedCity,
                     onCityChanged: (city) => _handleRouteIntent(
                       HostClubCreateCityChangedIntent(city),

@@ -221,6 +221,11 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const adminUpdateClubDetailsCallablePayloadFieldsOrganizerType = CatchContractFieldConstraints(
+    path: 'adminUpdateClubDetailsCallablePayload.fields.organizerType',
+    enumValues: <String>['club', 'community', 'individual', 'eventProducer', 'venue', 'brand'],
+  );
+
   static const adminUpdateClubDetailsCallablePayloadFieldsPhoneNumber = CatchContractFieldConstraints(
     path: 'adminUpdateClubDetailsCallablePayload.fields.phoneNumber',
     maxLength: 320,
@@ -239,6 +244,11 @@ abstract final class CatchContractConstraints {
   static const adminUpdateClubDetailsCallablePayloadFieldsProvenanceVerificationStatus = CatchContractFieldConstraints(
     path: 'adminUpdateClubDetailsCallablePayload.fields.provenance.verificationStatus',
     enumValues: <String>['unverified', 'sourceBacked', 'ownerVerified'],
+  );
+
+  static const adminUpdateClubDetailsCallablePayloadFieldsPublicCategoryLabel = CatchContractFieldConstraints(
+    path: 'adminUpdateClubDetailsCallablePayload.fields.publicCategoryLabel',
+    maxLength: 120,
   );
 
   static const adminUpdateClubDetailsCallablePayloadFieldsPublicPageCanonicalPath = CatchContractFieldConstraints(
@@ -1041,6 +1051,29 @@ abstract final class CatchContractConstraints {
     maxLength: 240,
   );
 
+  static const clubDocumentOrganizerType = CatchContractFieldConstraints(
+    path: 'clubDocument.organizerType',
+    enumValues: <String>['club', 'community', 'individual', 'eventProducer', 'venue', 'brand'],
+  );
+
+  static const clubDocumentOrganizerTypeUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'clubDocument.organizerTypeUpdatedAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const clubDocumentOrganizerTypeUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'clubDocument.organizerTypeUpdatedAt._seconds',
+    required: true,
+  );
+
+  static const clubDocumentOrganizerTypeUpdatedByUid = CatchContractFieldConstraints(
+    path: 'clubDocument.organizerTypeUpdatedByUid',
+    maxLength: 180,
+    minLength: 1,
+  );
+
   static const clubDocumentOwnershipClaimedAtNanoseconds = CatchContractFieldConstraints(
     path: 'clubDocument.ownership.claimedAt._nanoseconds',
     required: true,
@@ -1126,6 +1159,11 @@ abstract final class CatchContractConstraints {
     path: 'clubDocument.provenance.verificationStatus',
     required: true,
     enumValues: <String>['unverified', 'sourceBacked', 'ownerVerified'],
+  );
+
+  static const clubDocumentPublicCategoryLabel = CatchContractFieldConstraints(
+    path: 'clubDocument.publicCategoryLabel',
+    maxLength: 120,
   );
 
   static const clubDocumentPublicPageCanonicalPath = CatchContractFieldConstraints(
@@ -7108,6 +7146,11 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const updateClubPatchOrganizerType = CatchContractFieldConstraints(
+    path: 'updateClubPatch.organizerType',
+    enumValues: <String>['club', 'community', 'individual', 'eventProducer', 'venue', 'brand'],
+  );
+
   static const updateClubPatchPhoneNumber = CatchContractFieldConstraints(
     path: 'updateClubPatch.phoneNumber',
     maxLength: 320,
@@ -7685,10 +7728,12 @@ abstract final class CatchContractConstraints {
     'adminUpdateClubDetailsCallablePayload.fields.instagramHandle': adminUpdateClubDetailsCallablePayloadFieldsInstagramHandle,
     'adminUpdateClubDetailsCallablePayload.fields.location': adminUpdateClubDetailsCallablePayloadFieldsLocation,
     'adminUpdateClubDetailsCallablePayload.fields.name': adminUpdateClubDetailsCallablePayloadFieldsName,
+    'adminUpdateClubDetailsCallablePayload.fields.organizerType': adminUpdateClubDetailsCallablePayloadFieldsOrganizerType,
     'adminUpdateClubDetailsCallablePayload.fields.phoneNumber': adminUpdateClubDetailsCallablePayloadFieldsPhoneNumber,
     'adminUpdateClubDetailsCallablePayload.fields.profileImageUrl': adminUpdateClubDetailsCallablePayloadFieldsProfileImageUrl,
     'adminUpdateClubDetailsCallablePayload.fields.provenance.sourceConfidence': adminUpdateClubDetailsCallablePayloadFieldsProvenanceSourceConfidence,
     'adminUpdateClubDetailsCallablePayload.fields.provenance.verificationStatus': adminUpdateClubDetailsCallablePayloadFieldsProvenanceVerificationStatus,
+    'adminUpdateClubDetailsCallablePayload.fields.publicCategoryLabel': adminUpdateClubDetailsCallablePayloadFieldsPublicCategoryLabel,
     'adminUpdateClubDetailsCallablePayload.fields.publicPage.canonicalPath': adminUpdateClubDetailsCallablePayloadFieldsPublicPageCanonicalPath,
     'adminUpdateClubDetailsCallablePayload.fields.publicPage.citySlug': adminUpdateClubDetailsCallablePayloadFieldsPublicPageCitySlug,
     'adminUpdateClubDetailsCallablePayload.fields.publicPage.publishStatus': adminUpdateClubDetailsCallablePayloadFieldsPublicPagePublishStatus,
@@ -7824,6 +7869,10 @@ abstract final class CatchContractConstraints {
     'clubDocument.nextEventAt._nanoseconds': clubDocumentNextEventAtNanoseconds,
     'clubDocument.nextEventAt._seconds': clubDocumentNextEventAtSeconds,
     'clubDocument.nextEventLabel': clubDocumentNextEventLabel,
+    'clubDocument.organizerType': clubDocumentOrganizerType,
+    'clubDocument.organizerTypeUpdatedAt._nanoseconds': clubDocumentOrganizerTypeUpdatedAtNanoseconds,
+    'clubDocument.organizerTypeUpdatedAt._seconds': clubDocumentOrganizerTypeUpdatedAtSeconds,
+    'clubDocument.organizerTypeUpdatedByUid': clubDocumentOrganizerTypeUpdatedByUid,
     'clubDocument.ownership.claimedAt._nanoseconds': clubDocumentOwnershipClaimedAtNanoseconds,
     'clubDocument.ownership.claimedAt._seconds': clubDocumentOwnershipClaimedAtSeconds,
     'clubDocument.ownership.claimedByUid': clubDocumentOwnershipClaimedByUid,
@@ -7839,6 +7888,7 @@ abstract final class CatchContractConstraints {
     'clubDocument.provenance.origin': clubDocumentProvenanceOrigin,
     'clubDocument.provenance.sourceConfidence': clubDocumentProvenanceSourceConfidence,
     'clubDocument.provenance.verificationStatus': clubDocumentProvenanceVerificationStatus,
+    'clubDocument.publicCategoryLabel': clubDocumentPublicCategoryLabel,
     'clubDocument.publicPage.canonicalPath': clubDocumentPublicPageCanonicalPath,
     'clubDocument.publicPage.citySlug': clubDocumentPublicPageCitySlug,
     'clubDocument.publicPage.indexReview.checklist.cadenceVerified': clubDocumentPublicPageIndexReviewChecklistCadenceVerified,
@@ -8819,6 +8869,7 @@ abstract final class CatchContractConstraints {
     'updateClubPatch.logoPhoto.updatedAt._seconds': updateClubPatchLogoPhotoUpdatedAtSeconds,
     'updateClubPatch.logoPhoto.url': updateClubPatchLogoPhotoUrl,
     'updateClubPatch.name': updateClubPatchName,
+    'updateClubPatch.organizerType': updateClubPatchOrganizerType,
     'updateClubPatch.phoneNumber': updateClubPatchPhoneNumber,
     'updateClubPatch.profileImageUrl': updateClubPatchProfileImageUrl,
     'updateUserProfilePatch.activityPreferences.running.paceMaxSecsPerKm': updateUserProfilePatchActivityPreferencesRunningPaceMaxSecsPerKm,
