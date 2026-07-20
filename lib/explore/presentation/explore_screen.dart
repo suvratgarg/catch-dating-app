@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
@@ -58,6 +59,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   bool _searchRequested = false;
   bool? _wasExploreTabActive;
   bool _reentryRefreshQueued = false;
+  bool _guestJoinedFilterResetQueued = false;
 
   @override
   void didChangeDependencies() {
@@ -79,6 +81,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final uidAsync = ref.watch(uidProvider);
     final feedAsync = ref.watch(exploreFeedViewModelProvider);
     final recommendationsAsync = ref.watch(exploreRecommendationsProvider);
     final viewModelAsync = ref.watch(exploreClubsViewModelProvider);
@@ -94,6 +97,14 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     );
     final query = ref.watch(exploreSearchQueryProvider).trim();
     final filters = ref.watch(exploreFiltersProvider);
+    final uidData = uidAsync.asData;
+    final showAccountControls = uidData?.value != null;
+    if (uidData?.value == null && uidData != null && filters.joinedOnly) {
+      _scheduleGuestJoinedFilterReset();
+    }
+    final visibleFilters = showAccountControls
+        ? filters
+        : filters.copyWith(joinedOnly: false);
     final sourceClubsAsync = ref.watch(exploreSourceClubsProvider);
     final sourceClubs = sourceClubsAsync.asData?.value ?? const [];
     final hasSourceClubs = sourceClubs.isNotEmpty;
@@ -101,7 +112,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     final showFeaturedCover =
         featuredItem != null && !_searchRequested && query.isEmpty;
     final filterRailState = ExploreFilterRailState.from(
-      filters,
+      visibleFilters,
       l10n: context.l10n,
     );
     final dateStripState = ExploreDateStripState.from(
@@ -110,7 +121,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       now: ref.watch(exploreDiscoveryReferenceNowProvider),
     );
     final filterSheetState = ExploreFilterSheetState.from(
-      filters: filters,
+      filters: visibleFilters,
       sourceClubs: sourceClubs,
       l10n: context.l10n,
       viewModel: feedAsync.asData?.value,
@@ -120,7 +131,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       l10n: context.l10n,
       cityLabel: city.label,
       query: query,
-      filters: filters,
+      filters: visibleFilters,
       hasSourceClubs: hasSourceClubs,
       mappableEventCount: feedAsync.asData?.value.mappableEventCount,
       viewModelLoading: viewModelAsync.isLoading,
@@ -234,19 +245,26 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             builder: (sheetContext, ref, _) {
               final liveFilters = ref.watch(exploreFiltersProvider);
               final liveFeed = ref.watch(exploreFeedViewModelProvider);
+              final liveUidData = ref.watch(uidProvider).asData;
+              final showJoinedOnly = liveUidData?.value != null;
+              final visibleLiveFilters = showJoinedOnly
+                  ? liveFilters
+                  : liveFilters.copyWith(joinedOnly: false);
               return ExploreFilterSheet(
-                filters: liveFilters,
+                filters: visibleLiveFilters,
                 state: filterSheetState.withLiveResults(
-                  filters: liveFilters,
+                  filters: visibleLiveFilters,
                   viewModel: liveFeed.asData?.value,
                   feedLoading: liveFeed.isLoading,
                   l10n: sheetContext.l10n,
                 ),
                 onDistanceFilterSelected: (filter) =>
                     unawaited(_applyDistanceFilter(filter)),
-                onToggleJoinedOnly: () => ref
-                    .read(exploreFiltersProvider.notifier)
-                    .toggleJoinedOnly(),
+                onToggleJoinedOnly: showJoinedOnly
+                    ? () => ref
+                          .read(exploreFiltersProvider.notifier)
+                          .toggleJoinedOnly()
+                    : null,
                 onToggleHighRatedOnly: () => ref
                     .read(exploreFiltersProvider.notifier)
                     .toggleHighRatedOnly(),
@@ -257,6 +275,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                     ref.read(exploreFiltersProvider.notifier).toggleArea(area),
                 onClearFilters: () =>
                     ref.read(exploreFiltersProvider.notifier).clear(),
+                showJoinedOnly: showJoinedOnly,
               );
             },
           ),
@@ -300,7 +319,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
         feedAsync: feedAsync,
         recommendationsAsync: recommendationsAsync,
         clubsViewModel: bodyState.viewModel,
-        filters: filters,
+        filters: visibleFilters,
         searchQuery: query,
         onRetryFeed: () => ref.invalidate(exploreFeedViewModelProvider),
         onRetryClubs: () => retryBodyState(ExploreScreenRetryTarget.explore),
@@ -322,7 +341,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
         context: context,
         feedAsync: feedAsync,
         recommendationsAsync: recommendationsAsync,
-        filters: filters,
+        filters: visibleFilters,
         searchQuery: query,
         clubSectionError: bodyState.error,
         onRetryFeed: () => ref.invalidate(exploreFeedViewModelProvider),
@@ -390,8 +409,12 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                       onQueryChanged: (value) => ref
                           .read(exploreSearchQueryProvider.notifier)
                           .setQuery(value),
-                      actions: [savedEventsAction()],
-                      heroActions: [savedEventsAction(onDarkBackdrop: true)],
+                      actions: showAccountControls
+                          ? [savedEventsAction()]
+                          : const [],
+                      heroActions: showAccountControls
+                          ? [savedEventsAction(onDarkBackdrop: true)]
+                          : const [],
                       searchRequested: _searchRequested,
                       onSearchRequestedChanged: (expanded) {
                         if (_searchRequested == expanded) return;
@@ -402,7 +425,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                   ),
                   SliverToBoxAdapter(
                     child: ExploreFilterRail(
-                      filters: filters,
+                      filters: visibleFilters,
                       state: filterRailState,
                       dateStripState: dateStripState,
                       sheetState: filterSheetState,
@@ -411,9 +434,11 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                           .setTimeFilter(filter),
                       onDistanceFilterSelected: (filter) =>
                           unawaited(_applyDistanceFilter(filter)),
-                      onToggleJoinedOnly: () => ref
-                          .read(exploreFiltersProvider.notifier)
-                          .toggleJoinedOnly(),
+                      onToggleJoinedOnly: showAccountControls
+                          ? () => ref
+                                .read(exploreFiltersProvider.notifier)
+                                .toggleJoinedOnly()
+                          : null,
                       onToggleHighRatedOnly: () => ref
                           .read(exploreFiltersProvider.notifier)
                           .toggleHighRatedOnly(),
@@ -426,6 +451,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                       onClearFilters: () =>
                           ref.read(exploreFiltersProvider.notifier).clear(),
                       onOpenFilters: openExploreFilters,
+                      showJoinedOnly: showAccountControls,
                     ),
                   ),
                   ...bodySlivers,
@@ -470,6 +496,20 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
         .applyDistanceFilter(filter);
     if (!mounted || failure == null) return;
     _showLocationFailure(failure);
+  }
+
+  void _scheduleGuestJoinedFilterReset() {
+    if (_guestJoinedFilterResetQueued) return;
+    _guestJoinedFilterResetQueued = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _guestJoinedFilterResetQueued = false;
+      if (!mounted) return;
+      final uidData = ref.read(uidProvider).asData;
+      if (uidData == null || uidData.value != null) return;
+      final filters = ref.read(exploreFiltersProvider);
+      if (!filters.joinedOnly) return;
+      ref.read(exploreFiltersProvider.notifier).toggleJoinedOnly();
+    });
   }
 
   Future<void> _refreshExploreData() async {

@@ -994,7 +994,11 @@ String _initialLocationFromPlatform() {
 }
 
 /// Routes that unauthenticated users may access for read-only browsing.
-bool _isPublicRoute(String matchedLocation) {
+///
+/// Keep this matcher explicit: nested account-only routes must not become public
+/// merely because their parent organizer route is public.
+@visibleForTesting
+bool isGuestPublicRoute(String matchedLocation) {
   if (AppConfig.enableEventPolicyLab &&
       matchedLocation == Routes.eventPolicyLabScreen.path) {
     return true;
@@ -1010,13 +1014,24 @@ bool _isPublicRoute(String matchedLocation) {
   if (matchedLocation == Routes.startScreen.path) return true;
   if (matchedLocation == Routes.authScreen.path) return true;
   if (matchedLocation == Routes.exploreScreen.path) return true;
+  if (matchedLocation == Routes.exploreMapScreen.path) return true;
 
-  if (matchedLocation.startsWith('/organizers/')) {
+  final segments = Uri.parse(matchedLocation).pathSegments;
+  if (segments.length == 2 &&
+      segments.first == 'organizers' &&
+      segments.last != 'map') {
     return true;
   }
 
-  if (matchedLocation.startsWith('/events/') &&
-      matchedLocation.endsWith('/location')) {
+  if (segments.length == 4 &&
+      segments[0] == 'organizers' &&
+      segments[2] == 'events') {
+    return true;
+  }
+
+  if (segments.length == 3 &&
+      segments.first == 'events' &&
+      segments.last == 'location') {
     return true;
   }
 
@@ -1044,7 +1059,7 @@ String? appRedirect({
       userProfileAsync.isLoading;
 
   if (isWaitingOnAuth || isWaitingOnProfile) {
-    if (!isHostApp && _isPublicRoute(matchedLocation)) return null;
+    if (!isHostApp && isGuestPublicRoute(matchedLocation)) return null;
     if (onLoading) return null;
     return _locationWithFrom(
       Routes.loadingScreen.path,
@@ -1068,7 +1083,7 @@ String? appRedirect({
     }
 
     if (hasPendingAuthVerification && !onAuth) {
-      if (!_isPublicRoute(matchedLocation) ||
+      if (!isGuestPublicRoute(matchedLocation) ||
           _isTransientRoute(matchedLocation)) {
         return _locationWithFrom(
           Routes.authScreen.path,
@@ -1076,7 +1091,7 @@ String? appRedirect({
         );
       }
     }
-    if (_isPublicRoute(matchedLocation)) return null;
+    if (isGuestPublicRoute(matchedLocation)) return null;
     return _locationWithFrom(
       Routes.startScreen.path,
       from: _pendingDestination(uri: uri, matchedLocation: matchedLocation),
