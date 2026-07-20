@@ -3,10 +3,8 @@ import {type FormEvent, useCallback, useMemo, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
 import {claimFirebaseConfigured} from "../../firebaseConfig";
 import {hostListings} from "../organizers/data";
-import {
-  isClaimSubmissionEnabledListing,
-  isPublicApiEnabled,
-} from "../organizers/selectors";
+import {organizerPolicyForListing} from "../organizers/organizerPolicy";
+import {isClaimSubmissionEnabledListing} from "../organizers/selectors";
 import type {HostListing} from "../organizers/types";
 import type {FormStatus} from "../../shared/forms/types";
 import {emptyClaimRouteState, type ClaimRouteState} from "./claimRouting";
@@ -107,9 +105,10 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
       setStep("listing");
       return;
     }
-    if (!isPublicApiEnabled(listing)) {
+    const policy = organizerPolicyForListing(listing);
+    if (!policy.canRequestClaim) {
       setStatus({
-        message: listing.publicApi.reason,
+        message: policy.claimRequestReason,
         tone: "is-error",
       });
       return;

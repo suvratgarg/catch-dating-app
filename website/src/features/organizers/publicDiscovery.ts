@@ -7,6 +7,7 @@ import type {
 import {activityMeta, type ActivityMeta} from "@content/marketing";
 import {eligibleHomeCatchEvents} from "./homeEventEligibility";
 import {isFutureCatchEvent} from "./selectors";
+import {organizerPolicyForListing} from "./organizerPolicy";
 import type {HostListing, HostListingCatchEvent, HostListingExternalEvent} from "./types";
 
 export interface OrganizerEventHighlight {
@@ -275,9 +276,9 @@ export function eventActionCardForListing(
   } else {
     actions.push({
       href: "#reviews",
-      label: isFuture ? "Read reviews" : "Review event feedback",
+      label: "Read organizer reviews",
       variant: "secondary",
-      trackingLabel: "listing_event_reviews",
+      trackingLabel: "listing_organizer_reviews",
     });
   }
 
@@ -308,6 +309,23 @@ export function externalEventActionCardForListing(
 ): EventActionCardModel {
   const isFuture = isFutureExternalEvent(event);
   const activity = activityForKind(event.activityKind);
+  const actions: EventActionCardModel["actions"] = [
+    {
+      href: event.sourceHref,
+      label: websiteCopy["publicdiscovery_0359"],
+      target: "_blank",
+      rel: "noreferrer",
+      trackingLabel: "external_event_source",
+    },
+  ];
+  if (organizerPolicyForListing(listing).canRequestClaim) {
+    actions.push({
+      href: "#claim",
+      label: websiteCopy["publicdiscovery_0356"],
+      variant: "secondary",
+      trackingLabel: "external_event_claim",
+    });
+  }
   return {
     id: externalEventAnchorId(event),
     eyebrow: isFuture ? "Upcoming external event" : "Read-only external event",
@@ -326,20 +344,6 @@ export function externalEventActionCardForListing(
         value: event.externalLinkCount,
       },
     ],
-    actions: [
-      {
-        href: event.sourceHref,
-        label: websiteCopy["publicdiscovery_0359"],
-        target: "_blank",
-        rel: "noreferrer",
-        trackingLabel: "external_event_source",
-      },
-      {
-        href: "#claim",
-        label: websiteCopy["publicdiscovery_0356"],
-        variant: "secondary",
-        trackingLabel: "external_event_claim",
-      },
-    ],
+    actions,
   };
 }
