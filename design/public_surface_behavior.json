@@ -1,0 +1,1407 @@
+{
+  "$schema": "./public_surface_behavior.schema.json",
+  "version": 1,
+  "updated": "2026-07-21",
+  "purpose": "Decision-state contract for public and adjacent authenticated app and marketing surfaces. It records which UI and actions are visible, gated, local, native, web, or external without duplicating the existing screen, route, async-state, or booking-policy inventories.",
+  "coveragePolicy": "Each surface declares only dimensions that change its behavior and a targeted set of meaningful configurations. Loading, empty, error, offline, permission, mutation, theme, and accessibility remain orthogonal in the design-parity state matrix; event eligibility remains owned by the viewer availability resolver.",
+  "inventorySources": {
+    "appRoutes": "lib/routing/go_router.dart",
+    "appScreens": "design/screens/catch.screens.json",
+    "websiteRoutes": "design/website/routes.json"
+  },
+  "compositions": [
+    {
+      "id": "designParity.appAsyncStates",
+      "kind": "orthogonalStateContract",
+      "appliesToSurfaceIds": [
+        "app.explore",
+        "app.exploreMap",
+        "app.organizerDetail",
+        "app.eventDetail",
+        "app.eventLocation",
+        "app.savedEvents",
+        "app.profile",
+        "app.eventSuccessCompanion"
+      ],
+      "evidence": {
+        "path": "docs/design_parity/state_matrix.json",
+        "contains": [
+          "\"requiredStateKinds\"",
+          "\"loading\"",
+          "\"offline\"",
+          "\"accessibility\""
+        ]
+      },
+      "notes": "The behavior configurations are evaluated within populated/readable content. The existing design-parity contract continues to own async, mutation, visual-theme, and accessibility variants."
+    },
+    {
+      "id": "booking.viewerEventAvailability",
+      "kind": "resolver",
+      "appliesToSurfaceIds": [
+        "app.explore",
+        "app.exploreMap",
+        "app.eventDetail"
+      ],
+      "evidence": {
+        "path": "lib/events/domain/viewer_event_availability.dart",
+        "contains": [
+          "enum ViewerEventAvailabilityStatus",
+          "ViewerEventAvailability resolveViewerEventAvailability",
+          "bool get canBookNow"
+        ]
+      },
+      "notes": "The matrix consumes the resolver's outcome and does not restate age, invite, membership, cohort, capacity, waitlist, or run-preference policy calculations."
+    },
+    {
+      "id": "website.organizerPolicySelectors",
+      "kind": "resolver",
+      "appliesToSurfaceIds": [
+        "web.homeOrganizerDiscovery",
+        "web.organizerSearch",
+        "web.organizerListing",
+        "web.claim"
+      ],
+      "evidence": {
+        "path": "website/src/features/organizers/selectors.ts",
+        "contains": [
+          "export function isVerifiedListing",
+          "export function isUnclaimedListing",
+          "export function isClaimSubmissionEnabledListing"
+        ]
+      },
+      "notes": "Website controllers remain responsible for translating generated-listing fields into verified, unclaimed, public-API, and claimable policy facts."
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "viewer.session",
+      "description": "Authentication lifecycle relevant to route and action gating.",
+      "values": ["resolving", "guest", "signedIn"]
+    },
+    {
+      "id": "viewer.profileReadiness",
+      "description": "Signed-in consumer readiness used by booking and social feature gates.",
+      "values": ["notApplicable", "incomplete", "bookingReady", "socialReady"]
+    },
+    {
+      "id": "viewer.relationship",
+      "description": "Viewer relationship to the organizer represented by the listing.",
+      "values": ["visitor", "member", "host"]
+    },
+    {
+      "id": "organizer.appVisibility",
+      "description": "Canonical native-app discovery visibility.",
+      "values": ["discoverable", "hidden"],
+      "source": {
+        "kind": "jsonPointer",
+        "path": "contracts/firestore/organizers.schema.json",
+        "pointer": "/properties/appVisibility/enum",
+        "match": "exact"
+      }
+    },
+    {
+      "id": "organizer.ownershipState",
+      "description": "Canonical owner authority state, distinct from crawl origin and verification.",
+      "values": ["programmatic", "userCreated", "claimed", "transferred"],
+      "source": {
+        "kind": "jsonPointer",
+        "path": "contracts/firestore/organizers.schema.json",
+        "pointer": "/properties/ownership/properties/state/enum",
+        "match": "exact"
+      }
+    },
+    {
+      "id": "organizer.claimState",
+      "description": "Canonical claim workflow state.",
+      "values": ["unclaimed", "claimPending", "claimed", "verified", "suppressed"],
+      "source": {
+        "kind": "jsonPointer",
+        "path": "contracts/firestore/organizers.schema.json",
+        "pointer": "/properties/claim/properties/state/enum",
+        "match": "exact"
+      }
+    },
+    {
+      "id": "organizer.verificationStatus",
+      "description": "Canonical provenance confidence presented to viewers.",
+      "values": ["unverified", "sourceBacked", "ownerVerified"],
+      "source": {
+        "kind": "jsonPointer",
+        "path": "contracts/firestore/organizers.schema.json",
+        "pointer": "/properties/provenance/properties/verificationStatus/enum",
+        "match": "exact"
+      }
+    },
+    {
+      "id": "organizer.publishStatus",
+      "description": "Canonical marketing-page publication state.",
+      "values": ["draft", "qa", "published", "suppressed", "removed"],
+      "source": {
+        "kind": "jsonPointer",
+        "path": "contracts/firestore/organizers.schema.json",
+        "pointer": "/properties/publicPage/properties/publishStatus/enum",
+        "match": "exact"
+      }
+    },
+    {
+      "id": "event.supply",
+      "description": "Whether the event is operated inside Catch or represented as an outbound source event.",
+      "values": ["catchNative", "external"]
+    },
+    {
+      "id": "event.availability",
+      "description": "Resolved viewer-specific event eligibility, participation, and lifecycle result.",
+      "values": [
+        "open",
+        "saved",
+        "hosted",
+        "joined",
+        "waitlisted",
+        "attended",
+        "approvedToBook",
+        "requestRequired",
+        "waitlistAvailable",
+        "full",
+        "fullForViewer",
+        "inviteRequired",
+        "membershipRequired",
+        "runPreferencesRequired",
+        "ageRestricted",
+        "past",
+        "cancelled"
+      ],
+      "source": {
+        "kind": "dartEnum",
+        "path": "lib/events/domain/viewer_event_availability.dart",
+        "symbol": "ViewerEventAvailabilityStatus",
+        "match": "exact"
+      }
+    },
+    {
+      "id": "location.availability",
+      "description": "Availability of a map-safe event location and directions target.",
+      "values": ["missing", "approximate", "exact"]
+    },
+    {
+      "id": "website.publicApi",
+      "description": "Whether callable-backed public claim and review writes are enabled for a listing.",
+      "values": ["enabled", "disabled"]
+    }
+  ],
+  "dispositions": [
+    {
+      "id": "hidden",
+      "presence": "hidden",
+      "availability": "notApplicable",
+      "execution": "none",
+      "description": "The element is absent for this configuration."
+    },
+    {
+      "id": "visibleReadOnly",
+      "presence": "visible",
+      "availability": "notApplicable",
+      "execution": "none",
+      "description": "Visible information with no direct action."
+    },
+    {
+      "id": "visibleNative",
+      "presence": "visible",
+      "availability": "enabled",
+      "execution": "native",
+      "description": "Enabled action completed by the native app."
+    },
+    {
+      "id": "visibleWeb",
+      "presence": "visible",
+      "availability": "enabled",
+      "execution": "web",
+      "description": "Enabled action completed on the Catch website."
+    },
+    {
+      "id": "visibleExternal",
+      "presence": "visible",
+      "availability": "enabled",
+      "execution": "external",
+      "description": "Enabled action handed to an external URL or system app."
+    },
+    {
+      "id": "visibleLocal",
+      "presence": "visible",
+      "availability": "enabled",
+      "execution": "local",
+      "description": "Enabled action persisted only in local browser or device state."
+    },
+    {
+      "id": "visibleSignInGate",
+      "presence": "visible",
+      "availability": "enabled",
+      "execution": "signInGate",
+      "description": "Action remains discoverable but requires authentication before continuing."
+    },
+    {
+      "id": "visibleProfileGate",
+      "presence": "visible",
+      "availability": "enabled",
+      "execution": "profileGate",
+      "description": "Action requires the appropriate signed-in profile readiness before continuing."
+    },
+    {
+      "id": "visibleDisabled",
+      "presence": "visible",
+      "availability": "disabled",
+      "execution": "none",
+      "description": "Visible action with an explanatory unavailable state."
+    },
+    {
+      "id": "routeAllowed",
+      "presence": "visible",
+      "availability": "enabled",
+      "execution": "native",
+      "description": "The app route is accessible in this viewer state."
+    },
+    {
+      "id": "routeSignInRedirect",
+      "presence": "hidden",
+      "availability": "enabled",
+      "execution": "redirectSignIn",
+      "description": "The private route redirects a guest into the authentication flow."
+    }
+  ],
+  "surfaces": [
+    {
+      "id": "app.explore",
+      "platform": "app",
+      "coverageKind": "matrix",
+      "coverageRationale": "Explore is the logged-out app preset and changes discovery visibility, provenance copy, and save behavior by viewer and organizer authority.",
+      "routeIds": ["exploreScreen"],
+      "screenIds": ["screen.explore.discovery"],
+      "decisionDimensions": [
+        "viewer.session",
+        "organizer.appVisibility",
+        "organizer.claimState",
+        "organizer.verificationStatus"
+      ],
+      "invariantDimensions": ["organizer.publishStatus"],
+      "compositionIds": [
+        "designParity.appAsyncStates",
+        "booking.viewerEventAvailability"
+      ],
+      "elements": [
+        {"id": "organizer.card", "kind": "content", "description": "Organizer discovery card."},
+        {"id": "organizer.provenanceBadge", "kind": "badge", "description": "Crawled, claimed, or verified provenance treatment."},
+        {"id": "organizer.openDetail", "kind": "action", "description": "Open organizer detail."},
+        {"id": "event.openDetail", "kind": "action", "description": "Open a Catch event detail route."},
+        {"id": "organizer.save", "kind": "action", "description": "Save or follow an organizer from discovery."}
+      ],
+      "configurations": [
+        {
+          "id": "app.explore.guestCrawled",
+          "values": {
+            "viewer.session": "guest",
+            "organizer.appVisibility": "discoverable",
+            "organizer.claimState": "unclaimed",
+            "organizer.verificationStatus": "unverified"
+          },
+          "expectations": {
+            "organizer.card": {"disposition": "visibleReadOnly"},
+            "organizer.provenanceBadge": {"disposition": "visibleReadOnly", "variant": "crawled-unclaimed"},
+            "organizer.openDetail": {"disposition": "visibleNative"},
+            "event.openDetail": {"disposition": "visibleNative"},
+            "organizer.save": {"disposition": "visibleSignInGate", "variant": "sign-in-to-save"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        },
+        {
+          "id": "app.explore.memberVerified",
+          "values": {
+            "viewer.session": "signedIn",
+            "organizer.appVisibility": "discoverable",
+            "organizer.claimState": "verified",
+            "organizer.verificationStatus": "ownerVerified"
+          },
+          "expectations": {
+            "organizer.card": {"disposition": "visibleReadOnly"},
+            "organizer.provenanceBadge": {"disposition": "visibleReadOnly", "variant": "claimed-verified"},
+            "organizer.openDetail": {"disposition": "visibleNative"},
+            "event.openDetail": {"disposition": "visibleNative"},
+            "organizer.save": {"disposition": "visibleNative"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        },
+        {
+          "id": "app.explore.hiddenSupply",
+          "values": {
+            "viewer.session": "guest",
+            "organizer.appVisibility": "hidden",
+            "organizer.claimState": "unclaimed",
+            "organizer.verificationStatus": "unverified"
+          },
+          "expectations": {
+            "organizer.card": {"disposition": "hidden"},
+            "organizer.provenanceBadge": {"disposition": "hidden"},
+            "organizer.openDetail": {"disposition": "hidden"},
+            "event.openDetail": {"disposition": "hidden"},
+            "organizer.save": {"disposition": "hidden"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        }
+      ],
+      "evidence": [
+        {
+          "path": "test/explore/explore_view_model_test.dart",
+          "contains": [
+            "exploreFeedViewModelProvider resolves viewer-specific availability",
+            "ExploreMapLauncherState hides until mapped supply is loaded"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "app.exploreMap",
+      "platform": "app",
+      "coverageKind": "matrix",
+      "coverageRationale": "The map is publicly reachable but has its own marker, provenance, and open-detail affordances.",
+      "routeIds": ["exploreMapScreen"],
+      "screenIds": ["screen.explore.discovery"],
+      "decisionDimensions": [
+        "viewer.session",
+        "organizer.appVisibility",
+        "organizer.claimState",
+        "organizer.verificationStatus"
+      ],
+      "invariantDimensions": ["organizer.publishStatus"],
+      "compositionIds": [
+        "designParity.appAsyncStates",
+        "booking.viewerEventAvailability"
+      ],
+      "elements": [
+        {"id": "organizer.mapMarker", "kind": "content", "description": "Organizer or event map marker."},
+        {"id": "organizer.provenanceBadge", "kind": "badge", "description": "Provenance treatment in the selected marker sheet."},
+        {"id": "organizer.openDetail", "kind": "action", "description": "Open detail from the selected marker."}
+      ],
+      "configurations": [
+        {
+          "id": "app.exploreMap.guestCrawled",
+          "values": {
+            "viewer.session": "guest",
+            "organizer.appVisibility": "discoverable",
+            "organizer.claimState": "unclaimed",
+            "organizer.verificationStatus": "sourceBacked"
+          },
+          "expectations": {
+            "organizer.mapMarker": {"disposition": "visibleReadOnly"},
+            "organizer.provenanceBadge": {"disposition": "visibleReadOnly", "variant": "crawled-source-backed"},
+            "organizer.openDetail": {"disposition": "visibleNative"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        },
+        {
+          "id": "app.exploreMap.memberVerified",
+          "values": {
+            "viewer.session": "signedIn",
+            "organizer.appVisibility": "discoverable",
+            "organizer.claimState": "verified",
+            "organizer.verificationStatus": "ownerVerified"
+          },
+          "expectations": {
+            "organizer.mapMarker": {"disposition": "visibleReadOnly"},
+            "organizer.provenanceBadge": {"disposition": "visibleReadOnly", "variant": "claimed-verified"},
+            "organizer.openDetail": {"disposition": "visibleNative"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        },
+        {
+          "id": "app.exploreMap.hiddenSupply",
+          "values": {
+            "viewer.session": "guest",
+            "organizer.appVisibility": "hidden",
+            "organizer.claimState": "unclaimed",
+            "organizer.verificationStatus": "unverified"
+          },
+          "expectations": {
+            "organizer.mapMarker": {"disposition": "hidden"},
+            "organizer.provenanceBadge": {"disposition": "hidden"},
+            "organizer.openDetail": {"disposition": "hidden"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        }
+      ],
+      "evidence": [
+        {
+          "path": "test/explore/explore_view_model_test.dart",
+          "contains": [
+            "ExploreMapLauncherState hides until mapped supply is loaded",
+            "map view model preserves external event identity and coordinate"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "app.organizerDetail",
+      "platform": "app",
+      "coverageKind": "matrix",
+      "coverageRationale": "Organizer detail is guest-readable and must distinguish crawl provenance, claim authority, member actions, and owner management.",
+      "routeIds": ["clubDetailScreen"],
+      "screenIds": ["screen.club.detail"],
+      "decisionDimensions": [
+        "viewer.session",
+        "viewer.relationship",
+        "organizer.appVisibility",
+        "organizer.ownershipState",
+        "organizer.claimState",
+        "organizer.verificationStatus"
+      ],
+      "invariantDimensions": ["organizer.publishStatus"],
+      "compositionIds": ["designParity.appAsyncStates"],
+      "elements": [
+        {"id": "organizer.provenanceBadge", "kind": "badge", "description": "Listing authority and verification treatment."},
+        {"id": "organizer.claim", "kind": "action", "description": "Open the website claim flow for an unclaimed organizer."},
+        {"id": "organizer.follow", "kind": "action", "description": "Follow or join the organizer."},
+        {"id": "review.write", "kind": "action", "description": "Create a review in the native app when eligible."},
+        {"id": "event.openDetail", "kind": "action", "description": "Open an organizer event."},
+        {"id": "organizer.manage", "kind": "action", "description": "Open host management for an owned organizer."}
+      ],
+      "configurations": [
+        {
+          "id": "app.organizerDetail.guestCrawled",
+          "values": {
+            "viewer.session": "guest",
+            "viewer.relationship": "visitor",
+            "organizer.appVisibility": "discoverable",
+            "organizer.ownershipState": "programmatic",
+            "organizer.claimState": "unclaimed",
+            "organizer.verificationStatus": "unverified"
+          },
+          "expectations": {
+            "organizer.provenanceBadge": {"disposition": "visibleReadOnly", "variant": "crawled-unclaimed"},
+            "organizer.claim": {"disposition": "visibleWeb", "target": "/claim/:listing/"},
+            "organizer.follow": {"disposition": "visibleSignInGate"},
+            "review.write": {"disposition": "visibleSignInGate"},
+            "event.openDetail": {"disposition": "visibleNative"},
+            "organizer.manage": {"disposition": "hidden"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        },
+        {
+          "id": "app.organizerDetail.memberClaimed",
+          "values": {
+            "viewer.session": "signedIn",
+            "viewer.relationship": "member",
+            "organizer.appVisibility": "discoverable",
+            "organizer.ownershipState": "claimed",
+            "organizer.claimState": "claimed",
+            "organizer.verificationStatus": "sourceBacked"
+          },
+          "expectations": {
+            "organizer.provenanceBadge": {"disposition": "visibleReadOnly", "variant": "claimed-source-backed"},
+            "organizer.claim": {"disposition": "hidden"},
+            "organizer.follow": {"disposition": "visibleNative", "variant": "following"},
+            "review.write": {"disposition": "visibleNative"},
+            "event.openDetail": {"disposition": "visibleNative"},
+            "organizer.manage": {"disposition": "hidden"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        },
+        {
+          "id": "app.organizerDetail.ownerVerified",
+          "values": {
+            "viewer.session": "signedIn",
+            "viewer.relationship": "host",
+            "organizer.appVisibility": "discoverable",
+            "organizer.ownershipState": "claimed",
+            "organizer.claimState": "verified",
+            "organizer.verificationStatus": "ownerVerified"
+          },
+          "expectations": {
+            "organizer.provenanceBadge": {"disposition": "visibleReadOnly", "variant": "claimed-verified"},
+            "organizer.claim": {"disposition": "hidden"},
+            "organizer.follow": {"disposition": "hidden"},
+            "review.write": {"disposition": "hidden"},
+            "event.openDetail": {"disposition": "visibleNative"},
+            "organizer.manage": {"disposition": "visibleNative"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        }
+      ],
+      "evidence": [
+        {
+          "path": "test/clubs/club_detail_read_only_preview_test.dart",
+          "contains": [
+            "loaded preview renders canonical content behind one boundary",
+            "consumer retry error state"
+          ]
+        },
+        {
+          "path": "test/clubs/club_detail_dock_test.dart",
+          "contains": ["DockBell retains toggle and pending semantics over icon chrome"]
+        }
+      ]
+    },
+    {
+      "id": "app.eventDetail",
+      "platform": "app",
+      "coverageKind": "matrix",
+      "coverageRationale": "Event detail is guest-readable, while saving, booking, reviews, external booking, and provenance differ by session, readiness, supply, and resolved event availability.",
+      "routeIds": [
+        "eventDetailScreen",
+        "calendarEventDetailScreen",
+        "savedEventDetailScreen",
+        "dashboardEventDetailScreen",
+        "hostAppEventDetailScreen"
+      ],
+      "screenIds": ["screen.event.detail"],
+      "decisionDimensions": [
+        "viewer.session",
+        "viewer.profileReadiness",
+        "organizer.ownershipState",
+        "organizer.claimState",
+        "organizer.verificationStatus",
+        "event.supply",
+        "event.availability"
+      ],
+      "invariantDimensions": ["organizer.publishStatus"],
+      "compositionIds": [
+        "designParity.appAsyncStates",
+        "booking.viewerEventAvailability"
+      ],
+      "elements": [
+        {"id": "organizer.provenanceBadge", "kind": "badge", "description": "Host-listing provenance treatment."},
+        {"id": "event.signup", "kind": "action", "description": "Book, request, join a waitlist, or manage current participation."},
+        {"id": "event.save", "kind": "action", "description": "Save the event in Catch."},
+        {"id": "review.write", "kind": "action", "description": "Write an attendee review after eligibility unlocks."},
+        {"id": "event.location", "kind": "action", "description": "Open the event location map."},
+        {"id": "event.externalBooking", "kind": "action", "description": "Open an external source or booking page."}
+      ],
+      "configurations": [
+        {
+          "id": "app.eventDetail.guestCrawledOpen",
+          "values": {
+            "viewer.session": "guest",
+            "viewer.profileReadiness": "notApplicable",
+            "organizer.ownershipState": "programmatic",
+            "organizer.claimState": "unclaimed",
+            "organizer.verificationStatus": "unverified",
+            "event.supply": "catchNative",
+            "event.availability": "open"
+          },
+          "expectations": {
+            "organizer.provenanceBadge": {"disposition": "visibleReadOnly", "variant": "crawled-unclaimed"},
+            "event.signup": {"disposition": "visibleSignInGate", "variant": "sign-in-to-join"},
+            "event.save": {"disposition": "visibleSignInGate"},
+            "review.write": {"disposition": "hidden"},
+            "event.location": {"disposition": "visibleNative"},
+            "event.externalBooking": {"disposition": "hidden"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        },
+        {
+          "id": "app.eventDetail.incompleteOpen",
+          "values": {
+            "viewer.session": "signedIn",
+            "viewer.profileReadiness": "incomplete",
+            "organizer.ownershipState": "programmatic",
+            "organizer.claimState": "unclaimed",
+            "organizer.verificationStatus": "sourceBacked",
+            "event.supply": "catchNative",
+            "event.availability": "open"
+          },
+          "expectations": {
+            "organizer.provenanceBadge": {"disposition": "visibleReadOnly", "variant": "crawled-source-backed"},
+            "event.signup": {"disposition": "visibleProfileGate", "variant": "complete-booking-profile"},
+            "event.save": {"disposition": "visibleNative"},
+            "review.write": {"disposition": "hidden"},
+            "event.location": {"disposition": "visibleNative"},
+            "event.externalBooking": {"disposition": "hidden"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        },
+        {
+          "id": "app.eventDetail.bookingReadyVerifiedOpen",
+          "values": {
+            "viewer.session": "signedIn",
+            "viewer.profileReadiness": "bookingReady",
+            "organizer.ownershipState": "claimed",
+            "organizer.claimState": "verified",
+            "organizer.verificationStatus": "ownerVerified",
+            "event.supply": "catchNative",
+            "event.availability": "open"
+          },
+          "expectations": {
+            "organizer.provenanceBadge": {"disposition": "visibleReadOnly", "variant": "claimed-verified"},
+            "event.signup": {"disposition": "visibleNative", "variant": "book"},
+            "event.save": {"disposition": "visibleNative"},
+            "review.write": {"disposition": "hidden"},
+            "event.location": {"disposition": "visibleNative"},
+            "event.externalBooking": {"disposition": "hidden"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        },
+        {
+          "id": "app.eventDetail.attendedReview",
+          "values": {
+            "viewer.session": "signedIn",
+            "viewer.profileReadiness": "socialReady",
+            "organizer.ownershipState": "claimed",
+            "organizer.claimState": "verified",
+            "organizer.verificationStatus": "ownerVerified",
+            "event.supply": "catchNative",
+            "event.availability": "attended"
+          },
+          "expectations": {
+            "organizer.provenanceBadge": {"disposition": "visibleReadOnly", "variant": "claimed-verified"},
+            "event.signup": {"disposition": "hidden"},
+            "event.save": {"disposition": "visibleNative"},
+            "review.write": {"disposition": "visibleNative"},
+            "event.location": {"disposition": "visibleNative"},
+            "event.externalBooking": {"disposition": "hidden"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        },
+        {
+          "id": "app.eventDetail.guestExternal",
+          "values": {
+            "viewer.session": "guest",
+            "viewer.profileReadiness": "notApplicable",
+            "organizer.ownershipState": "programmatic",
+            "organizer.claimState": "unclaimed",
+            "organizer.verificationStatus": "sourceBacked",
+            "event.supply": "external",
+            "event.availability": "open"
+          },
+          "expectations": {
+            "organizer.provenanceBadge": {"disposition": "visibleReadOnly", "variant": "crawled-source-backed"},
+            "event.signup": {"disposition": "hidden"},
+            "event.save": {"disposition": "visibleSignInGate"},
+            "review.write": {"disposition": "hidden"},
+            "event.location": {"disposition": "visibleExternal"},
+            "event.externalBooking": {"disposition": "visibleExternal"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        },
+        {
+          "id": "app.eventDetail.fullForViewer",
+          "values": {
+            "viewer.session": "signedIn",
+            "viewer.profileReadiness": "bookingReady",
+            "organizer.ownershipState": "claimed",
+            "organizer.claimState": "claimed",
+            "organizer.verificationStatus": "sourceBacked",
+            "event.supply": "catchNative",
+            "event.availability": "fullForViewer"
+          },
+          "expectations": {
+            "organizer.provenanceBadge": {"disposition": "visibleReadOnly", "variant": "claimed-source-backed"},
+            "event.signup": {"disposition": "visibleDisabled", "variant": "full-for-viewer"},
+            "event.save": {"disposition": "visibleNative"},
+            "review.write": {"disposition": "hidden"},
+            "event.location": {"disposition": "visibleNative"},
+            "event.externalBooking": {"disposition": "hidden"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        }
+      ],
+      "evidence": [
+        {
+          "path": "test/events/event_detail_screen_state_test.dart",
+          "contains": [
+            "derives eligible paid and paid-unsupported booking states",
+            "locks member context for guests",
+            "unlocks reviews only for attended users after the event ends"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "app.eventLocation",
+      "platform": "app",
+      "coverageKind": "matrix",
+      "coverageRationale": "The public location route depends on whether a safe map target and directions destination exist, not organizer provenance.",
+      "routeIds": ["eventLocationMapScreen"],
+      "screenIds": ["screen.event.location_map"],
+      "decisionDimensions": ["viewer.session", "location.availability"],
+      "invariantDimensions": [
+        "organizer.claimState",
+        "organizer.verificationStatus"
+      ],
+      "compositionIds": ["designParity.appAsyncStates"],
+      "elements": [
+        {"id": "route.access", "kind": "routeGuard", "description": "Access to the event location route."},
+        {"id": "location.map", "kind": "content", "description": "Pinned event map content."},
+        {"id": "location.directions", "kind": "action", "description": "Open directions in a system mapping app."}
+      ],
+      "configurations": [
+        {
+          "id": "app.eventLocation.guestExact",
+          "values": {
+            "viewer.session": "guest",
+            "location.availability": "exact"
+          },
+          "expectations": {
+            "route.access": {"disposition": "routeAllowed"},
+            "location.map": {"disposition": "visibleReadOnly", "variant": "exact-pin"},
+            "location.directions": {"disposition": "visibleExternal"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        },
+        {
+          "id": "app.eventLocation.memberExact",
+          "values": {
+            "viewer.session": "signedIn",
+            "location.availability": "exact"
+          },
+          "expectations": {
+            "route.access": {"disposition": "routeAllowed"},
+            "location.map": {"disposition": "visibleReadOnly", "variant": "exact-pin"},
+            "location.directions": {"disposition": "visibleExternal"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        },
+        {
+          "id": "app.eventLocation.guestMissing",
+          "values": {
+            "viewer.session": "guest",
+            "location.availability": "missing"
+          },
+          "expectations": {
+            "route.access": {"disposition": "routeAllowed"},
+            "location.map": {"disposition": "visibleDisabled", "variant": "location-unavailable"},
+            "location.directions": {"disposition": "hidden"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        }
+      ],
+      "evidence": [
+        {
+          "path": "test/events/events_widgets_test.dart",
+          "contains": [
+            "event location map centers a pinned event and labels it",
+            "event location map keeps directions as an explicit action"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "app.savedEvents",
+      "platform": "app",
+      "coverageKind": "routeGuard",
+      "coverageRationale": "Saved Events is adjacent to public discovery but contains viewer-owned data and needs only an exact authentication guard.",
+      "routeIds": ["savedEventsScreen"],
+      "screenIds": ["screen.saved_events.list"],
+      "decisionDimensions": ["viewer.session"],
+      "invariantDimensions": [
+        "organizer.claimState",
+        "organizer.verificationStatus"
+      ],
+      "compositionIds": ["designParity.appAsyncStates"],
+      "elements": [
+        {"id": "route.access", "kind": "routeGuard", "description": "Authentication guard for saved viewer data."}
+      ],
+      "configurations": [
+        {
+          "id": "app.savedEvents.guest",
+          "values": {"viewer.session": "guest"},
+          "expectations": {"route.access": {"disposition": "routeSignInRedirect"}},
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        },
+        {
+          "id": "app.savedEvents.member",
+          "values": {"viewer.session": "signedIn"},
+          "expectations": {"route.access": {"disposition": "routeAllowed"}},
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        }
+      ],
+      "evidence": [
+        {
+          "path": "lib/routing/go_router.dart",
+          "contains": ["savedEventsScreen('/saved-events'", "String? appRedirect("]
+        }
+      ]
+    },
+    {
+      "id": "app.profile",
+      "platform": "app",
+      "coverageKind": "routeGuard",
+      "coverageRationale": "Self Profile is viewer-owned and not part of the guest shell; provenance cannot change its access decision.",
+      "routeIds": ["profileScreen"],
+      "screenIds": ["screen.profile.self"],
+      "decisionDimensions": ["viewer.session"],
+      "invariantDimensions": [
+        "organizer.claimState",
+        "organizer.verificationStatus"
+      ],
+      "compositionIds": ["designParity.appAsyncStates"],
+      "elements": [
+        {"id": "route.access", "kind": "routeGuard", "description": "Authentication guard for the current-user profile."}
+      ],
+      "configurations": [
+        {
+          "id": "app.profile.guest",
+          "values": {"viewer.session": "guest"},
+          "expectations": {"route.access": {"disposition": "routeSignInRedirect"}},
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        },
+        {
+          "id": "app.profile.member",
+          "values": {"viewer.session": "signedIn"},
+          "expectations": {"route.access": {"disposition": "routeAllowed"}},
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        }
+      ],
+      "evidence": [
+        {
+          "path": "test/routing/app_shell_guest_cta_test.dart",
+          "contains": [
+            "expect(find.text('Profile'), findsNothing)",
+            "authenticated app shell loads Chats and Profile branches"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "app.eventSuccessCompanion",
+      "platform": "app",
+      "coverageKind": "routeGuard",
+      "coverageRationale": "Companion plans are participation-sensitive attendee data. A guest must not inherit public access merely because the route sits below the organizer prefix.",
+      "routeIds": ["eventSuccessCompanionScreen"],
+      "screenIds": ["screen.event_success.companion"],
+      "decisionDimensions": ["viewer.session"],
+      "invariantDimensions": [
+        "organizer.claimState",
+        "organizer.verificationStatus"
+      ],
+      "compositionIds": ["designParity.appAsyncStates"],
+      "elements": [
+        {"id": "route.access", "kind": "routeGuard", "description": "Authentication guard for attendee companion plans."}
+      ],
+      "configurations": [
+        {
+          "id": "app.eventSuccessCompanion.guest",
+          "values": {"viewer.session": "guest"},
+          "expectations": {"route.access": {"disposition": "routeSignInRedirect"}},
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        },
+        {
+          "id": "app.eventSuccessCompanion.member",
+          "values": {"viewer.session": "signedIn"},
+          "expectations": {"route.access": {"disposition": "routeAllowed"}},
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["app.publicSurfaceBehavior"]
+        }
+      ],
+      "evidence": [
+        {
+          "path": "lib/routing/go_router.dart",
+          "contains": [
+            "eventSuccessCompanionScreen(",
+            "matchedLocation.startsWith('/organizers/')"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "web.homeOrganizerDiscovery",
+      "platform": "web",
+      "coverageKind": "matrix",
+      "coverageRationale": "Home exposes a subset of organizer and event discovery, but website authentication does not alter those public cards.",
+      "routeIds": ["home"],
+      "decisionDimensions": [
+        "organizer.publishStatus",
+        "organizer.claimState",
+        "organizer.verificationStatus"
+      ],
+      "invariantDimensions": ["viewer.session", "organizer.appVisibility"],
+      "compositionIds": ["website.organizerPolicySelectors"],
+      "elements": [
+        {"id": "organizer.card", "kind": "content", "description": "Featured organizer discovery card."},
+        {"id": "organizer.provenanceBadge", "kind": "badge", "description": "Public listing authority treatment."},
+        {"id": "organizer.openDetail", "kind": "action", "description": "Open the generated organizer listing."},
+        {"id": "organizer.claim", "kind": "action", "description": "Open claim flow for an unclaimed listing."}
+      ],
+      "configurations": [
+        {
+          "id": "web.homeOrganizerDiscovery.crawledPublished",
+          "values": {
+            "organizer.publishStatus": "published",
+            "organizer.claimState": "unclaimed",
+            "organizer.verificationStatus": "sourceBacked"
+          },
+          "expectations": {
+            "organizer.card": {"disposition": "visibleReadOnly"},
+            "organizer.provenanceBadge": {"disposition": "visibleReadOnly", "variant": "crawled-source-backed"},
+            "organizer.openDetail": {"disposition": "visibleWeb"},
+            "organizer.claim": {"disposition": "visibleWeb", "target": "/claim/:listing/"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["web.publicSurfaceBehavior"]
+        },
+        {
+          "id": "web.homeOrganizerDiscovery.verifiedPublished",
+          "values": {
+            "organizer.publishStatus": "published",
+            "organizer.claimState": "verified",
+            "organizer.verificationStatus": "ownerVerified"
+          },
+          "expectations": {
+            "organizer.card": {"disposition": "visibleReadOnly"},
+            "organizer.provenanceBadge": {"disposition": "visibleReadOnly", "variant": "claimed-verified"},
+            "organizer.openDetail": {"disposition": "visibleWeb"},
+            "organizer.claim": {"disposition": "hidden"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["web.publicSurfaceBehavior"]
+        },
+        {
+          "id": "web.homeOrganizerDiscovery.suppressed",
+          "values": {
+            "organizer.publishStatus": "suppressed",
+            "organizer.claimState": "suppressed",
+            "organizer.verificationStatus": "unverified"
+          },
+          "expectations": {
+            "organizer.card": {"disposition": "hidden"},
+            "organizer.provenanceBadge": {"disposition": "hidden"},
+            "organizer.openDetail": {"disposition": "hidden"},
+            "organizer.claim": {"disposition": "hidden"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["web.publicSurfaceBehavior"]
+        }
+      ],
+      "evidence": [
+        {
+          "path": "website/src/features/organizers/publicDiscovery.test.ts",
+          "contains": [
+            "builds eligible event cards with stable deep links",
+            "deduplicates format suggestions and normalizes activity kinds"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "web.organizerSearch",
+      "platform": "web",
+      "coverageKind": "matrix",
+      "coverageRationale": "Search exposes crawl/claim filters, local saves, and listing navigation without requiring a website login.",
+      "routeIds": ["organizer_search"],
+      "decisionDimensions": [
+        "organizer.publishStatus",
+        "organizer.claimState",
+        "organizer.verificationStatus"
+      ],
+      "invariantDimensions": ["viewer.session", "organizer.appVisibility"],
+      "compositionIds": ["website.organizerPolicySelectors"],
+      "elements": [
+        {"id": "organizer.result", "kind": "content", "description": "Organizer search result."},
+        {"id": "organizer.provenanceBadge", "kind": "badge", "description": "Claim and verification treatment."},
+        {"id": "organizer.openDetail", "kind": "action", "description": "Open organizer listing."},
+        {"id": "organizer.save", "kind": "action", "description": "Save organizer to browser local storage."},
+        {"id": "organizer.claim", "kind": "action", "description": "Open claim flow when eligible."}
+      ],
+      "configurations": [
+        {
+          "id": "web.organizerSearch.crawledPublished",
+          "values": {
+            "organizer.publishStatus": "published",
+            "organizer.claimState": "unclaimed",
+            "organizer.verificationStatus": "sourceBacked"
+          },
+          "expectations": {
+            "organizer.result": {"disposition": "visibleReadOnly"},
+            "organizer.provenanceBadge": {"disposition": "visibleReadOnly", "variant": "crawled-source-backed"},
+            "organizer.openDetail": {"disposition": "visibleWeb"},
+            "organizer.save": {"disposition": "visibleLocal"},
+            "organizer.claim": {"disposition": "visibleWeb"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["web.publicSurfaceBehavior"]
+        },
+        {
+          "id": "web.organizerSearch.verifiedPublished",
+          "values": {
+            "organizer.publishStatus": "published",
+            "organizer.claimState": "verified",
+            "organizer.verificationStatus": "ownerVerified"
+          },
+          "expectations": {
+            "organizer.result": {"disposition": "visibleReadOnly"},
+            "organizer.provenanceBadge": {"disposition": "visibleReadOnly", "variant": "claimed-verified"},
+            "organizer.openDetail": {"disposition": "visibleWeb"},
+            "organizer.save": {"disposition": "visibleLocal"},
+            "organizer.claim": {"disposition": "hidden"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["web.publicSurfaceBehavior"]
+        },
+        {
+          "id": "web.organizerSearch.removed",
+          "values": {
+            "organizer.publishStatus": "removed",
+            "organizer.claimState": "suppressed",
+            "organizer.verificationStatus": "unverified"
+          },
+          "expectations": {
+            "organizer.result": {"disposition": "hidden"},
+            "organizer.provenanceBadge": {"disposition": "hidden"},
+            "organizer.openDetail": {"disposition": "hidden"},
+            "organizer.save": {"disposition": "hidden"},
+            "organizer.claim": {"disposition": "hidden"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["web.publicSurfaceBehavior"]
+        }
+      ],
+      "evidence": [
+        {
+          "path": "website/src/features/organizers/useOrganizerDirectoryController.test.tsx",
+          "contains": [
+            "hydrates filters from the URL and composes functional updates",
+            "tracks submitted result appearances and resets the URL-owned filters"
+          ]
+        },
+        {
+          "path": "website/src/features/organizers/savedOrganizerStorage.ts",
+          "contains": [
+            "catch_saved_organizers_v1",
+            "Local saves should not block the public listing UI"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "web.organizerListing",
+      "platform": "web",
+      "coverageKind": "matrix",
+      "coverageRationale": "The canonical and legacy organizer listing families share claim, review, save, Catch-event, external-event, and provenance actions; they do not provide a standalone web Event Detail route.",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "decisionDimensions": [
+        "organizer.publishStatus",
+        "organizer.claimState",
+        "organizer.verificationStatus",
+        "website.publicApi",
+        "event.supply"
+      ],
+      "invariantDimensions": ["viewer.session", "organizer.appVisibility"],
+      "compositionIds": ["website.organizerPolicySelectors"],
+      "elements": [
+        {"id": "organizer.provenanceBadge", "kind": "badge", "description": "Listing provenance and verification treatment."},
+        {"id": "organizer.claim", "kind": "action", "description": "Claim an eligible organizer page."},
+        {"id": "review.write", "kind": "action", "description": "Publish a public web review without app authentication."},
+        {"id": "event.catchAction", "kind": "action", "description": "Navigate to the Catch event anchor and app-download path."},
+        {"id": "event.externalAction", "kind": "action", "description": "Open the external source event."},
+        {"id": "organizer.save", "kind": "action", "description": "Persist a local browser save."}
+      ],
+      "configurations": [
+        {
+          "id": "web.organizerListing.crawledCatchEnabled",
+          "values": {
+            "organizer.publishStatus": "published",
+            "organizer.claimState": "unclaimed",
+            "organizer.verificationStatus": "sourceBacked",
+            "website.publicApi": "enabled",
+            "event.supply": "catchNative"
+          },
+          "expectations": {
+            "organizer.provenanceBadge": {"disposition": "visibleReadOnly", "variant": "crawled-source-backed"},
+            "organizer.claim": {"disposition": "visibleWeb", "target": "#claim"},
+            "review.write": {"disposition": "visibleWeb", "target": "#reviews"},
+            "event.catchAction": {"disposition": "visibleWeb", "target": "#event-:eventId"},
+            "event.externalAction": {"disposition": "hidden"},
+            "organizer.save": {"disposition": "visibleLocal"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["web.publicSurfaceBehavior"]
+        },
+        {
+          "id": "web.organizerListing.verifiedCatchEnabled",
+          "values": {
+            "organizer.publishStatus": "published",
+            "organizer.claimState": "verified",
+            "organizer.verificationStatus": "ownerVerified",
+            "website.publicApi": "enabled",
+            "event.supply": "catchNative"
+          },
+          "expectations": {
+            "organizer.provenanceBadge": {"disposition": "visibleReadOnly", "variant": "claimed-verified"},
+            "organizer.claim": {"disposition": "hidden"},
+            "review.write": {"disposition": "visibleWeb", "target": "#reviews"},
+            "event.catchAction": {"disposition": "visibleWeb", "target": "#event-:eventId"},
+            "event.externalAction": {"disposition": "hidden"},
+            "organizer.save": {"disposition": "visibleLocal"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["web.publicSurfaceBehavior"]
+        },
+        {
+          "id": "web.organizerListing.crawledExternalEnabled",
+          "values": {
+            "organizer.publishStatus": "published",
+            "organizer.claimState": "unclaimed",
+            "organizer.verificationStatus": "sourceBacked",
+            "website.publicApi": "enabled",
+            "event.supply": "external"
+          },
+          "expectations": {
+            "organizer.provenanceBadge": {"disposition": "visibleReadOnly", "variant": "crawled-source-backed"},
+            "organizer.claim": {"disposition": "visibleWeb"},
+            "review.write": {"disposition": "visibleWeb"},
+            "event.catchAction": {"disposition": "hidden"},
+            "event.externalAction": {"disposition": "visibleExternal"},
+            "organizer.save": {"disposition": "visibleLocal"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["web.publicSurfaceBehavior"]
+        },
+        {
+          "id": "web.organizerListing.publicApiDisabled",
+          "values": {
+            "organizer.publishStatus": "published",
+            "organizer.claimState": "unclaimed",
+            "organizer.verificationStatus": "unverified",
+            "website.publicApi": "disabled",
+            "event.supply": "catchNative"
+          },
+          "expectations": {
+            "organizer.provenanceBadge": {"disposition": "visibleReadOnly", "variant": "crawled-unclaimed"},
+            "organizer.claim": {"disposition": "visibleDisabled", "variant": "public-api-unavailable"},
+            "review.write": {"disposition": "visibleDisabled", "variant": "public-api-unavailable"},
+            "event.catchAction": {"disposition": "visibleWeb"},
+            "event.externalAction": {"disposition": "hidden"},
+            "organizer.save": {"disposition": "visibleLocal"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["web.publicSurfaceBehavior"]
+        }
+      ],
+      "evidence": [
+        {
+          "path": "website/src/features/organizers/useHostListingPageController.test.tsx",
+          "contains": ["persists organizer saves and exposes event-aware navigation"]
+        },
+        {
+          "path": "website/src/features/reviews/useListingReviewsController.test.tsx",
+          "contains": [
+            "keeps disabled listing routes read-only",
+            "publishes configured reviews and refreshes the listing review query"
+          ]
+        },
+        {
+          "path": "website/src/features/organizers/publicDiscovery.test.ts",
+          "contains": ["builds eligible event cards with stable deep links"]
+        }
+      ]
+    },
+    {
+      "id": "web.claim",
+      "platform": "web",
+      "coverageKind": "matrix",
+      "coverageRationale": "Claim and lookup routes are the only marketing surfaces whose actions depend on website authentication as well as listing claim and public-API state.",
+      "routeIds": ["claim", "claim_lookup"],
+      "decisionDimensions": [
+        "viewer.session",
+        "organizer.claimState",
+        "website.publicApi"
+      ],
+      "invariantDimensions": [
+        "organizer.appVisibility",
+        "organizer.verificationStatus"
+      ],
+      "compositionIds": ["website.organizerPolicySelectors"],
+      "elements": [
+        {"id": "claim.signIn", "kind": "action", "description": "Authenticate the claimant on the website."},
+        {"id": "claim.form", "kind": "content", "description": "Claimant role, contact, and evidence form."},
+        {"id": "claim.submit", "kind": "action", "description": "Submit the typed claim request."},
+        {"id": "claim.status", "kind": "content", "description": "Pending, already claimed, or unavailable status."}
+      ],
+      "configurations": [
+        {
+          "id": "web.claim.authResolving",
+          "values": {
+            "viewer.session": "resolving",
+            "organizer.claimState": "unclaimed",
+            "website.publicApi": "enabled"
+          },
+          "expectations": {
+            "claim.signIn": {"disposition": "visibleDisabled", "variant": "auth-resolving"},
+            "claim.form": {"disposition": "visibleReadOnly"},
+            "claim.submit": {"disposition": "visibleDisabled", "variant": "auth-resolving"},
+            "claim.status": {"disposition": "hidden"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["web.publicSurfaceBehavior"]
+        },
+        {
+          "id": "web.claim.guestUnclaimed",
+          "values": {
+            "viewer.session": "guest",
+            "organizer.claimState": "unclaimed",
+            "website.publicApi": "enabled"
+          },
+          "expectations": {
+            "claim.signIn": {"disposition": "visibleWeb"},
+            "claim.form": {"disposition": "visibleReadOnly"},
+            "claim.submit": {"disposition": "visibleSignInGate"},
+            "claim.status": {"disposition": "hidden"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["web.publicSurfaceBehavior"]
+        },
+        {
+          "id": "web.claim.signedInUnclaimed",
+          "values": {
+            "viewer.session": "signedIn",
+            "organizer.claimState": "unclaimed",
+            "website.publicApi": "enabled"
+          },
+          "expectations": {
+            "claim.signIn": {"disposition": "hidden"},
+            "claim.form": {"disposition": "visibleReadOnly"},
+            "claim.submit": {"disposition": "visibleWeb"},
+            "claim.status": {"disposition": "hidden"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["web.publicSurfaceBehavior"]
+        },
+        {
+          "id": "web.claim.pending",
+          "values": {
+            "viewer.session": "signedIn",
+            "organizer.claimState": "claimPending",
+            "website.publicApi": "enabled"
+          },
+          "expectations": {
+            "claim.signIn": {"disposition": "hidden"},
+            "claim.form": {"disposition": "hidden"},
+            "claim.submit": {"disposition": "hidden"},
+            "claim.status": {"disposition": "visibleReadOnly", "variant": "pending"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["web.publicSurfaceBehavior"]
+        },
+        {
+          "id": "web.claim.alreadyClaimed",
+          "values": {
+            "viewer.session": "signedIn",
+            "organizer.claimState": "claimed",
+            "website.publicApi": "enabled"
+          },
+          "expectations": {
+            "claim.signIn": {"disposition": "hidden"},
+            "claim.form": {"disposition": "hidden"},
+            "claim.submit": {"disposition": "hidden"},
+            "claim.status": {"disposition": "visibleReadOnly", "variant": "already-claimed"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["web.publicSurfaceBehavior"]
+        },
+        {
+          "id": "web.claim.publicApiDisabled",
+          "values": {
+            "viewer.session": "guest",
+            "organizer.claimState": "unclaimed",
+            "website.publicApi": "disabled"
+          },
+          "expectations": {
+            "claim.signIn": {"disposition": "hidden"},
+            "claim.form": {"disposition": "hidden"},
+            "claim.submit": {"disposition": "hidden"},
+            "claim.status": {"disposition": "visibleReadOnly", "variant": "claim-unavailable"}
+          },
+          "implementationStatus": "specified",
+          "proofHarnessIds": ["web.publicSurfaceBehavior"]
+        }
+      ],
+      "evidence": [
+        {
+          "path": "website/src/features/claims/useClaimFlowController.test.tsx",
+          "contains": [
+            "returns an empty claim route to listing selection on submit",
+            "validates a preselected route before attempting an unconfigured write"
+          ]
+        },
+        {
+          "path": "website/src/features/claims/useClaimRequestMutation.test.tsx",
+          "contains": [
+            "submits the typed claim packet and refreshes both claim query families",
+            "blocks a listing claim before mutation when its public API is disabled"
+          ]
+        }
+      ]
+    }
+  ],
+  "proofHarnesses": [
+    {
+      "id": "app.publicSurfaceBehavior",
+      "platform": "app",
+      "status": "planned",
+      "path": "test/design/public_surface_behavior_test.dart",
+      "contains": ["public surface behavior contract"],
+      "surfaceIds": [
+        "app.explore",
+        "app.exploreMap",
+        "app.organizerDetail",
+        "app.eventDetail",
+        "app.eventLocation",
+        "app.savedEvents",
+        "app.profile",
+        "app.eventSuccessCompanion"
+      ]
+    },
+    {
+      "id": "web.publicSurfaceBehavior",
+      "platform": "web",
+      "status": "planned",
+      "path": "website/src/features/organizers/publicSurfaceBehavior.test.ts",
+      "contains": ["public surface behavior contract"],
+      "surfaceIds": [
+        "web.homeOrganizerDiscovery",
+        "web.organizerSearch",
+        "web.organizerListing",
+        "web.claim"
+      ]
+    }
+  ],
+  "absentSurfaces": [
+    {
+      "id": "web.eventDetail",
+      "platform": "web",
+      "checkedInventory": "websiteRoutes",
+      "forbiddenRouteIds": ["event_detail", "event_detail_canonical"],
+      "counterpartSurfaceId": "app.eventDetail",
+      "reason": "Catch-native event booking remains an app action. Website event cards stay within organizer listings or hand off externally; there is no standalone web Event Detail route."
+    },
+    {
+      "id": "web.appExploreEquivalent",
+      "platform": "web",
+      "checkedInventory": "websiteRoutes",
+      "forbiddenRouteIds": ["explore", "explore_map"],
+      "counterpartSurfaceId": "app.explore",
+      "reason": "The website has Home organizer discovery and Organizer Search, but no route equivalent to the app's personalized Explore feed or map."
+    }
+  ]
+}
