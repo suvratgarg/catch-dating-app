@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "migration": "clubs_to_organizers",
+  "observedAt": "2026-07-20",
+  "mutated": false,
+  "commands": {
+    "inventory": "node tool/data/migrate_clubs_to_organizers.mjs --env <env> --include-storage --json",
+    "functions": "./tool/firebase_with_env.sh <env> functions:list --json"
+  },
+  "requiredCanonicalFunctions": [
+    "createOrganizer",
+    "updateOrganizer",
+    "archiveOrganizer",
+    "deleteOrganizer",
+    "createOrganizerPost",
+    "followOrganizer",
+    "unfollowOrganizer",
+    "requestOrganizerClaim",
+    "startOrganizerConversation",
+    "adminGetOrganizerDetails",
+    "adminListOrganizerDetails",
+    "adminUpdateOrganizerDetails"
+  ],
+  "environments": {
+    "dev": {
+      "projectId": "catchdates-dev",
+      "clubsScanned": 21,
+      "organizersPresent": 0,
+      "firestoreWritesNeeded": 3032,
+      "firestoreBlockers": 0,
+      "storageFilesScanned": 1,
+      "storageCopiesNeeded": 1,
+      "storageBlockers": 0,
+      "requiredCanonicalFunctionsDeployed": []
+    },
+    "staging": {
+      "projectId": "catchdates-staging",
+      "clubsScanned": 0,
+      "organizersPresent": 0,
+      "firestoreWritesNeeded": 0,
+      "firestoreBlockers": 0,
+      "storageFilesScanned": 0,
+      "storageCopiesNeeded": 0,
+      "storageBlockers": 0,
+      "requiredCanonicalFunctionsDeployed": []
+    },
+    "prod": {
+      "projectId": "catch-dating-app-64e51",
+      "clubsScanned": 41,
+      "organizersPresent": 0,
+      "firestoreWritesNeeded": 6780,
+      "firestoreBlockers": 0,
+      "storageFilesScanned": 0,
+      "storageCopiesNeeded": 0,
+      "storageBlockers": 0,
+      "requiredCanonicalFunctionsDeployed": []
+    }
+  },
+  "conclusion": "All inventories were read-only and conflict-free. The additive organizer backend is absent in every environment, so deployment must precede any remote backfill apply."
+}

@@ -52,6 +52,24 @@ const forbiddenSourceMarkers = [
   ["lib/event_policies/domain/event_policy_preview/catalog.dart", "Club member"],
 ];
 
+const forbiddenClientAuthorityPatterns = [
+  {
+    roots: ["lib", "website/src", "admin/src"],
+    pattern: /collection\s*\(\s*["']clubs["']\s*\)/gu,
+    detail: "Production clients must not read or write the legacy clubs collection.",
+  },
+  {
+    roots: ["lib"],
+    pattern: /httpsCallable\s*\(\s*["'](?:createClub|updateClub|archiveClub|deleteClub|createClubPost|joinClub|leaveClub|setClubNotificationPreference|requestClubClaim|startClubHostConversation|adminGetClubDetails|adminListClubDetails|adminUpdateClubDetails)["']\s*\)/gu,
+    detail: "Flutter production code must call the organizer-named callable.",
+  },
+  {
+    roots: ["website/src", "admin/src"],
+    pattern: /httpsCallable(?:<[^>]+>)?\s*\(\s*(?:functions\s*,\s*)?["'](?:createClub|updateClub|archiveClub|deleteClub|createClubPost|joinClub|leaveClub|setClubNotificationPreference|requestClubClaim|startClubHostConversation|createPublicClubReview|listPublicClubReviews|adminGetClubDetails|adminListClubDetails|adminUpdateClubDetails)["']\s*\)/gu,
+    detail: "React production code must call the organizer-named callable.",
+  },
+];
+
 const allowedClubCopyKeys = new Set([
   "hostsOrganizerTypeClub",
   "launchAccessLaunchAccessApplicationScreenBodyUsefulIfYouAlready",
@@ -84,8 +102,26 @@ export function checkOrganizerNomenclature({root = fromRepo()} = {}) {
       });
     }
   }
+  checkClientAuthorityPatterns(root, findings);
   checkProductCopy(root, findings);
   return {ok: findings.length === 0, findings};
+}
+
+function checkClientAuthorityPatterns(root, findings) {
+  for (const {roots, pattern, detail} of forbiddenClientAuthorityPatterns) {
+    for (const relativeRoot of roots) {
+      for (const filePath of sourceFiles(path.join(root, relativeRoot))) {
+        const source = fs.readFileSync(filePath, "utf8");
+        pattern.lastIndex = 0;
+        if (!pattern.test(source)) continue;
+        findings.push({
+          rule: "legacyClientAuthorityPattern",
+          path: relative(root, filePath),
+          detail,
+        });
+      }
+    }
+  }
 }
 
 function checkTaxonomy(root, findings) {

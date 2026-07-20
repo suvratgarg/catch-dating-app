@@ -80,6 +80,12 @@
     "firestoreIndexes": "Every clubId index must gain an organizerId equivalent and pass parity checks before the old index is retired.",
     "storageRules": "Organizer media paths must be dual-supported and copied with checksum evidence before club media paths are frozen."
   },
+  "remoteInventoryEvidence": {
+    "observedAt": "2026-07-20",
+    "path": "docs/migrations/evidence/clubs_to_organizers_2026-07-20_dry_run.json",
+    "mutated": false,
+    "canonicalBackendDeployed": false
+  },
   "guards": [
     "tool/contracts/check_migration_contracts.mjs validates phase truthfulness.",
     "A clubs-to-organizers vocabulary scanner blocks new product-facing club authority outside explicit compatibility allowlists.",

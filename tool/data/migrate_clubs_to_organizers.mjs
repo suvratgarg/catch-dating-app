@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import path from "node:path";
 import {isDeepStrictEqual} from "node:util";
 import {fileURLToPath} from "node:url";
 import {
@@ -8,7 +9,7 @@ import {
   resolveFirebaseProjectId,
 } from "../lib/firebase_project.mjs";
 import {parseCommonArgs} from "../lib/cli_args.mjs";
-import {createFunctionsRequire} from "../lib/repo_paths.mjs";
+import {createFunctionsRequire, fromRepo} from "../lib/repo_paths.mjs";
 
 const requireFromFunctions = createFunctionsRequire();
 const admin = requireFromFunctions("firebase-admin");
@@ -48,6 +49,7 @@ export async function main(argv = process.argv.slice(2)) {
   if (args.apply && !args.backup_file) {
     throw new Error("--apply requires --backup-file <path>.");
   }
+  const backupFile = args.apply ? resolveBackupFile(args.backup_file) : null;
 
   const projectId = resolveFirebaseProjectId({
     env: args.env,
@@ -62,12 +64,21 @@ export async function main(argv = process.argv.slice(2)) {
   });
   applyFirestoreEmulatorHost(args.emulatorHost);
 
-  const app = admin.initializeApp({projectId}, "clubs-to-organizers-migration");
+  const storageBucket = args.include_storage ? resolveStorageBucket({
+    env: args.env,
+    projectId,
+    storageBucket: args.storage_bucket,
+  }) : null;
+  const app = admin.initializeApp({
+    projectId,
+    ...(storageBucket ? {storageBucket} : {}),
+  }, "clubs-to-organizers-migration");
   try {
     const db = app.firestore();
     const inventory = await readMigrationInventory(db);
     const firestorePlan = buildClubsToOrganizersPlan(inventory);
-    const bucket = args.include_storage ? admin.storage(app).bucket() : null;
+    const bucket = storageBucket ?
+      admin.storage(app).bucket(storageBucket) : null;
     const storagePlan = bucket ? await buildStorageMigrationPlan(bucket) : null;
     const summary = summarizePlan(firestorePlan, storagePlan, projectId);
     printOutput(summary, args.json);
@@ -82,7 +93,7 @@ export async function main(argv = process.argv.slice(2)) {
       );
     }
 
-    writeBackup(args.backup_file, {projectId, inventory, storagePlan, summary});
+    writeBackup(backupFile, {projectId, inventory, storagePlan, summary});
     await applyClubsToOrganizersPlan(db, firestorePlan);
     if (bucket && storagePlan) await applyStorageMigrationPlan(bucket, storagePlan);
 
@@ -642,6 +653,26 @@ function writeBackup(path, payload) {
   console.log(`Wrote pre-apply backup to ${path}.`);
 }
 
+export function resolveBackupFile(candidate, {root = fromRepo()} = {}) {
+  const backupPath = path.resolve(candidate);
+  const parent = path.dirname(backupPath);
+  if (!fs.existsSync(parent) || !fs.statSync(parent).isDirectory()) {
+    throw new Error(
+      `Backup directory must already exist: ${parent}. ` +
+      "Create an owner-restricted directory outside the repository."
+    );
+  }
+  const realRoot = fs.realpathSync(root);
+  const realParent = fs.realpathSync(parent);
+  if (realParent === realRoot || realParent.startsWith(`${realRoot}${path.sep}`)) {
+    throw new Error(
+      "--backup-file must be outside the repository because it contains " +
+      "full Firestore documents."
+    );
+  }
+  return path.join(realParent, path.basename(backupPath));
+}
+
 function printOutput(summary, json) {
   if (json) {
     console.log(JSON.stringify(summary, null, 2));
@@ -666,8 +697,21 @@ function printOutput(summary, json) {
 function parseArgs(argv) {
   return parseCommonArgs(argv, {
     booleanFlags: ["--confirm-migration", "--include-storage"],
-    valueFlags: ["--backup-file"],
+    valueFlags: ["--backup-file", "--storage-bucket"],
   });
+}
+
+export function resolveStorageBucket({env, projectId, storageBucket}) {
+  if (storageBucket) return storageBucket;
+  if (env) {
+    const optionsPath = fromRepo(`lib/firebase_options_${env}.dart`);
+    if (fs.existsSync(optionsPath)) {
+      const source = fs.readFileSync(optionsPath, "utf8");
+      const match = /storageBucket:\s*'([^']+)'/.exec(source);
+      if (match) return match[1];
+    }
+  }
+  return `${projectId}.firebasestorage.app`;
 }
 
 function printHelp() {
@@ -681,12 +725,14 @@ default. This tool never deletes legacy data.
 Options:
   --env <dev|staging|prod>  Resolve project id from .firebaserc.
   --project <id>            Firebase project override.
+  --storage-bucket <name>   Override the resolved Firebase Storage bucket.
   --emulator                Use Firestore emulator at 127.0.0.1:8080.
   --include-storage         Audit/copy clubs/ media to organizers/ paths.
   --json                    Print JSON summary.
   --apply                   Apply the planned additions and patches.
   --confirm-migration       Required with --apply.
-  --backup-file <path>      Required unused JSON backup path with --apply.
+  --backup-file <path>      Required unused path in an existing secure directory
+                            outside the repository; contains full documents.
   --allow-prod              Required with --apply against production.
   -h, --help                Show this help.`);
 }

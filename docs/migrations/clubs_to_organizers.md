@@ -95,8 +95,20 @@ Complete this sequence independently in dev, staging, and production:
      --env dev --include-storage --json
    ```
 
+   The CLI resolves the environment bucket from
+   `lib/firebase_options_<env>.dart`. Use `--storage-bucket <name>` only for a
+   deliberately selected non-default bucket.
+
+   The latest read-only environment inventory is recorded in
+   `docs/migrations/evidence/clubs_to_organizers_2026-07-20_dry_run.json`. It is
+   evidence of migration size and blockers only; it is not apply evidence and
+   does not advance the contract phase.
+
 3. Resolve every blocker. Review source counts, planned writes by kind, and
-   Storage copy count. Choose a new, unused backup path.
+   Storage copy count. Create an owner-restricted backup directory outside the
+   repository and choose a new, unused file path within it. The backup contains
+   full Firestore documents and must never be committed or stored as an ordinary
+   build artifact.
 4. Apply only after the environment and plan have been explicitly approved:
 
    ```sh
@@ -105,7 +117,7 @@ Complete this sequence independently in dev, staging, and production:
      --include-storage \
      --apply \
      --confirm-migration \
-     --backup-file artifacts/migrations/dev-clubs-to-organizers.json
+     --backup-file /secure/path/dev-clubs-to-organizers.json
    ```
 
    Production additionally requires `--allow-prod`.

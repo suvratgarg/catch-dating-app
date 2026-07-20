@@ -8,6 +8,11 @@ import {checkOrganizerNomenclature} from "./check_organizer_nomenclature.mjs";
 test("organizer nomenclature gate rejects legacy authority and generic copy", () => {
   const root = fixtureRoot();
   write(root, "website/src/firebase.ts", "requestClubClaim");
+  write(root, "website/src/legacyApi.ts", `
+    collection(db, "clubs");
+    httpsCallable(functions, "createPublicClubReview");
+  `);
+  write(root, "lib/example.dart", "httpsCallable('joinClub')");
   write(root, "lib/l10n/app_en.arb", JSON.stringify({copy: "Join club"}));
 
   const result = checkOrganizerNomenclature({root});
@@ -15,6 +20,12 @@ test("organizer nomenclature gate rejects legacy authority and generic copy", ()
   assert.equal(result.ok, false);
   assert.ok(result.findings.some((item) =>
     item.rule === "legacyAuthorityMarker"));
+  assert.ok(result.findings.some((item) =>
+    item.rule === "legacyClientAuthorityPattern" &&
+    item.path === "website/src/legacyApi.ts"));
+  assert.ok(result.findings.some((item) =>
+    item.rule === "legacyClientAuthorityPattern" &&
+    item.path === "lib/example.dart"));
   assert.ok(result.findings.some((item) =>
     item.rule === "genericClubProductCopy"));
 });

@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import test from "node:test";
 import {
   applyStorageMigrationPlan,
@@ -6,6 +9,8 @@ import {
   buildStorageMigrationPlan,
   canonicalOrganizerDocument,
   canonicalOrganizerType,
+  resolveStorageBucket,
+  resolveBackupFile,
 } from "./migrate_clubs_to_organizers.mjs";
 
 const timestamp = {seconds: 1, nanoseconds: 0};
@@ -47,6 +52,42 @@ test("canonical organizer type maps legacy values and defaults to club", () => {
     "eventProducer"
   );
   assert.equal(canonicalOrganizerType({organizerType: "individual"}), "individual");
+});
+
+test("storage bucket resolution supports environment config and override", () => {
+  assert.equal(resolveStorageBucket({
+    env: "dev",
+    projectId: "catchdates-dev",
+  }), "catchdates-dev.firebasestorage.app");
+  assert.equal(resolveStorageBucket({
+    projectId: "custom-project",
+  }), "custom-project.firebasestorage.app");
+  assert.equal(resolveStorageBucket({
+    env: "dev",
+    projectId: "catchdates-dev",
+    storageBucket: "explicit.appspot.com",
+  }), "explicit.appspot.com");
+});
+
+test("backup path must be in an existing directory outside the repository", () => {
+  const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), "organizer-backup-"));
+  const root = path.join(sandbox, "repo");
+  const secure = path.join(sandbox, "secure");
+  fs.mkdirSync(root);
+  fs.mkdirSync(secure);
+
+  assert.equal(
+    resolveBackupFile(path.join(secure, "backup.json"), {root}),
+    path.join(fs.realpathSync(secure), "backup.json")
+  );
+  assert.throws(
+    () => resolveBackupFile(path.join(root, "backup.json"), {root}),
+    /outside the repository/u
+  );
+  assert.throws(
+    () => resolveBackupFile(path.join(sandbox, "missing", "backup.json"), {root}),
+    /must already exist/u
+  );
 });
 
 test("canonical organizer document writes canonical aliases and route", () => {
