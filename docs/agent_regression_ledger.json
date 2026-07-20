@@ -1,5 +1,5 @@
 {
-  "version": 52,
+  "version": 53,
   "updated": "2026-07-20",
   "owner": "agent_operating_model",
   "entries": [
@@ -2378,6 +2378,27 @@
         "docs/web_surface_architecture.md"
       ],
       "notes": "Legacy club collections, fields, Dart aliases, and callable wrappers remain only for the released-client compatibility window; remote backfill and retirement have separate evidence gates."
+    },
+    {
+      "id": "REG-ORGANIZER-COUNT-SEMANTICS-001",
+      "title": "Follower backfill overwrites the legacy membership aggregate",
+      "status": "active",
+      "applies_to": [
+        "functions/src/clubs/syncClubMemberStats.ts",
+        "tool/data/migrate_clubs_to_organizers.mjs",
+        "contracts/firestore/organizers.schema.json"
+      ],
+      "symptom": "Creating organizer follow edges asynchronously rewrites clubs.memberCount from followerCount, dropping owner and manager membership edges and causing delayed post-migration parity drift.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions test && node --test tool/data/migrate_clubs_to_organizers.test.mjs",
+        "guardEvidence": "the organizer follower trigger test proves legacy memberCount is unchanged, while the migration test derives an explicit recovery patch from active clubMemberships and excludes memberCount from canonical organizer parity"
+      },
+      "owner_docs": [
+        "docs/migrations/clubs_to_organizers.md",
+        "docs/data_contracts.md"
+      ],
+      "notes": "The two aggregates intentionally have different semantics during compatibility: organizer followers exclude team roles, while legacy club memberships include them."
     }
   ]
 }

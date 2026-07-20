@@ -165,6 +165,23 @@ writes, and rerun: equal writes are idempotent and remaining writes are planned
 again. A checksum conflict is investigated manually; it is never resolved by
 blind overwrite.
 
+### Legacy count trigger recovery
+
+`clubs.memberCount` counts every active legacy membership, including owner and
+manager edges. `organizers.followerCount` counts consumer follow edges only;
+these aggregates must not be mirrored as equal values. If a deployed follower
+trigger incorrectly rewrites the legacy count, first deploy the corrected
+`syncOrganizerFollowerStats`, then audit the deterministic repair:
+
+```sh
+node tool/data/migrate_clubs_to_organizers.mjs \
+  --env dev --include-storage --repair-legacy-member-counts --json
+```
+
+Apply with the ordinary `--apply`, `--confirm-migration`, and secure
+`--backup-file` gates. The repair derives each legacy count from active
+`clubMemberships`; it never copies `followerCount` into `memberCount`.
+
 Rollback during the compatibility window means moving client reads back to the
 legacy projection while preserving canonical data for diagnosis. It does not
 mean deleting `organizers` or copied media. Any destructive rollback needs its

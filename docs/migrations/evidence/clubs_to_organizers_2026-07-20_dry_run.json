@@ -1,8 +1,9 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "migration": "clubs_to_organizers",
   "observedAt": "2026-07-20",
-  "mutated": false,
+  "updatedAt": "2026-07-20T18:31:09Z",
+  "mutated": true,
   "commands": {
     "inventory": "node tool/data/migrate_clubs_to_organizers.mjs --env <env> --include-storage --json",
     "functions": "./tool/firebase_with_env.sh <env> functions:list --json"
@@ -15,8 +16,18 @@
     "createOrganizerPost",
     "followOrganizer",
     "unfollowOrganizer",
+    "setOrganizerNotificationPreference",
+    "addOrganizerManager",
+    "removeOrganizerManager",
+    "transferOrganizerOwnership",
     "requestOrganizerClaim",
+    "adminDecideOrganizerClaim",
     "startOrganizerConversation",
+    "createPublicOrganizerReview",
+    "listPublicOrganizerReviews",
+    "generateOrganizerLogoThumbnail",
+    "syncOrganizerFollowerStats",
+    "syncAlgoliaOrganizerIndex",
     "adminGetOrganizerDetails",
     "adminListOrganizerDetails",
     "adminUpdateOrganizerDetails"
@@ -24,14 +35,52 @@
   "environments": {
     "dev": {
       "projectId": "catchdates-dev",
-      "clubsScanned": 21,
-      "organizersPresent": 0,
-      "firestoreWritesNeeded": 3032,
-      "firestoreBlockers": 0,
-      "storageFilesScanned": 1,
-      "storageCopiesNeeded": 1,
-      "storageBlockers": 0,
-      "requiredCanonicalFunctionsDeployed": []
+      "status": "complete_remote",
+      "preApply": {
+        "clubsScanned": 21,
+        "organizersPresent": 0,
+        "firestoreWritesNeeded": 3032,
+        "firestoreBlockers": 0,
+        "storageFilesScanned": 1,
+        "storageCopiesNeeded": 1,
+        "storageBlockers": 0
+      },
+      "backend": {
+        "functionsDeployed": true,
+        "firestoreIndexesDeployed": true,
+        "firestoreRulesDeployed": true,
+        "storageRulesDeployed": true,
+        "requiredCanonicalFunctionsDeployed": 22
+      },
+      "apply": {
+        "firestoreWritesApplied": 3032,
+        "storageCopiesApplied": 1,
+        "backupMode": "0600",
+        "backupStoredOutsideRepository": true,
+        "delayedTriggerDriftDetected": true,
+        "legacyMemberCountRepairsApplied": 18,
+        "canonicalFollowerCountRepairsApplied": 1,
+        "regressionGuard": "REG-ORGANIZER-COUNT-SEMANTICS-001"
+      },
+      "postApply": {
+        "clubsScanned": 21,
+        "organizersPresent": 21,
+        "organizersSchemaValidated": 21,
+        "firestoreWritesNeeded": 0,
+        "firestoreBlockers": 0,
+        "storageFilesScanned": 1,
+        "storageCopiesNeeded": 0,
+        "storageBlockers": 0,
+        "repairWritesNeeded": 0,
+        "repairBlockers": 0
+      },
+      "verification": {
+        "functionsTestsPassed": 547,
+        "rulesTestsPassed": 96,
+        "organizerMigrationTestsPassed": 11,
+        "agentReadinessPassed": 3523,
+        "agentReadinessTotal": 3523
+      }
     },
     "staging": {
       "projectId": "catchdates-staging",
@@ -56,5 +105,5 @@
       "requiredCanonicalFunctionsDeployed": []
     }
   },
-  "conclusion": "All inventories were read-only and conflict-free. The additive organizer backend is absent in every environment, so deployment must precede any remote backfill apply."
+  "conclusion": "Dev backend deployment and backfill are complete with zero-write, zero-blocker, schema-valid Firestore and checksum-valid Storage parity. Staging and production remain read-only and pending."
 }

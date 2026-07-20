@@ -83,8 +83,24 @@
   "remoteInventoryEvidence": {
     "observedAt": "2026-07-20",
     "path": "docs/migrations/evidence/clubs_to_organizers_2026-07-20_dry_run.json",
-    "mutated": false,
-    "canonicalBackendDeployed": false
+    "mutated": true,
+    "environments": {
+      "dev": {
+        "backendDeployed": true,
+        "backfillApplied": true,
+        "parity": "complete_remote"
+      },
+      "staging": {
+        "backendDeployed": false,
+        "backfillApplied": false,
+        "parity": "pending"
+      },
+      "prod": {
+        "backendDeployed": false,
+        "backfillApplied": false,
+        "parity": "pending"
+      }
+    }
   },
   "guards": [
     "tool/contracts/check_migration_contracts.mjs validates phase truthfulness.",

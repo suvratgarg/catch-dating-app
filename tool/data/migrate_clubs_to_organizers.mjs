@@ -10,6 +10,8 @@ import {
 } from "../lib/firebase_project.mjs";
 import {parseCommonArgs} from "../lib/cli_args.mjs";
 import {createFunctionsRequire, fromRepo} from "../lib/repo_paths.mjs";
+import {validateOrganizerDocument} from
+  "../contracts/generated/schema_contract_validators.mjs";
 
 const requireFromFunctions = createFunctionsRequire();
 const admin = requireFromFunctions("firebase-admin");
@@ -76,7 +78,11 @@ export async function main(argv = process.argv.slice(2)) {
   try {
     const db = app.firestore();
     const inventory = await readMigrationInventory(db);
-    const firestorePlan = buildClubsToOrganizersPlan(inventory);
+    const planOptions = {
+      repairLegacyMemberCounts: args.repair_legacy_member_counts === true,
+      validateOrganizerSchemas: true,
+    };
+    const firestorePlan = buildClubsToOrganizersPlan(inventory, planOptions);
     const bucket = storageBucket ?
       admin.storage(app).bucket(storageBucket) : null;
     const storagePlan = bucket ? await buildStorageMigrationPlan(bucket) : null;
@@ -98,7 +104,10 @@ export async function main(argv = process.argv.slice(2)) {
     if (bucket && storagePlan) await applyStorageMigrationPlan(bucket, storagePlan);
 
     const verificationInventory = await readMigrationInventory(db);
-    const verification = buildClubsToOrganizersPlan(verificationInventory);
+    const verification = buildClubsToOrganizersPlan(
+      verificationInventory,
+      planOptions
+    );
     if (verification.blockers.length > 0 || verification.writes.length > 0) {
       throw new Error(
         "Post-apply parity failed: " +
@@ -183,24 +192,59 @@ async function readCollectionGroup(db, name, predicate) {
     .map((doc) => ({id: doc.id, path: doc.ref.path, data: doc.data()}));
 }
 
-export function buildClubsToOrganizersPlan(inventory) {
+export function buildClubsToOrganizersPlan(
+  inventory,
+  {
+    repairLegacyMemberCounts = false,
+    validateOrganizerSchemas = false,
+  } = {}
+) {
   const writesByTarget = new Map();
   const blockers = [];
   const collections = inventory.collections ?? {};
   const targetById = indexById(collections.organizers);
   const clubsById = indexById(collections.clubs);
+  const followerCounts = activeLegacyFollowerCounts(collections.clubMemberships);
 
   for (const club of collections.clubs ?? []) {
-    const expected = canonicalOrganizerDocument(club.id, club.data);
+    const expected = canonicalOrganizerDocument(club.id, club.data, {
+      followerCount: followerCounts.get(club.id) ?? 0,
+    });
+    const target = targetById.get(club.id)?.data;
+    const repairFollowerCount = repairLegacyMemberCounts &&
+      target !== undefined &&
+      target.followerCount === legacyDerivedFollowerCount(club.data) &&
+      target.followerCount !== expected.followerCount;
+    if (repairFollowerCount) {
+      queueMerge(
+        writesByTarget,
+        `organizers/${club.id}`,
+        {followerCount: expected.followerCount},
+        club.path,
+        "canonical_follower_count_repair"
+      );
+    }
+    if (validateOrganizerSchemas) {
+      queueOrganizerSchemaValidation(
+        blockers,
+        `organizers/${club.id}`,
+        {...(target ?? {}), ...expected}
+      );
+    }
     queueFullDocument({
       writesByTarget,
       blockers,
       sourcePath: club.path,
       targetPath: `organizers/${club.id}`,
       expected,
-      existing: targetById.get(club.id)?.data,
+      existing: repairFollowerCount ?
+        {...target, followerCount: expected.followerCount} : target,
       kind: "organizer",
     });
+  }
+
+  if (repairLegacyMemberCounts) {
+    queueLegacyMemberCountRepairs(collections, writesByTarget, blockers);
   }
 
   const teamTargets = indexById(collections.organizerTeamMemberships);
@@ -350,15 +394,20 @@ export function buildClubsToOrganizersPlan(inventory) {
   };
 }
 
-export function canonicalOrganizerDocument(organizerId, club) {
+export function canonicalOrganizerDocument(
+  organizerId,
+  club,
+  {followerCount = club?.followerCount ?? club?.memberCount ?? 0} = {}
+) {
+  const canonicalSource = {...(club ?? {})};
+  delete canonicalSource.memberCount;
   const organizerPhotos = club?.organizerPhotos ?? club?.clubPhotos ?? [];
-  const followerCount = club?.followerCount ?? club?.memberCount ?? 0;
   const canonicalPath = canonicalOrganizerPath(
     club?.publicPage?.canonicalPath,
     organizerId
   );
   return pruneUndefined({
-    ...club,
+    ...canonicalSource,
     organizerPhotos,
     followerCount,
     organizerType: canonicalOrganizerType(club),
@@ -373,6 +422,91 @@ export function canonicalOrganizerDocument(organizerId, club) {
       club?.publicCategoryLabel ?? club?.displayCategory ?? null,
     publicPage: club?.publicPage ? {...club.publicPage, canonicalPath} : undefined,
   });
+}
+
+function activeLegacyFollowerCounts(memberships = []) {
+  const counts = new Map();
+  for (const membership of memberships) {
+    const organizerId = membership.data?.clubId;
+    if (typeof organizerId !== "string" || !organizerId.trim()) continue;
+    if (membership.data?.role !== "member" ||
+        membership.data?.status !== "active") continue;
+    counts.set(organizerId, (counts.get(organizerId) ?? 0) + 1);
+  }
+  return counts;
+}
+
+function legacyDerivedFollowerCount(club) {
+  return club?.followerCount ?? club?.memberCount ?? 0;
+}
+
+function queueOrganizerSchemaValidation(blockers, documentPath, data) {
+  if (validateOrganizerDocument(schemaSerializableFirestoreData(data))) return;
+  const reasons = (validateOrganizerDocument.errors ?? [])
+    .slice(0, 5)
+    .map((error) =>
+      `schema ${error.instancePath || "/"} ${error.message ?? "is invalid"}`
+    );
+  blockers.push({
+    path: documentPath,
+    reasons: reasons.length > 0 ? reasons : ["organizer schema validation failed"],
+  });
+}
+
+function schemaSerializableFirestoreData(value) {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  if (isTimestampLike(value)) {
+    const seconds = value.seconds ?? value._seconds;
+    const nanoseconds = value.nanoseconds ?? value._nanoseconds;
+    return {_seconds: seconds, _nanoseconds: nanoseconds};
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => schemaSerializableFirestoreData(item));
+  }
+  if (typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value)
+        .map(([key, item]) => [key, schemaSerializableFirestoreData(item)])
+        .filter(([, item]) => item !== undefined)
+    );
+  }
+  return value;
+}
+
+function isTimestampLike(value) {
+  if (!value || typeof value !== "object") return false;
+  const seconds = value.seconds ?? value._seconds;
+  const nanoseconds = value.nanoseconds ?? value._nanoseconds;
+  return Number.isInteger(seconds) && Number.isInteger(nanoseconds) &&
+    (typeof value.toDate === "function" ||
+      Object.keys(value).every((key) => [
+        "seconds",
+        "nanoseconds",
+        "_seconds",
+        "_nanoseconds",
+      ].includes(key)));
+}
+
+function queueLegacyMemberCountRepairs(collections, writesByTarget, blockers) {
+  const activeCounts = new Map();
+  for (const membership of collections.clubMemberships ?? []) {
+    if (membership.data?.status !== "active") continue;
+    const organizerId = requiredLegacyId(membership, "clubId", blockers);
+    if (!organizerId) continue;
+    activeCounts.set(organizerId, (activeCounts.get(organizerId) ?? 0) + 1);
+  }
+  for (const club of collections.clubs ?? []) {
+    const memberCount = activeCounts.get(club.id) ?? 0;
+    if (club.data?.memberCount === memberCount) continue;
+    queueMerge(
+      writesByTarget,
+      club.path,
+      {memberCount},
+      club.path,
+      "legacy_member_count_repair"
+    );
+  }
 }
 
 export function canonicalOrganizerType(club) {
@@ -704,7 +838,11 @@ function printOutput(summary, json) {
 
 function parseArgs(argv) {
   return parseCommonArgs(argv, {
-    booleanFlags: ["--confirm-migration", "--include-storage"],
+    booleanFlags: [
+      "--confirm-migration",
+      "--include-storage",
+      "--repair-legacy-member-counts",
+    ],
     valueFlags: ["--backup-file", "--storage-bucket"],
   });
 }
@@ -736,6 +874,9 @@ Options:
   --storage-bucket <name>   Override the resolved Firebase Storage bucket.
   --emulator                Use Firestore emulator at 127.0.0.1:8080.
   --include-storage         Audit/copy clubs/ media to organizers/ paths.
+  --repair-legacy-member-counts
+                            Recompute legacy counts from active memberships;
+                            use only to repair compatibility aggregate drift.
   --json                    Print JSON summary.
   --apply                   Apply the planned additions and patches.
   --confirm-migration       Required with --apply.

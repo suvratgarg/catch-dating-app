@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   refreshClubMemberStats,
+  refreshOrganizerFollowerStats,
   syncClubMemberStatsHandler,
 } from "./syncClubMemberStats";
 
@@ -85,6 +86,32 @@ test("syncClubMemberStatsHandler refreshes moved membership clubs",
     );
 
     assert.deepEqual(refreshed.sort(), ["club-1", "club-2"]);
+  }
+);
+
+test("refreshOrganizerFollowerStats leaves legacy membership count intact",
+  async () => {
+    const firestore = fakeFirestore({
+      "organizers/club-1": {followerCount: 99},
+      "clubs/club-1": {memberCount: 3},
+      "organizerFollows/club-1_runner-1": {
+        organizerId: "club-1",
+        uid: "runner-1",
+        status: "active",
+      },
+      "organizerFollows/club-1_runner-2": {
+        organizerId: "club-1",
+        uid: "runner-2",
+        status: "inactive",
+      },
+    });
+
+    await refreshOrganizerFollowerStats("club-1", {
+      firestore: () => firestore as never,
+    });
+
+    assert.equal(firestore.get("organizers/club-1")?.followerCount, 1);
+    assert.equal(firestore.get("clubs/club-1")?.memberCount, 3);
   }
 );
 

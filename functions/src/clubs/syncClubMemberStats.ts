@@ -97,11 +97,7 @@ export async function refreshOrganizerFollowerStats(
     .where("status", "==", "active")
     .get();
   const followerCount = followsSnap.docs.length;
-  const legacyClubRef = db.collection("clubs").doc(organizerId);
-  const batch = db.batch();
-  batch.set(organizerRef, {followerCount}, {merge: true});
-  batch.set(legacyClubRef, {memberCount: followerCount}, {merge: true});
-  await batch.commit();
+  await organizerRef.set({followerCount}, {merge: true});
 }
 
 /** Recomputes organizer follower counts affected by a follow-edge write. */

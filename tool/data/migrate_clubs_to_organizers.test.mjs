@@ -115,6 +115,79 @@ test("canonical organizer document writes canonical aliases and route", () => {
   assert.deepEqual(organizer.organizerPhotos, [{id: "photo-1"}]);
   assert.equal(organizer.publicPage.canonicalPath, "/organizers/run-club/");
   assert.equal(organizer.organizerTypeUpdatedByUid, "owner-1");
+  assert.equal("memberCount" in organizer, false);
+});
+
+test("legacy member-count repair uses active membership edges", () => {
+  const plan = buildClubsToOrganizersPlan(inventory({
+    clubs: [entry("clubs/club-1", {memberCount: 1})],
+    organizers: [entry("organizers/club-1", canonicalOrganizerDocument(
+      "club-1",
+      {memberCount: 1},
+      {followerCount: 1}
+    ))],
+    clubMemberships: [
+      entry("clubMemberships/club-1_owner-1", {
+        clubId: "club-1",
+        uid: "owner-1",
+        role: "owner",
+        status: "active",
+      }),
+      entry("clubMemberships/club-1_member-1", {
+        clubId: "club-1",
+        uid: "member-1",
+        role: "member",
+        status: "active",
+      }),
+      entry("clubMemberships/club-1_member-2", {
+        clubId: "club-1",
+        uid: "member-2",
+        role: "member",
+        status: "left",
+      }),
+    ],
+  }), {repairLegacyMemberCounts: true});
+
+  assert.equal(plan.blockers.length, 0);
+  const repair = plan.writes.find((write) => write.targetPath === "clubs/club-1");
+  assert.deepEqual(repair?.data, {memberCount: 2});
+  assert.equal(repair?.kind, "legacy_member_count_repair");
+});
+
+test("repair mode corrects only the known legacy-derived follower count", () => {
+  const source = entry("clubs/club-1", {memberCount: 1});
+  const oldTarget = entry("organizers/club-1", canonicalOrganizerDocument(
+    "club-1",
+    source.data
+  ));
+  const membership = entry("clubMemberships/club-1_host-1", {
+    clubId: "club-1",
+    uid: "host-1",
+    role: "host",
+    status: "active",
+  });
+  const repaired = buildClubsToOrganizersPlan(inventory({
+    clubs: [source],
+    organizers: [oldTarget],
+    clubMemberships: [membership],
+  }), {repairLegacyMemberCounts: true});
+
+  assert.equal(repaired.blockers.length, 0);
+  const repair = repaired.writes.find(
+    (write) => write.targetPath === "organizers/club-1"
+  );
+  assert.deepEqual(repair?.data, {followerCount: 0});
+  assert.equal(repair?.kind, "canonical_follower_count_repair");
+
+  const conflicting = buildClubsToOrganizersPlan(inventory({
+    clubs: [source],
+    organizers: [entry("organizers/club-1", {
+      ...oldTarget.data,
+      followerCount: 7,
+    })],
+    clubMemberships: [membership],
+  }), {repairLegacyMemberCounts: true});
+  assert.equal(conflicting.blockers.length, 1);
 });
 
 test("plan splits host/member edges and patches dependent references", () => {
@@ -161,6 +234,7 @@ test("plan splits host/member edges and patches dependent references", () => {
     writes.get("organizerFollows/club-1_member-1").data.status,
     "active"
   );
+  assert.equal(writes.get("organizers/club-1").data.followerCount, 1);
   assert.deepEqual(writes.get("events/event-1").data, {organizerId: "club-1"});
 });
 
