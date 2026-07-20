@@ -258,6 +258,7 @@ async function createPublicOrganizerReviewFromData(
   const reviewRef = db.collection("reviews").doc();
   const createdAt = new Date().toISOString();
   const reviewerName = publicReviewerName(data);
+  const moderationStatus = reviewModerationStatus(data.comment, reviewerName);
 
   await db.runTransaction(async (tx) => {
     const [organizerSnap, legacyClubSnap] = await Promise.all([
@@ -265,7 +266,8 @@ async function createPublicOrganizerReviewFromData(
       tx.get(legacyClubRef),
     ]);
     assertCanReceivePublicReview(
-      organizerSnap.exists ? organizerSnap : legacyClubSnap,
+      organizerSnap,
+      legacyClubSnap,
       data.submittedFromPath
     );
     tx.create(reviewRef, {
@@ -278,7 +280,7 @@ async function createPublicOrganizerReviewFromData(
       comment: data.comment,
       verificationStatus: "unverified",
       source: "publicListing",
-      moderationStatus: reviewModerationStatus(data.comment, reviewerName),
+      moderationStatus,
       isAnonymous: data.isAnonymous,
       submittedFromPath: data.submittedFromPath,
       createdAt: deps.serverTimestamp?.() ??
@@ -296,6 +298,7 @@ async function createPublicOrganizerReviewFromData(
       createdAt,
       verificationStatus: "unverified",
       source: "publicListing",
+      moderationStatus,
       isAnonymous: data.isAnonymous,
       ownerResponse: null,
     },
@@ -353,7 +356,8 @@ async function listPublicOrganizerReviewsFromData(
         .get(),
     ]);
   assertCanReceivePublicReview(
-    organizerSnap.exists ? organizerSnap : legacyClubSnap,
+    organizerSnap,
+    legacyClubSnap,
     null
   );
 
@@ -616,14 +620,32 @@ function eventOrganizerId(
 }
 
 function assertCanReceivePublicReview(
-  clubSnap: FirebaseFirestore.DocumentSnapshot,
+  organizerSnap: FirebaseFirestore.DocumentSnapshot,
+  legacyClubSnap: FirebaseFirestore.DocumentSnapshot,
   submittedFromPath: string | null
 ) {
-  if (!clubSnap.exists) {
+  const candidates = [organizerSnap, legacyClubSnap]
+    .filter((snapshot) => snapshot.exists);
+  if (candidates.length === 0) {
     throw new HttpsError("not-found", "Organizer profile not found.");
   }
-  const club = requireDoc<ClubDocument>(clubSnap, "ClubDocument");
-  assertPublicOrganizerPageEligible(club, {pagePath: submittedFromPath});
+
+  const eligibilityErrors: unknown[] = [];
+  for (const candidate of candidates) {
+    try {
+      const club = requireDoc<ClubDocument>(candidate, "ClubDocument");
+      assertPublicOrganizerPageEligible(club, {pagePath: submittedFromPath});
+      return;
+    } catch (error) {
+      eligibilityErrors.push(error);
+    }
+  }
+
+  const pathError = eligibilityErrors.find((error) =>
+    error instanceof HttpsError && error.code === "invalid-argument"
+  );
+  if (pathError) throw pathError;
+  throw eligibilityErrors[0];
 }
 
 function assertOwnsReview(
@@ -735,6 +757,7 @@ function toPublicClubReview(
     verificationStatus:
       review.verificationStatus ?? (review.eventId ? "verified" : "unverified"),
     source: review.source ?? (review.eventId ? "catchEvent" : "publicListing"),
+    moderationStatus: "published",
     isAnonymous: review.isAnonymous ?? false,
     ownerResponse: ownerResponse ? {
       hostName: ownerResponse.hostName,

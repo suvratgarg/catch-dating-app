@@ -6,10 +6,14 @@ import {
   claimUrlStateForListing,
 } from "./claimRouting";
 
-function withAuthority(claimState: string, ownershipState = "programmatic") {
+function withAuthority(
+  claimState: HostListing["authority"]["claimState"],
+  ownershipState: HostListing["authority"]["ownershipState"] = "programmatic"
+) {
   return {
     ...hostListings[0],
     authority: {
+      ...hostListings[0].authority,
       claimState,
       ownershipState,
       publishStatus: "published",
@@ -17,7 +21,12 @@ function withAuthority(claimState: string, ownershipState = "programmatic") {
     },
     capabilities: {
       claimRequest: {state: "enabled", reason: ""},
-      publicReviews: {readState: "enabled", writeState: "enabled", reason: ""},
+      publicReviews: {
+        targetState: "enabled",
+        readState: "enabled",
+        writeState: "enabled",
+        reason: "",
+      },
     },
   } as HostListing;
 }

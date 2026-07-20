@@ -343,7 +343,8 @@ export const ListingMissingEvidenceUnavailable: Story = {
       claimController={mockListingClaimController({
         isConfigured: false,
         notConfiguredReason: "Firebase claim requests are disabled in this environment.",
-        publicApiEnabled: false,
+        presentation: {panel: "runtimeFallback"},
+        publicApiEnabled: true,
       })}
       listing={claimableListing}
     />
@@ -385,6 +386,7 @@ function mockListingClaimController(
     isSigningIn: false,
     isSubmitting: false,
     notConfiguredReason: "",
+    presentation: {panel: "form"},
     publicApiEnabled: true,
     status: {message: "", tone: ""},
     user: null,

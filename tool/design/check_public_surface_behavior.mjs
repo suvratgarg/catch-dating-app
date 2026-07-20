@@ -23,7 +23,11 @@ export function validateContractSchema(matrix, schema) {
   });
 }
 
-export function validatePublicSurfaceBehavior({matrix, root = repoRoot}) {
+export function validatePublicSurfaceBehavior({
+  matrix,
+  root = repoRoot,
+  strict = false,
+}) {
   const errors = [];
   const textCache = new Map();
   const jsonCache = new Map();
@@ -66,10 +70,12 @@ export function validatePublicSurfaceBehavior({matrix, root = repoRoot}) {
     "inventorySources.websiteRoutes",
   );
 
+  let appRoutes = [];
   let appRouteIds = new Set();
   if (routerSource != null) {
     try {
-      appRouteIds = new Set(extractAppRouteIds(routerSource));
+      appRoutes = extractAppRoutes(routerSource);
+      appRouteIds = new Set(appRoutes.map((route) => route.id));
     } catch (error) {
       errors.push(`inventorySources.appRoutes: ${error.message}`);
     }
@@ -137,10 +143,30 @@ export function validatePublicSurfaceBehavior({matrix, root = repoRoot}) {
       globalConfigurationIds,
       errors,
       textFor,
+      strict,
     });
   }
 
+  validateConsumerRouteCoverage({
+    appRoutes,
+    surfaces: matrix.surfaces ?? [],
+    errors,
+  });
+
   for (const harness of matrix.proofHarnesses ?? []) {
+    const expectedConfigurationIds = new Set(
+      (matrix.surfaces ?? [])
+        .filter((surface) => (harness.surfaceIds ?? []).includes(surface.id))
+        .flatMap((surface) =>
+          (surface.configurations ?? []).map((configuration) => configuration.id),
+        ),
+    );
+    validateExactKeys(
+      Object.fromEntries((harness.configurationIds ?? []).map((id) => [id, true])),
+      expectedConfigurationIds,
+      `${harness.id}.configurationIds`,
+      errors,
+    );
     for (const surfaceId of harness.surfaceIds ?? []) {
       const surface = surfaces.get(surfaceId);
       if (!surface) {
@@ -153,6 +179,12 @@ export function validatePublicSurfaceBehavior({matrix, root = repoRoot}) {
     }
     const absolutePath = safeRepoPath(root, harness.path);
     const exists = absolutePath != null && fs.existsSync(absolutePath);
+    if (strict && harness.status !== "existing") {
+      errors.push(`${harness.id}: strict verification requires an existing proof harness.`);
+    }
+    if (strict && !exists) {
+      errors.push(`${harness.id}: strict verification requires ${harness.path} to exist.`);
+    }
     if (harness.status === "existing" || exists) {
       validateEvidence(
         {path: harness.path, contains: harness.contains},
@@ -238,6 +270,7 @@ function validateSurface({
   globalConfigurationIds,
   errors,
   textFor,
+  strict,
 }) {
   const label = `surface ${surface.id}`;
   const routeInventory = surface.platform === "app" ? appRouteIds : websiteRouteIds;
@@ -293,9 +326,21 @@ function validateSurface({
   }
 
   const tupleKeys = new Set();
+  const witnessedDecisionValues = new Map(
+    [...decisionIds].map((dimensionId) => [dimensionId, new Set()]),
+  );
   let hasActionableOutcome = false;
+  const enabledElementIds = new Set();
   for (const configuration of surface.configurations ?? []) {
     const configurationLabel = `${surface.id}.${configuration.id}`;
+    if (!configuration.id.startsWith(`${surface.id}.`)) {
+      errors.push(`${configurationLabel}: id must start with ${surface.id}.`);
+    }
+    if (strict && configuration.implementationStatus !== "verified") {
+      errors.push(
+        `${configurationLabel}: strict verification requires implementationStatus verified.`,
+      );
+    }
     if (globalConfigurationIds.has(configuration.id)) {
       errors.push(`${configurationLabel}: duplicate global configuration id.`);
     }
@@ -312,6 +357,7 @@ function validateSurface({
       if (dimension && !(dimension.values ?? []).includes(value)) {
         errors.push(`${configurationLabel}: invalid ${dimensionId} value ${value}.`);
       }
+      witnessedDecisionValues.get(dimensionId)?.add(value);
     }
     validateExactKeys(
       configuration.expectations,
@@ -330,6 +376,7 @@ function validateSurface({
         );
       } else if (disposition.execution !== "none") {
         hasActionableOutcome = true;
+        enabledElementIds.add(elementId);
       }
     }
 
@@ -353,7 +400,7 @@ function validateSurface({
           errors.push(`${configurationLabel}: ${harnessId} does not register ${surface.id}.`);
         }
         if (
-          configuration.implementationStatus !== "specified" &&
+          (strict || configuration.implementationStatus !== "specified") &&
           harness.status !== "existing"
         ) {
           errors.push(
@@ -363,8 +410,114 @@ function validateSurface({
       }
     }
   }
+  validateDecisionValueCoverage({
+    surface,
+    decisionIds,
+    dimensions,
+    witnessedDecisionValues,
+    errors,
+  });
   if (!hasActionableOutcome) {
     errors.push(`${label}: at least one configuration must have an actionable outcome.`);
+  }
+  for (const element of surface.elements ?? []) {
+    const hasConstantDisposition = element.constantDisposition !== undefined;
+    const hasConstantRationale = element.constantRationale !== undefined;
+    if (hasConstantDisposition !== hasConstantRationale) {
+      errors.push(
+        `${label}: element ${element.id} must declare constantDisposition and constantRationale together.`,
+      );
+    }
+    if (hasConstantDisposition) {
+      if (!dispositions.has(element.constantDisposition)) {
+        errors.push(
+          `${label}: element ${element.id} has unknown constant disposition ${element.constantDisposition}.`,
+        );
+      }
+      for (const configuration of surface.configurations ?? []) {
+        if (
+          configuration.expectations?.[element.id]?.disposition !==
+          element.constantDisposition
+        ) {
+          errors.push(
+            `${surface.id}.${configuration.id}.${element.id}: must preserve constant disposition ${element.constantDisposition}.`,
+          );
+        }
+      }
+    }
+    if (
+      element.kind === "action" &&
+      !enabledElementIds.has(element.id) &&
+      !hasConstantDisposition
+    ) {
+      errors.push(
+        `${label}: action ${element.id} needs at least one enabled execution witness.`,
+      );
+    }
+  }
+}
+
+function validateDecisionValueCoverage({
+  surface,
+  decisionIds,
+  dimensions,
+  witnessedDecisionValues,
+  errors,
+}) {
+  const exclusions = surface.excludedDecisionValues ?? {};
+  validateExactKeys(
+    exclusions,
+    decisionIds,
+    `${surface.id}.excludedDecisionValues`,
+    errors,
+  );
+  for (const dimensionId of decisionIds) {
+    const dimension = dimensions.get(dimensionId);
+    if (!dimension) continue;
+    const witnessed = witnessedDecisionValues.get(dimensionId) ?? new Set();
+    const excluded = exclusions[dimensionId] ?? {};
+    for (const value of Object.keys(excluded)) {
+      if (!(dimension.values ?? []).includes(value)) {
+        errors.push(
+          `${surface.id}.excludedDecisionValues.${dimensionId}: unknown value ${value}.`,
+        );
+      }
+      if (witnessed.has(value)) {
+        errors.push(
+          `${surface.id}.excludedDecisionValues.${dimensionId}: ${value} is both witnessed and excluded.`,
+        );
+      }
+    }
+    for (const value of dimension.values ?? []) {
+      if (!witnessed.has(value) && excluded[value] === undefined) {
+        errors.push(
+          `${surface.id}.${dimensionId}: ${value} needs a configuration witness or an explicit exclusion rationale.`,
+        );
+      }
+    }
+  }
+}
+
+function validateConsumerRouteCoverage({appRoutes, surfaces, errors}) {
+  const routeOwners = new Map();
+  for (const surface of surfaces) {
+    if (surface.platform !== "app") continue;
+    for (const routeId of surface.routeIds ?? []) {
+      const owners = routeOwners.get(routeId) ?? [];
+      owners.push(surface.id);
+      routeOwners.set(routeId, owners);
+    }
+  }
+  for (const route of appRoutes) {
+    if (route.audience !== "consumer") continue;
+    const owners = routeOwners.get(route.id) ?? [];
+    if (owners.length === 0) {
+      errors.push(`app route ${route.id}: consumer route has no behavior surface owner.`);
+    } else if (owners.length > 1) {
+      errors.push(
+        `app route ${route.id}: consumer route has multiple behavior surface owners (${owners.join(", ")}).`,
+      );
+    }
   }
 }
 
@@ -443,6 +596,10 @@ export function extractDartEnumValues(source, symbol) {
 }
 
 export function extractAppRouteIds(source) {
+  return extractAppRoutes(source).map((route) => route.id);
+}
+
+export function extractAppRoutes(source) {
   const enumMatch = /\benum\s+Routes\s*\{/u.exec(source);
   if (!enumMatch) throw new Error("could not find enum Routes.");
   const openIndex = source.indexOf("{", enumMatch.index);
@@ -454,13 +611,13 @@ export function extractAppRouteIds(source) {
     .join("\n")
     .replace(/\/\*[\s\S]*?\*\//gu, "")
     .split(";")[0];
-  const ids = [
+  const routes = [
     ...body.matchAll(
-      /(?:^|\n)\s*([A-Za-z][A-Za-z0-9_]*)\s*\(\s*(['"])[^'"]+\2/gmu,
+      /(?:^|\n)\s*([A-Za-z][A-Za-z0-9_]*)\s*\(\s*(['"])([^'"]+)\2\s*,\s*AppRouteAudience\.(shared|consumer|host)\s*,?\s*\)/gmsu,
     ),
-  ].map((match) => match[1]);
-  if (ids.length === 0) throw new Error("enum Routes has no path entries.");
-  return ids;
+  ].map((match) => ({id: match[1], path: match[3], audience: match[4]}));
+  if (routes.length === 0) throw new Error("enum Routes has no path entries.");
+  return routes;
 }
 
 function matchingBraceIndex(source, openIndex) {
@@ -480,11 +637,17 @@ function escapeRegExp(value) {
 }
 
 function parseArgs(argv) {
-  const parsed = {matrix: defaultMatrixPath, schema: defaultSchemaPath, summary: false};
+  const parsed = {
+    matrix: defaultMatrixPath,
+    schema: defaultSchemaPath,
+    strict: false,
+    summary: false,
+  };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === "--check") continue;
     if (arg === "--summary") parsed.summary = true;
+    else if (arg === "--strict") parsed.strict = true;
     else if (arg === "--help" || arg === "-h") parsed.help = true;
     else if (arg === "--matrix") parsed.matrix = requiredValue(argv, ++index, arg);
     else if (arg === "--schema") parsed.schema = requiredValue(argv, ++index, arg);
@@ -500,7 +663,7 @@ function requiredValue(argv, index, flag) {
 }
 
 function printHelp() {
-  console.log(`Usage: node tool/design/check_public_surface_behavior.mjs [--check] [--summary]
+  console.log(`Usage: node tool/design/check_public_surface_behavior.mjs [--check] [--strict] [--summary]
 
 Validates the public app and marketing website viewer/provenance behavior
 contract, its canonical enum sources, route and screen references, evidence,
@@ -526,7 +689,7 @@ function main() {
   const schema = readJson(path.resolve(repoRoot, args.schema));
   const schemaErrors = validateContractSchema(matrix, schema);
   const semanticErrors = schemaErrors.length === 0
-    ? validatePublicSurfaceBehavior({matrix, root: repoRoot})
+    ? validatePublicSurfaceBehavior({matrix, root: repoRoot, strict: args.strict})
     : [];
   const errors = [...schemaErrors, ...semanticErrors];
 

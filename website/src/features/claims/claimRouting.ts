@@ -42,10 +42,13 @@ export function claimRouteStateForLocation(
 export function getClaimListingForLookup(lookup: string | null) {
   if (!lookup) return null;
   return hostListings.find((listing) =>
-    listing.id === lookup ||
-    listing.slug === lookup ||
-    listing.path === lookup ||
-    listing.legacyPaths?.includes(lookup)
+    organizerPolicyForListing(listing).isPubliclyReadable &&
+    (
+      listing.id === lookup ||
+      listing.slug === lookup ||
+      listing.path === lookup ||
+      listing.legacyPaths?.includes(lookup)
+    )
   ) ?? null;
 }
 

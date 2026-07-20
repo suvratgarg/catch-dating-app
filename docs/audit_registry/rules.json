@@ -3024,6 +3024,49 @@
         }
       ]
     },
+    "PUBLIC-SURFACE-BEHAVIOR-001": {
+      "title": "Keep public viewer and listing authority behavior explicit across app and web",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "web_surface_architecture",
+        "version": "0.8.1"
+      },
+      "applies_to": [
+        "design/public_surface_behavior.json",
+        "design/public_surface_behavior.schema.json",
+        "design/screens/catch.screens.json",
+        "contracts/firestore/organizers.schema.json",
+        "contracts/public/website_host_listing_projection.schema.json",
+        "lib/routing/**",
+        "lib/explore/**",
+        "lib/clubs/**",
+        "lib/events/**",
+        "lib/organizers/**",
+        "website/src/features/claims/**",
+        "website/src/features/organizers/**",
+        "website/src/features/reviews/**",
+        "website/scripts/**",
+        "test/design/**",
+        "tool/design/check_public_surface_behavior.mjs"
+      ],
+      "instruction": "Treat design/public_surface_behavior.json as the executable decision table for public app and marketing surfaces. Keep viewer-session resolution, app role, profile readiness, viewer relationship, app and web publication, organizer ownership/claim/verification, host/contact identity, event supply/lifecycle/availability/payment, location, independent claim/review capabilities, and their runtimes explicit. Every consumer route must have exactly one matrix owner, every configuration must be verified by the declared app or website harness, and excluded dimension values require a rationale. Public actions fail closed when relationship or runtime authority is unresolved.",
+      "sunset_when": [
+        "Never; cross-surface public behavior remains a permanent product and architecture contract"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "design:public-surface-behavior",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/web_surface_architecture.md#public-viewer-and-listing-authority-matrix"
+        }
+      ]
+    },
     "WEB-VISUAL-001": {
       "title": "Registry-ready React stories have deterministic visual baselines",
       "status": "active",

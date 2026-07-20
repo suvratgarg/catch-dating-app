@@ -1059,7 +1059,11 @@ String? appRedirect({
       userProfileAsync.isLoading;
 
   if (isWaitingOnAuth || isWaitingOnProfile) {
-    if (!isHostApp && isGuestPublicRoute(matchedLocation)) return null;
+    if (!isHostApp &&
+        isGuestPublicRoute(matchedLocation) &&
+        !_isTransientRoute(matchedLocation)) {
+      return null;
+    }
     if (onLoading) return null;
     return _locationWithFrom(
       Routes.loadingScreen.path,
@@ -1117,6 +1121,13 @@ String? appRedirect({
 
   if (userProfile == null || !userProfile.hasBookingReadyIdentityOn(today)) {
     if (onOnboarding) return null;
+    // Public discovery remains readable for a signed-in viewer whose profile
+    // is incomplete. Only the action that needs profile data is gated.
+    if (!isHostApp &&
+        isGuestPublicRoute(matchedLocation) &&
+        !_isTransientRoute(matchedLocation)) {
+      return null;
+    }
     return _locationWithFrom(
       Routes.onboardingScreen.path,
       from: _pendingDestination(uri: uri, matchedLocation: matchedLocation),
@@ -1135,7 +1146,7 @@ String? appRedirect({
 
   if (_requiresSocialProfile(matchedLocation) &&
       !userProfile.hasSocialReadyProfileOn(today)) {
-    return _profileCompletionLocation(
+    return profileCompletionLocation(
       from: _pendingDestination(uri: uri, matchedLocation: matchedLocation),
     );
   }
@@ -1201,7 +1212,7 @@ String _locationWithFrom(String path, {String? from}) {
   ).toString();
 }
 
-String _profileCompletionLocation({String? from}) {
+String profileCompletionLocation({String? from}) {
   final safeFrom = _sanitizeFrom(from);
   return Uri(
     path: Routes.onboardingScreen.path,

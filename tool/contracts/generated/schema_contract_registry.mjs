@@ -30743,6 +30743,7 @@ export const createPublicClubReviewCallableResponseSchema = {
         "createdAt",
         "verificationStatus",
         "source",
+        "moderationStatus",
         "isAnonymous",
         "ownerResponse"
       ],
@@ -30779,6 +30780,13 @@ export const createPublicClubReviewCallableResponseSchema = {
           "enum": [
             "catchEvent",
             "publicListing"
+          ]
+        },
+        "moderationStatus": {
+          "type": "string",
+          "enum": [
+            "published",
+            "pending"
           ]
         },
         "isAnonymous": {
@@ -30836,6 +30844,7 @@ export const createPublicClubReviewCallableResponseSchema = {
         "createdAt",
         "verificationStatus",
         "source",
+        "moderationStatus",
         "isAnonymous",
         "ownerResponse"
       ],
@@ -30872,6 +30881,13 @@ export const createPublicClubReviewCallableResponseSchema = {
           "enum": [
             "catchEvent",
             "publicListing"
+          ]
+        },
+        "moderationStatus": {
+          "type": "string",
+          "enum": [
+            "published",
+            "pending"
           ]
         },
         "isAnonymous": {
@@ -31273,6 +31289,7 @@ export const createPublicOrganizerReviewCallableResponseSchema = {
         "createdAt",
         "verificationStatus",
         "source",
+        "moderationStatus",
         "isAnonymous",
         "ownerResponse"
       ],
@@ -31309,6 +31326,13 @@ export const createPublicOrganizerReviewCallableResponseSchema = {
           "enum": [
             "catchEvent",
             "publicListing"
+          ]
+        },
+        "moderationStatus": {
+          "type": "string",
+          "enum": [
+            "published",
+            "pending"
           ]
         },
         "isAnonymous": {
@@ -31366,6 +31390,7 @@ export const createPublicOrganizerReviewCallableResponseSchema = {
         "createdAt",
         "verificationStatus",
         "source",
+        "moderationStatus",
         "isAnonymous",
         "ownerResponse"
       ],
@@ -31402,6 +31427,13 @@ export const createPublicOrganizerReviewCallableResponseSchema = {
           "enum": [
             "catchEvent",
             "publicListing"
+          ]
+        },
+        "moderationStatus": {
+          "type": "string",
+          "enum": [
+            "published",
+            "pending"
           ]
         },
         "isAnonymous": {
@@ -32514,6 +32546,8 @@ export const websiteHostListingProjectionSchema = {
     "sources",
     "claim",
     "publicApi",
+    "authority",
+    "capabilities",
     "lastVerifiedAt",
     "searchText"
   ],
@@ -32590,9 +32624,11 @@ export const websiteHostListingProjectionSchema = {
       "type": "string",
       "enum": [
         "first_party",
+        "seedOnly",
         "high",
         "medium",
-        "low"
+        "low",
+        "ownerVerified"
       ]
     },
     "headline": {
@@ -33191,6 +33227,207 @@ export const websiteHostListingProjectionSchema = {
         }
       }
     },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ownershipState",
+        "claimState",
+        "provenanceOrigin",
+        "sourceConfidence",
+        "verificationStatus",
+        "appVisibility",
+        "publishStatus",
+        "indexStatus"
+      ],
+      "properties": {
+        "ownershipState": {
+          "type": "string",
+          "enum": [
+            "programmatic",
+            "userCreated",
+            "claimed",
+            "transferred"
+          ]
+        },
+        "claimState": {
+          "type": "string",
+          "enum": [
+            "unclaimed",
+            "claimPending",
+            "claimed",
+            "verified",
+            "suppressed"
+          ]
+        },
+        "provenanceOrigin": {
+          "type": "string",
+          "enum": [
+            "userCreated",
+            "scraper",
+            "adminSeed",
+            "import"
+          ]
+        },
+        "sourceConfidence": {
+          "type": "string",
+          "enum": [
+            "seedOnly",
+            "low",
+            "medium",
+            "high",
+            "ownerVerified"
+          ]
+        },
+        "verificationStatus": {
+          "type": "string",
+          "enum": [
+            "unverified",
+            "sourceBacked",
+            "ownerVerified"
+          ]
+        },
+        "appVisibility": {
+          "type": "string",
+          "enum": [
+            "discoverable",
+            "hidden"
+          ]
+        },
+        "publishStatus": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "qa",
+            "published",
+            "suppressed",
+            "removed"
+          ]
+        },
+        "indexStatus": {
+          "type": "string",
+          "enum": [
+            "noindex",
+            "indexReady",
+            "indexed"
+          ]
+        }
+      }
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claimRequest",
+        "publicReviews"
+      ],
+      "properties": {
+        "claimRequest": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "reason"
+          ],
+          "properties": {
+            "state": {
+              "type": "string",
+              "enum": [
+                "enabled",
+                "disabled"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "publicReviews": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "targetState",
+            "readState",
+            "writeState",
+            "reason"
+          ],
+          "properties": {
+            "targetState": {
+              "type": "string",
+              "enum": [
+                "enabled",
+                "disabled"
+              ]
+            },
+            "readState": {
+              "type": "string",
+              "enum": [
+                "enabled",
+                "disabled"
+              ]
+            },
+            "writeState": {
+              "type": "string",
+              "enum": [
+                "enabled",
+                "disabled"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "not": {
+            "anyOf": [
+              {
+                "properties": {
+                  "targetState": {
+                    "const": "disabled"
+                  },
+                  "readState": {
+                    "const": "enabled"
+                  }
+                },
+                "required": [
+                  "targetState",
+                  "readState"
+                ]
+              },
+              {
+                "properties": {
+                  "targetState": {
+                    "const": "disabled"
+                  },
+                  "writeState": {
+                    "const": "enabled"
+                  }
+                },
+                "required": [
+                  "targetState",
+                  "writeState"
+                ]
+              },
+              {
+                "properties": {
+                  "readState": {
+                    "const": "disabled"
+                  },
+                  "writeState": {
+                    "const": "enabled"
+                  }
+                },
+                "required": [
+                  "readState",
+                  "writeState"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
     "lastVerifiedAt": {
       "type": "string",
       "minLength": 1
@@ -33199,6 +33436,27 @@ export const websiteHostListingProjectionSchema = {
       "type": "string",
       "minLength": 1
     }
+  },
+  "not": {
+    "properties": {
+      "authority": {
+        "properties": {
+          "claimState": {
+            "const": "suppressed"
+          },
+          "publishStatus": {
+            "const": "published"
+          }
+        },
+        "required": [
+          "claimState",
+          "publishStatus"
+        ]
+      }
+    },
+    "required": [
+      "authority"
+    ]
   },
   "definitions": {
     "nonEmptyString": {
@@ -33727,6 +33985,311 @@ export const websiteHostListingProjectionSchema = {
             "static_fixture",
             "unknown"
           ]
+        }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ownershipState",
+        "claimState",
+        "provenanceOrigin",
+        "sourceConfidence",
+        "verificationStatus",
+        "appVisibility",
+        "publishStatus",
+        "indexStatus"
+      ],
+      "properties": {
+        "ownershipState": {
+          "type": "string",
+          "enum": [
+            "programmatic",
+            "userCreated",
+            "claimed",
+            "transferred"
+          ]
+        },
+        "claimState": {
+          "type": "string",
+          "enum": [
+            "unclaimed",
+            "claimPending",
+            "claimed",
+            "verified",
+            "suppressed"
+          ]
+        },
+        "provenanceOrigin": {
+          "type": "string",
+          "enum": [
+            "userCreated",
+            "scraper",
+            "adminSeed",
+            "import"
+          ]
+        },
+        "sourceConfidence": {
+          "type": "string",
+          "enum": [
+            "seedOnly",
+            "low",
+            "medium",
+            "high",
+            "ownerVerified"
+          ]
+        },
+        "verificationStatus": {
+          "type": "string",
+          "enum": [
+            "unverified",
+            "sourceBacked",
+            "ownerVerified"
+          ]
+        },
+        "appVisibility": {
+          "type": "string",
+          "enum": [
+            "discoverable",
+            "hidden"
+          ]
+        },
+        "publishStatus": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "qa",
+            "published",
+            "suppressed",
+            "removed"
+          ]
+        },
+        "indexStatus": {
+          "type": "string",
+          "enum": [
+            "noindex",
+            "indexReady",
+            "indexed"
+          ]
+        }
+      }
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "reason"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "enabled",
+            "disabled"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "publicReviewCapability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetState",
+        "readState",
+        "writeState",
+        "reason"
+      ],
+      "properties": {
+        "targetState": {
+          "type": "string",
+          "enum": [
+            "enabled",
+            "disabled"
+          ]
+        },
+        "readState": {
+          "type": "string",
+          "enum": [
+            "enabled",
+            "disabled"
+          ]
+        },
+        "writeState": {
+          "type": "string",
+          "enum": [
+            "enabled",
+            "disabled"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "not": {
+        "anyOf": [
+          {
+            "properties": {
+              "targetState": {
+                "const": "disabled"
+              },
+              "readState": {
+                "const": "enabled"
+              }
+            },
+            "required": [
+              "targetState",
+              "readState"
+            ]
+          },
+          {
+            "properties": {
+              "targetState": {
+                "const": "disabled"
+              },
+              "writeState": {
+                "const": "enabled"
+              }
+            },
+            "required": [
+              "targetState",
+              "writeState"
+            ]
+          },
+          {
+            "properties": {
+              "readState": {
+                "const": "disabled"
+              },
+              "writeState": {
+                "const": "enabled"
+              }
+            },
+            "required": [
+              "readState",
+              "writeState"
+            ]
+          }
+        ]
+      }
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claimRequest",
+        "publicReviews"
+      ],
+      "properties": {
+        "claimRequest": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "reason"
+          ],
+          "properties": {
+            "state": {
+              "type": "string",
+              "enum": [
+                "enabled",
+                "disabled"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "publicReviews": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "targetState",
+            "readState",
+            "writeState",
+            "reason"
+          ],
+          "properties": {
+            "targetState": {
+              "type": "string",
+              "enum": [
+                "enabled",
+                "disabled"
+              ]
+            },
+            "readState": {
+              "type": "string",
+              "enum": [
+                "enabled",
+                "disabled"
+              ]
+            },
+            "writeState": {
+              "type": "string",
+              "enum": [
+                "enabled",
+                "disabled"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "not": {
+            "anyOf": [
+              {
+                "properties": {
+                  "targetState": {
+                    "const": "disabled"
+                  },
+                  "readState": {
+                    "const": "enabled"
+                  }
+                },
+                "required": [
+                  "targetState",
+                  "readState"
+                ]
+              },
+              {
+                "properties": {
+                  "targetState": {
+                    "const": "disabled"
+                  },
+                  "writeState": {
+                    "const": "enabled"
+                  }
+                },
+                "required": [
+                  "targetState",
+                  "writeState"
+                ]
+              },
+              {
+                "properties": {
+                  "readState": {
+                    "const": "disabled"
+                  },
+                  "writeState": {
+                    "const": "enabled"
+                  }
+                },
+                "required": [
+                  "readState",
+                  "writeState"
+                ]
+              }
+            ]
+          }
         }
       }
     },

@@ -1,6 +1,6 @@
 {
-  "version": "1.1.1",
-  "updated": "2026-07-20",
+  "version": "1.1.2",
+  "updated": "2026-07-21",
   "ownerVocabulary": [
     "agent_operating_model",
     "app_platform",
@@ -69,8 +69,8 @@
       "owner": "design_system",
       "sources": ["design/**", "lib/core/theme/**", "lib/core/widgets/**", "widgetbook/**", "packages/catch_ui_lints/**", "packages/phosphor_flutter/**"],
       "generatedOutputs": ["design_context_pack/**", "docs/design_parity/**", "docs/audit_registry/widget_*.json", "widgetbook/lib/main.directories.g.dart"],
-      "consumers": ["lib/**", "admin/**", "website/**", "test/goldens/**", "artifacts/**"],
-      "checks": ["design:tokens", "design:parity-gate", "design:flutter-field-surface-inventory", "design:widgetbook-contract-refs", "design:widgetbook-coverage", "lint:catch-ui-plugin-smoke"],
+      "consumers": ["lib/**", "admin/**", "website/**", "test/design/**", "test/goldens/**", "artifacts/**"],
+      "checks": ["design:tokens", "design:parity-gate", "design:public-surface-behavior", "design:flutter-field-surface-inventory", "design:widgetbook-contract-refs", "design:widgetbook-coverage", "lint:catch-ui-plugin-smoke"],
       "ciWorkflows": [".github/workflows/flutter-ci.yml", ".github/workflows/tools-ci.yml", ".github/workflows/visual-integration-ci.yml"]
     },
     {

@@ -7,6 +7,7 @@ import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_b
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_host_section.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/organizers/domain/organizer_authority.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -105,6 +106,69 @@ void main() {
     } finally {
       semantics.dispose();
     }
+  });
+
+  testWidgets(
+    'unclaimed no-host preview shows provenance without empty hosts',
+    (tester) async {
+      final club =
+          buildClub(
+            hostUserId: null,
+            ownerUserId: null,
+            hostUserIds: const [],
+            hostProfiles: const [],
+          ).copyWith(
+            claim: OrganizerClaim.fromJson({'state': 'unclaimed'}),
+            provenance: OrganizerProvenance.fromJson({
+              'origin': 'scraper',
+              'sourceConfidence': 'high',
+              'verificationStatus': 'sourceBacked',
+            }),
+          );
+      final viewModel = ClubDetailViewModel(
+        club: club,
+        isHost: false,
+        isMember: false,
+        upcomingEvents: const [],
+        reviews: const [],
+        userProfile: null,
+        uid: null,
+        isAuthenticated: false,
+      );
+
+      await _pumpPreview(tester, club: club, viewModel: AsyncData(viewModel));
+
+      expect(find.text('SOURCE BACKED'), findsOneWidget);
+      expect(find.text('Your hosts'), findsNothing);
+      expect(find.byType(ClubHostRow), findsNothing);
+    },
+  );
+
+  testWidgets('owner verification is derived from authority state', (
+    tester,
+  ) async {
+    final club = buildClub().copyWith(
+      claim: OrganizerClaim.fromJson({'state': 'verified'}),
+      provenance: OrganizerProvenance.fromJson({
+        'origin': 'scraper',
+        'sourceConfidence': 'ownerVerified',
+        'verificationStatus': 'ownerVerified',
+      }),
+    );
+    final viewModel = ClubDetailViewModel(
+      club: club,
+      isHost: false,
+      isMember: false,
+      upcomingEvents: const [],
+      reviews: const [],
+      userProfile: null,
+      uid: null,
+      isAuthenticated: false,
+    );
+
+    await _pumpPreview(tester, club: club, viewModel: AsyncData(viewModel));
+
+    expect(find.text('OWNER VERIFIED'), findsOneWidget);
   });
 }
 

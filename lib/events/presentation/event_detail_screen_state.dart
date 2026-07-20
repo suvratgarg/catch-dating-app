@@ -3,15 +3,21 @@ import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
 import 'package:catch_dating_app/events/domain/event_capacity_labels.dart';
-import 'package:catch_dating_app/events/domain/event_domain_readiness.dart';
 import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_service.dart';
+import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/organizers/presentation/organizer_authority_badge.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+
+bool eventDetailHasBookingReadyProfile(
+  UserProfile? userProfile, {
+  required DateTime now,
+}) => userProfile?.hasBookingReadyIdentityOn(now) == true;
 
 enum EventDetailBookingDockAction {
   none,
@@ -154,24 +160,61 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
   required DateTime now,
   required bool hasInviteCode,
   required bool supportsPaidBookings,
+  bool isSaved = false,
+  bool isHosted = false,
+  bool isClubMember = false,
   EventDetailBookingDockMutationState mutationState =
       const EventDetailBookingDockMutationState(),
 }) {
-  final eligibility = _eventDetailEligibilityForParticipation(
+  if (event.isCancelled) {
+    return EventDetailBookingDockState(
+      label: l10n.eventsEventDetailScreenStateLabelEventCancelled,
+      primaryAction: EventDetailBookingDockAction.none,
+      error: mutationState.error,
+    );
+  }
+  if (!event.endTime.isAfter(now)) {
+    if (participation?.status == EventParticipationStatus.attended) {
+      return EventDetailBookingDockState(
+        label: l10n.eventsEventDetailScreenStateLabelYouAttendedThisEvent,
+        primaryAction: EventDetailBookingDockAction.none,
+        leadingKind: EventDetailBookingDockLeadingKind.attended,
+        error: mutationState.error,
+      );
+    }
+    return EventDetailBookingDockState(
+      label: l10n.eventsEventDetailScreenStateLabelThisEventHasEnded,
+      primaryAction: EventDetailBookingDockAction.none,
+      error: mutationState.error,
+    );
+  }
+  if (!event.startTime.isAfter(now)) {
+    return EventDetailBookingDockState(
+      label: l10n.eventsEventDetailScreenStateLabelEventInProgress,
+      primaryAction: EventDetailBookingDockAction.none,
+      error: mutationState.error,
+    );
+  }
+  final availability = resolveViewerEventAvailability(
     event: event,
     userProfile: userProfile,
     participation: participation,
+    isSaved: isSaved,
+    isHosted: isHosted,
+    isClubMember: isClubMember,
     now: now,
-    hasInviteCode: hasInviteCode,
+    hasValidInvite: hasInviteCode,
   );
-  final signUpStatus = _statusForEligibility(eligibility);
+  final eligibility = availability.eligibility;
+  final signUpStatus = eventSignUpStatusForViewerAvailability(
+    availability.status,
+  );
   final requiresHostApproval =
       event.effectiveEventPolicy.admissionPolicy.manualApprovalRequired;
+  final waitlistEnabled =
+      event.effectiveEventPolicy.admissionPolicy.waitlistPolicy.isEnabled;
   final hasApprovedJoinRequest =
-      requiresHostApproval &&
-      participation?.status == EventParticipationStatus.waitlisted &&
-      participation != null &&
-      EventService.participationStatus(participation, now: now).hasHostApproval;
+      availability.status == ViewerEventAvailabilityStatus.approvedToBook;
   final hasActiveWaitlistOffer = participation != null
       ? EventService.participationStatus(
           participation,
@@ -179,11 +222,13 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
         ).isWaitlistOfferActive
       : false;
   final canRequestHostApproval =
-      requiresHostApproval && eligibility is GenderCapacityReached;
-  final quotedPriceInPaise = event.priceInPaiseFor(userProfile);
+      availability.status == ViewerEventAvailabilityStatus.requestRequired;
+  final quotedPriceInPaise =
+      availability.quotedPriceInPaise ?? event.priceInPaiseFor(userProfile);
   final isFreeForViewer = quotedPriceInPaise == 0;
   final needsRunPreferences =
-      event.requiresRunPreferences && !userProfile.hasCurrentRunPreferences;
+      availability.status ==
+      ViewerEventAvailabilityStatus.runPreferencesRequired;
 
   if (hasActiveWaitlistOffer) {
     final paidUnsupported = !isFreeForViewer && !supportsPaidBookings;
@@ -239,19 +284,26 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
       now: now,
       mutationState: mutationState,
     ),
-    EventSignUpStatus.full => EventDetailBookingDockState(
-      label: needsRunPreferences
-          ? l10n.eventsEventDetailScreenStateLabelSetRunPreferences
-          : requiresHostApproval
-          ? l10n.eventsEventDetailScreenStateLabelRequestToJoin
-          : l10n.eventsEventDetailScreenStateLabelJoinWaitlist,
-      primaryAction: needsRunPreferences
-          ? EventDetailBookingDockAction.openRunPreferences
-          : EventDetailBookingDockAction.joinWaitlist,
-      buttonKey: EventDetailBookingDockButtonKey.joinWaitlist,
-      isLoading: mutationState.joinWaitlistPending,
-      error: mutationState.error,
-    ),
+    EventSignUpStatus.full =>
+      waitlistEnabled
+          ? EventDetailBookingDockState(
+              label: needsRunPreferences
+                  ? l10n.eventsEventDetailScreenStateLabelSetRunPreferences
+                  : requiresHostApproval
+                  ? l10n.eventsEventDetailScreenStateLabelRequestToJoin
+                  : l10n.eventsEventDetailScreenStateLabelJoinWaitlist,
+              primaryAction: needsRunPreferences
+                  ? EventDetailBookingDockAction.openRunPreferences
+                  : EventDetailBookingDockAction.joinWaitlist,
+              buttonKey: EventDetailBookingDockButtonKey.joinWaitlist,
+              isLoading: mutationState.joinWaitlistPending,
+              error: mutationState.error,
+            )
+          : EventDetailBookingDockState(
+              label: l10n.eventsEventDetailScreenStateLabelEventFull,
+              primaryAction: EventDetailBookingDockAction.none,
+              error: mutationState.error,
+            ),
     EventSignUpStatus.waitlisted => EventDetailBookingDockState(
       label: requiresHostApproval
           ? l10n.eventsEventDetailScreenStateLabelWithdrawRequest
@@ -283,7 +335,11 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
           requiresHostApproval
               ? l10n.eventsEventDetailScreenStateLabelRequestRequired
               : l10n.eventsEventDetailScreenStateLabelSpotsForYourGender,
-        _ => l10n.eventsEventDetailScreenStateLabelNotEligibleForThis,
+        _ =>
+          availability.status ==
+                  ViewerEventAvailabilityStatus.membershipRequired
+              ? l10n.eventsEventDetailDesignPrimitivesVisiblecopyMembersOnly
+              : l10n.eventsEventDetailScreenStateLabelNotEligibleForThis,
       },
       primaryAction: EventDetailBookingDockAction.none,
       error: mutationState.error,
@@ -374,50 +430,31 @@ EventDetailBookingDockState _signedUpBookingDockState({
   );
 }
 
-EventEligibility _eventDetailEligibilityForParticipation({
-  required Event event,
-  required UserProfile userProfile,
-  required EventParticipation? participation,
-  required DateTime now,
-  required bool hasInviteCode,
-}) {
-  return switch (participation?.status) {
-    EventParticipationStatus.attended =>
-      _hasEventStarted(event, now) ? const Attended() : const AlreadySignedUp(),
-    EventParticipationStatus.signedUp => const AlreadySignedUp(),
-    EventParticipationStatus.waitlisted
-        when participation != null &&
-            EventService.participationStatus(
-              participation,
-              now: now,
-            ).hasHostApproval =>
-      _hasEventStarted(event, now) ? const EventPast() : const Eligible(),
-    EventParticipationStatus.waitlisted => const OnWaitlist(),
-    EventParticipationStatus.cancelled ||
-    EventParticipationStatus.deleted ||
-    null => EventService.eligibilityFor(
-      event,
-      userProfile,
-      now: now,
-      hasValidInvite: hasInviteCode,
-    ),
-  };
-}
-
-bool _hasEventStarted(Event event, DateTime now) =>
-    !event.startTime.isAfter(now);
-
-EventSignUpStatus _statusForEligibility(EventEligibility eligibility) {
-  return switch (eligibility) {
-    Attended() => EventSignUpStatus.attended,
-    AlreadySignedUp() => EventSignUpStatus.signedUp,
-    EventPast() => EventSignUpStatus.past,
-    OnWaitlist() => EventSignUpStatus.waitlisted,
-    EventFull() => EventSignUpStatus.full,
-    Eligible() => EventSignUpStatus.eligible,
-    _ => EventSignUpStatus.ineligible,
-  };
-}
+/// Canonical presentation bridge from domain availability into the booking
+/// dock's coarse action family. The public-surface behavior harness exercises
+/// every availability enum value through this bridge.
+EventSignUpStatus eventSignUpStatusForViewerAvailability(
+  ViewerEventAvailabilityStatus status,
+) => switch (status) {
+  ViewerEventAvailabilityStatus.open ||
+  ViewerEventAvailabilityStatus.saved ||
+  ViewerEventAvailabilityStatus.approvedToBook ||
+  ViewerEventAvailabilityStatus.runPreferencesRequired =>
+    EventSignUpStatus.eligible,
+  ViewerEventAvailabilityStatus.joined => EventSignUpStatus.signedUp,
+  ViewerEventAvailabilityStatus.waitlisted => EventSignUpStatus.waitlisted,
+  ViewerEventAvailabilityStatus.attended => EventSignUpStatus.attended,
+  ViewerEventAvailabilityStatus.waitlistAvailable ||
+  ViewerEventAvailabilityStatus.full => EventSignUpStatus.full,
+  ViewerEventAvailabilityStatus.past => EventSignUpStatus.past,
+  ViewerEventAvailabilityStatus.hosted ||
+  ViewerEventAvailabilityStatus.requestRequired ||
+  ViewerEventAvailabilityStatus.fullForViewer ||
+  ViewerEventAvailabilityStatus.inviteRequired ||
+  ViewerEventAvailabilityStatus.membershipRequired ||
+  ViewerEventAvailabilityStatus.ageRestricted ||
+  ViewerEventAvailabilityStatus.cancelled => EventSignUpStatus.ineligible,
+};
 
 EventDetailCompanionState eventDetailCompanionStateFrom<T>({
   required EventParticipation? participation,
@@ -485,7 +522,7 @@ EventDetailHostState eventDetailHostStateFrom({
         hostName: club.displayHostName,
         photoUrl: hostProfile?.avatarUrl ?? club.logoPhotoUrl,
         meta: _hostMeta(club, l10n),
-        verified: false,
+        verified: club.organizerAuthority.isOwnerVerified,
         canMessage: canMessage,
       );
     }(),
@@ -496,6 +533,7 @@ EventDetailHostState eventDetailHostStateFrom({
 
 String? _hostMeta(Club club, AppLocalizations l10n) {
   final parts = <String>[];
+  parts.add(organizerTrustLabel(club.organizerAuthority.trustState, l10n));
   final area = club.area.trim();
   if (area.isNotEmpty) parts.add(area.toUpperCase());
   if (club.reviewCount > 0) {

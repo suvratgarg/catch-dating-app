@@ -42,27 +42,27 @@
       "routes": [
         {
           "id": "eventDetailScreen",
-          "path": "/clubs/:clubId/events/:eventId",
+          "path": "/organizers/:clubId/events/:eventId",
           "role": "primary"
         },
         {
           "id": "calendarEventDetailScreen",
-          "path": "/calendar/clubs/:clubId/events/:eventId",
+          "path": "/calendar/organizers/:clubId/events/:eventId",
           "role": "alias"
         },
         {
           "id": "savedEventDetailScreen",
-          "path": "/saved-events/clubs/:clubId/events/:eventId",
+          "path": "/saved-events/organizers/:clubId/events/:eventId",
           "role": "alias"
         },
         {
           "id": "dashboardEventDetailScreen",
-          "path": "/dashboard/clubs/:clubId/events/:eventId",
+          "path": "/dashboard/organizers/:clubId/events/:eventId",
           "role": "alias"
         },
         {
           "id": "hostAppEventDetailScreen",
-          "path": "/host/clubs/:clubId/events/:eventId",
+          "path": "/host/organizers/:clubId/events/:eventId",
           "role": "host"
         }
       ],
@@ -973,7 +973,7 @@
       "routes": [
         {
           "id": "clubDetailScreen",
-          "path": "/clubs/:clubId",
+          "path": "/organizers/:clubId",
           "role": "primary"
         }
       ],
@@ -1636,12 +1636,12 @@
       "routes": [
         {
           "id": "exploreScreen",
-          "path": "/clubs",
+          "path": "/organizers",
           "role": "primary"
         },
         {
           "id": "exploreMapScreen",
-          "path": "/clubs/map",
+          "path": "/organizers/map",
           "role": "alias"
         }
       ],
@@ -3170,7 +3170,7 @@
       "routes": [
         {
           "id": "eventSuccessCompanionScreen",
-          "path": "/clubs/:clubId/events/:eventId/companion",
+          "path": "/organizers/:clubId/events/:eventId/companion",
           "role": "primary"
         }
       ],
@@ -10579,7 +10579,7 @@
       "routes": [
         {
           "id": "hostClubDetailScreen",
-          "path": "/host/clubs/:clubId",
+          "path": "/host/organizers/:clubId",
           "role": "primary"
         }
       ],

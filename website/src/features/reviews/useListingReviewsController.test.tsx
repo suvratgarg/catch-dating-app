@@ -3,6 +3,7 @@ import {act, renderHook, waitFor} from "@testing-library/react";
 import type {PropsWithChildren} from "react";
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {hostListings} from "../organizers/data";
+import {organizerPolicyForListing} from "../organizers/organizerPolicy";
 import type {HostListing} from "../organizers/types";
 
 const reviewConfig = vi.hoisted(() => ({enabled: false}));
@@ -41,10 +42,18 @@ function queryHarness() {
 function enabledListing(): HostListing {
   return {
     ...hostListings[0],
-    publicApi: {
-      ...hostListings[0].publicApi,
-      state: "enabled",
-      reason: "",
+    authority: {
+      ...hostListings[0].authority,
+      publishStatus: "published",
+    },
+    capabilities: {
+      ...hostListings[0].capabilities,
+      publicReviews: {
+        targetState: "enabled",
+        readState: "enabled",
+        writeState: "enabled",
+        reason: "",
+      },
     },
   };
 }
@@ -64,7 +73,18 @@ describe("useListingReviewsController", () => {
   });
 
   it("keeps disabled listing routes read-only", async () => {
-    const listing = hostListings[0];
+    const listing = {
+      ...hostListings[0],
+      capabilities: {
+        ...hostListings[0].capabilities,
+        publicReviews: {
+          targetState: "enabled",
+          readState: "disabled",
+          writeState: "disabled",
+          reason: "Public reviews are disabled for this fixture.",
+        },
+      },
+    } as HostListing;
     const {wrapper} = queryHarness();
     const {result} = renderHook(() => useListingReviewsController(listing), {wrapper});
 
@@ -75,7 +95,7 @@ describe("useListingReviewsController", () => {
     await act(async () => result.current.submitReview(submitEvent()));
 
     expect(result.current.status).toEqual({
-      message: listing.publicApi.reason,
+      message: organizerPolicyForListing(listing).publicReviewReason,
       tone: "is-error",
     });
     expect(createPublicOrganizerReview).not.toHaveBeenCalled();
@@ -96,6 +116,7 @@ describe("useListingReviewsController", () => {
   });
 
   it("validates review identity before creating a mutation", async () => {
+    reviewConfig.enabled = true;
     const {wrapper} = queryHarness();
     const {result} = renderHook(() => useListingReviewsController(enabledListing()), {wrapper});
 
@@ -110,9 +131,11 @@ describe("useListingReviewsController", () => {
   });
 
   it("keeps public reviews enabled when only claim submission is disabled", async () => {
+    reviewConfig.enabled = true;
     const listing = {
       ...hostListings[0],
       authority: {
+        ...hostListings[0].authority,
         claimState: "unclaimed",
         ownershipState: "programmatic",
         publishStatus: "published",
@@ -120,23 +143,23 @@ describe("useListingReviewsController", () => {
       },
       capabilities: {
         claimRequest: {state: "disabled", reason: "Claim target is syncing."},
-        publicReviews: {readState: "enabled", writeState: "enabled", reason: ""},
+        publicReviews: {
+          targetState: "enabled",
+          readState: "enabled",
+          writeState: "enabled",
+          reason: "",
+        },
       },
     } as HostListing;
     const {wrapper} = queryHarness();
     const {result} = renderHook(() => useListingReviewsController(listing), {wrapper});
 
-    act(() => {
-      result.current.setComment("A thoughtful evening.");
-      result.current.setReviewerName("Guest");
-    });
-    await act(async () => result.current.submitReview(submitEvent()));
-
     expect(result.current.publicReviewWriteEnabled).toBe(true);
-    expect(result.current.status.tone).toBe("is-success");
+    expect(result.current.publicReviewReason).toBe("");
+    expect(createPublicOrganizerReview).not.toHaveBeenCalled();
   });
 
-  it("adds an unconfigured review locally and exposes it in the summary", async () => {
+  it("fails closed when the review runtime is unavailable", async () => {
     const listing = enabledListing();
     const {wrapper} = queryHarness();
     const {result} = renderHook(() => useListingReviewsController(listing), {wrapper});
@@ -149,20 +172,12 @@ describe("useListingReviewsController", () => {
     await act(async () => result.current.submitReview(submitEvent()));
 
     expect(result.current.status).toEqual({
-      message: "Preview review added locally. Configure website App Check to write it to Firestore.",
-      tone: "is-success",
+      message: "Review submission is unavailable in this website build.",
+      tone: "is-error",
     });
-    expect(result.current.reviews[0]).toMatchObject({
-      comment: "Warm hosts and clear facilitation.",
-      rating: 4,
-      reviewerName: "Guest",
-      source: "publicListing",
-    });
-    expect(result.current.summary.publicReviews).toHaveLength(1);
-    expect(trackMarketingEvent).toHaveBeenCalledWith(
-      "listing_public_review_submitted",
-      expect.objectContaining({club_id: listing.id, configured: false})
-    );
+    expect(createPublicOrganizerReview).not.toHaveBeenCalled();
+    expect(result.current.reviews).toEqual(listing.reviews);
+    expect(trackMarketingEvent).not.toHaveBeenCalled();
   });
 
   it("publishes configured reviews and refreshes the listing review query", async () => {

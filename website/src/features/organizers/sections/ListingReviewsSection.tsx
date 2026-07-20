@@ -1,4 +1,5 @@
 import {websiteCopy} from "@content/generated";
+import {organizerListingCopy} from "@content/organizer";
 import {SectionHeader} from "../../../shared/site";
 import {
   Button,
@@ -31,7 +32,7 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
     isSubmitting,
     rating,
     publicReviewReason,
-    publicReviewWriteEnabled,
+    presentation,
     reviewFormId,
     reviewerName,
     reviews,
@@ -52,6 +53,33 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
     verifiedCount,
     verifiedReviews,
   } = summary;
+
+  if (presentation.read === "hidden") {
+    return null;
+  }
+
+  if (presentation.read === "unavailable") {
+    return (
+      <ListingSection
+        variant="reviews"
+        id="reviews"
+        aria-labelledby="listing-reviews-title"
+      >
+        <SectionHeader
+          eyebrow={websiteCopy["listingreviewssection_0437"]}
+          id="listing-reviews-title"
+          title={<>{websiteCopy["listingreviewssection_0434"]} {listing.name}.</>}
+          body={websiteCopy["listingreviewssection_0445"]} />
+        <ListingReviewEmptyState reveal>
+          <div>
+            <UiLabel>{organizerListingCopy.reviews.unavailableLabel}</UiLabel>
+            <h3>{organizerListingCopy.reviews.unavailableTitle}</h3>
+            <p>{publicReviewReason}</p>
+          </div>
+        </ListingReviewEmptyState>
+      </ListingSection>
+    );
+  }
 
   return (
     <ListingSection
@@ -79,7 +107,7 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
           <UiLabel>{websiteCopy["listingreviewssection_0442"]}</UiLabel>
           <strong>{verifiedCount}</strong>
         </div>
-        {publicReviewWriteEnabled ? (
+        {presentation.write === "form" ? (
           <ButtonLink
             variant="ghost"
             href={`#${reviewFormId}`}
@@ -132,7 +160,7 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
           />
         </div>
 
-        {publicReviewWriteEnabled ? (
+        {presentation.write === "form" ? (
           <ListingReviewForm
             id={reviewFormId}
             onSubmit={submitReview}
@@ -177,15 +205,15 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
               placeholder={websiteCopy["listingreviewssection_0446"]}
             />
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Publishing..." : "Publish review"}
+              {isSubmitting ? "Submitting..." : "Submit review"}
             </Button>
             {status.message ? <FormStatus status={status} /> : null}
           </ListingReviewForm>
         ) : (
           <ListingReviewEmptyState reveal>
             <div>
-              <UiLabel>Reviews unavailable</UiLabel>
-              <h3>Public reviews are not available for this listing.</h3>
+              <UiLabel>{organizerListingCopy.reviews.unavailableLabel}</UiLabel>
+              <h3>{organizerListingCopy.reviews.unavailableTitle}</h3>
               <p>{publicReviewReason}</p>
             </div>
           </ListingReviewEmptyState>

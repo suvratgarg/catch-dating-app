@@ -201,6 +201,7 @@ function mockClaimController(overrides: Partial<ClaimFlowController> = {}): Clai
     businessEmail: "host@example.com",
     businessPhone: "",
     canContinueRole: true,
+    claimRuntimeAvailable: true,
     claimLookup: null,
     claimUrlState: null,
     currentStepIndex: 0,

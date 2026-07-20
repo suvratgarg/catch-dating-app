@@ -33,7 +33,16 @@ function wrapper() {
 function enabledListing(): HostListing {
   return {
     ...hostListings[0],
-    publicApi: {...hostListings[0].publicApi, state: "enabled", reason: ""},
+    authority: {
+      ...hostListings[0].authority,
+      claimState: "unclaimed",
+      ownershipState: "programmatic",
+      publishStatus: "published",
+    },
+    capabilities: {
+      ...hostListings[0].capabilities,
+      claimRequest: {state: "enabled", reason: ""},
+    },
   };
 }
 

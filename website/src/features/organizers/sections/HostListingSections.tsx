@@ -79,7 +79,7 @@ export function HostListingSections({
       {!isAppCreated ? (
         <>
           <ListingSourcesSection listing={listing} />
-          {canRequestClaim ? (
+          {claimController.presentation.panel !== "hidden" ? (
             <ListingMissingEvidenceSection
               claimController={claimController}
               listing={listing}

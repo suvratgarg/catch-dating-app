@@ -6,7 +6,6 @@ import {
   StatusBadge,
 } from "../OrganizerIdentity";
 import {activityForListing} from "../publicDiscovery";
-import {isVerifiedListing} from "../selectors";
 import {organizerPolicyForListing} from "../organizerPolicy";
 import type {HostListing} from "../types";
 import {
@@ -49,8 +48,18 @@ export function ListingHeroSection({
   shareStatus: string;
 }) {
   const activity = activityForListing(listing);
-  const resolvedCanRequestClaim = canRequestClaim ??
-    organizerPolicyForListing(listing).canRequestClaim;
+  const policy = organizerPolicyForListing(listing);
+  const resolvedCanRequestClaim = canRequestClaim ?? policy.canRequestClaim;
+  const metricItems = [
+    ...(listing.metrics?.memberCount !== undefined ? [{
+      label: websiteCopy["listingherosection_0408"],
+      value: listing.metrics.memberCount,
+    }] : []),
+    ...(policy.canReadPublicReviews && listing.metrics ? [
+      {label: websiteCopy["listingherosection_0415"], value: listing.metrics.rating?.toFixed(1) ?? "0.0"},
+      {label: websiteCopy["listingherosection_0417"], value: listing.metrics.reviewCount ?? 0},
+    ] : []),
+  ];
 
   return (
     <ListingHeroShell>
@@ -67,8 +76,8 @@ export function ListingHeroSection({
           <BadgeRow
             aria-label={websiteCopy["listingherosection_0407"]}
             items={[
-              {label: listing.status},
-              {label: listing.sourceConfidence.replaceAll("_", " ")},
+              {label: policy.badge.label},
+              {label: policy.verificationStatus.replaceAll(/([A-Z])/g, " $1").toLowerCase()},
               {label: websiteTemplates.updatedLabel(listing.lastVerifiedAt)},
             ]}
           />
@@ -130,21 +139,17 @@ export function ListingHeroSection({
           <ActivityMark listing={listing} size="lg" />
           <div>
             <UiLabel>
-              {isAppCreated ? "Catch organizer" : "Unclaimed profile"}
+              {policy.badge.label}
             </UiLabel>
             <h2>{listing.name}</h2>
             <p>
               {listing.host ? `Hosted by ${listing.host.name}` : `${listing.city}, ${listing.region}`}
             </p>
           </div>
-          {listing.metrics ? (
+          {metricItems.length ? (
             <ListingHeroMetrics
               aria-label={websiteCopy["listingherosection_0411"]}
-              items={[
-                {label: websiteCopy["listingherosection_0408"], value: listing.metrics.memberCount ?? 0},
-                {label: websiteCopy["listingherosection_0415"], value: listing.metrics.rating?.toFixed(1) ?? "0.0"},
-                {label: websiteCopy["listingherosection_0417"], value: listing.metrics.reviewCount ?? 0},
-              ]}
+              items={metricItems}
             />
           ) : null}
           <ListingFormatRow items={listing.formats} />
@@ -156,12 +161,16 @@ export function ListingHeroSection({
 }
 
 function ListingDiagnosticsPanel({listing}: {listing: HostListing}) {
-  const verified = isVerifiedListing(listing);
+  const policy = organizerPolicyForListing(listing);
+  const verified = ["firstParty", "ownerVerified"].includes(policy.trustState);
   const diagnostics = verified
     ? [
         {ok: true, label: websiteCopy["listingherosection_0412"]},
         {ok: true, label: websiteCopy["listingherosection_0406"]},
-        {ok: (listing.metrics?.reviewCount ?? 0) > 0, label: websiteCopy["listingherosection_0416"]},
+        ...(policy.canReadPublicReviews ? [{
+          ok: policy.canReadPublicReviews && (listing.metrics?.reviewCount ?? 0) > 0,
+          label: websiteCopy["listingherosection_0416"],
+        }] : []),
         {ok: Boolean(listing.eventSuccessSummary), label: websiteCopy["listingherosection_0405"]},
       ]
     : [

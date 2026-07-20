@@ -1,4 +1,5 @@
 import {describe, expect, it} from "vitest";
+import {organizerListingCopy} from "../../content/organizer";
 import {activeFeaturedCity, activeMarket} from "../../content/markets";
 import {hostListings} from "./data";
 import type {
@@ -57,7 +58,7 @@ describe("public discovery models", () => {
       activityKind: "dinner",
       timeline: "past",
       startTime: "2020-01-01T10:00:00.000Z",
-      title: "Past dinner",
+      title: hostListings[0].name,
       date: "1 January 2020",
       location: "Delhi",
       priceLabel: "₹1,500",
@@ -68,11 +69,24 @@ describe("public discovery models", () => {
       summary: "A past dinner",
     } as HostListingCatchEvent;
 
-    const card = eventActionCardForListing(hostListings[0], event);
+    const reviewReadableListing = {
+      ...hostListings[0],
+      capabilities: {
+        ...hostListings[0].capabilities,
+        publicReviews: {
+          targetState: "enabled",
+          readState: "enabled",
+          writeState: "enabled",
+          reason: "",
+        },
+      },
+    } as HostListing;
+    const card = eventActionCardForListing(reviewReadableListing, event);
 
-    expect(card.actions[1]).toMatchObject({
+    expect(card.actions).toHaveLength(1);
+    expect(card.actions[0]).toMatchObject({
       href: "#reviews",
-      label: "Read organizer reviews",
+      label: organizerListingCopy.eventActions.readOrganizerReviews,
       trackingLabel: "listing_organizer_reviews",
     });
   });
@@ -82,7 +96,7 @@ describe("public discovery models", () => {
       id: "external-event",
       activityKind: "socialRun",
       startTime: "2099-01-01T10:00:00.000Z",
-      title: "External run",
+      title: hostListings[0].name,
       date: "1 January 2099",
       location: "Delhi",
       priceLabel: "External ticketing",
@@ -94,7 +108,16 @@ describe("public discovery models", () => {
     const disabledCard = externalEventActionCardForListing(hostListings[0], event);
     const claimableListing = {
       ...hostListings[0],
-      publicApi: {...hostListings[0].publicApi, state: "enabled", reason: ""},
+      authority: {
+        ...hostListings[0].authority,
+        claimState: "unclaimed",
+        ownershipState: "programmatic",
+        publishStatus: "published",
+      },
+      capabilities: {
+        ...hostListings[0].capabilities,
+        claimRequest: {state: "enabled", reason: ""},
+      },
     } as HostListing;
     const enabledCard = externalEventActionCardForListing(claimableListing, event);
 

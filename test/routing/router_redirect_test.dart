@@ -403,19 +403,31 @@ void main() {
     );
 
     test(
-      'authenticated users without a profile doc are sent to onboarding',
+      'authenticated users without a profile may still browse public routes',
       () {
         expect(
           _redirect(
             uidAsync: const AsyncData(_testUid),
             userProfileAsync: const AsyncData(null),
-            location: '/clubs',
+            location: '/organizers',
             matchedLocation: Routes.exploreScreen.path,
           ),
-          '/onboarding?from=%2Fclubs',
+          null,
         );
       },
     );
+
+    test('authenticated users without a profile still gate private routes', () {
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(_testUid),
+          userProfileAsync: const AsyncData(null),
+          location: '/chats',
+          matchedLocation: Routes.matchesListScreen.path,
+        ),
+        '/onboarding?from=%2Fchats',
+      );
+    });
 
     test('club detail deep links are accessible to unauthenticated users', () {
       expect(

@@ -15,6 +15,7 @@ export interface CreatePublicClubReviewCallableResponse {
     createdAt: string;
     verificationStatus: "verified" | "unverified";
     source: "catchEvent" | "publicListing";
+    moderationStatus: "published" | "pending";
     isAnonymous: boolean;
     ownerResponse: {
       hostName: string;

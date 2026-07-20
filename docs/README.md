@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 4.7.0
-updated: 2026-07-20
+version: 4.7.1
+updated: 2026-07-21
 owner: recursive_audit_loop
 status: active
 ---
@@ -48,6 +48,7 @@ section unless the task requires a full historical audit.
 | Release operations | `release_operations.md` | CI/release gates, Firebase deploy ordering, environment prerequisites, smoke tests, and human release evidence. |
 | Durable business operations | `operations_platform.md` | Canonical boundary for resumable human/worker/agent workflows, persisted runs and work items, authority lanes, Supply Intake stages, source learning, publication plans, and future admin-workflow adoption. |
 | Web surface architecture | `web_surface_architecture.md` | Domain/subdomain ownership, Firebase Hosting targets, stack boundaries for marketing/app/admin, marketing CI/CD, public website route contracts, and future host-portal placement. |
+| Public viewer and listing authority behavior | `web_surface_architecture.md#public-viewer-and-listing-authority-matrix`, `../design/public_surface_behavior.json` | Executable app/website matrix for auth resolution, profile readiness, app role, listing lifecycle/authority/publication, event capability, claim/review target and runtime capability, action disposition, exact consumer-route ownership, and proof harnesses. |
 | Marketing website architecture | `marketing_website_architecture.md` | Code organization, route-first/page-controller-component boundaries, target feature structure, and refactor order for `website/**`. |
 | Admin and analytics dashboard | `admin_analytics_dashboard_spec.md` | Internal admin console and analytics product spec: safety/access ops, cohort retention, host/event analytics, user value, finance, BigQuery marts, and admin API boundaries. |
 | Admin dashboard user stories and component catalogue | `admin_dashboard_user_stories_and_component_catalogue.md` | Tab-by-tab user stories, current workflow fit, top admin-console weaknesses, inspected-file log, and React admin primitive/component migration catalogue. |

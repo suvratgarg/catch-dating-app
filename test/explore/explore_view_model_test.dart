@@ -252,9 +252,9 @@ void main() {
 
       expect(state.title, 'Explore');
       expect(state.searchValue, 'pickleball dinner');
-      expect(state.searchPlaceholder, 'Search events or clubs');
-      expect(state.searchTooltip, 'Search events or clubs');
-      expect(state.searchSemanticLabel, 'Search events or clubs');
+      expect(state.searchPlaceholder, 'Search events or organizers');
+      expect(state.searchTooltip, 'Search events or organizers');
+      expect(state.searchSemanticLabel, 'Search events or organizers');
       expect(state.showSearchAction, true);
       expect(state.showCoverStory, false);
       expect(state.searchExpanded, false);
@@ -1083,13 +1083,13 @@ void main() {
 
       final state = ExploreClubCardState.from(club, l10n: _l10n);
 
-      expect(state.memberCountLabel, '42 members');
+      expect(state.memberCountLabel, '42 followers');
       expect(state.caption, 'FRI 8 PM');
       expect(state.title, 'Tempo House');
       expect(state.supportingLabel, 'Next: Fri 8 PM');
       expect(state.ratingReviewLabel, '0.0 · NO REVIEWS');
       expect(state.semanticLabel, contains('Tempo House'));
-      expect(state.rowKicker, 'CLUB TO KNOW');
+      expect(state.rowKicker, 'ORGANIZER TO KNOW');
       expect(state.tags, ['music', 'social']);
     });
 

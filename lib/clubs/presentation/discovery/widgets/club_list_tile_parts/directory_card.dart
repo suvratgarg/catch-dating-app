@@ -64,12 +64,18 @@ class ClubIndexRow extends StatelessWidget {
                     style: CatchTextStyles.titleS(context, color: t.ink),
                   ),
                   gapH8,
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: CatchBadge.functional(
-                      label: _clubIndexActivityLabel(club),
-                      accentColor: activitySwatch.accent,
-                    ),
+                  Wrap(
+                    spacing: CatchSpacing.micro6,
+                    runSpacing: CatchSpacing.micro6,
+                    children: [
+                      CatchBadge.functional(
+                        label: _clubIndexActivityLabel(club),
+                        accentColor: activitySwatch.accent,
+                      ),
+                      OrganizerAuthorityBadge(
+                        state: club.organizerAuthority.trustState,
+                      ),
+                    ],
                   ),
                   gapH6,
                   Text(
@@ -114,7 +120,17 @@ class MembershipTrailingController extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (isJoined) {
+    final uidAsync = ref.watch(uidProvider);
+    final actionState = exploreOrganizerMembershipActionState(
+      contentVisible: true,
+      authResolved: uidAsync.hasValue,
+      uid: uidAsync.asData?.value,
+      isFollowing: isJoined,
+    );
+    if (actionState == ExploreOrganizerMembershipActionState.hidden) {
+      return const SizedBox.shrink();
+    }
+    if (actionState == ExploreOrganizerMembershipActionState.following) {
       return const MembershipTrailing(
         isJoined: true,
         isPending: false,
@@ -153,8 +169,7 @@ class MembershipTrailingController extends ConsumerWidget {
         isJoined: false,
         isPending: joinMutation.isPending,
         onJoinPressed: () {
-          final uid = ref.read(uidProvider).asData?.value;
-          if (uid == null) {
+          if (actionState == ExploreOrganizerMembershipActionState.signInGate) {
             context.go(
               Uri(
                 path: Routes.authScreen.path,

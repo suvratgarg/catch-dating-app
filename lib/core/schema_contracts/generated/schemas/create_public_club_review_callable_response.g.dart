@@ -31,6 +31,7 @@ const schemaCreatePublicClubReviewCallableResponseSchema = <String, Object?>{
         'createdAt',
         'verificationStatus',
         'source',
+        'moderationStatus',
         'isAnonymous',
         'ownerResponse',
       ],
@@ -67,6 +68,13 @@ const schemaCreatePublicClubReviewCallableResponseSchema = <String, Object?>{
           'enum': <Object?>[
             'catchEvent',
             'publicListing',
+          ],
+        },
+        'moderationStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'published',
+            'pending',
           ],
         },
         'isAnonymous': <String, Object?>{
@@ -124,6 +132,7 @@ const schemaCreatePublicClubReviewCallableResponseSchema = <String, Object?>{
         'createdAt',
         'verificationStatus',
         'source',
+        'moderationStatus',
         'isAnonymous',
         'ownerResponse',
       ],
@@ -160,6 +169,13 @@ const schemaCreatePublicClubReviewCallableResponseSchema = <String, Object?>{
           'enum': <Object?>[
             'catchEvent',
             'publicListing',
+          ],
+        },
+        'moderationStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'published',
+            'pending',
           ],
         },
         'isAnonymous': <String, Object?>{

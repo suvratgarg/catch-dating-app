@@ -210,8 +210,11 @@
             "external",
             "local",
             "signInGate",
-            "profileGate",
-            "redirectSignIn"
+          "profileGate",
+          "redirectSignIn",
+          "redirectLoading",
+          "redirectProfile",
+          "redirectResume"
           ]
         },
         "description": {
@@ -232,7 +235,9 @@
         "description": {
           "type": "string",
           "minLength": 1
-        }
+        },
+        "constantDisposition": {"$ref": "#/$defs/id"},
+        "constantRationale": {"type": "string", "minLength": 1}
       }
     },
     "expectation": {
@@ -291,6 +296,16 @@
         }
       }
     },
+    "excludedDecisionValues": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
     "surface": {
       "type": "object",
       "additionalProperties": false,
@@ -301,6 +316,7 @@
         "coverageRationale",
         "routeIds",
         "decisionDimensions",
+        "excludedDecisionValues",
         "invariantDimensions",
         "compositionIds",
         "elements",
@@ -332,6 +348,9 @@
             {"minItems": 1}
           ]
         },
+        "excludedDecisionValues": {
+          "$ref": "#/$defs/excludedDecisionValues"
+        },
         "invariantDimensions": {"$ref": "#/$defs/stringSet"},
         "compositionIds": {"$ref": "#/$defs/stringSet"},
         "elements": {
@@ -354,7 +373,16 @@
     "proofHarness": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "platform", "status", "path", "contains", "surfaceIds"],
+      "required": [
+        "id",
+        "platform",
+        "status",
+        "path",
+        "contains",
+        "surfaceIds",
+        "configurationIds",
+        "verificationMode"
+      ],
       "properties": {
         "id": {"$ref": "#/$defs/id"},
         "platform": {
@@ -375,6 +403,15 @@
             {"$ref": "#/$defs/stringSet"},
             {"minItems": 1}
           ]
+        },
+        "configurationIds": {
+          "allOf": [
+            {"$ref": "#/$defs/stringSet"},
+            {"minItems": 1}
+          ]
+        },
+        "verificationMode": {
+          "const": "dynamicMatrixEnumeration"
         }
       }
     },

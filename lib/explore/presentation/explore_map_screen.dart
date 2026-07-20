@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/external_links.dart';
@@ -58,7 +59,9 @@ class ExploreMapScreen extends ConsumerStatefulWidget {
 class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
   String? _selectedEventId;
   String? _lastMarketId;
+  String? _lastViewerCacheKey;
   AsyncValue<EventMapViewModel>? _lastSuccessfulMapViewModel;
+  bool _guestJoinedFilterResetQueued = false;
 
   @override
   void initState() {
@@ -78,6 +81,16 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final uidAsync = ref.watch(uidProvider);
+    final viewerCacheKey = exploreMapViewerCacheKey(uidAsync);
+    if (_lastViewerCacheKey != viewerCacheKey) {
+      final hadViewer = _lastViewerCacheKey != null;
+      _lastViewerCacheKey = viewerCacheKey;
+      _lastSuccessfulMapViewModel = null;
+      if (hadViewer) {
+        _selectedEventId = widget.initialSelectedEventId;
+      }
+    }
     final feedAsync = ref.watch(exploreFeedViewModelProvider);
     final selectedCity = ref.watch(selectedExploreCityProvider);
     final marketId = selectedCity.effectiveMarketId;
@@ -86,6 +99,11 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
       _lastSuccessfulMapViewModel = null;
     }
     final filters = ref.watch(exploreFiltersProvider);
+    if (uidAsync.asData?.value == null &&
+        uidAsync.asData != null &&
+        filters.joinedOnly) {
+      _scheduleGuestJoinedFilterReset();
+    }
     final deviceLocationAsync = ref.watch(deviceLocationProvider);
     final deviceLocation = deviceLocationAsync.asData?.value;
     final distanceRingRadiusKm = exploreDistanceFilterKm(
@@ -378,6 +396,20 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
     );
   }
 
+  void _scheduleGuestJoinedFilterReset() {
+    if (_guestJoinedFilterResetQueued) return;
+    _guestJoinedFilterResetQueued = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _guestJoinedFilterResetQueued = false;
+      if (!mounted) return;
+      final uidData = ref.read(uidProvider).asData;
+      if (uidData == null || uidData.value != null) return;
+      final filters = ref.read(exploreFiltersProvider);
+      if (!filters.joinedOnly) return;
+      ref.read(exploreFiltersProvider.notifier).toggleJoinedOnly();
+    });
+  }
+
   void _clearSelection() {
     if (_selectedEventId == null) return;
     catchSelectionHaptic();
@@ -457,6 +489,13 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
         );
     unawaited(ref.read(externalLinkControllerProvider).openExternal(uri));
   }
+}
+
+@visibleForTesting
+String exploreMapViewerCacheKey(AsyncValue<String?> uidAsync) {
+  final uidData = uidAsync.asData;
+  if (uidData == null) return 'auth-resolving';
+  return uidData.value == null ? 'guest' : 'viewer:${uidData.value}';
 }
 
 @visibleForTesting

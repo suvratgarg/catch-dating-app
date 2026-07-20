@@ -656,6 +656,55 @@
     "x-owner": "product",
     "x-surface": "clubs.presentation.detail.widgets.club_detail_body"
   },
+  "organizersAuthorityBadgeUnclaimed": "Unclaimed listing",
+  "@organizersAuthorityBadgeUnclaimed": {
+    "description": "Authority badge for a crawled organizer listing that has not been claimed.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "organizers.presentation.organizer_authority_badge"
+  },
+  "organizersAuthorityBadgeSourceBacked": "Source backed",
+  "@organizersAuthorityBadgeSourceBacked": {
+    "description": "Authority badge for an organizer listing supported by reviewed public sources but not owner verified.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "organizers.presentation.organizer_authority_badge"
+  },
+  "organizersAuthorityBadgeClaimPending": "Claim under review",
+  "@organizersAuthorityBadgeClaimPending": {
+    "description": "Authority badge for an organizer listing with a pending claim request.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "organizers.presentation.organizer_authority_badge"
+  },
+  "organizersAuthorityBadgeClaimed": "Claimed",
+  "@organizersAuthorityBadgeClaimed": {
+    "description": "Authority badge for a claimed organizer listing that is not yet owner verified.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "organizers.presentation.organizer_authority_badge"
+  },
+  "organizersAuthorityBadgeCatchOrganizer": "Catch organizer",
+  "@organizersAuthorityBadgeCatchOrganizer": {
+    "description": "Authority badge for a first-party organizer created in Catch without implying owner verification.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "organizers.presentation.organizer_authority_badge"
+  },
+  "organizersAuthorityBadgeOwnerVerified": "Owner verified",
+  "@organizersAuthorityBadgeOwnerVerified": {
+    "description": "Authority badge for an organizer whose owner identity has been verified.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "organizers.presentation.organizer_authority_badge"
+  },
+  "organizersAuthorityBadgeUnavailable": "Unavailable",
+  "@organizersAuthorityBadgeUnavailable": {
+    "description": "Defensive authority badge for a suppressed organizer; public routes should normally hide this state.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "organizers.presentation.organizer_authority_badge"
+  },
   "clubsClubDetailBodyTitleReviews": "Reviews",
   "@clubsClubDetailBodyTitleReviews": {
     "description": "Product copy used by lib/clubs/presentation/detail/widgets/club_detail_body.dart (title).",
@@ -12158,6 +12207,13 @@
     "x-owner": "product",
     "x-surface": "events.presentation.event_detail_screen_state"
   },
+  "eventsEventDetailScreenStateLabelEventCancelled": "This event was cancelled",
+  "@eventsEventDetailScreenStateLabelEventCancelled": {
+    "description": "Disabled Event Detail dock status for a cancelled event.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "events.presentation.event_detail_screen_state"
+  },
   "eventsEventDetailScreenStateLabelMustBeMinageTo": "Must be {minAge}+ to join",
   "@eventsEventDetailScreenStateLabelMustBeMinageTo": {
     "description": "Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).",
@@ -12236,6 +12292,27 @@
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "events.presentation.event_detail_screen_state"
+  },
+  "eventsEventDetailScreenStateLabelEventFull": "Event full",
+  "@eventsEventDetailScreenStateLabelEventFull": {
+    "description": "Disabled Event Detail action when capacity is full and no waitlist is available.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "events.presentation.event_detail_screen_state"
+  },
+  "eventsEventDetailScreenStateLabelEventInProgress": "Event in progress",
+  "@eventsEventDetailScreenStateLabelEventInProgress": {
+    "description": "Disabled Event Detail action while an event is currently running.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "events.presentation.event_detail_screen_state"
+  },
+  "eventsEventDetailScreenLabelCompleteBookingProfile": "Complete booking profile",
+  "@eventsEventDetailScreenLabelCompleteBookingProfile": {
+    "description": "Event Detail action shown to signed-in viewers who need booking profile fields.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "events.presentation.event_detail_screen"
   },
   "eventsEventDetailScreenStateLabelCancelBooking": "Cancel booking",
   "@eventsEventDetailScreenStateLabelCancelBooking": {

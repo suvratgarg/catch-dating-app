@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 548,
+  "total": 558,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -24,7 +24,7 @@
       ]
     },
     "flutter_unit_widget": {
-      "count": 268,
+      "count": 270,
       "files": [
         "test/activity/activity_taxonomy_test.dart",
         "test/analytics/app_analytics_test.dart",
@@ -117,6 +117,7 @@
         "test/dashboard/dashboard_full_view_model_test.dart",
         "test/dashboard/dashboard_screen_test.dart",
         "test/dashboard/empty_hero_card_test.dart",
+        "test/design/public_surface_behavior_test.dart",
         "test/event_policies/event_policy_lab_screen_test.dart",
         "test/event_policies/event_policy_preview_test.dart",
         "test/event_policies/event_policy_test.dart",
@@ -230,6 +231,7 @@
         "test/onboarding/onboarding_flow_state_test.dart",
         "test/onboarding/onboarding_step_test.dart",
         "test/onboarding/onboarding_widgets_test.dart",
+        "test/organizers/organizer_authority_test.dart",
         "test/payments/payment_confirmation_controller_test.dart",
         "test/payments/payment_confirmation_screen_test.dart",
         "test/payments/payment_history_repository_test.dart",
@@ -305,7 +307,7 @@
       ]
     },
     "functions_source": {
-      "count": 88,
+      "count": 89,
       "files": [
         "functions/src/admin/accessApplications.test.ts",
         "functions/src/admin/adminAuth.test.ts",
@@ -370,6 +372,7 @@
         "functions/src/operations/projectionImporter.test.ts",
         "functions/src/operations/reducers.test.ts",
         "functions/src/operations/validation.test.ts",
+        "functions/src/organizers/organizerPayloadNormalization.test.ts",
         "functions/src/payments/createRazorpayOrder.test.ts",
         "functions/src/payments/createStripeCheckoutSession.test.ts",
         "functions/src/payments/paymentValidation.test.ts",
@@ -398,7 +401,7 @@
       ]
     },
     "tooling": {
-      "count": 129,
+      "count": 132,
       "files": [
         "tool/agent/check_agent_readiness.test.mjs",
         "tool/architecture/check_adopted_architecture_boundaries.test.mjs",
@@ -409,6 +412,7 @@
         "tool/audit/check_fn_rate_limits.test.mjs",
         "tool/audit/check_fn_readme_inventory.test.mjs",
         "tool/check_enforcement_integrity.test.mjs",
+        "tool/check_organizer_nomenclature.test.mjs",
         "tool/check_repository_root_hygiene.test.mjs",
         "tool/ci/check_tool_category_coverage.test.mjs",
         "tool/contracts/check_firestore_query_indexes.test.mjs",
@@ -422,6 +426,7 @@
         "tool/data/backfill_location_market_fields.test.mjs",
         "tool/data/backfill_organizer_admin_search.test.mjs",
         "tool/data/backfill_profile_photos.test.mjs",
+        "tool/data/migrate_clubs_to_organizers.test.mjs",
         "tool/data/profile_projection_parity.test.mjs",
         "tool/data/recompute_club_host_profiles.test.mjs",
         "tool/data/recompute_club_member_counts.test.mjs",
@@ -440,6 +445,7 @@
         "tool/design/check_component_lexicon.test.mjs",
         "tool/design/check_host_event_field_contracts.test.mjs",
         "tool/design/check_option_group_usage.test.mjs",
+        "tool/design/check_public_surface_behavior.test.mjs",
         "tool/design/check_rail_contracts.test.mjs",
         "tool/design/check_reference_screens.test.mjs",
         "tool/design/check_screen_gutters.test.mjs",
@@ -532,7 +538,7 @@
       ]
     },
     "web": {
-      "count": 51,
+      "count": 55,
       "files": [
         "admin/src/app/App.test.tsx",
         "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
@@ -574,15 +580,19 @@
         "website/scripts/ownerGatedContent.test.mjs",
         "website/scripts/postbuild.test.mjs",
         "website/src/content/contentContracts.test.ts",
+        "website/src/features/claims/claimRouting.test.ts",
         "website/src/features/claims/useClaimFlowController.test.tsx",
         "website/src/features/claims/useClaimRequestMutation.test.tsx",
         "website/src/features/host/application/applicationModel.test.ts",
         "website/src/features/host/application/useHostApplicationController.test.tsx",
         "website/src/features/marketing/tracking.test.ts",
+        "website/src/features/organizers/organizerPolicy.test.ts",
         "website/src/features/organizers/publicDiscovery.test.ts",
+        "website/src/features/organizers/publicSurfaceBehavior.test.ts",
         "website/src/features/organizers/selectors.test.ts",
         "website/src/features/organizers/useHostListingPageController.test.tsx",
         "website/src/features/organizers/useOrganizerDirectoryController.test.tsx",
+        "website/src/features/reviews/reviewModel.test.ts",
         "website/src/features/reviews/useListingReviewsController.test.tsx",
         "website/src/features/waitlist/useWaitlistFormController.test.tsx"
       ]

@@ -56,18 +56,22 @@ AsyncValue<ClubDetailViewModel?> clubDetailViewModel(Ref ref, String clubId) {
   // silently disappear when discarded via .asData?.value in
   // buildClubDetailViewModel.
   if (reviewsAsync.hasError) {
-    ref.read(errorLoggerProvider).logError(
-      reviewsAsync.error!,
-      reviewsAsync.stackTrace,
-      reason: 'Failed to load reviews for club $clubId',
-    );
+    ref
+        .read(errorLoggerProvider)
+        .logError(
+          reviewsAsync.error!,
+          reviewsAsync.stackTrace,
+          reason: 'Failed to load reviews for club $clubId',
+        );
   }
   if (userProfileAsync.hasError) {
-    ref.read(errorLoggerProvider).logError(
-      userProfileAsync.error!,
-      userProfileAsync.stackTrace,
-      reason: 'Failed to load user profile in club detail',
-    );
+    ref
+        .read(errorLoggerProvider)
+        .logError(
+          userProfileAsync.error!,
+          userProfileAsync.stackTrace,
+          reason: 'Failed to load user profile in club detail',
+        );
   }
 
   return buildClubDetailViewModel(
@@ -77,6 +81,7 @@ AsyncValue<ClubDetailViewModel?> clubDetailViewModel(Ref ref, String clubId) {
     userProfileAsync: userProfileAsync,
     uidAsync: uidAsync,
     membershipAsync: membershipAsync,
+    appRole: AppConfig.appRole,
   );
 }
 
@@ -87,6 +92,7 @@ AsyncValue<ClubDetailViewModel?> buildClubDetailViewModel({
   required AsyncValue<UserProfile?> userProfileAsync,
   required AsyncValue<String?> uidAsync,
   required AsyncValue<ClubMembership?> membershipAsync,
+  AppRole appRole = AppRole.consumer,
   DateTime? now,
 }) {
   final uid = uidAsync.asData?.value;
@@ -115,14 +121,32 @@ AsyncValue<ClubDetailViewModel?> buildClubDetailViewModel({
       uidAsync.stackTrace ?? StackTrace.current,
     );
   }
-
   final club = clubAsync.asData?.value;
   if (club == null) return const AsyncData(null);
+  final isOwnedHostRoute = uid != null && club.isHostedBy(uid);
+  if (appRole.isHost && !isOwnedHostRoute) {
+    return const AsyncData(null);
+  }
+  if (!appRole.isHost && !club.isPubliclyBrowseable) {
+    return const AsyncData(null);
+  }
+  // Membership only controls the consumer join/leave dock. An organizer owner
+  // must not lose access to their own page when that unrelated edge is loading
+  // or unavailable.
+  if (isAuthenticated && !isOwnedHostRoute && membershipAsync.isLoading) {
+    return const AsyncLoading();
+  }
+  if (isAuthenticated && !isOwnedHostRoute && membershipAsync.hasError) {
+    return AsyncError(
+      membershipAsync.error!,
+      membershipAsync.stackTrace ?? StackTrace.current,
+    );
+  }
 
   final events = eventsAsync.asData?.value ?? const [];
   final effectiveNow = now ?? DateTime.now();
   final upcomingEvents =
-      events.where((event) => event.startTime.isAfter(effectiveNow)).toList()
+      events.where((event) => event.isUpcomingAt(effectiveNow)).toList()
         ..sort((a, b) => a.startTime.compareTo(b.startTime));
   final reviews = isAuthenticated
       ? (reviewsAsync.asData?.value ?? const [])
@@ -134,8 +158,7 @@ AsyncValue<ClubDetailViewModel?> buildClubDetailViewModel({
   return AsyncData(
     ClubDetailViewModel(
       club: club,
-      isHost:
-          AppConfig.appRole.isHost && isAuthenticated && club.isHostedBy(uid),
+      isHost: isAuthenticated && club.isHostedBy(uid),
       isMember: isAuthenticated && isActiveMember,
       upcomingEvents: upcomingEvents,
       reviews: reviews,

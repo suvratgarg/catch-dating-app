@@ -22,6 +22,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/organizers/presentation/organizer_authority_badge.dart';
 import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
 import 'package:flutter/material.dart';
 
@@ -147,6 +148,13 @@ class ClubDetailSliverBody extends StatelessWidget {
                   ),
                   gapH16,
                 ],
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: OrganizerAuthorityBadge(
+                    state: club.organizerAuthority.trustState,
+                  ),
+                ),
+                gapH12,
                 CatchMetricStrip(items: _clubMetricItems(club, context.l10n)),
               ],
             ),
@@ -171,18 +179,21 @@ class ClubDetailSliverBody extends StatelessWidget {
                     title: context.l10n.clubsClubDetailBodyTitleFromTheClub,
                     child: ClubPhotoStrip(club: club),
                   ),
-                CatchSection.divided(
-                  title: context.l10n.clubsClubDetailBodyTitleYourHosts,
-                  count: club.displayHostProfiles.length,
-                  child: ClubHostSection(
-                    club: club,
-                    canViewProfile: effectiveHostProfileSelection != null,
-                    isMessageHostPending: state.isMessageHostPending,
-                    messageableHostUids: state.messageableHostUids,
-                    onViewProfile: effectiveHostProfileSelection,
-                    onMessageHost: effectiveHostMessage,
+                if (club.displayHostProfiles.isNotEmpty)
+                  CatchSection.divided(
+                    title: context.l10n.clubsClubDetailBodyTitleYourHosts,
+                    count: club.displayHostProfiles.length,
+                    child: ClubHostSection(
+                      club: club,
+                      canViewProfile:
+                          state.isAuthenticated &&
+                          effectiveHostProfileSelection != null,
+                      isMessageHostPending: state.isMessageHostPending,
+                      messageableHostUids: state.messageableHostUids,
+                      onViewProfile: effectiveHostProfileSelection,
+                      onMessageHost: effectiveHostMessage,
+                    ),
                   ),
-                ),
               ],
             ),
           ],

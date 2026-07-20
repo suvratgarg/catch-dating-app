@@ -602,7 +602,7 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
       .where((event) => event.isUpcomingAt(now))
       .map((event) {
         final club = clubById[event.clubId];
-        if (club == null) return null;
+        if (club == null || !club.isPubliclyBrowseable) return null;
         final isClubMember = membershipClubIds.contains(event.clubId);
         final distanceFromUserKm = _distanceFromUserKm(
           event: event,

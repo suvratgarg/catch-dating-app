@@ -89,15 +89,15 @@ function ClaimListingPanel({
     handleSignIn,
     handleSignOut,
     handleSubmit,
-    isConfigured,
     isSigningIn,
     isSubmitting,
     notConfiguredReason,
+    presentation,
     status,
     user,
   } = controller;
 
-  if (!isConfigured) {
+  if (presentation.panel === "runtimeFallback") {
     return (
       <ClaimRequestPanel id="claim" reveal>
         <div>

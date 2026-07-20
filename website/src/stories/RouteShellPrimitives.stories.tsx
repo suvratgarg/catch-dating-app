@@ -624,6 +624,7 @@ function mockListingClaimController(
     isSigningIn: false,
     isSubmitting: false,
     notConfiguredReason: "",
+    presentation: {panel: "form"},
     publicApiEnabled: true,
     status: {message: "", tone: ""},
     user: null,

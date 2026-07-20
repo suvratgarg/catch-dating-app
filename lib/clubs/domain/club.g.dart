@@ -60,6 +60,22 @@ _Club _$ClubFromJson(Map<String, dynamic> json) => _Club(
   appVisibility:
       $enumDecodeNullable(_$ClubAppVisibilityEnumMap, json['appVisibility']) ??
       ClubAppVisibility.discoverable,
+  ownership: json['ownership'] == null
+      ? null
+      : OrganizerOwnership.fromJson(json['ownership'] as Map<String, dynamic>),
+  claim: json['claim'] == null
+      ? null
+      : OrganizerClaim.fromJson(json['claim'] as Map<String, dynamic>),
+  publicPage: json['publicPage'] == null
+      ? null
+      : OrganizerPublicPage.fromJson(
+          json['publicPage'] as Map<String, dynamic>,
+        ),
+  provenance: json['provenance'] == null
+      ? null
+      : OrganizerProvenance.fromJson(
+          json['provenance'] as Map<String, dynamic>,
+        ),
   organizerType:
       $enumDecodeNullable(
         _$OrganizerTypeEnumMap,
@@ -106,6 +122,10 @@ Map<String, dynamic> _$ClubToJson(_Club instance) => <String, dynamic>{
   'archivedAt': const NullableTimestampConverter().toJson(instance.archivedAt),
   'archiveReason': instance.archiveReason,
   'appVisibility': _$ClubAppVisibilityEnumMap[instance.appVisibility]!,
+  'ownership': instance.ownership?.toJson(),
+  'claim': instance.claim?.toJson(),
+  'publicPage': instance.publicPage?.toJson(),
+  'provenance': instance.provenance?.toJson(),
   'organizerType': _$OrganizerTypeEnumMap[instance.organizerType]!,
   'publicCategoryLabel': instance.publicCategoryLabel,
   'hostDefaults': instance.hostDefaults.toJson(),

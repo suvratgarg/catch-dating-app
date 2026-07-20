@@ -98,7 +98,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     final query = ref.watch(exploreSearchQueryProvider).trim();
     final filters = ref.watch(exploreFiltersProvider);
     final uidData = uidAsync.asData;
-    final showAccountControls = uidData?.value != null;
+    final showAccountControls = exploreShowsAccountControls(
+      authResolved: uidData != null,
+      uid: uidData?.value,
+    );
     if (uidData?.value == null && uidData != null && filters.joinedOnly) {
       _scheduleGuestJoinedFilterReset();
     }
@@ -580,6 +583,12 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     );
   }
 }
+
+@visibleForTesting
+bool exploreShowsAccountControls({
+  required bool authResolved,
+  required String? uid,
+}) => authResolved && uid != null;
 
 double _mapLauncherBottomOffset(BuildContext context) {
   return AppShellActiveTab.bottomOverlayClearanceOf(

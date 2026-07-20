@@ -607,6 +607,48 @@ abstract class AppLocalizations {
   /// **'Your hosts'**
   String get clubsClubDetailBodyTitleYourHosts;
 
+  /// Authority badge for a crawled organizer listing that has not been claimed.
+  ///
+  /// In en, this message translates to:
+  /// **'Unclaimed listing'**
+  String get organizersAuthorityBadgeUnclaimed;
+
+  /// Authority badge for an organizer listing supported by reviewed public sources but not owner verified.
+  ///
+  /// In en, this message translates to:
+  /// **'Source backed'**
+  String get organizersAuthorityBadgeSourceBacked;
+
+  /// Authority badge for an organizer listing with a pending claim request.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim under review'**
+  String get organizersAuthorityBadgeClaimPending;
+
+  /// Authority badge for a claimed organizer listing that is not yet owner verified.
+  ///
+  /// In en, this message translates to:
+  /// **'Claimed'**
+  String get organizersAuthorityBadgeClaimed;
+
+  /// Authority badge for a first-party organizer created in Catch without implying owner verification.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch organizer'**
+  String get organizersAuthorityBadgeCatchOrganizer;
+
+  /// Authority badge for an organizer whose owner identity has been verified.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner verified'**
+  String get organizersAuthorityBadgeOwnerVerified;
+
+  /// Defensive authority badge for a suppressed organizer; public routes should normally hide this state.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable'**
+  String get organizersAuthorityBadgeUnavailable;
+
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_body.dart (title).
   ///
   /// In en, this message translates to:
@@ -10394,6 +10436,12 @@ abstract class AppLocalizations {
   /// **'This event has ended'**
   String get eventsEventDetailScreenStateLabelThisEventHasEnded;
 
+  /// Disabled Event Detail dock status for a cancelled event.
+  ///
+  /// In en, this message translates to:
+  /// **'This event was cancelled'**
+  String get eventsEventDetailScreenStateLabelEventCancelled;
+
   /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
@@ -10459,6 +10507,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Book event'**
   String get eventsEventDetailScreenStateLabelBookEvent;
+
+  /// Disabled Event Detail action when capacity is full and no waitlist is available.
+  ///
+  /// In en, this message translates to:
+  /// **'Event full'**
+  String get eventsEventDetailScreenStateLabelEventFull;
+
+  /// Disabled Event Detail action while an event is currently running.
+  ///
+  /// In en, this message translates to:
+  /// **'Event in progress'**
+  String get eventsEventDetailScreenStateLabelEventInProgress;
+
+  /// Event Detail action shown to signed-in viewers who need booking profile fields.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete booking profile'**
+  String get eventsEventDetailScreenLabelCompleteBookingProfile;
 
   /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
   ///

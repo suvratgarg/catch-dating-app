@@ -84,11 +84,15 @@ class ClubDetailScreen extends ConsumerWidget {
     );
     final screenState = HostClubDetailScreenState.fromState(
       viewModel: _catchAsyncState(vmAsync),
-      initialClub: initialClub,
+      initialClub: clubDetailInitialClubForRoute(
+        clubId: clubId,
+        initialClub: initialClub,
+      ),
       currentUid: currentUid,
       currentUserProfile: currentUserProfile,
       currentMembership: currentMembership,
       appRole: AppConfig.appRole,
+      authResolved: currentUidAsync.hasValue || currentUidAsync.hasError,
     );
 
     Widget wrapMutationListeners(Widget child) => CatchMutationErrorListeners(

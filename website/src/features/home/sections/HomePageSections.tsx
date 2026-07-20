@@ -50,7 +50,10 @@ import {
   publicEventSummaries,
   publicSearchSuggestions,
 } from "../../organizers/publicDiscoveryData";
-import {listingProfileStrength} from "../../organizers/selectors";
+import {
+  isPubliclyReadableListing,
+  listingProfileStrength,
+} from "../../organizers/selectors";
 import {WaitlistForm} from "../../waitlist/WaitlistForm";
 
 export function HomeHeroSection() {
@@ -201,6 +204,7 @@ export function HomeFormatsSection() {
 
 export function HomeFeaturedOrganizersSection() {
   const featured = hostListings
+    .filter(isPubliclyReadableListing)
     .slice()
     .sort((a, b) => listingProfileStrength(b) - listingProfileStrength(a))
     .slice(0, 3);

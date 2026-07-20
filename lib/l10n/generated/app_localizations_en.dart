@@ -290,6 +290,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clubsClubDetailBodyTitleYourHosts => 'Your hosts';
 
   @override
+  String get organizersAuthorityBadgeUnclaimed => 'Unclaimed listing';
+
+  @override
+  String get organizersAuthorityBadgeSourceBacked => 'Source backed';
+
+  @override
+  String get organizersAuthorityBadgeClaimPending => 'Claim under review';
+
+  @override
+  String get organizersAuthorityBadgeClaimed => 'Claimed';
+
+  @override
+  String get organizersAuthorityBadgeCatchOrganizer => 'Catch organizer';
+
+  @override
+  String get organizersAuthorityBadgeOwnerVerified => 'Owner verified';
+
+  @override
+  String get organizersAuthorityBadgeUnavailable => 'Unavailable';
+
+  @override
   String get clubsClubDetailBodyTitleReviews => 'Reviews';
 
   @override
@@ -6610,6 +6631,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'This event has ended';
 
   @override
+  String get eventsEventDetailScreenStateLabelEventCancelled =>
+      'This event was cancelled';
+
+  @override
   String eventsEventDetailScreenStateLabelMustBeMinageTo({
     required Object minAge,
   }) {
@@ -6656,6 +6681,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventsEventDetailScreenStateLabelBookEvent => 'Book event';
+
+  @override
+  String get eventsEventDetailScreenStateLabelEventFull => 'Event full';
+
+  @override
+  String get eventsEventDetailScreenStateLabelEventInProgress =>
+      'Event in progress';
+
+  @override
+  String get eventsEventDetailScreenLabelCompleteBookingProfile =>
+      'Complete booking profile';
 
   @override
   String get eventsEventDetailScreenStateLabelCancelBooking => 'Cancel booking';

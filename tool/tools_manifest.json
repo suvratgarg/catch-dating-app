@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-20",
+  "updated": "2026-07-21",
   "tools": [
     {
       "id": "tool:runner",
@@ -3420,6 +3420,33 @@
         "dart run tool/design_tokens.dart --check"
       ],
       "role": "finder"
+    },
+    {
+      "id": "design:public-surface-behavior",
+      "category": "design",
+      "path": "tool/design/check_public_surface_behavior.mjs",
+      "command": "node tool/design/check_public_surface_behavior.mjs --strict",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Enforces the cross-surface viewer, listing-authority, route-ownership, capability, and action behavior matrix.",
+      "checks": [
+        "node --check tool/design/check_public_surface_behavior.mjs",
+        "node --test tool/design/check_public_surface_behavior.test.mjs",
+        "node tool/design/check_public_surface_behavior.mjs --strict"
+      ],
+      "role": "gate",
+      "rules": [
+        "PUBLIC-SURFACE-BEHAVIOR-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_public_surface_behavior.test.mjs",
+        "contains": [
+          "strict verification rejects unverified configurations and planned harnesses",
+          "rejects duplicate configuration tuples",
+          "rejects unclassified or multiply owned consumer routes"
+        ]
+      }
     },
     {
       "id": "design:component-contracts",

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/organizers/domain/organizer_authority.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'club.freezed.dart';
@@ -76,6 +77,10 @@ abstract class Club with _$Club {
     @NullableTimestampConverter() DateTime? archivedAt,
     String? archiveReason,
     @Default(ClubAppVisibility.discoverable) ClubAppVisibility appVisibility,
+    OrganizerOwnership? ownership,
+    OrganizerClaim? claim,
+    OrganizerPublicPage? publicPage,
+    OrganizerProvenance? provenance,
     @JsonKey(readValue: _readOrganizerType)
     @Default(OrganizerType.club)
     OrganizerType organizerType,
@@ -134,6 +139,23 @@ abstract class Club with _$Club {
       appVisibility == ClubAppVisibility.discoverable &&
       status == ClubLifecycleStatus.active &&
       !archived;
+
+  OrganizerAuthority get organizerAuthority => OrganizerAuthority.resolve(
+    hasLegacyOwner:
+        ownerOrPrimaryHostUserId != null ||
+        hostUserIds.isNotEmpty ||
+        hostProfiles.isNotEmpty,
+    ownership: ownership,
+    claim: claim,
+    publicPage: publicPage,
+    provenance: provenance,
+  );
+
+  /// Public consumer routes require both app visibility and an authority state
+  /// that has not been suppressed or removed. Web publication/indexing remains
+  /// a separate capability because QA/noindex pages may still be previewed.
+  bool get isPubliclyBrowseable =>
+      isAppDiscoverable && !organizerAuthority.blocksPublicRead;
 }
 
 enum ClubHostRole { owner, host }

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/foundation.dart';
 
@@ -208,10 +209,12 @@ EventDetailSocialState eventDetailSocialStateFrom({
   required DateTime now,
 }) {
   final isMember = isAuthenticated && userProfile != null;
+  final isSocialReady = isMember && userProfile.hasSocialReadyProfileOn(now);
   final reviewAccessStarted = !event.endTime.isAfter(now);
   final canWrite =
-      isMember &&
+      isSocialReady &&
       !renderAsHost &&
+      !event.isCancelled &&
       participation?.status == EventParticipationStatus.attended &&
       reviewAccessStarted;
   final canRespond = isMember && renderAsHost && hasReviews;

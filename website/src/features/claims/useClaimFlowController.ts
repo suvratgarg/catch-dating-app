@@ -4,7 +4,10 @@ import {trackMarketingEvent} from "../../analytics";
 import {claimFirebaseConfigured} from "../../firebaseConfig";
 import {hostListings} from "../organizers/data";
 import {organizerPolicyForListing} from "../organizers/organizerPolicy";
-import {isClaimSubmissionEnabledListing} from "../organizers/selectors";
+import {
+  isClaimSubmissionEnabledListing,
+  isPubliclyReadableListing,
+} from "../organizers/selectors";
 import type {HostListing} from "../organizers/types";
 import type {FormStatus} from "../../shared/forms/types";
 import {emptyClaimRouteState, type ClaimRouteState} from "./claimRouting";
@@ -25,7 +28,10 @@ import {
 
 export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimRouteState) {
   const claimLookup = routeState.lookup;
-  const preselectedListing = routeState.listing;
+  const preselectedListing = routeState.listing &&
+    isPubliclyReadableListing(routeState.listing) ?
+    routeState.listing :
+    null;
   const claimUrlState = routeState.urlState;
   const urlRequestId = routeState.requestId;
   const [step, setStep] = useState<ClaimFlowStep>(
@@ -197,6 +203,7 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
     handleSignOut,
     isSigningIn,
     isSubmitting: claimRequestMutation.isPending,
+    claimRuntimeAvailable: claimFirebaseConfigured,
     listing,
     message,
     proofUrls,

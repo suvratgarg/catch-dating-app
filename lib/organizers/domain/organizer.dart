@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 
+export 'organizer_authority.dart';
+
 /// Canonical app-domain name for the organization that owns events.
 ///
 /// The typedef keeps released `Club` call sites source-compatible while new

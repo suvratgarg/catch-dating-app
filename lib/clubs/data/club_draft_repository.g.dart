@@ -93,4 +93,4 @@ final class ClubDraftProvider
   }
 }
 
-String _$clubDraftHash() => r'ec80ece972c4b906c6b2787961078ddf8cf9b144';
+String _$clubDraftHash() => r'6ef67b781af921e210a0cb127bf162b09a09f94c';

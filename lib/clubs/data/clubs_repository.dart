@@ -160,7 +160,7 @@ class ClubsRepository {
   );
 
   static List<Club> _appDiscoverableClubs(Iterable<Club> clubs) =>
-      clubs.where((club) => club.isAppDiscoverable).toList(growable: false);
+      clubs.where((club) => club.isPubliclyBrowseable).toList(growable: false);
 
   // ── Write ──────────────────────────────────────────────────────────────────
 

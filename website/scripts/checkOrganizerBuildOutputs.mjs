@@ -77,6 +77,7 @@ export function checkOrganizerBuildOutputs({
   const paths = new Set();
   let indexableListings = 0;
   let legacyRoutes = 0;
+  let publishedListings = 0;
 
   for (const listing of hostListings) {
     if (listing?.dataOrigin === "catchDemo") {
@@ -95,6 +96,26 @@ export function checkOrganizerBuildOutputs({
 
     const canonicalUrl = `${baseUrl}${listing.path}`;
     const routeHtml = readRouteHtml({distRoot, routePath: listing.path});
+    const publiclyReadable = isPubliclyReadableListing(listing);
+    if (!publiclyReadable) {
+      if (routeHtml !== null) {
+        errors.push(`${listing.id}: unpublished route HTML exists for ${listing.path}`);
+      }
+      if (sitemapUrls.has(canonicalUrl)) {
+        errors.push(`${listing.id}: unpublished listing present in sitemap`);
+      }
+      for (const legacyPath of listing.legacyPaths ?? []) {
+        const legacyUrl = `${baseUrl}${legacyPath}`;
+        if (readRouteHtml({distRoot, routePath: legacyPath}) !== null) {
+          errors.push(`${listing.id}: unpublished legacy route exists for ${legacyPath}`);
+        }
+        if (sitemapUrls.has(legacyUrl)) {
+          errors.push(`${listing.id}: unpublished legacy path present in sitemap ${legacyPath}`);
+        }
+      }
+      continue;
+    }
+    publishedListings += 1;
     if (routeHtml === null) {
       errors.push(`${listing.id}: missing route HTML for ${listing.path}`);
     } else {
@@ -161,10 +182,16 @@ export function checkOrganizerBuildOutputs({
     summary: {
       indexableListings,
       legacyRoutes,
-      listings: hostListings.length,
+      listings: publishedListings,
       sitemapUrls: sitemapUrls.size,
     },
   };
+}
+
+function isPubliclyReadableListing(listing) {
+  if (!listing?.authority) return true;
+  return listing.authority.publishStatus === "published" &&
+    listing.authority.claimState !== "suppressed";
 }
 
 function checkRouteHtml({

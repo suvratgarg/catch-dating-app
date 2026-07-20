@@ -349,6 +349,7 @@ test("createPublicClubReviewHandler writes anonymous unverified review",
     assert.equal(result.review.reviewerName, "Anonymous reviewer");
     assert.equal(result.review.verificationStatus, "unverified");
     assert.equal(result.review.source, "publicListing");
+    assert.equal(result.review.moderationStatus, "published");
     assert.deepEqual(h.ipRateLimitCalls, [
       "203.0.113.7:5:3600000",
     ]);
@@ -368,11 +369,11 @@ test("createPublicClubReviewHandler writes anonymous unverified review",
     );
   });
 
-test("createPublicClubReviewHandler holds blocked content as pending",
+test("createPublicClubReviewHandler returns blocked content as pending",
   async () => {
     const h = harness(baseDocs());
 
-    await createPublicClubReviewHandler(
+    const result = await createPublicClubReviewHandler(
       request(null, {
         clubId: "club-1",
         rating: 1,
@@ -388,6 +389,7 @@ test("createPublicClubReviewHandler holds blocked content as pending",
     // counts toward the club rating) until a human clears it.
     const review = h.firestore.get("reviews/auto-1");
     assert.equal(review?.moderationStatus, "pending");
+    assert.equal(result.review.moderationStatus, "pending");
   });
 
 test("createPublicClubReviewHandler requires name when not anonymous",
@@ -451,6 +453,35 @@ test("createPublicClubReviewHandler rejects unpublished pages", async () => {
     (error) => assertHttpsCode(error, "failed-precondition")
   );
 });
+
+test("eligible compatibility target survives an ineligible canonical shadow",
+  async () => {
+    const h = harness(baseDocs({
+      "organizers/club-1": clubDoc({
+        publishStatus: "qa",
+        robots: "noindex, follow",
+      }),
+    }));
+
+    const listed = await listPublicClubReviewsHandler(
+      request(null, {clubId: "club-1"}),
+      h.deps
+    );
+    assert.deepEqual(listed, {reviews: []});
+
+    const created = await createPublicClubReviewHandler(
+      request(null, {
+        clubId: "club-1",
+        rating: 5,
+        comment: "The public compatibility listing works.",
+        reviewerName: "Visitor",
+        isAnonymous: false,
+        submittedFromPath: "/organizers/club-one/",
+      }),
+      h.deps
+    );
+    assert.equal(created.reviewId, "auto-1");
+  });
 
 test("createPublicClubReviewHandler rejects noncanonical paths", async () => {
   const h = harness(baseDocs());

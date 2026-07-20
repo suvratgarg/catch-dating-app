@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.5.0
-updated: 2026-07-20
+version: 1.5.1
+updated: 2026-07-21
 owner: recursive_audit_loop
 status: active
 ---
@@ -1786,6 +1786,21 @@ Rules:
   or handled by the screen/controller boundary.
 - Legacy/deep-link aliases should delegate to canonical screens rather than
   duplicate product behavior.
+
+### Public route decision contract
+
+Public-route visibility and action eligibility are governed by
+`design/public_surface_behavior.json` and the canonical explanation in
+`docs/web_surface_architecture.md#public-viewer-and-listing-authority-matrix`.
+Do not reduce the decision to `uid != null` or a crawled/claimed boolean. Auth
+resolution, app role, profile readiness, viewer relationship, organizer
+visibility, effective lifecycle availability, and authority, event
+availability, and capability/runtime evidence remain separate inputs. Every
+consumer route in `go_router.dart` must have
+exactly one matrix owner; a route hidden from guest tab chrome still needs an
+explicit guest and profile-readiness redirect. Run
+`node tool/run.mjs check design:public-surface-behavior` whenever a covered
+route, decision helper, action, or source enum changes.
 
 ## Testing Expectations
 

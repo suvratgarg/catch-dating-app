@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.4.167
-updated: 2026-07-16
+version: 0.4.168
+updated: 2026-07-21
 owner: marketing_website
 status: active
 ---
@@ -51,6 +51,17 @@ The website is already split out of the old monolithic shell:
   `dataOrigin: "catchDemo"`. Storybook reads the explicit demo-inclusive
   `hostListings.demo.json` projection through `stories/fixtures/hostListings.ts`.
   The generator and pretypecheck gate validate both outputs.
+- `design/public_surface_behavior.json` is the cross-surface authority and
+  action matrix described by
+  `docs/web_surface_architecture.md#public-viewer-and-listing-authority-matrix`.
+  Website listing policy must consume canonical ownership, claim,
+  verification, publication, independent claim/review-target/read/write
+  capability fields, and runtime availability; it must not infer an enabled
+  action from provenance or sign-in state. Published-but-suppressed records and
+  review capabilities without a verified canonical target fail closed. The
+  strict checker plus
+  `website/src/features/organizers/publicSurfaceBehavior.test.ts` prove every
+  registered website row against production policy and presentation adapters.
 - Home event discovery applies the pure `homeEventEligibility.ts` selector:
   only future Catch events in market-pack live cities are eligible. External
   events remain listing-page evidence, and city aliases normalize at this

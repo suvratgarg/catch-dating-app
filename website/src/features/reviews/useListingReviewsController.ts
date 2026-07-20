@@ -1,4 +1,5 @@
 import {websiteCopy} from "@content/generated";
+import {organizerListingCopy} from "@content/organizer";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {type FormEvent, useEffect, useMemo, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
@@ -7,14 +8,27 @@ import {publicReviewsFirebaseConfigured} from "../../firebaseConfig";
 import type {FormStatus} from "../../shared/forms/types";
 import {websiteQueryKeys} from "../../shared/query/queryKeys";
 import {organizerPolicyForListing} from "../organizers/organizerPolicy";
+import {listingReviewPresentationFor} from "../organizers/listingPresentation";
 import type {HostListing, HostListingReview} from "../organizers/types";
 import {buildListingReviewSummary, mergeReviews} from "./reviewModel";
 
 export function useListingReviewsController(listing: HostListing) {
   const queryClient = useQueryClient();
-  const seedReviews = useMemo(() => listing.reviews ?? [], [listing]);
   const policy = organizerPolicyForListing(listing);
-  const publicApiEnabled = policy.canWritePublicReview;
+  const presentation = listingReviewPresentationFor({
+    canReadPublicReviews: policy.canReadPublicReviews,
+    canWritePublicReview: policy.canWritePublicReview,
+    isPubliclyReadable: policy.isPubliclyReadable,
+    runtimeAvailable: publicReviewsFirebaseConfigured,
+  });
+  const seedReviews = useMemo(
+    () => policy.canReadPublicReviews ? listing.reviews ?? [] : [],
+    [listing, policy.canReadPublicReviews]
+  );
+  const publicReviewWriteEnabled = presentation.write === "form";
+  const publicReviewReason = policy.canWritePublicReview && !publicReviewsFirebaseConfigured ?
+    organizerListingCopy.reviews.runtimeUnavailable :
+    policy.publicReviewReason;
   const reviewQueryKey = useMemo(
     () => websiteQueryKeys.reviews.listing(listing.id),
     [listing.id]
@@ -49,10 +63,7 @@ export function useListingReviewsController(listing: HostListing) {
       reviewerName: string;
     }) => {
       if (!publicReviewsFirebaseConfigured) {
-        return {
-          mode: "local" as const,
-          review: payload.localReview,
-        };
+        throw new Error(organizerListingCopy.reviews.runtimeUnavailable);
       }
       const {createPublicOrganizerReview} = await import("../../firebase");
       const result = await createPublicOrganizerReview({
@@ -67,18 +78,16 @@ export function useListingReviewsController(listing: HostListing) {
         moderationStatus?: "published" | "pending";
       };
       return {
-        mode: "remote" as const,
-        moderationStatus: review.moderationStatus ?? "published",
+        moderationStatus: review.moderationStatus ?? "pending",
         review,
       };
     },
   });
 
   const remoteReviews = reviewsQuery.data?.reviews;
-  const reviews = useMemo(
-    () => mergeReviews(localReviews, mergeReviews(remoteReviews ?? [], seedReviews)),
-    [localReviews, remoteReviews, seedReviews]
-  );
+  const reviews = useMemo(() => policy.canReadPublicReviews ?
+    mergeReviews(localReviews, mergeReviews(remoteReviews ?? [], seedReviews)) :
+    [], [localReviews, policy.canReadPublicReviews, remoteReviews, seedReviews]);
 
   const summary = useMemo(
     () => buildListingReviewSummary(listing, reviews),
@@ -89,9 +98,9 @@ export function useListingReviewsController(listing: HostListing) {
     event.preventDefault();
     setStatus({message: "", tone: ""});
 
-    if (!publicApiEnabled) {
+    if (!publicReviewWriteEnabled) {
       setStatus({
-        message: policy.publicReviewReason,
+        message: publicReviewReason,
         tone: "is-error",
       });
       return;
@@ -132,59 +141,50 @@ export function useListingReviewsController(listing: HostListing) {
         reviewerName: trimmedName,
       });
 
-      if (result.mode === "remote") {
-        if (result.moderationStatus === "pending") {
-          await queryClient.invalidateQueries({queryKey: reviewQueryKey});
-          setStatus({
-            message: "Review submitted for moderation.",
-            tone: "is-success",
-          });
-          setComment("");
-          if (isAnonymous) setReviewerName("");
-          trackMarketingEvent("listing_public_review_submitted", {
-            club_id: listing.id,
-            anonymous: isAnonymous,
-            configured: publicReviewsFirebaseConfigured,
-            moderation_status: "pending",
-          });
-          return;
-        }
-        // Keep the callable's accepted review visible while the eventually
-        // consistent list query catches up. mergeReviews deduplicates it once
-        // the backend read returns the same id.
-        setLocalReviews((current) => mergeReviews([result.review], current));
-        queryClient.setQueryData<ListPublicOrganizerReviewsResponse>(
-          reviewQueryKey,
-          (current) => {
-            const seen = new Set<string>();
-            const reviews = [result.review, ...(current?.reviews ?? [])].filter((review) => {
-              if (seen.has(review.id)) return false;
-              seen.add(review.id);
-              return true;
-            });
-            return {reviews};
-          }
-        );
+      if (result.moderationStatus === "pending") {
         await queryClient.invalidateQueries({queryKey: reviewQueryKey});
         setStatus({
-          message: websiteCopy["uselistingreviewscontroller_0504"],
+          message: organizerListingCopy.reviews.pendingAcknowledgement,
           tone: "is-success",
         });
-      } else {
-        setLocalReviews((current) => mergeReviews([result.review], current));
-        setStatus({
-          message:
-            websiteCopy["uselistingreviewscontroller_0503"],
-          tone: "is-success",
+        setComment("");
+        if (isAnonymous) setReviewerName("");
+        trackMarketingEvent("listing_public_review_submitted", {
+          club_id: listing.id,
+          anonymous: isAnonymous,
+          configured: true,
+          moderation_status: "pending",
         });
+        return;
       }
+      // Keep a published callable response visible while the eventually
+      // consistent list query catches up. mergeReviews deduplicates it once
+      // the backend read returns the same id.
+      setLocalReviews((current) => mergeReviews([result.review], current));
+      queryClient.setQueryData<ListPublicOrganizerReviewsResponse>(
+        reviewQueryKey,
+        (current) => {
+          const seen = new Set<string>();
+          const reviews = [result.review, ...(current?.reviews ?? [])].filter((review) => {
+            if (seen.has(review.id)) return false;
+            seen.add(review.id);
+            return true;
+          });
+          return {reviews};
+        }
+      );
+      await queryClient.invalidateQueries({queryKey: reviewQueryKey});
+      setStatus({
+        message: websiteCopy["uselistingreviewscontroller_0504"],
+        tone: "is-success",
+      });
       setComment("");
       if (isAnonymous) setReviewerName("");
       trackMarketingEvent("listing_public_review_submitted", {
         club_id: listing.id,
         anonymous: isAnonymous,
-        configured: publicReviewsFirebaseConfigured,
-        moderation_status: result.mode === "remote" ? result.moderationStatus : "local",
+        configured: true,
+        moderation_status: result.moderationStatus,
       });
     } catch (error) {
       setStatus({
@@ -205,9 +205,11 @@ export function useListingReviewsController(listing: HostListing) {
     comment,
     isAnonymous,
     isSubmitting: createReviewMutation.isPending,
-    publicApiEnabled,
-    publicReviewReason: policy.publicReviewReason,
-    publicReviewWriteEnabled: policy.canWritePublicReview,
+    publicApiEnabled: publicReviewWriteEnabled,
+    presentation,
+    publicReviewReadEnabled: presentation.read === "content",
+    publicReviewReason,
+    publicReviewWriteEnabled,
     rating,
     reviewFormId: `review-${listing.id}`,
     reviewerName,

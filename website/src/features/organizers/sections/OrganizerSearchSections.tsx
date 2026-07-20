@@ -31,6 +31,7 @@ import {
 import {trackOrganizerSearchAppearance} from "../analytics";
 import {ActivityMark, StatusBadge} from "../OrganizerIdentity";
 import {activityForListing, eventHighlightsForListing} from "../publicDiscovery";
+import {organizerPolicyForListing} from "../organizerPolicy";
 import {claimHrefForListing} from "../routing";
 import {
   nextFutureCatchEvent,
@@ -255,9 +256,10 @@ function OrganizerResultCard({
   listing: HostListing;
   queryTerms: string[];
 }) {
-  const isAppCreated = listing.listingVariant === "appCreatedClub";
-  const rating = listing.metrics?.rating;
-  const reviewCount = listing.metrics?.reviewCount;
+  const policy = organizerPolicyForListing(listing);
+  const isAppCreated = policy.isCatchCreated;
+  const rating = policy.canReadPublicReviews ? listing.metrics?.rating : undefined;
+  const reviewCount = policy.canReadPublicReviews ? listing.metrics?.reviewCount : undefined;
   const activity = activityForListing(listing);
   const eventHighlights = eventHighlightsForListing(listing, queryTerms);
   const nextEvent = nextFutureCatchEvent(listing);
@@ -298,7 +300,7 @@ function OrganizerResultCard({
           ) : null}
           <ListingFormatRow items={listing.formats.slice(0, 4)} />
           <OrganizerResultCardFooter>
-            <span>{isAppCreated ? "Owner-managed profile" : `${listing.missingEvidence.length} proof gaps`}</span>
+            <span>{policy.badge.label}</span>
           </OrganizerResultCardFooter>
         </OrganizerResultCardBody>
       </PlainLink>

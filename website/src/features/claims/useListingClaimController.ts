@@ -1,9 +1,11 @@
 import {websiteCopy} from "@content/generated";
+import {organizerListingCopy} from "@content/organizer";
 import {type FormEvent, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
 import {claimFirebaseConfigured} from "../../firebaseConfig";
 import type {FormStatus} from "../../shared/forms/types";
 import {organizerPolicyForListing} from "../organizers/organizerPolicy";
+import {listingClaimPresentationFor} from "../organizers/listingPresentation";
 import type {HostListing} from "../organizers/types";
 import {
   claimContactValidationMessage,
@@ -19,6 +21,11 @@ import {
 export function useListingClaimController(listing: HostListing) {
   const policy = organizerPolicyForListing(listing);
   const publicApiEnabled = policy.canRequestClaim;
+  const presentation = listingClaimPresentationFor({
+    canRequestClaim: policy.canRequestClaim,
+    isPubliclyReadable: policy.isPubliclyReadable,
+    runtimeAvailable: claimFirebaseConfigured,
+  });
   const [status, setStatus] = useState<FormStatus>({
     message: "",
     tone: "",
@@ -42,6 +49,13 @@ export function useListingClaimController(listing: HostListing) {
     if (!publicApiEnabled) {
       setStatus({
         message: policy.claimRequestReason,
+        tone: "is-error",
+      });
+      return;
+    }
+    if (!claimFirebaseConfigured) {
+      setStatus({
+        message: organizerListingCopy.claims.runtimeUnavailable,
         tone: "is-error",
       });
       return;
@@ -124,9 +138,10 @@ export function useListingClaimController(listing: HostListing) {
     handleSubmit,
     isConfigured: claimFirebaseConfigured && publicApiEnabled,
     notConfiguredReason: publicApiEnabled ?
-      "Claim submission needs the website Firebase/App Check config." :
+      organizerListingCopy.claims.runtimeUnavailable :
       policy.claimRequestReason,
     publicApiEnabled,
+    presentation,
     isSigningIn,
     isSubmitting: claimRequestMutation.isPending,
     status,

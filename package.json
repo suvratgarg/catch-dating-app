@@ -66,6 +66,7 @@
     "design:fields:facades:check": "node tool/design/generate_field_inventory.mjs --check",
     "design:todo-summary:check": "node tool/design/check_comprehensive_todo_summary.mjs --check",
     "design:parity:check": "node tool/design/check_design_parity.mjs --check",
+    "design:public-surfaces:check": "node tool/design/check_public_surface_behavior.mjs --strict",
     "web:admin-feature-exports:check": "node tool/run.mjs check web:admin-feature-exports"
   },
   "devDependencies": {

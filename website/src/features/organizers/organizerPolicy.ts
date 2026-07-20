@@ -1,4 +1,5 @@
 import type {HostListing} from "./types";
+import {organizerListingCopy} from "../../content/organizer";
 
 export type OrganizerOwnershipState =
   | "programmatic"
@@ -21,6 +22,16 @@ export type OrganizerVerificationStatus =
   | "ownerVerified"
   | "unknown";
 
+export type OrganizerTrustState =
+  | "crawledUnclaimed"
+  | "sourceBacked"
+  | "claimPending"
+  | "claimedUnverified"
+  | "firstParty"
+  | "ownerVerified"
+  | "suppressed"
+  | "unknown";
+
 export interface OrganizerListingPolicy {
   badge: {
     compactLabel: string;
@@ -28,6 +39,7 @@ export interface OrganizerListingPolicy {
     tone: "claimed" | "unclaimed" | "verified";
   };
   canReadPublicReviews: boolean;
+  isPubliclyReadable: boolean;
   canRequestClaim: boolean;
   canWritePublicReview: boolean;
   claimRequestReason: string;
@@ -35,6 +47,7 @@ export interface OrganizerListingPolicy {
   isCatchCreated: boolean;
   ownershipState: OrganizerOwnershipState;
   publicReviewReason: string;
+  trustState: OrganizerTrustState;
   verificationStatus: OrganizerVerificationStatus;
 }
 
@@ -57,6 +70,7 @@ interface PolicyAwareListing {
     publicReviews?: {
       readState?: string;
       reason?: string;
+      targetState?: string;
       writeState?: string;
     };
   };
@@ -106,10 +120,18 @@ export function organizerPolicyForListing(listing: HostListing): OrganizerListin
     !hasAuthorityProjection
   );
   const isCatchCreated = ownershipState === "userCreated" ||
-    listing.listingVariant === "appCreatedClub";
-  const publicationBlocksActions = ["suppressed", "removed"].includes(
-    projected.authority?.publishStatus ?? ""
-  );
+    (!hasAuthorityProjection && listing.listingVariant === "appCreatedClub");
+  const publishStatus = projected.authority?.publishStatus;
+  const isPubliclyReadable = hasAuthorityProjection ?
+    publishStatus === "published" && claimState !== "suppressed" :
+    true;
+  const trustState = trustStateFor({
+    claimState,
+    isCatchCreated,
+    ownershipState,
+    publishStatus,
+    verificationStatus,
+  });
   const ownershipCanBeClaimed = ownershipState === "programmatic";
   const claimStateCanBeClaimed = claimState === "unclaimed";
   const claimCapability = projected.capabilities?.claimRequest;
@@ -117,12 +139,12 @@ export function organizerPolicyForListing(listing: HostListing): OrganizerListin
   const claimCapabilityEnabled = claimCapability ?
     capabilityEnabled(claimCapability.state) :
     !hasCapabilityProjection && legacyPublicApiEnabled;
-  const canRequestClaim = !publicationBlocksActions &&
+  const canRequestClaim = isPubliclyReadable &&
     ownershipCanBeClaimed &&
     claimStateCanBeClaimed &&
     claimCapabilityEnabled;
   const claimRequestReason = canRequestClaim ? "" : firstReason([
-    publicationBlocksActions ? "This organizer listing is not publicly available." : "",
+    !isPubliclyReadable ? "This organizer listing is not publicly available." : "",
     claimStateReason(claimState),
     ownershipReason(ownershipState),
     claimCapability?.reason,
@@ -131,34 +153,36 @@ export function organizerPolicyForListing(listing: HostListing): OrganizerListin
   ]);
 
   const publicReviews = projected.capabilities?.publicReviews;
-  const canReadPublicReviews = !publicationBlocksActions && (publicReviews ?
+  const publicReviewTargetEnabled = publicReviews ?
+    capabilityEnabled(publicReviews.targetState) :
+    !hasCapabilityProjection && legacyPublicApiEnabled;
+  const canReadPublicReviews = isPubliclyReadable && publicReviewTargetEnabled && (publicReviews ?
     capabilityEnabled(publicReviews.readState) :
     !hasCapabilityProjection && legacyPublicApiEnabled);
   const canWritePublicReview = canReadPublicReviews && (publicReviews ?
     capabilityEnabled(publicReviews.writeState) :
     !hasCapabilityProjection && legacyPublicApiEnabled);
   const publicReviewReason = canWritePublicReview ? "" : firstReason([
-    publicationBlocksActions ? "Reviews are unavailable for this organizer listing." : "",
+    !isPubliclyReadable ? "Reviews are unavailable for this organizer listing." : "",
+    !publicReviewTargetEnabled ?
+      "Reviews are unavailable until the canonical organizer target is ready." : "",
     publicReviews?.reason,
     listing.publicApi.reason,
     "Public reviews are not available for this organizer.",
   ]);
 
   return {
-    badge: badgeFor({
-      claimState,
-      isCatchCreated,
-      ownershipState,
-      verificationStatus,
-    }),
+    badge: badgeFor(trustState),
     canReadPublicReviews,
     canRequestClaim,
     canWritePublicReview,
     claimRequestReason,
     claimState,
     isCatchCreated,
+    isPubliclyReadable,
     ownershipState,
     publicReviewReason,
+    trustState,
     verificationStatus,
   };
 }
@@ -210,40 +234,50 @@ function normalizedVerificationStatus(
   return "unknown";
 }
 
-function badgeFor({
+function trustStateFor({
   claimState,
   isCatchCreated,
   ownershipState,
+  publishStatus,
   verificationStatus,
 }: {
   claimState: OrganizerClaimState;
   isCatchCreated: boolean;
   ownershipState: OrganizerOwnershipState;
+  publishStatus: string | undefined;
   verificationStatus: OrganizerVerificationStatus;
-}): OrganizerListingPolicy["badge"] {
-  if (claimState === "suppressed") {
-    return {compactLabel: "Unavailable", label: "Listing unavailable", tone: "unclaimed"};
+}): OrganizerTrustState {
+  if (claimState === "suppressed" || ["suppressed", "removed"].includes(publishStatus ?? "")) {
+    return "suppressed";
   }
-  if (claimState === "claimPending") {
-    return {compactLabel: "Pending", label: "Claim pending", tone: "claimed"};
+  if (isCatchCreated) return "firstParty";
+  if (claimState === "verified" || verificationStatus === "ownerVerified") {
+    return "ownerVerified";
   }
-  if (isCatchCreated || claimState === "verified" || verificationStatus === "ownerVerified") {
-    return {compactLabel: "Verified", label: "Verified on Catch", tone: "verified"};
-  }
+  if (claimState === "claimPending") return "claimPending";
   if (["claimed", "transferred"].includes(ownershipState) || claimState === "claimed") {
-    return {compactLabel: "Claimed", label: "Claimed", tone: "claimed"};
+    return "claimedUnverified";
   }
-  if (verificationStatus === "sourceBacked") {
-    return {compactLabel: "Source-backed", label: "Source-backed listing", tone: "verified"};
-  }
-  if (claimState === "unclaimed") {
-    return {compactLabel: "Unclaimed", label: "Unclaimed", tone: "unclaimed"};
-  }
-  return {compactLabel: "Unknown", label: "Status unavailable", tone: "unclaimed"};
+  if (verificationStatus === "sourceBacked") return "sourceBacked";
+  if (claimState === "unclaimed") return "crawledUnclaimed";
+  return "unknown";
+}
+
+function badgeFor(state: OrganizerTrustState): OrganizerListingPolicy["badge"] {
+  const copy = organizerListingCopy.badges[state];
+  return {
+    compactLabel: copy.compact,
+    label: copy.label,
+    tone: state === "ownerVerified" ?
+      "verified" :
+      state === "crawledUnclaimed" || state === "suppressed" || state === "unknown" ?
+        "unclaimed" :
+        "claimed",
+  };
 }
 
 function capabilityEnabled(value: string | undefined) {
-  return value === "enabled" || value === "available" || value === "ready";
+  return value === "enabled";
 }
 
 function claimStateReason(state: OrganizerClaimState) {

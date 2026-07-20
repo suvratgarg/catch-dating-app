@@ -22,6 +22,7 @@
         "createdAt",
         "verificationStatus",
         "source",
+        "moderationStatus",
         "isAnonymous",
         "ownerResponse"
       ],
@@ -38,6 +39,10 @@
         "source": {
           "type": "string",
           "enum": ["catchEvent", "publicListing"]
+        },
+        "moderationStatus": {
+          "type": "string",
+          "enum": ["published", "pending"]
         },
         "isAnonymous": {"type": "boolean"},
         "ownerResponse": {

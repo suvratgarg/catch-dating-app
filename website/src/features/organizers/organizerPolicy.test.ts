@@ -1,4 +1,5 @@
 import {describe, expect, it} from "vitest";
+import {organizerListingCopy} from "../../content/organizer";
 import {hostListings} from "./data";
 import {organizerPolicyForListing} from "./organizerPolicy";
 import type {HostListing} from "./types";
@@ -16,7 +17,12 @@ interface PolicyFixtureFields {
   };
   capabilities: {
     claimRequest: {state: string; reason: string};
-    publicReviews: {readState: string; writeState: string; reason: string};
+    publicReviews: {
+      targetState: string;
+      readState: string;
+      writeState: string;
+      reason: string;
+    };
   };
 }
 
@@ -39,7 +45,12 @@ function listingWithPolicy(
     },
     capabilities: {
       claimRequest: {state: "enabled", reason: ""},
-      publicReviews: {readState: "enabled", writeState: "enabled", reason: ""},
+      publicReviews: {
+        targetState: "enabled",
+        readState: "enabled",
+        writeState: "enabled",
+        reason: "",
+      },
       ...capabilities,
     },
   } as HostListing;
@@ -50,7 +61,10 @@ describe("organizerPolicyForListing", () => {
     const policy = organizerPolicyForListing(listingWithPolicy({}));
 
     expect(policy).toMatchObject({
-      badge: {label: "Source-backed listing", tone: "verified"},
+      badge: {
+        label: organizerListingCopy.badges.sourceBacked.label,
+        tone: "claimed",
+      },
       canReadPublicReviews: true,
       canRequestClaim: true,
       canWritePublicReview: true,
@@ -67,7 +81,10 @@ describe("organizerPolicyForListing", () => {
 
     expect(policy.canRequestClaim).toBe(false);
     expect(policy.canWritePublicReview).toBe(true);
-    expect(policy.badge).toMatchObject({label: "Claim pending", tone: "claimed"});
+    expect(policy.badge).toMatchObject({
+      label: organizerListingCopy.badges.claimPending.label,
+      tone: "claimed",
+    });
     expect(policy.claimRequestReason).toContain("already under review");
   });
 
@@ -82,7 +99,7 @@ describe("organizerPolicyForListing", () => {
     expect(policy.canRequestClaim).toBe(false);
     expect(policy.badge).toEqual({
       compactLabel: "Verified",
-      label: "Verified on Catch",
+      label: organizerListingCopy.badges.ownerVerified.label,
       tone: "verified",
     });
   });
@@ -96,13 +113,18 @@ describe("organizerPolicyForListing", () => {
     expect(policy.canRequestClaim).toBe(false);
     expect(policy.canReadPublicReviews).toBe(false);
     expect(policy.canWritePublicReview).toBe(false);
-    expect(policy.badge.label).toBe("Listing unavailable");
+    expect(policy.badge.label).toBe(organizerListingCopy.badges.suppressed.label);
   });
 
   it("keeps claim and review capabilities independent", () => {
     const policy = organizerPolicyForListing(listingWithPolicy({}, {
       claimRequest: {state: "disabled", reason: "Claim target is syncing."},
-      publicReviews: {readState: "enabled", writeState: "enabled", reason: ""},
+      publicReviews: {
+        targetState: "enabled",
+        readState: "enabled",
+        writeState: "enabled",
+        reason: "",
+      },
     }));
 
     expect(policy.canRequestClaim).toBe(false);
@@ -112,8 +134,13 @@ describe("organizerPolicyForListing", () => {
   });
 
   it("adapts old unclaimed projections through the legacy public API flag", () => {
+    const legacyListing = Object.fromEntries(
+      Object.entries(hostListings[0]).filter(
+        ([key]) => !["authority", "capabilities"].includes(key)
+      )
+    );
     const listing = {
-      ...hostListings[0],
+      ...legacyListing,
       status: "unclaimed",
       publicApi: {...hostListings[0].publicApi, state: "enabled", reason: ""},
     } as HostListing;
@@ -122,6 +149,33 @@ describe("organizerPolicyForListing", () => {
     expect(policy.canRequestClaim).toBe(true);
     expect(policy.canReadPublicReviews).toBe(true);
     expect(policy.canWritePublicReview).toBe(true);
+  });
+
+  it("fails public routes closed for stale published suppression", () => {
+    const policy = organizerPolicyForListing(listingWithPolicy({
+      claimState: "suppressed",
+      publishStatus: "published",
+    }));
+
+    expect(policy.isPubliclyReadable).toBe(false);
+    expect(policy.canRequestClaim).toBe(false);
+    expect(policy.canReadPublicReviews).toBe(false);
+    expect(policy.canWritePublicReview).toBe(false);
+  });
+
+  it("requires a canonical target before projected review capabilities", () => {
+    const policy = organizerPolicyForListing(listingWithPolicy({}, {
+      publicReviews: {
+        targetState: "disabled",
+        readState: "enabled",
+        writeState: "enabled",
+        reason: "Canonical target is not ready.",
+      },
+    }));
+
+    expect(policy.canReadPublicReviews).toBe(false);
+    expect(policy.canWritePublicReview).toBe(false);
+    expect(policy.publicReviewReason).toContain("canonical organizer target");
   });
 
   it("fails closed for incomplete authority and capability projections", () => {
@@ -135,6 +189,46 @@ describe("organizerPolicyForListing", () => {
     const policy = organizerPolicyForListing(listing);
 
     expect(policy.ownershipState).toBe("unknown");
+    expect(policy.canRequestClaim).toBe(false);
+    expect(policy.canReadPublicReviews).toBe(false);
+    expect(policy.canWritePublicReview).toBe(false);
+  });
+
+  it("keeps first-party creation distinct from owner verification", () => {
+    const policy = organizerPolicyForListing(listingWithPolicy({
+      claimState: "claimed",
+      ownershipState: "userCreated",
+      provenanceOrigin: "userCreated",
+      sourceConfidence: "high",
+      verificationStatus: "sourceBacked",
+    }));
+
+    expect(policy.trustState).toBe("firstParty");
+    expect(policy.badge).toMatchObject({
+      label: organizerListingCopy.badges.firstParty.label,
+      tone: "claimed",
+    });
+  });
+
+  it("keeps a canonical verified first-party payload first-party", () => {
+    const policy = organizerPolicyForListing(listingWithPolicy({
+      claimState: "verified",
+      ownershipState: "userCreated",
+      provenanceOrigin: "userCreated",
+      sourceConfidence: "ownerVerified",
+      verificationStatus: "ownerVerified",
+    }));
+
+    expect(policy.trustState).toBe("firstParty");
+    expect(policy.badge.label).toBe(organizerListingCopy.badges.firstParty.label);
+  });
+
+  it("fails public reads and actions closed until a projected page is published", () => {
+    const policy = organizerPolicyForListing(listingWithPolicy({
+      publishStatus: "qa",
+    }));
+
+    expect(policy.isPubliclyReadable).toBe(false);
     expect(policy.canRequestClaim).toBe(false);
     expect(policy.canReadPublicReviews).toBe(false);
     expect(policy.canWritePublicReview).toBe(false);

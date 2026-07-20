@@ -1,6 +1,6 @@
 {
-  "version": "1.5.46",
-  "updated": "2026-07-19",
+  "version": "1.5.47",
+  "updated": "2026-07-21",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
   "patterns": [
@@ -24,9 +24,9 @@
       "adopters": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "role": "reference route screen: provider watch, async/error branches, loaded Scaffold, bottom navigation, route callbacks, mutation listeners, EventDetailScreenState host/companion/booking derivation, and route side effects",
+          "role": "reference route screen: provider watch, auth-resolution and organizer-authority fail-closed branches, resolved viewer availability, loaded Scaffold, bottom navigation, role-correct organizer route callbacks, mutation listeners, EventDetailScreenState host/companion/booking derivation, and route side effects",
           "status": "aligned",
-          "lastReviewedPass": "2026-07-01-event-detail-host-companion-state-adapter"
+          "lastReviewedPass": "2026-07-21-public-surface-behavior-matrix"
         },
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
@@ -149,16 +149,22 @@
           "lastReviewedPass": "2026-07-01-saved-events-screen-boundary"
         },
         {
-          "path": "lib/explore/presentation/explore_screen.dart",
-          "role": "adopter route screen: route-owned Explore feed/clubs/city/search/filter/source provider wave, live filter-sheet count subscription, body-state branch precedence, map launcher, mutation listener, city-recovery callback, event/external navigation side effects, and provider-free chrome/body composition",
+          "path": "lib/clubs/presentation/detail/club_detail_screen.dart",
+          "role": "adopter route screen: auth-resolution-safe initial route cache, organizer authority and app-visibility boundary, host ownership preview boundary, relationship fail-closed state, and provider-free organizer-detail content composition",
           "status": "aligned",
-          "lastReviewedPass": "2026-07-18-explore-discovery-ux-w4"
+          "lastReviewedPass": "2026-07-21-public-surface-behavior-matrix"
+        },
+        {
+          "path": "lib/explore/presentation/explore_screen.dart",
+          "role": "adopter route screen: route-owned Explore feed/organizer/city/search/filter/source provider wave, auth-resolved account controls, guest joined-filter reset, app-browseable organizer supply, live filter-sheet count subscription, body-state branch precedence, map launcher, mutation listener, city-recovery callback, event/external navigation side effects, and provider-free chrome/body composition",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-21-public-surface-behavior-matrix"
         },
         {
           "path": "lib/explore/presentation/explore_map_screen.dart",
-          "role": "adopter route screen: route-owned Explore map feed/filter provider wave, map view-model construction, retry invalidation, distance-filter cycling, and event-detail navigation side effects",
+          "role": "adopter route screen: route-owned Explore map feed/filter provider wave, viewer-keyed cache reset, app-browseable organizer supply, map view-model construction, retry invalidation, distance-filter cycling, and event-detail navigation side effects",
           "status": "aligned",
-          "lastReviewedPass": "2026-07-03-explore-screen-boundary"
+          "lastReviewedPass": "2026-07-21-public-surface-behavior-matrix"
         },
         {
           "path": "lib/explore/presentation/widgets/explore_body.dart",
@@ -1636,6 +1642,18 @@
       ],
       "adopters": [
         {
+          "path": "test/design/public_surface_behavior_test.dart",
+          "role": "data-driven app proof harness that executes every registered public-surface configuration against production route, organizer authority, Explore account-control, event-availability, and action-disposition helpers",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-21-public-surface-behavior-matrix"
+        },
+        {
+          "path": "test/routing/router_redirect_test.dart",
+          "role": "focused guest, auth-resolution, booking-ready, social-ready, onboarding-resume, and host/consumer route redirect coverage",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-21-public-surface-behavior-matrix"
+        },
+        {
           "path": "lib/app.dart",
           "role": "app root with synchronous owned localization delegates and component-native English fallback for the nonlocalized country picker",
           "status": "aligned",
@@ -1660,15 +1678,17 @@
           "reason": "original suites remain optional native-device entrypoints when APP_SHELL_NATIVE_INTEGRATION is explicitly enabled"
         }
       ],
-      "requiredBackPropagation": "When the app root, GoRouter ownership, integration binding, app-shell navigation, localization delegates, or mounted async behavior changes, update the shared harness, headless wrappers, native runner, CI lane, regression ledger, and focused shell/golden coverage together.",
+      "requiredBackPropagation": "When the app root, GoRouter ownership, public route classification, integration binding, app-shell navigation, localization delegates, or mounted async behavior changes, update the public-surface matrix and harness, shared integration harness, headless wrappers, native runner, CI lane, regression ledger, and focused shell/golden coverage together.",
       "requiredChecks": [
+        "node tool/run.mjs check design:public-surface-behavior",
+        "flutter test test/design/public_surface_behavior_test.dart test/routing/router_redirect_test.dart",
         "bash tool/test_app_shell_integration.sh",
         "flutter test --concurrency=1 test/goldens",
         "flutter test --concurrency=1 test/core/catch_primitives_test.dart --plain-name 'CatchTabBar keeps four animated destinations within 390px'",
         "node tool/architecture/check_app_architecture_exhibits.mjs",
         "node tool/agent/check_agent_readiness.mjs"
       ],
-      "notes": "Consumer integration cases cover consumer-owned routes only. Host creation and attendance remain in host surface/controller tests; Dashboard recommendations remain owned by Explore."
+      "notes": "Every consumer route is owned by exactly one public-surface matrix class even when guest tab chrome hides it. Consumer integration cases cover consumer-owned routes only. Host creation and attendance remain in host surface/controller tests; Dashboard recommendations remain owned by Explore."
     }
   ]
 }

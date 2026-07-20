@@ -1,8 +1,39 @@
 {
-  "version": 53,
-  "updated": "2026-07-20",
+  "version": 55,
+  "updated": "2026-07-21",
   "owner": "agent_operating_model",
   "entries": [
+    {
+      "id": "REG-PUBLIC-SURFACE-BEHAVIOR-001",
+      "title": "Public actions drift from viewer, authority, or runtime state",
+      "status": "active",
+      "applies_to": [
+        "design/public_surface_behavior.json",
+        "design/public_surface_behavior.schema.json",
+        "lib/routing/**",
+        "lib/explore/**",
+        "lib/clubs/**",
+        "lib/events/**",
+        "lib/organizers/**",
+        "website/src/features/claims/**",
+        "website/src/features/organizers/**",
+        "website/src/features/reviews/**",
+        "website/scripts/**",
+        "tool/design/check_public_surface_behavior.mjs"
+      ],
+      "symptom": "A resolving viewer receives guest actions, a crawled or claimed listing is presented as owner verified, an archived, hidden, unpublished, or claim-suppressed listing leaks into public discovery, an event action ignores viewer-specific availability, or claim/review UI is enabled from preview-only or otherwise incomplete target, capability, and runtime evidence.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check design:public-surface-behavior && flutter test test/design/public_surface_behavior_test.dart && npm --prefix website run test:unit -- src/features/organizers/publicSurfaceBehavior.test.ts",
+        "guardEvidence": "the strict gate rejects source-enum drift, duplicate tuples, unowned routes, unverified rows, unexplained exclusions, and harness coverage gaps; the app and website harnesses execute every registered configuration against production decision and presentation helpers"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/app_architecture.md",
+        "docs/marketing_website_architecture.md"
+      ],
+      "notes": "Only Explore and its public detail/map children are guest-readable in the consumer app, but hidden tabs are not treated as access control: every consumer deep link has exactly one route class. WEB-ORGANIZER-CLAIM-TARGET-001 and WEB-ORGANIZER-REVIEW-TARGET-001 keep claim and review actions fail-closed until their canonical target evidence is live. Preview-only sync state is advisory, and review callables select an eligible canonical or compatibility target instead of allowing an ineligible canonical document to shadow a valid legacy target."
+    },
     {
       "id": "REG-CATCH-UI-LINT-VACUITY-001",
       "title": "Catch UI lint gates pass after the analyzer plugin silently skips or fails setup",

@@ -3,6 +3,7 @@ import fs from "node:fs";
 import test from "node:test";
 import {repoRoot} from "../lib/repo_paths.mjs";
 import {
+  extractAppRoutes,
   validateContractSchema,
   validatePublicSurfaceBehavior,
 } from "./check_public_surface_behavior.mjs";
@@ -94,10 +95,48 @@ test("rejects a missing existing proof harness", () => {
     (entry) => entry.id === "app.publicSurfaceBehavior",
   );
   harness.status = "existing";
+  harness.path = "test/design/invented_public_surface_behavior_test.dart";
   assert.match(
     errorsFor(matrix),
-    /proof harness app\.publicSurfaceBehavior: missing evidence file/u,
+    /missing evidence file test\/design\/invented_public_surface_behavior_test\.dart/u,
   );
+});
+
+test("strict verification rejects unverified configurations and planned harnesses", () => {
+  const matrix = cloneMatrix();
+  surfaceFor(matrix, "app.explore").configurations[0].implementationStatus =
+    "specified";
+  matrix.proofHarnesses.find(
+    (entry) => entry.id === "app.publicSurfaceBehavior",
+  ).status = "planned";
+  const errors = errorsFor(matrix, {strict: true});
+  assert.match(errors, /requires implementationStatus verified/u);
+  assert.match(errors, /strict verification requires an existing proof harness/u);
+});
+
+test("rejects a proof harness without exact configuration coverage", () => {
+  const matrix = cloneMatrix();
+  matrix.proofHarnesses.find(
+    (entry) => entry.id === "app.publicSurfaceBehavior",
+  ).configurationIds.pop();
+  assert.match(errorsFor(matrix), /configurationIds: missing/u);
+});
+
+test("rejects a decision value without a witness or exclusion", () => {
+  const matrix = cloneMatrix();
+  delete surfaceFor(matrix, "app.explore")
+    .excludedDecisionValues["organizer.ownershipState"].transferred;
+  assert.match(
+    errorsFor(matrix),
+    /organizer\.ownershipState: transferred needs a configuration witness/u,
+  );
+});
+
+test("rejects a value that is both witnessed and excluded", () => {
+  const matrix = cloneMatrix();
+  surfaceFor(matrix, "app.explore")
+    .excludedDecisionValues["viewer.session"].guest = "Invented overlap.";
+  assert.match(errorsFor(matrix), /guest is both witnessed and excluded/u);
 });
 
 test("rejects a proof harness that omits a referenced surface", () => {
@@ -137,6 +176,38 @@ test("rejects a surface with no actionable outcome", () => {
   assert.match(errorsFor(matrix), /at least one configuration must have an actionable outcome/u);
 });
 
+test("rejects a changed constant action disposition", () => {
+  const matrix = cloneMatrix();
+  surfaceFor(matrix, "app.explore").configurations[0]
+    .expectations["discovery.search"].disposition = "hidden";
+  assert.match(errorsFor(matrix), /must preserve constant disposition visibleNative/u);
+});
+
+test("rejects unclassified or multiply owned consumer routes", () => {
+  const unclassified = cloneMatrix();
+  surfaceFor(unclassified, "app.privateConsumerRoots").routeIds =
+    surfaceFor(unclassified, "app.privateConsumerRoots").routeIds.filter(
+      (id) => id !== "dashboardScreen",
+    );
+  assert.match(
+    errorsFor(unclassified),
+    /app route dashboardScreen: consumer route has no behavior surface owner/u,
+  );
+
+  const duplicated = cloneMatrix();
+  surfaceFor(duplicated, "app.savedEvents").routeIds.push("dashboardScreen");
+  assert.match(
+    errorsFor(duplicated),
+    /app route dashboardScreen: consumer route has multiple behavior surface owners/u,
+  );
+});
+
+test("extracts app route id path and audience for ownership checks", () => {
+  const routes = extractAppRoutes(fs.readFileSync(`${repoRoot}/lib/routing/go_router.dart`, "utf8"));
+  expectRoute(routes, "exploreScreen", "/organizers", "consumer");
+  expectRoute(routes, "hostClubDetailScreen", "/host/organizers/:clubId", "host");
+});
+
 function cloneMatrix() {
   return structuredClone(baseMatrix);
 }
@@ -149,6 +220,10 @@ function surfaceFor(matrix, id) {
   return matrix.surfaces.find((entry) => entry.id === id);
 }
 
-function errorsFor(matrix) {
-  return validatePublicSurfaceBehavior({matrix, root: repoRoot}).join("\n");
+function errorsFor(matrix, {strict = false} = {}) {
+  return validatePublicSurfaceBehavior({matrix, root: repoRoot, strict}).join("\n");
+}
+
+function expectRoute(routes, id, path, audience) {
+  assert.deepEqual(routes.find((route) => route.id === id), {id, path, audience});
 }
