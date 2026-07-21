@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.4.0
-updated: 2026-07-20
+version: 1.4.1
+updated: 2026-07-21
 owner: recursive_audit_loop
 status: active
 ---
@@ -286,6 +286,10 @@ Each device push token lives at
 `environment`, `platform`, optional app version/build, `locale`, `timeZone`, and
 `updatedAt`. The client owns this device metadata and rules restrict writes to
 the authenticated user plus the known role/environment/platform vocabulary.
+Consumer clients attempt the legacy `fcmToken` and installation document as
+independent compatibility writes, so an older deployed rule set cannot prevent
+the other representation from being refreshed. Each failure is still logged
+with its own non-PII resource context.
 Notification producers select reviewed templates by stable message id and use
 the installation locale when the delivery path supports per-installation
 fan-out. English remains the bundled server fallback; notification prose must

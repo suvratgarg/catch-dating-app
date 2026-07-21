@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -114,6 +115,11 @@ class _HostEventParticipantsPanelState
 
     return CatchAsyncValueView<AttendanceSheetViewModel?>(
       value: attendanceAsync,
+      onRetry: () {
+        ref.invalidate(watchEventProvider(eventId));
+        ref.invalidate(watchEventParticipationsForEventProvider(eventId));
+        ref.invalidate(attendanceSheetViewModelProvider(eventId));
+      },
       loadingBuilder: (_) => const CatchSkeletonRows(
         count: 4,
         titleWidth: CatchLayout.skeletonTextSectionWidth,
@@ -444,11 +450,7 @@ class _HostEventParticipantsPanelState
 }
 
 CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
-  return value.when(
-    data: CatchAsyncState<T>.data,
-    loading: () => const CatchAsyncState.loading(),
-    error: (error, stackTrace) => CatchAsyncState<T>.error(error),
-  );
+  return catchAsyncStateFromAsyncValue(value);
 }
 
 Object _waitlistOfferMutationKey(String eventId, List<String> userIds) {

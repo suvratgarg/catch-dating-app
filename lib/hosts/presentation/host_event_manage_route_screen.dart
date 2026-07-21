@@ -32,11 +32,15 @@ class HostEventManageRouteScreen extends ConsumerWidget {
 
     return CatchAsyncValueView<_HostEventManageRouteData>(
       value: routeDataAsync,
-      loadingBuilder: (_) => Scaffold(
-        backgroundColor: CatchTokens.of(context).bg,
-        appBar: CatchTopBar(
+      onRetry: () {
+        ref.invalidate(uidProvider);
+        ref.invalidate(fetchClubProvider(clubId));
+        ref.invalidate(watchEventProvider(eventId));
+      },
+      loadingBuilder: (_) => CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
-          border: true,
+          divider: scrolledUnder,
         ),
         body: const SafeArea(child: HostRouteLoadingBody(showTabRail: true)),
       ),

@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.5.1
+version: 1.5.2
 updated: 2026-07-21
 owner: recursive_audit_loop
 status: active
@@ -161,6 +161,11 @@ display adapters by naming convention. They may depend on domain/core/value
 types and `CatchAsyncState`, but they must not import Riverpod, declare
 providers, or call `ref.watch/read/listen`; provider-owned composition belongs
 in a neighboring `_view_model.dart`, `_controller.dart`, or route screen.
+When a route edge translates Riverpod `AsyncValue` into `CatchAsyncState`, it
+must use `catchAsyncStateFromAsyncValue` from
+`lib/core/presentation/catch_async_value_adapter.dart`. That adapter gives a
+known error precedence over refresh loading, then preserves credible data, and
+uses loading only when neither exists.
 
 Allowed exceptions:
 
@@ -794,6 +799,13 @@ Use `CatchAsyncValueView` for simple body screens with one async value.
 
 Use `CatchAsyncValueSliver` for simple sliver surfaces.
 
+Both primitives apply `InitialLoadPolicy.standard` (12 seconds) to the first
+user-visible resolution. When the deadline expires, the skeleton becomes a
+branded timeout state. Every presentation call site must supply `onRetry`; the
+`catch_async_requires_retry` analyzer diagnostic enforces that contract. The
+deadline is a presentation/provider-boundary policy only: never apply an idle
+timeout to a long-lived Firestore stream after its first value.
+
 Use a feature-owned typed UI state when a screen has richer behavior, such as:
 
 - partial secondary failures;
@@ -823,7 +835,8 @@ delivery channels:
 - `CatchErrorState` owns app-facing branded error content through one resolved
   descriptor and one shared body renderer.
 - `CatchErrorScaffold`, `CatchSliverErrorState`, and `CatchInlineErrorState`
-  are placement adapters for root, sliver, and section errors.
+  are placement adapters for root, sliver, and section errors. Every adapter
+  supports the same primary retry and optional secondary-action contract.
 - `CatchErrorBanner` is the persistent inline mutation/form error channel.
 - `CatchMutationErrorBanner` is the persistent Riverpod mutation adapter.
 - `CatchMutationErrorListener` and `CatchMutationErrorListeners` are transient
@@ -834,6 +847,10 @@ delivery channels:
 
 Do not reintroduce `CatchErrorText`, raw `Center(Text(error.toString()))`,
 raw vendor messages, or bespoke error cards that discard retry/error context.
+An explicit caller retry callback is authoritative and must not be suppressed
+by exception metadata. Firestore `permission-denied` is an operational backend
+failure unless a domain/callable boundary has explicitly classified it as a
+user authorization decision.
 
 ### Failure Channels
 
@@ -1843,6 +1860,27 @@ and identity routes use `CatchTopBar.identity`. A canonical call elsewhere in
 the file cannot bless helper-owned or raw chrome inside the actual `appBar`
 value.
 
+Pushed utility/list and identity routes use `CatchRouteScaffold`. It owns the
+page background and derives the top-bar divider from real vertical scroll
+notifications: no divider at rest, divider only while content is scrolled
+under the pinned compact bar. Root tab titles remain sliver content and scroll
+away; only deliberately declared search/filter/tab controls may pin.
+
+### Exhibit ARCH-ROUTE-CHROME-001: Pushed Route Chrome
+
+<!-- exhibit-freshness: ARCH-ROUTE-CHROME-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+
+`CatchRouteScaffold` is the reference boundary for pushed Consumer and Host
+routes. The route supplies a `CatchTopBar` builder and body; the shell alone
+owns surface color and the scroll-under divider. Loading, empty, error, and
+content branches retain the same title voice and back behavior instead of
+building competing scaffolds.
+
+The first adopters are Saved Events, Review History, Payment History,
+Settings, Chat Detail, Host Event Manage, Host Event Edit, and Host route
+loading. When another pushed list or form is touched, migrate it to this
+boundary rather than copying `Scaffold(backgroundColor:, appBar:)` flags.
+
 Pushed routes that must always expose an exit declare `leading: "back"` in
 the same manifest entry. The gate then requires an explicit
 `CatchTopBarLeading.back` (or `showBackButton: true`) configuration, so a
@@ -1863,6 +1901,8 @@ workspace, or temporary legacy role by symbol and owner. Role-to-owner policy
 is enforced; raw Material app bars cannot be relabeled as workspace or hero
 exceptions. Legacy entries are visible migration debt, not generic
 exceptions.
+The same gate consumes `tool/design/tab_root_scroll_contracts.json` and must
+report every consumer and Host tab-root branch; a zero-root pass is invalid.
 
 Full-screen editors that must cover persistent shell navigation declare their
 launcher in the same contract and push through
@@ -2392,6 +2432,12 @@ route edge, but widgets below the screen consume the presentation state object
 instead of reading repositories or recomputing product policy. In this exhibit,
 `CalendarHomeState` owns the screen-level selected-date/header/view inputs and
 `CalendarEventSummary` owns the merged event list.
+
+Riverpod translation remains at that route edge. Use
+`catchAsyncStateFromAsyncValue` rather than `AsyncValue.when`: refresh-time
+`AsyncError` can also report `isLoading`, so the shared adapter intentionally
+selects error, then available data, then loading. `CatchAsyncState` itself stays
+provider-free.
 
 This is a narrow state-boundary exhibit. The first full route/controller
 migration still needs its own reference exhibit before a broad rollout.

@@ -1312,11 +1312,6 @@ class ExploreScreenBodyState {
     required bool eventFeedHasContent,
     required ExploreDiscoveryEmptyState emptyState,
   }) {
-    if (viewModelLoading) {
-      return const ExploreScreenBodyState._(
-        kind: ExploreScreenBodyKind.loading,
-      );
-    }
     if (viewModelError != null) {
       if (eventFeedHasContent) {
         return ExploreScreenBodyState._(
@@ -1329,6 +1324,11 @@ class ExploreScreenBodyState {
         kind: ExploreScreenBodyKind.error,
         error: viewModelError,
         retryTarget: ExploreScreenRetryTarget.explore,
+      );
+    }
+    if (viewModelLoading) {
+      return const ExploreScreenBodyState._(
+        kind: ExploreScreenBodyKind.loading,
       );
     }
 
@@ -1344,16 +1344,16 @@ class ExploreScreenBodyState {
         viewModel: resolvedViewModel,
       );
     }
-    if (eventFeedLoading) {
-      return const ExploreScreenBodyState._(
-        kind: ExploreScreenBodyKind.loading,
-      );
-    }
     if (eventFeedError != null) {
       return ExploreScreenBodyState._(
         kind: ExploreScreenBodyKind.error,
         error: eventFeedError,
         retryTarget: ExploreScreenRetryTarget.eventFeed,
+      );
+    }
+    if (eventFeedLoading) {
+      return const ExploreScreenBodyState._(
+        kind: ExploreScreenBodyKind.loading,
       );
     }
     return ExploreScreenBodyState._(

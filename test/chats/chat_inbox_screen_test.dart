@@ -345,109 +345,110 @@ void main() {
     });
   });
 
-  testWidgets('chat sliver header search expands while pinned and editable', (
-    tester,
-  ) async {
-    final container = ProviderContainer();
-    addTearDown(container.dispose);
+  testWidgets(
+    'chat root header search expands in scroll content and is editable',
+    (tester) async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
 
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: Scaffold(
-            body: Consumer(
-              builder: (context, ref, child) {
-                return CustomScrollView(
-                  slivers: [
-                    ...CatchSliverHeader(
-                      title: const SizedBox.shrink(),
-                      bottomHeight: chatsBrowseHeaderHeight(
-                        context: context,
-                        hasHostFilter: false,
-                        hasHeaderSubtitle: false,
-                      ),
-                      bottom: ChatsBrowseHeader(
-                        showSearchAction: true,
-                        searchValue: ref.watch(chatSearchQueryProvider),
-                        onSearchChanged: ref
-                            .read(chatSearchQueryProvider.notifier)
-                            .setQuery,
-                        hostFilter: null,
-                        hostUnreadCount: 0,
-                        onHostFilterChanged: null,
-                      ),
-                    ).buildSlivers(context),
-                    const SliverToBoxAdapter(child: SizedBox(height: 700)),
-                  ],
-                );
-              },
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: Consumer(
+                builder: (context, ref, child) {
+                  return CustomScrollView(
+                    slivers: [
+                      ...CatchSliverHeader(
+                        title: const SizedBox.shrink(),
+                        bottomHeight: chatsBrowseHeaderHeight(
+                          context: context,
+                          hasHostFilter: false,
+                          hasHeaderSubtitle: false,
+                        ),
+                        bottom: ChatsBrowseHeader(
+                          showSearchAction: true,
+                          searchValue: ref.watch(chatSearchQueryProvider),
+                          onSearchChanged: ref
+                              .read(chatSearchQueryProvider.notifier)
+                              .setQuery,
+                          hostFilter: null,
+                          hostUnreadCount: 0,
+                          onHostFilterChanged: null,
+                        ),
+                      ).buildSlivers(context),
+                      const SliverToBoxAdapter(child: SizedBox(height: 700)),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         ),
-      ),
-    );
-    await tester.pump();
+      );
+      await tester.pump();
 
-    expect(tester.takeException(), isNull);
-    expect(find.text('Chats'), findsOneWidget);
-    expect(find.text('Messages from your matches'), findsNothing);
-    expect(find.text('Your catches'), findsNothing);
-    expect(find.text('0 chats'), findsNothing);
-    expect(find.byType(TextField), findsNothing);
-    final initialTitleTop = tester.getTopLeft(find.text('Chats')).dy;
+      expect(tester.takeException(), isNull);
+      expect(find.text('Chats'), findsOneWidget);
+      expect(find.text('Messages from your matches'), findsNothing);
+      expect(find.text('Your catches'), findsNothing);
+      expect(find.text('0 chats'), findsNothing);
+      expect(find.byType(TextField), findsNothing);
+      final initialTitleTop = tester.getTopLeft(find.text('Chats')).dy;
 
-    await tester.drag(find.byType(CustomScrollView), const Offset(0, -220));
-    await pumpFeatureUi(tester);
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, -220));
+      await pumpFeatureUi(tester);
 
-    expect(find.text('Chats').hitTestable(), findsOneWidget);
-    final scrolledTitleTop = tester.getTopLeft(find.text('Chats')).dy;
-    expect(scrolledTitleTop, greaterThanOrEqualTo(0));
-    expect(scrolledTitleTop, lessThanOrEqualTo(initialTitleTop));
+      expect(find.text('Chats').hitTestable(), findsOneWidget);
+      final scrolledTitleTop = tester.getTopLeft(find.text('Chats')).dy;
+      expect(scrolledTitleTop, greaterThanOrEqualTo(0));
+      expect(scrolledTitleTop, lessThanOrEqualTo(initialTitleTop));
 
-    await tester.tap(find.byTooltip('Search chats'));
-    await tester.pump();
-    final midSearchMorphFrame = Duration(
-      milliseconds: CatchMotion.base.inMilliseconds ~/ 2,
-    );
-    await tester.pump(midSearchMorphFrame);
+      await tester.tap(find.byTooltip('Search chats'));
+      await tester.pump();
+      final midSearchMorphFrame = Duration(
+        milliseconds: CatchMotion.base.inMilliseconds ~/ 2,
+      );
+      await tester.pump(midSearchMorphFrame);
 
-    final expandingSearchField = find.byWidgetPredicate(
-      (widget) =>
-          widget is CatchSearchField &&
-          widget.mode == CatchSearchFieldMode.expanding,
-    );
-    final morphingSearchWidth = tester.getSize(expandingSearchField).width;
-    expect(morphingSearchWidth, greaterThan(CatchField.compactControlHeight));
+      final expandingSearchField = find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchSearchField &&
+            widget.mode == CatchSearchFieldMode.expanding,
+      );
+      final morphingSearchWidth = tester.getSize(expandingSearchField).width;
+      expect(morphingSearchWidth, greaterThan(CatchField.compactControlHeight));
 
-    await pumpFeatureUi(tester);
+      await pumpFeatureUi(tester);
 
-    final expandedSearchWidth = tester.getSize(expandingSearchField).width;
-    expect(expandedSearchWidth, greaterThanOrEqualTo(morphingSearchWidth));
-    expect(find.byType(TextField), findsOneWidget);
-    expect(find.byIcon(CatchIcons.keyboardHideRounded), findsNothing);
-    expect(
-      tester.widget<TextField>(find.byType(TextField)).textInputAction,
-      TextInputAction.done,
-    );
-    await tester.enterText(find.byType(TextField), 'taylor');
-    await tester.pump();
+      final expandedSearchWidth = tester.getSize(expandingSearchField).width;
+      expect(expandedSearchWidth, greaterThanOrEqualTo(morphingSearchWidth));
+      expect(find.byType(TextField), findsOneWidget);
+      expect(find.byIcon(CatchIcons.keyboardHideRounded), findsNothing);
+      expect(
+        tester.widget<TextField>(find.byType(TextField)).textInputAction,
+        TextInputAction.done,
+      );
+      await tester.enterText(find.byType(TextField), 'taylor');
+      await tester.pump();
 
-    expect(tester.takeException(), isNull);
-    expect(container.read(chatSearchQueryProvider), 'taylor');
+      expect(tester.takeException(), isNull);
+      expect(container.read(chatSearchQueryProvider), 'taylor');
 
-    await tester.tap(find.byIcon(CatchIcons.clearCircle));
-    await tester.pump();
+      await tester.tap(find.byIcon(CatchIcons.clearCircle));
+      await tester.pump();
 
-    expect(tester.takeException(), isNull);
-    expect(container.read(chatSearchQueryProvider), isEmpty);
+      expect(tester.takeException(), isNull);
+      expect(container.read(chatSearchQueryProvider), isEmpty);
 
-    await tester.testTextInput.receiveAction(TextInputAction.done);
-    await pumpFeatureUi(tester);
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await pumpFeatureUi(tester);
 
-    expect(find.byType(TextField), findsNothing);
-  });
+      expect(find.byType(TextField), findsNothing);
+    },
+  );
 
   testWidgets('shows the empty state when there are no matches', (
     tester,

@@ -2903,8 +2903,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get safetySettingsScreenTitleLogOut => 'Log out';
 
   @override
-  String get safetySettingsScreenTextCatch10Made =>
-      'Catch 1.0 · made in Bombay';
+  String safetySettingsScreenTextVersionMade({required String version}) {
+    return 'Catch $version · made in Bombay';
+  }
 
   @override
   String get safetySettingsScreenTitleNoBlockedAccounts =>

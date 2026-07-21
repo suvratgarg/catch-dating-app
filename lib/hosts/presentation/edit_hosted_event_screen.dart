@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -23,6 +24,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -313,7 +315,6 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final mutation = ref.watch(
       HostEventBookingController.updateHostedEventMutation,
     );
@@ -379,11 +380,10 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       }
     }
 
-    return Scaffold(
-      backgroundColor: t.bg,
-      appBar: CatchTopBar(
+    return CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.hostsEditHostedEventScreenTitleEditEvent,
-        border: true,
+        divider: scrolledUnder,
       ),
       body: SafeArea(
         top: false,

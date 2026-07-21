@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
@@ -39,6 +40,11 @@ void main() {
     expect(find.text('No blocked accounts'), findsOneWidget);
     expect(find.byKey(SettingsKeys.showOnMapSwitch), findsOneWidget);
     expect(find.byKey(SettingsKeys.weeklyDigestSwitch), findsOneWidget);
+    expect(find.text('Edit profile'), findsNothing);
+    expect(find.text('Privacy policy'), findsNothing);
+    expect(find.text('Terms'), findsNothing);
+    expect(find.text('1.0.1'), findsOneWidget);
+    expect(find.text('Catch 1.0.1 · made in Bombay'), findsOneWidget);
     expect(_topBarMaterial(tester).color, CatchTokens.editorialLight.bg);
   });
 
@@ -295,6 +301,9 @@ ProviderContainer _settingsContainer({
   final container = ProviderContainer(
     overrides: [
       uidProvider.overrideWith((ref) => Stream.value(user.uid)),
+      appPackageInfoProvider.overrideWith(
+        (ref) async => (version: '1.0.1', buildNumber: '3'),
+      ),
       authRepositoryProvider.overrideWithValue(
         authRepository ?? _FakeSettingsAuthRepository(),
       ),

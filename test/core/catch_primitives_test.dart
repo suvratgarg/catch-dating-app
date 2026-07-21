@@ -2317,14 +2317,15 @@ void main() {
     expect(retryCount, 1);
   });
 
-  testWidgets('CatchErrorState hides retry UI for non-retryable errors', (
+  testWidgets('CatchErrorState honors an explicit recovery callback', (
     tester,
   ) async {
+    var retryCount = 0;
     await tester.pumpWidget(
       _wrap(
         CatchErrorState.fromError(
           const ValidationException('Please enter a valid phone number.'),
-          onRetry: () {},
+          onRetry: () => retryCount += 1,
         ),
       ),
     );
@@ -2334,7 +2335,62 @@ void main() {
       find.text('Check the highlighted details and try again.'),
       findsOneWidget,
     );
-    expect(find.text('Try again'), findsNothing);
+    expect(find.text('Try again'), findsOneWidget);
+    await tester.tap(find.text('Try again'));
+    await tester.pump();
+    expect(retryCount, 1);
+  });
+
+  testWidgets('Catch error variants keep a caller-provided alternate action', (
+    tester,
+  ) async {
+    var alternateCount = 0;
+    Widget alternateAction() => CatchButton(
+      label: 'Go back',
+      onPressed: () => alternateCount += 1,
+      variant: CatchButtonVariant.secondary,
+    );
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchInlineErrorState.fromError(
+          const PermissionException('Unavailable.'),
+          secondaryAction: alternateAction(),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Go back'));
+    expect(alternateCount, 1);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: CatchErrorScaffold.fromError(
+          const PermissionException('Unavailable.'),
+          secondaryAction: alternateAction(),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Go back'));
+    expect(alternateCount, 2);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: CustomScrollView(
+            slivers: [
+              CatchSliverErrorState.fromError(
+                const PermissionException('Unavailable.'),
+                secondaryAction: alternateAction(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Go back'));
+    expect(alternateCount, 3);
   });
 
   testWidgets('CatchSliverErrorState fills a sliver viewport', (tester) async {
@@ -2486,6 +2542,36 @@ void main() {
       ),
     );
 
+    expect(find.text('Loading custom state'), findsOneWidget);
+  });
+
+  testWidgets('CatchAsyncValueView replaces an expired skeleton with retry', (
+    tester,
+  ) async {
+    var retryCount = 0;
+    await tester.pumpWidget(
+      _wrap(
+        CatchAsyncValueView<int>(
+          value: const AsyncLoading<int>(),
+          initialLoadTimeout: const Duration(milliseconds: 10),
+          onRetry: () => retryCount += 1,
+          builder: (context, value) => Text('$value'),
+          loadingBuilder: (_) => const Text('Loading custom state'),
+        ),
+      ),
+    );
+
+    expect(find.text('Loading custom state'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 11));
+    expect(
+      find.text('The request timed out. Please try again.'),
+      findsOneWidget,
+    );
+    expect(find.text('Try again'), findsOneWidget);
+
+    await tester.tap(find.text('Try again'));
+    await tester.pump();
+    expect(retryCount, 1);
     expect(find.text('Loading custom state'), findsOneWidget);
   });
 

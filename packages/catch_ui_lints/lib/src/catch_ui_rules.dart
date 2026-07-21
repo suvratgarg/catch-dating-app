@@ -457,6 +457,12 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     severity: DiagnosticSeverity.INFO,
   );
 
+  static const asyncRequiresRetry = LintCode(
+    'catch_async_requires_retry',
+    'CatchAsyncValueView/CatchAsyncValueSliver must declare onRetry so both provider errors and initial-load timeouts have an actionable recovery path.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
   static const noRawErrorSurface = LintCode(
     'catch_no_raw_error_surface',
     'Use CatchErrorState/CatchSliverErrorState/CatchInlineErrorState instead of a raw Center(Text(...)) failure surface.',
@@ -521,6 +527,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     fieldRequiresSectionContext,
     sectionListRequiresEmptyPolicy,
     asyncRequiresStateSurface,
+    asyncRequiresRetry,
     noRawErrorSurface,
     noShellLocalMeasurement,
   ];
@@ -747,6 +754,13 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
         !_hasNamedArgument(node, 'emptyBuilder') &&
         !_hasNamedArgument(node, 'emptyStateOmitted')) {
       _reportAtNode(node, CatchUiLayoutRules.sectionListRequiresEmptyPolicy);
+    }
+
+    if (isFeaturePresentationPath &&
+        (typeName == 'CatchAsyncValueView' ||
+            typeName == 'CatchAsyncValueSliver') &&
+        !_hasNamedArgument(node, 'onRetry')) {
+      _reportAtNode(node, CatchUiLayoutRules.asyncRequiresRetry);
     }
 
     if (typeName == 'Image' &&

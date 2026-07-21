@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/data/initial_load_policy.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,7 +27,7 @@ typedef CatchAsyncValueErrorBuilder =
 ///   builder: (context, clubs) => ListView(...),
 /// )
 /// ```
-class CatchAsyncValueView<T> extends StatelessWidget {
+class CatchAsyncValueView<T> extends StatefulWidget {
   const CatchAsyncValueView({
     super.key,
     required this.value,
@@ -35,6 +39,7 @@ class CatchAsyncValueView<T> extends StatelessWidget {
     this.skipLoadingOnReload = false,
     this.skipLoadingOnRefresh = true,
     this.skipError = false,
+    this.initialLoadTimeout = InitialLoadPolicy.standard,
   });
 
   final AsyncValue<T> value;
@@ -50,25 +55,100 @@ class CatchAsyncValueView<T> extends StatelessWidget {
   final bool skipLoadingOnReload;
   final bool skipLoadingOnRefresh;
   final bool skipError;
+  final Duration? initialLoadTimeout;
+
+  @override
+  State<CatchAsyncValueView<T>> createState() => _CatchAsyncValueViewState<T>();
+}
+
+class _CatchAsyncValueViewState<T> extends State<CatchAsyncValueView<T>> {
+  Timer? _deadline;
+  bool _timedOut = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _syncDeadline();
+  }
+
+  @override
+  void didUpdateWidget(CatchAsyncValueView<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncDeadline();
+  }
+
+  @override
+  void dispose() {
+    _deadline?.cancel();
+    super.dispose();
+  }
+
+  void _syncDeadline() {
+    if (!_isInitialLoading(widget.value)) {
+      _deadline?.cancel();
+      _deadline = null;
+      _timedOut = false;
+      return;
+    }
+    if (_timedOut || _deadline != null || widget.initialLoadTimeout == null) {
+      return;
+    }
+    _deadline = Timer(widget.initialLoadTimeout!, () {
+      if (!mounted || !_isInitialLoading(widget.value)) return;
+      setState(() => _timedOut = true);
+    });
+  }
+
+  void _retry() {
+    _deadline?.cancel();
+    _deadline = null;
+    setState(() => _timedOut = false);
+    widget.onRetry?.call();
+    _syncDeadline();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final value = widget.value;
+    if (value.hasError && !widget.skipError) {
+      return widget.errorBuilder?.call(
+            context,
+            value.error!,
+            value.stackTrace ?? StackTrace.current,
+          ) ??
+          CatchErrorState.fromError(
+            value.error!,
+            context: widget.errorContext,
+            onRetry: widget.onRetry == null ? null : _retry,
+          );
+    }
+    if (_timedOut) {
+      return CatchErrorState.fromError(
+        _initialLoadTimeoutException,
+        context: widget.errorContext,
+        onRetry: widget.onRetry == null ? null : _retry,
+      );
+    }
     return value.when(
-      skipLoadingOnReload: skipLoadingOnReload,
-      skipLoadingOnRefresh: skipLoadingOnRefresh,
-      skipError: skipError,
-      data: (value) => builder(context, value),
+      skipLoadingOnReload: widget.skipLoadingOnReload,
+      skipLoadingOnRefresh: widget.skipLoadingOnRefresh,
+      skipError: widget.skipError,
+      data: (value) => widget.builder(context, value),
       loading: () =>
-          loadingBuilder?.call(context) ?? const CatchLoadingIndicator(),
+          widget.loadingBuilder?.call(context) ?? const CatchLoadingIndicator(),
       error: (e, st) =>
-          errorBuilder?.call(context, e, st) ??
-          CatchErrorState.fromError(e, context: errorContext, onRetry: onRetry),
+          widget.errorBuilder?.call(context, e, st) ??
+          CatchErrorState.fromError(
+            e,
+            context: widget.errorContext,
+            onRetry: widget.onRetry == null ? null : _retry,
+          ),
     );
   }
 }
 
 /// Sliver equivalent of [CatchAsyncValueView].
-class CatchAsyncValueSliver<T> extends StatelessWidget {
+class CatchAsyncValueSliver<T> extends StatefulWidget {
   const CatchAsyncValueSliver({
     super.key,
     required this.value,
@@ -83,6 +163,7 @@ class CatchAsyncValueSliver<T> extends StatelessWidget {
     this.skipLoadingOnReload = false,
     this.skipLoadingOnRefresh = true,
     this.skipError = false,
+    this.initialLoadTimeout = InitialLoadPolicy.standard,
   });
 
   final AsyncValue<T> value;
@@ -97,38 +178,115 @@ class CatchAsyncValueSliver<T> extends StatelessWidget {
   final bool skipLoadingOnReload;
   final bool skipLoadingOnRefresh;
   final bool skipError;
+  final Duration? initialLoadTimeout;
+
+  @override
+  State<CatchAsyncValueSliver<T>> createState() =>
+      _CatchAsyncValueSliverState<T>();
+}
+
+class _CatchAsyncValueSliverState<T> extends State<CatchAsyncValueSliver<T>> {
+  Timer? _deadline;
+  bool _timedOut = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _syncDeadline();
+  }
+
+  @override
+  void didUpdateWidget(CatchAsyncValueSliver<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncDeadline();
+  }
+
+  @override
+  void dispose() {
+    _deadline?.cancel();
+    super.dispose();
+  }
+
+  void _syncDeadline() {
+    if (!_isInitialLoading(widget.value)) {
+      _deadline?.cancel();
+      _deadline = null;
+      _timedOut = false;
+      return;
+    }
+    if (_timedOut || _deadline != null || widget.initialLoadTimeout == null) {
+      return;
+    }
+    _deadline = Timer(widget.initialLoadTimeout!, () {
+      if (!mounted || !_isInitialLoading(widget.value)) return;
+      setState(() => _timedOut = true);
+    });
+  }
+
+  void _retry() {
+    _deadline?.cancel();
+    _deadline = null;
+    setState(() => _timedOut = false);
+    widget.onRetry?.call();
+    _syncDeadline();
+  }
+
+  Widget _errorSliver(BuildContext context, Object error, StackTrace stack) {
+    final customSliver = widget.sliverErrorBuilder?.call(context, error, stack);
+    if (customSliver != null) return customSliver;
+    final customBuilder = widget.errorBuilder?.call(context, error, stack);
+    if (customBuilder != null) return SliverToBoxAdapter(child: customBuilder);
+    return CatchSliverErrorState.fromError(
+      error,
+      context: widget.errorContext,
+      onRetry: widget.onRetry == null ? null : _retry,
+      fillRemaining: widget.fillErrorRemaining,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final value = widget.value;
+    if (value.hasError && !widget.skipError) {
+      return _errorSliver(
+        context,
+        value.error!,
+        value.stackTrace ?? StackTrace.current,
+      );
+    }
+    if (_timedOut) {
+      return _errorSliver(
+        context,
+        _initialLoadTimeoutException,
+        StackTrace.current,
+      );
+    }
     return value.when(
-      skipLoadingOnReload: skipLoadingOnReload,
-      skipLoadingOnRefresh: skipLoadingOnRefresh,
-      skipError: skipError,
-      data: (value) => builder(context, value),
+      skipLoadingOnReload: widget.skipLoadingOnReload,
+      skipLoadingOnRefresh: widget.skipLoadingOnRefresh,
+      skipError: widget.skipError,
+      data: (value) => widget.builder(context, value),
       loading: () {
-        final customSliver = sliverLoadingBuilder?.call(context);
+        final customSliver = widget.sliverLoadingBuilder?.call(context);
         if (customSliver != null) return customSliver;
         return SliverToBoxAdapter(
-          child: loadingBuilder?.call(context) ?? const CatchLoadingIndicator(),
+          child:
+              widget.loadingBuilder?.call(context) ??
+              const CatchLoadingIndicator(),
         );
       },
-      error: (e, st) {
-        final customSliver = sliverErrorBuilder?.call(context, e, st);
-        if (customSliver != null) return customSliver;
-        final customBuilder = errorBuilder?.call(context, e, st);
-        if (customBuilder != null) {
-          return SliverToBoxAdapter(child: customBuilder);
-        }
-        return CatchSliverErrorState.fromError(
-          e,
-          context: errorContext,
-          onRetry: onRetry,
-          fillRemaining: fillErrorRemaining,
-        );
-      },
+      error: (e, st) => _errorSliver(context, e, st),
     );
   }
 }
+
+bool _isInitialLoading(AsyncValue<Object?> value) =>
+    value.isLoading && !value.hasValue && !value.hasError;
+
+const _initialLoadTimeoutException = NetworkException(
+  'timeout',
+  'This is taking longer than expected. Please try again.',
+);
 
 class CatchAsyncScreenLoading extends StatelessWidget {
   const CatchAsyncScreenLoading({

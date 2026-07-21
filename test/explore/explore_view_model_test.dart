@@ -1152,6 +1152,13 @@ void main() {
       final viewModelError = body(viewModelError: StateError('clubs failed'));
       expect(viewModelError.kind, ExploreScreenBodyKind.error);
       expect(viewModelError.retryTarget, ExploreScreenRetryTarget.explore);
+      expect(
+        body(
+          viewModelLoading: true,
+          viewModelError: StateError('clubs failed'),
+        ).kind,
+        ExploreScreenBodyKind.error,
+      );
 
       final viewModelErrorWithFeed = body(
         viewModelError: StateError('clubs failed'),
@@ -1179,6 +1186,13 @@ void main() {
       final feedError = body(eventFeedError: StateError('events failed'));
       expect(feedError.kind, ExploreScreenBodyKind.error);
       expect(feedError.retryTarget, ExploreScreenRetryTarget.eventFeed);
+      expect(
+        body(
+          eventFeedLoading: true,
+          eventFeedError: StateError('events failed'),
+        ).kind,
+        ExploreScreenBodyKind.error,
+      );
 
       final empty = body();
       expect(empty.kind, ExploreScreenBodyKind.empty);

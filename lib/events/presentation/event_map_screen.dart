@@ -99,6 +99,9 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
         Positioned.fill(
           child: CatchAsyncValueView<EventMapViewModel>(
             value: viewModelAsync,
+            onRetry:
+                widget.onRetry ??
+                () => ref.invalidate(eventMapViewModelProvider),
             loadingBuilder: (_) => const EventMapLoadingBody(),
             errorBuilder: (_, error, _) => CatchErrorState.fromError(
               error,

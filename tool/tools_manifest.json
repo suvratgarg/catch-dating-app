@@ -913,6 +913,8 @@
       "role": "gate",
       "rules": [
         "UI-LINT-001",
+        "ASYNC-LOADING-PRESENTATION-001",
+        "ERROR-UI-002",
         "IMAGE-NETWORK-PRIMITIVE-001"
       ],
       "vacuityProof": {
@@ -920,6 +922,7 @@
         "path": "tool/check_catch_ui_lints.sh",
         "diagnostics": [
           "catch_no_allow_debt",
+          "catch_async_requires_retry",
           "catch_no_raw_content_dimension",
           "catch_no_local_design_constant"
         ]

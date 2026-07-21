@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-07-19",
+  "updated": "2026-07-21",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -3467,6 +3467,7 @@
         "enforcement": {
           "code": "catch_async_requires_state_surface",
           "codes": [
+            "catch_async_requires_retry",
             "catch_mutation_pending_requires_error",
             "catch_no_async_flush_hack",
             "catch_no_raw_error_surface"

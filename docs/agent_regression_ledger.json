@@ -1,5 +1,5 @@
 {
-  "version": 55,
+  "version": 58,
   "updated": "2026-07-21",
   "owner": "agent_operating_model",
   "entries": [
@@ -2430,6 +2430,81 @@
         "docs/data_contracts.md"
       ],
       "notes": "The two aggregates intentionally have different semantics during compatibility: organizer followers exclude team roles, while legacy club memberships include them."
+    },
+    {
+      "id": "REG-ASYNC-DEADLINE-RETRY-001",
+      "title": "Initial provider loads remain indefinite or discard recovery callbacks",
+      "status": "active",
+      "applies_to": [
+        "lib/core/data/initial_load_policy.dart",
+        "lib/core/presentation/catch_async_value_adapter.dart",
+        "lib/core/widgets/catch_async_value_view.dart",
+        "lib/core/widgets/catch_error_state.dart",
+        "lib/**/presentation/**",
+        "packages/catch_ui_lints/**"
+      ],
+      "symptom": "A screen can display a skeleton forever, a known error loses to a loading flag, or an explicit retry callback disappears because generic exception metadata classifies the error as non-retryable.",
+      "guard": {
+        "type": "command",
+        "command": "bash tool/check_catch_ui_lints.sh && flutter test test/core/catch_async_state_test.dart test/core/catch_primitives_test.dart test/explore/explore_view_model_test.dart",
+        "guardEvidence": "the analyzer rejects CatchAsyncValue surfaces without onRetry; adapter tests prove refresh-time errors outrank simultaneous loading flags; primitive tests prove the initial-load deadline and explicit recovery callback; Explore state tests prove known errors outrank loading"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/widget_catalog.md",
+        "docs/audit_registry/rules.json"
+      ],
+      "notes": "The 12-second policy is a presentation deadline for initial provider resolution, not an idle timeout for healthy Firestore streams."
+    },
+    {
+      "id": "REG-PUSHED-ROUTE-CHROME-001",
+      "title": "Pushed route titles, surfaces, and dividers drift by caller",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_route_scaffold.dart",
+        "lib/events/presentation/saved_events_screen.dart",
+        "lib/reviews/presentation/reviews_history_screen.dart",
+        "lib/payments/presentation/payment_history_screen.dart",
+        "lib/safety/presentation/settings_screen.dart",
+        "lib/chats/presentation/**",
+        "lib/hosts/presentation/**",
+        "tool/design/screen_top_bar_contracts.json"
+      ],
+      "symptom": "One route has a permanent underline, another never separates scrolled content, a detail bar changes surface color, or loading/content branches render different title hierarchies.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check design:screen-top-bar-contracts && flutter test test/core/catch_top_bar_test.dart test/events/saved_events_screen_test.dart test/chats/chat_screen_test.dart",
+        "guardEvidence": "the route shell test proves the divider follows scroll depth, the contract gate inventories Consumer and Host roots, and focused tests reject duplicate Saved Events titles and drifting chat chrome"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/design_language.md",
+        "docs/widget_catalog.md"
+      ],
+      "notes": "Root tab titles stay in scroll content; pushed routes use CatchRouteScaffold."
+    },
+    {
+      "id": "REG-ORGANIZER-ROLLOUT-READ-FALLBACK-001",
+      "title": "Organizer-first client ships before production read access or projection data",
+      "status": "active",
+      "applies_to": [
+        "lib/clubs/data/clubs_repository.dart",
+        "lib/clubs/data/organizer_projection_fallback.dart",
+        "docs/migrations/clubs_to_organizers.md",
+        "test/clubs/organizer_projection_fallback_test.dart"
+      ],
+      "symptom": "Home and Explore fail with Firestore permission-denied after the client switches reads to organizers while production still exposes only the legacy clubs compatibility projection.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test test/clubs/organizer_projection_fallback_test.dart test/clubs/clubs_repository_test.dart",
+        "guardEvidence": "watch falls back when canonical collection access is denied"
+      },
+      "owner_docs": [
+        "docs/migrations/clubs_to_organizers.md",
+        "docs/data_contracts.md",
+        "docs/app_architecture.md"
+      ],
+      "notes": "This is a temporary read-only compatibility seam. It must be retired after production rules, indexes, backfill, and released-client evidence satisfy the migration exit gate."
     }
   ]
 }

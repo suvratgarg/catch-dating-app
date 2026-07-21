@@ -7,7 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -29,10 +29,12 @@ class SavedEventsScreen extends ConsumerWidget {
     final t = CatchTokens.of(context);
     final uidAsync = ref.watch(uidProvider);
 
-    return Scaffold(
+    return CatchRouteScaffold(
       backgroundColor: t.bg,
-      appBar: CatchTopBar(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.eventsSavedEventsScreenTitleSavedEvents,
+        leadingType: CatchTopBarLeading.back,
+        divider: scrolledUnder,
       ),
       body: SafeArea(
         child: Builder(
@@ -53,6 +55,12 @@ class SavedEventsScreen extends ConsumerWidget {
 
             return CatchAsyncValueView<List<Event>>(
               value: savedEventsAsync,
+              onRetry: () {
+                ref.invalidate(uidProvider);
+                if (uid != null) {
+                  ref.invalidate(watchSavedEventDetailsForUserProvider(uid));
+                }
+              },
               loadingBuilder: (_) => const SavedEventsLoading(),
               errorBuilder: (_, error, _) => SavedEventsError(
                 error: error,
@@ -97,9 +105,9 @@ class SavedEventsScreen extends ConsumerWidget {
 
                 return CustomScrollView(
                   slivers: [
-                    const SavedEventsHeaderSliver(),
                     CatchAsyncValueSliver<Map<String, String>>(
                       value: clubNamesAsync,
+                      onRetry: () => ref.invalidate(clubNameLookupProvider),
                       sliverLoadingBuilder: (_) =>
                           const EventAgendaSliverSkeleton(),
                       sliverErrorBuilder: (_, error, _) =>
@@ -130,23 +138,6 @@ class SavedEventsScreen extends ConsumerWidget {
       Routes.savedEventDetailScreen.name,
       pathParameters: {'clubId': event.clubId, 'eventId': event.id},
       extra: event,
-    );
-  }
-}
-
-class SavedEventsHeaderSliver extends StatelessWidget {
-  const SavedEventsHeaderSliver({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverPadding(
-      padding: CatchInsets.pageHeaderCompact,
-      sliver: SliverToBoxAdapter(
-        child: Text(
-          context.l10n.eventsSavedEventsScreenTextEventsYouSaved,
-          style: CatchTextStyles.headlineS(context),
-        ),
-      ),
     );
   }
 }
@@ -183,19 +174,7 @@ class SavedEventsLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        SliverPadding(
-          padding: CatchInsets.pageHeaderCompact,
-          sliver: SliverToBoxAdapter(
-            child: CatchSkeleton.text(
-              width: CatchLayout.skeletonTextHeadlineWidth,
-            ),
-          ),
-        ),
-        const EventAgendaSliverSkeleton(),
-      ],
-    );
+    return const CustomScrollView(slivers: [EventAgendaSliverSkeleton()]);
   }
 }
 

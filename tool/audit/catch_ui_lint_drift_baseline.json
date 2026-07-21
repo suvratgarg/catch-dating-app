@@ -1,8 +1,9 @@
 {
   "version": 1,
-  "updated": "2026-07-19",
+  "updated": "2026-07-21",
   "description": "Catch UI analyzer-plugin drift maxima after P0 warning cleanup and P1-P3 enforcement rollout. Every declared code is covered; maxima may decrease only.",
   "maxCounts": {
+    "catch_async_requires_retry": 0,
     "catch_async_requires_state_surface": 1,
     "catch_event_detail_prefers_photo_thumbnail": 0,
     "catch_field_requires_section_context": 53,

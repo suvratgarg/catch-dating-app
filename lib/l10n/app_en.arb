@@ -5853,12 +5853,12 @@
     "x-owner": "product",
     "x-surface": "safety.presentation.settings_screen"
   },
-  "safetySettingsScreenTextCatch10Made": "Catch 1.0 · made in Bombay",
-  "@safetySettingsScreenTextCatch10Made": {
-    "description": "Product copy used by lib/safety/presentation/settings_screen.dart (Text).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "safety.presentation.settings_screen"
+  "safetySettingsScreenTextVersionMade": "Catch {version} · made in Bombay",
+  "@safetySettingsScreenTextVersionMade": {
+    "description": "Settings footer with the running app version.",
+    "placeholders": {
+      "version": {"type": "String"}
+    }
   },
   "safetySettingsScreenTitleNoBlockedAccounts": "No blocked accounts",
   "@safetySettingsScreenTitleNoBlockedAccounts": {

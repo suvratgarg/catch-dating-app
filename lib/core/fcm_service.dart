@@ -221,10 +221,22 @@ class FcmService {
   }
 
   Future<void> _saveToken(String uid, String token) async {
+    final userRef = _db.collection('users').doc(uid);
+
+    // Keep the legacy consumer field working while older production rules and
+    // senders are still deployed. A denied compatibility-projection write must
+    // not prevent the other token representation from being attempted.
+    if (!AppConfig.appRole.isHost) {
+      try {
+        await userRef.update({'fcmToken': token});
+      } catch (error, stackTrace) {
+        _logTokenPersistenceError(error, stackTrace, resource: 'users');
+      }
+    }
+
     try {
       final installationId = await _pushInstallationId();
       final packageInfo = await PackageInfo.fromPlatform();
-      final userRef = _db.collection('users').doc(uid);
       await userRef.collection('pushInstallations').doc(installationId).set({
         'token': token,
         'appRole': AppConfig.appRoleName,
@@ -236,24 +248,31 @@ class FcmService {
         'timeZone': DateTime.now().timeZoneName,
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
-
-      // Legacy compatibility for existing consumer notification senders.
-      if (!AppConfig.appRole.isHost) {
-        await userRef.update({'fcmToken': token});
-      }
-    } catch (e, st) {
-      _errorLogger.logAppException(
-        normalizeBackendError(
-          e,
-          stackTrace: st,
-          context: const BackendErrorContext(
-            service: BackendService.firestore,
-            action: 'save push token',
-            resource: 'users',
-          ),
-        ),
+    } catch (error, stackTrace) {
+      _logTokenPersistenceError(
+        error,
+        stackTrace,
+        resource: 'push_installations',
       );
     }
+  }
+
+  void _logTokenPersistenceError(
+    Object error,
+    StackTrace stackTrace, {
+    required String resource,
+  }) {
+    _errorLogger.logAppException(
+      normalizeBackendError(
+        error,
+        stackTrace: stackTrace,
+        context: BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'save push token',
+          resource: resource,
+        ),
+      ),
+    );
   }
 
   Future<String> _pushInstallationId() {

@@ -79,6 +79,7 @@ class HostClubSpokeResolver extends ConsumerWidget {
     final clubsAsync = ref.watch(_hostClubsForUserProvider(uid));
     return CatchAsyncValueView<List<Club>>(
       value: clubsAsync,
+      onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
       loadingBuilder: (_) => HostLoadingScreen(title: title),
       errorBuilder: (_, error, _) => CatchErrorScaffold.fromError(
         error,

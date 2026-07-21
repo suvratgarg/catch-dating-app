@@ -7,6 +7,25 @@ void main() {
     AppConfig.resetEntrypointEnvironmentOverrideForTesting();
   });
 
+  group('owner-approved external destinations', () {
+    test('accepts only absolute HTTPS URLs', () {
+      expect(
+        AppConfig.configuredExternalUriFor(' https://catchdates.com/privacy '),
+        Uri.parse('https://catchdates.com/privacy'),
+      );
+      expect(AppConfig.configuredExternalUriFor(''), isNull);
+      expect(AppConfig.configuredExternalUriFor('/privacy'), isNull);
+      expect(
+        AppConfig.configuredExternalUriFor('http://catchdates.com/privacy'),
+        isNull,
+      );
+      expect(
+        AppConfig.configuredExternalUriFor('ftp://catchdates.com/privacy'),
+        isNull,
+      );
+    });
+  });
+
   test(
     'installable target entrypoints override stale compile-time identity',
     () {

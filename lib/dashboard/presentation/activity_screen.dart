@@ -69,6 +69,7 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
       ),
       body: CatchAsyncValueView<String?>(
         value: uidAsync,
+        onRetry: () => ref.invalidate(uidProvider),
         loadingBuilder: (_) => const ActivityScreenLoading(),
         errorBuilder: (_, _, _) => const ActivitySignedOutState(),
         builder: (context, uid) {
@@ -78,6 +79,8 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
                 notificationsAsync ??
                 const AsyncLoading<List<ActivityNotification>>(),
             loadingBuilder: (_) => const ActivityScreenLoading(),
+            onRetry: () =>
+                ref.invalidate(watchActivityNotificationsProvider(uid)),
             errorBuilder: (context, error, _) => ActivityScreenBody(
               state: NotificationsActivityError(uid: uid, error: error),
               onRetry: () =>

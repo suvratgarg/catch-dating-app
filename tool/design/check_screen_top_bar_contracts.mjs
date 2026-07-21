@@ -9,6 +9,10 @@ const architectureAdoptionPath =
   "docs/audit_registry/architecture_pattern_adoption.json";
 const screenChromeArchitectureId = "ARCH-SCREEN-CHROME-001";
 const appBarPattern = /\bappBar\s*:\s*([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?)/gu;
+const routeTopBarBuilderPattern =
+  /\btopBarBuilder\s*:\s*\([^)]*\)\s*=>\s*(CatchTopBar(?:\.identity)?)/gu;
+const canonicalRouteScaffoldPath =
+  "lib/core/widgets/catch_route_scaffold.dart";
 const rawChromePattern =
   /\b(AppBar|SliverAppBar|CupertinoNavigationBar|CupertinoSliverNavigationBar)\s*\(/gu;
 const manualHeaderClassPattern =
@@ -185,10 +189,11 @@ function collectAppBars(root) {
 
   for (const absolutePath of walkDartFiles(libRoot)) {
     const relativePath = path.relative(root, absolutePath).split(path.sep).join("/");
+    if (relativePath === canonicalRouteScaffoldPath) continue;
     const source = maskDartCommentsAndStrings(
       fs.readFileSync(absolutePath, "utf8"),
     );
-    const matches = [...source.matchAll(appBarPattern)].map((match) => {
+    const directMatches = [...source.matchAll(appBarPattern)].map((match) => {
       const matchIndex = match.index ?? 0;
       const expressionOffset = match[0].lastIndexOf(match[1]);
       const valueStart = matchIndex + expressionOffset;
@@ -198,6 +203,19 @@ function collectAppBars(root) {
         value: readAppBarValue(source, valueStart),
       };
     });
+    const builderMatches = [...source.matchAll(routeTopBarBuilderPattern)].map(
+      (match) => {
+        const matchIndex = match.index ?? 0;
+        const expressionOffset = match[0].lastIndexOf(match[1]);
+        const valueStart = matchIndex + expressionOffset;
+        return {
+          expression: match[1],
+          line: lineNumberAt(source, matchIndex),
+          value: readAppBarValue(source, valueStart),
+        };
+      },
+    );
+    const matches = [...directMatches, ...builderMatches];
     if (matches.length > 0) result.set(relativePath, matches);
   }
   return result;
@@ -1102,8 +1120,8 @@ function checkRootHeaderSurface({root, rootHeader, surface, findings}) {
   const source = maskDartCommentsAndStrings(
     fs.readFileSync(absolutePath, "utf8"),
   );
-  const classBody = readClassBody(source, surface.symbol);
-  if (classBody == null) {
+  const classBodies = readWidgetClassBodies(source, surface.symbol);
+  if (classBodies.length === 0) {
     findings.push({
       code: "missing-root-header-symbol",
       path: surface.path,
@@ -1114,6 +1132,7 @@ function checkRootHeaderSurface({root, rootHeader, surface, findings}) {
     return;
   }
 
+  const classBody = classBodies.map((entry) => entry.body).join("\n");
   const ownerCalls = readCalls(classBody, surface.owner);
   const expectedCount = surface.minimumOccurrences ?? 1;
   if (ownerCalls.length < expectedCount) {

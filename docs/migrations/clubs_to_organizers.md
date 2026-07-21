@@ -1,7 +1,7 @@
 ---
 doc_id: clubs_to_organizers_migration
-version: 1.0.0
-updated: 2026-07-20
+version: 1.0.1
+updated: 2026-07-21
 owner: data_platform
 status: active
 ---
@@ -60,6 +60,13 @@ New Flutter, React, and Functions code must use the canonical column. Legacy
 fields are mirrors for released clients and warehouse continuity, not alternate
 sources of truth. `tool/check_organizer_nomenclature.mjs` enforces the selected
 cutover points.
+
+During the additive deployment window, Flutter organizer reads try
+`organizers` first and may fall back to the `clubs` projection only when
+Firestore rejects access to the canonical collection. Empty canonical results
+never trigger fallback, and all writes remain canonical/callable-owned. Remove
+this rollout fallback only after production rules/data are deployed and
+fallback-read evidence is zero.
 
 ## What The Migration Copies
 

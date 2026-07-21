@@ -1223,7 +1223,7 @@ void main() {
       expect(find.byType(TextField), findsOneWidget);
       expect(
         tester.getSize(find.byType(ExploreCityPicker)).height,
-        CatchIconButton.navSize,
+        CatchSpacing.s11,
       );
       expect(
         tester.getSize(_topLevelSearchField()).height,
@@ -1941,7 +1941,7 @@ void main() {
       final initialCityTriggerSize = tester.getSize(
         find.byType(ExploreCityPicker),
       );
-      expect(initialCityTriggerSize.height, CatchIconButton.navSize);
+      expect(initialCityTriggerSize.height, CatchSpacing.s11);
       expect(
         initialCityTriggerSize.width,
         greaterThan(initialCityTriggerSize.height),
@@ -2151,6 +2151,9 @@ void main() {
             AvatarChip(club: club, showLiveBadge: true),
           ],
         ),
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        ],
       );
 
       // The index row keeps cover art and rail identity separate:
@@ -2184,6 +2187,9 @@ void main() {
       await pumpTestApp(
         tester,
         ClubIndexRow(club: buildClub(name: 'Host Club'), isJoined: true),
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        ],
       );
 
       expect(find.text('You host'), findsNothing);
@@ -2407,7 +2413,12 @@ void main() {
         );
 
         await tester.pumpWidget(
-          MaterialApp.router(theme: AppTheme.light, routerConfig: router),
+          ProviderScope(
+            child: MaterialApp.router(
+              theme: AppTheme.light,
+              routerConfig: router,
+            ),
+          ),
         );
         await tester.tap(find.text('Open hero'));
         await _pumpClubUi(tester);
@@ -2637,7 +2648,15 @@ void main() {
         );
 
         await tester.pumpWidget(
-          MaterialApp.router(theme: AppTheme.light, routerConfig: router),
+          ProviderScope(
+            overrides: [
+              uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+            ],
+            child: MaterialApp.router(
+              theme: AppTheme.light,
+              routerConfig: router,
+            ),
+          ),
         );
         await _pumpClubUi(tester);
         await tester.tap(
@@ -3435,7 +3454,7 @@ void main() {
             .state<RefreshIndicatorState>(find.byType(RefreshIndicator))
             .show(),
       );
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(feedBuilds, greaterThan(initialBuilds));
     });

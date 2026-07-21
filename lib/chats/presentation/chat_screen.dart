@@ -27,6 +27,7 @@ import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -289,15 +290,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         ChatController.blockUserMutation,
         SuvbotController.requestMutation,
       ],
-      child: Scaffold(
-        appBar: CatchTopBar.identity(
+      child: CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.identity(
           identityName: chatState.name,
           identityPhotoUrl: chatState.photoUrl,
           onIdentityTap: chatState.profileNavigationEnabled
               ? () => _openOtherProfile(chatState)
               : null,
-          surface: true,
-          border: true,
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
           actions: [
             if (chatState.threadActions.isNotEmpty)
               CatchTopBarMenuAction<ChatThreadAction>(

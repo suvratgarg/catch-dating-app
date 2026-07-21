@@ -5056,11 +5056,11 @@ abstract class AppLocalizations {
   /// **'Log out'**
   String get safetySettingsScreenTitleLogOut;
 
-  /// Product copy used by lib/safety/presentation/settings_screen.dart (Text).
+  /// Settings footer with the running app version.
   ///
   /// In en, this message translates to:
-  /// **'Catch 1.0 · made in Bombay'**
-  String get safetySettingsScreenTextCatch10Made;
+  /// **'Catch {version} · made in Bombay'**
+  String safetySettingsScreenTextVersionMade({required String version});
 
   /// Product copy used by lib/safety/presentation/settings_screen.dart (title).
   ///

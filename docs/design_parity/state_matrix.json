@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-07-19",
+  "updated": "2026-07-21",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -3317,7 +3317,7 @@
               "tests": [
                 "test/chats/chat_inbox_screen_test.dart"
               ],
-              "notes": "ChatsSliverHeader expands the pinned CatchBrowseHeader search field and writes chatSearchQueryProvider.",
+              "notes": "ChatsBrowseHeader expands the scroll-owned root search field and writes chatSearchQueryProvider.",
               "previewIds": [
                 "ChatsListScreen/Consumer route states"
               ],

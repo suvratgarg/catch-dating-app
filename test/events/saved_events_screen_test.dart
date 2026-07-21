@@ -133,7 +133,8 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('Events you saved'), findsOneWidget);
+      expect(find.text('Saved events'), findsOneWidget);
+      expect(find.text('Events you saved'), findsNothing);
       expect(find.text('STRIDE SOCIAL'), findsAtLeastNWidgets(1));
       expect(find.textContaining('SAVED', findRichText: true), findsOneWidget);
       expect(find.textContaining('PAST', findRichText: true), findsOneWidget);

@@ -1,5 +1,5 @@
 {
-  "version": "1.5.47",
+  "version": "1.5.48",
   "updated": "2026-07-21",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
@@ -368,19 +368,13 @@
         },
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
-          "role": "Chats/Host Inbox pinned browse header uses CatchScreenTopBar with root title, subtitle, expanding search, and optional host filter row",
+          "role": "Chats/Host Inbox scroll-owned browse header uses CatchScreenTopBar with root title, subtitle, expanding search, and optional host filter row",
           "status": "aligned",
           "lastReviewedPass": "2026-07-07-screen-header-chrome"
         },
         {
           "path": "lib/user_profile/presentation/profile_screen.dart",
           "role": "Profile tab sliver title uses CatchScreenHeaderTitle.block with the settings icon in the action slot before the pinned tab rail",
-          "status": "aligned",
-          "lastReviewedPass": "2026-07-07-screen-header-chrome"
-        },
-        {
-          "path": "lib/safety/presentation/settings_screen.dart",
-          "role": "Settings root-like route uses CatchScreenTopBar so it matches Profile and the main tab screen typography",
           "status": "aligned",
           "lastReviewedPass": "2026-07-07-screen-header-chrome"
         },
@@ -424,6 +418,75 @@
       "notes": "This pattern separates root screen voice chrome from compact navigation chrome. CatchScreenHeaderTitle owns Archivo headline typography for root titles plus optional mono eyebrow, subtitle, leading, action, material, and padding slots. CatchScreenTopBar wraps CatchTopBar when a root-like app bar also needs safe-area, action, or expanding-search behavior. Do not recreate feature-local title widgets for Home, Explore, Chats, Profile, Activity, or Settings; pass feature data and actions into the shared header slots. The screen-top-bar contract gate inventories every compact and identity app bar, exact raw media-hero exception, feature-owned Screen/Scaffold/Header/TopBar/HeaderContent class including delegated State bodies, and shell-covering editor launcher. Every discovered surface in an aligned adopter path must retain a canonical root owner, so one correct header cannot hide a second drifting implementation."
     },
     {
+      "id": "ARCH-ROUTE-CHROME-001",
+      "name": "Pushed route chrome",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-route-chrome-001-pushed-route-chrome",
+      "prototypeFiles": [
+        "lib/core/widgets/catch_route_scaffold.dart",
+        "test/core/catch_top_bar_test.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/events/presentation/saved_events_screen.dart",
+          "role": "consumer pushed list with one title hierarchy and scroll-derived divider",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-21-async-route-chrome-consistency"
+        },
+        {
+          "path": "lib/reviews/presentation/reviews_history_screen.dart",
+          "role": "consumer pushed list with compact back chrome and scroll-derived divider",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-21-async-route-chrome-consistency"
+        },
+        {
+          "path": "lib/payments/presentation/payment_history_screen.dart",
+          "role": "consumer pushed history route sharing the same empty and scroll chrome",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-21-async-route-chrome-consistency"
+        },
+        {
+          "path": "lib/safety/presentation/settings_screen.dart",
+          "role": "consumer pushed settings route with scroll-derived divider",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-21-async-route-chrome-consistency"
+        },
+        {
+          "path": "lib/chats/presentation/chat_screen.dart",
+          "role": "shared Consumer and Host chat detail with canonical route surface and divider",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-21-async-route-chrome-consistency"
+        },
+        {
+          "path": "lib/hosts/presentation/host_event_manage_screen.dart",
+          "role": "Host event workspace with scroll-derived compact chrome",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-21-async-route-chrome-consistency"
+        },
+        {
+          "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+          "role": "Host event editor with scroll-derived compact chrome",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-21-async-route-chrome-consistency"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_loading_screen.dart",
+          "role": "Host loading route retaining the canonical surface and top bar",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-21-async-route-chrome-consistency"
+        }
+      ],
+      "requiredBackPropagation": "When pushed-route surface, divider, title, or back semantics change, update CatchRouteScaffold, every aligned Consumer and Host adopter, the top-bar manifest, focused widget tests, and the regression ledger together.",
+      "requiredChecks": [
+        "flutter test test/core/catch_top_bar_test.dart test/events/saved_events_screen_test.dart test/reviews/reviews_widgets_test.dart test/payments/payment_history_screen_test.dart test/safety/settings_screen_test.dart test/chats/chat_screen_test.dart",
+        "flutter test test/hosts/host_create_event_screen_test.dart test/hosts/host_operations_screen_test.dart",
+        "node tool/run.mjs check design:screen-top-bar-contracts",
+        "node tool/architecture/check_app_architecture_exhibits.mjs",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "notes": "Root tab titles remain scroll content under ARCH-SCREEN-CHROME-001. This exhibit owns pushed-route surface and divider behavior only."
+    },
+    {
       "id": "ARCH-UI-STATE-001",
       "name": "Provider-free presentation state model",
       "status": "reference",
@@ -447,6 +510,18 @@
           "providerFree": true,
           "status": "aligned",
           "lastReviewedPass": "2026-07-18-host-consumer-ui-reconciliation"
+        },
+        {
+          "path": "lib/core/presentation/catch_async_value_adapter.dart",
+          "role": "route-edge Riverpod translation into provider-free CatchAsyncState with known-error, credible-data, then loading precedence",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-21-error-chrome-consistency"
+        },
+        {
+          "path": "test/core/catch_async_state_test.dart",
+          "role": "refresh-time AsyncValue precedence coverage for the shared route-edge adapter",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-21-error-chrome-consistency"
         },
         {
           "path": "test/core/catch_primitives_test.dart",
