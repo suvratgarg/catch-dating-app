@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.17
+version: 0.1.18
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -166,12 +166,22 @@ first checked example: it contains both `screen.explore.discovery` and the
 marketing `organizer_search` route, while their components, action owners,
 states, and evidence remain runtime-specific.
 
-Event Detail, Explore, and Host Event Manage are the reference contracts.
+Event Detail, Explore, Host Event Manage, Catches Hub, Catches Event, Matches
+List, Member Chat, Self Profile, and Public Profile are the current reference
+contracts.
 Actions name one of the surface's declared Dart or TypeScript owners, so a
 larger feature may compose multiple action domains without pretending one enum
 or controller owns everything. Action outcomes are typed as local surface
 states, route destinations, or side effects. A read-only surface may declare no
 actions or action owners; the format never requires fabricated behavior.
+
+For state-rich surfaces, use the compact state matrix: `stateIds` must list the
+authority's exact state inventory, `scenarioDefaults` declares the repeated
+dimension/action case once, and `scenarioOverrides` records only meaningful
+differences. The compiler expands this into the same generated scenario
+projection and rejects missing, unknown, duplicate, or out-of-inventory state
+overrides. This keeps source contracts reviewable without allowing a newly
+registered state to pass silently.
 
 Required evidence stays strict. A real missing capture, preview, or test may be
 admitted only through an explicit evidence exception tied to a stable open debt

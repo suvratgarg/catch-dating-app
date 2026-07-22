@@ -332,7 +332,8 @@ function compileSurfaceContract({
   const scenarioIds = new Set();
   const referencedActionIds = new Set();
   const compiledScenarios = [];
-  for (const scenario of surface.scenarios ?? []) {
+  const sourceScenarios = expandSurfaceScenarios({surface, authority, label, errors});
+  for (const scenario of sourceScenarios) {
     if (scenarioIds.has(scenario.id)) errors.push(`${label}: duplicate scenario ${scenario.id}.`);
     scenarioIds.add(scenario.id);
     if (mappedStateIds.has(scenario.stateId)) {
@@ -490,6 +491,61 @@ function compileSurfaceContract({
       previews: uniquePreviews,
     },
   };
+}
+
+function expandSurfaceScenarios({surface, authority, label, errors}) {
+  const hasExplicitScenarios = surface.scenarios != null;
+  const hasCompactMatrix = surface.stateIds != null ||
+    surface.scenarioDefaults != null ||
+    surface.scenarioOverrides != null;
+  if (hasExplicitScenarios && hasCompactMatrix) {
+    errors.push(`${label}: use either scenarios or the compact state matrix, not both.`);
+    return surface.scenarios;
+  }
+  if (hasExplicitScenarios) return surface.scenarios;
+
+  if (surface.stateIds == null || surface.scenarioDefaults == null ||
+      surface.scenarioOverrides == null) {
+    errors.push(
+      `${label}: compact state matrices require stateIds, scenarioDefaults, ` +
+      "and scenarioOverrides.",
+    );
+    return [];
+  }
+
+  const declaredStateIds = surface.stateIds;
+  const declaredStateIdSet = new Set(declaredStateIds);
+  if (declaredStateIds.length !== declaredStateIdSet.size) {
+    errors.push(`${label}.stateIds: duplicate authority state ids are not allowed.`);
+  }
+  const authorityStateIds = new Set(authority.states.map((state) => state.id));
+  const missingStateIds = [...authorityStateIds].filter((id) => !declaredStateIdSet.has(id));
+  const unknownStateIds = [...declaredStateIdSet].filter((id) => !authorityStateIds.has(id));
+  if (missingStateIds.length > 0) {
+    errors.push(`${label}.stateIds: missing authority states: ${missingStateIds.join(", ")}.`);
+  }
+  if (unknownStateIds.length > 0) {
+    errors.push(`${label}.stateIds: unknown authority states: ${unknownStateIds.join(", ")}.`);
+  }
+
+  for (const stateId of Object.keys(surface.scenarioOverrides)) {
+    if (!declaredStateIdSet.has(stateId)) {
+      errors.push(`${label}.scenarioOverrides: ${stateId} is not declared in stateIds.`);
+    }
+  }
+
+  return declaredStateIds.map((stateId) => {
+    const override = surface.scenarioOverrides[stateId] ?? {};
+    return {
+      id: stateId,
+      stateId,
+      dimensions: {
+        ...(surface.scenarioDefaults.dimensions ?? {}),
+        ...(override.dimensions ?? {}),
+      },
+      actionCases: override.actionCases ?? surface.scenarioDefaults.actionCases ?? [],
+    };
+  });
 }
 
 function resolveAuthority({surface, label, authorityRegistries, errors}) {

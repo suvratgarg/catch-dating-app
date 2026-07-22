@@ -68,10 +68,47 @@
         "bindings",
         "dimensions",
         "actions",
-        "scenarios",
         "requiredEvidence"
       ],
       "additionalProperties": false,
+      "oneOf": [
+        {
+          "required": [
+            "scenarios"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "stateIds"
+                ]
+              },
+              {
+                "required": [
+                  "scenarioDefaults"
+                ]
+              },
+              {
+                "required": [
+                  "scenarioOverrides"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "required": [
+            "stateIds",
+            "scenarioDefaults",
+            "scenarioOverrides"
+          ],
+          "not": {
+            "required": [
+              "scenarios"
+            ]
+          }
+        }
+      ],
       "properties": {
         "id": {
           "type": "string",
@@ -113,6 +150,27 @@
           "minItems": 1,
           "items": {
             "$ref": "#/$defs/scenario"
+          }
+        },
+        "stateIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9_.-]+$"
+          }
+        },
+        "scenarioDefaults": {
+          "$ref": "#/$defs/scenarioDefaults"
+        },
+        "scenarioOverrides": {
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^[a-z0-9_.-]+$"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/scenarioOverride"
           }
         },
         "requiredEvidence": {
@@ -410,6 +468,43 @@
           "type": "string",
           "pattern": "^[a-z0-9_.-]+$"
         },
+        "dimensions": {
+          "$ref": "#/$defs/dimensionSelection"
+        },
+        "actionCases": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/actionCase"
+          }
+        }
+      }
+    },
+    "scenarioDefaults": {
+      "type": "object",
+      "required": [
+        "dimensions",
+        "actionCases"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "dimensions": {
+          "$ref": "#/$defs/dimensionSelection"
+        },
+        "actionCases": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/actionCase"
+          }
+        }
+      }
+    },
+    "scenarioOverride": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
         "dimensions": {
           "$ref": "#/$defs/dimensionSelection"
         },

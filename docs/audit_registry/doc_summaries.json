@@ -1,5 +1,5 @@
 {
-  "version": "4.5.151",
+  "version": "4.5.152",
   "updated": "2026-07-23",
   "owner": "recursive_audit_loop",
   "summaries": {
@@ -513,7 +513,7 @@
       ]
     },
     "design/features/feature_contract.schema.json": {
-      "purpose": "Executable schema for one semantic feature identity with runtime-native Flutter, marketing, and admin surface projections, action owners, state scenarios, outcomes, and evidence requirements.",
+      "purpose": "Executable schema for one semantic feature identity with runtime-native Flutter, marketing, and admin surface projections, compact exact state matrices, action owners, outcomes, and evidence requirements.",
       "read_when": [
         "Creating or changing a feature contract",
         "Extending one feature identity across another runtime",

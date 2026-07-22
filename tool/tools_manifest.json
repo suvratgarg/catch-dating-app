@@ -3503,7 +3503,7 @@
       "command": "node tool/design/build_feature_contracts.mjs --check",
       "safety": "local-writes-generated",
       "status": "active",
-      "description": "Compiles reviewed multi-surface feature sources into deterministic state, action-cardinality, and evidence contracts while rejecting authority/runtime drift and missing or duplicate authority-state coverage.",
+      "description": "Compiles reviewed multi-surface feature sources, including compact exact state matrices, into deterministic state, action-cardinality, and evidence contracts while rejecting authority/runtime drift and missing or duplicate authority-state coverage.",
       "checks": [
         "node --check tool/design/build_feature_contracts.mjs",
         "node --test tool/design/build_feature_contracts.test.mjs",
@@ -3517,6 +3517,8 @@
         "type": "test",
         "path": "tool/design/build_feature_contracts.test.mjs",
         "contains": [
+          "compiles compact state matrices without weakening exact authority coverage",
+          "rejects compact state overrides outside the declared inventory",
           "compiles multiple runtime projections into one shared feature identity",
           "supports read-only projections without synthetic actions or bindings",
           "rejects duplicate and missing surface-state mappings",

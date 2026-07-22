@@ -78,56 +78,50 @@
     {
       "authority": "flutter_screens",
       "authorityId": "screen.catches.hub",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Attended-event matchmaking entry surface.",
-      "targetFeature": "feature.catches_hub",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Catches hub contract covers all registered states, active-window navigation, recap entry, and empty recovery.",
+      "featureContract": "feature.catches_hub"
     },
     {
       "authority": "flutter_screens",
       "authorityId": "screen.catches.event",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Event-scoped matching queue and reaction workflow.",
-      "targetFeature": "feature.catches_event",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled event-scoped Catches contract covers queue, eligibility, pass/reaction mutation, and deck navigation states.",
+      "featureContract": "feature.catches_event"
     },
     {
       "authority": "flutter_screens",
       "authorityId": "screen.matches.list",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Match and conversation list surface.",
-      "targetFeature": "feature.matches_list",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled consumer Matches list contract covers threads, search, empty states, duplicate collapse, unread state, and chat entry.",
+      "featureContract": "feature.matches_list"
     },
     {
       "authority": "flutter_screens",
       "authorityId": "screen.matches.chat",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Member chat, media, read-state, and safety action workflow.",
-      "targetFeature": "feature.member_chat",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled member-chat contract covers messages, images, event context, profile/share/safety actions, Suvbot, and availability states.",
+      "featureContract": "feature.member_chat"
     },
     {
       "authority": "flutter_screens",
       "authorityId": "screen.profile.self",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Self-profile editing and preview workflow.",
-      "targetFeature": "feature.profile_self",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled self-profile contract covers loading, editing, photo operations, mutation feedback, preview, and settings entry.",
+      "featureContract": "feature.profile_self"
     },
     {
       "authority": "flutter_screens",
       "authorityId": "screen.profile.public",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Public member profile with viewer and safety actions.",
-      "targetFeature": "feature.profile_public",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled public-profile contract covers viewer context, fallback loading, unavailable/offline states, and report/block safety actions.",
+      "featureContract": "feature.profile_public"
     },
     {
       "authority": "flutter_screens",

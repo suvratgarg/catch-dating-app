@@ -1,0 +1,703 @@
+{
+  "$schema": "./feature_contract.schema.json",
+  "version": 2,
+  "updated": "2026-07-23",
+  "id": "feature.member_chat",
+  "name": "Member Chat",
+  "owner": "chats",
+  "status": "pilot",
+  "description": "Orchestrates a consumer conversation thread across message delivery, media upload, profile and sharing actions, safety controls, event context, and Suvbot variants.",
+  "surfaces": [
+    {
+      "id": "consumer_flutter",
+      "runtime": "flutter",
+      "authority": {
+        "registry": "flutter_screens",
+        "id": "screen.matches.chat"
+      },
+      "actionScope": {
+        "included": "Member message, image, profile, share-card, report, block, and Suvbot actions.",
+        "excluded": [
+          "Automatic read-receipt resets, scroll coordination, retry scheduling, and event-context loading retain controller-owned lifecycle behavior."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "widgetbook/lib/matches/matches_chat_use_cases.dart"
+        ],
+        "actionOwners": [
+          {
+            "id": "chat_mutations",
+            "language": "dart",
+            "file": "lib/chats/presentation/chat_controller.dart",
+            "symbol": "ChatController"
+          },
+          {
+            "id": "thread_actions",
+            "language": "dart",
+            "file": "lib/chats/presentation/chat_thread_action_controller.dart",
+            "symbol": "ChatThreadActionController"
+          },
+          {
+            "id": "suvbot",
+            "language": "dart",
+            "file": "lib/chats/presentation/suvbot_controller.dart",
+            "symbol": "SuvbotController"
+          }
+        ],
+        "componentContracts": [
+          "catch.button",
+          "catch.field",
+          "catch.icon_button",
+          "catch.surface",
+          "catch.top_bar"
+        ],
+        "dataContracts": [
+          "contracts/callables/block_user_payload.schema.json",
+          "contracts/callables/report_user_payload.schema.json",
+          "contracts/client_writes/create_chat_message.schema.json",
+          "contracts/client_writes/reset_match_unread_count.schema.json",
+          "contracts/firestore/chat_messages.schema.json",
+          "contracts/firestore/matches.schema.json",
+          "contracts/firestore/public_profiles.schema.json",
+          "contracts/storage/match_chat_images.schema.json"
+        ]
+      },
+      "dimensions": {
+        "load": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "loading",
+            "error",
+            "offline"
+          ]
+        },
+        "content": {
+          "default": "populated",
+          "values": [
+            "populated",
+            "empty"
+          ]
+        },
+        "access": {
+          "default": "available",
+          "values": [
+            "available",
+            "unavailable",
+            "blocked"
+          ]
+        },
+        "context": {
+          "default": "member",
+          "values": [
+            "member",
+            "event",
+            "event_loading",
+            "suvbot"
+          ]
+        },
+        "mutation": {
+          "default": "idle",
+          "values": [
+            "idle",
+            "send_pending",
+            "image_pending",
+            "safety_pending",
+            "suvbot_pending",
+            "failed"
+          ]
+        },
+        "composer": {
+          "default": "resting",
+          "values": [
+            "resting",
+            "keyboard_open"
+          ]
+        },
+        "accessibility": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "text_scale_2",
+            "reduced_motion"
+          ]
+        },
+        "theme": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "light_dark"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "send_message",
+          "owner": "chat_mutations",
+          "codeValue": "sendMessage",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "matchId",
+            "clientMessageId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "populated_thread",
+                "send_message_mutation",
+                "send_failure"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "chat.create_text_message"
+            }
+          ],
+          "description": "Creates one text message in the current conversation."
+        },
+        {
+          "id": "send_image",
+          "owner": "chat_mutations",
+          "codeValue": "sendImage",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "matchId",
+            "messageId",
+            "storagePath"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "populated_thread",
+                "send_image_mutation",
+                "image_send_failure_cleanup"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "chat.upload_and_create_image_message"
+            }
+          ],
+          "description": "Uploads an image and creates the corresponding chat message, compensating storage when the write fails."
+        },
+        {
+          "id": "open_profile",
+          "owner": "thread_actions",
+          "codeValue": "profileNavigationRequest",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "matchId",
+            "targetUid"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.profile.public"
+              }
+            }
+          ],
+          "description": "Opens the other member's public profile when the thread view model exposes a valid target."
+        },
+        {
+          "id": "share_card",
+          "owner": "thread_actions",
+          "codeValue": "runThreadAction",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "matchId",
+            "messageSnapshotVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "share_card"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "chat.share_card"
+            }
+          ],
+          "description": "Builds and opens a share card from the current non-empty message snapshot."
+        },
+        {
+          "id": "report_member",
+          "owner": "chat_mutations",
+          "codeValue": "reportUser",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "matchId",
+            "targetUid",
+            "reportAttemptId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "safety_report_block"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "safety.report_member_from_chat"
+            }
+          ],
+          "description": "Submits a chat-context safety report for the other member."
+        },
+        {
+          "id": "block_member",
+          "owner": "chat_mutations",
+          "codeValue": "blockUser",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "targetUid",
+            "relationshipVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "safety_report_block",
+                "blocked_chat"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "safety.block_member_from_chat"
+            }
+          ],
+          "description": "Blocks the other member once for the active viewer-target relationship and closes the conversation."
+        },
+        {
+          "id": "request_suvbot_action",
+          "owner": "suvbot",
+          "codeValue": "requestAction",
+          "cardinality": "domain_bounded",
+          "scopeKeys": [
+            "viewerUid",
+            "matchId",
+            "actionId",
+            "availableActionVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "suvbot_controls",
+                "suvbot_action_mutation"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "chat.request_suvbot_action"
+            }
+          ],
+          "description": "Runs one action from the server-provided Suvbot action set."
+        }
+      ],
+      "stateIds": [
+        "messages_loading",
+        "messages_error",
+        "populated_thread",
+        "empty_thread",
+        "event_context_ready",
+        "event_context_fallback",
+        "send_message_mutation",
+        "send_failure",
+        "send_image_mutation",
+        "image_send_failure_cleanup",
+        "read_receipt_reset",
+        "chat_unavailable",
+        "blocked_chat",
+        "top_bar_actions",
+        "share_card",
+        "safety_report_block",
+        "suvbot_controls",
+        "suvbot_action_mutation",
+        "keyboard_composer",
+        "offline",
+        "text_scale_2",
+        "reduced_motion",
+        "light_dark"
+      ],
+      "scenarioDefaults": {
+        "dimensions": {},
+        "actionCases": [
+          {
+            "id": "default"
+          }
+        ]
+      },
+      "scenarioOverrides": {
+        "messages_loading": {
+          "dimensions": {
+            "load": "loading"
+          }
+        },
+        "messages_error": {
+          "dimensions": {
+            "load": "error"
+          }
+        },
+        "populated_thread": {
+          "actionCases": [
+            {
+              "id": "member_thread",
+              "enabledActions": [
+                "send_message",
+                "send_image",
+                "open_profile",
+                "share_card",
+                "report_member",
+                "block_member"
+              ]
+            }
+          ]
+        },
+        "empty_thread": {
+          "dimensions": {
+            "content": "empty"
+          },
+          "actionCases": [
+            {
+              "id": "empty_member_thread",
+              "enabledActions": [
+                "send_message",
+                "send_image",
+                "open_profile",
+                "report_member",
+                "block_member"
+              ],
+              "disabledActions": [
+                "share_card"
+              ]
+            }
+          ]
+        },
+        "event_context_ready": {
+          "dimensions": {
+            "context": "event"
+          },
+          "actionCases": [
+            {
+              "id": "member_thread",
+              "enabledActions": [
+                "send_message",
+                "send_image",
+                "open_profile",
+                "share_card",
+                "report_member",
+                "block_member"
+              ]
+            }
+          ]
+        },
+        "event_context_fallback": {
+          "dimensions": {
+            "context": "event_loading"
+          },
+          "actionCases": [
+            {
+              "id": "member_thread",
+              "enabledActions": [
+                "send_message",
+                "send_image",
+                "open_profile",
+                "share_card",
+                "report_member",
+                "block_member"
+              ]
+            }
+          ]
+        },
+        "send_message_mutation": {
+          "dimensions": {
+            "mutation": "send_pending"
+          },
+          "actionCases": [
+            {
+              "id": "send_pending",
+              "enabledActions": [
+                "open_profile",
+                "share_card",
+                "report_member",
+                "block_member"
+              ],
+              "disabledActions": [
+                "send_message",
+                "send_image"
+              ]
+            }
+          ]
+        },
+        "send_failure": {
+          "dimensions": {
+            "mutation": "failed"
+          },
+          "actionCases": [
+            {
+              "id": "retryable",
+              "enabledActions": [
+                "send_message",
+                "send_image",
+                "open_profile",
+                "share_card",
+                "report_member",
+                "block_member"
+              ]
+            }
+          ]
+        },
+        "send_image_mutation": {
+          "dimensions": {
+            "mutation": "image_pending"
+          },
+          "actionCases": [
+            {
+              "id": "image_pending",
+              "enabledActions": [
+                "open_profile",
+                "share_card",
+                "report_member",
+                "block_member"
+              ],
+              "disabledActions": [
+                "send_message",
+                "send_image"
+              ]
+            }
+          ]
+        },
+        "image_send_failure_cleanup": {
+          "dimensions": {
+            "mutation": "failed"
+          },
+          "actionCases": [
+            {
+              "id": "retryable",
+              "enabledActions": [
+                "send_message",
+                "send_image",
+                "open_profile",
+                "share_card",
+                "report_member",
+                "block_member"
+              ]
+            }
+          ]
+        },
+        "read_receipt_reset": {
+          "actionCases": [
+            {
+              "id": "member_thread",
+              "enabledActions": [
+                "send_message",
+                "send_image",
+                "open_profile",
+                "share_card",
+                "report_member",
+                "block_member"
+              ]
+            }
+          ]
+        },
+        "chat_unavailable": {
+          "dimensions": {
+            "access": "unavailable"
+          }
+        },
+        "blocked_chat": {
+          "dimensions": {
+            "access": "blocked"
+          }
+        },
+        "top_bar_actions": {
+          "actionCases": [
+            {
+              "id": "available",
+              "enabledActions": [
+                "open_profile",
+                "share_card",
+                "report_member",
+                "block_member"
+              ]
+            }
+          ]
+        },
+        "share_card": {
+          "actionCases": [
+            {
+              "id": "shareable",
+              "enabledActions": [
+                "share_card"
+              ]
+            }
+          ]
+        },
+        "safety_report_block": {
+          "dimensions": {
+            "mutation": "safety_pending"
+          },
+          "actionCases": [
+            {
+              "id": "safety_action",
+              "enabledActions": [
+                "report_member",
+                "block_member"
+              ]
+            }
+          ]
+        },
+        "suvbot_controls": {
+          "dimensions": {
+            "context": "suvbot"
+          },
+          "actionCases": [
+            {
+              "id": "available_actions",
+              "enabledActions": [
+                "request_suvbot_action"
+              ]
+            }
+          ]
+        },
+        "suvbot_action_mutation": {
+          "dimensions": {
+            "context": "suvbot",
+            "mutation": "suvbot_pending"
+          },
+          "actionCases": [
+            {
+              "id": "pending",
+              "disabledActions": [
+                "request_suvbot_action"
+              ]
+            }
+          ]
+        },
+        "keyboard_composer": {
+          "dimensions": {
+            "composer": "keyboard_open"
+          },
+          "actionCases": [
+            {
+              "id": "composing",
+              "enabledActions": [
+                "send_message",
+                "send_image"
+              ]
+            }
+          ]
+        },
+        "offline": {
+          "dimensions": {
+            "load": "offline"
+          }
+        },
+        "text_scale_2": {
+          "dimensions": {
+            "accessibility": "text_scale_2"
+          },
+          "actionCases": [
+            {
+              "id": "member_thread",
+              "enabledActions": [
+                "send_message",
+                "send_image",
+                "open_profile",
+                "share_card",
+                "report_member",
+                "block_member"
+              ]
+            }
+          ]
+        },
+        "reduced_motion": {
+          "dimensions": {
+            "accessibility": "reduced_motion"
+          },
+          "actionCases": [
+            {
+              "id": "member_thread",
+              "enabledActions": [
+                "send_message",
+                "send_image",
+                "open_profile",
+                "share_card",
+                "report_member",
+                "block_member"
+              ]
+            }
+          ]
+        },
+        "light_dark": {
+          "dimensions": {
+            "theme": "light_dark"
+          },
+          "actionCases": [
+            {
+              "id": "member_thread",
+              "enabledActions": [
+                "send_message",
+                "send_image",
+                "open_profile",
+                "share_card",
+                "report_member",
+                "block_member"
+              ]
+            }
+          ]
+        }
+      },
+      "requiredEvidence": {
+        "captures": true,
+        "previews": true,
+        "tests": true
+      },
+      "evidenceExceptions": [
+        {
+          "stateIds": [
+            "send_message_mutation",
+            "send_image_mutation",
+            "image_send_failure_cleanup",
+            "read_receipt_reset"
+          ],
+          "evidence": [
+            "captures"
+          ],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "These mutation states have focused tests and Widgetbook coverage but no deterministic capture registered by the screen authority."
+        },
+        {
+          "stateIds": [
+            "messages_loading",
+            "chat_unavailable",
+            "blocked_chat",
+            "keyboard_composer",
+            "offline",
+            "text_scale_2",
+            "reduced_motion",
+            "light_dark"
+          ],
+          "evidence": [
+            "tests"
+          ],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "These registered route variants have captures and previews but no focused state-level test attached to the authority."
+        }
+      ]
+    }
+  ]
+}

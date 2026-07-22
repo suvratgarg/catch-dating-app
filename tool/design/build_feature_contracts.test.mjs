@@ -271,6 +271,62 @@ test("compiles exact surface-state coverage and action availability", () => {
   assert.match(artifact.sourceDigest, /^sha256:[a-f0-9]{64}$/u);
 });
 
+test("compiles compact state matrices without weakening exact authority coverage", () => {
+  const input = fixture();
+  const surface = input.source.surfaces[0];
+  delete surface.scenarios;
+  surface.stateIds = ["loading", "ready"];
+  surface.scenarioDefaults = {
+    dimensions: {},
+    actionCases: [{id: "default"}],
+  };
+  surface.scenarioOverrides = {
+    loading: {dimensions: {load: "loading"}},
+    ready: {actionCases: [{id: "eligible", enabledActions: ["book"]}]},
+  };
+
+  assert.equal(validateFeatureSchema(input.source), true, JSON.stringify(
+    validateFeatureSchema.errors,
+  ));
+  const artifact = compileFeatureContract(input);
+  assert.deepEqual(
+    artifact.surfaces[0].scenarios.map((scenario) => scenario.stateId),
+    ["loading", "ready"],
+  );
+  assert.deepEqual(
+    artifact.surfaces[0].scenarios[1].actionCases[0].actions.enabled,
+    ["book"],
+  );
+
+  surface.stateIds = ["loading"];
+  assert.throws(
+    () => compileFeatureContract(input),
+    (error) => error instanceof FeatureContractError &&
+      error.message.includes("missing authority states: ready"),
+  );
+});
+
+test("rejects compact state overrides outside the declared inventory", () => {
+  const input = fixture();
+  const surface = input.source.surfaces[0];
+  delete surface.scenarios;
+  surface.stateIds = ["loading", "ready"];
+  surface.scenarioDefaults = {
+    dimensions: {},
+    actionCases: [{id: "default"}],
+  };
+  surface.scenarioOverrides = {
+    missing: {dimensions: {load: "loading"}},
+    ready: {actionCases: [{id: "eligible", enabledActions: ["book"]}]},
+  };
+
+  assert.throws(
+    () => compileFeatureContract(input),
+    (error) => error instanceof FeatureContractError &&
+      error.message.includes("missing is not declared in stateIds"),
+  );
+});
+
 test("compiles multiple runtime projections into one shared feature identity", () => {
   const data = fixture();
   data.source.surfaces.push(marketingSurface());

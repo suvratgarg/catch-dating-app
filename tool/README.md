@@ -522,13 +522,22 @@ classifications and writes one deterministic cross-surface artifact under
 Each surface must state its action scope. Event Detail covers the Flutter
 booking dock; Explore combines Flutter empty-result recovery with marketing-web
 URL filtering/search analytics; Host Event Manage covers primary Flutter
-edit/cancel/delete lifecycle rows. Generated action counts must not be read as
-coverage of excluded route or section actions. Actions name their owning Dart
-or TypeScript symbol and may end in local surface states, route destinations,
-or named side effects. Read-only surfaces use empty action/action-owner arrays
-instead of inventing synthetic behavior. Missing required evidence must use an
-explicit stable-debt exception, and the compiler rejects that exception once
-the referenced evidence exists.
+edit/cancel/delete lifecycle rows; the consumer social reference batch adds
+Catches Hub, Catches Event, Matches List, Member Chat, Self Profile, and Public
+Profile. Generated action counts must not be read as coverage of excluded route
+or section actions. Actions name their owning Dart or TypeScript symbol and may
+end in local surface states, route destinations, or named side effects.
+Read-only surfaces use empty action/action-owner arrays instead of inventing
+synthetic behavior. Missing required evidence must use an explicit stable-debt
+exception, and the compiler rejects that exception once the referenced evidence
+exists.
+
+State-heavy surfaces may use the compact matrix form. `stateIds` still must
+equal the authority's full state inventory, while `scenarioDefaults` owns the
+common dimension/action case and `scenarioOverrides` records only divergent
+states. The compiler expands this form into ordinary generated scenarios and
+fails missing or unknown state ids and overrides, so the shorter source format
+does not weaken drift detection.
 
 ```sh
 node tool/design/build_feature_contracts.mjs
