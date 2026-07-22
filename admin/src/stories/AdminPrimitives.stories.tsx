@@ -595,7 +595,7 @@ export const AdminSignInScreenStory: Story = {
   parameters: {
     catchComponent: {
       id: "shared_admin_sign_in_screen",
-      states: ["default"],
+      states: ["default", "phone-entry"],
     },
   },
   render: () => (
@@ -608,8 +608,52 @@ export const AdminSignInScreenStory: Story = {
           </AdminBrandCopy>
         </AdminBrandBlock>
         <AdminSignInMeta>Use an account with approved admin claims.</AdminSignInMeta>
+        <TextField
+          label="Phone number"
+          onChange={() => undefined}
+          placeholder="+91 90000 00000"
+          value=""
+        />
         <AdminSignInActions>
-          <AdminButton variant="primary">Continue with Google</AdminButton>
+          <AdminButton variant="primary">Send verification code</AdminButton>
+          <AdminButton>Sign in with Google</AdminButton>
+        </AdminSignInActions>
+      </AdminSignInPanel>
+    </AdminSignInScreen>
+  ),
+};
+
+export const AdminPhoneOtpSignInScreenStory: Story = {
+  name: "Sign in screen · Phone verification",
+  parameters: {
+    catchComponent: {
+      id: "shared_admin_sign_in_screen",
+      states: ["phone-otp"],
+    },
+  },
+  render: () => (
+    <AdminSignInScreen>
+      <AdminSignInPanel>
+        <AdminBrandBlock>
+          <AdminBrandMark size="large">C</AdminBrandMark>
+          <AdminBrandCopy>
+            <AdminBrandTitle>Catch Admin</AdminBrandTitle>
+          </AdminBrandCopy>
+        </AdminBrandBlock>
+        <AdminSignInMeta>
+          Verification code sent to +91 90000 00000.
+        </AdminSignInMeta>
+        <TextField
+          inputMode="numeric"
+          label="Verification code"
+          maxLength={6}
+          onChange={() => undefined}
+          placeholder="000000"
+          value=""
+        />
+        <AdminSignInActions>
+          <AdminButton variant="primary">Verify and sign in</AdminButton>
+          <AdminButton>Use another phone</AdminButton>
         </AdminSignInActions>
       </AdminSignInPanel>
     </AdminSignInScreen>

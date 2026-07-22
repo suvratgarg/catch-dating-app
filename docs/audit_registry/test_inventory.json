@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 561,
+  "total": 562,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -539,7 +539,7 @@
       ]
     },
     "web": {
-      "count": 57,
+      "count": 58,
       "files": [
         "admin/src/app/App.test.tsx",
         "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
@@ -565,6 +565,7 @@
         "admin/src/generated/validators/adminCallableValidators.test.ts",
         "admin/src/shared/api/adminApi.test.ts",
         "admin/src/shared/api/dataMode.test.ts",
+        "admin/src/shared/api/firebase.test.ts",
         "admin/src/shared/controllers/marketingReviewDecisionHelpers.test.ts",
         "admin/src/shared/operations/operationSelectors.test.ts",
         "admin/src/shared/query/queryKeys.test.ts",
