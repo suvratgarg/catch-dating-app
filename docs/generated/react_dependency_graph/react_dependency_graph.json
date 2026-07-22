@@ -19,16 +19,16 @@
     "nonLiteralDynamicImports": "report"
   },
   "summary": {
-    "scannedSourceModules": 286,
-    "dependencyLeafNodes": 22,
-    "moduleNodes": 308,
-    "moduleEdges": 1066,
-    "runtimeModuleEdges": 850,
-    "typeOnlyModuleEdges": 216,
-    "dynamicImportEdges": 26,
-    "reExportEdges": 63,
-    "featureGroups": 30,
-    "featureDependencies": 86,
+    "scannedSourceModules": 288,
+    "dependencyLeafNodes": 23,
+    "moduleNodes": 311,
+    "moduleEdges": 1083,
+    "runtimeModuleEdges": 866,
+    "typeOnlyModuleEdges": 217,
+    "dynamicImportEdges": 27,
+    "reExportEdges": 64,
+    "featureGroups": 31,
+    "featureDependencies": 89,
     "crossSurfaceDependencies": 5,
     "externalPackages": 12,
     "unresolvedImports": 0,
@@ -348,6 +348,15 @@
       "stories": 0
     },
     {
+      "id": "website:feature:legal",
+      "surface": "website",
+      "scope": "feature",
+      "feature": "legal",
+      "modules": 1,
+      "tests": 0,
+      "stories": 0
+    },
+    {
       "id": "website:feature:marketing",
       "surface": "website",
       "scope": "feature",
@@ -397,7 +406,7 @@
       "surface": "website",
       "scope": "shared",
       "feature": null,
-      "modules": 45,
+      "modules": 47,
       "tests": 1,
       "stories": 0
     },
@@ -1590,6 +1599,28 @@
       ]
     },
     {
+      "id": "website:app->website:feature:legal",
+      "source": "website:app",
+      "target": "website:feature:legal",
+      "sourceSurface": "website",
+      "sourceScope": "app",
+      "sourceFeature": null,
+      "targetSurface": "website",
+      "targetScope": "feature",
+      "targetFeature": "legal",
+      "edges": 1,
+      "runtimeEdges": 1,
+      "typeOnlyEdges": 0,
+      "dynamicImports": 1,
+      "reExports": 0,
+      "sourceModules": [
+        "website/src/app/App.tsx"
+      ],
+      "targetModules": [
+        "website/src/features/legal/LegalPage.tsx"
+      ]
+    },
+    {
       "id": "website:app->website:feature:marketing",
       "source": "website:app",
       "target": "website:feature:marketing",
@@ -1669,8 +1700,8 @@
       "targetSurface": "website",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 8,
-      "runtimeEdges": 7,
+      "edges": 9,
+      "runtimeEdges": 8,
       "typeOnlyEdges": 1,
       "dynamicImports": 0,
       "reExports": 0,
@@ -1682,6 +1713,7 @@
       ],
       "targetModules": [
         "website/src/content/interpolate.ts",
+        "website/src/content/legal.ts",
         "website/src/content/meta.json",
         "website/src/content/metaContract.ts",
         "website/src/shared/query/queryClient.tsx",
@@ -1780,8 +1812,8 @@
       "targetSurface": "website",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 16,
-      "runtimeEdges": 13,
+      "edges": 17,
+      "runtimeEdges": 14,
       "typeOnlyEdges": 3,
       "dynamicImports": 0,
       "reExports": 0,
@@ -1798,6 +1830,7 @@
       "targetModules": [
         "website/src/content/generated.ts",
         "website/src/content/marketing.ts",
+        "website/src/content/site.ts",
         "website/src/content/templates.ts",
         "website/src/shared/forms/types.ts",
         "website/src/shared/query/queryKeys.ts",
@@ -1910,8 +1943,8 @@
       "targetSurface": "website",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 7,
-      "runtimeEdges": 6,
+      "edges": 8,
+      "runtimeEdges": 7,
       "typeOnlyEdges": 1,
       "dynamicImports": 0,
       "reExports": 0,
@@ -1922,6 +1955,7 @@
       "targetModules": [
         "website/src/content/generated.ts",
         "website/src/content/marketing.ts",
+        "website/src/content/site.ts",
         "website/src/shared/site/index.ts",
         "website/src/shared/ui/primitives/index.ts"
       ]
@@ -1958,8 +1992,8 @@
       "targetSurface": "website",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 32,
-      "runtimeEdges": 31,
+      "edges": 33,
+      "runtimeEdges": 32,
       "typeOnlyEdges": 1,
       "dynamicImports": 0,
       "reExports": 0,
@@ -1980,6 +2014,7 @@
         "website/src/content/host.ts",
         "website/src/content/marketing.ts",
         "website/src/content/markets/index.ts",
+        "website/src/content/site.ts",
         "website/src/content/templates.ts",
         "website/src/shared/forms/types.ts",
         "website/src/shared/query/queryKeys.ts",
@@ -2008,6 +2043,32 @@
       ],
       "targetModules": [
         "website/src/analytics.ts"
+      ]
+    },
+    {
+      "id": "website:feature:legal->website:shared",
+      "source": "website:feature:legal",
+      "target": "website:shared",
+      "sourceSurface": "website",
+      "sourceScope": "feature",
+      "sourceFeature": "legal",
+      "targetSurface": "website",
+      "targetScope": "shared",
+      "targetFeature": null,
+      "edges": 5,
+      "runtimeEdges": 4,
+      "typeOnlyEdges": 1,
+      "dynamicImports": 0,
+      "reExports": 0,
+      "sourceModules": [
+        "website/src/features/legal/LegalPage.tsx"
+      ],
+      "targetModules": [
+        "website/src/content/legal.ts",
+        "website/src/content/site.ts",
+        "website/src/content/types.ts",
+        "website/src/shared/site/index.ts",
+        "website/src/shared/ui/primitives/index.ts"
       ]
     },
     {
@@ -2069,8 +2130,8 @@
       "targetSurface": "website",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 3,
-      "runtimeEdges": 3,
+      "edges": 4,
+      "runtimeEdges": 4,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "reExports": 0,
@@ -2079,6 +2140,7 @@
       ],
       "targetModules": [
         "website/src/content/generated.ts",
+        "website/src/content/site.ts",
         "website/src/shared/site/index.ts",
         "website/src/shared/ui/primitives/index.ts"
       ]
@@ -2211,8 +2273,8 @@
       "targetSurface": "website",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 41,
-      "runtimeEdges": 38,
+      "edges": 43,
+      "runtimeEdges": 40,
       "typeOnlyEdges": 3,
       "dynamicImports": 0,
       "reExports": 0,
@@ -2240,6 +2302,7 @@
         "website/src/content/generated.ts",
         "website/src/content/marketing.ts",
         "website/src/content/markets/index.ts",
+        "website/src/content/site.ts",
         "website/src/content/templates.ts",
         "website/src/generated/hostListings.json",
         "website/src/shared/site/index.ts",
@@ -2553,6 +2616,28 @@
       ]
     },
     {
+      "id": "website:story->website:feature:legal",
+      "source": "website:story",
+      "target": "website:feature:legal",
+      "sourceSurface": "website",
+      "sourceScope": "support",
+      "sourceFeature": null,
+      "targetSurface": "website",
+      "targetScope": "feature",
+      "targetFeature": "legal",
+      "edges": 1,
+      "runtimeEdges": 1,
+      "typeOnlyEdges": 0,
+      "dynamicImports": 0,
+      "reExports": 0,
+      "sourceModules": [
+        "website/src/stories/MarketingRoutes.stories.tsx"
+      ],
+      "targetModules": [
+        "website/src/features/legal/LegalPage.tsx"
+      ]
+    },
+    {
       "id": "website:story->website:feature:marketing",
       "source": "website:story",
       "target": "website:feature:marketing",
@@ -2673,8 +2758,8 @@
       "targetSurface": "website",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 21,
-      "runtimeEdges": 19,
+      "edges": 22,
+      "runtimeEdges": 20,
       "typeOnlyEdges": 2,
       "dynamicImports": 0,
       "reExports": 0,
@@ -2695,6 +2780,7 @@
         "website/src/stories/fixtures/marketingCaptures.ts"
       ],
       "targetModules": [
+        "website/src/content/legal.ts",
         "website/src/content/marketing.ts",
         "website/src/generated/hostListings.demo.json",
         "website/src/shared/query/queryClient.tsx",
@@ -3111,16 +3197,18 @@
       "sourceLayer": "app",
       "targetSurface": "website",
       "targetLayer": "content",
-      "edges": 3,
-      "runtimeEdges": 3,
+      "edges": 4,
+      "runtimeEdges": 4,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "reExports": 0,
       "sourceModules": [
+        "website/src/app/App.tsx",
         "website/src/app/pageMeta.ts"
       ],
       "targetModules": [
         "website/src/content/interpolate.ts",
+        "website/src/content/legal.ts",
         "website/src/content/meta.json",
         "website/src/content/metaContract.ts"
       ]
@@ -3133,10 +3221,10 @@
       "sourceLayer": "app",
       "targetSurface": "website",
       "targetLayer": "feature",
-      "edges": 10,
-      "runtimeEdges": 9,
+      "edges": 11,
+      "runtimeEdges": 10,
       "typeOnlyEdges": 1,
-      "dynamicImports": 6,
+      "dynamicImports": 7,
       "reExports": 0,
       "sourceModules": [
         "website/src/app/App.tsx",
@@ -3147,6 +3235,7 @@
         "website/src/features/claims/claimRouting.ts",
         "website/src/features/home/HomePage.tsx",
         "website/src/features/host/HostPage.tsx",
+        "website/src/features/legal/LegalPage.tsx",
         "website/src/features/marketing/MarketingConsentBanner.tsx",
         "website/src/features/notFound/NotFoundPage.tsx",
         "website/src/features/organizers/HostListingPage.tsx",
@@ -3247,9 +3336,9 @@
       "sourceLayer": "feature",
       "targetSurface": "website",
       "targetLayer": "content",
-      "edges": 56,
-      "runtimeEdges": 56,
-      "typeOnlyEdges": 0,
+      "edges": 65,
+      "runtimeEdges": 64,
+      "typeOnlyEdges": 1,
       "dynamicImports": 0,
       "reExports": 0,
       "sourceModules": [
@@ -3270,6 +3359,7 @@
         "website/src/features/host/sections/HostPageSections.tsx",
         "website/src/features/host/sections/HostSupportingSections.tsx",
         "website/src/features/host/sections/PlaybookShowcase.tsx",
+        "website/src/features/legal/LegalPage.tsx",
         "website/src/features/marketing/MarketingConsentBanner.tsx",
         "website/src/features/marketing/useAppDownloadCtas.ts",
         "website/src/features/notFound/NotFoundPage.tsx",
@@ -3295,10 +3385,12 @@
       "targetModules": [
         "website/src/content/generated.ts",
         "website/src/content/host.ts",
+        "website/src/content/legal.ts",
         "website/src/content/marketing.ts",
         "website/src/content/markets/index.ts",
         "website/src/content/site.ts",
-        "website/src/content/templates.ts"
+        "website/src/content/templates.ts",
+        "website/src/content/types.ts"
       ]
     },
     {
@@ -3355,8 +3447,8 @@
       "sourceLayer": "feature",
       "targetSurface": "website",
       "targetLayer": "shared",
-      "edges": 58,
-      "runtimeEdges": 45,
+      "edges": 60,
+      "runtimeEdges": 47,
       "typeOnlyEdges": 13,
       "dynamicImports": 0,
       "reExports": 0,
@@ -3378,6 +3470,7 @@
         "website/src/features/host/sections/HostPageSections.tsx",
         "website/src/features/host/sections/HostSupportingSections.tsx",
         "website/src/features/host/sections/PlaybookShowcase.tsx",
+        "website/src/features/legal/LegalPage.tsx",
         "website/src/features/marketing/MarketingConsentBanner.tsx",
         "website/src/features/marketing/useAppDownloadCtas.ts",
         "website/src/features/notFound/NotFoundPage.tsx",
@@ -3523,15 +3616,17 @@
       "sourceLayer": "story",
       "targetSurface": "website",
       "targetLayer": "content",
-      "edges": 1,
-      "runtimeEdges": 1,
+      "edges": 2,
+      "runtimeEdges": 2,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "reExports": 0,
       "sourceModules": [
-        "website/src/stories/MarketingPrimitives.stories.tsx"
+        "website/src/stories/MarketingPrimitives.stories.tsx",
+        "website/src/stories/MarketingRoutes.stories.tsx"
       ],
       "targetModules": [
+        "website/src/content/legal.ts",
         "website/src/content/marketing.ts"
       ]
     },
@@ -3543,8 +3638,8 @@
       "sourceLayer": "story",
       "targetSurface": "website",
       "targetLayer": "feature",
-      "edges": 47,
-      "runtimeEdges": 37,
+      "edges": 48,
+      "runtimeEdges": 38,
       "typeOnlyEdges": 10,
       "dynamicImports": 0,
       "reExports": 0,
@@ -3577,6 +3672,7 @@
         "website/src/features/host/sections/HostPageSections.tsx",
         "website/src/features/host/sections/HostSupportingSections.tsx",
         "website/src/features/host/sections/PlaybookShowcase.tsx",
+        "website/src/features/legal/LegalPage.tsx",
         "website/src/features/marketing/MarketingConsentBanner.tsx",
         "website/src/features/notFound/NotFoundPage.tsx",
         "website/src/features/organizers/HostListingPage.tsx",
@@ -3905,9 +4001,9 @@
     },
     {
       "package": "react",
-      "edges": 117,
+      "edges": 118,
       "runtimeEdges": 60,
-      "typeOnlyEdges": 57,
+      "typeOnlyEdges": 58,
       "dynamicImports": 0,
       "surfaces": [
         "admin",
@@ -4014,6 +4110,7 @@
         "website/src/shared/ui/primitives/host3.tsx",
         "website/src/shared/ui/primitives/layout.tsx",
         "website/src/shared/ui/primitives/layout2.tsx",
+        "website/src/shared/ui/primitives/legal.tsx",
         "website/src/shared/ui/primitives/marketing.tsx",
         "website/src/shared/ui/primitives/media.tsx",
         "website/src/shared/ui/primitives/organizer.tsx",
@@ -6309,6 +6406,18 @@
       "story": false
     },
     {
+      "id": "website/src/content/legal.json",
+      "surface": "website",
+      "layer": "content",
+      "scope": "shared",
+      "feature": null,
+      "group": "website:shared",
+      "extension": ".json",
+      "scanned": false,
+      "test": false,
+      "story": false
+    },
+    {
       "id": "website/src/content/legal.ts",
       "surface": "website",
       "layer": "content",
@@ -6736,6 +6845,18 @@
       "feature": "host",
       "group": "website:feature:host",
       "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "website/src/features/legal/LegalPage.tsx",
+      "surface": "website",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "legal",
+      "group": "website:feature:legal",
+      "extension": ".tsx",
       "scanned": true,
       "test": false,
       "story": false
@@ -7522,6 +7643,18 @@
     },
     {
       "id": "website/src/shared/ui/primitives/layout2.tsx",
+      "surface": "website",
+      "layer": "shared",
+      "scope": "shared",
+      "feature": null,
+      "group": "website:shared",
+      "extension": ".tsx",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "website/src/shared/ui/primitives/legal.tsx",
       "surface": "website",
       "layer": "shared",
       "scope": "shared",
@@ -12558,11 +12691,20 @@
     },
     {
       "source": "website/src/app/App.tsx",
+      "target": "website/src/content/legal.ts",
+      "specifier": "../content/legal",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 19,
+      "column": 1
+    },
+    {
+      "source": "website/src/app/App.tsx",
       "target": "website/src/features/claims/claimRouting.ts",
       "specifier": "../features/claims/claimRouting",
       "kind": "import",
       "typeOnly": false,
-      "line": 19,
+      "line": 20,
       "column": 1
     },
     {
@@ -12571,7 +12713,7 @@
       "specifier": "../features/organizers/routing",
       "kind": "import",
       "typeOnly": false,
-      "line": 20,
+      "line": 21,
       "column": 1
     },
     {
@@ -12580,7 +12722,7 @@
       "specifier": "../shared/site",
       "kind": "import",
       "typeOnly": false,
-      "line": 23,
+      "line": 24,
       "column": 1
     },
     {
@@ -12589,7 +12731,7 @@
       "specifier": "../shared/ui/primitives",
       "kind": "import",
       "typeOnly": false,
-      "line": 24,
+      "line": 25,
       "column": 1
     },
     {
@@ -12598,7 +12740,7 @@
       "specifier": "../features/claims/ClaimPage",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 27,
+      "line": 28,
       "column": 19
     },
     {
@@ -12607,7 +12749,7 @@
       "specifier": "../features/home/HomePage",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 30,
+      "line": 31,
       "column": 19
     },
     {
@@ -12616,7 +12758,7 @@
       "specifier": "../features/organizers/HostListingPage",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 33,
+      "line": 34,
       "column": 19
     },
     {
@@ -12625,7 +12767,7 @@
       "specifier": "../features/host/HostPage",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 36,
+      "line": 37,
       "column": 19
     },
     {
@@ -12634,7 +12776,7 @@
       "specifier": "../features/notFound/NotFoundPage",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 39,
+      "line": 40,
       "column": 19
     },
     {
@@ -12643,7 +12785,16 @@
       "specifier": "../features/organizers/OrganizerSearchPage",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 42,
+      "line": 43,
+      "column": 19
+    },
+    {
+      "source": "website/src/app/App.tsx",
+      "target": "website/src/features/legal/LegalPage.tsx",
+      "specifier": "../features/legal/LegalPage",
+      "kind": "dynamic-import",
+      "typeOnly": false,
+      "line": 46,
       "column": 19
     },
     {
@@ -12765,11 +12916,20 @@
     },
     {
       "source": "website/src/content/legal.ts",
+      "target": "website/src/content/legal.json",
+      "specifier": "./legal.json",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "website/src/content/legal.ts",
       "target": "website/src/content/types.ts",
       "specifier": "./types",
       "kind": "import",
       "typeOnly": true,
-      "line": 1,
+      "line": 2,
       "column": 1
     },
     {
@@ -12837,11 +12997,20 @@
     },
     {
       "source": "website/src/features/claims/ClaimPage.tsx",
+      "target": "website/src/content/site.ts",
+      "specifier": "@content/site",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/claims/ClaimPage.tsx",
       "target": "website/src/shared/site/index.ts",
       "specifier": "../../shared/site",
       "kind": "import",
       "typeOnly": false,
-      "line": 2,
+      "line": 3,
       "column": 1
     },
     {
@@ -12850,7 +13019,7 @@
       "specifier": "../../shared/ui/primitives",
       "kind": "import",
       "typeOnly": false,
-      "line": 3,
+      "line": 4,
       "column": 1
     },
     {
@@ -12859,7 +13028,7 @@
       "specifier": "./sections/ClaimPageSections",
       "kind": "import",
       "typeOnly": false,
-      "line": 4,
+      "line": 5,
       "column": 1
     },
     {
@@ -12868,7 +13037,7 @@
       "specifier": "./claimRouting",
       "kind": "import",
       "typeOnly": true,
-      "line": 9,
+      "line": 10,
       "column": 1
     },
     {
@@ -12877,7 +13046,7 @@
       "specifier": "./useClaimFlowController",
       "kind": "import",
       "typeOnly": false,
-      "line": 10,
+      "line": 11,
       "column": 1
     },
     {
@@ -13359,11 +13528,20 @@
     },
     {
       "source": "website/src/features/home/HomePage.tsx",
+      "target": "website/src/content/site.ts",
+      "specifier": "@content/site",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/home/HomePage.tsx",
       "target": "website/src/features/home/sections/HomePageSections.tsx",
       "specifier": "./sections/HomePageSections",
       "kind": "import",
       "typeOnly": false,
-      "line": 2,
+      "line": 3,
       "column": 1
     },
     {
@@ -13372,7 +13550,7 @@
       "specifier": "../../shared/ui/primitives",
       "kind": "import",
       "typeOnly": true,
-      "line": 14,
+      "line": 15,
       "column": 1
     },
     {
@@ -13381,7 +13559,7 @@
       "specifier": "../../shared/site",
       "kind": "import",
       "typeOnly": false,
-      "line": 15,
+      "line": 16,
       "column": 1
     },
     {
@@ -13503,11 +13681,20 @@
     },
     {
       "source": "website/src/features/host/HostPage.tsx",
+      "target": "website/src/content/site.ts",
+      "specifier": "@content/site",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/host/HostPage.tsx",
       "target": "website/src/shared/site/index.ts",
       "specifier": "../../shared/site",
       "kind": "import",
       "typeOnly": false,
-      "line": 2,
+      "line": 3,
       "column": 1
     },
     {
@@ -13516,7 +13703,7 @@
       "specifier": "./sections/CaptureFrames",
       "kind": "import",
       "typeOnly": true,
-      "line": 3,
+      "line": 4,
       "column": 1
     },
     {
@@ -13525,7 +13712,7 @@
       "specifier": "./sections/CreateEventWalkthrough",
       "kind": "import",
       "typeOnly": false,
-      "line": 4,
+      "line": 5,
       "column": 1
     },
     {
@@ -13534,7 +13721,7 @@
       "specifier": "./sections/PlaybookShowcase",
       "kind": "import",
       "typeOnly": false,
-      "line": 5,
+      "line": 6,
       "column": 1
     },
     {
@@ -13543,7 +13730,7 @@
       "specifier": "./sections/HostComparisonSection",
       "kind": "import",
       "typeOnly": false,
-      "line": 6,
+      "line": 7,
       "column": 1
     },
     {
@@ -13552,7 +13739,7 @@
       "specifier": "./sections/HostSupportingSections",
       "kind": "import",
       "typeOnly": false,
-      "line": 7,
+      "line": 8,
       "column": 1
     },
     {
@@ -13561,7 +13748,7 @@
       "specifier": "./sections/HostPageSections",
       "kind": "import",
       "typeOnly": false,
-      "line": 12,
+      "line": 13,
       "column": 1
     },
     {
@@ -13961,6 +14148,51 @@
       "column": 1
     },
     {
+      "source": "website/src/features/legal/LegalPage.tsx",
+      "target": "website/src/content/types.ts",
+      "specifier": "../../content/types",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/legal/LegalPage.tsx",
+      "target": "website/src/content/site.ts",
+      "specifier": "../../content/site",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/legal/LegalPage.tsx",
+      "target": "website/src/content/legal.ts",
+      "specifier": "../../content/legal",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/legal/LegalPage.tsx",
+      "target": "website/src/shared/site/index.ts",
+      "specifier": "../../shared/site",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 4,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/legal/LegalPage.tsx",
+      "target": "website/src/shared/ui/primitives/index.ts",
+      "specifier": "../../shared/ui/primitives",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 5,
+      "column": 1
+    },
+    {
       "source": "website/src/features/marketing/MarketingConsentBanner.tsx",
       "target": "website/src/content/generated.ts",
       "specifier": "@content/generated",
@@ -14052,11 +14284,20 @@
     },
     {
       "source": "website/src/features/notFound/NotFoundPage.tsx",
+      "target": "website/src/content/site.ts",
+      "specifier": "@content/site",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/notFound/NotFoundPage.tsx",
       "target": "website/src/shared/site/index.ts",
       "specifier": "../../shared/site",
       "kind": "import",
       "typeOnly": false,
-      "line": 2,
+      "line": 3,
       "column": 1
     },
     {
@@ -14065,7 +14306,7 @@
       "specifier": "../../shared/ui/primitives",
       "kind": "import",
       "typeOnly": false,
-      "line": 3,
+      "line": 4,
       "column": 1
     },
     {
@@ -14079,11 +14320,20 @@
     },
     {
       "source": "website/src/features/organizers/HostListingPage.tsx",
+      "target": "website/src/content/site.ts",
+      "specifier": "@content/site",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/HostListingPage.tsx",
       "target": "website/src/shared/site/index.ts",
       "specifier": "../../shared/site",
       "kind": "import",
       "typeOnly": false,
-      "line": 2,
+      "line": 3,
       "column": 1
     },
     {
@@ -14092,7 +14342,7 @@
       "specifier": "./types",
       "kind": "import",
       "typeOnly": true,
-      "line": 3,
+      "line": 4,
       "column": 1
     },
     {
@@ -14101,7 +14351,7 @@
       "specifier": "../claims/useListingClaimController",
       "kind": "import",
       "typeOnly": false,
-      "line": 4,
+      "line": 5,
       "column": 1
     },
     {
@@ -14110,7 +14360,7 @@
       "specifier": "./sections/HostListingSections",
       "kind": "import",
       "typeOnly": false,
-      "line": 5,
+      "line": 6,
       "column": 1
     },
     {
@@ -14119,7 +14369,7 @@
       "specifier": "./useHostListingPageController",
       "kind": "import",
       "typeOnly": false,
-      "line": 6,
+      "line": 7,
       "column": 1
     },
     {
@@ -14169,11 +14419,20 @@
     },
     {
       "source": "website/src/features/organizers/OrganizerSearchPage.tsx",
+      "target": "website/src/content/site.ts",
+      "specifier": "@content/site",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/OrganizerSearchPage.tsx",
       "target": "website/src/shared/site/index.ts",
       "specifier": "../../shared/site",
       "kind": "import",
       "typeOnly": false,
-      "line": 2,
+      "line": 3,
       "column": 1
     },
     {
@@ -14182,7 +14441,7 @@
       "specifier": "./sections/OrganizerSearchSections",
       "kind": "import",
       "typeOnly": false,
-      "line": 3,
+      "line": 4,
       "column": 1
     },
     {
@@ -14191,7 +14450,7 @@
       "specifier": "./useOrganizerDirectoryController",
       "kind": "import",
       "typeOnly": false,
-      "line": 8,
+      "line": 9,
       "column": 1
     },
     {
@@ -16418,6 +16677,15 @@
       "column": 1
     },
     {
+      "source": "website/src/shared/ui/primitives/index.ts",
+      "target": "website/src/shared/ui/primitives/legal.tsx",
+      "specifier": "./legal",
+      "kind": "export",
+      "typeOnly": false,
+      "line": 31,
+      "column": 1
+    },
+    {
       "source": "website/src/shared/ui/primitives/layout.tsx",
       "target": "packages/web-ui/src/index.ts",
       "specifier": "@catch/web-ui",
@@ -17031,11 +17299,29 @@
     },
     {
       "source": "website/src/stories/MarketingRoutes.stories.tsx",
+      "target": "website/src/features/legal/LegalPage.tsx",
+      "specifier": "../features/legal/LegalPage",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 8,
+      "column": 1
+    },
+    {
+      "source": "website/src/stories/MarketingRoutes.stories.tsx",
+      "target": "website/src/content/legal.ts",
+      "specifier": "../content/legal",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 9,
+      "column": 1
+    },
+    {
+      "source": "website/src/stories/MarketingRoutes.stories.tsx",
       "target": "website/src/stories/fixtures/hostListings.ts",
       "specifier": "./fixtures/hostListings",
       "kind": "import",
       "typeOnly": false,
-      "line": 8,
+      "line": 10,
       "column": 1
     },
     {
@@ -17044,7 +17330,7 @@
       "specifier": "../features/organizers/HostListingPage",
       "kind": "import",
       "typeOnly": false,
-      "line": 9,
+      "line": 11,
       "column": 1
     },
     {
@@ -17053,7 +17339,7 @@
       "specifier": "../features/organizers/OrganizerSearchPage",
       "kind": "import",
       "typeOnly": false,
-      "line": 10,
+      "line": 12,
       "column": 1
     },
     {
@@ -17062,7 +17348,7 @@
       "specifier": "../features/organizers/types",
       "kind": "import",
       "typeOnly": true,
-      "line": 11,
+      "line": 13,
       "column": 1
     },
     {
@@ -17071,7 +17357,7 @@
       "specifier": "../shared/query/queryClient",
       "kind": "import",
       "typeOnly": false,
-      "line": 12,
+      "line": 14,
       "column": 1
     },
     {
@@ -17080,7 +17366,7 @@
       "specifier": "../shared/site",
       "kind": "import",
       "typeOnly": false,
-      "line": 13,
+      "line": 15,
       "column": 1
     },
     {
@@ -17089,7 +17375,7 @@
       "specifier": "./fixtures/marketingCaptures",
       "kind": "import",
       "typeOnly": false,
-      "line": 14,
+      "line": 16,
       "column": 1
     },
     {
@@ -20125,6 +20411,15 @@
       "kind": "import",
       "typeOnly": true,
       "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/shared/ui/primitives/legal.tsx",
+      "package": "react",
+      "specifier": "react",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1,
       "column": 1
     },
     {
