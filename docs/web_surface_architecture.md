@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.8.2
+version: 0.8.3
 updated: 2026-07-22
 owner: web_platform
 status: active
@@ -434,6 +434,11 @@ pipeline:
   Storybook stories through a Playwright Chromium axe gate;
 - pushes to `main` that touch marketing-site inputs deploy only
   `hosting:marketing` to the production Firebase project;
+- the deploy job reads canonical organizer claim-target readiness from
+  production, materializes receipt-aware production and demo projections in
+  the ephemeral runner checkout, and verifies both before Firebase invokes the
+  normal predeploy build; committed receipt-free projections remain the stable
+  PR validation source rather than being mistaken for production readiness;
 - generated public routes are served as static files; only explicit host,
   claim, and API rewrites remain, so unknown paths use `dist/404.html` with an
   actual HTTP 404 instead of the root SPA shell;

@@ -156,6 +156,12 @@ jobs:
       - name: Read production organizer claim readiness
         run: node tool/organizer_intake/sync_claim_targets_to_firestore.mjs --env prod --receipt /tmp/organizer-claim-target-readiness.json --json
 
+      - name: Materialize verified production organizer listings
+        env:
+          ORGANIZER_CLAIM_TARGET_PROJECT_ID: catch-dating-app-64e51
+          ORGANIZER_CLAIM_TARGET_RECEIPT: /tmp/organizer-claim-target-readiness.json
+        run: npm --workspace catch-marketing run materialize:organizer-listings:deploy
+
       - name: Deploy production marketing site
         env:
           ORGANIZER_CLAIM_TARGET_PROJECT_ID: catch-dating-app-64e51

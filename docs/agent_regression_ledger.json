@@ -1,5 +1,5 @@
 {
-  "version": 60,
+  "version": 61,
   "updated": "2026-07-22",
   "owner": "agent_operating_model",
   "entries": [
@@ -2552,6 +2552,28 @@
         "design/public_surface_behavior.json"
       ],
       "notes": "Verified discovery is a product eligibility grouping, not a request to collapse first-party and owner-verified presentation labels."
+    },
+    {
+      "id": "REG-MARKETING-RECEIPT-AWARE-DEPLOY-001",
+      "title": "Production marketing deploy checks live organizer readiness against receipt-free generated output",
+      "status": "active",
+      "applies_to": [
+        ".github/workflows/marketing-website.yml",
+        "website/package.json",
+        "website/scripts/generateOrganizerListings.mjs",
+        "website/scripts/marketingDeployWorkflow.test.mjs"
+      ],
+      "symptom": "PR validation passes, but the main-branch Hosting deploy fails because the live Firestore readiness receipt changes organizer claim and review capabilities before the predeploy drift check runs.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-marketing run check:deploy-contract && node --test website/scripts/generateOrganizerListings.test.mjs",
+        "guardEvidence": "the workflow contract requires receipt-aware production and demo projections to be materialized after the read-only production receipt and before Firebase predeploy; generator tests prove a verified canonical receipt enables the intended public claim and review capabilities"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/release_operations.md"
+      ],
+      "notes": "The materialized files exist only in the deployment runner checkout. Committed generated projections stay receipt-free so pull-request drift validation remains deterministic and does not claim live production readiness."
     }
   ]
 }
