@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.20
+version: 0.1.21
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -166,17 +166,30 @@ first checked example: it contains both `screen.explore.discovery` and the
 marketing `organizer_search` route, while their components, action owners,
 states, and evidence remain runtime-specific.
 
-Event Detail, Explore, Dashboard Home, Event Success, Host Event Manage,
-Catches Hub, Catches Event, Matches List, Member Chat, Self Profile, Public
-Profile, and Organizer Detail are the current reference contracts. Organizer
-Detail is the first three-surface reference: consumer Flutter, host Flutter,
-and the canonical marketing listing share one semantic feature identity while
-retaining separate actions and state inventories.
+Event Detail, Explore, Dashboard Home, Event Success, Host Home, Host
+Organizers, Host Event Manage, Catches Hub, Catches Event, Matches List, Member
+Chat, Self Profile, Public Profile, and Organizer Detail are the current
+reference contracts. Organizer Detail is the first three-surface reference:
+consumer Flutter, host Flutter, and the canonical marketing listing share one
+semantic feature identity while retaining separate actions and state
+inventories.
 Actions name one of the surface's declared Dart or TypeScript owners, so a
 larger feature may compose multiple action domains without pretending one enum
 or controller owns everything. Action outcomes are typed as local surface
 states, route destinations, or side effects. A read-only surface may declare no
 actions or action owners; the format never requires fabricated behavior.
+
+A coordinated workspace may bind several route projections to one authority
+when users experience them as one feature. Host Organizers is the reference:
+Edit, Insights, Preview, Event Defaults, Live Guide, Payments, Team, and host
+identity retain separate action owners and states inside one feature contract.
+Do not split a feature merely because a spoke has its own URL, and do not merge
+routes whose state or actions do not share a coherent user goal.
+
+Flutter preview evidence may use the stable annotated Widgetbook builder id or
+the `Type/Use case name` identity. Prefer the builder id when the same builder
+is intentionally annotated for several component types, because the generated
+Widgetbook registry uses that builder as their shared evidence seam.
 
 An action whose owner exists but whose runtime callback is not connected may be
 declared with `implementationStatus: known_gap`, stable debt, and a concrete

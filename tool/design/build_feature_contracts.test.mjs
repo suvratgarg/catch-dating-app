@@ -566,7 +566,7 @@ test("rejects runtime and authority mismatches", () => {
 test("parses Widgetbook preview ids from annotated use cases", () => {
   assert.deepEqual(
     [...parseWidgetbookPreviewIds(widgetbookSource())],
-    ["ExampleScreen/Screen states"],
+    ["ExampleScreen/Screen states", "example"],
   );
 });
 

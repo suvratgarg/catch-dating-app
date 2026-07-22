@@ -1,0 +1,1638 @@
+{
+  "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
+  "version": 2,
+  "generatedFrom": "design/features/host_home.feature.json",
+  "generatedFor": "2026-07-23",
+  "sourceDigest": "sha256:aa0827e53dfe11ef687d28dac39d272f03ad7a31bd77fc8cbb5c130285d01eae",
+  "resolvedDigest": "sha256:c2572f7164bc4d44570dc0c8b1ff6ee4a6d2836a89741a3e4027326369acccc0",
+  "feature": {
+    "id": "feature.host_home",
+    "name": "Host Home",
+    "owner": "hosts",
+    "status": "pilot",
+    "description": "Orchestrates the host Today and Events entry workspace across authentication, organizer selection, hosted-event lifecycle state, recovery, and typed create, repeat, manage, and task navigation."
+  },
+  "coverage": {
+    "surfaces": 1,
+    "states": 18,
+    "scenarios": 18,
+    "actionCases": 18,
+    "actions": 12,
+    "captures": 16,
+    "previews": 1,
+    "testFiles": 1,
+    "evidenceExceptions": 15
+  },
+  "surfaces": [
+    {
+      "id": "host_flutter",
+      "runtime": "flutter",
+      "authority": {
+        "registry": "flutter_screens",
+        "id": "screen.host.home"
+      },
+      "actionScope": {
+        "included": "Host Home authentication recovery, organizer switching, Today/Events workspace selection, event-list filtering and retry, and typed create, repeat, manage, and Today-task navigation.",
+        "excluded": [
+          "Organizer editing, event creation internals, event management mutations, booking policy, analytics, payouts, and host-team administration retain their owning feature contracts or controllers."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "widgetbook/lib/hosts/host_operations_use_cases.dart"
+        ],
+        "actionOwners": [
+          {
+            "id": "route_screen",
+            "language": "dart",
+            "file": "lib/hosts/presentation/host_operations/host_operations_home_screen.dart",
+            "symbol": "HostOperationsHomeScreen"
+          },
+          {
+            "id": "workspace",
+            "language": "dart",
+            "file": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
+            "symbol": "HostEventsScaffold"
+          },
+          {
+            "id": "events_list",
+            "language": "dart",
+            "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
+            "symbol": "HostEventsClubCard"
+          },
+          {
+            "id": "auth_required",
+            "language": "dart",
+            "file": "lib/hosts/presentation/host_operations/host_auth_required_screen.dart",
+            "symbol": "HostAuthRequiredScreen"
+          }
+        ],
+        "componentContracts": [
+          "catch.button",
+          "catch.empty_state",
+          "catch.error_state",
+          "catch.event_card",
+          "catch.menu",
+          "catch.option_group",
+          "catch.skeleton",
+          "catch.surface",
+          "catch.top_bar"
+        ],
+        "dataContracts": [
+          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/events.schema.json",
+          "contracts/firestore/organizer_team_memberships.schema.json",
+          "contracts/firestore/organizers.schema.json"
+        ]
+      },
+      "coverage": {
+        "states": 18,
+        "scenarios": 18,
+        "actionCases": 18,
+        "actions": 12,
+        "captures": 16,
+        "previews": 1,
+        "testFiles": 1,
+        "evidenceExceptions": 15
+      },
+      "dimensions": {
+        "load": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "loading",
+            "error",
+            "offline"
+          ]
+        },
+        "access": {
+          "default": "owner",
+          "values": [
+            "owner",
+            "cohost",
+            "signed_out"
+          ]
+        },
+        "organizer_supply": {
+          "default": "one",
+          "values": [
+            "one",
+            "multiple",
+            "none"
+          ]
+        },
+        "workspace": {
+          "default": "today",
+          "values": [
+            "today",
+            "events"
+          ]
+        },
+        "event_supply": {
+          "default": "populated",
+          "values": [
+            "populated",
+            "empty"
+          ]
+        },
+        "accessibility": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "text_scale_2",
+            "reduced_motion"
+          ]
+        },
+        "theme": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "light_dark"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "sign_in",
+          "owner": "auth_required",
+          "codeValue": "go",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "routeInstanceId",
+            "authSessionId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.auth.phone_entry"
+              }
+            }
+          ],
+          "description": "Leaves the signed-out host state for the shared phone authentication route.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "retry_host_home",
+          "owner": "route_screen",
+          "codeValue": "invalidate",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "routeInstanceId",
+            "retryTarget",
+            "failureStateVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "host_clubs_loading",
+                "one_owned_club",
+                "multiple_clubs_switcher",
+                "no_host_clubs"
+              ]
+            }
+          ],
+          "description": "Invalidates only the failed authentication or hosted-organizer provider for the current route failure.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "retry_host_events",
+          "owner": "events_list",
+          "codeValue": "invalidate",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "clubId",
+            "failureStateVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "club_events_loading",
+                "upcoming_events",
+                "empty_events"
+              ]
+            }
+          ],
+          "description": "Invalidates the selected organizer's hosted-event stream after a nested list failure.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "create_organizer",
+          "owner": "workspace",
+          "codeValue": "hostCreateClubScreen",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "routeInstanceId",
+            "emptyStateVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.club.create"
+              }
+            }
+          ],
+          "description": "Opens Host Create Organizer from the no-organizers state.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "switch_organizer",
+          "owner": "workspace",
+          "codeValue": "selectClubIndex",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "routeInstanceId",
+            "clubId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "multiple_clubs_switcher",
+                "cohost_role",
+                "upcoming_events",
+                "empty_events"
+              ]
+            }
+          ],
+          "description": "Switches the Today and Events projections to another organizer the viewer hosts.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "view_events",
+          "owner": "workspace",
+          "codeValue": "selectTab",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "routeInstanceId",
+            "tabSelectionVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "club_events_loading",
+                "upcoming_events",
+                "empty_events"
+              ]
+            }
+          ],
+          "description": "Moves from Today to the selected organizer's Events workspace.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "filter_events",
+          "owner": "workspace",
+          "codeValue": "HostEventsLifecycleFilter",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "clubId",
+            "filterSelectionVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "upcoming_events",
+                "empty_events"
+              ]
+            }
+          ],
+          "description": "Selects the Upcoming, Live, or Past lifecycle projection without changing the hosted-event source.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "create_event",
+          "owner": "workspace",
+          "codeValue": "_openCreateEvent",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "clubId",
+            "tapAttemptId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.event.create"
+              }
+            }
+          ],
+          "description": "Opens Host Event Create with the selected organizer id and organizer snapshot.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "repeat_event",
+          "owner": "workspace",
+          "codeValue": "_openRepeatEvent",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "clubId",
+            "eventId",
+            "tapAttemptId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.event.create"
+              }
+            }
+          ],
+          "description": "Opens Host Event Create with a policy-gated repeat prefill from the latest eligible event.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "manage_event",
+          "owner": "workspace",
+          "codeValue": "_openManageEvent",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "clubId",
+            "eventId",
+            "tapAttemptId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.event.manage"
+              }
+            }
+          ],
+          "description": "Opens Host Event Manage for a selected lifecycle-list event.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_today_event",
+          "owner": "workspace",
+          "codeValue": "_openTodayEvent",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "clubId",
+            "eventId",
+            "eventClockState"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.event.manage"
+              }
+            }
+          ],
+          "description": "Opens the Today event in its live or setup Host Manage section based on the current event clock.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_today_task",
+          "owner": "workspace",
+          "codeValue": "_openTodayTask",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "clubId",
+            "eventId",
+            "taskDestination"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.host.event.manage"
+              }
+            }
+          ],
+          "description": "Routes a truthful Today task to the matching guests or setup section of Host Event Manage.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [
+        {
+          "stateIds": [
+            "uid_missing",
+            "host_clubs_loading",
+            "host_clubs_error",
+            "no_host_clubs",
+            "club_events_loading",
+            "club_events_error",
+            "club_events_offline",
+            "empty_events",
+            "offline",
+            "text_scale_2",
+            "reduced_motion",
+            "light_dark"
+          ],
+          "evidence": [
+            "tests"
+          ],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "These registered Host Home states have deterministic capture and preview evidence but no focused state-level automated test recorded by the screen authority yet."
+        },
+        {
+          "stateIds": [
+            "club_events_offline"
+          ],
+          "evidence": [
+            "previews"
+          ],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "The nested hosted-event offline state is captured but has no dedicated Widgetbook scenario registered yet."
+        },
+        {
+          "stateIds": [
+            "create_event_action",
+            "manage_event_navigation"
+          ],
+          "evidence": [
+            "captures"
+          ],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "The typed Host Home route actions are covered by focused widget tests and the route-state catalog but do not yet have standalone deterministic captures."
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "uid_missing",
+          "stateId": "uid_missing",
+          "kind": "permission",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "access": "signed_out",
+            "organizer_supply": "one",
+            "workspace": "today",
+            "event_supply": "populated",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_home_signed_out"
+            ],
+            "previewIds": [
+              "hostHomeRouteStates"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "authentication",
+              "dimensions": {
+                "load": "ready",
+                "access": "signed_out",
+                "organizer_supply": "one",
+                "workspace": "today",
+                "event_supply": "populated",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "sign_in"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_host_home",
+                  "retry_host_events",
+                  "create_organizer",
+                  "switch_organizer",
+                  "view_events",
+                  "filter_events",
+                  "create_event",
+                  "repeat_event",
+                  "manage_event",
+                  "open_today_event",
+                  "open_today_task"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "host_clubs_loading",
+          "stateId": "host_clubs_loading",
+          "kind": "loading",
+          "status": "captured",
+          "dimensions": {
+            "load": "loading",
+            "access": "owner",
+            "organizer_supply": "one",
+            "workspace": "today",
+            "event_supply": "populated",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_home_clubs_loading"
+            ],
+            "previewIds": [
+              "hostHomeRouteStates"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "loading",
+                "access": "owner",
+                "organizer_supply": "one",
+                "workspace": "today",
+                "event_supply": "populated",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_home",
+                  "retry_host_events",
+                  "create_organizer",
+                  "switch_organizer",
+                  "view_events",
+                  "filter_events",
+                  "create_event",
+                  "repeat_event",
+                  "manage_event",
+                  "open_today_event",
+                  "open_today_task"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "host_clubs_error",
+          "stateId": "host_clubs_error",
+          "kind": "error",
+          "status": "captured",
+          "dimensions": {
+            "load": "error",
+            "access": "owner",
+            "organizer_supply": "one",
+            "workspace": "today",
+            "event_supply": "populated",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_home_clubs_error",
+              "host_home_clubs_offline"
+            ],
+            "previewIds": [
+              "hostHomeRouteStates"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "recovery",
+              "dimensions": {
+                "load": "error",
+                "access": "owner",
+                "organizer_supply": "one",
+                "workspace": "today",
+                "event_supply": "populated",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "retry_host_home"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_events",
+                  "create_organizer",
+                  "switch_organizer",
+                  "view_events",
+                  "filter_events",
+                  "create_event",
+                  "repeat_event",
+                  "manage_event",
+                  "open_today_event",
+                  "open_today_task"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "no_host_clubs",
+          "stateId": "no_host_clubs",
+          "kind": "empty",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "access": "owner",
+            "organizer_supply": "none",
+            "workspace": "today",
+            "event_supply": "populated",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_home_empty_clubs"
+            ],
+            "previewIds": [
+              "hostHomeRouteStates"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "create",
+              "dimensions": {
+                "load": "ready",
+                "access": "owner",
+                "organizer_supply": "none",
+                "workspace": "today",
+                "event_supply": "populated",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "create_organizer"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_home",
+                  "retry_host_events",
+                  "switch_organizer",
+                  "view_events",
+                  "filter_events",
+                  "create_event",
+                  "repeat_event",
+                  "manage_event",
+                  "open_today_event",
+                  "open_today_task"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "one_owned_club",
+          "stateId": "one_owned_club",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "access": "owner",
+            "organizer_supply": "one",
+            "workspace": "today",
+            "event_supply": "populated",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_home_dashboard"
+            ],
+            "previewIds": [
+              "hostHomeRouteStates"
+            ],
+            "tests": [
+              "test/hosts/host_operations_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "today",
+              "dimensions": {
+                "load": "ready",
+                "access": "owner",
+                "organizer_supply": "one",
+                "workspace": "today",
+                "event_supply": "populated",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "view_events",
+                  "create_event",
+                  "open_today_event",
+                  "open_today_task"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_home",
+                  "retry_host_events",
+                  "create_organizer",
+                  "switch_organizer",
+                  "filter_events",
+                  "repeat_event",
+                  "manage_event"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "multiple_clubs_switcher",
+          "stateId": "multiple_clubs_switcher",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "access": "owner",
+            "organizer_supply": "multiple",
+            "workspace": "today",
+            "event_supply": "populated",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_home_switcher_cohost",
+              "host_home_long_club_names"
+            ],
+            "previewIds": [
+              "hostHomeRouteStates"
+            ],
+            "tests": [
+              "test/hosts/host_operations_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "switch",
+              "dimensions": {
+                "load": "ready",
+                "access": "owner",
+                "organizer_supply": "multiple",
+                "workspace": "today",
+                "event_supply": "populated",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "switch_organizer",
+                  "view_events",
+                  "create_event"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_home",
+                  "retry_host_events",
+                  "create_organizer",
+                  "filter_events",
+                  "repeat_event",
+                  "manage_event",
+                  "open_today_event",
+                  "open_today_task"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "cohost_role",
+          "stateId": "cohost_role",
+          "kind": "permission",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "access": "cohost",
+            "organizer_supply": "one",
+            "workspace": "today",
+            "event_supply": "populated",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_home_cohost_empty_events"
+            ],
+            "previewIds": [
+              "hostHomeRouteStates"
+            ],
+            "tests": [
+              "test/hosts/host_operations_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "cohost",
+              "dimensions": {
+                "load": "ready",
+                "access": "cohost",
+                "organizer_supply": "one",
+                "workspace": "today",
+                "event_supply": "populated",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "switch_organizer",
+                  "view_events",
+                  "create_event"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_home",
+                  "retry_host_events",
+                  "create_organizer",
+                  "filter_events",
+                  "repeat_event",
+                  "manage_event",
+                  "open_today_event",
+                  "open_today_task"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "club_events_loading",
+          "stateId": "club_events_loading",
+          "kind": "loading",
+          "status": "captured",
+          "dimensions": {
+            "load": "loading",
+            "access": "owner",
+            "organizer_supply": "one",
+            "workspace": "events",
+            "event_supply": "populated",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_home_events_loading"
+            ],
+            "previewIds": [
+              "hostHomeRouteStates"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "loading",
+                "access": "owner",
+                "organizer_supply": "one",
+                "workspace": "events",
+                "event_supply": "populated",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_home",
+                  "retry_host_events",
+                  "create_organizer",
+                  "switch_organizer",
+                  "view_events",
+                  "filter_events",
+                  "create_event",
+                  "repeat_event",
+                  "manage_event",
+                  "open_today_event",
+                  "open_today_task"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "club_events_error",
+          "stateId": "club_events_error",
+          "kind": "error",
+          "status": "captured",
+          "dimensions": {
+            "load": "error",
+            "access": "owner",
+            "organizer_supply": "one",
+            "workspace": "events",
+            "event_supply": "populated",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_home_events_error"
+            ],
+            "previewIds": [
+              "hostHomeRouteStates"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "recovery",
+              "dimensions": {
+                "load": "error",
+                "access": "owner",
+                "organizer_supply": "one",
+                "workspace": "events",
+                "event_supply": "populated",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "retry_host_events"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_home",
+                  "create_organizer",
+                  "switch_organizer",
+                  "view_events",
+                  "filter_events",
+                  "create_event",
+                  "repeat_event",
+                  "manage_event",
+                  "open_today_event",
+                  "open_today_task"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "club_events_offline",
+          "stateId": "club_events_offline",
+          "kind": "offline",
+          "status": "captured",
+          "dimensions": {
+            "load": "offline",
+            "access": "owner",
+            "organizer_supply": "one",
+            "workspace": "events",
+            "event_supply": "populated",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_home_events_offline"
+            ],
+            "previewIds": [],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "recovery",
+              "dimensions": {
+                "load": "offline",
+                "access": "owner",
+                "organizer_supply": "one",
+                "workspace": "events",
+                "event_supply": "populated",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "retry_host_events"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_home",
+                  "create_organizer",
+                  "switch_organizer",
+                  "view_events",
+                  "filter_events",
+                  "create_event",
+                  "repeat_event",
+                  "manage_event",
+                  "open_today_event",
+                  "open_today_task"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "upcoming_events",
+          "stateId": "upcoming_events",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "access": "owner",
+            "organizer_supply": "one",
+            "workspace": "events",
+            "event_supply": "populated",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_home_dashboard",
+              "host_home_events_list"
+            ],
+            "previewIds": [
+              "hostHomeRouteStates"
+            ],
+            "tests": [
+              "test/hosts/host_operations_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "events",
+              "dimensions": {
+                "load": "ready",
+                "access": "owner",
+                "organizer_supply": "one",
+                "workspace": "events",
+                "event_supply": "populated",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "switch_organizer",
+                  "filter_events",
+                  "create_event",
+                  "repeat_event",
+                  "manage_event"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_home",
+                  "retry_host_events",
+                  "create_organizer",
+                  "view_events",
+                  "open_today_event",
+                  "open_today_task"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "empty_events",
+          "stateId": "empty_events",
+          "kind": "empty",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "access": "owner",
+            "organizer_supply": "one",
+            "workspace": "events",
+            "event_supply": "empty",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_home_cohost_empty_events"
+            ],
+            "previewIds": [
+              "hostHomeRouteStates"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "empty",
+              "dimensions": {
+                "load": "ready",
+                "access": "owner",
+                "organizer_supply": "one",
+                "workspace": "events",
+                "event_supply": "empty",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "switch_organizer",
+                  "filter_events",
+                  "create_event"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_home",
+                  "retry_host_events",
+                  "create_organizer",
+                  "view_events",
+                  "repeat_event",
+                  "manage_event",
+                  "open_today_event",
+                  "open_today_task"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "create_event_action",
+          "stateId": "create_event_action",
+          "kind": "populated",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "access": "owner",
+            "organizer_supply": "one",
+            "workspace": "today",
+            "event_supply": "populated",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "hostHomeRouteStates"
+            ],
+            "tests": [
+              "test/hosts/host_operations_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "create",
+              "dimensions": {
+                "load": "ready",
+                "access": "owner",
+                "organizer_supply": "one",
+                "workspace": "today",
+                "event_supply": "populated",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "create_event"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_home",
+                  "retry_host_events",
+                  "create_organizer",
+                  "switch_organizer",
+                  "view_events",
+                  "filter_events",
+                  "repeat_event",
+                  "manage_event",
+                  "open_today_event",
+                  "open_today_task"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "manage_event_navigation",
+          "stateId": "manage_event_navigation",
+          "kind": "populated",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "access": "owner",
+            "organizer_supply": "one",
+            "workspace": "today",
+            "event_supply": "populated",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "hostHomeRouteStates"
+            ],
+            "tests": [
+              "test/hosts/host_operations_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "manage",
+              "dimensions": {
+                "load": "ready",
+                "access": "owner",
+                "organizer_supply": "one",
+                "workspace": "today",
+                "event_supply": "populated",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "manage_event",
+                  "open_today_event",
+                  "open_today_task"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_home",
+                  "retry_host_events",
+                  "create_organizer",
+                  "switch_organizer",
+                  "view_events",
+                  "filter_events",
+                  "create_event",
+                  "repeat_event"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "offline",
+          "stateId": "offline",
+          "kind": "offline",
+          "status": "captured",
+          "dimensions": {
+            "load": "offline",
+            "access": "owner",
+            "organizer_supply": "one",
+            "workspace": "today",
+            "event_supply": "populated",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_home_clubs_offline"
+            ],
+            "previewIds": [
+              "hostHomeRouteStates"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "recovery",
+              "dimensions": {
+                "load": "offline",
+                "access": "owner",
+                "organizer_supply": "one",
+                "workspace": "today",
+                "event_supply": "populated",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "retry_host_home"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_events",
+                  "create_organizer",
+                  "switch_organizer",
+                  "view_events",
+                  "filter_events",
+                  "create_event",
+                  "repeat_event",
+                  "manage_event",
+                  "open_today_event",
+                  "open_today_task"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "text_scale_2",
+          "stateId": "text_scale_2",
+          "kind": "accessibility",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "access": "owner",
+            "organizer_supply": "one",
+            "workspace": "today",
+            "event_supply": "populated",
+            "accessibility": "text_scale_2",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_home_text_scale_2"
+            ],
+            "previewIds": [
+              "hostHomeRouteStates"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "ready",
+                "access": "owner",
+                "organizer_supply": "one",
+                "workspace": "today",
+                "event_supply": "populated",
+                "accessibility": "text_scale_2",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_home",
+                  "retry_host_events",
+                  "create_organizer",
+                  "switch_organizer",
+                  "view_events",
+                  "filter_events",
+                  "create_event",
+                  "repeat_event",
+                  "manage_event",
+                  "open_today_event",
+                  "open_today_task"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "reduced_motion",
+          "stateId": "reduced_motion",
+          "kind": "accessibility",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "access": "owner",
+            "organizer_supply": "one",
+            "workspace": "today",
+            "event_supply": "populated",
+            "accessibility": "reduced_motion",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_home_reduced_motion"
+            ],
+            "previewIds": [
+              "hostHomeRouteStates"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "ready",
+                "access": "owner",
+                "organizer_supply": "one",
+                "workspace": "today",
+                "event_supply": "populated",
+                "accessibility": "reduced_motion",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_home",
+                  "retry_host_events",
+                  "create_organizer",
+                  "switch_organizer",
+                  "view_events",
+                  "filter_events",
+                  "create_event",
+                  "repeat_event",
+                  "manage_event",
+                  "open_today_event",
+                  "open_today_task"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "light_dark",
+          "stateId": "light_dark",
+          "kind": "theme",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "access": "owner",
+            "organizer_supply": "one",
+            "workspace": "today",
+            "event_supply": "populated",
+            "accessibility": "standard",
+            "theme": "light_dark"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_home_light_dark"
+            ],
+            "previewIds": [
+              "hostHomeRouteStates"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "ready",
+                "access": "owner",
+                "organizer_supply": "one",
+                "workspace": "today",
+                "event_supply": "populated",
+                "accessibility": "standard",
+                "theme": "light_dark"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "sign_in",
+                  "retry_host_home",
+                  "retry_host_events",
+                  "create_organizer",
+                  "switch_organizer",
+                  "view_events",
+                  "filter_events",
+                  "create_event",
+                  "repeat_event",
+                  "manage_event",
+                  "open_today_event",
+                  "open_today_task"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "screen.host.home",
+          "owner": "hosts",
+          "routes": [
+            {
+              "id": "hostHomeScreen",
+              "path": "/host",
+              "role": "primary"
+            },
+            {
+              "id": "hostEventsScreen",
+              "path": "/host/events",
+              "role": "primary"
+            }
+          ]
+        },
+        "components": [
+          {
+            "id": "catch.button",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchButton",
+              "file": "lib/core/widgets/catch_button.dart",
+              "constructors": [
+                "CatchButton"
+              ]
+            }
+          },
+          {
+            "id": "catch.empty_state",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchEmptyState",
+              "file": "lib/core/widgets/catch_empty_state.dart",
+              "constructors": [
+                "CatchEmptyState"
+              ]
+            }
+          },
+          {
+            "id": "catch.error_state",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchErrorState",
+              "file": "lib/core/widgets/catch_error_state.dart",
+              "constructors": [
+                "CatchErrorState",
+                "CatchErrorState.fromError"
+              ]
+            }
+          },
+          {
+            "id": "catch.event_card",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchEventCard",
+              "file": "lib/core/widgets/catch_event_activity_cards.dart",
+              "constructors": [
+                "CatchEventCard.ticket"
+              ]
+            }
+          },
+          {
+            "id": "catch.menu",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchMenu",
+              "file": "lib/core/widgets/catch_menu.dart",
+              "constructors": [
+                "CatchMenu"
+              ]
+            }
+          },
+          {
+            "id": "catch.option_group",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchOptionGroup",
+              "file": "lib/core/widgets/catch_option_group.dart",
+              "constructors": [
+                "CatchOptionGroup"
+              ]
+            }
+          },
+          {
+            "id": "catch.skeleton",
+            "kind": "pattern",
+            "dart": {
+              "symbol": "CatchSkeleton",
+              "file": "lib/core/widgets/catch_skeleton.dart",
+              "constructors": [
+                "CatchSkeleton.card",
+                "CatchSkeleton.box",
+                "CatchSkeleton.text",
+                "CatchSkeleton.textBlock",
+                "CatchSkeleton.circle",
+                "CatchSkeleton.custom"
+              ]
+            }
+          },
+          {
+            "id": "catch.surface",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchSurface",
+              "file": "lib/core/widgets/catch_surface.dart",
+              "constructors": [
+                "CatchSurface",
+                "CatchSurface.card",
+                "CatchSurface.tinted",
+                "CatchSurface.message"
+              ]
+            }
+          },
+          {
+            "id": "catch.top_bar",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchTopBar",
+              "file": "lib/core/widgets/catch_top_bar.dart",
+              "constructors": [
+                "CatchTopBar"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "hostHomeRouteStates"
+        ]
+      }
+    }
+  ]
+}

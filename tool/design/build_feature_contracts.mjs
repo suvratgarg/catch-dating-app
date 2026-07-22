@@ -1015,6 +1015,11 @@ export function parseWidgetbookPreviewIds(source) {
     const type = body.match(/\btype:\s*([A-Za-z_][A-Za-z0-9_]*)/u)?.[1];
     if (name != null && type != null) ids.add(`${type}/${name}`);
   }
+  const annotatedBuilder =
+    /@widgetbook\.UseCase\(([\s\S]*?)\n\)\s*Widget\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(/gu;
+  for (const match of source.matchAll(annotatedBuilder)) {
+    ids.add(match[2]);
+  }
   return ids;
 }
 

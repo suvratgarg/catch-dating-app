@@ -8299,6 +8299,20 @@
       },
       "designRefs": [
         {
+          "id": "repo.host-home-feature-contract",
+          "kind": "repo",
+          "status": "available",
+          "path": "design/features/host_home.feature.json",
+          "notes": "Authoritative Host Home feature orchestration source; the compiler requires exact coverage of all registered Host Home states and typed actions."
+        },
+        {
+          "id": "generated.host-home-feature-contract",
+          "kind": "generated",
+          "status": "available",
+          "path": "design/features/generated/host_home.feature_contract.json",
+          "notes": "Generated Host Home state, action, evidence, component, and data-contract projection; do not edit directly."
+        },
+        {
           "id": "repo.host-operations-tests",
           "kind": "repo",
           "status": "available",
@@ -8865,6 +8879,11 @@
           "id": "DS-HOST-HOME-004",
           "status": "blocked",
           "nextAction": "Blocked/reference-only until canonical state-variant exports exist: Host Today and Host Events references and masks are exported and registered. The current Claude sources only provide the base Today and Events compositions; loading, empty, role/cohost, offline/error, text-scale, reduced-motion, light/dark, and additional event-list variants need source exports before reference work can continue."
+        },
+        {
+          "id": "DS-HOST-HOME-005",
+          "status": "open",
+          "nextAction": "Close feature.host_home evidence exceptions with focused tests for 12 registered route, nested-event, empty, offline, accessibility, and theme states; standalone captures for create/manage navigation; and a dedicated Widgetbook scenario for nested hosted-event offline."
         }
       ]
     },
@@ -9047,6 +9066,20 @@
         "notes": "HostClubsScreen resolves auth and hosted/owned club streams and owns the canonical Edit/Insights/Preview tab shell. HostClubEditTab owns only Media, Identity, Contact, and Club settings; Event defaults, Live event guide, Host team, and owner-only Payments use top-level spoke routes resolved through the same club stream. HostClubDefaultsSaver serializes optimistic defaults updates, profile/media edits run through HostClubEditController, payouts through HostPaymentAccountController, host-team mutations through HostTeamManagementController, and HostClubInsightsState owns analytics query state."
       },
       "designRefs": [
+        {
+          "id": "repo.host-organizers-feature-contract",
+          "kind": "repo",
+          "status": "available",
+          "path": "design/features/host_organizers.feature.json",
+          "notes": "Authoritative Host Organizers feature orchestration source across Edit, Insights, Preview, settings spokes, payouts, team, and host identity."
+        },
+        {
+          "id": "generated.host-organizers-feature-contract",
+          "kind": "generated",
+          "status": "available",
+          "path": "design/features/generated/host_organizers.feature_contract.json",
+          "notes": "Generated Host Organizers state, action, evidence, component, and data-contract projection; do not edit directly."
+        },
         {
           "id": "repo.host-clubs-tests",
           "kind": "repo",
@@ -10585,6 +10618,11 @@
           "id": "DS-HOST-CLUBS-004",
           "status": "closed",
           "nextAction": "The 2026-07-10 production full-shell Organizer comparison is within the aggregate advisory threshold at 12.02% mismatch / 7.79 meanDelta with navigation chrome included. Extra cohost, empty, loading/error/offline, analytics, payout, inline editor, team mutation, text-scale, reduced-motion, and light/dark comparisons depend on future design exports."
+        },
+        {
+          "id": "DS-HOST-CLUBS-005",
+          "status": "open",
+          "nextAction": "Close feature.host_organizers evidence exceptions with focused tests for the registered route, settings, analytics, payout, profile, team, accessibility, and theme states; deterministic captures for the 14 preview-only states; and a dedicated Widgetbook scenario for host_team_offline."
         }
       ],
       "captureIds": [

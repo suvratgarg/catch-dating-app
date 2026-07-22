@@ -4833,6 +4833,11 @@
               "id": "DP-HOST-HOME-004",
               "status": "blocked",
               "nextAction": "Restore Events below the canonical mean-delta threshold and remove HOST-V2-EVENTS-VISUAL-DRIFT-001. Continue HOST-V2-TODAY-FUNCTIONAL-PARITY-001 by composing real pending-approval, offer, draft, and guest-inquiry sources; remove the Today regressionThresholds only after the canonical threshold passes. Additional loading/empty/role/theme variants still need design exports."
+            },
+            {
+              "id": "DS-HOST-HOME-005",
+              "status": "open",
+              "nextAction": "Close feature.host_home evidence exceptions with focused tests for 12 registered route, nested-event, empty, offline, accessibility, and theme states; standalone captures for create/manage navigation; and a dedicated Widgetbook scenario for nested hosted-event offline."
             }
           ]
         },
@@ -5607,6 +5612,11 @@
               "id": "DS-HOST-CLUBS-004",
               "status": "closed",
               "nextAction": "The 2026-07-10 production full-shell Organizer comparison is within the aggregate advisory threshold at 12.02% mismatch / 7.79 meanDelta with navigation chrome included. Extra cohost, empty, loading/error/offline, analytics, payout, inline editor, team mutation, text-scale, reduced-motion, and light/dark comparisons depend on future design exports."
+            },
+            {
+              "id": "DS-HOST-CLUBS-005",
+              "status": "open",
+              "nextAction": "Close feature.host_organizers evidence exceptions with focused tests for 31 registered states, deterministic captures for 14 preview-only states, and a dedicated Widgetbook scenario for host_team_offline."
             }
           ]
         },

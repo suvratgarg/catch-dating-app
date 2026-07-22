@@ -123,20 +123,18 @@
     {
       "authority": "flutter_screens",
       "authorityId": "screen.host.home",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Host overview and event-list entry surface.",
-      "targetFeature": "feature.host_home",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Host Home contract covers authentication recovery, organizer switching, Today and Events projections, event lifecycle filtering, nested recovery, and typed create, repeat, manage, and task navigation.",
+      "featureContract": "feature.host_home"
     },
     {
       "authority": "flutter_screens",
       "authorityId": "screen.host.clubs",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Host organizer operations, settings, team, payments, and insights surface.",
-      "targetFeature": "feature.host_organizers",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Host Organizers contract covers organizer selection, Edit, Insights, Preview, settings spokes, profile and media writes, defaults, payouts, team management, host identity, hosted-organizer navigation, and sign out.",
+      "featureContract": "feature.host_organizers"
     },
     {
       "authority": "flutter_screens",

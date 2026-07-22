@@ -3503,7 +3503,7 @@
       "command": "node tool/design/build_feature_contracts.mjs --check",
       "safety": "local-writes-generated",
       "status": "active",
-      "description": "Compiles reviewed multi-surface feature sources, including compact exact state matrices, checked React route-state preview mappings, and explicitly disabled known implementation gaps, into deterministic state, action-cardinality, and evidence contracts while rejecting authority/runtime drift, enabled known-gap actions, and missing or duplicate authority-state coverage.",
+      "description": "Compiles reviewed multi-surface feature sources, including compact exact state matrices, stable annotated Flutter preview-builder ids, checked React route-state preview mappings, and explicitly disabled known implementation gaps, into deterministic state, action-cardinality, and evidence contracts while rejecting authority/runtime drift, enabled known-gap actions, and missing or duplicate authority-state coverage.",
       "checks": [
         "node --check tool/design/build_feature_contracts.mjs",
         "node --test tool/design/build_feature_contracts.test.mjs",
