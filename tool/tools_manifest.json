@@ -3467,6 +3467,35 @@
       }
     },
     {
+      "id": "design:feature-coverage",
+      "category": "design",
+      "path": "tool/design/check_feature_coverage.mjs",
+      "command": "node tool/design/check_feature_coverage.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Fails when a registered Flutter screen, marketing route, or admin route component lacks exactly one contracted, grouped, planned, or excluded feature-contract decision.",
+      "checks": [
+        "node --check tool/design/check_feature_coverage.mjs",
+        "node --test tool/design/check_feature_coverage.test.mjs",
+        "node tool/design/check_feature_coverage.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "AGENT-HARNESS-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_feature_coverage.test.mjs",
+        "contains": [
+          "rejects missing, duplicate, and unknown authority decisions",
+          "rejects contracted decisions that do not bind their authority item",
+          "rejects missing or chained grouped primaries",
+          "fails when a registry adds an unclassified feature surface",
+          "rejects orphaned source contracts"
+        ]
+      }
+    },
+    {
       "id": "design:feature-contracts",
       "category": "design",
       "path": "tool/design/build_feature_contracts.mjs",

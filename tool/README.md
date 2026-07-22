@@ -490,6 +490,26 @@ record the parent-reviewed result with
 
 ## Feature Contract Compiler
 
+`design/features/feature_coverage.json` is the exhaustive migration ledger for
+registered feature surfaces. It derives its inventory from the Flutter screen
+registry, marketing route registry, and route-kind entries in the admin
+component registry. Every authority item must be contracted, grouped under one
+primary feature projection, planned against a stable migration debt id, or
+explicitly excluded. The checker also rejects orphaned source contracts and a
+`contracted` decision whose source contract does not bind the claimed surface.
+
+```sh
+node tool/design/check_feature_coverage.mjs --check
+node tool/design/check_feature_coverage.mjs --summary
+```
+
+`planned` proves that a surface is visible to the migration; it does not claim
+that its state/action/evidence contract exists yet. Grouping is reserved for a
+secondary route projection of the same feature, such as a dynamic lookup or a
+live controller wrapper. Static legal/support and platform fallback routes may
+be excluded when their existing route, metadata, and preview contracts are the
+correct authority and there is no stateful product-action workflow to model.
+
 `design/features/*.feature.json` holds reviewed feature orchestration sources.
 They reference existing screen, component, data, capture, Widgetbook, and test
 authorities instead of duplicating their semantics. The compiler resolves those

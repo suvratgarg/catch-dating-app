@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.4.171
+version: 0.4.172
 updated: 2026-07-22
 owner: marketing_website
 status: active
@@ -47,6 +47,11 @@ The website is already split out of the old monolithic shell:
   ownership, and Storybook coverage status. It is validated bidirectionally
   against referenced Storybook `parameters.catchComponent` declarations by
   `tool/marketing/check_website_components.mjs`.
+- `design/features/feature_coverage.json` classifies every marketing route as a
+  contracted, grouped, planned, or explicitly excluded feature projection.
+  Shared product outcomes may target a cross-runtime identity such as
+  `feature.explore` or `feature.organizer_detail`; route metadata, static output,
+  React components, actions, and evidence remain owned by the website runtime.
 - `website/src/generated/hostListings.json` is production-only and excludes
   `dataOrigin: "catchDemo"` plus organizer-intake and seed records that do not
   resolve to a `live` city in the active market pack. Multi-market organizer

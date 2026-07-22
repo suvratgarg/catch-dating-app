@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.8.3
+version: 0.8.4
 updated: 2026-07-22
 owner: web_platform
 status: active
@@ -23,6 +23,21 @@ Keep the Flutter web app separate from the public website. The Flutter web app i
 the consumer app surface and should continue sharing mobile app code. The
 marketing and admin surfaces are web-native products and should use the same
 React + TypeScript stack where practical.
+
+## Cross-Surface Feature Identity
+
+`design/features/feature_coverage.json` is the exhaustive migration boundary
+across the Flutter screen registry, marketing route registry, and route-kind
+entries in the admin component registry. It can assign one semantic feature id
+to multiple runtime projections when the user outcome is genuinely shared—for
+example organizer discovery or organizer detail. It does not make Flutter and
+React share a UI runtime: each projection keeps its own screen/route authority,
+components, action symbols, evidence, and implementation tests.
+
+Run `node tool/design/check_feature_coverage.mjs --check` after adding or
+removing any registered product surface. A planned decision is migration debt,
+not completed contract coverage; a grouped decision is a secondary route
+projection, not a shortcut for combining unrelated workflows.
 
 ## Organizer Entity Boundary
 

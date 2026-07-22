@@ -1,0 +1,534 @@
+{
+  "$schema": "./feature_coverage.schema.json",
+  "version": 1,
+  "updated": "2026-07-23",
+  "owner": "product_design_parity",
+  "sourceOfTruth": "Exhaustive migration ledger for feature orchestration contracts across registered Flutter screens, marketing routes, and admin route components. A planned entry names its intended shared feature identity; grouped entries are secondary route projections, not independent features.",
+  "authorities": [
+    {
+      "id": "flutter_screens",
+      "runtime": "flutter",
+      "registry": "design/screens/catch.screens.json",
+      "collection": "screens",
+      "idField": "id"
+    },
+    {
+      "id": "marketing_routes",
+      "runtime": "react_marketing",
+      "registry": "design/website/routes.json",
+      "collection": "routes",
+      "idField": "id"
+    },
+    {
+      "id": "admin_routes",
+      "runtime": "react_admin",
+      "registry": "design/admin/components.json",
+      "collection": "components",
+      "idField": "id",
+      "filter": {
+        "field": "kind",
+        "value": "route"
+      }
+    }
+  ],
+  "decisions": [
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.event.detail",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Reference contract for Event Detail state, evidence, and booking-dock action orchestration.",
+      "featureContract": "feature.event_detail"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.club.detail",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Primary consumer organizer profile and schedule surface.",
+      "targetFeature": "feature.organizer_detail",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.explore.discovery",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Reference contract for discovery and map states plus empty-result recovery actions.",
+      "featureContract": "feature.explore"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.dashboard.home",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Primary signed-in consumer dashboard and recommendation surface.",
+      "targetFeature": "feature.dashboard_home",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.event_success.companion",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Attendee live-guide and post-event companion workflow.",
+      "targetFeature": "feature.event_success",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.catches.hub",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Attended-event matchmaking entry surface.",
+      "targetFeature": "feature.catches_hub",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.catches.event",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Event-scoped matching queue and reaction workflow.",
+      "targetFeature": "feature.catches_event",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.matches.list",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Match and conversation list surface.",
+      "targetFeature": "feature.matches_list",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.matches.chat",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Member chat, media, read-state, and safety action workflow.",
+      "targetFeature": "feature.member_chat",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.profile.self",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Self-profile editing and preview workflow.",
+      "targetFeature": "feature.profile_self",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.profile.public",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Public member profile with viewer and safety actions.",
+      "targetFeature": "feature.profile_public",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.home",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Host overview and event-list entry surface.",
+      "targetFeature": "feature.host_home",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.clubs",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Host organizer operations, settings, team, payments, and insights surface.",
+      "targetFeature": "feature.host_organizers",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.club.detail",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Host-context organizer profile projection.",
+      "targetFeature": "feature.organizer_detail",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.event.create",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Multi-step host event creation and draft workflow.",
+      "targetFeature": "feature.host_event_create",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.event.manage",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Reference contract for Host Event Manage route/workspace states and primary lifecycle actions.",
+      "featureContract": "feature.host_event_manage"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.inbox",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Host inquiry inbox, filtering, broadcast, and conversation navigation.",
+      "targetFeature": "feature.host_inbox",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.chat",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Host inquiry chat and safety workflow.",
+      "targetFeature": "feature.host_chat",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.start.welcome",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Logged-out welcome and authentication entry surface.",
+      "targetFeature": "feature.start_welcome",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.auth.phone_entry",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Phone and OTP authentication workflow.",
+      "targetFeature": "feature.phone_auth",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.onboarding.flow",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Required member onboarding and profile creation workflow.",
+      "targetFeature": "feature.member_onboarding",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.calendar.home",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Planned-event calendar and detail navigation surface.",
+      "targetFeature": "feature.calendar",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.saved_events.list",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Saved-event collection and detail navigation surface.",
+      "targetFeature": "feature.saved_events",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.filters.preferences",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Matching preference editing and persistence workflow.",
+      "targetFeature": "feature.matching_preferences",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.event.recap",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Post-event attendee recap and Catches handoff.",
+      "targetFeature": "feature.event_recap",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.club.create",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Multi-step host organizer creation and draft workflow.",
+      "targetFeature": "feature.host_organizer_create",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.event.edit",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Edit projection of the Host Event Manage lifecycle.",
+      "targetFeature": "feature.host_event_manage",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.event.location_map",
+      "status": "planned",
+      "priority": "P3",
+      "reason": "Exact-location child projection of Event Detail.",
+      "targetFeature": "feature.event_detail",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.notifications.list",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Activity feed, read-state, and deep-link workflow.",
+      "targetFeature": "feature.notifications",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.reviews.history",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Member review history and edit workflow.",
+      "targetFeature": "feature.review_history",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.settings.account",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Account, notification, privacy, safety, and deletion settings workflow.",
+      "targetFeature": "feature.account_settings",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.payments.history",
+      "status": "planned",
+      "priority": "P3",
+      "reason": "Member payment history, status, and help surface.",
+      "targetFeature": "feature.payment_history",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "home",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Public product entry, app-download, and waitlist conversion workflow.",
+      "targetFeature": "feature.marketing_home",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "host",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Public host acquisition and application workflow.",
+      "targetFeature": "feature.host_acquisition",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "organizer_search",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Public-web projection of organizer discovery and filtering.",
+      "targetFeature": "feature.explore",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "claim",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Organizer claim discovery, eligibility, and submission workflow.",
+      "targetFeature": "feature.organizer_claim",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "claim_lookup",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Dynamic lookup projection of the canonical organizer claim feature.",
+      "primaryAuthorityId": "claim"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "privacy",
+      "status": "excluded",
+      "priority": "P4",
+      "reason": "Published static legal content has route, metadata, and Storybook contracts but no stateful product action orchestration to duplicate here."
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "terms",
+      "status": "excluded",
+      "priority": "P4",
+      "reason": "Published static legal content has route, metadata, and Storybook contracts but no stateful product action orchestration to duplicate here."
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "help",
+      "status": "excluded",
+      "priority": "P4",
+      "reason": "Published static support content has route, metadata, and Storybook contracts but no stateful product action orchestration to duplicate here."
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "not_found",
+      "status": "excluded",
+      "priority": "P4",
+      "reason": "Platform fallback surface is already governed by the route and static-output contracts rather than a product feature workflow."
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "organizer_listing_canonical",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Public-web projection of organizer detail, events, reviews, and claim capability.",
+      "targetFeature": "feature.organizer_detail",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "organizer_listing_legacy",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Legacy canonical/noindex projection of the organizer detail feature.",
+      "primaryAuthorityId": "organizer_listing_canonical"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_access_review",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Admin launch-access review and decision workflow.",
+      "targetFeature": "feature.admin_access_review",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_admin_role_management",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Admin role lookup, assignment, and audit workflow.",
+      "targetFeature": "feature.admin_role_management",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_data_quality",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Admin data-quality signal review workflow.",
+      "targetFeature": "feature.admin_data_quality",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_event_publishing",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Canonical and external event review, readiness, import, and publishing workflow.",
+      "targetFeature": "feature.admin_event_publishing",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_finance_ops",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Finance issue review and reconciliation workflow.",
+      "targetFeature": "feature.admin_finance_ops",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_growth_kpi",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Growth KPI signal and trend inspection workflow.",
+      "targetFeature": "feature.admin_growth_kpi",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_intake_workspace",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Event, organizer, and automation intake workspace.",
+      "targetFeature": "feature.admin_intake",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_organizer_intake",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Organizer-specific route projection within the canonical Intake workspace.",
+      "primaryAuthorityId": "route_intake_workspace"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_marketing_ops",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Marketing planning, drafting, review, preview, and export workflow.",
+      "targetFeature": "feature.admin_marketing_ops",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_organizer_publishing",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Organizer directory, claim, route-readiness, and publishing workflow.",
+      "targetFeature": "feature.admin_organizer_publishing",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_overview",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Admin metrics, queue routing, and analytics overview.",
+      "targetFeature": "feature.admin_overview",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_overview_live_controller",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Live controller wrapper for the canonical prop-driven Overview route contract.",
+      "primaryAuthorityId": "route_overview"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_safety_triage",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Safety case triage, detail, assignment, and decision workflow.",
+      "targetFeature": "feature.admin_safety_triage",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_user_analytics",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Aggregate member analytics and reporting workflow.",
+      "targetFeature": "feature.admin_user_analytics",
+      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+    }
+  ]
+}
