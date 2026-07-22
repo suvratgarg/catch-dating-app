@@ -488,6 +488,28 @@ When using parallel agents, keep subagent work in disposable Git worktrees and
 record the parent-reviewed result with
 `tool/agent/record_delegation_outcome.mjs`.
 
+## Feature Contract Compiler
+
+`design/features/*.feature.json` holds reviewed feature orchestration sources.
+They reference existing screen, component, data, capture, Widgetbook, and test
+authorities instead of duplicating their semantics. The compiler resolves those
+references, expands every action case into enabled, disabled, and not-allowed
+classifications, and writes deterministic evidence artifacts under
+`design/features/generated/`.
+
+Each source must state its action scope. The Event Detail pilot covers the
+booking dock only, so its generated action counts must not be read as coverage
+of navigation, sharing, saving, or other route-owned actions.
+
+```sh
+node tool/design/build_feature_contracts.mjs
+node tool/design/build_feature_contracts.mjs --check
+node tool/design/build_feature_contracts.mjs --summary
+```
+
+The `--check` command is blocking in the design parity gate. Generated feature
+contracts are review artifacts and must not be edited by hand.
+
 ## Design Tokens
 
 The canonical UI primitive source is `design/tokens/catch.tokens.json`. It

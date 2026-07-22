@@ -1432,6 +1432,7 @@
         "lib/**/presentation/**",
         "lib/**/data/**",
         "functions/src/**",
+        "design/features/**",
         "docs/**"
       ],
       "instruction": "Every user-visible action must declare its scope key and cardinality: not allowed, singleton, unbounded, or domain-bounded. Singleton actions must render their resulting state instead of duplicate CTAs and be enforced server-side. Unbounded actions must have a UI that supports zero, one, and many items. Domain bounds must be real product constraints, not UI shortcuts.",
@@ -1445,6 +1446,11 @@
         }
       ],
       "enforcement": [
+        {
+          "tool": "design:feature-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/design_parity/README.md#feature-contract-compiler"
+        },
         {
           "stage": "manual",
           "docAnchor": "docs/audit_registry/rules.json"
@@ -3110,6 +3116,6 @@
       ]
     }
   },
-  "version": "2.8.1",
-  "updated": "2026-07-21"
+  "version": "2.8.2",
+  "updated": "2026-07-23"
 }

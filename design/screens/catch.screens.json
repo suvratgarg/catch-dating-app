@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-07-22",
+  "updated": "2026-07-23",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -133,6 +133,20 @@
           "status": "available",
           "path": "design/components/catch.components.json",
           "notes": "`catch.event_detail_sections` groups Event Detail hero, ticket facts, overview primitives, host/social sections, companion prompt, booking dock, and avatar stack without promoting event-only compounds to reusable primitives."
+        },
+        {
+          "id": "repo.event-detail-feature-contract",
+          "kind": "repo",
+          "status": "available",
+          "path": "design/features/event_detail.feature.json",
+          "notes": "Structured orchestration source for Event Detail dimensions, booking-action cardinality, and exact screen-state coverage."
+        },
+        {
+          "id": "generated.event-detail-feature-contract",
+          "kind": "generated",
+          "status": "available",
+          "path": "design/features/generated/event_detail.feature_contract.json",
+          "notes": "Deterministic projection resolving every Event Detail state to captures, Widgetbook previews, tests, action cases, components, and data contracts."
         }
       ],
       "captures": [
@@ -476,6 +490,9 @@
           "kind": "offline",
           "status": "captured",
           "source": "Current fatal-error path can show backend/network failures, but there is no explicit offline composition state.",
+          "tests": [
+            "test/events/event_detail_widgets_test.dart"
+          ],
           "nextAction": "Define explicit offline copy and retry behavior if product wants this to diverge from the generic event error surface.",
           "captureIds": [
             "event_detail_offline"
@@ -488,7 +505,10 @@
           "id": "text_scale_2",
           "kind": "accessibility",
           "status": "captured",
-          "source": "No dedicated Event Detail text-scale capture yet.",
+          "source": "Text-scale 2.0 is exercised through the full Event Detail composition on the tall review device.",
+          "tests": [
+            "test/events/event_detail_widgets_test.dart"
+          ],
           "nextAction": "Compare tall-device text-scale capture after section adapters reduce layout drift.",
           "captureIds": [
             "event_detail_text_scale_2"
@@ -501,7 +521,10 @@
           "id": "reduced_motion",
           "kind": "accessibility",
           "status": "captured",
-          "source": "Hero and route transition use motion helpers, but no reduced-motion preview is registered for this screen.",
+          "source": "Hero and route transition motion is exercised with animations disabled across the full Event Detail composition.",
+          "tests": [
+            "test/events/event_detail_widgets_test.dart"
+          ],
           "nextAction": "Compare reduced-motion capture for hero presentation modes and route transition.",
           "captureIds": [
             "event_detail_reduced_motion"

@@ -1,0 +1,1180 @@
+{
+  "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
+  "version": 1,
+  "generatedFrom": "design/features/event_detail.feature.json",
+  "generatedFor": "2026-07-23",
+  "sourceDigest": "sha256:eeadda5f0279339a689776619bfe6dba56c92bc5429361eb445fe5d5d12f8b2a",
+  "resolvedDigest": "sha256:306bde1126a2a21f6a69c925a96b598b0574c123efd5558f2f2f685ffc45d8d6",
+  "feature": {
+    "id": "feature.event_detail",
+    "name": "Event Detail",
+    "owner": "events",
+    "status": "pilot",
+    "description": "Orchestrates Event Detail state, booking-action, and evidence contracts without duplicating the owning screen, component, data, or Widgetbook registries.",
+    "actionScope": {
+      "included": "Booking-dock actions represented by EventDetailBookingDockAction.",
+      "excluded": [
+        "Navigation chrome, sharing, saving, calendar, location, companion, organizer, messaging, authentication, and profile-completion actions remain owned and verified by their existing route and widget contracts."
+      ]
+    }
+  },
+  "bindings": {
+    "widgetbookSources": [
+      "widgetbook/lib/events/event_detail_use_cases.dart",
+      "widgetbook/lib/primitives/core_catalog_use_cases.dart"
+    ],
+    "actionOwner": {
+      "file": "lib/events/presentation/event_detail_screen_state.dart",
+      "symbol": "EventDetailBookingDockAction"
+    },
+    "componentContracts": [
+      "catch.async_value",
+      "catch.error_state",
+      "catch.event_detail_sections"
+    ],
+    "dataContracts": [
+      "contracts/callables/event_booking_payload.schema.json",
+      "contracts/client_writes/create_saved_event.schema.json",
+      "contracts/client_writes/delete_saved_event.schema.json",
+      "contracts/firestore/event_participations.schema.json",
+      "contracts/firestore/event_waitlist_offers.schema.json",
+      "contracts/firestore/events.schema.json",
+      "contracts/firestore/saved_events.schema.json"
+    ]
+  },
+  "coverage": {
+    "screenStates": 15,
+    "scenarios": 15,
+    "actionCases": 24,
+    "actions": 6,
+    "captures": 24,
+    "previews": 6,
+    "testFiles": 3
+  },
+  "dimensions": {
+    "load": {
+      "default": "ready",
+      "values": [
+        "ready",
+        "loading",
+        "not_found",
+        "error",
+        "offline"
+      ]
+    },
+    "viewer": {
+      "default": "member",
+      "values": [
+        "guest",
+        "member",
+        "host"
+      ]
+    },
+    "presentation": {
+      "default": "standard",
+      "values": [
+        "standard",
+        "ticket",
+        "spotlight_dark"
+      ]
+    },
+    "participation": {
+      "default": "eligible",
+      "values": [
+        "eligible",
+        "signed_up",
+        "waitlisted",
+        "waitlist_offer",
+        "full",
+        "attended",
+        "past",
+        "cancelled"
+      ]
+    },
+    "mutation": {
+      "default": "idle",
+      "values": [
+        "idle",
+        "book_pending",
+        "cancel_pending",
+        "book_failed",
+        "cancel_failed",
+        "book_succeeded",
+        "cancel_succeeded"
+      ]
+    },
+    "accessibility": {
+      "default": "standard",
+      "values": [
+        "standard",
+        "text_scale_2",
+        "reduced_motion"
+      ]
+    }
+  },
+  "actions": [
+    {
+      "id": "book",
+      "codeValue": "book",
+      "cardinality": "singleton",
+      "scopeKeys": [
+        "viewerUid",
+        "eventId"
+      ],
+      "resultState": "booking_signed_up",
+      "description": "Creates at most one active booking relationship for the viewer and event."
+    },
+    {
+      "id": "cancel_booking",
+      "codeValue": "cancelBooking",
+      "cardinality": "singleton",
+      "scopeKeys": [
+        "viewerUid",
+        "eventId"
+      ],
+      "resultState": "member_default",
+      "description": "Cancels the viewer's single active booking for the event."
+    },
+    {
+      "id": "join_waitlist",
+      "codeValue": "joinWaitlist",
+      "cardinality": "singleton",
+      "scopeKeys": [
+        "viewerUid",
+        "eventId"
+      ],
+      "resultState": "waitlist_sold_out_cancelled_past",
+      "description": "Creates at most one active waitlist relationship for the viewer and event."
+    },
+    {
+      "id": "leave_waitlist",
+      "codeValue": "leaveWaitlist",
+      "cardinality": "singleton",
+      "scopeKeys": [
+        "viewerUid",
+        "eventId"
+      ],
+      "resultState": "member_default",
+      "description": "Removes the viewer's single active waitlist relationship for the event."
+    },
+    {
+      "id": "accept_waitlist_offer",
+      "codeValue": "acceptWaitlistOffer",
+      "cardinality": "singleton",
+      "scopeKeys": [
+        "viewerUid",
+        "eventId",
+        "waitlistOfferId"
+      ],
+      "resultState": "booking_signed_up",
+      "description": "Accepts one active waitlist offer and transitions it to a booking."
+    },
+    {
+      "id": "decline_waitlist_offer",
+      "codeValue": "declineWaitlistOffer",
+      "cardinality": "singleton",
+      "scopeKeys": [
+        "viewerUid",
+        "eventId",
+        "waitlistOfferId"
+      ],
+      "resultState": "waitlist_sold_out_cancelled_past",
+      "description": "Declines one active waitlist offer without creating another offer action."
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "loading",
+      "screenStateId": "loading",
+      "kind": "loading",
+      "status": "captured",
+      "dimensions": {
+        "load": "loading",
+        "viewer": "member",
+        "presentation": "standard",
+        "participation": "eligible",
+        "mutation": "idle",
+        "accessibility": "standard"
+      },
+      "evidence": {
+        "captureIds": [
+          "event_detail_loading"
+        ],
+        "previewIds": [
+          "EventDetailScreen/Screen states"
+        ],
+        "tests": [
+          "test/events/event_detail_widgets_test.dart"
+        ]
+      },
+      "actionCases": [
+        {
+          "id": "default",
+          "dimensions": {
+            "load": "loading",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [],
+            "disabled": [],
+            "notAllowed": [
+              "book",
+              "cancel_booking",
+              "join_waitlist",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "not_found",
+      "screenStateId": "not_found",
+      "kind": "empty",
+      "status": "captured",
+      "dimensions": {
+        "load": "not_found",
+        "viewer": "member",
+        "presentation": "standard",
+        "participation": "eligible",
+        "mutation": "idle",
+        "accessibility": "standard"
+      },
+      "evidence": {
+        "captureIds": [
+          "event_detail_not_found"
+        ],
+        "previewIds": [
+          "EventDetailScreen/Screen states"
+        ],
+        "tests": [
+          "test/events/event_detail_widgets_test.dart"
+        ]
+      },
+      "actionCases": [
+        {
+          "id": "default",
+          "dimensions": {
+            "load": "not_found",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [],
+            "disabled": [],
+            "notAllowed": [
+              "book",
+              "cancel_booking",
+              "join_waitlist",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "fatal_error",
+      "screenStateId": "fatal_error",
+      "kind": "error",
+      "status": "captured",
+      "dimensions": {
+        "load": "error",
+        "viewer": "member",
+        "presentation": "standard",
+        "participation": "eligible",
+        "mutation": "idle",
+        "accessibility": "standard"
+      },
+      "evidence": {
+        "captureIds": [
+          "event_detail_error"
+        ],
+        "previewIds": [
+          "EventDetailScreen/Screen states"
+        ],
+        "tests": [
+          "test/events/event_detail_widgets_test.dart"
+        ]
+      },
+      "actionCases": [
+        {
+          "id": "default",
+          "dimensions": {
+            "load": "error",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [],
+            "disabled": [],
+            "notAllowed": [
+              "book",
+              "cancel_booking",
+              "join_waitlist",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "member_default",
+      "screenStateId": "member_default",
+      "kind": "populated",
+      "status": "captured",
+      "dimensions": {
+        "load": "ready",
+        "viewer": "member",
+        "presentation": "standard",
+        "participation": "eligible",
+        "mutation": "idle",
+        "accessibility": "standard"
+      },
+      "evidence": {
+        "captureIds": [
+          "event_detail_member"
+        ],
+        "previewIds": [
+          "EventDetailBody/Prompt states",
+          "EventDetailScreen/Screen states"
+        ],
+        "tests": [
+          "test/events/event_detail_widgets_test.dart"
+        ]
+      },
+      "actionCases": [
+        {
+          "id": "eligible",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [
+              "book"
+            ],
+            "disabled": [],
+            "notAllowed": [
+              "cancel_booking",
+              "join_waitlist",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "member_ticket",
+      "screenStateId": "member_ticket",
+      "kind": "theme",
+      "status": "captured",
+      "dimensions": {
+        "load": "ready",
+        "viewer": "member",
+        "presentation": "ticket",
+        "participation": "eligible",
+        "mutation": "idle",
+        "accessibility": "standard"
+      },
+      "evidence": {
+        "captureIds": [
+          "event_detail_member_ticket"
+        ],
+        "previewIds": [
+          "EventDetailHeroAppBar/Catalog states",
+          "EventDetailTicketStubBand/Catalog states",
+          "EventDetailScreen/Screen states"
+        ],
+        "tests": [
+          "test/events/event_detail_widgets_test.dart"
+        ]
+      },
+      "actionCases": [
+        {
+          "id": "eligible",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "ticket",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [
+              "book"
+            ],
+            "disabled": [],
+            "notAllowed": [
+              "cancel_booking",
+              "join_waitlist",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "member_spotlight_dark",
+      "screenStateId": "member_spotlight_dark",
+      "kind": "theme",
+      "status": "captured",
+      "dimensions": {
+        "load": "ready",
+        "viewer": "member",
+        "presentation": "spotlight_dark",
+        "participation": "eligible",
+        "mutation": "idle",
+        "accessibility": "standard"
+      },
+      "evidence": {
+        "captureIds": [
+          "event_detail_member_spotlight"
+        ],
+        "previewIds": [
+          "EventDetailHeroAppBar/Catalog states",
+          "EventDetailScreen/Screen states"
+        ],
+        "tests": [
+          "test/events/event_detail_widgets_test.dart"
+        ]
+      },
+      "actionCases": [
+        {
+          "id": "eligible",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "spotlight_dark",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [
+              "book"
+            ],
+            "disabled": [],
+            "notAllowed": [
+              "cancel_booking",
+              "join_waitlist",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "guest",
+      "screenStateId": "guest",
+      "kind": "permission",
+      "status": "captured",
+      "dimensions": {
+        "load": "ready",
+        "viewer": "guest",
+        "presentation": "standard",
+        "participation": "eligible",
+        "mutation": "idle",
+        "accessibility": "standard"
+      },
+      "evidence": {
+        "captureIds": [
+          "event_detail_guest"
+        ],
+        "previewIds": [
+          "EventDetailSocialSection/Social states",
+          "EventBookingDock/BookingDock states",
+          "EventDetailScreen/Screen states"
+        ],
+        "tests": [
+          "test/events/event_detail_widgets_test.dart"
+        ]
+      },
+      "actionCases": [
+        {
+          "id": "sign_in_gate",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "guest",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [],
+            "disabled": [],
+            "notAllowed": [
+              "book",
+              "cancel_booking",
+              "join_waitlist",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "host_app",
+      "screenStateId": "host_app",
+      "kind": "permission",
+      "status": "captured",
+      "dimensions": {
+        "load": "ready",
+        "viewer": "host",
+        "presentation": "standard",
+        "participation": "eligible",
+        "mutation": "idle",
+        "accessibility": "standard"
+      },
+      "evidence": {
+        "captureIds": [
+          "event_detail_host_app"
+        ],
+        "previewIds": [
+          "EventDetailScreen/Screen states"
+        ],
+        "tests": [
+          "test/events/event_detail_controller_test.dart",
+          "test/events/event_detail_widgets_test.dart"
+        ]
+      },
+      "actionCases": [
+        {
+          "id": "booking_dock_hidden",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "host",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [],
+            "disabled": [],
+            "notAllowed": [
+              "book",
+              "cancel_booking",
+              "join_waitlist",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "booking_signed_up",
+      "screenStateId": "booking_signed_up",
+      "kind": "populated",
+      "status": "captured",
+      "dimensions": {
+        "load": "ready",
+        "viewer": "member",
+        "presentation": "standard",
+        "participation": "signed_up",
+        "mutation": "idle",
+        "accessibility": "standard"
+      },
+      "evidence": {
+        "captureIds": [
+          "event_detail_booking_signed_up"
+        ],
+        "previewIds": [
+          "EventBookingDock/BookingDock states",
+          "EventDetailBody/Prompt states"
+        ],
+        "tests": [
+          "test/events/event_detail_screen_state_test.dart",
+          "test/events/event_detail_widgets_test.dart"
+        ]
+      },
+      "actionCases": [
+        {
+          "id": "signed_up",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "signed_up",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [
+              "cancel_booking"
+            ],
+            "disabled": [],
+            "notAllowed": [
+              "book",
+              "join_waitlist",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "booking_pending",
+      "screenStateId": "booking_pending",
+      "kind": "mutation",
+      "status": "captured",
+      "dimensions": {
+        "load": "ready",
+        "viewer": "member",
+        "presentation": "standard",
+        "participation": "eligible",
+        "mutation": "idle",
+        "accessibility": "standard"
+      },
+      "evidence": {
+        "captureIds": [
+          "event_detail_booking_pending",
+          "event_detail_cancel_pending"
+        ],
+        "previewIds": [
+          "EventBookingDock/BookingDock states"
+        ],
+        "tests": [
+          "test/events/event_detail_screen_state_test.dart",
+          "test/events/event_detail_widgets_test.dart"
+        ]
+      },
+      "actionCases": [
+        {
+          "id": "book_pending",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "book_pending",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [],
+            "disabled": [
+              "book"
+            ],
+            "notAllowed": [
+              "cancel_booking",
+              "join_waitlist",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        },
+        {
+          "id": "cancel_pending",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "signed_up",
+            "mutation": "cancel_pending",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [],
+            "disabled": [
+              "cancel_booking"
+            ],
+            "notAllowed": [
+              "book",
+              "join_waitlist",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "booking_failed",
+      "screenStateId": "booking_failed",
+      "kind": "mutation",
+      "status": "captured",
+      "dimensions": {
+        "load": "ready",
+        "viewer": "member",
+        "presentation": "standard",
+        "participation": "eligible",
+        "mutation": "idle",
+        "accessibility": "standard"
+      },
+      "evidence": {
+        "captureIds": [
+          "event_detail_booking_failure",
+          "event_detail_cancel_failure",
+          "event_detail_booking_success_snackbar",
+          "event_detail_cancel_success_snackbar"
+        ],
+        "previewIds": [
+          "EventBookingDock/BookingDock states"
+        ],
+        "tests": [
+          "test/events/event_detail_screen_state_test.dart",
+          "test/events/event_detail_widgets_test.dart"
+        ]
+      },
+      "actionCases": [
+        {
+          "id": "book_failed",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "book_failed",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [
+              "book"
+            ],
+            "disabled": [],
+            "notAllowed": [
+              "cancel_booking",
+              "join_waitlist",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        },
+        {
+          "id": "cancel_failed",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "signed_up",
+            "mutation": "cancel_failed",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [
+              "cancel_booking"
+            ],
+            "disabled": [],
+            "notAllowed": [
+              "book",
+              "join_waitlist",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        },
+        {
+          "id": "book_succeeded",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "signed_up",
+            "mutation": "book_succeeded",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [
+              "cancel_booking"
+            ],
+            "disabled": [],
+            "notAllowed": [
+              "book",
+              "join_waitlist",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        },
+        {
+          "id": "cancel_succeeded",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "cancel_succeeded",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [
+              "book"
+            ],
+            "disabled": [],
+            "notAllowed": [
+              "cancel_booking",
+              "join_waitlist",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "waitlist_sold_out_cancelled_past",
+      "screenStateId": "waitlist_sold_out_cancelled_past",
+      "kind": "populated",
+      "status": "captured",
+      "dimensions": {
+        "load": "ready",
+        "viewer": "member",
+        "presentation": "standard",
+        "participation": "eligible",
+        "mutation": "idle",
+        "accessibility": "standard"
+      },
+      "evidence": {
+        "captureIds": [
+          "event_detail_booking_waitlist",
+          "event_detail_booking_waitlist_offer",
+          "event_detail_booking_full",
+          "event_detail_booking_attended",
+          "event_detail_booking_past",
+          "event_detail_booking_cancelled"
+        ],
+        "previewIds": [
+          "EventBookingDock/BookingDock states"
+        ],
+        "tests": [
+          "test/events/event_detail_screen_state_test.dart",
+          "test/events/event_detail_widgets_test.dart"
+        ]
+      },
+      "actionCases": [
+        {
+          "id": "waitlisted",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "waitlisted",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [
+              "leave_waitlist"
+            ],
+            "disabled": [],
+            "notAllowed": [
+              "book",
+              "cancel_booking",
+              "join_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        },
+        {
+          "id": "waitlist_offer",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "waitlist_offer",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ],
+            "disabled": [],
+            "notAllowed": [
+              "book",
+              "cancel_booking",
+              "join_waitlist",
+              "leave_waitlist"
+            ]
+          }
+        },
+        {
+          "id": "full",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "full",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [
+              "join_waitlist"
+            ],
+            "disabled": [],
+            "notAllowed": [
+              "book",
+              "cancel_booking",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        },
+        {
+          "id": "attended",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "attended",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [],
+            "disabled": [],
+            "notAllowed": [
+              "book",
+              "cancel_booking",
+              "join_waitlist",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        },
+        {
+          "id": "past",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "past",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [],
+            "disabled": [],
+            "notAllowed": [
+              "book",
+              "cancel_booking",
+              "join_waitlist",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        },
+        {
+          "id": "cancelled",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "cancelled",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [],
+            "disabled": [],
+            "notAllowed": [
+              "book",
+              "cancel_booking",
+              "join_waitlist",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "offline",
+      "screenStateId": "offline",
+      "kind": "offline",
+      "status": "captured",
+      "dimensions": {
+        "load": "offline",
+        "viewer": "member",
+        "presentation": "standard",
+        "participation": "eligible",
+        "mutation": "idle",
+        "accessibility": "standard"
+      },
+      "evidence": {
+        "captureIds": [
+          "event_detail_offline"
+        ],
+        "previewIds": [
+          "EventDetailScreen/Screen states"
+        ],
+        "tests": [
+          "test/events/event_detail_widgets_test.dart"
+        ]
+      },
+      "actionCases": [
+        {
+          "id": "default",
+          "dimensions": {
+            "load": "offline",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "actions": {
+            "enabled": [],
+            "disabled": [],
+            "notAllowed": [
+              "book",
+              "cancel_booking",
+              "join_waitlist",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "text_scale_2",
+      "screenStateId": "text_scale_2",
+      "kind": "accessibility",
+      "status": "captured",
+      "dimensions": {
+        "load": "ready",
+        "viewer": "member",
+        "presentation": "standard",
+        "participation": "eligible",
+        "mutation": "idle",
+        "accessibility": "text_scale_2"
+      },
+      "evidence": {
+        "captureIds": [
+          "event_detail_text_scale_2"
+        ],
+        "previewIds": [
+          "EventDetailScreen/Screen states"
+        ],
+        "tests": [
+          "test/events/event_detail_widgets_test.dart"
+        ]
+      },
+      "actionCases": [
+        {
+          "id": "eligible",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "text_scale_2"
+          },
+          "actions": {
+            "enabled": [
+              "book"
+            ],
+            "disabled": [],
+            "notAllowed": [
+              "cancel_booking",
+              "join_waitlist",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "reduced_motion",
+      "screenStateId": "reduced_motion",
+      "kind": "accessibility",
+      "status": "captured",
+      "dimensions": {
+        "load": "ready",
+        "viewer": "member",
+        "presentation": "standard",
+        "participation": "eligible",
+        "mutation": "idle",
+        "accessibility": "reduced_motion"
+      },
+      "evidence": {
+        "captureIds": [
+          "event_detail_reduced_motion"
+        ],
+        "previewIds": [
+          "EventDetailScreen/Screen states"
+        ],
+        "tests": [
+          "test/events/event_detail_widgets_test.dart"
+        ]
+      },
+      "actionCases": [
+        {
+          "id": "eligible",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "reduced_motion"
+          },
+          "actions": {
+            "enabled": [
+              "book"
+            ],
+            "disabled": [],
+            "notAllowed": [
+              "cancel_booking",
+              "join_waitlist",
+              "leave_waitlist",
+              "accept_waitlist_offer",
+              "decline_waitlist_offer"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

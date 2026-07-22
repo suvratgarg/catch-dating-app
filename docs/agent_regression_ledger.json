@@ -1,6 +1,6 @@
 {
-  "version": 61,
-  "updated": "2026-07-22",
+  "version": 62,
+  "updated": "2026-07-23",
   "owner": "agent_operating_model",
   "entries": [
     {
@@ -2574,6 +2574,31 @@
         "docs/release_operations.md"
       ],
       "notes": "The materialized files exist only in the deployment runner checkout. Committed generated projections stay receipt-free so pull-request drift validation remains deterministic and does not claim live production readiness."
+    },
+    {
+      "id": "REG-FEATURE-CONTRACT-DRIFT-001",
+      "title": "Feature orchestration claims complete evidence while screen states or actions drift",
+      "status": "active",
+      "applies_to": [
+        "design/features/**",
+        "design/screens/catch.screens.json",
+        "design/components/catch.components.json",
+        "widgetbook/lib/**",
+        "test/**",
+        "tool/design/build_feature_contracts.mjs"
+      ],
+      "symptom": "A feature brief appears deterministic but omits or duplicates a registered screen state, leaves an action unclassified, points to missing evidence, or carries a stale generated projection.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/design/build_feature_contracts.test.mjs && node tool/design/build_feature_contracts.mjs --check && node tool/design/check_screen_contracts.mjs --check",
+        "guardEvidence": "known-bad compiler tests reject duplicate and missing state mappings, missing capture/preview/test evidence, and unknown action/dimension references; the live check resolves every feature reference and compares deterministic output"
+      },
+      "owner_docs": [
+        "docs/design_parity/README.md",
+        "design/screens/README.md",
+        "tool/README.md"
+      ],
+      "notes": "Event Detail is the first reference pilot. Feature contracts orchestrate existing authorities and do not generate Flutter behavior, business algorithms, security rules, or migrations."
     }
   ]
 }

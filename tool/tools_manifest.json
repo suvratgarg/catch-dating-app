@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-22",
+  "updated": "2026-07-23",
   "tools": [
     {
       "id": "tool:runner",
@@ -3463,6 +3463,33 @@
           "strict verification rejects unverified configurations and planned harnesses",
           "rejects duplicate configuration tuples",
           "rejects unclassified or multiply owned consumer routes"
+        ]
+      }
+    },
+    {
+      "id": "design:feature-contracts",
+      "category": "design",
+      "path": "tool/design/build_feature_contracts.mjs",
+      "command": "node tool/design/build_feature_contracts.mjs --check",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Compiles reviewed feature orchestration sources into deterministic state, action-cardinality, and evidence contracts while rejecting missing or duplicate screen-state coverage.",
+      "checks": [
+        "node --check tool/design/build_feature_contracts.mjs",
+        "node --test tool/design/build_feature_contracts.test.mjs",
+        "node tool/design/build_feature_contracts.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "ACTION-CARDINALITY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/build_feature_contracts.test.mjs",
+        "contains": [
+          "rejects duplicate and missing screen-state mappings",
+          "rejects missing capture, preview, and test evidence",
+          "rejects unknown action and dimension references"
         ]
       }
     },

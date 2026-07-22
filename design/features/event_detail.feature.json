@@ -1,0 +1,302 @@
+{
+  "$schema": "./feature_contract.schema.json",
+  "version": 1,
+  "updated": "2026-07-23",
+  "id": "feature.event_detail",
+  "name": "Event Detail",
+  "owner": "events",
+  "status": "pilot",
+  "description": "Orchestrates Event Detail state, booking-action, and evidence contracts without duplicating the owning screen, component, data, or Widgetbook registries.",
+  "actionScope": {
+    "included": "Booking-dock actions represented by EventDetailBookingDockAction.",
+    "excluded": [
+      "Navigation chrome, sharing, saving, calendar, location, companion, organizer, messaging, authentication, and profile-completion actions remain owned and verified by their existing route and widget contracts."
+    ]
+  },
+  "screenContract": "screen.event.detail",
+  "bindings": {
+    "widgetbookSources": [
+      "widgetbook/lib/events/event_detail_use_cases.dart",
+      "widgetbook/lib/primitives/core_catalog_use_cases.dart"
+    ],
+    "actionOwner": {
+      "file": "lib/events/presentation/event_detail_screen_state.dart",
+      "symbol": "EventDetailBookingDockAction"
+    },
+    "componentContracts": [
+      "catch.async_value",
+      "catch.error_state",
+      "catch.event_detail_sections"
+    ],
+    "dataContracts": [
+      "contracts/callables/event_booking_payload.schema.json",
+      "contracts/client_writes/create_saved_event.schema.json",
+      "contracts/client_writes/delete_saved_event.schema.json",
+      "contracts/firestore/event_participations.schema.json",
+      "contracts/firestore/event_waitlist_offers.schema.json",
+      "contracts/firestore/events.schema.json",
+      "contracts/firestore/saved_events.schema.json"
+    ]
+  },
+  "dimensions": {
+    "load": {
+      "default": "ready",
+      "values": ["ready", "loading", "not_found", "error", "offline"]
+    },
+    "viewer": {
+      "default": "member",
+      "values": ["guest", "member", "host"]
+    },
+    "presentation": {
+      "default": "standard",
+      "values": ["standard", "ticket", "spotlight_dark"]
+    },
+    "participation": {
+      "default": "eligible",
+      "values": [
+        "eligible",
+        "signed_up",
+        "waitlisted",
+        "waitlist_offer",
+        "full",
+        "attended",
+        "past",
+        "cancelled"
+      ]
+    },
+    "mutation": {
+      "default": "idle",
+      "values": [
+        "idle",
+        "book_pending",
+        "cancel_pending",
+        "book_failed",
+        "cancel_failed",
+        "book_succeeded",
+        "cancel_succeeded"
+      ]
+    },
+    "accessibility": {
+      "default": "standard",
+      "values": ["standard", "text_scale_2", "reduced_motion"]
+    }
+  },
+  "actions": [
+    {
+      "id": "book",
+      "codeValue": "book",
+      "cardinality": "singleton",
+      "scopeKeys": ["viewerUid", "eventId"],
+      "resultState": "booking_signed_up",
+      "description": "Creates at most one active booking relationship for the viewer and event."
+    },
+    {
+      "id": "cancel_booking",
+      "codeValue": "cancelBooking",
+      "cardinality": "singleton",
+      "scopeKeys": ["viewerUid", "eventId"],
+      "resultState": "member_default",
+      "description": "Cancels the viewer's single active booking for the event."
+    },
+    {
+      "id": "join_waitlist",
+      "codeValue": "joinWaitlist",
+      "cardinality": "singleton",
+      "scopeKeys": ["viewerUid", "eventId"],
+      "resultState": "waitlist_sold_out_cancelled_past",
+      "description": "Creates at most one active waitlist relationship for the viewer and event."
+    },
+    {
+      "id": "leave_waitlist",
+      "codeValue": "leaveWaitlist",
+      "cardinality": "singleton",
+      "scopeKeys": ["viewerUid", "eventId"],
+      "resultState": "member_default",
+      "description": "Removes the viewer's single active waitlist relationship for the event."
+    },
+    {
+      "id": "accept_waitlist_offer",
+      "codeValue": "acceptWaitlistOffer",
+      "cardinality": "singleton",
+      "scopeKeys": ["viewerUid", "eventId", "waitlistOfferId"],
+      "resultState": "booking_signed_up",
+      "description": "Accepts one active waitlist offer and transitions it to a booking."
+    },
+    {
+      "id": "decline_waitlist_offer",
+      "codeValue": "declineWaitlistOffer",
+      "cardinality": "singleton",
+      "scopeKeys": ["viewerUid", "eventId", "waitlistOfferId"],
+      "resultState": "waitlist_sold_out_cancelled_past",
+      "description": "Declines one active waitlist offer without creating another offer action."
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "loading",
+      "screenStateId": "loading",
+      "dimensions": {"load": "loading"},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "not_found",
+      "screenStateId": "not_found",
+      "dimensions": {"load": "not_found"},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "fatal_error",
+      "screenStateId": "fatal_error",
+      "dimensions": {"load": "error"},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "member_default",
+      "screenStateId": "member_default",
+      "dimensions": {},
+      "actionCases": [{"id": "eligible", "enabledActions": ["book"]}]
+    },
+    {
+      "id": "member_ticket",
+      "screenStateId": "member_ticket",
+      "dimensions": {"presentation": "ticket"},
+      "actionCases": [{"id": "eligible", "enabledActions": ["book"]}]
+    },
+    {
+      "id": "member_spotlight_dark",
+      "screenStateId": "member_spotlight_dark",
+      "dimensions": {"presentation": "spotlight_dark"},
+      "actionCases": [{"id": "eligible", "enabledActions": ["book"]}]
+    },
+    {
+      "id": "guest",
+      "screenStateId": "guest",
+      "dimensions": {"viewer": "guest"},
+      "actionCases": [{"id": "sign_in_gate"}]
+    },
+    {
+      "id": "host_app",
+      "screenStateId": "host_app",
+      "dimensions": {"viewer": "host"},
+      "actionCases": [{"id": "booking_dock_hidden"}]
+    },
+    {
+      "id": "booking_signed_up",
+      "screenStateId": "booking_signed_up",
+      "dimensions": {"participation": "signed_up"},
+      "actionCases": [
+        {"id": "signed_up", "enabledActions": ["cancel_booking"]}
+      ]
+    },
+    {
+      "id": "booking_pending",
+      "screenStateId": "booking_pending",
+      "dimensions": {},
+      "actionCases": [
+        {
+          "id": "book_pending",
+          "dimensions": {"mutation": "book_pending"},
+          "disabledActions": ["book"]
+        },
+        {
+          "id": "cancel_pending",
+          "dimensions": {
+            "participation": "signed_up",
+            "mutation": "cancel_pending"
+          },
+          "disabledActions": ["cancel_booking"]
+        }
+      ]
+    },
+    {
+      "id": "booking_failed",
+      "screenStateId": "booking_failed",
+      "dimensions": {},
+      "actionCases": [
+        {
+          "id": "book_failed",
+          "dimensions": {"mutation": "book_failed"},
+          "enabledActions": ["book"]
+        },
+        {
+          "id": "cancel_failed",
+          "dimensions": {
+            "participation": "signed_up",
+            "mutation": "cancel_failed"
+          },
+          "enabledActions": ["cancel_booking"]
+        },
+        {
+          "id": "book_succeeded",
+          "dimensions": {
+            "participation": "signed_up",
+            "mutation": "book_succeeded"
+          },
+          "enabledActions": ["cancel_booking"]
+        },
+        {
+          "id": "cancel_succeeded",
+          "dimensions": {"mutation": "cancel_succeeded"},
+          "enabledActions": ["book"]
+        }
+      ]
+    },
+    {
+      "id": "waitlist_sold_out_cancelled_past",
+      "screenStateId": "waitlist_sold_out_cancelled_past",
+      "dimensions": {},
+      "actionCases": [
+        {
+          "id": "waitlisted",
+          "dimensions": {"participation": "waitlisted"},
+          "enabledActions": ["leave_waitlist"]
+        },
+        {
+          "id": "waitlist_offer",
+          "dimensions": {"participation": "waitlist_offer"},
+          "enabledActions": [
+            "accept_waitlist_offer",
+            "decline_waitlist_offer"
+          ]
+        },
+        {
+          "id": "full",
+          "dimensions": {"participation": "full"},
+          "enabledActions": ["join_waitlist"]
+        },
+        {
+          "id": "attended",
+          "dimensions": {"participation": "attended"}
+        },
+        {"id": "past", "dimensions": {"participation": "past"}},
+        {
+          "id": "cancelled",
+          "dimensions": {"participation": "cancelled"}
+        }
+      ]
+    },
+    {
+      "id": "offline",
+      "screenStateId": "offline",
+      "dimensions": {"load": "offline"},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "text_scale_2",
+      "screenStateId": "text_scale_2",
+      "dimensions": {"accessibility": "text_scale_2"},
+      "actionCases": [{"id": "eligible", "enabledActions": ["book"]}]
+    },
+    {
+      "id": "reduced_motion",
+      "screenStateId": "reduced_motion",
+      "dimensions": {"accessibility": "reduced_motion"},
+      "actionCases": [{"id": "eligible", "enabledActions": ["book"]}]
+    }
+  ],
+  "requiredEvidence": {
+    "captures": true,
+    "previews": true,
+    "tests": true
+  }
+}

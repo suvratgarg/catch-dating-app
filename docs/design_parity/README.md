@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.13
-updated: 2026-07-15
+version: 0.1.14
+updated: 2026-07-23
 owner: product_design_parity
 status: active
 ---
@@ -23,7 +23,10 @@ checks in one durable matrix.
 | `event_detail_composition_tracker.md` | First screen-level composition tracker, mapping Event Detail from Claude event primitives to current Flutter sections, states, Widgetbook gaps, and migration tasks. |
 | `design/screens/screen_coverage.json` | Exhaustive route-to-screen coverage ledger. Every generated route is contracted, aliased, planned, or excluded from baseline design parity. |
 | `design/screens/catch.screens.json` | Machine-readable screen composition registry connecting routes, controller owners, states, captures, sections, and implementation paths. |
+| `design/features/*.feature.json` | Structured feature orchestration contracts that reference, rather than duplicate, screen, component, data, Widgetbook, capture, and test authorities. |
+| `design/features/generated/*.feature_contract.json` | Generated state/action/evidence projections. These artifacts are deterministic and must not be edited by hand. |
 | `tool/design/check_design_parity.mjs` | Standard local design parity gate. Runs component contracts, route inventory, capture coverage, screen coverage, screen contracts, Widgetbook refs, and advisory scanners. |
+| `tool/design/build_feature_contracts.mjs` | Compiles feature orchestration sources, enforces exact screen-state coverage and action cardinality, resolves evidence, and fails stale generated output. |
 | `tool/design/check_screen_coverage.mjs` | Validates screen coverage against route inventory, capture coverage, and the screen composition registry. |
 | `tool/design/check_screen_contracts.mjs` | Validates screen contracts against route inventory, capture catalog entries, component dependencies, Flutter source paths, and Dart symbols. |
 | `tool/design/check_widgetbook_contract_refs.mjs` | Validates component contracts and contract preview ids against generated Widgetbook directories. |
@@ -141,3 +144,31 @@ The local Widgetbook workspace lives in `widgetbook/`. Primitive previews should
 map to `design/components/catch.components.json` contract states, and screen
 previews should use the same fixture fakes as UI captures where possible. Run
 `cd widgetbook && dart run build_runner build` after adding annotated use cases.
+
+## Feature Contract Compiler
+
+Feature contracts are orchestration indexes, not replacement sources of truth.
+They declare valid state dimensions, cardinality for an explicit action domain,
+and one mapping for every state in an owning screen contract. They reference
+component ids, data-contract paths, Widgetbook sources, captures, and tests; the
+compiler resolves those authorities into a checked generated artifact.
+
+Event Detail is the reference pilot at
+`design/features/event_detail.feature.json`. Its action domain is deliberately
+limited to `EventDetailBookingDockAction`; navigation, share, save, calendar,
+location, companion, organizer, messaging, and auth/profile actions retain their
+existing owners and are not claimed as compiler coverage. Compile and verify it
+with:
+
+```bash
+node tool/design/build_feature_contracts.mjs
+node tool/design/build_feature_contracts.mjs --check
+```
+
+The compiler fails duplicate or missing screen-state mappings, unknown action or
+dimension values, undeclared action-owner symbols, missing component/data paths,
+missing capture/preview/test evidence, stale output, and orphaned generated
+artifacts. Natural-language briefs may inform a contract draft, but only the
+reviewed JSON source is executable. Flutter widgets, controllers, business
+algorithms, security rules, and migrations remain manually implemented and
+tested against their owning contracts.
