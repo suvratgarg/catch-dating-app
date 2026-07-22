@@ -40,7 +40,7 @@ function fixture() {
           codeValue: "book",
           cardinality: "singleton",
           scopeKeys: ["viewerUid", "eventId"],
-          resultState: "ready",
+          outcomes: [{kind: "screen_state", stateIds: ["ready"]}],
           description: "Book once.",
         },
       ],
@@ -119,6 +119,7 @@ test("compiles exact screen-state coverage and action availability", () => {
     captures: 2,
     previews: 1,
     testFiles: 1,
+    evidenceExceptions: 0,
   });
   assert.deepEqual(
     artifact.scenarios[0].actionCases[0].actions.notAllowed,
@@ -168,6 +169,64 @@ test("rejects missing capture, preview, and test evidence", () => {
       assert.match(error.message, /test evidence is required/u);
       return true;
     },
+  );
+});
+
+test("allows explicit evidence debt and rejects stale exceptions", () => {
+  const data = fixture();
+  data.screenRegistry.screens[0].states[0].tests = [];
+  data.source.evidenceExceptions = [
+    {
+      screenStateIds: ["loading"],
+      evidence: ["tests"],
+      debtId: "DEBT-EXAMPLE-001",
+      reason: "The route-state test is not implemented yet.",
+    },
+  ];
+
+  const artifact = compileFeatureContract({
+    ...data,
+    sourcePath: "design/features/example.feature.json",
+  });
+  assert.equal(artifact.coverage.evidenceExceptions, 1);
+  assert.deepEqual(artifact.evidenceExceptions, data.source.evidenceExceptions);
+
+  data.screenRegistry.screens[0].states[0].tests = [testPath];
+  assert.throws(
+    () => compileFeatureContract({
+      ...data,
+      sourcePath: "design/features/example.feature.json",
+    }),
+    /unused exception for loading tests/u,
+  );
+});
+
+test("validates screen-state, route, and side-effect action outcomes", () => {
+  const data = fixture();
+  data.screenRegistry.screens.push({
+    id: "screen.target",
+    captures: [],
+    states: [],
+  });
+  data.source.actions[0].outcomes = [
+    {kind: "screen_state", stateIds: ["ready", "loading"]},
+    {kind: "route", screenContract: "screen.target"},
+    {kind: "side_effect", id: "example.persisted"},
+  ];
+
+  const artifact = compileFeatureContract({
+    ...data,
+    sourcePath: "design/features/example.feature.json",
+  });
+  assert.deepEqual(artifact.actions[0].outcomes, data.source.actions[0].outcomes);
+
+  data.source.actions[0].outcomes[1].screenContract = "screen.missing";
+  assert.throws(
+    () => compileFeatureContract({
+      ...data,
+      sourcePath: "design/features/example.feature.json",
+    }),
+    /unknown outcome route screen\.missing/u,
   );
 });
 

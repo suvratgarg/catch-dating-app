@@ -1,5 +1,5 @@
 {
-  "version": 62,
+  "version": 63,
   "updated": "2026-07-23",
   "owner": "agent_operating_model",
   "entries": [
@@ -2591,14 +2591,14 @@
       "guard": {
         "type": "command",
         "command": "node --test tool/design/build_feature_contracts.test.mjs && node tool/design/build_feature_contracts.mjs --check && node tool/design/check_screen_contracts.mjs --check",
-        "guardEvidence": "known-bad compiler tests reject duplicate and missing state mappings, missing capture/preview/test evidence, and unknown action/dimension references; the live check resolves every feature reference and compares deterministic output"
+        "guardEvidence": "known-bad compiler tests reject duplicate and missing state mappings, missing capture/preview/test evidence, stale evidence exceptions, invalid screen-state/route/side-effect outcomes, and unknown action/dimension references; the live check resolves every feature reference and compares deterministic output"
       },
       "owner_docs": [
         "docs/design_parity/README.md",
         "design/screens/README.md",
         "tool/README.md"
       ],
-      "notes": "Event Detail is the first reference pilot. Feature contracts orchestrate existing authorities and do not generate Flutter behavior, business algorithms, security rules, or migrations."
+      "notes": "Event Detail, Explore, and Host Event Manage are the reference contracts. Feature contracts orchestrate existing authorities and expose named evidence debt; they do not generate Flutter behavior, business algorithms, security rules, or migrations."
     }
   ]
 }

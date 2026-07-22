@@ -497,9 +497,13 @@ references, expands every action case into enabled, disabled, and not-allowed
 classifications, and writes deterministic evidence artifacts under
 `design/features/generated/`.
 
-Each source must state its action scope. The Event Detail pilot covers the
-booking dock only, so its generated action counts must not be read as coverage
-of navigation, sharing, saving, or other route-owned actions.
+Each source must state its action scope. Event Detail covers the booking dock,
+Explore covers empty-result recovery, and Host Event Manage covers primary
+edit/cancel/delete lifecycle rows; generated action counts must not be read as
+coverage of excluded route or section actions. Action outcomes may be local
+screen states, route destinations, or named side effects. Missing required
+evidence must use an explicit stable-debt exception, and the compiler rejects
+that exception once the referenced evidence exists.
 
 ```sh
 node tool/design/build_feature_contracts.mjs

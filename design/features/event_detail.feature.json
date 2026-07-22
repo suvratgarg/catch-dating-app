@@ -87,7 +87,9 @@
       "codeValue": "book",
       "cardinality": "singleton",
       "scopeKeys": ["viewerUid", "eventId"],
-      "resultState": "booking_signed_up",
+      "outcomes": [
+        {"kind": "screen_state", "stateIds": ["booking_signed_up"]}
+      ],
       "description": "Creates at most one active booking relationship for the viewer and event."
     },
     {
@@ -95,7 +97,9 @@
       "codeValue": "cancelBooking",
       "cardinality": "singleton",
       "scopeKeys": ["viewerUid", "eventId"],
-      "resultState": "member_default",
+      "outcomes": [
+        {"kind": "screen_state", "stateIds": ["member_default"]}
+      ],
       "description": "Cancels the viewer's single active booking for the event."
     },
     {
@@ -103,7 +107,12 @@
       "codeValue": "joinWaitlist",
       "cardinality": "singleton",
       "scopeKeys": ["viewerUid", "eventId"],
-      "resultState": "waitlist_sold_out_cancelled_past",
+      "outcomes": [
+        {
+          "kind": "screen_state",
+          "stateIds": ["waitlist_sold_out_cancelled_past"]
+        }
+      ],
       "description": "Creates at most one active waitlist relationship for the viewer and event."
     },
     {
@@ -111,7 +120,9 @@
       "codeValue": "leaveWaitlist",
       "cardinality": "singleton",
       "scopeKeys": ["viewerUid", "eventId"],
-      "resultState": "member_default",
+      "outcomes": [
+        {"kind": "screen_state", "stateIds": ["member_default"]}
+      ],
       "description": "Removes the viewer's single active waitlist relationship for the event."
     },
     {
@@ -119,7 +130,9 @@
       "codeValue": "acceptWaitlistOffer",
       "cardinality": "singleton",
       "scopeKeys": ["viewerUid", "eventId", "waitlistOfferId"],
-      "resultState": "booking_signed_up",
+      "outcomes": [
+        {"kind": "screen_state", "stateIds": ["booking_signed_up"]}
+      ],
       "description": "Accepts one active waitlist offer and transitions it to a booking."
     },
     {
@@ -127,7 +140,12 @@
       "codeValue": "declineWaitlistOffer",
       "cardinality": "singleton",
       "scopeKeys": ["viewerUid", "eventId", "waitlistOfferId"],
-      "resultState": "waitlist_sold_out_cancelled_past",
+      "outcomes": [
+        {
+          "kind": "screen_state",
+          "stateIds": ["waitlist_sold_out_cancelled_past"]
+        }
+      ],
       "description": "Declines one active waitlist offer without creating another offer action."
     }
   ],

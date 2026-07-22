@@ -1747,6 +1747,20 @@
           "status": "available",
           "path": "design/reference_screens/manifest.json",
           "notes": "Explore discovery-feed PNG reference plus masks is registered for advisory pixel comparison."
+        },
+        {
+          "id": "repo.explore-feature-contract",
+          "kind": "repo",
+          "status": "available",
+          "path": "design/features/explore.feature.json",
+          "notes": "Structured orchestration source for Explore discovery/map dimensions, empty-state recovery action cardinality, exact screen-state coverage, and explicit evidence debt."
+        },
+        {
+          "id": "generated.explore-feature-contract",
+          "kind": "generated",
+          "status": "available",
+          "path": "design/features/generated/explore.feature_contract.json",
+          "notes": "Deterministic projection resolving every Explore state to captures, Widgetbook previews, tests or named evidence exceptions, action cases, components, and data contracts."
         }
       ],
       "captures": [
@@ -2092,6 +2106,9 @@
           "source": "ExploreMapScreen supports broad pan/filter scope through the map route distance controls, and the deterministic placeholder now renders an active distance ring when user location is seeded.",
           "captureIds": [
             "explore_map_distance_ring"
+          ],
+          "previewIds": [
+            "ExploreMapScreen/Map route states"
           ],
           "tests": [
             "test/explore/explore_widgets_test.dart"
@@ -2471,6 +2488,11 @@
           "id": "DS-EXPLORE-004",
           "status": "closed",
           "nextAction": "Closed by ExploreDiscoveryScreenState, which maps route provider-wave inputs into map launcher state, route body branch state, and empty-state copy/action before ExploreScreen renders visual slivers. Existing provider-free section states own feed-card planning, cover/search-open/event/external/club/map-sheet/filter/chrome labels, and map labels. The catalog-only CrossPaths proposal was retired; live attendee signals now use the established veiled-avatar privacy contract."
+        },
+        {
+          "id": "DS-EXPLORE-005",
+          "status": "open",
+          "nextAction": "Close the feature-contract evidence exceptions by adding deterministic capture coverage for no-exact-pin and zero-radius map results, plus focused automated coverage for no-exact-pin, offline, text-scale-2, and reduced-motion route states."
         }
       ]
     },
@@ -12791,6 +12813,20 @@
           "notes": "Event Success host tests cover setup, live, and report tabs, host report availability, live signal quality, and Event Success host states embedded by Host Manage."
         },
         {
+          "id": "repo.host-event-manage-feature-contract",
+          "kind": "repo",
+          "status": "available",
+          "path": "design/features/host_event_manage.feature.json",
+          "notes": "Structured orchestration source for Host Manage route/workspace dimensions, edit/cancel/delete action outcomes, exact screen-state coverage, and explicit evidence debt."
+        },
+        {
+          "id": "generated.host-event-manage-feature-contract",
+          "kind": "generated",
+          "status": "available",
+          "path": "design/features/generated/host_event_manage.feature_contract.json",
+          "notes": "Deterministic projection resolving every Host Manage state to captures, Widgetbook previews, tests or named evidence exceptions, action cases, components, and data contracts."
+        },
+        {
           "id": "claude.host-event-manage",
           "kind": "claude",
           "status": "needs_export",
@@ -13685,6 +13721,9 @@
           "captureIds": [
             "host_manage_invite_links_loading"
           ],
+          "previewIds": [
+            "HostEventManageRouteScreen/Route and section states"
+          ],
           "notes": "Named invite-link provider loading now has the deterministic host_manage_invite_links_loading tall capture inside the private-access card.",
           "widgetbook": [
             "HostEventManageRouteScreen/Route and section states"
@@ -13699,6 +13738,9 @@
           "captureIds": [
             "host_manage_invite_links_error"
           ],
+          "previewIds": [
+            "HostEventManageRouteScreen/Route and section states"
+          ],
           "notes": "Named invite-link provider failure now has the deterministic host_manage_invite_links_error tall capture with branded inline retry.",
           "widgetbook": [
             "HostEventManageRouteScreen/Route and section states"
@@ -13712,6 +13754,9 @@
           "status": "captured",
           "captureIds": [
             "host_manage_invite_links_offline"
+          ],
+          "previewIds": [
+            "HostEventManageRouteScreen/Route and section states"
           ],
           "notes": "Named invite-link offline failure now has the deterministic host_manage_invite_links_offline tall capture with branded inline retry.",
           "widgetbook": [
@@ -14346,6 +14391,11 @@
           "id": "DS-HOST-EVENT-MANAGE-005",
           "status": "blocked",
           "nextAction": "Blocked/reference-only until canonical edge-state exports exist: setup/private-access, attendance roster, live console, post-event report, private-access missing-code, invite-link disabled-row, and invite-link long-label/source states have deterministic captures. Remaining work is masks for additional dynamic host data once canonical exports exist."
+        },
+        {
+          "id": "DS-HOST-EVENT-MANAGE-006",
+          "status": "open",
+          "nextAction": "Close the feature-contract evidence exceptions with focused tests for the registered route provider waves, roster edge states, private-access and invite-link variants, action-row states, offline/accessibility/theme states, and other Host Manage states that currently rely on deterministic capture and Widgetbook proof only."
         }
       ],
       "captureIds": [

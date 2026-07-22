@@ -3489,6 +3489,8 @@
         "contains": [
           "rejects duplicate and missing screen-state mappings",
           "rejects missing capture, preview, and test evidence",
+          "allows explicit evidence debt and rejects stale exceptions",
+          "validates screen-state, route, and side-effect action outcomes",
           "rejects unknown action and dimension references"
         ]
       }

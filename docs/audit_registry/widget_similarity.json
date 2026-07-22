@@ -8271,7 +8271,7 @@
       "simhash128": "b6e2fc03f7c3ad15e568b20087086434",
       "tokenStreamLength": 40,
       "coarseTokenStreamLength": 40,
-      "usageCountRaw": 6,
+      "usageCountRaw": 8,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -19340,7 +19340,7 @@
         "HostLoadingScreen",
         "HostOperationsHomeScreen"
       ],
-      "usageSum": 111,
+      "usageSum": 113,
       "scope": "screen"
     },
     {
@@ -19545,7 +19545,7 @@
         "HostCreateEventRouteScreen",
         "HostEventManageRouteScreen"
       ],
-      "usageSum": 36,
+      "usageSum": 38,
       "scope": "screen"
     },
     {

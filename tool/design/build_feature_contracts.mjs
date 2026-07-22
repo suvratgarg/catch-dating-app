@@ -176,6 +176,28 @@ export function compileFeatureContract({
   }
 
   const screenStates = new Map((screen.states ?? []).map((state) => [state.id, state]));
+  const evidenceExceptions = compileEvidenceExceptions({
+    source,
+    screenStates,
+    errors,
+  });
+  const evidenceExceptionMap = new Map();
+  for (const exception of evidenceExceptions) {
+    for (const screenStateId of exception.screenStateIds) {
+      for (const evidenceKind of exception.evidence) {
+        const key = evidenceExceptionKey(screenStateId, evidenceKind);
+        if (evidenceExceptionMap.has(key)) {
+          errors.push(
+            `${source.id}.evidenceExceptions: duplicate exception for ` +
+            `${screenStateId} ${evidenceKind}.`,
+          );
+        } else {
+          evidenceExceptionMap.set(key, exception);
+        }
+      }
+    }
+  }
+  const usedEvidenceExceptions = new Set();
   const actionIds = new Set();
   const actions = [];
   const actionOwnerSource = safeRead(source.bindings.actionOwner.file, readPath, errors);
@@ -189,8 +211,21 @@ export function compileFeatureContract({
   for (const action of source.actions ?? []) {
     if (actionIds.has(action.id)) errors.push(`${source.id}: duplicate action ${action.id}.`);
     actionIds.add(action.id);
-    if (!screenStates.has(action.resultState)) {
-      errors.push(`${source.id}.actions.${action.id}: unknown resultState ${action.resultState}.`);
+    for (const outcome of action.outcomes ?? []) {
+      if (outcome.kind === "screen_state") {
+        for (const stateId of outcome.stateIds ?? []) {
+          if (!screenStates.has(stateId)) {
+            errors.push(
+              `${source.id}.actions.${action.id}: unknown outcome screen state ${stateId}.`,
+            );
+          }
+        }
+      } else if (outcome.kind === "route" && !screens.has(outcome.screenContract)) {
+        errors.push(
+          `${source.id}.actions.${action.id}: unknown outcome route ` +
+          `${outcome.screenContract}.`,
+        );
+      }
     }
     if (actionOwnerSource != null && !hasWord(actionOwnerSource, action.codeValue)) {
       errors.push(
@@ -290,6 +325,8 @@ export function compileFeatureContract({
       availablePreviews,
       pathExists,
       requiredEvidence: source.requiredEvidence,
+      evidenceExceptionMap,
+      usedEvidenceExceptions,
       errors,
     });
     compiledScenarios.push({
@@ -315,6 +352,15 @@ export function compileFeatureContract({
   if (orphanActions.length > 0) {
     errors.push(`${source.id}: actions are never classified by a scenario: ${orphanActions.join(", ")}.`);
   }
+  for (const key of evidenceExceptionMap.keys()) {
+    if (!usedEvidenceExceptions.has(key)) {
+      const [screenStateId, evidenceKind] = key.split(":");
+      errors.push(
+        `${source.id}.evidenceExceptions: unused exception for ` +
+        `${screenStateId} ${evidenceKind}.`,
+      );
+    }
+  }
   if (errors.length > 0) throw new FeatureContractError(errors);
 
   const selectedComponents = (componentRegistry.components ?? [])
@@ -335,6 +381,7 @@ export function compileFeatureContract({
     },
     components: selectedComponents,
     previews: selectedPreviews,
+    evidenceExceptions,
   };
   const uniqueCaptures = uniqueSorted(compiledScenarios.flatMap(
     (scenario) => scenario.evidence.captureIds,
@@ -370,11 +417,33 @@ export function compileFeatureContract({
       captures: uniqueCaptures.length,
       previews: selectedPreviews.length,
       testFiles: uniqueTests.length,
+      evidenceExceptions: usedEvidenceExceptions.size,
     },
     dimensions: source.dimensions,
     actions,
+    evidenceExceptions,
     scenarios: compiledScenarios,
   };
+}
+
+function compileEvidenceExceptions({source, screenStates, errors}) {
+  const exceptions = [];
+  for (const [index, exception] of (source.evidenceExceptions ?? []).entries()) {
+    for (const stateId of exception.screenStateIds ?? []) {
+      if (!screenStates.has(stateId)) {
+        errors.push(
+          `${source.id}.evidenceExceptions.${index}: unknown screen state ${stateId}.`,
+        );
+      }
+    }
+    exceptions.push({
+      screenStateIds: [...(exception.screenStateIds ?? [])],
+      evidence: [...(exception.evidence ?? [])],
+      debtId: exception.debtId,
+      reason: exception.reason,
+    });
+  }
+  return exceptions;
 }
 
 function validateBindings({source, componentRegistry, pathExists, readPath, errors}) {
@@ -419,32 +488,88 @@ function validateEvidence({
   availablePreviews,
   pathExists,
   requiredEvidence,
+  evidenceExceptionMap,
+  usedEvidenceExceptions,
   errors,
 }) {
   const label = `${featureId}.scenarios.${scenario.id}`;
-  const screenCaptureIds = new Set((screen.captures ?? []).map((capture) => capture.id));
-  if (requiredEvidence.captures && evidence.captureIds.length === 0) {
-    errors.push(`${label}: capture evidence is required.`);
-  }
+  const screenCaptureIds = new Set([
+    ...(screen.captures ?? []).map((capture) => capture.id),
+    ...(screen.states ?? []).flatMap((state) => state.captureIds ?? []),
+  ]);
+  validateRequiredEvidence({
+    label,
+    screenStateId: scenario.screenStateId,
+    evidenceKind: "captures",
+    isRequired: requiredEvidence.captures,
+    hasEvidence: evidence.captureIds.length > 0,
+    evidenceExceptionMap,
+    usedEvidenceExceptions,
+    errors,
+  });
   for (const captureId of evidence.captureIds) {
     if (!screenCaptureIds.has(captureId)) {
       errors.push(`${label}: capture ${captureId} is not registered on ${screen.id}.`);
     }
   }
-  if (requiredEvidence.previews && evidence.previewIds.length === 0) {
-    errors.push(`${label}: Widgetbook preview evidence is required.`);
-  }
+  validateRequiredEvidence({
+    label,
+    screenStateId: scenario.screenStateId,
+    evidenceKind: "previews",
+    isRequired: requiredEvidence.previews,
+    hasEvidence: evidence.previewIds.length > 0,
+    evidenceExceptionMap,
+    usedEvidenceExceptions,
+    errors,
+  });
   for (const previewId of evidence.previewIds) {
     if (!availablePreviews.has(previewId)) {
       errors.push(`${label}: Widgetbook preview ${previewId} is not declared.`);
     }
   }
-  if (requiredEvidence.tests && evidence.tests.length === 0) {
-    errors.push(`${label}: test evidence is required.`);
-  }
+  validateRequiredEvidence({
+    label,
+    screenStateId: scenario.screenStateId,
+    evidenceKind: "tests",
+    isRequired: requiredEvidence.tests,
+    hasEvidence: evidence.tests.length > 0,
+    evidenceExceptionMap,
+    usedEvidenceExceptions,
+    errors,
+  });
   for (const testPath of evidence.tests) {
     if (!pathExists(testPath)) errors.push(`${label}: test path does not exist: ${testPath}.`);
   }
+}
+
+function validateRequiredEvidence({
+  label,
+  screenStateId,
+  evidenceKind,
+  isRequired,
+  hasEvidence,
+  evidenceExceptionMap,
+  usedEvidenceExceptions,
+  errors,
+}) {
+  const key = evidenceExceptionKey(screenStateId, evidenceKind);
+  const hasException = evidenceExceptionMap.has(key);
+  if (hasEvidence) return;
+  if (isRequired && hasException) {
+    usedEvidenceExceptions.add(key);
+    return;
+  }
+  if (!isRequired) return;
+  const labelByKind = {
+    captures: "capture evidence",
+    previews: "Widgetbook preview evidence",
+    tests: "test evidence",
+  };
+  errors.push(`${label}: ${labelByKind[evidenceKind]} is required.`);
+}
+
+function evidenceExceptionKey(screenStateId, evidenceKind) {
+  return `${screenStateId}:${evidenceKind}`;
 }
 
 export function parseWidgetbookPreviewIds(source) {
@@ -513,7 +638,8 @@ function printSummary(artifact) {
     `${artifact.feature.id}: ${coverage.scenarios}/${coverage.screenStates} states, ` +
     `${coverage.actionCases} action cases, ${coverage.actions} actions, ` +
     `${coverage.captures} captures, ${coverage.previews} previews, ` +
-    `${coverage.testFiles} test files.`,
+    `${coverage.testFiles} test files, ` +
+    `${coverage.evidenceExceptions} evidence exceptions.`,
   );
 }
 

@@ -1,0 +1,292 @@
+{
+  "$schema": "./feature_contract.schema.json",
+  "version": 1,
+  "updated": "2026-07-23",
+  "id": "feature.explore",
+  "name": "Explore",
+  "owner": "explore",
+  "status": "pilot",
+  "description": "Orchestrates Explore discovery and map state, empty-state recovery actions, and evidence contracts without duplicating the owning screen, component, data, or Widgetbook registries.",
+  "actionScope": {
+    "included": "Empty-result recovery actions represented by ExploreDiscoveryEmptyAction.",
+    "excluded": [
+      "Search entry, city and filter editing, organizer follow/sign-in, map interaction, event or organizer navigation, and membership mutations retain their existing owners and verification paths."
+    ]
+  },
+  "screenContract": "screen.explore.discovery",
+  "bindings": {
+    "widgetbookSources": [
+      "widgetbook/lib/explore/explore_use_cases.dart",
+      "widgetbook/lib/primitives/core_catalog_use_cases.dart"
+    ],
+    "actionOwner": {
+      "file": "lib/explore/presentation/explore_screen_state.dart",
+      "symbol": "ExploreDiscoveryEmptyAction"
+    },
+    "componentContracts": [
+      "catch.button",
+      "catch.chip",
+      "catch.count_pill",
+      "catch.cover_story",
+      "catch.event_card",
+      "catch.field",
+      "catch.icon_button",
+      "catch.surface",
+      "catch.top_bar"
+    ],
+    "dataContracts": [
+      "contracts/firestore/club_memberships.schema.json",
+      "contracts/firestore/clubs.schema.json",
+      "contracts/firestore/events.schema.json",
+      "contracts/firestore/external_events.schema.json",
+      "contracts/firestore/organizers.schema.json"
+    ]
+  },
+  "dimensions": {
+    "surface": {
+      "default": "discovery",
+      "values": ["discovery", "map"]
+    },
+    "load": {
+      "default": "ready",
+      "values": ["ready", "loading", "error", "offline"]
+    },
+    "content": {
+      "default": "populated",
+      "values": ["populated", "empty"]
+    },
+    "viewer": {
+      "default": "member",
+      "values": ["guest", "member"]
+    },
+    "search": {
+      "default": "inactive",
+      "values": ["inactive", "active"]
+    },
+    "filters": {
+      "default": "inactive",
+      "values": ["inactive", "active"]
+    },
+    "selection": {
+      "default": "none",
+      "values": ["none", "pin"]
+    },
+    "accessibility": {
+      "default": "standard",
+      "values": ["standard", "text_scale_2", "reduced_motion"]
+    }
+  },
+  "actions": [
+    {
+      "id": "clear_search",
+      "codeValue": "clearSearch",
+      "cardinality": "singleton",
+      "scopeKeys": ["routeInstanceId", "queryStateVersion"],
+      "outcomes": [
+        {
+          "kind": "screen_state",
+          "stateIds": ["discovery_feed", "no_search_results", "empty_city"]
+        }
+      ],
+      "description": "Clears the active search term once for the current Explore query state."
+    },
+    {
+      "id": "clear_filters",
+      "codeValue": "clearFilters",
+      "cardinality": "singleton",
+      "scopeKeys": ["routeInstanceId", "filterStateVersion"],
+      "outcomes": [
+        {
+          "kind": "screen_state",
+          "stateIds": ["discovery_feed", "no_search_results", "empty_city"]
+        }
+      ],
+      "description": "Clears active Explore filters once for the current filter state."
+    },
+    {
+      "id": "clear_search_and_filters",
+      "codeValue": "clearSearchAndFilters",
+      "cardinality": "singleton",
+      "scopeKeys": [
+        "routeInstanceId",
+        "queryStateVersion",
+        "filterStateVersion"
+      ],
+      "outcomes": [
+        {
+          "kind": "screen_state",
+          "stateIds": ["discovery_feed", "empty_city"]
+        }
+      ],
+      "description": "Clears both search and filters as one recovery transition for the current Explore state."
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "loading",
+      "screenStateId": "loading",
+      "dimensions": {"load": "loading"},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "club_source_error",
+      "screenStateId": "club_source_error",
+      "dimensions": {"load": "error"},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "event_feed_error",
+      "screenStateId": "event_feed_error",
+      "dimensions": {"load": "error"},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "empty_city",
+      "screenStateId": "empty_city",
+      "dimensions": {"content": "empty"},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "no_search_results",
+      "screenStateId": "no_search_results",
+      "dimensions": {"content": "empty"},
+      "actionCases": [
+        {
+          "id": "search_only",
+          "dimensions": {"search": "active"},
+          "enabledActions": ["clear_search"]
+        },
+        {
+          "id": "filters_only",
+          "dimensions": {"filters": "active"},
+          "enabledActions": ["clear_filters"]
+        },
+        {
+          "id": "search_and_filters",
+          "dimensions": {"search": "active", "filters": "active"},
+          "enabledActions": ["clear_search_and_filters"]
+        }
+      ]
+    },
+    {
+      "id": "discovery_feed",
+      "screenStateId": "discovery_feed",
+      "dimensions": {},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "search_query",
+      "screenStateId": "search_query",
+      "dimensions": {"search": "active"},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "filters_active",
+      "screenStateId": "filters_active",
+      "dimensions": {"filters": "active"},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "anonymous_guest",
+      "screenStateId": "anonymous_guest",
+      "dimensions": {"viewer": "guest"},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "unclaimed_host_projection",
+      "screenStateId": "unclaimed_host_projection",
+      "dimensions": {},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "map_route",
+      "screenStateId": "map_route",
+      "dimensions": {"surface": "map"},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "pins_ready",
+      "screenStateId": "pins_ready",
+      "dimensions": {"surface": "map"},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "selected_pin",
+      "screenStateId": "selected_pin",
+      "dimensions": {"surface": "map", "selection": "pin"},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "large_pan_scope",
+      "screenStateId": "large_pan_scope",
+      "dimensions": {"surface": "map"},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "no_exact_pins",
+      "screenStateId": "no_exact_pins",
+      "dimensions": {"surface": "map", "content": "empty"},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "zero_radius_results",
+      "screenStateId": "zero_radius_results",
+      "dimensions": {"surface": "map", "content": "empty"},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "map_loading",
+      "screenStateId": "map_loading",
+      "dimensions": {"surface": "map", "load": "loading"},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "map_error",
+      "screenStateId": "map_error",
+      "dimensions": {"surface": "map", "load": "error"},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "offline",
+      "screenStateId": "offline",
+      "dimensions": {"load": "offline"},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "text_scale_2",
+      "screenStateId": "text_scale_2",
+      "dimensions": {"accessibility": "text_scale_2"},
+      "actionCases": [{"id": "default"}]
+    },
+    {
+      "id": "reduced_motion",
+      "screenStateId": "reduced_motion",
+      "dimensions": {"accessibility": "reduced_motion"},
+      "actionCases": [{"id": "default"}]
+    }
+  ],
+  "requiredEvidence": {
+    "captures": true,
+    "previews": true,
+    "tests": true
+  },
+  "evidenceExceptions": [
+    {
+      "screenStateIds": ["no_exact_pins", "zero_radius_results"],
+      "evidence": ["captures"],
+      "debtId": "DS-EXPLORE-005",
+      "reason": "These map empty variants are implemented and previewed but do not yet have dedicated deterministic capture ids."
+    },
+    {
+      "screenStateIds": [
+        "no_exact_pins",
+        "offline",
+        "text_scale_2",
+        "reduced_motion"
+      ],
+      "evidence": ["tests"],
+      "debtId": "DS-EXPLORE-005",
+      "reason": "These registered route states do not yet name focused automated test evidence in the screen contract."
+    }
+  ]
+}

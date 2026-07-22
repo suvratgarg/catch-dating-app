@@ -58,6 +58,10 @@
         "previews": {"const": true},
         "tests": {"const": true}
       }
+    },
+    "evidenceExceptions": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/evidenceException"}
     }
   },
   "$defs": {
@@ -139,7 +143,7 @@
         "codeValue",
         "cardinality",
         "scopeKeys",
-        "resultState",
+        "outcomes",
         "description"
       ],
       "additionalProperties": false,
@@ -153,8 +157,69 @@
           "uniqueItems": true,
           "items": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"}
         },
-        "resultState": {"type": "string", "pattern": "^[a-z0-9_.-]+$"},
+        "outcomes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/actionOutcome"}
+        },
         "description": {"type": "string", "minLength": 1}
+      }
+    },
+    "actionOutcome": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "stateIds"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {"const": "screen_state"},
+            "stateIds": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {"type": "string", "pattern": "^[a-z0-9_.-]+$"}
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "screenContract"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {"const": "route"},
+            "screenContract": {"type": "string", "pattern": "^screen\\.[a-z0-9_.-]+$"}
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "id"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {"const": "side_effect"},
+            "id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]+$"}
+          }
+        }
+      ]
+    },
+    "evidenceException": {
+      "type": "object",
+      "required": ["screenStateIds", "evidence", "debtId", "reason"],
+      "additionalProperties": false,
+      "properties": {
+        "screenStateIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[a-z0-9_.-]+$"}
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": ["captures", "previews", "tests"]}
+        },
+        "debtId": {"type": "string", "pattern": "^[A-Z][A-Z0-9_.-]+$"},
+        "reason": {"type": "string", "minLength": 1}
       }
     },
     "scenario": {

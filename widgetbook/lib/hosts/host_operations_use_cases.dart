@@ -3135,6 +3135,136 @@ Widget hostCreateEventRouteStateViewCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Route and section states',
+  type: HostEventManageRouteScreen,
+  path: '[P1 product surfaces]/Host operations',
+)
+Widget hostEventManageRouteAndSectionStates(BuildContext context) {
+  return _HostCatalog(
+    title: 'HostEventManageRouteScreen',
+    contractId: 'screen.host.event.manage',
+    children: [
+      _StateCard(
+        label: 'route loading',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(clubValue: const AsyncLoading<Club?>()),
+        ),
+      ),
+      _StateCard(
+        label: 'route error',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            clubValue: AsyncError<Club?>(
+              StateError('Club fetch failed'),
+              StackTrace.empty,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'route offline',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            clubValue: AsyncError<Club?>(
+              obviousOfflineException(),
+              StackTrace.empty,
+            ),
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'event not found',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(eventValue: AsyncData<Event?>(null)),
+        ),
+      ),
+      _StateCard(
+        label: 'unauthorized host',
+        child: const _DeviceFrame(
+          child: _HostManageRouteScope(uid: HostOperationsFixtures.guestUid),
+        ),
+      ),
+      const _StateCard(
+        label: 'setup workspace',
+        child: _DeviceFrame(child: _HostManageRouteScope()),
+      ),
+      const _StateCard(
+        label: 'guests workspace',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            initialSection: HostEventManageSection.guests,
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'live workspace',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            initialSection: HostEventManageSection.live,
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'report workspace',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            initialSection: HostEventManageSection.report,
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'invite links loading',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            inviteLinksValue: AsyncLoading<List<EventInviteLink>>(),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'invite links error',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            inviteLinksValue: AsyncError<List<EventInviteLink>>(
+              StateError('Invite links failed'),
+              StackTrace.empty,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'invite links offline',
+        child: _DeviceFrame(
+          child: _HostManageRouteScope(
+            inviteLinksValue: AsyncError<List<EventInviteLink>>(
+              obviousOfflineException(),
+              StackTrace.empty,
+            ),
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'text scale 2.0',
+        child: _DeviceFrame(
+          child: _MediaOverride(
+            textScaler: TextScaler.linear(2),
+            child: _HostManageRouteScope(),
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'reduced motion',
+        child: _DeviceFrame(
+          child: _MediaOverride(
+            disableAnimations: true,
+            child: _HostManageRouteScope(),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Route and section states',
   type: EditHostedEventRouteScreen,
   path: '[P1 product surfaces]/Host operations',
 )

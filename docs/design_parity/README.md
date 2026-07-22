@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.14
+version: 0.1.15
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -153,22 +153,29 @@ and one mapping for every state in an owning screen contract. They reference
 component ids, data-contract paths, Widgetbook sources, captures, and tests; the
 compiler resolves those authorities into a checked generated artifact.
 
-Event Detail is the reference pilot at
-`design/features/event_detail.feature.json`. Its action domain is deliberately
-limited to `EventDetailBookingDockAction`; navigation, share, save, calendar,
-location, companion, organizer, messaging, and auth/profile actions retain their
-existing owners and are not claimed as compiler coverage. Compile and verify it
-with:
+Event Detail, Explore, and Host Event Manage are the reference contracts. Each
+source deliberately limits its action domain to one owning code symbol:
+`EventDetailBookingDockAction`, `ExploreDiscoveryEmptyAction`, or
+`HostEventManageActionIntent`. All other actions retain their existing owners
+and are not claimed as compiler coverage. Action outcomes are typed as local
+screen states, route destinations, or side effects, so the compiler does not
+pretend every action ends on the same screen.
+
+Required evidence stays strict. A real missing capture, preview, or test may be
+admitted only through an explicit evidence exception tied to a stable open debt
+id. The compiler rejects missing exceptions and also rejects stale exceptions
+after the evidence is added. Compile and verify the contracts with:
 
 ```bash
 node tool/design/build_feature_contracts.mjs
 node tool/design/build_feature_contracts.mjs --check
 ```
 
-The compiler fails duplicate or missing screen-state mappings, unknown action or
-dimension values, undeclared action-owner symbols, missing component/data paths,
-missing capture/preview/test evidence, stale output, and orphaned generated
-artifacts. Natural-language briefs may inform a contract draft, but only the
-reviewed JSON source is executable. Flutter widgets, controllers, business
-algorithms, security rules, and migrations remain manually implemented and
-tested against their owning contracts.
+The compiler fails duplicate or missing screen-state mappings, unknown action,
+outcome, route, or dimension values, undeclared action-owner symbols, missing
+component/data paths, missing capture/preview/test evidence, unused evidence
+exceptions, stale output, and orphaned generated artifacts. Natural-language
+briefs may inform a contract draft, but only the reviewed JSON source is
+executable. Flutter widgets, controllers, business algorithms, security rules,
+and migrations remain manually implemented and tested against their owning
+contracts.

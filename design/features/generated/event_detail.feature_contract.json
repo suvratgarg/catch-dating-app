@@ -3,8 +3,8 @@
   "version": 1,
   "generatedFrom": "design/features/event_detail.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:eeadda5f0279339a689776619bfe6dba56c92bc5429361eb445fe5d5d12f8b2a",
-  "resolvedDigest": "sha256:306bde1126a2a21f6a69c925a96b598b0574c123efd5558f2f2f685ffc45d8d6",
+  "sourceDigest": "sha256:3284c0b7cc6b3cf82c0e7cbed8f921eea189d65e0bf88f33c2bdd4bc951f2595",
+  "resolvedDigest": "sha256:78a5297ce9b2632d2f0ccb5319d3feeaa50d8fdc2dddf6f8fb5ac5fa5bbcb76b",
   "feature": {
     "id": "feature.event_detail",
     "name": "Event Detail",
@@ -49,7 +49,8 @@
     "actions": 6,
     "captures": 24,
     "previews": 6,
-    "testFiles": 3
+    "testFiles": 3,
+    "evidenceExceptions": 0
   },
   "dimensions": {
     "load": {
@@ -121,7 +122,14 @@
         "viewerUid",
         "eventId"
       ],
-      "resultState": "booking_signed_up",
+      "outcomes": [
+        {
+          "kind": "screen_state",
+          "stateIds": [
+            "booking_signed_up"
+          ]
+        }
+      ],
       "description": "Creates at most one active booking relationship for the viewer and event."
     },
     {
@@ -132,7 +140,14 @@
         "viewerUid",
         "eventId"
       ],
-      "resultState": "member_default",
+      "outcomes": [
+        {
+          "kind": "screen_state",
+          "stateIds": [
+            "member_default"
+          ]
+        }
+      ],
       "description": "Cancels the viewer's single active booking for the event."
     },
     {
@@ -143,7 +158,14 @@
         "viewerUid",
         "eventId"
       ],
-      "resultState": "waitlist_sold_out_cancelled_past",
+      "outcomes": [
+        {
+          "kind": "screen_state",
+          "stateIds": [
+            "waitlist_sold_out_cancelled_past"
+          ]
+        }
+      ],
       "description": "Creates at most one active waitlist relationship for the viewer and event."
     },
     {
@@ -154,7 +176,14 @@
         "viewerUid",
         "eventId"
       ],
-      "resultState": "member_default",
+      "outcomes": [
+        {
+          "kind": "screen_state",
+          "stateIds": [
+            "member_default"
+          ]
+        }
+      ],
       "description": "Removes the viewer's single active waitlist relationship for the event."
     },
     {
@@ -166,7 +195,14 @@
         "eventId",
         "waitlistOfferId"
       ],
-      "resultState": "booking_signed_up",
+      "outcomes": [
+        {
+          "kind": "screen_state",
+          "stateIds": [
+            "booking_signed_up"
+          ]
+        }
+      ],
       "description": "Accepts one active waitlist offer and transitions it to a booking."
     },
     {
@@ -178,10 +214,18 @@
         "eventId",
         "waitlistOfferId"
       ],
-      "resultState": "waitlist_sold_out_cancelled_past",
+      "outcomes": [
+        {
+          "kind": "screen_state",
+          "stateIds": [
+            "waitlist_sold_out_cancelled_past"
+          ]
+        }
+      ],
       "description": "Declines one active waitlist offer without creating another offer action."
     }
   ],
+  "evidenceExceptions": [],
   "scenarios": [
     {
       "id": "loading",
