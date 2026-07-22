@@ -163,6 +163,13 @@ host-visible organizer metrics through `recordOrganizerAnalyticsEvent` in
 - Set `VITE_GTM_ID` from `env.example` to load Google Tag Manager after consent.
   GTM is optional for Hosting deploys until the production container exists; the
   site skips GTM when the variable is unset.
+- `.github/workflows/website-production-observability.yml` probes the public
+  launch routes every 15 minutes without a paid monitoring service. The same
+  status, canonical-metadata, and content checks run immediately after a
+  marketing deployment.
+- Browser errors and unhandled promise rejections emit only a coarse
+  `client_error` event after analytics consent. Error messages, stacks, query
+  strings, and user identifiers are deliberately excluded.
 - Configure GA4, Google Ads, Meta Pixel, LinkedIn Insight Tag, and other pixels in
   GTM against the pushed `dataLayer` events.
 - Set `VITE_WEBSITE_APPCHECK_SITE_KEY` and the Firebase web config in
@@ -177,6 +184,7 @@ host-visible organizer metrics through `recordOrganizerAnalyticsEvent` in
 Primary web events:
 
 - `page_view`
+- `client_error`
 - `cta_click`
 - `city_selected`
 - `role_selected`

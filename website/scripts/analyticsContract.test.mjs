@@ -84,6 +84,27 @@ test("consent banner state covers unset, essential-only, and accepted choices", 
   assert.equal(latestEvent("consent_updated").content_version, "website_copy_v2");
 });
 
+test("client error signals are coarse and require analytics consent", () => {
+  window.localStorage.clear();
+  window.dataLayer = [];
+
+  assert.equal(analytics.trackClientErrorSignal("window_error"), false);
+  assert.equal(latestEvent("client_error"), undefined);
+
+  analytics.setMarketingConsent("essential");
+  assert.equal(analytics.trackClientErrorSignal("unhandled_rejection"), false);
+  assert.equal(latestEvent("client_error"), undefined);
+
+  analytics.setMarketingConsent("accepted");
+  assert.equal(analytics.trackClientErrorSignal("window_error"), true);
+  assert.deepEqual(latestEvent("client_error"), {
+    event: "client_error",
+    content_version: "website_copy_v2",
+    error_source: "window_error",
+    page_path: "/host/",
+  });
+});
+
 function latestEvent(eventName) {
   return [...window.dataLayer]
     .reverse()

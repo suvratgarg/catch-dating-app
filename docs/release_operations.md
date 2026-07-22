@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.10.6
-updated: 2026-07-19
+version: 1.10.7
+updated: 2026-07-22
 owner: recursive_audit_loop
 status: active
 ---
@@ -132,6 +132,7 @@ The current workflows are:
 | `.github/workflows/release-readiness.yml` | Manual staging/prod release gate. |
 | `.github/workflows/mobile-internal-release.yml` | Canonical Consumer/Host mobile release matrix: signed iOS uploads to TestFlight and signed Android AABs with guarded Play internal upload. |
 | `.github/workflows/observability-evidence.yml` | Manual Crashlytics and Analytics evidence capture. |
+| `.github/workflows/website-production-observability.yml` | Scheduled and manual production website status, canonical-metadata, and launch-content probes. |
 
 ## Git Branch Hygiene
 
