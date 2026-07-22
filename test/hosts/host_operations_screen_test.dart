@@ -19,6 +19,7 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
@@ -1626,13 +1627,12 @@ void main() {
       HostClubEventDefaultsScreen(clubId: club.id),
       overrides: overrides,
     );
-    final topBar = tester.widget<CatchScreenTopBar>(
-      find.byType(CatchScreenTopBar),
-    );
+    final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
     expect(topBar.title, 'Event defaults');
-    expect(topBar.eyebrow, club.name);
+    expect(topBar.subtitle, club.name);
     expect(topBar.leadingType, CatchTopBarLeading.back);
-    expect(topBar.border, isTrue);
+    expect(topBar.divider, isFalse);
+    expect(find.byType(CatchRouteScaffold), findsOneWidget);
     expect(find.byType(CatchFieldToggle), findsNothing);
     expect(find.byType(CatchFieldActionBar), findsNothing);
     expect(find.text('Default activity'), findsOneWidget);

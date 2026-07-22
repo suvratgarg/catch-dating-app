@@ -923,6 +923,7 @@
         "diagnostics": [
           "catch_no_allow_debt",
           "catch_async_requires_retry",
+          "catch_error_state_requires_action",
           "catch_no_raw_content_dimension",
           "catch_no_local_design_constant"
         ]

@@ -77,6 +77,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -241,6 +242,7 @@ class _ProviderProbe extends ConsumerWidget {
           value: asyncValue,
           builder: (_, value) => Text('$value'),
         ),
+        const CatchErrorState(title: 'Unavailable', message: 'Try elsewhere.'),
       ],
     );
   }
@@ -345,6 +347,10 @@ expect_code_count \
 expect_code_count \
   "seeded violation corpus" \
   "catch_async_requires_retry" \
+  1
+expect_code_count \
+  "seeded violation corpus" \
+  "catch_error_state_requires_action" \
   1
 expect_code_count "seeded violation corpus" "catch_no_raw_error_surface" 1
 expect_code_count \

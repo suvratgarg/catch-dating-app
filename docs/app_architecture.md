@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.5.2
-updated: 2026-07-21
+version: 1.5.3
+updated: 2026-07-22
 owner: recursive_audit_loop
 status: active
 ---
@@ -806,6 +806,15 @@ branded timeout state. Every presentation call site must supply `onRetry`; the
 deadline is a presentation/provider-boundary policy only: never apply an idle
 timeout to a long-lived Firestore stream after its first value.
 
+Every full-screen or sliver error must also leave the user a truthful next
+step. Use `onRetry` when the failed operation is safe to rerun. For terminal
+route conditions such as a deleted resource, invalid route argument, or lost
+authorization, supply `secondaryAction: CatchErrorBackAction()` (or another
+explicit destination action) instead. Inline errors may inherit recovery from
+their surrounding section. The `catch_error_state_requires_action` analyzer
+diagnostic rejects actionless full-screen and sliver error surfaces in feature
+presentation code.
+
 Use a feature-owned typed UI state when a screen has richer behavior, such as:
 
 - partial secondary failures;
@@ -837,6 +846,8 @@ delivery channels:
 - `CatchErrorScaffold`, `CatchSliverErrorState`, and `CatchInlineErrorState`
   are placement adapters for root, sliver, and section errors. Every adapter
   supports the same primary retry and optional secondary-action contract.
+- `CatchErrorBackAction` is the canonical route-exit action when retry would
+  be dishonest or impossible.
 - `CatchErrorBanner` is the persistent inline mutation/form error channel.
 - `CatchMutationErrorBanner` is the persistent Riverpod mutation adapter.
 - `CatchMutationErrorListener` and `CatchMutationErrorListeners` are transient
@@ -1876,10 +1887,12 @@ owns surface color and the scroll-under divider. Loading, empty, error, and
 content branches retain the same title voice and back behavior instead of
 building competing scaffolds.
 
-The first adopters are Saved Events, Review History, Payment History,
-Settings, Chat Detail, Host Event Manage, Host Event Edit, and Host route
-loading. When another pushed list or form is touched, migrate it to this
-boundary rather than copying `Scaffold(backgroundColor:, appBar:)` flags.
+The adopters are Saved Events, Review History, Payment History, Settings, Chat
+Detail, Host Event Manage, Host Event Edit, Host team, every Host organizer
+settings spoke, and Host route loading. Host create-organizer and create-event
+flows remain step-header routes, and event detail remains the declared media
+hero exception. When another pushed list or form is touched, migrate it to
+this boundary rather than copying `Scaffold(backgroundColor:, appBar:)` flags.
 
 Pushed routes that must always expose an exit declare `leading: "back"` in
 the same manifest entry. The gate then requires an explicit

@@ -60,6 +60,7 @@ class EventSuccessEventPreviewRouteScreen extends ConsumerWidget {
         message: context
             .l10n
             .eventSuccessEventSuccessEventPreviewScreenMessageThisEventIsNo,
+        secondaryAction: const CatchErrorBackAction(),
       );
     }
 

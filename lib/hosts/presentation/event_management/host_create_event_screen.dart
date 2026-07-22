@@ -48,6 +48,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
             context.l10n.hostsHostCreateEventScreenTitleEventSetupUnavailable,
         message:
             context.l10n.hostsHostCreateEventScreenMessageThatOrganizerDoesNot,
+        secondaryAction: const CatchErrorBackAction(),
       );
     }
     if (initialPrefill != null && initialPrefill.values.clubId != clubId) {
@@ -55,6 +56,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
         title: context.l10n.hostsHostCreateEventScreenTitleRepeatUnavailable,
         message:
             context.l10n.hostsHostCreateEventScreenMessageThatEventBelongsTo,
+        secondaryAction: const CatchErrorBackAction(),
       );
     }
     final routeState = HostCreateEventRouteState.resolve(
@@ -104,10 +106,12 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
       HostCreateEventRouteStatus.notFound => CatchErrorScaffold(
         title: context.l10n.hostsHostCreateEventScreenTitleClubNotFound,
         message: context.l10n.hostsHostCreateEventScreenMessageThisClubIsNo,
+        secondaryAction: const CatchErrorBackAction(),
       ),
       HostCreateEventRouteStatus.forbidden => CatchErrorScaffold(
         title: context.l10n.hostsHostCreateEventScreenTitleHostAccessRequired,
         message: context.l10n.hostsHostCreateEventScreenMessageOnlyThisClubS,
+        secondaryAction: const CatchErrorBackAction(),
       ),
       HostCreateEventRouteStatus.ready => CreateEventScreen(
         club: state.club!,

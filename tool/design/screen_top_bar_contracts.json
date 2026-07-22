@@ -72,6 +72,7 @@
       "role": "identity",
       "expression": "CatchTopBar.identity",
       "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
@@ -127,37 +128,43 @@
       "role": "compact",
       "expression": "CatchTopBar",
       "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",
-      "owner": "CatchTopBar"
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold"
     },
     {
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",
-      "owner": "CatchTopBar"
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold"
     },
     {
       "path": "lib/hosts/presentation/host_event_manage_route_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",
-      "owner": "CatchTopBar"
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold"
     },
     {
       "path": "lib/hosts/presentation/host_event_manage_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",
-      "owner": "CatchTopBar"
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold"
     },
     {
       "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-      "role": "screen",
-      "expression": "CatchScreenTopBar",
-      "owner": "CatchScreenTopBar",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
@@ -169,16 +176,18 @@
     },
     {
       "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
-      "role": "screen",
-      "expression": "CatchScreenTopBar",
-      "owner": "CatchScreenTopBar",
+      "role": "compact",
+      "expression": "CatchTopBar",
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/host_operations/host_loading_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar",
-      "owner": "CatchTopBar"
+      "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold"
     },
     {
       "path": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
@@ -197,6 +206,7 @@
       "role": "compact",
       "expression": "CatchTopBar",
       "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
@@ -210,6 +220,7 @@
       "role": "compact",
       "expression": "CatchTopBar",
       "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
@@ -217,6 +228,7 @@
       "role": "compact",
       "expression": "CatchTopBar",
       "owner": "CatchTopBar",
+      "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {

@@ -32,12 +32,37 @@ test("accepts canonical route-scaffold top-bar builders", () => {
         body: ListView(),
       );
     `,
-    contract: compactContract({leading: "back"}),
+    contract: compactContract({
+      leading: "back",
+      surface: "CatchRouteScaffold",
+    }),
   });
 
   const result = checkScreenTopBarContracts({root});
 
   assert.deepEqual(result.findings, []);
+});
+
+test("flags a route contract that drops its canonical surface", () => {
+  const root = fixtureRoot({
+    source: `
+      Scaffold(
+        appBar: CatchTopBar(
+          title: 'Review history',
+          leadingType: CatchTopBarLeading.back,
+        ),
+        body: ListView(),
+      );
+    `,
+    contract: compactContract({
+      leading: "back",
+      surface: "CatchRouteScaffold",
+    }),
+  });
+
+  const result = checkScreenTopBarContracts({root});
+
+  assert.ok(hasFinding(result, "missing-route-scaffold-surface"));
 });
 
 test("resolves canonical root chrome owned by a StatefulWidget state", () => {
@@ -605,13 +630,14 @@ function screenContract({
   };
 }
 
-function compactContract({expression = "CatchTopBar", leading} = {}) {
+function compactContract({expression = "CatchTopBar", leading, surface} = {}) {
   return {
     path: "lib/calendar/calendar_screen.dart",
     role: "compact",
     expression,
     owner: "CatchTopBar",
     ...(leading == null ? {} : {leading}),
+    ...(surface == null ? {} : {surface}),
   };
 }
 

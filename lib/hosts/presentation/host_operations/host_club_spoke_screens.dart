@@ -118,14 +118,12 @@ class HostClubSpokeScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: CatchTokens.of(context).bg,
-      appBar: CatchScreenTopBar(
-        context: context,
-        eyebrow: club.name,
+    return CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: title,
+        subtitle: club.name,
         leadingType: CatchTopBarLeading.back,
-        border: true,
+        divider: scrolledUnder,
       ),
       body: SafeArea(
         top: false,

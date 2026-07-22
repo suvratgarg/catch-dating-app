@@ -5,6 +5,7 @@
   "maxCounts": {
     "catch_async_requires_retry": 0,
     "catch_async_requires_state_surface": 1,
+    "catch_error_state_requires_action": 0,
     "catch_event_detail_prefers_photo_thumbnail": 0,
     "catch_field_requires_section_context": 53,
     "catch_icon_button_requires_tooltip": 0,

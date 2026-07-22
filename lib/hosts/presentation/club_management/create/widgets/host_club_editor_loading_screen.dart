@@ -2,6 +2,8 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
+import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class HostClubEditorLoadingScreen extends StatelessWidget {
@@ -16,24 +18,11 @@ class HostClubEditorLoadingScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: CatchInsets.pageHeaderCompact,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CatchSkeleton.text(
-                    width: CatchLayout.skeletonTextSecondaryWidth,
-                  ),
-                  gapH8,
-                  CatchSkeleton.text(
-                    width: CatchLayout.skeletonTextPageTitleWidth,
-                  ),
-                  gapH16,
-                  CatchSkeleton.box(
-                    height: CatchLayout.stepHeaderProgressHeight,
-                  ),
-                ],
-              ),
+            CatchStepHeader(
+              title: context.l10n.hostsCreateClubScreenTitleClubBasics,
+              step: 1,
+              total: 4,
+              onBack: () => Navigator.of(context).maybePop(),
             ),
             const Expanded(
               child: SingleChildScrollView(

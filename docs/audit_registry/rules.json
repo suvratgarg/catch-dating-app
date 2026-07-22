@@ -1568,7 +1568,7 @@
         "lib/core/widgets/**",
         "test/**/*.dart"
       ],
-      "instruction": "Do not add new raw Center(Text(...)) full-screen errors or reintroduce CatchErrorText-style compatibility wrappers. Route app-facing data-load failures through CatchErrorState, CatchErrorScaffold, CatchSliverErrorState, or CatchInlineErrorState with appErrorMessage/appErrorTitle mapped copy and optional retry. Keep CatchFrameworkErrorView for Flutter framework crashes only, ErrorBanner for inline mutation/form failures, and showCatchErrorSnackBar for transient action failures.",
+      "instruction": "Do not add new raw Center(Text(...)) full-screen errors or reintroduce CatchErrorText-style compatibility wrappers. Route app-facing data-load failures through CatchErrorState, CatchErrorScaffold, CatchSliverErrorState, or CatchInlineErrorState with appErrorMessage/appErrorTitle mapped copy. Every full-screen or sliver error must expose onRetry or a truthful secondary action such as CatchErrorBackAction; inline errors may inherit recovery from their surrounding section. Keep CatchFrameworkErrorView for Flutter framework crashes only, ErrorBanner for inline mutation/form failures, and showCatchErrorSnackBar for transient action failures.",
       "sunset_when": [
         "A canonical app error primitive covers full-screen, sliver, and inline contexts",
         "Existing AsyncValue error branches have migrated away from raw centered text except where explicitly justified"
@@ -1855,7 +1855,7 @@
       ]
     },
     "ERROR-UI-002": {
-      "title": "Data-load error branches must use a Catch error primitive with retry, never an empty-state or bespoke card",
+      "title": "Data-load errors must use a Catch primitive and blocking states must expose recovery",
       "status": "active",
       "kind": "scar",
       "introduced_in": {
@@ -1866,7 +1866,7 @@
         "lib/**/presentation/**",
         "lib/core/widgets/**"
       ],
-      "instruction": "AsyncValue/stream error branches must render CatchErrorState/CatchSliverErrorState/CatchInlineErrorState.fromError (mapped copy + onRetry that invalidates the failing provider). Reserve CatchEmptyState for genuinely-empty success states; never route an error into an empty-state or a hand-rolled card that discards the error object.",
+      "instruction": "AsyncValue/stream error branches must render CatchErrorState/CatchSliverErrorState/CatchInlineErrorState.fromError with mapped copy. Provider failures use onRetry that invalidates the failing provider; terminal full-screen and sliver route errors use a truthful secondary action such as CatchErrorBackAction. Reserve CatchEmptyState for genuinely-empty success states; never route an error into an empty-state or a hand-rolled card that discards the error object.",
       "sunset_when": [
         "A catch_ui_lints diagnostic flags CatchEmptyState/bespoke cards inside error branches",
         "No feature error branch renders raw/empty surfaces for three passes"

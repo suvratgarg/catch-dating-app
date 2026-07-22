@@ -54,6 +54,7 @@ class EventLocationMapRouteScreen extends ConsumerWidget {
                   context.l10n.eventsEventLocationMapScreenTitleEventNotFound,
               message:
                   context.l10n.eventsEventLocationMapScreenMessageThisEventIsNo,
+              secondaryAction: const CatchErrorBackAction(),
             ),
           );
         }

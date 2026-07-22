@@ -43,6 +43,7 @@ const rolePolicies = new Map([
 ]);
 const validRoles = new Set([...rolePolicies.keys(), "workspace"]);
 const validLeadingPolicies = new Set(["auto", "back", "none"]);
+const validSurfacePolicies = new Set(["CatchRouteScaffold"]);
 const canonicalWorkspaceOwners = new Set([
   "CatchTopBar",
   "CatchScreenTopBar",
@@ -433,6 +434,21 @@ function checkContract({root, contract, appBars, findings}) {
     });
   }
 
+  if (contract.surface === "CatchRouteScaffold") {
+    const source = maskDartCommentsAndStrings(
+      fs.readFileSync(absolutePath, "utf8"),
+    );
+    if (!/\bCatchRouteScaffold\s*\(/u.test(source)) {
+      findings.push({
+        code: "missing-route-scaffold-surface",
+        path: contract.path,
+        message:
+          "This pushed route must use CatchRouteScaffold so surface color and " +
+          "the scroll-under divider cannot drift by caller.",
+      });
+    }
+  }
+
   const policy = rolePolicies.get(contract.role);
   if (policy != null && contract.owner !== policy.owner) {
     findings.push({
@@ -538,6 +554,16 @@ function validateManifest(manifest, findings, manifestPath) {
         code: "invalid-leading-policy",
         path: contract.path ?? manifestPath,
         message: `Unknown screen-chrome leading policy ${contract.leading}.`,
+      });
+    }
+    if (
+      contract.surface != null &&
+      !validSurfacePolicies.has(contract.surface)
+    ) {
+      findings.push({
+        code: "invalid-surface-policy",
+        path: contract.path ?? manifestPath,
+        message: `Unknown screen surface policy ${contract.surface}.`,
       });
     }
     if (

@@ -1,6 +1,6 @@
 {
-  "version": "1.5.48",
-  "updated": "2026-07-21",
+  "version": "1.5.49",
+  "updated": "2026-07-22",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
   "patterns": [
@@ -474,6 +474,24 @@
           "role": "Host loading route retaining the canonical surface and top bar",
           "status": "aligned",
           "lastReviewedPass": "2026-07-21-async-route-chrome-consistency"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+          "role": "Host team workspace with canonical route surface and scroll-derived divider",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-22-organizer-rollout-and-host-audit"
+        },
+        {
+          "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+          "role": "Host organizer settings spokes with canonical route surface and scroll-derived divider",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-22-organizer-rollout-and-host-audit"
+        },
+        {
+          "path": "lib/hosts/presentation/club_management/create/widgets/host_club_editor_loading_screen.dart",
+          "role": "Host organizer step-flow loading state retaining the canonical step header",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-22-organizer-rollout-and-host-audit"
         }
       ],
       "requiredBackPropagation": "When pushed-route surface, divider, title, or back semantics change, update CatchRouteScaffold, every aligned Consumer and Host adopter, the top-bar manifest, focused widget tests, and the regression ledger together.",

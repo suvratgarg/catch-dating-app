@@ -43,7 +43,8 @@ export async function main(argv = process.argv.slice(2)) {
   const app = admin.initializeApp({projectId}, "location-market-backfill");
   const db = app.firestore();
   const plan = await buildLocationMarketBackfillPlan(db, {
-    includeConfig: !args.skip_config,
+    includeConfig: !args.skip_config && !args.clubs_only,
+    includeProfiles: !args.clubs_only,
   });
 
   const output = args.summary_only ? compactSummary(plan.summary) : plan.summary;
@@ -66,14 +67,16 @@ export async function main(argv = process.argv.slice(2)) {
 
 export async function buildLocationMarketBackfillPlan(
   firestore,
-  {includeConfig = true} = {}
+  {includeConfig = true, includeProfiles = true} = {}
 ) {
   const [configDoc, clubsSnap, usersSnap, publicProfilesSnap] =
     await Promise.all([
       includeConfig ? firestore.collection("config").doc("cities").get() : null,
       firestore.collection("clubs").get(),
-      firestore.collection("users").get(),
-      firestore.collection("publicProfiles").get(),
+      includeProfiles ? firestore.collection("users").get() : emptySnapshot(),
+      includeProfiles ?
+        firestore.collection("publicProfiles").get() :
+        emptySnapshot(),
     ]);
 
   const repairs = [];
@@ -215,9 +218,13 @@ function stringOrNull(value) {
   return trimmed.length > 0 ? trimmed : null;
 }
 
+function emptySnapshot() {
+  return {size: 0, docs: []};
+}
+
 function parseArgs(argv) {
   return parseCommonArgs(argv, {
-    booleanFlags: ["--summary-only", "--skip-config"],
+    booleanFlags: ["--clubs-only", "--summary-only", "--skip-config"],
   });
 }
 
@@ -271,6 +278,7 @@ publicProfiles. The script is dry-run by default.
 Options:
   --apply                 Write repairs. Default is dry-run.
   --allow-prod            Required with --apply against prod.
+  --clubs-only            Repair only clubs; skip config and profile reads.
   --skip-config           Do not repair config/cities.
   --json                  Print summary as JSON.
   --summary-only          Omit per-document repair details from output.

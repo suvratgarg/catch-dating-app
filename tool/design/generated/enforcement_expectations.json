@@ -9,6 +9,9 @@
     "catch_async_requires_state_surface": [
       "catch.async_value"
     ],
+    "catch_error_state_requires_action": [
+      "catch.async_value"
+    ],
     "catch_event_detail_prefers_photo_thumbnail": [
       "catch.event_detail_sections"
     ],

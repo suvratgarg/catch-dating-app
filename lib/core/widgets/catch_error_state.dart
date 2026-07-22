@@ -12,6 +12,25 @@ import 'package:flutter/material.dart';
 
 enum CatchErrorStateMode { fullScreen, inline, compact }
 
+/// Canonical exit affordance for terminal error states where retry is not a
+/// truthful action (for example a deleted event or an unauthorized route).
+class CatchErrorBackAction extends StatelessWidget {
+  const CatchErrorBackAction({super.key, this.label, this.onPressed});
+
+  final String? label;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchButton(
+      label: label ?? MaterialLocalizations.of(context).backButtonTooltip,
+      onPressed: onPressed ?? () => Navigator.of(context).maybePop(),
+      variant: CatchButtonVariant.secondary,
+      icon: Icon(CatchIcons.arrowBackIosNewRounded),
+    );
+  }
+}
+
 class CatchErrorState extends StatelessWidget {
   const CatchErrorState({
     super.key,

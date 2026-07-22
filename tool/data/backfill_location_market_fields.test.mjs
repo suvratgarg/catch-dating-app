@@ -87,6 +87,26 @@ test("applyLocationMarketBackfillPlan writes set and update repairs", async () =
   });
 });
 
+test("buildLocationMarketBackfillPlan can scope repairs to clubs", async () => {
+  const firestore = fakeFirestore({
+    config: {cities: {version: 1}},
+    clubs: {"club-1": {location: "indore"}},
+    users: {"user-1": {city: "indore"}},
+    publicProfiles: {"user-1": {city: "indore"}},
+  });
+
+  const plan = await buildLocationMarketBackfillPlan(firestore, {
+    includeConfig: false,
+    includeProfiles: false,
+  });
+
+  assert.deepEqual(plan.repairs.map((repair) => repair.path), ["clubs/club-1"]);
+  assert.equal(plan.summary.configChecked, false);
+  assert.equal(plan.summary.clubsScanned, 1);
+  assert.equal(plan.summary.usersScanned, 0);
+  assert.equal(plan.summary.publicProfilesScanned, 0);
+});
+
 function fakeFirestore(initialData) {
   const data = structuredClone(initialData);
   return {

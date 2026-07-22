@@ -123,6 +123,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
         return CatchErrorScaffold(
           title: context.l10n.eventsEventDetailScreenTitleEventNotFound,
           message: context.l10n.eventsEventDetailScreenMessageThisEventIsNo,
+          secondaryAction: const CatchErrorBackAction(),
         );
       }
       final now = DateTime.now();
@@ -452,6 +453,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     return CatchErrorScaffold(
       title: context.l10n.eventsEventDetailScreenTitleEventNotFound,
       message: context.l10n.eventsEventDetailScreenMessageThisEventIsNo,
+      secondaryAction: const CatchErrorBackAction(),
     );
   }
 

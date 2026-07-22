@@ -2345,10 +2345,9 @@ void main() {
     tester,
   ) async {
     var alternateCount = 0;
-    Widget alternateAction() => CatchButton(
+    Widget alternateAction() => CatchErrorBackAction(
       label: 'Go back',
       onPressed: () => alternateCount += 1,
-      variant: CatchButtonVariant.secondary,
     );
 
     await tester.pumpWidget(

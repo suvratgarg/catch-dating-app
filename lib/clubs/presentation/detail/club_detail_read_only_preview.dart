@@ -53,6 +53,8 @@ class ClubDetailReadOnlyPreviewSliver extends ConsumerWidget {
             message: context.l10n.clubsClubDetailScreenMessageThisClubIsNo,
             icon: CatchIcons.groupsOutlined,
             fillRemaining: false,
+            onRetry: () =>
+                ref.invalidate(clubDetailViewModelProvider(initialClub.id)),
           );
         }
 

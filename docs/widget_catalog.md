@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.658
-updated: 2026-07-21
+version: 2.5.659
+updated: 2026-07-22
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,13 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.659
+
+- Added `CatchErrorBackAction` and analyzer enforcement that every blocking
+  error state exposes Retry or a deliberate alternate action.
+- Extended `CatchRouteScaffold` adoption to Host team and organizer settings
+  spokes; Host step flows retain `CatchStepHeader` during loading.
 
 ### 2.5.658
 
@@ -6560,6 +6567,7 @@ Widgetbook callers.
 | `CatchFrameworkErrorDebugDetails` | `lib/core/widgets/catch_framework_error_view.dart:86` | Direct debug disclosure renderer used by `CatchFrameworkErrorView`. Owns collapsed/expanded state, tokenized developer-detail chrome, and mono debug text while keeping framework-crash recovery separate from app-facing error surfaces. |
 | `CatchErrorIcon` | `lib/core/widgets/catch_error_icon.dart:7` | Shared branded error medallion used by framework and app-facing error surfaces. Treat as an atom composed by error surfaces, not a separate product component to review in Widgetbook. |
 | `CatchErrorState` | `lib/core/widgets/catch_error_state.dart:13` | Canonical branded app-facing error content. Supports full-screen, inline, and compact modes, mapped title/message copy, optional retry, and optional secondary action while composing the shared public `CatchErrorBody`. Widgetbook groups this family as the single "Error surfaces" review point. |
+| `CatchErrorBackAction` | `lib/core/widgets/catch_error_state.dart` | Canonical alternate action for terminal route errors where retry is not truthful. Uses the secondary button treatment and either invokes a caller-owned destination or safely pops the current route. |
 | `CatchErrorBody` | `lib/core/widgets/catch_error_state.dart:82` | Direct branded error-body renderer used by error placement adapters. Owns icon sizing, title/message typography, retry and secondary-action layout, inline/compact surface wrapping, and full-screen centering. |
 | `CatchErrorScaffold` | `lib/core/widgets/catch_error_state.dart:247` | Full-screen/root-tab placement adapter for load failures. Keeps framework crashes separate from app data-load failures while reusing `CatchErrorBody`. |
 | `CatchStateViewport` | `lib/core/widgets/catch_empty_state.dart` | Canonical box-layout placement for terminal empty/error content inside an app shell. Subtracts the floating bottom obstruction from the visible optical center and is used by Profile's unavailable/error branches; feature screens must not recreate this with local spacers or bottom padding. |

@@ -1,6 +1,6 @@
 {
-  "version": 58,
-  "updated": "2026-07-21",
+  "version": 59,
+  "updated": "2026-07-22",
   "owner": "agent_operating_model",
   "entries": [
     {
@@ -2482,6 +2482,29 @@
         "docs/widget_catalog.md"
       ],
       "notes": "Root tab titles stay in scroll content; pushed routes use CatchRouteScaffold."
+    },
+    {
+      "id": "REG-TERMINAL-ERROR-ACTION-001",
+      "title": "Blocking error surfaces strand the user without a next action",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_error_state.dart",
+        "lib/**/presentation/**",
+        "packages/catch_ui_lints/**",
+        "tool/check_catch_ui_lints.sh"
+      ],
+      "symptom": "A full-screen or sliver error replaces the route content but exposes neither a safe retry nor a way to leave the dead end.",
+      "guard": {
+        "type": "command",
+        "command": "bash tool/check_catch_ui_lints.sh && flutter test test/core/catch_primitives_test.dart",
+        "guardEvidence": "catch_error_state_requires_action rejects actionless blocking error primitives and widget tests prove the canonical alternate action is preserved by every placement adapter"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/widget_catalog.md",
+        "docs/audit_registry/rules.json"
+      ],
+      "notes": "Use retry for rerunnable failures and CatchErrorBackAction or another explicit destination for terminal route conditions. Inline errors may inherit nearby recovery controls."
     },
     {
       "id": "REG-ORGANIZER-ROLLOUT-READ-FALLBACK-001",

@@ -46,6 +46,7 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
         message: context
             .l10n
             .hostsEditHostedEventRouteScreenMessageThisHostedEventIs,
+        secondaryAction: const CatchErrorBackAction(),
       ),
       HostEventEditRouteStatus.unauthorized => CatchErrorScaffold(
         title:
@@ -53,6 +54,7 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
         message:
             context.l10n.hostsEditHostedEventRouteScreenMessageYouCanEditOnly,
         icon: CatchIcons.blockRounded,
+        secondaryAction: const CatchErrorBackAction(),
       ),
       HostEventEditRouteStatus.ready => EditHostedEventScreen(
         club: state.club!,

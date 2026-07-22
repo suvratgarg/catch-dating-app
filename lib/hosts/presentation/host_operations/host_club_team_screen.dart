@@ -26,7 +26,6 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final uidAsync = ref.watch(uidProvider);
     if (uidAsync.isLoading) {
       return HostLoadingScreen(
@@ -96,19 +95,17 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen> {
           HostProfileController.saveProfileMutation,
         ],
         errorContext: AppErrorContext.profile,
-        child: Scaffold(
-          backgroundColor: t.bg,
-          appBar: CatchScreenTopBar(
-            context: context,
-            eyebrow: club.name,
+        child: CatchRouteScaffold(
+          topBarBuilder: (context, scrolledUnder) => CatchTopBar(
             title: context.l10n.hostsHostClubEditTabLabelHostTeam,
+            subtitle: club.name,
             leading: CatchIconAction(
               tooltip: MaterialLocalizations.of(context).backButtonTooltip,
               icon: CatchIcons.arrowBackIosNewRounded,
               onPressed: _leaveTeam,
             ),
             leadingType: CatchTopBarLeading.back,
-            border: true,
+            divider: scrolledUnder,
             bottom: CatchTabRail<HostTeamMode>(
               selected: _selectedTab,
               onChanged: (tab) => setState(() => _selectedTab = tab),
