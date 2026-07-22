@@ -15442,6 +15442,11 @@
           "id": "DS-HOST-INBOX-004",
           "status": "in_progress",
           "nextAction": "Functional semantics and the authorized callable are implemented locally. Keep production sending disabled until the live callable preflight passes, then record delivery evidence; visual closure separately requires meanDelta 18 or below from the current 31.90."
+        },
+        {
+          "id": "DS-HOST-INBOX-005",
+          "status": "open",
+          "nextAction": "feature.host_inbox compiles all 25 registered states and ten actions. Add four standalone interaction captures and focused tests for the eight registered test exceptions to retire its twelve evidence exceptions."
         }
       ]
     },
@@ -16393,6 +16398,11 @@
           "id": "DS-HOST-CHAT-005",
           "status": "blocked",
           "nextAction": "Blocked. Baseline shared Messaging-thread Host Chat reference and masks are registered; dedicated Host Chat design variants are still needed for keyboard/safe-area, timestamps, profile photos, generated share-card rasterization if retained, dynamic message times, snackbars, dialogs, host-shell chrome, accessibility, and theme states."
+        },
+        {
+          "id": "DS-HOST-CHAT-006",
+          "status": "open",
+          "nextAction": "feature.member_chat now binds Host Chat as a second projection of the same ChatScreen implementation, compiling all 29 host states and nine host actions. Add six standalone captures and focused tests for the 19 registered test exceptions to retire its 25 host-surface evidence exceptions."
         }
       ]
     },

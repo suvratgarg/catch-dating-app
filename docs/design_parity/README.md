@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.22
+version: 0.1.23
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -167,9 +167,9 @@ marketing `organizer_search` route, while their components, action owners,
 states, and evidence remain runtime-specific.
 
 Event Detail, Explore, Dashboard Home, Event Success, Host Home, Host
-Organizers, Host Event Create, Host Event Manage, Catches Hub, Catches Event,
-Matches List, Member Chat, Self Profile, Public Profile, and Organizer Detail
-are the current reference contracts. Organizer Detail is the first
+Organizers, Host Event Create, Host Event Manage, Host Inbox, Catches Hub,
+Catches Event, Matches List, Chat Thread, Self Profile, Public Profile, and
+Organizer Detail are the current reference contracts. Organizer Detail is the first
 three-surface reference:
 consumer Flutter, host Flutter, and the canonical marketing listing share one
 semantic feature identity while retaining separate actions and state
@@ -193,6 +193,15 @@ selection, typed activity/policy/guide choices, draft lifecycle, submission,
 and success navigation are explicit actions; text entry remains form data
 governed by field validators and event schemas. This keeps action coverage
 complete without treating every keystroke as a separate contract operation.
+
+When two registered surfaces use the same production implementation and differ
+only by viewer policy, prefer separate projections in one feature contract.
+Chat Thread is the reference: consumer and host routes both render
+`ChatScreen`, while each projection keeps its own states, action availability,
+evidence, and profile/share/safety policy. Shared code alone is insufficient if
+the user goals differ; Host Inbox remains separate because event scoping,
+audience segmentation, and broadcasts are host operations rather than thread
+behavior.
 
 Flutter preview evidence may use the stable annotated Widgetbook builder id or
 the `Type/Use case name` identity. Prefer the builder id when the same builder

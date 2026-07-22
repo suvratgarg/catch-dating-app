@@ -8074,6 +8074,11 @@
               "id": "DP-HOST-INBOX-004",
               "status": "in_progress",
               "nextAction": "Product semantics, the authorized callable, and visual parity are implemented locally. Keep production sending disabled until the live callable/IAM preflight succeeds, then record Activity durability, preference-gated push, and no match/message fan-out evidence."
+            },
+            {
+              "id": "DP-HOST-INBOX-005",
+              "status": "open",
+              "nextAction": "feature.host_inbox compiles all 25 registered states and ten actions. Add four standalone interaction captures and focused tests for the eight registered test exceptions to retire its twelve evidence exceptions."
             }
           ]
         },
@@ -8531,6 +8536,11 @@
               "id": "DP-HOST-CHAT-005",
               "status": "blocked",
               "nextAction": "Blocked. Baseline shared Messaging-thread Host Chat reference and masks are registered; dedicated Host Chat references are still needed for keyboard/safe-area, timestamps, remote photos, generated share-card rasterization if retained, dynamic message times, unread/read markers, host-shell chrome, accessibility, and theme states."
+            },
+            {
+              "id": "DP-HOST-CHAT-006",
+              "status": "open",
+              "nextAction": "feature.member_chat now binds Host Chat as a second projection of the same ChatScreen implementation, compiling all 29 host states and nine host actions. Add six standalone captures and focused tests for the 19 registered test exceptions to retire its 25 host-surface evidence exceptions."
             }
           ]
         }

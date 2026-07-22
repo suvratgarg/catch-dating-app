@@ -163,20 +163,18 @@
     {
       "authority": "flutter_screens",
       "authorityId": "screen.host.inbox",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Host inquiry inbox, filtering, broadcast, and conversation navigation.",
-      "targetFeature": "feature.host_inbox",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Host Inbox contract covers event/general scopes, booked/prospective audiences, search, conversation routing, roster-derived broadcasts, and recovery.",
+      "featureContract": "feature.host_inbox"
     },
     {
       "authority": "flutter_screens",
       "authorityId": "screen.host.chat",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Host inquiry chat and safety workflow.",
-      "targetFeature": "feature.host_chat",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Shared chat-thread contract extends the same ChatScreen implementation with host-inquiry identity, disabled profile/share policy, retries, messaging, safety, and lifecycle states.",
+      "featureContract": "feature.member_chat"
     },
     {
       "authority": "flutter_screens",

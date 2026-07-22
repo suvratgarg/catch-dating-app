@@ -3,25 +3,25 @@
   "version": 2,
   "generatedFrom": "design/features/member_chat.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:d0edec3ef690c033805e5501193de8797670be44f49fbc32fc8c426fb870472e",
-  "resolvedDigest": "sha256:f8faf4f1477887cba1cba5e23f02a7fbbb2051d25d5a44cbdbabb6082392178c",
+  "sourceDigest": "sha256:29134dd066b5ed235fe7aff133f5b85282a068017daa584fd195baa697922e40",
+  "resolvedDigest": "sha256:0a1919e794b8f4e0f62d7cf03a3fa50d881dc7d5ff356a56833603be3c002018",
   "feature": {
     "id": "feature.member_chat",
-    "name": "Member Chat",
+    "name": "Chat Thread",
     "owner": "chats",
     "status": "pilot",
-    "description": "Orchestrates a consumer conversation thread across message delivery, media upload, profile and sharing actions, safety controls, event context, and Suvbot variants."
+    "description": "Orchestrates consumer and host conversation-thread projections across message delivery, media upload, identity policy, sharing and safety actions, event context, retries, and Suvbot variants."
   },
   "coverage": {
-    "surfaces": 1,
-    "states": 23,
-    "scenarios": 23,
-    "actionCases": 23,
-    "actions": 7,
-    "captures": 18,
-    "previews": 1,
+    "surfaces": 2,
+    "states": 52,
+    "scenarios": 52,
+    "actionCases": 54,
+    "actions": 16,
+    "captures": 37,
+    "previews": 2,
     "testFiles": 7,
-    "evidenceExceptions": 12
+    "evidenceExceptions": 37
   },
   "surfaces": [
     {
@@ -1728,6 +1728,2296 @@
         ],
         "previews": [
           "ChatScreen/Route states"
+        ]
+      }
+    },
+    {
+      "id": "host_flutter",
+      "runtime": "flutter",
+      "authority": {
+        "registry": "flutter_screens",
+        "id": "screen.host.chat"
+      },
+      "actionScope": {
+        "included": "Host-inquiry authentication, match, and message recovery; host identity policy; text and image delivery; profile/share capability policy; and report/block safety actions.",
+        "excluded": [
+          "Automatic read-marker decisions and scroll coordination remain lifecycle effects owned by their controllers rather than user actions.",
+          "Suvbot and member-only profile/share behavior remain in the consumer projection; event-context enrichment failures stay non-primary."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "widgetbook/lib/matches/matches_chat_use_cases.dart"
+        ],
+        "actionOwners": [
+          {
+            "id": "chat_screen",
+            "language": "dart",
+            "file": "lib/chats/presentation/chat_screen.dart",
+            "symbol": "ChatScreen"
+          },
+          {
+            "id": "retry_controller",
+            "language": "dart",
+            "file": "lib/chats/presentation/chat_retry_controller.dart",
+            "symbol": "ChatRetryController"
+          },
+          {
+            "id": "chat_mutations",
+            "language": "dart",
+            "file": "lib/chats/presentation/chat_controller.dart",
+            "symbol": "ChatController"
+          },
+          {
+            "id": "thread_actions",
+            "language": "dart",
+            "file": "lib/chats/presentation/chat_thread_action_controller.dart",
+            "symbol": "ChatThreadActionController"
+          }
+        ],
+        "componentContracts": [
+          "catch.button",
+          "catch.error_state",
+          "catch.field",
+          "catch.icon_button",
+          "catch.surface",
+          "catch.top_bar"
+        ],
+        "dataContracts": [
+          "contracts/callables/block_user_payload.schema.json",
+          "contracts/callables/report_user_payload.schema.json",
+          "contracts/client_writes/create_chat_message.schema.json",
+          "contracts/client_writes/reset_match_unread_count.schema.json",
+          "contracts/firestore/chat_messages.schema.json",
+          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/events.schema.json",
+          "contracts/firestore/matches.schema.json",
+          "contracts/firestore/public_profiles.schema.json",
+          "contracts/storage/match_chat_images.schema.json"
+        ]
+      },
+      "coverage": {
+        "states": 29,
+        "scenarios": 29,
+        "actionCases": 31,
+        "actions": 9,
+        "captures": 19,
+        "previews": 1,
+        "testFiles": 1,
+        "evidenceExceptions": 25
+      },
+      "dimensions": {
+        "route": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "loading",
+            "error",
+            "not_found"
+          ]
+        },
+        "messages": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "loading",
+            "error",
+            "empty"
+          ]
+        },
+        "access": {
+          "default": "host_inquiry",
+          "values": [
+            "host_inquiry",
+            "profile_disabled",
+            "share_disabled",
+            "blocked"
+          ]
+        },
+        "context": {
+          "default": "event",
+          "values": [
+            "event",
+            "event_fallback"
+          ]
+        },
+        "mutation": {
+          "default": "idle",
+          "values": [
+            "idle",
+            "send_pending",
+            "image_pending",
+            "report_pending",
+            "block_pending",
+            "failed"
+          ]
+        },
+        "composer": {
+          "default": "enabled",
+          "values": [
+            "enabled",
+            "disabled",
+            "keyboard_open"
+          ]
+        },
+        "connectivity": {
+          "default": "online",
+          "values": [
+            "online",
+            "offline"
+          ]
+        },
+        "accessibility": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "text_scale_2",
+            "reduced_motion"
+          ]
+        },
+        "theme": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "light_dark"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "retry_auth",
+          "owner": "chat_screen",
+          "codeValue": "uidProvider",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "routeInstanceId",
+            "authSessionId",
+            "failureStateVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "host_inquiry_identity",
+                "offline"
+              ]
+            }
+          ],
+          "description": "Retries the route-level signed-in viewer dependency.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "retry_match",
+          "owner": "retry_controller",
+          "codeValue": "reloadMatch",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "matchId",
+            "failureStateVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "match_loading",
+                "match_error",
+                "match_not_found",
+                "host_inquiry_identity"
+              ]
+            }
+          ],
+          "description": "Invalidates only the failed match stream for the current host inquiry.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "retry_messages",
+          "owner": "retry_controller",
+          "codeValue": "reloadMessages",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "matchId",
+            "failureStateVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "messages_loading",
+                "messages_error",
+                "empty_thread",
+                "populated_thread",
+                "offline"
+              ]
+            }
+          ],
+          "description": "Invalidates only the failed conversation-message stream.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "send_message",
+          "owner": "chat_mutations",
+          "codeValue": "sendMessage",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "matchId",
+            "clientMessageId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "send_message_pending",
+                "send_failure",
+                "populated_thread",
+                "offline"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "host_chat.create_text_message"
+            }
+          ],
+          "description": "Creates one text message in the host inquiry conversation.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "send_image",
+          "owner": "chat_mutations",
+          "codeValue": "sendImage",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "matchId",
+            "messageId",
+            "storagePath"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "send_image_pending",
+                "mutation_error_listener",
+                "populated_thread",
+                "offline"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "host_chat.upload_and_create_image_message"
+            }
+          ],
+          "description": "Uploads an image and writes its message, deleting an orphaned upload if the message write fails.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_profile",
+          "owner": "thread_actions",
+          "codeValue": "profileNavigationRequest",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "matchId",
+            "targetUid"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.profile.public"
+              }
+            }
+          ],
+          "description": "Represents profile navigation capability; host-inquiry identity policy intentionally disables it.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "share_card",
+          "owner": "thread_actions",
+          "codeValue": "runThreadAction",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "matchId",
+            "messageSnapshotVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "host_chat.share_card"
+            }
+          ],
+          "description": "Represents share-card capability; host-inquiry identity policy intentionally disables it.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "report_user",
+          "owner": "chat_mutations",
+          "codeValue": "reportUser",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "matchId",
+            "targetUid",
+            "reportAttemptId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "report_user_mutation",
+                "mutation_error_listener"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "host_chat.report_user"
+            }
+          ],
+          "description": "Submits one host-chat safety report for the inquiry participant.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "block_user",
+          "owner": "chat_mutations",
+          "codeValue": "blockUser",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "targetUid",
+            "relationshipVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "block_user_mutation",
+                "blocked_chat",
+                "mutation_error_listener"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "host_chat.block_user_and_close"
+            }
+          ],
+          "description": "Confirms and blocks the inquiry participant once for the current viewer-target relationship, then closes the thread.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [
+        {
+          "stateIds": [
+            "uid_loading",
+            "host_profile_navigation_disabled",
+            "host_share_card_disabled",
+            "event_context_ready",
+            "auto_scroll_read_marker",
+            "send_failure"
+          ],
+          "evidence": [
+            "captures"
+          ],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "These Host Chat policy, lifecycle, and failure states have focused tests and the shared Host Chat preview but no standalone deterministic capture registered yet."
+        },
+        {
+          "stateIds": [
+            "uid_loading",
+            "match_loading",
+            "match_error",
+            "match_not_found",
+            "event_context_fallback",
+            "messages_loading",
+            "populated_thread",
+            "composer_disabled_loading",
+            "blocked_chat",
+            "send_message_pending",
+            "send_image_pending",
+            "report_user_mutation",
+            "block_user_mutation",
+            "mutation_error_listener",
+            "keyboard_composer",
+            "offline",
+            "text_scale_2",
+            "reduced_motion",
+            "light_dark"
+          ],
+          "evidence": [
+            "tests"
+          ],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "These registered Host Chat states have deterministic capture and preview evidence but no focused state-level automated test attached to the authority yet."
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "uid_loading",
+          "stateId": "uid_loading",
+          "kind": "loading",
+          "status": "implemented",
+          "dimensions": {
+            "route": "loading",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "route": "loading",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages",
+                  "send_message",
+                  "send_image",
+                  "open_profile",
+                  "share_card",
+                  "report_user",
+                  "block_user"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "match_loading",
+          "stateId": "match_loading",
+          "kind": "loading",
+          "status": "captured",
+          "dimensions": {
+            "route": "loading",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_match_loading"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "route": "loading",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages",
+                  "send_message",
+                  "send_image",
+                  "open_profile",
+                  "share_card",
+                  "report_user",
+                  "block_user"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "match_error",
+          "stateId": "match_error",
+          "kind": "error",
+          "status": "captured",
+          "dimensions": {
+            "route": "error",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "disabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_match_error"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "recovery",
+              "dimensions": {
+                "route": "error",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "disabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "retry_match"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_messages",
+                  "send_message",
+                  "send_image",
+                  "open_profile",
+                  "share_card",
+                  "report_user",
+                  "block_user"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "match_not_found",
+          "stateId": "match_not_found",
+          "kind": "empty",
+          "status": "captured",
+          "dimensions": {
+            "route": "not_found",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "disabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_not_found"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "route": "not_found",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "disabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages",
+                  "send_message",
+                  "send_image",
+                  "open_profile",
+                  "share_card",
+                  "report_user",
+                  "block_user"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "host_inquiry_identity",
+          "stateId": "host_inquiry_identity",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_inquiry"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": [
+              "test/chats/chat_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "host_policy",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "send_message",
+                  "send_image",
+                  "report_user",
+                  "block_user"
+                ],
+                "disabled": [
+                  "open_profile",
+                  "share_card"
+                ],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "host_profile_navigation_disabled",
+          "stateId": "host_profile_navigation_disabled",
+          "kind": "permission",
+          "status": "tested",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "profile_disabled",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": [
+              "test/chats/chat_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "policy",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "profile_disabled",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "open_profile"
+                ],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages",
+                  "send_message",
+                  "send_image",
+                  "share_card",
+                  "report_user",
+                  "block_user"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "host_share_card_disabled",
+          "stateId": "host_share_card_disabled",
+          "kind": "permission",
+          "status": "tested",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "share_disabled",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": [
+              "test/chats/chat_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "policy",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "share_disabled",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "share_card"
+                ],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages",
+                  "send_message",
+                  "send_image",
+                  "open_profile",
+                  "report_user",
+                  "block_user"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "event_context_ready",
+          "stateId": "event_context_ready",
+          "kind": "populated",
+          "status": "tested",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": [
+              "test/chats/chat_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "event",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "send_message",
+                  "send_image",
+                  "report_user",
+                  "block_user"
+                ],
+                "disabled": [
+                  "open_profile",
+                  "share_card"
+                ],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "event_context_fallback",
+          "stateId": "event_context_fallback",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event_fallback",
+            "mutation": "idle",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_event_context_fallback"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "fallback",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event_fallback",
+                "mutation": "idle",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "send_message",
+                  "send_image",
+                  "report_user",
+                  "block_user"
+                ],
+                "disabled": [
+                  "open_profile",
+                  "share_card"
+                ],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "messages_loading",
+          "stateId": "messages_loading",
+          "kind": "loading",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "messages": "loading",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_messages_loading"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "route": "ready",
+                "messages": "loading",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages",
+                  "send_message",
+                  "send_image",
+                  "open_profile",
+                  "share_card",
+                  "report_user",
+                  "block_user"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "messages_error",
+          "stateId": "messages_error",
+          "kind": "error",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "messages": "error",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_messages_error"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": [
+              "test/chats/chat_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "recovery",
+              "dimensions": {
+                "route": "ready",
+                "messages": "error",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "retry_messages"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "send_message",
+                  "send_image",
+                  "open_profile",
+                  "share_card",
+                  "report_user",
+                  "block_user"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "empty_thread",
+          "stateId": "empty_thread",
+          "kind": "empty",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "messages": "empty",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_empty_thread"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": [
+              "test/chats/chat_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "empty",
+              "dimensions": {
+                "route": "ready",
+                "messages": "empty",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "send_message",
+                  "send_image",
+                  "report_user",
+                  "block_user"
+                ],
+                "disabled": [
+                  "open_profile",
+                  "share_card"
+                ],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "populated_thread",
+          "stateId": "populated_thread",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_inquiry",
+              "host_chat_image_day_separator"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "thread",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "send_message",
+                  "send_image",
+                  "report_user",
+                  "block_user"
+                ],
+                "disabled": [
+                  "open_profile",
+                  "share_card"
+                ],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "auto_scroll_read_marker",
+          "stateId": "auto_scroll_read_marker",
+          "kind": "populated",
+          "status": "tested",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": [
+              "test/chats/chat_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "lifecycle",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "send_message",
+                  "send_image",
+                  "report_user",
+                  "block_user"
+                ],
+                "disabled": [
+                  "open_profile",
+                  "share_card"
+                ],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "composer_enabled",
+          "stateId": "composer_enabled",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_composer_states",
+              "host_chat_keyboard_multiline"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": [
+              "test/chats/chat_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "composer",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "send_message",
+                  "send_image"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages",
+                  "open_profile",
+                  "share_card",
+                  "report_user",
+                  "block_user"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "composer_disabled_loading",
+          "stateId": "composer_disabled_loading",
+          "kind": "loading",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "disabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_match_loading",
+              "host_chat_composer_states"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "disabled",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "disabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "send_message",
+                  "send_image"
+                ],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages",
+                  "open_profile",
+                  "share_card",
+                  "report_user",
+                  "block_user"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "blocked_chat",
+          "stateId": "blocked_chat",
+          "kind": "permission",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "blocked",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "disabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_blocked",
+              "host_chat_composer_states"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "blocked",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "blocked",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "disabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "report_user",
+                  "block_user"
+                ],
+                "disabled": [
+                  "send_message",
+                  "send_image",
+                  "open_profile",
+                  "share_card"
+                ],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "send_message_pending",
+          "stateId": "send_message_pending",
+          "kind": "mutation",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "send_pending",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_composer_states"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "pending",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "send_pending",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "send_message",
+                  "send_image"
+                ],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages",
+                  "open_profile",
+                  "share_card",
+                  "report_user",
+                  "block_user"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "send_failure",
+          "stateId": "send_failure",
+          "kind": "mutation",
+          "status": "tested",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "failed",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": [
+              "test/chats/chat_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "retry",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "failed",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "send_message",
+                  "send_image"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages",
+                  "open_profile",
+                  "share_card",
+                  "report_user",
+                  "block_user"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "send_image_pending",
+          "stateId": "send_image_pending",
+          "kind": "mutation",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "image_pending",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_composer_states"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "pending",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "image_pending",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "send_message",
+                  "send_image"
+                ],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages",
+                  "open_profile",
+                  "share_card",
+                  "report_user",
+                  "block_user"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "top_bar_safety_actions",
+          "stateId": "top_bar_safety_actions",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_safety_pending_menu"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": [
+              "test/chats/chat_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "safety",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "report_user",
+                  "block_user"
+                ],
+                "disabled": [
+                  "open_profile",
+                  "share_card"
+                ],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages",
+                  "send_message",
+                  "send_image"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "report_user_mutation",
+          "stateId": "report_user_mutation",
+          "kind": "mutation",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "report_pending",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_report_failure_snackbar",
+              "host_chat_safety_pending_menu"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "report_pending",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "report_pending",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "report_user"
+                ],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages",
+                  "send_message",
+                  "send_image",
+                  "open_profile",
+                  "share_card",
+                  "block_user"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "block_user_mutation",
+          "stateId": "block_user_mutation",
+          "kind": "mutation",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "block_pending",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_block_confirm_dialog",
+              "host_chat_safety_pending_menu"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "block_pending",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "block_pending",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "block_user"
+                ],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages",
+                  "send_message",
+                  "send_image",
+                  "open_profile",
+                  "share_card",
+                  "report_user"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "mutation_error_listener",
+          "stateId": "mutation_error_listener",
+          "kind": "mutation",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "failed",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_report_failure_snackbar"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "retry_safety",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "failed",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "report_user",
+                  "block_user"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages",
+                  "send_message",
+                  "send_image",
+                  "open_profile",
+                  "share_card"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "keyboard_composer",
+          "stateId": "keyboard_composer",
+          "kind": "accessibility",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "keyboard_open",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_keyboard_multiline"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "keyboard",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "keyboard_open",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "send_message",
+                  "send_image"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages",
+                  "open_profile",
+                  "share_card",
+                  "report_user",
+                  "block_user"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "offline",
+          "stateId": "offline",
+          "kind": "offline",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "enabled",
+            "connectivity": "offline",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_offline"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "auth_recovery",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "enabled",
+                "connectivity": "offline",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "retry_auth"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_match",
+                  "retry_messages",
+                  "send_message",
+                  "send_image",
+                  "open_profile",
+                  "share_card",
+                  "report_user",
+                  "block_user"
+                ]
+              }
+            },
+            {
+              "id": "message_recovery",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "enabled",
+                "connectivity": "offline",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "retry_messages"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "send_message",
+                  "send_image",
+                  "open_profile",
+                  "share_card",
+                  "report_user",
+                  "block_user"
+                ]
+              }
+            },
+            {
+              "id": "send_retry",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "enabled",
+                "connectivity": "offline",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "send_message",
+                  "send_image"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages",
+                  "open_profile",
+                  "share_card",
+                  "report_user",
+                  "block_user"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "text_scale_2",
+          "stateId": "text_scale_2",
+          "kind": "accessibility",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "text_scale_2",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_text_scale_2"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "thread",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "text_scale_2",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "send_message",
+                  "send_image",
+                  "report_user",
+                  "block_user"
+                ],
+                "disabled": [
+                  "open_profile",
+                  "share_card"
+                ],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "reduced_motion",
+          "stateId": "reduced_motion",
+          "kind": "accessibility",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "reduced_motion",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_reduced_motion"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "thread",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "reduced_motion",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "send_message",
+                  "send_image",
+                  "report_user",
+                  "block_user"
+                ],
+                "disabled": [
+                  "open_profile",
+                  "share_card"
+                ],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "light_dark",
+          "stateId": "light_dark",
+          "kind": "theme",
+          "status": "captured",
+          "dimensions": {
+            "route": "ready",
+            "messages": "ready",
+            "access": "host_inquiry",
+            "context": "event",
+            "mutation": "idle",
+            "composer": "enabled",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "light_dark"
+          },
+          "evidence": {
+            "captureIds": [
+              "host_chat_light_dark"
+            ],
+            "previewIds": [
+              "ChatScreen/Host chat states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "thread",
+              "dimensions": {
+                "route": "ready",
+                "messages": "ready",
+                "access": "host_inquiry",
+                "context": "event",
+                "mutation": "idle",
+                "composer": "enabled",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "light_dark"
+              },
+              "actions": {
+                "enabled": [
+                  "send_message",
+                  "send_image",
+                  "report_user",
+                  "block_user"
+                ],
+                "disabled": [
+                  "open_profile",
+                  "share_card"
+                ],
+                "notAllowed": [
+                  "retry_auth",
+                  "retry_match",
+                  "retry_messages"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "screen.host.chat",
+          "owner": "hosts",
+          "routes": [
+            {
+              "id": "hostChatScreen",
+              "path": "/host/inbox/:matchId",
+              "role": "primary"
+            }
+          ]
+        },
+        "components": [
+          {
+            "id": "catch.button",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchButton",
+              "file": "lib/core/widgets/catch_button.dart",
+              "constructors": [
+                "CatchButton"
+              ]
+            }
+          },
+          {
+            "id": "catch.error_state",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchErrorState",
+              "file": "lib/core/widgets/catch_error_state.dart",
+              "constructors": [
+                "CatchErrorState",
+                "CatchErrorState.fromError"
+              ]
+            }
+          },
+          {
+            "id": "catch.field",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchField",
+              "file": "lib/core/widgets/catch_field.dart",
+              "constructors": [
+                "CatchField.read",
+                "CatchField.content",
+                "CatchField.nav",
+                "CatchField.action",
+                "CatchField.toggle",
+                "CatchField.input",
+                "CatchField.inputActions",
+                "CatchField.control",
+                "CatchField.choices",
+                "CatchField.optionCards",
+                "CatchField.stepper",
+                "CatchField.add",
+                "CatchField.select"
+              ]
+            }
+          },
+          {
+            "id": "catch.icon_button",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchIconButton",
+              "file": "lib/core/widgets/catch_icon_button.dart",
+              "constructors": [
+                "CatchIconButton",
+                "CatchIconButton.icon",
+                "CatchIconButton.counted"
+              ]
+            }
+          },
+          {
+            "id": "catch.surface",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchSurface",
+              "file": "lib/core/widgets/catch_surface.dart",
+              "constructors": [
+                "CatchSurface",
+                "CatchSurface.card",
+                "CatchSurface.tinted",
+                "CatchSurface.message"
+              ]
+            }
+          },
+          {
+            "id": "catch.top_bar",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchTopBar",
+              "file": "lib/core/widgets/catch_top_bar.dart",
+              "constructors": [
+                "CatchTopBar"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "ChatScreen/Host chat states"
         ]
       }
     }
