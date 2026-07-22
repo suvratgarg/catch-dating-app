@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "tool": "audit-merge-drops",
+  "refs": {
+    "base": "c17ffc43503a04cfc752696d8075e920f1fbb7cb",
+    "ours": "9a9e3ef3c8f12bd874274c337f7a9ebf0262f328",
+    "theirs": "2a382a25432e46ec79fdb3ba8b2bf47f17513409",
+    "merged": "9e7e693e24033a34c39b56f2ebea6471782ef13d"
+  },
+  "summary": {
+    "changedPaths": 669,
+    "discarded-ours": 0,
+    "discarded-theirs": 0,
+    "both-diverged": 16,
+    "resolved-equivalent": 0,
+    "retained-ours": 604,
+    "retained-theirs": 49,
+    "discardedPaths": 0,
+    "unreceiptedDiscardedPaths": 0,
+    "invalidReceipts": 0
+  },
+  "bothDivergedReview": [
+    {
+      "path": ".github/workflows/marketing-website.yml",
+      "resolution": "Combined organizer public-surface gates with the website pilot workflow changes; the marketing build and pretypecheck suite passed."
+    },
+    {
+      "path": ".github/workflows/website-production-observability.yml",
+      "resolution": "Retained the upstream production probe workflow and removed only its trailing blank line."
+    },
+    {
+      "path": "docs/audit_registry/doc_versions.json",
+      "resolution": "Recorded monotonic merged versions matching the three resolved owner documents; the monotonicity gate passed."
+    },
+    {
+      "path": "docs/audit_registry/files.jsonl",
+      "resolution": "Regenerated from the complete merged tree with audit_registry refresh."
+    },
+    {
+      "path": "docs/audit_registry/test_inventory.json",
+      "resolution": "Regenerated from the complete merged tree; the inventory freshness check passed."
+    },
+    {
+      "path": "docs/generated/react_dependency_graph/README.md",
+      "resolution": "Regenerated from the combined React source tree; the dependency graph gate passed."
+    },
+    {
+      "path": "docs/generated/react_dependency_graph/react_dependency_graph.json",
+      "resolution": "Regenerated from the combined React source tree; 295 modules and 1122 edges were verified."
+    },
+    {
+      "path": "docs/generated/react_dependency_graph/react_dependency_graph.mmd",
+      "resolution": "Regenerated from the combined React source tree."
+    },
+    {
+      "path": "docs/marketing_website_architecture.md",
+      "resolution": "Merged the organizer URL fail-closed contract with the now-published website legal-content contract and advanced the version."
+    },
+    {
+      "path": "docs/release_operations.md",
+      "resolution": "Retained both release guidance sets and advanced the governed version."
+    },
+    {
+      "path": "docs/web_surface_architecture.md",
+      "resolution": "Retained both web-surface guidance sets and advanced the governed version."
+    },
+    {
+      "path": "operations/launch/README.md",
+      "resolution": "Retained the upstream launch workflow guidance and removed only its trailing blank line."
+    },
+    {
+      "path": "website/README.md",
+      "resolution": "Git merged the organizer and pilot documentation additions; website pretypecheck and build passed."
+    },
+    {
+      "path": "website/scripts/postbuild.mjs",
+      "resolution": "Git merged both route-contract changes; postbuild contract tests and the production build passed."
+    },
+    {
+      "path": "website/scripts/postbuild.test.mjs",
+      "resolution": "Git merged both test expansions; the postbuild contract tests passed."
+    },
+    {
+      "path": "website/scripts/probeProduction.test.mjs",
+      "resolution": "Retained the upstream production-probe tests and removed only their trailing blank line."
+    }
+  ]
+}
