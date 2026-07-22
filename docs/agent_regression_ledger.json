@@ -1,5 +1,5 @@
 {
-  "version": 59,
+  "version": 60,
   "updated": "2026-07-22",
   "owner": "agent_operating_model",
   "entries": [
@@ -2508,26 +2508,26 @@
     },
     {
       "id": "REG-ORGANIZER-ROLLOUT-READ-FALLBACK-001",
-      "title": "Organizer-first client ships before production read access or projection data",
+      "title": "Legacy organizer read fallback returns after canonical cutover",
       "status": "active",
       "applies_to": [
         "lib/clubs/data/clubs_repository.dart",
-        "lib/clubs/data/organizer_projection_fallback.dart",
         "docs/migrations/clubs_to_organizers.md",
-        "test/clubs/organizer_projection_fallback_test.dart"
+        "tool/check_organizer_nomenclature.mjs",
+        "test/clubs/clubs_repository_test.dart"
       ],
-      "symptom": "Home and Explore fail with Firestore permission-denied after the client switches reads to organizers while production still exposes only the legacy clubs compatibility projection.",
+      "symptom": "Current clients silently read clubs after a canonical organizer error, masking rollout defects and restoring two competing read authorities.",
       "guard": {
         "type": "command",
-        "command": "flutter test test/clubs/organizer_projection_fallback_test.dart test/clubs/clubs_repository_test.dart",
-        "guardEvidence": "watch falls back when canonical collection access is denied"
+        "command": "node tool/check_organizer_nomenclature.mjs && flutter test test/clubs/clubs_repository_test.dart",
+        "guardEvidence": "the nomenclature gate rejects legacy fallback seams and repository tests prove legacy-only documents are ignored"
       },
       "owner_docs": [
         "docs/migrations/clubs_to_organizers.md",
         "docs/data_contracts.md",
         "docs/app_architecture.md"
       ],
-      "notes": "This is a temporary read-only compatibility seam. It must be retired after production rules, indexes, backfill, and released-client evidence satisfy the migration exit gate."
+      "notes": "The temporary permission-denied fallback was retired on 2026-07-22 after production rules, indexes, and 41-of-41 organizer parity were verified. Legacy writes remain only for released-client compatibility until a separate cleanup."
     }
   ]
 }

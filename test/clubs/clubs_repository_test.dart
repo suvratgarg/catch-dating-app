@@ -141,6 +141,21 @@ void main() {
       expect(await repository.fetchClub('club-missing'), isNull);
     });
 
+    test('reads only canonical organizers after fallback retirement', () async {
+      final legacyOnly = buildClub(id: 'legacy-only');
+      await firestore
+          .collection('clubs')
+          .doc(legacyOnly.id)
+          .set(legacyOnly.toJson());
+
+      expect(await repository.fetchClub(legacyOnly.id), isNull);
+      await expectLater(repository.watchClub(legacyOnly.id), emits(null));
+      await expectLater(
+        repository.watchClubsByLocation(legacyOnly.locationMarketId),
+        emits(isEmpty),
+      );
+    });
+
     test(
       'watchClubsByLocation filters by city and orders by createdAt',
       () async {

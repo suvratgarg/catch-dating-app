@@ -4,7 +4,7 @@
   "legacyStoragePath": "clubs/{clubId}",
   "candidatePrimaryStoragePath": "organizers/{organizerId}",
   "selectedFutureName": "organizers",
-  "currentPhase": "backfill_and_parity",
+  "currentPhase": "freeze_legacy_writes",
   "reason": "Organizer is the durable product entity and club is one organizer subtype. The migration must replace club-specific storage, identifiers, relationships, routes, and client vocabulary without breaking released apps or public pages.",
   "classification": {
     "field": "organizerType",
@@ -43,8 +43,8 @@
     },
     {
       "id": "backfill_and_parity",
-      "status": "pending",
-      "description": "Run dry-run-first idempotent tooling that copies every legacy club as organizerType club unless a canonical mapped value exists, then prove field, document, relationship, route, and media parity."
+      "status": "complete_remote",
+      "description": "Dry-run-first idempotent tooling copied legacy club authority into canonical organizers and proved field, document, relationship, route, and media parity in staging and production on 2026-07-22."
     },
     {
       "id": "client_cutover",
@@ -52,14 +52,24 @@
       "description": "Move Flutter consumer and Hosts surfaces plus React website and admin clients to organizer-named domains, identifiers, routes, and primary reads."
     },
     {
-      "id": "new_primary_and_freeze_old",
+      "id": "new_primary",
+      "status": "complete",
+      "description": "Make organizers the only primary authority and current-client read target while compatibility writers continue to mirror released-client fields."
+    },
+    {
+      "id": "retire_client_fallback",
+      "status": "complete",
+      "description": "Remove the Flutter permission-denied fallback to legacy clubs after production rules and organizer document parity are independently verified."
+    },
+    {
+      "id": "freeze_legacy_writes",
       "status": "pending",
-      "description": "Make organizers the only primary write target, freeze new clubs data, retain measured fallback reads, and verify released-client compatibility."
+      "description": "After the supported released-client window, stop compatibility writes to legacy club collections and prove no operational consumer depends on them."
     },
     {
       "id": "retire_legacy",
       "status": "pending",
-      "description": "After remote parity and release-age evidence, remove fallback reads and legacy fields, collections, indexes, rules, storage paths, and callable wrappers through an explicitly approved cleanup."
+      "description": "After release-age and operational-consumer evidence, remove legacy fields, collections, indexes, rules, storage paths, and callable wrappers through an explicitly approved cleanup."
     }
   ],
   "knownConsumers": [
@@ -81,8 +91,8 @@
     "storageRules": "Organizer media paths must be dual-supported and copied with checksum evidence before club media paths are frozen."
   },
   "remoteInventoryEvidence": {
-    "observedAt": "2026-07-20",
-    "path": "docs/migrations/evidence/clubs_to_organizers_2026-07-20_dry_run.json",
+    "observedAt": "2026-07-22",
+    "path": "docs/migrations/evidence/clubs_to_organizers_2026-07-22_rollout.json",
     "mutated": true,
     "environments": {
       "dev": {
@@ -91,20 +101,40 @@
         "parity": "complete_remote"
       },
       "staging": {
-        "backendDeployed": false,
-        "backfillApplied": false,
-        "parity": "pending"
+        "backendDeployed": true,
+        "backfillApplied": true,
+        "parity": "complete_remote"
       },
       "prod": {
-        "backendDeployed": false,
-        "backfillApplied": false,
-        "parity": "pending"
+        "backendDeployed": true,
+        "backfillApplied": true,
+        "parity": "complete_remote",
+        "callableInvokerIam": "pending_explicit_approval"
       }
+    }
+  },
+  "liveApply": {
+    "validatedAt": "2026-07-22",
+    "evidencePath": "docs/migrations/evidence/clubs_to_organizers_2026-07-22_rollout.json",
+    "staging": {
+      "clubsScanned": 0,
+      "organizersAfter": 0,
+      "writesNeededAfter": 0,
+      "blockersAfter": 0
+    },
+    "prod": {
+      "clubsScanned": 41,
+      "organizersAfter": 41,
+      "firestoreWritesApplied": 6780,
+      "writesNeededAfter": 0,
+      "blockersAfter": 0,
+      "storageCopiesNeededAfter": 0
     }
   },
   "guards": [
     "tool/contracts/check_migration_contracts.mjs validates phase truthfulness.",
     "A clubs-to-organizers vocabulary scanner blocks new product-facing club authority outside explicit compatibility allowlists.",
+    "The organizer nomenclature scanner blocks reintroduction of the retired Flutter legacy read fallback.",
     "Backfill apply mode is disabled until dry-run counts, conflict reports, backups, and target environment are explicit.",
     "Legacy deletion is a separate explicitly approved operation after parity and released-client evidence."
   ]

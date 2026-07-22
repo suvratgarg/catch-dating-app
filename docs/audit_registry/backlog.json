@@ -1,6 +1,6 @@
 {
-  "version": "2.7.164",
-  "updated": "2026-07-21",
+  "version": "2.7.165",
+  "updated": "2026-07-22",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, uid-loading conflation follow-up, React component-governance follow-up including class-name boundary enforcement and exported website feature component registry coverage, admin feature export boundary, the retired website legacy site barrel/import boundary, UI label spans, empty-state variants, page shells, claim-flow route/root/auth-row shells, website Host Page route, Host Application flow, Host feature section, waitlist form shells, marketing section, marketing info-card, marketing loop-list, marketing consent banner, featured organizer card, app-download CTA group, organizer listing, organizer listing hero, organizer listing event section including event-action cards, organizer search section, organizer search result shells, PublicSearchBar ownership, public event-card shells, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin loading icon shells, admin toolbar shells/modifiers, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin marketing layout shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision/footer shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin roadmap lists, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
   "scanner_snapshot": {
@@ -44,6 +44,29 @@
     ]
   },
   "pending": [
+    {
+      "id": "PROD-FUNCTION-TRIGGER-TYPE-DRIFT-001",
+      "title": "Reconcile production event trigger types before the next full Functions rollout",
+      "status": "active",
+      "owner": "agent",
+      "area": "functions,release,production",
+      "priority": "high",
+      "summary": "The 2026-07-22 production organizer rollout safely stopped two broad deploy attempts because live onEventInviteLinkWritten and onEventWaitlistOfferWritten are HTTPS functions while current source exports background Firestore triggers under the same names. Organizer-owned functions were deployed with an exact allowlist; the mismatched live functions were not replaced or deleted.",
+      "acceptance": [
+        "inventory the live trigger type, region, runtime, and consumers for both function names",
+        "choose a no-downtime rename or explicitly approved replacement sequence rather than forcing an in-place type change",
+        "exercise invite-link and waitlist-offer behavior in staging before production",
+        "prove a full manifest-driven Functions deploy plan no longer stops on trigger-type drift",
+        "retain rollback evidence for any live function replacement"
+      ],
+      "paths": [
+        "functions/src/index.ts",
+        "functions/src/events",
+        "tool/deploy_firebase_targets.sh",
+        "docs/release_operations.md"
+      ],
+      "source": "2026-07-22-organizer-production-rollout"
+    },
     {
       "id": "WEB-ORGANIZER-CLAIM-TARGET-001",
       "title": "Cut organizer intake claim targets over to canonical organizer documents",

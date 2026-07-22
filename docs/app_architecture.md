@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.5.3
+version: 1.5.4
 updated: 2026-07-22
 owner: recursive_audit_loop
 status: active
@@ -51,7 +51,9 @@ as one organizer subtype. Primary repository reads use `organizers`,
 `organizerFollows`, and organizer-named callables; events carry
 `organizerId`; organizer media uploads use `organizers/{id}`; public/detail and
 Hosts routes use `/organizers` and `/host/organizers`. `/host/clubs` is a
-redirect-only compatibility route.
+redirect-only compatibility route. Current Flutter repositories never fall
+back to the legacy `clubs` collection; a canonical read failure remains visible
+and recoverable through the shared async error policy.
 
 The Hosts owner can edit the required `organizerType` field using the closed
 taxonomy `club`, `community`, `individual`, `eventProducer`, `venue`, and

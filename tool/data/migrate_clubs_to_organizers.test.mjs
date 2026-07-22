@@ -258,6 +258,36 @@ test("plan blocks conflicting target authority instead of overwriting", () => {
   assert.match(plan.blockers[0].reasons.join(" "), /name differs/);
 });
 
+test("plan accepts backend-owned organizer projections recomputed after copy", () => {
+  const source = entry("clubs/club-1", {
+    name: "Source name",
+    clubPhotos: [],
+    memberCount: 0,
+    rating: 3,
+    reviewCount: 1,
+    verifiedReviewCount: 0,
+    nextEventAt: {seconds: 10, nanoseconds: 0},
+    nextEventLabel: "Legacy projection",
+    createdAt: timestamp,
+  });
+  const target = entry("organizers/club-1", {
+    ...canonicalOrganizerDocument("club-1", source.data),
+    rating: 4.5,
+    reviewCount: 8,
+    verifiedReviewCount: 7,
+    nextEventAt: {seconds: 20, nanoseconds: 0},
+    nextEventLabel: "Canonical projection",
+  });
+
+  const plan = buildClubsToOrganizersPlan(inventory({
+    clubs: [source],
+    organizers: [target],
+  }));
+
+  assert.equal(plan.writes.length, 0);
+  assert.equal(plan.blockers.length, 0);
+});
+
 test("plan is idempotent when canonical target and reference already match", () => {
   const source = entry("clubs/club-1", {
     name: "Source name",

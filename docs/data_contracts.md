@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.4.1
-updated: 2026-07-21
+version: 1.4.2
+updated: 2026-07-22
 owner: recursive_audit_loop
 status: active
 ---
@@ -82,6 +82,9 @@ New contracts use `organizerId`, `organizerTeamMemberships`,
 `clubClaimRequests`, `clubScheduleLocks`, `clubId`, and club-media contracts are
 released-client compatibility projections only. They remain additive during
 the migration window and must not become the authority for new behavior.
+Production canonical parity completed on 2026-07-22, and current Flutter reads
+do not fall back to `clubs`; compatibility writes remain until the separate
+released-client retirement gate is approved.
 
 ### Required Event Meeting Location
 
@@ -617,12 +620,12 @@ types/folders and callable wrappers are compatibility adapters until the remote
 backfill and supported-client window are proven. They must not be used to
 introduce new club-only behavior.
 
-Remote organizer backfill and legacy cleanup are intentionally not complete.
-Follow `docs/migrations/clubs_to_organizers.md`. Do not delete or reset
-Firestore data in dev, staging, or prod without a separate explicit
-destructive-action confirmation. Preserve user documents and both canonical
-organizer documents and legacy club projections
-through any remote migration.
+Remote organizer backfill is complete in staging and production; legacy
+cleanup is intentionally not complete. Follow
+`docs/migrations/clubs_to_organizers.md`. Do not delete or reset Firestore data
+in dev, staging, or prod without a separate explicit destructive-action
+confirmation. Preserve user documents and both canonical organizer documents
+and legacy club projections through any remote migration.
 
 If remote cleanup is approved, first export or back up existing `users`,
 `publicProfiles`, and old `runClubs` documents for each Firebase environment.

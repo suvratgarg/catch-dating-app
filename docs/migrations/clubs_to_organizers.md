@@ -1,7 +1,7 @@
 ---
 doc_id: clubs_to_organizers_migration
-version: 1.0.1
-updated: 2026-07-21
+version: 1.1.0
+updated: 2026-07-22
 owner: data_platform
 status: active
 ---
@@ -61,12 +61,12 @@ fields are mirrors for released clients and warehouse continuity, not alternate
 sources of truth. `tool/check_organizer_nomenclature.mjs` enforces the selected
 cutover points.
 
-During the additive deployment window, Flutter organizer reads try
-`organizers` first and may fall back to the `clubs` projection only when
-Firestore rejects access to the canonical collection. Empty canonical results
-never trigger fallback, and all writes remain canonical/callable-owned. Remove
-this rollout fallback only after production rules/data are deployed and
-fallback-read evidence is zero.
+Flutter organizer reads now use `organizers` exclusively. The temporary
+permission-denied fallback to `clubs` was retired on 2026-07-22 after staging
+and production rules were deployed and production parity reached 41 clubs, 41
+organizers, zero remaining writes, and zero blockers. The legacy collections
+remain read/write compatibility projections for supported older released
+clients; they are not an alternate read authority for current source.
 
 ## What The Migration Copies
 
@@ -84,10 +84,13 @@ fallback-read evidence is zero.
   user schedule locks;
 - all Storage objects below `clubs/` into the equivalent `organizers/` path.
 
-An existing canonical value must either match the legacy source or be missing.
-The tool reports a blocker instead of overwriting a different value. Existing
-Storage targets require a matching CRC32C or MD5 checksum; different or
-incomparable objects block apply.
+An existing canonical value must either match the legacy source or be missing,
+except for backend-owned organizer projections such as next-event and review
+aggregates. Once a canonical organizer exists, those trigger-recomputed values
+are authoritative and the migration verifier preserves them instead of
+comparing them to a stale legacy projection. Other differences remain blockers
+and are never overwritten. Existing Storage targets require a matching CRC32C
+or MD5 checksum; different or incomparable objects block apply.
 
 ## Environment Run Order
 
@@ -106,10 +109,10 @@ Complete this sequence independently in dev, staging, and production:
    `lib/firebase_options_<env>.dart`. Use `--storage-bucket <name>` only for a
    deliberately selected non-default bucket.
 
-   The latest read-only environment inventory is recorded in
-   `docs/migrations/evidence/clubs_to_organizers_2026-07-20_dry_run.json`. It is
-   evidence of migration size and blockers only; it is not apply evidence and
-   does not advance the contract phase.
+   The original read-only inventory is recorded in
+   `docs/migrations/evidence/clubs_to_organizers_2026-07-20_dry_run.json`.
+   Applied staging and production results are recorded in
+   `docs/migrations/evidence/clubs_to_organizers_2026-07-22_rollout.json`.
 
 3. Resolve every blocker. Review source counts, planned writes by kind, and
    Storage copy count. Create an owner-restricted backup directory outside the
@@ -159,9 +162,13 @@ Before calling an environment migrated, record:
 - the migration's post-apply plan is empty;
 - organizer-first app, website, and admin smoke flows pass.
 
-The legacy side remains a compatibility projection after parity. A later
-retirement plan must prove fallback-read volume is zero, all supported clients
-are organizer-aware, and no operational tool still treats `clubs` as primary.
+Staging and production Firestore/Storage parity completed on 2026-07-22. The
+production apply created 41 canonical organizers through 6,780 planned writes;
+an independent reread found zero remaining writes, blockers, or Storage copies.
+The legacy side remains a compatibility projection after parity. Client
+fallback reads are retired, but deleting legacy fields, collections, rules,
+indexes, Storage paths, or callable wrappers remains a separate operation that
+requires released-client and operational-tool evidence.
 
 ## Failure And Recovery
 
@@ -189,7 +196,8 @@ Apply with the ordinary `--apply`, `--confirm-migration`, and secure
 `--backup-file` gates. The repair derives each legacy count from active
 `clubMemberships`; it never copies `followerCount` into `memberCount`.
 
-Rollback during the compatibility window means moving client reads back to the
-legacy projection while preserving canonical data for diagnosis. It does not
-mean deleting `organizers` or copied media. Any destructive rollback needs its
-own exact target list, export, approval, and receipt.
+Rollback during the compatibility window preserves canonical data and the
+owner-restricted pre-apply backup for diagnosis. Reintroducing a legacy client
+read would be a reviewed source change, not an automatic runtime fallback. It
+does not mean deleting `organizers` or copied media. Any destructive rollback
+needs its own exact target list, export, approval, and receipt.

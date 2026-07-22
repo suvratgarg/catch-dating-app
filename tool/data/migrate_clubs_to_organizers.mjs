@@ -16,6 +16,14 @@ import {validateOrganizerDocument} from
 const requireFromFunctions = createFunctionsRequire();
 const admin = requireFromFunctions("firebase-admin");
 
+const backendOwnedOrganizerProjectionFields = Object.freeze([
+  "nextEventAt",
+  "nextEventLabel",
+  "rating",
+  "reviewCount",
+  "verifiedReviewCount",
+]);
+
 export const organizerReferenceCollections = Object.freeze([
   "eventBroadcasts",
   "eventInviteLinks",
@@ -207,10 +215,13 @@ export function buildClubsToOrganizersPlan(
   const followerCounts = activeLegacyFollowerCounts(collections.clubMemberships);
 
   for (const club of collections.clubs ?? []) {
-    const expected = canonicalOrganizerDocument(club.id, club.data, {
-      followerCount: followerCounts.get(club.id) ?? 0,
-    });
     const target = targetById.get(club.id)?.data;
+    const expected = preserveBackendOwnedOrganizerProjections(
+      canonicalOrganizerDocument(club.id, club.data, {
+        followerCount: followerCounts.get(club.id) ?? 0,
+      }),
+      target
+    );
     const repairFollowerCount = repairLegacyMemberCounts &&
       target !== undefined &&
       target.followerCount === legacyDerivedFollowerCount(club.data) &&
@@ -392,6 +403,15 @@ export function buildClubsToOrganizersPlan(
     blockers,
     summary: summarizeFirestore(writesByTarget, blockers, collections),
   };
+}
+
+function preserveBackendOwnedOrganizerProjections(expected, target) {
+  if (target === undefined) return expected;
+  const canonical = {...expected};
+  for (const field of backendOwnedOrganizerProjectionFields) {
+    if (field in target) canonical[field] = target[field];
+  }
+  return canonical;
 }
 
 export function canonicalOrganizerDocument(

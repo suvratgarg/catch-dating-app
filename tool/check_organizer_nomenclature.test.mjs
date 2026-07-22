@@ -13,6 +13,11 @@ test("organizer nomenclature gate rejects legacy authority and generic copy", ()
     httpsCallable(functions, "createPublicClubReview");
   `);
   write(root, "lib/example.dart", "httpsCallable('joinClub')");
+  write(root, "lib/clubs/data/clubs_repository.dart", `
+    const _legacyCollectionPath = "clubs";
+    watchWithLegacyProjection();
+    import "organizer_projection_fallback.dart";
+  `);
   write(root, "lib/l10n/app_en.arb", JSON.stringify({copy: "Join club"}));
 
   const result = checkOrganizerNomenclature({root});
@@ -20,6 +25,9 @@ test("organizer nomenclature gate rejects legacy authority and generic copy", ()
   assert.equal(result.ok, false);
   assert.ok(result.findings.some((item) =>
     item.rule === "legacyAuthorityMarker"));
+  assert.ok(result.findings.some((item) =>
+    item.rule === "legacyAuthorityMarker" &&
+    item.detail.includes("organizer_projection_fallback")));
   assert.ok(result.findings.some((item) =>
     item.rule === "legacyClientAuthorityPattern" &&
     item.path === "website/src/legacyApi.ts"));

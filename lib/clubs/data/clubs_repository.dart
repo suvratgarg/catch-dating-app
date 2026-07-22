@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/clubs/data/club_callable_responses.dart';
-import 'package:catch_dating_app/clubs/data/organizer_projection_fallback.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
@@ -28,7 +27,6 @@ class ClubsRepository {
   const ClubsRepository(this._db, this._functions);
 
   static const _collectionPath = 'organizers';
-  static const _legacyCollectionPath = 'clubs';
 
   final FirebaseFirestore _db;
   final FirebaseFunctions _functions;
@@ -41,25 +39,12 @@ class ClubsRepository {
         toJson: (club) => club.toJson(),
       );
 
-  CollectionReference<Club> get _legacyClubsRef => _db
-      .collection(_legacyCollectionPath)
-      .withDocumentIdConverter<Club>(
-        idField: 'id',
-        fromJson: Club.fromJson,
-        toJson: (club) => club.toJson(),
-      );
-
   DocumentReference<Club> _clubRef([String? id]) => _clubsRef.doc(id);
 
   // ── Read ───────────────────────────────────────────────────────────────────
 
-  Stream<Club?> watchClub(String id) => _watchWithLegacyProjection(
-    canonical: () =>
-        _clubRef(id).snapshots().map((doc) => doc.exists ? doc.data() : null),
-    legacy: () => _legacyClubsRef
-        .doc(id)
-        .snapshots()
-        .map((doc) => doc.exists ? doc.data() : null),
+  Stream<Club?> watchClub(String id) => withBackendErrorStream(
+    () => _clubRef(id).snapshots().map((doc) => doc.exists ? doc.data() : null),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch organizer',
@@ -67,13 +52,9 @@ class ClubsRepository {
     ),
   );
 
-  Future<Club?> fetchClub(String id) => _fetchWithLegacyProjection(
+  Future<Club?> fetchClub(String id) => withBackendErrorContext(
     () async {
       final doc = await _clubRef(id).get();
-      return doc.exists ? doc.data() : null;
-    },
-    () async {
-      final doc = await _legacyClubsRef.doc(id).get();
       return doc.exists ? doc.data() : null;
     },
     context: const BackendErrorContext(
@@ -83,107 +64,75 @@ class ClubsRepository {
     ),
   );
 
-  Stream<List<Club>> watchClubsByLocation(
-    String location,
-  ) => _watchWithLegacyProjection(
-    canonical: () => _clubsRef
-        .where('locationMarketId', isEqualTo: location)
-        .orderBy('createdAt', descending: true)
-        .limit(ReadLimitPolicy.directoryPage)
-        .snapshots()
-        .map((snap) => _appDiscoverableClubs(snap.docs.map((d) => d.data()))),
-    legacy: () => _legacyClubsRef
-        .where('locationMarketId', isEqualTo: location)
-        .orderBy('createdAt', descending: true)
-        .limit(ReadLimitPolicy.directoryPage)
-        .snapshots()
-        .map((snap) => _appDiscoverableClubs(snap.docs.map((d) => d.data()))),
-    context: const BackendErrorContext(
-      service: BackendService.firestore,
-      action: 'watch organizers by location',
-      resource: _collectionPath,
-    ),
-  );
-
-  Stream<List<Club>> watchClubsByLocationSortedByRating(
-    String location,
-  ) => _watchWithLegacyProjection(
-    canonical: () => _clubsRef
-        .where('locationMarketId', isEqualTo: location)
-        .orderBy('rating', descending: true)
-        .limit(ReadLimitPolicy.directoryPage)
-        .snapshots()
-        .map((snap) => _appDiscoverableClubs(snap.docs.map((d) => d.data()))),
-    legacy: () => _legacyClubsRef
-        .where('locationMarketId', isEqualTo: location)
-        .orderBy('rating', descending: true)
-        .limit(ReadLimitPolicy.directoryPage)
-        .snapshots()
-        .map((snap) => _appDiscoverableClubs(snap.docs.map((d) => d.data()))),
-    context: const BackendErrorContext(
-      service: BackendService.firestore,
-      action: 'watch organizers by rating',
-      resource: _collectionPath,
-    ),
-  );
-
-  Stream<List<Club>> watchClubsHostedBy(String uid) =>
-      _watchWithLegacyProjection(
-        canonical: () => _clubsRef
-            .where(
-              Filter.or(
-                Filter('hostUserId', isEqualTo: uid),
-                Filter('hostUserIds', arrayContains: uid),
-              ),
-            )
+  Stream<List<Club>> watchClubsByLocation(String location) =>
+      withBackendErrorStream(
+        () => _clubsRef
+            .where('locationMarketId', isEqualTo: location)
+            .orderBy('createdAt', descending: true)
             .limit(ReadLimitPolicy.directoryPage)
             .snapshots()
-            .map((snap) => snap.docs.map((d) => d.data()).toList()),
-        legacy: () => _legacyClubsRef
-            .where(
-              Filter.or(
-                Filter('hostUserId', isEqualTo: uid),
-                Filter('hostUserIds', arrayContains: uid),
-              ),
-            )
-            .limit(ReadLimitPolicy.directoryPage)
-            .snapshots()
-            .map((snap) => snap.docs.map((d) => d.data()).toList()),
+            .map(
+              (snap) => _appDiscoverableClubs(snap.docs.map((d) => d.data())),
+            ),
         context: const BackendErrorContext(
           service: BackendService.firestore,
-          action: 'watch hosted organizers',
+          action: 'watch organizers by location',
           resource: _collectionPath,
         ),
       );
 
-  Stream<List<Club>> watchClubsOwnedBy(String uid) =>
-      _watchWithLegacyProjection(
-        canonical: () => _clubsRef
-            .where(
-              Filter.or(
-                Filter('hostUserId', isEqualTo: uid),
-                Filter('ownerUserId', isEqualTo: uid),
-              ),
-            )
+  Stream<List<Club>> watchClubsByLocationSortedByRating(String location) =>
+      withBackendErrorStream(
+        () => _clubsRef
+            .where('locationMarketId', isEqualTo: location)
+            .orderBy('rating', descending: true)
             .limit(ReadLimitPolicy.directoryPage)
             .snapshots()
-            .map((snap) => snap.docs.map((d) => d.data()).toList()),
-        legacy: () => _legacyClubsRef
-            .where(
-              Filter.or(
-                Filter('hostUserId', isEqualTo: uid),
-                Filter('ownerUserId', isEqualTo: uid),
-              ),
-            )
-            .limit(ReadLimitPolicy.directoryPage)
-            .snapshots()
-            .map((snap) => snap.docs.map((d) => d.data()).toList()),
+            .map(
+              (snap) => _appDiscoverableClubs(snap.docs.map((d) => d.data())),
+            ),
         context: const BackendErrorContext(
           service: BackendService.firestore,
-          action: 'watch owned organizers',
+          action: 'watch organizers by rating',
           resource: _collectionPath,
         ),
       );
+
+  Stream<List<Club>> watchClubsHostedBy(String uid) => withBackendErrorStream(
+    () => _clubsRef
+        .where(
+          Filter.or(
+            Filter('hostUserId', isEqualTo: uid),
+            Filter('hostUserIds', arrayContains: uid),
+          ),
+        )
+        .limit(ReadLimitPolicy.directoryPage)
+        .snapshots()
+        .map((snap) => snap.docs.map((d) => d.data()).toList()),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch hosted organizers',
+      resource: _collectionPath,
+    ),
+  );
+
+  Stream<List<Club>> watchClubsOwnedBy(String uid) => withBackendErrorStream(
+    () => _clubsRef
+        .where(
+          Filter.or(
+            Filter('hostUserId', isEqualTo: uid),
+            Filter('ownerUserId', isEqualTo: uid),
+          ),
+        )
+        .limit(ReadLimitPolicy.directoryPage)
+        .snapshots()
+        .map((snap) => snap.docs.map((d) => d.data()).toList()),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch owned organizers',
+      resource: _collectionPath,
+    ),
+  );
 
   Stream<List<Club>> watchClubsByIds({required List<String> clubIds}) =>
       _watchClubsByIds(clubIds: clubIds, discoverableOnly: true);
@@ -198,29 +147,11 @@ class ClubsRepository {
   Stream<List<Club>> _watchClubsByIds({
     required List<String> clubIds,
     required bool discoverableOnly,
-  }) => _watchWithLegacyProjection(
-    canonical: () => watchDocumentsByIds(
-      ids: clubIds,
-      collection: _clubsRef,
-      idOf: (club) => club.id,
-      transform: discoverableOnly ? _appDiscoverableClubs : null,
-      context: const BackendErrorContext(
-        service: BackendService.firestore,
-        action: 'watch organizers by ids',
-        resource: _collectionPath,
-      ),
-    ),
-    legacy: () => watchDocumentsByIds(
-      ids: clubIds,
-      collection: _legacyClubsRef,
-      idOf: (club) => club.id,
-      transform: discoverableOnly ? _appDiscoverableClubs : null,
-      context: const BackendErrorContext(
-        service: BackendService.firestore,
-        action: 'watch legacy organizer projections by ids',
-        resource: _legacyCollectionPath,
-      ),
-    ),
+  }) => watchDocumentsByIds(
+    ids: clubIds,
+    collection: _clubsRef,
+    idOf: (club) => club.id,
+    transform: discoverableOnly ? _appDiscoverableClubs : null,
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch organizers by ids',
@@ -230,40 +161,6 @@ class ClubsRepository {
 
   static List<Club> _appDiscoverableClubs(Iterable<Club> clubs) =>
       clubs.where((club) => club.isPubliclyBrowseable).toList(growable: false);
-
-  /// Keeps organizer-first clients usable while production rules/data roll out.
-  /// Only a backend collection-access failure activates the compatibility
-  /// projection; empty canonical results never fall back and writes remain
-  /// canonical/callable-owned.
-  Stream<T> _watchWithLegacyProjection<T>({
-    required Stream<T> Function() canonical,
-    required Stream<T> Function() legacy,
-    required BackendErrorContext context,
-  }) => watchOrganizerProjectionWithFallback(
-    canonical: canonical,
-    legacy: legacy,
-    context: context,
-    legacyContext: BackendErrorContext(
-      service: BackendService.firestore,
-      action: '${context.action} from compatibility projection',
-      resource: _legacyCollectionPath,
-    ),
-  );
-
-  Future<T> _fetchWithLegacyProjection<T>(
-    Future<T> Function() canonical,
-    Future<T> Function() legacy, {
-    required BackendErrorContext context,
-  }) => fetchOrganizerProjectionWithFallback(
-    canonical: canonical,
-    legacy: legacy,
-    context: context,
-    legacyContext: BackendErrorContext(
-      service: BackendService.firestore,
-      action: '${context.action} from compatibility projection',
-      resource: _legacyCollectionPath,
-    ),
-  );
 
   // ── Write ──────────────────────────────────────────────────────────────────
 
