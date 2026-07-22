@@ -151,7 +151,8 @@
               "id": "safety.report_member_from_profile"
             }
           ],
-          "description": "Submits one reason-coded safety report for the viewed member and exposes pending plus settled feedback."
+          "description": "Submits one reason-coded safety report for the viewed member and exposes pending plus settled feedback.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "block_member",
@@ -176,7 +177,8 @@
               "id": "safety.block_member_from_profile"
             }
           ],
-          "description": "Blocks the viewed member once for the active viewer-target relationship after confirmation."
+          "description": "Blocks the viewed member once for the active viewer-target relationship after confirmation.",
+          "implementationStatus": "implemented"
         }
       ],
       "evidenceExceptions": [

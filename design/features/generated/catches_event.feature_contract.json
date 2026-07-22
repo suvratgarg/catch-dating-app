@@ -161,7 +161,8 @@
               "id": "swipes.record_pass"
             }
           ],
-          "description": "Records one pass decision for the current event and target profile, then advances the queue."
+          "description": "Records one pass decision for the current event and target profile, then advances the queue.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "react_to_profile",
@@ -190,7 +191,8 @@
               "id": "swipes.record_reaction"
             }
           ],
-          "description": "Records one like reaction, optional profile target, and optional comment for the current event candidate."
+          "description": "Records one like reaction, optional profile target, and optional comment for the current event candidate.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "open_filters",
@@ -211,7 +213,8 @@
               }
             }
           ],
-          "description": "Opens matching preferences from an eligible event deck."
+          "description": "Opens matching preferences from an eligible event deck.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "back_to_catches",
@@ -231,7 +234,8 @@
               }
             }
           ],
-          "description": "Exits the current event deck to the preceding route or canonical Catches hub fallback."
+          "description": "Exits the current event deck to the preceding route or canonical Catches hub fallback.",
+          "implementationStatus": "implemented"
         }
       ],
       "evidenceExceptions": [

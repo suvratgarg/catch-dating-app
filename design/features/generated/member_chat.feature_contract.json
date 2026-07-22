@@ -182,7 +182,8 @@
               "id": "chat.create_text_message"
             }
           ],
-          "description": "Creates one text message in the current conversation."
+          "description": "Creates one text message in the current conversation.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "send_image",
@@ -209,7 +210,8 @@
               "id": "chat.upload_and_create_image_message"
             }
           ],
-          "description": "Uploads an image and creates the corresponding chat message, compensating storage when the write fails."
+          "description": "Uploads an image and creates the corresponding chat message, compensating storage when the write fails.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "open_profile",
@@ -230,7 +232,8 @@
               }
             }
           ],
-          "description": "Opens the other member's public profile when the thread view model exposes a valid target."
+          "description": "Opens the other member's public profile when the thread view model exposes a valid target.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "share_card",
@@ -254,7 +257,8 @@
               "id": "chat.share_card"
             }
           ],
-          "description": "Builds and opens a share card from the current non-empty message snapshot."
+          "description": "Builds and opens a share card from the current non-empty message snapshot.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "report_member",
@@ -279,7 +283,8 @@
               "id": "safety.report_member_from_chat"
             }
           ],
-          "description": "Submits a chat-context safety report for the other member."
+          "description": "Submits a chat-context safety report for the other member.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "block_member",
@@ -304,7 +309,8 @@
               "id": "safety.block_member_from_chat"
             }
           ],
-          "description": "Blocks the other member once for the active viewer-target relationship and closes the conversation."
+          "description": "Blocks the other member once for the active viewer-target relationship and closes the conversation.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "request_suvbot_action",
@@ -330,7 +336,8 @@
               "id": "chat.request_suvbot_action"
             }
           ],
-          "description": "Runs one action from the server-provided Suvbot action set."
+          "description": "Runs one action from the server-provided Suvbot action set.",
+          "implementationStatus": "implemented"
         }
       ],
       "evidenceExceptions": [

@@ -162,7 +162,8 @@
               ]
             }
           ],
-          "description": "Invalidates the organizer-detail view model once for the current failed load state."
+          "description": "Invalidates the organizer-detail view model once for the current failed load state.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "sign_in_to_join",
@@ -183,7 +184,8 @@
               }
             }
           ],
-          "description": "Routes a signed-out viewer to authentication while preserving the organizer-detail return path."
+          "description": "Routes a signed-out viewer to authentication while preserving the organizer-detail return path.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "join_organizer",
@@ -209,7 +211,8 @@
               "id": "organizer.membership_joined"
             }
           ],
-          "description": "Creates the current viewer's organizer membership once for the active membership version."
+          "description": "Creates the current viewer's organizer membership once for the active membership version.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "leave_organizer",
@@ -235,7 +238,8 @@
               "id": "organizer.membership_left"
             }
           ],
-          "description": "Removes the current viewer's organizer membership once for the active membership version."
+          "description": "Removes the current viewer's organizer membership once for the active membership version.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "toggle_notifications",
@@ -253,7 +257,8 @@
               "id": "organizer.notification_preference_updated"
             }
           ],
-          "description": "Toggles organizer push notifications once for the current membership preference version."
+          "description": "Toggles organizer push notifications once for the current membership preference version.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "share_organizer",
@@ -271,7 +276,8 @@
               "id": "organizer.share_sheet_opened"
             }
           ],
-          "description": "Opens the organizer share-card sheet for the current profile."
+          "description": "Opens the organizer share-card sheet for the current profile.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "open_event",
@@ -292,7 +298,8 @@
               }
             }
           ],
-          "description": "Routes a selected upcoming organizer event to consumer Event Detail."
+          "description": "Routes a selected upcoming organizer event to consumer Event Detail.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "open_host_profile",
@@ -313,7 +320,8 @@
               }
             }
           ],
-          "description": "Routes a selected organizer host identity to Public Profile."
+          "description": "Routes a selected organizer host identity to Public Profile.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "message_host",
@@ -338,7 +346,8 @@
               "id": "organizer.host_conversation_started"
             }
           ],
-          "description": "Starts or resolves the viewer-host conversation once and opens its member chat."
+          "description": "Starts or resolves the viewer-host conversation once and opens its member chat.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "open_contact",
@@ -356,7 +365,8 @@
               "id": "organizer.contact_link_opened"
             }
           ],
-          "description": "Opens a typed organizer Instagram, phone, or email contact target."
+          "description": "Opens a typed organizer Instagram, phone, or email contact target.",
+          "implementationStatus": "implemented"
         }
       ],
       "evidenceExceptions": [
@@ -1327,7 +1337,8 @@
               ]
             }
           ],
-          "description": "Invalidates the shared organizer-detail view model once for the current host-route failure state."
+          "description": "Invalidates the shared organizer-detail view model once for the current host-route failure state.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "share_organizer",
@@ -1345,7 +1356,8 @@
               "id": "organizer.share_sheet_opened"
             }
           ],
-          "description": "Opens the organizer share-card sheet from the host public preview."
+          "description": "Opens the organizer share-card sheet from the host public preview.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "open_host_event",
@@ -1366,7 +1378,8 @@
               }
             }
           ],
-          "description": "Routes a hosted schedule row to the Host Event Manage projection."
+          "description": "Routes a hosted schedule row to the Host Event Manage projection.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "open_host_profile",
@@ -1387,7 +1400,8 @@
               }
             }
           ],
-          "description": "Opens a selected organizer host's public profile from the host-shell preview."
+          "description": "Opens a selected organizer host's public profile from the host-shell preview.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "open_contact",
@@ -1405,7 +1419,8 @@
               "id": "organizer.contact_link_opened"
             }
           ],
-          "description": "Opens a typed organizer contact target from the host public preview."
+          "description": "Opens a typed organizer contact target from the host public preview.",
+          "implementationStatus": "implemented"
         }
       ],
       "evidenceExceptions": [
@@ -2635,7 +2650,8 @@
               "id": "organizer.web_saved_state_persisted"
             }
           ],
-          "description": "Toggles the local saved-organizer state and records organizer-save analytics when saved."
+          "description": "Toggles the local saved-organizer state and records organizer-save analytics when saved.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "share_listing",
@@ -2653,7 +2669,8 @@
               "id": "organizer.web_share_completed_or_reported"
             }
           ],
-          "description": "Uses native share, clipboard, or a manual URL fallback and exposes completion, cancellation, or error status."
+          "description": "Uses native share, clipboard, or a manual URL fallback and exposes completion, cancellation, or error status.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "request_claim",
@@ -2678,7 +2695,8 @@
               "id": "organizer.claim_request_submitted"
             }
           ],
-          "description": "Validates and submits one typed organizer claim request when policy, runtime, and authentication allow it."
+          "description": "Validates and submits one typed organizer claim request when policy, runtime, and authentication allow it.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "submit_public_review",
@@ -2696,7 +2714,8 @@
               "id": "organizer.public_review_submitted"
             }
           ],
-          "description": "Validates and submits a public organizer review, preserving moderation-pending and published response semantics."
+          "description": "Validates and submits a public organizer review, preserving moderation-pending and published response semantics.",
+          "implementationStatus": "implemented"
         }
       ],
       "evidenceExceptions": [

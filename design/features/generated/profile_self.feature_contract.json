@@ -171,7 +171,8 @@
               "id": "profile.update_fields"
             }
           ],
-          "description": "Serializes and persists one typed profile patch against the latest signed-in profile version."
+          "description": "Serializes and persists one typed profile patch against the latest signed-in profile version.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "pick_and_upload_photo",
@@ -196,7 +197,8 @@
               "id": "profile.upload_photo"
             }
           ],
-          "description": "Selects, uploads, and persists a photo into one bounded profile slot."
+          "description": "Selects, uploads, and persists a photo into one bounded profile slot.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "delete_photo",
@@ -222,7 +224,8 @@
               "id": "profile.delete_photo"
             }
           ],
-          "description": "Deletes one occupied photo slot and synchronizes storage plus profile projections."
+          "description": "Deletes one occupied photo slot and synchronizes storage plus profile projections.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "reorder_photo",
@@ -249,7 +252,8 @@
               "id": "profile.reorder_photos"
             }
           ],
-          "description": "Moves one existing profile photo between bounded slots and persists the new order."
+          "description": "Moves one existing profile photo between bounded slots and persists the new order.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "open_account_settings",
@@ -269,7 +273,8 @@
               }
             }
           ],
-          "description": "Opens account settings from the self-profile top bar."
+          "description": "Opens account settings from the self-profile top bar.",
+          "implementationStatus": "implemented"
         }
       ],
       "evidenceExceptions": [

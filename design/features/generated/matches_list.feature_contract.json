@@ -156,7 +156,8 @@
               }
             }
           ],
-          "description": "Opens one visible match or conversation thread."
+          "description": "Opens one visible match or conversation thread.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "update_search",
@@ -179,7 +180,8 @@
               ]
             }
           ],
-          "description": "Updates or clears the persistent consumer chat query and recomputes visible threads."
+          "description": "Updates or clears the persistent consumer chat query and recomputes visible threads.",
+          "implementationStatus": "implemented"
         }
       ],
       "evidenceExceptions": [

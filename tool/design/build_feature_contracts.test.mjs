@@ -271,6 +271,48 @@ test("compiles exact surface-state coverage and action availability", () => {
   assert.match(artifact.sourceDigest, /^sha256:[a-f0-9]{64}$/u);
 });
 
+test("projects known implementation gaps and rejects enabling them", () => {
+  const data = fixture();
+  const action = data.source.surfaces[0].actions[0];
+  action.implementationStatus = "known_gap";
+  action.debtId = "FEATURE-ACTION-WIRING-001";
+  action.implementationNotes = "The controller method exists but the route callback is not wired.";
+  data.source.surfaces[0].scenarios[1].actionCases[0] = {
+    id: "eligible",
+    disabledActions: ["book"],
+  };
+
+  assert.equal(validateFeatureSchema(data.source), true);
+  const artifact = compileFeatureContract({...data, sourcePath: "fixture.json"});
+  assert.equal(artifact.surfaces[0].actions[0].implementationStatus, "known_gap");
+  assert.deepEqual(
+    artifact.surfaces[0].scenarios[1].actionCases[0].actions.disabled,
+    ["book"],
+  );
+
+  data.source.surfaces[0].scenarios[1].actionCases[0] = {
+    id: "eligible",
+    enabledActions: ["book"],
+  };
+  assert.throws(
+    () => compileFeatureContract({...data, sourcePath: "fixture.json"}),
+    /known-gap actions cannot be enabled: book/u,
+  );
+});
+
+test("requires debt metadata only for known implementation gaps", () => {
+  const source = fixture().source;
+  source.surfaces[0].actions[0].implementationStatus = "known_gap";
+  assert.equal(validateFeatureSchema(source), false);
+
+  source.surfaces[0].actions[0].debtId = "FEATURE-ACTION-WIRING-001";
+  source.surfaces[0].actions[0].implementationNotes = "Missing callback wiring.";
+  assert.equal(validateFeatureSchema(source), true);
+
+  source.surfaces[0].actions[0].implementationStatus = "implemented";
+  assert.equal(validateFeatureSchema(source), false);
+});
+
 test("compiles compact state matrices without weakening exact authority coverage", () => {
   const input = fixture();
   const surface = input.source.surfaces[0];

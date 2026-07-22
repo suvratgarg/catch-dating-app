@@ -3180,6 +3180,11 @@
           "id": "DS-DASHBOARD-004",
           "status": "closed",
           "nextAction": "Closed by Dashboard Home reference export: full_dashboard.png and empty_start.png live under design/reference_screens/screen.dashboard.home, the manifest maps them to dashboard_home/dashboard_home_empty_start captures, and tool/design/check_reference_screens.mjs provides advisory pixel comparison. Current empty-start comparison after the hero-shell pass is 54.05% mismatch / 59.13 meanDelta, down from the first 58.50% / 76.92 baseline; full_dashboard remains at 28.50% / 36.79 until the populated-state pass."
+        },
+        {
+          "id": "DS-DASHBOARD-005",
+          "status": "open",
+          "nextAction": "Add focused state-level tests for profile_error, memberships_error, offline, text_scale_2, reduced_motion, and light_dark; feature.dashboard_home carries these six explicit evidence exceptions while compiling all 19 registered states and 12 Dashboard-owned actions."
         }
       ]
     },
@@ -4279,12 +4284,17 @@
         {
           "id": "DS-EVENT-SUCCESS-COMPANION-003",
           "status": "closed",
-          "nextAction": "Closed by EventSuccessCompanionScreenState plus provider-free companion action sections. CompatibilityQuestionnaireSection, FirstHelloCheckInCard, SelfCheckInCard, PaperSelfCheckInBar, MicroPodCard, RotationScheduleCard, WingmanRequestSection, and EventSuccessFeedbackForm now receive explicit action state and typed callbacks from EventSuccessCompanionScreen/EventSuccessCompanionRouteScreen."
+          "nextAction": "Closed for provider-free companion section APIs and EventSuccessCompanionScreenState ownership. FirstHelloCheckInCard, SelfCheckInCard, PaperSelfCheckInBar, MicroPodCard, RotationScheduleCard, WingmanRequestSection, EventSuccessFeedbackForm, and CompatibilityQuestionnaireSection receive explicit action state and typed callbacks from EventSuccessCompanionScreen. The missing production route binding for the compatibility callback is tracked separately by DS-EVENT-SUCCESS-COMPANION-005."
         },
         {
           "id": "DS-EVENT-SUCCESS-COMPANION-004",
           "status": "blocked",
           "nextAction": "Blocked on missing canonical design exports for stage, reveal, wingman, afterglow, feedback, offline/error, accessibility, and theme variants. The only local Event Success Companion reference is design/reference_screens/screen.event_success.companion/default_live_guide.png with masks.json."
+        },
+        {
+          "id": "DS-EVENT-SUCCESS-COMPANION-005",
+          "status": "open",
+          "nextAction": "Wire EventSuccessCompanionRouteScreen to EventSuccessController.saveCompatibilityResponse through compatibilityResponseMutation, add route-level persistence proof, then remove FEATURE-ACTION-WIRING-001 from feature.event_success. Separately add focused tests for the nine registered state-level test exceptions; auto_launch remains launcher-policy evidence without synthetic visual evidence."
         }
       ]
     },

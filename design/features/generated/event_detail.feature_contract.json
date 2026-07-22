@@ -154,7 +154,8 @@
               ]
             }
           ],
-          "description": "Creates at most one active booking relationship for the viewer and event."
+          "description": "Creates at most one active booking relationship for the viewer and event.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "cancel_booking",
@@ -173,7 +174,8 @@
               ]
             }
           ],
-          "description": "Cancels the viewer's single active booking for the event."
+          "description": "Cancels the viewer's single active booking for the event.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "join_waitlist",
@@ -192,7 +194,8 @@
               ]
             }
           ],
-          "description": "Creates at most one active waitlist relationship for the viewer and event."
+          "description": "Creates at most one active waitlist relationship for the viewer and event.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "leave_waitlist",
@@ -211,7 +214,8 @@
               ]
             }
           ],
-          "description": "Removes the viewer's single active waitlist relationship for the event."
+          "description": "Removes the viewer's single active waitlist relationship for the event.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "accept_waitlist_offer",
@@ -231,7 +235,8 @@
               ]
             }
           ],
-          "description": "Accepts one active waitlist offer and transitions it to a booking."
+          "description": "Accepts one active waitlist offer and transitions it to a booking.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "decline_waitlist_offer",
@@ -251,7 +256,8 @@
               ]
             }
           ],
-          "description": "Declines one active waitlist offer without creating another offer action."
+          "description": "Declines one active waitlist offer without creating another offer action.",
+          "implementationStatus": "implemented"
         }
       ],
       "evidenceExceptions": [],

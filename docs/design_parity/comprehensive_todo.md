@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.300
+version: 0.2.301
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -24,24 +24,27 @@ ledgers as the source of truth when counts differ:
 - Route inventory: 52 app routes.
 - Route coverage decisions: 44 contracted, 2 alias, 0 planned, 6 excluded.
 - Screen contracts: 32 contracted screens.
-- Feature orchestration coverage: 57 registered authorities, 10 source
-  contracts, 11 contracted Flutter screens, 2 contracted marketing routes, and
-  21 planned Flutter screens. The social-journey batch compiles all 99
+- Feature orchestration coverage: 57 registered authorities, 12 source
+  contracts, 13 contracted Flutter screens, 2 contracted marketing routes, and
+  19 planned Flutter screens. The social-journey batch compiles all 99
   registered states and 23 explicit actions across Catches Hub, Catches Event,
   Matches List, Member Chat, Self Profile, and Public Profile; missing focused
   capture/test evidence remains named migration debt. Organizer Detail adds one
   three-surface identity spanning 13 consumer, 19 host, and 5 marketing states
   with 19 surface-specific actions and checked route-state-to-preview evidence.
+  Dashboard Home and Event Success add 45 exact Flutter states and 24 actions;
+  Event Success preserves its missing compatibility-save route callback as a
+  compiler-enforced known gap rather than falsely enabling it.
 - Screen priority spread: 18 P1, 9 P2, and 5 P3 contracted screens.
 - Contracted screen states: 597.
 - Contracted screen sections: 228.
-- Screen registry migration gaps: 6 open, 24 blocked, and 99 closed. These are
+- Screen registry migration gaps: 8 open, 24 blocked, and 99 closed. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
 - Contracted section states: 1,069.
 - Open screen-contract validation gaps: 0.
 - Design parity matrix: 12 feature groups, 33 screens, 599 matrix states, and
-  41 open matrix gaps across screen-state, lint-candidate, and preview-plan
+  43 open matrix gaps across screen-state, lint-candidate, and preview-plan
   queues.
 - Matrix state status spread: 541 captured, 16 implemented, 1 planned, and
   41 tested.
@@ -669,8 +672,8 @@ from those ledgers rather than hand-editing counts.
 | P1 | `screen.catches.event` | 19 | 6 | 1 | None | `DS-CATCHES-EVENT-002` blocked, `DS-CATCHES-EVENT-004` blocked | Local Catches Event states, cached-offline deck capture, pass/reaction pending captures, duplicate-pending disabled-control proof, comment-sheet empty/filled captures, and write-failure snackbar feedback are source-backed. Remaining work is blocked on keyboard-open capture automation and external reference exports for keyboard/comment sheet, empty/offline, accessibility, theme, and optional mutation variants. |
 | P1 | `screen.catches.hub` | 12 | 4 | 0 | Blocked: missing canonical design source | `DS-CATCHES-HUB-004` blocked | Hub route adapter and section Widgetbook coverage are closed; local Claude bundle has no distinct hub source, so export waits on design source handoff. |
 | P1 | `screen.club.detail` | 13 | 9 | 1 | None | None | Body policy, direct host/contact/photo section previews, loading captures, initial-fallback capture, empty-schedule capture, and consumer-only dock decisioning are closed. Reopen only if a new host/member dock contract is designed. |
-| P1 | `screen.dashboard.home` | 19 | 9 | 2 | None | None | Keep as the reference-complete baseline; finish remaining full-body display-data cleanup. |
-| P1 | `screen.event_success.companion` | 26 | 11 | 1 | Stage variants blocked on missing canonical exports | `DS-EVENT-SUCCESS-COMPANION-004` blocked | `EventSuccessCompanionScreenState` owns runtime moment selection/effect identity and companion action sections now receive provider-free action state plus typed callbacks. Route/runtime, action pending, text-scale, reduced-motion, and paired light/dark captures are closed. Remaining runtime-stage reference exports are blocked until canonical design sources are supplied. |
+| P1 | `screen.dashboard.home` | 19 | 9 | 2 | None | `DS-DASHBOARD-005` | `feature.dashboard_home` now compiles all 19 states and 12 route/event-focus actions. Six captured and previewed error/offline/accessibility/theme states still need focused test registration; full-body display-data cleanup remains separate architecture work. |
+| P1 | `screen.event_success.companion` | 26 | 11 | 1 | Stage variants blocked on missing canonical exports | `DS-EVENT-SUCCESS-COMPANION-004` blocked, `DS-EVENT-SUCCESS-COMPANION-005` | `feature.event_success` now compiles all 26 states and 12 attendee actions. The contract exposes the unwired compatibility-save callback as a known gap instead of enabling it; nine captured/previewed states still need focused test registration, while auto-launch remains policy tested without synthetic visual evidence. |
 | P1 | `screen.event.detail` | 21 | 14 | 1 | None | None | Booking dock, booking/cancel mutation feedback, host lookup, companion availability, body visibility, invite-loop visibility, host-app bottom-nav visibility, and social/review access now map through provider-free Event Detail display states. Continue only reference/pixel comparison, waitlist-specific mutation variants, or new product variants. |
 | P1 | `screen.explore.discovery` | 21 | 8 | 1 | None | `DS-EXPLORE-005` | `feature.explore` now compiles two native projections under one identity: all 21 Flutter discovery/map states with empty-state recovery actions, plus the three real marketing Organizer Search route states with URL-filter/search/reset controller actions and React preview/test evidence. The stale marketing-only `saved-organizers` route state was removed because saving belongs to organizer detail. Dedicated captures for no-exact-pin and zero-radius map results plus focused no-exact-pin/offline/accessibility tests remain named Flutter evidence debt. The 2026-07 quality pass adds ranked-but-non-destructive cover selection, honest CTA copy, a seven-day intent strip plus Any, cursor freshness, privacy-safe attendee proof, host/rating organizer context, and current widget-contract convergence. Cross Paths is retired until a consent-safe relationship source exists. |
 | P1 | `screen.host.chat` | 29 | 9 | 1 | Blocked: provider-specific offline policy and dedicated Host Chat reference masks | `DS-HOST-CHAT-001` blocked, `DS-HOST-CHAT-005` blocked | `ChatRouteState` now owns the route provider watch wave and mutation-pending flags; `HostChatScreenState` owns typed retry targets, report/block pending state, and top-bar action intents; `ChatReadMarkerState` owns read-marker decision policy; `ChatReadMarkerController` executes mark-read side effects; `ChatScrollCoordinator` owns initial/appended/send-success message list auto-scroll; `ChatThreadActionController` executes profile/share/report/block typed action intents; `ChatRetryController` executes typed route/message/Suvbot retry invalidation; `ChatThreadLookupState` owns profile/event/host lookup keys. Host Chat captures now include keyboard-open multiline safe-area, image/day-separator populated thread, report failure snackbar, block confirmation dialog, and safety pending menu variants. The populated-thread reference baseline is within threshold against `host_chat_inquiry` (`12.71%` mismatch, meanDelta `5.28`). Resume when provider-specific profile/club/event offline copy and dedicated Host Chat reference masks are supplied. |
@@ -1421,20 +1424,22 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
 
 ### P1 dashboard_home
 
-- [ ] `dashboard.home` (14 state follow-ups, 0 open gaps)
+- [ ] `dashboard.home` (19 registered states, 1 open evidence gap)
   - tested: `self_check_in_mutation`, `after_event_swipe_review`
   - captured: `loading`, `profile_error`, `memberships_error`, `booked_events_error`, `empty_start`, `full_dashboard`, `event_focus_upcoming`, `self_check_in_mutation`, `after_event_swipe_review`, `notifications_unread`, `joined_clubs_rail`, `weekly_activity_permission`, `recommendations_ready`, `recommendations_loading`, `recommendations_error`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
   - DP-DASHBOARD-004: Closed by Dashboard full/empty reference PNG export and advisory comparison tooling.
+  - DS-DASHBOARD-005: Add focused state-level tests for `profile_error`, `memberships_error`, `offline`, `text_scale_2`, `reduced_motion`, and `light_dark`; `feature.dashboard_home` carries these six explicit evidence exceptions while compiling all 19 registered states and 12 Dashboard-owned actions.
 
 ### P1 event_success_companion
 
-- [ ] `event_success.companion` (26 state follow-ups, no open gaps; 1 blocked reference gap)
+- [ ] `event_success.companion` (26 registered states, 1 open action gap, 1 blocked reference gap)
   - planned: None
   - tested: `auto_launch`
   - captured: `route_loading`, `event_not_found`, `sign_in_required`, `no_booking`, `plan_missing`, `data_load_error`, `default_live_guide`, `pre_arrival_planning`, `self_check_in`, `first_hello_start`, `first_hello_assigned`, `compatibility_questionnaire`, `live_step_context`, `conversation_cues`, `micro_pod_assignment`, `rotation_schedule`, `live_reveal_countdown`, `live_reveal_unlocked`, `wingman_request`, `post_event_afterglow_feedback`, `opt_out_assignments`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
   - DP-EVENT-SUCCESS-COMPANION-002: Closed; companion route loading/error/access/offline states, runtime moments, action pending states, text scale, reduced motion, and paired light/dark captures are registered and linked to first-pass Widgetbook previews. Mutation failure/snackbar variants should be added only if product copy diverges from the shared mutation listener behavior.
-  - DP-EVENT-SUCCESS-COMPANION-003: Closed; `EventSuccessCompanionScreenState` owns runtime moment selection, presentation metadata, transition/effect identity, paper-shell selection, reveal kind, module flags, and wingman candidate filtering. Questionnaire, First Hello, self-check-in, micro-pod, rotation, wingman, and feedback sections now receive provider-free action state plus typed callbacks from the companion screen edge.
+  - DP-EVENT-SUCCESS-COMPANION-003: Closed for provider-free section APIs and `EventSuccessCompanionScreenState` ownership. First Hello, self-check-in, micro-pod, rotation, wingman, feedback, and questionnaire sections receive typed callbacks from `EventSuccessCompanionScreen`; the missing production route binding for questionnaire persistence is tracked separately by DP-EVENT-SUCCESS-COMPANION-005.
   - DP-EVENT-SUCCESS-COMPANION-004: Blocked; default live-guide companion reference and masks are registered, but no local canonical exports exist for runtime-stage, reveal, wingman, afterglow, feedback, offline/error, accessibility, or theme variants.
+  - DS-EVENT-SUCCESS-COMPANION-005: Wire `EventSuccessCompanionRouteScreen` to `EventSuccessController.saveCompatibilityResponse` through `EventSuccessController.compatibilityResponseMutation`, add a route-level persistence test, and then remove `FEATURE-ACTION-WIRING-001` from `feature.event_success`. Add focused state-level tests for the nine registered test exceptions separately; auto-launch correctly remains launcher-policy evidence without a synthetic preview or capture.
 
 ### P1 catches
 

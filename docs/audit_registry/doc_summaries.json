@@ -1,5 +1,5 @@
 {
-  "version": "4.5.153",
+  "version": "4.5.154",
   "updated": "2026-07-23",
   "owner": "recursive_audit_loop",
   "summaries": {
@@ -61,7 +61,7 @@
       ]
     },
     "docs/agent_regression_ledger.json": {
-      "purpose": "Machine-readable list of hard-won agent regression guards, including audit-loop, design-system, generated-metadata, Widgetbook, canonical market display, nullable organizer data, parallel Flutter test, parallel delegation ownership, and enforcement-integrity drift failures.",
+      "purpose": "Machine-readable list of hard-won agent regression guards, including feature-contract action wiring, audit-loop, design-system, generated-metadata, Widgetbook, canonical market display, nullable organizer data, parallel Flutter test, parallel delegation ownership, and enforcement-integrity drift failures.",
       "read_when": [
         "Generating a context pack",
         "Touching a scope with known agent regression risks",
@@ -503,7 +503,7 @@
       ]
     },
     "docs/design_parity/README.md": {
-      "purpose": "Design parity folder owner and workflow for state matrices, multi-surface feature contracts, explicit React route-state preview mappings, captures, Widgetbook and Storybook evidence, component contracts, and route-ledger hygiene.",
+      "purpose": "Design parity folder owner and workflow for state matrices, multi-surface feature contracts, known implementation-gap actions, explicit React route-state preview mappings, captures, Widgetbook and Storybook evidence, component contracts, and route-ledger hygiene.",
       "read_when": [
         "Starting design-parity work",
         "Changing screen contracts, capture coverage, Widgetbook references, or design parity ledgers"
@@ -513,7 +513,7 @@
       ]
     },
     "design/features/feature_contract.schema.json": {
-      "purpose": "Executable schema for one semantic feature identity with runtime-native Flutter, marketing, and admin surface projections, compact exact state matrices, explicit registered-preview evidence mappings, action owners, outcomes, and evidence requirements.",
+      "purpose": "Executable schema for one semantic feature identity with runtime-native Flutter, marketing, and admin surface projections, compact exact state matrices, explicit registered-preview evidence mappings, action owners, known implementation gaps, outcomes, and evidence requirements.",
       "read_when": [
         "Creating or changing a feature contract",
         "Extending one feature identity across another runtime",

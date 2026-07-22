@@ -59,20 +59,18 @@
     {
       "authority": "flutter_screens",
       "authorityId": "screen.dashboard.home",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Primary signed-in consumer dashboard and recommendation surface.",
-      "targetFeature": "feature.dashboard_home",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Dashboard Home contract covers route recovery, empty discovery, event focus, self-check-in, Catch and review entry, header navigation, registered enrichments, and accessibility states.",
+      "featureContract": "feature.dashboard_home"
     },
     {
       "authority": "flutter_screens",
       "authorityId": "screen.event_success.companion",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Attendee live-guide and post-event companion workflow.",
-      "targetFeature": "feature.event_success",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Event Success contract covers route gates, attendee moments, arrival actions, assignments, reveal, wingman, feedback, opt-outs, auto-launch evidence, and an explicit known questionnaire wiring gap.",
+      "featureContract": "feature.event_success"
     },
     {
       "authority": "flutter_screens",

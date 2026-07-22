@@ -175,7 +175,8 @@
               }
             }
           ],
-          "description": "Navigates the host to the single edit route for the managed event."
+          "description": "Navigates the host to the single edit route for the managed event.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "cancel_event",
@@ -194,7 +195,8 @@
               ]
             }
           ],
-          "description": "Cancels the managed event once after host confirmation."
+          "description": "Cancels the managed event once after host confirmation.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "delete_event",
@@ -211,7 +213,8 @@
               "id": "event.deleted"
             }
           ],
-          "description": "Deletes an unused managed event once after host confirmation."
+          "description": "Deletes an unused managed event once after host confirmation.",
+          "implementationStatus": "implemented"
         }
       ],
       "evidenceExceptions": [

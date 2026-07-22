@@ -160,7 +160,8 @@
               ]
             }
           ],
-          "description": "Clears the active search term once for the current Explore query state."
+          "description": "Clears the active search term once for the current Explore query state.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "clear_filters",
@@ -181,7 +182,8 @@
               ]
             }
           ],
-          "description": "Clears active Explore filters once for the current filter state."
+          "description": "Clears active Explore filters once for the current filter state.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "clear_search_and_filters",
@@ -202,7 +204,8 @@
               ]
             }
           ],
-          "description": "Clears both search and filters as one recovery transition for the current Explore state."
+          "description": "Clears both search and filters as one recovery transition for the current Explore state.",
+          "implementationStatus": "implemented"
         }
       ],
       "evidenceExceptions": [
@@ -1605,7 +1608,8 @@
               ]
             }
           ],
-          "description": "Projects query and filter updates into canonical URL search parameters and recalculates visible organizer results."
+          "description": "Projects query and filter updates into canonical URL search parameters and recalculates visible organizer results.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "submit_search",
@@ -1622,7 +1626,8 @@
               "id": "analytics.organizer_search_submitted"
             }
           ],
-          "description": "Records one search submission and bounded organizer appearance events for the current query context."
+          "description": "Records one search submission and bounded organizer appearance events for the current query context.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "clear_filters",
@@ -1645,7 +1650,8 @@
               "id": "analytics.organizer_search_filters_cleared"
             }
           ],
-          "description": "Resets the current URL-owned filter tuple once and records the reset."
+          "description": "Resets the current URL-owned filter tuple once and records the reset.",
+          "implementationStatus": "implemented"
         }
       ],
       "evidenceExceptions": [],

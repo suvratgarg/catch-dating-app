@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.19
+version: 0.1.20
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -166,17 +166,24 @@ first checked example: it contains both `screen.explore.discovery` and the
 marketing `organizer_search` route, while their components, action owners,
 states, and evidence remain runtime-specific.
 
-Event Detail, Explore, Host Event Manage, Catches Hub, Catches Event, Matches
-List, Member Chat, Self Profile, Public Profile, and Organizer Detail are the
-current reference contracts. Organizer Detail is the first three-surface
-reference: consumer Flutter, host Flutter, and the canonical marketing listing
-share one semantic feature identity while retaining separate actions and state
-inventories.
+Event Detail, Explore, Dashboard Home, Event Success, Host Event Manage,
+Catches Hub, Catches Event, Matches List, Member Chat, Self Profile, Public
+Profile, and Organizer Detail are the current reference contracts. Organizer
+Detail is the first three-surface reference: consumer Flutter, host Flutter,
+and the canonical marketing listing share one semantic feature identity while
+retaining separate actions and state inventories.
 Actions name one of the surface's declared Dart or TypeScript owners, so a
 larger feature may compose multiple action domains without pretending one enum
 or controller owns everything. Action outcomes are typed as local surface
 states, route destinations, or side effects. A read-only surface may declare no
 actions or action owners; the format never requires fabricated behavior.
+
+An action whose owner exists but whose runtime callback is not connected may be
+declared with `implementationStatus: known_gap`, stable debt, and a concrete
+source note. The action must still be classified, but the compiler rejects any
+scenario that enables it. Generated actions without an explicit status project
+as `implemented`. This prevents a contract from turning an existing controller
+method into a false claim that the user-facing action works.
 
 For state-rich surfaces, use the compact state matrix: `stateIds` must list the
 authority's exact state inventory, `scenarioDefaults` declares the repeated
@@ -208,9 +215,10 @@ node tool/design/build_feature_contracts.mjs --check
 
 The compiler fails duplicate surfaces or authority bindings, runtime/authority
 mismatches, duplicate or missing authority-state mappings, unknown action owner,
-action, outcome, route, or dimension values, undeclared Dart/TypeScript symbols,
-missing component/data paths, missing capture/preview/test evidence, unused
-evidence exceptions, stale output, and orphaned generated artifacts. Natural-language
+action, outcome, route, or dimension values, enabled known-gap actions,
+undeclared Dart/TypeScript symbols, missing component/data paths, missing
+capture/preview/test evidence, unused evidence exceptions, stale output, and
+orphaned generated artifacts. Natural-language
 briefs may inform a contract draft, but only the reviewed JSON source is
 executable. Flutter widgets, controllers, business algorithms, security rules,
 and migrations remain manually implemented and tested against their owning

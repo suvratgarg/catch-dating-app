@@ -130,7 +130,8 @@
               }
             }
           ],
-          "description": "Opens the event-scoped Catch deck for an attended event whose Catch window is still open."
+          "description": "Opens the event-scoped Catch deck for an attended event whose Catch window is still open.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "open_event_recap",
@@ -150,7 +151,8 @@
               }
             }
           ],
-          "description": "Opens the recap for one attended event represented by the hub row."
+          "description": "Opens the recap for one attended event represented by the hub row.",
+          "implementationStatus": "implemented"
         },
         {
           "id": "find_event",
@@ -171,7 +173,8 @@
               }
             }
           ],
-          "description": "Leaves the empty hub for Explore once for the current empty-state presentation."
+          "description": "Leaves the empty hub for Explore once for the current empty-state presentation.",
+          "implementationStatus": "implemented"
         }
       ],
       "evidenceExceptions": [

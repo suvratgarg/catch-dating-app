@@ -295,6 +295,7 @@ function compileSurfaceContract({
   const usedEvidenceExceptions = new Set();
   const actionOwners = resolveActionOwners({surface, label, pathExists, readPath, errors});
   const actionIds = new Set();
+  const knownGapActionIds = new Set();
   const actions = [];
   for (const action of surface.actions ?? []) {
     if (actionIds.has(action.id)) errors.push(`${label}: duplicate action ${action.id}.`);
@@ -325,7 +326,9 @@ function compileSurfaceContract({
         );
       }
     }
-    actions.push(action);
+    const implementationStatus = action.implementationStatus ?? "implemented";
+    if (implementationStatus === "known_gap") knownGapActionIds.add(action.id);
+    actions.push({...action, implementationStatus});
   }
 
   const mappedStateIds = new Set();
@@ -382,6 +385,13 @@ function compileSurfaceContract({
           );
         }
         referencedActionIds.add(actionId);
+      }
+      const enabledKnownGaps = enabled.filter((id) => knownGapActionIds.has(id));
+      if (enabledKnownGaps.length > 0) {
+        errors.push(
+          `${label}.scenarios.${scenario.id}.actionCases.${actionCase.id}: ` +
+          `known-gap actions cannot be enabled: ${enabledKnownGaps.join(", ")}.`,
+        );
       }
       actionCases.push({
         id: actionCase.id,
