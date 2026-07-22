@@ -3,7 +3,7 @@
   "boardId": "catch-pilot-launch-2026-07",
   "name": "Catch website-first pilot launch",
   "owner": "founder",
-  "updatedAt": "2026-07-22T20:05:50+05:30",
+  "updatedAt": "2026-07-22T21:43:15+05:30",
   "operatingMode": "website_first",
   "successDefinition": "Catch is publicly operating in Mumbai and Indore with accurate market claims, reachable legal and help pages, production website monitoring, and a reviewed supply pipeline ready for the first 50 organizers plus their events.",
   "statusDefinitions": {
@@ -92,55 +92,64 @@
     {
       "id": "LAUNCH-MARKET-001",
       "severity": "P0",
-      "status": "in_progress",
+      "status": "fixed",
       "workstream": "launch_surface",
-      "summary": "The organizer generator projected published Delhi inventory even though Delhi is waitlisted, exposing Bhag Club through Home, directory, search, static routes, JSON-LD, and sitemap.",
+      "summary": "Resolved: deployable organizer artifacts now enforce the Mumbai and Indore pilot market set; Delhi and Bhag Club are absent from production routes, discovery, and sitemap output.",
       "owner": "codex/pilot-hardening-20260722",
-      "nextAction": "Merge, deploy, and verify that the Bhag canonical and legacy routes and sitemap entry are absent while the review/Storybook projection is preserved.",
+      "nextAction": "Keep the generator and promotion-bridge market guards required as new organizer batches are reviewed.",
       "evidence": [
         "website/scripts/generateOrganizerListings.mjs",
         "tool/organizer_intake/check_promotion_bridge.mjs",
-        "website/src/generated/hostListings.json"
+        "website/src/generated/hostListings.json",
+        "PR #99 merged as 61c8db9cd9d0c2d4b675be94718c9e601c3e083b",
+        "Marketing Website workflow 29934872745 and Deploy marketing Hosting completed successfully",
+        "2026-07-22 live probe: /organizers/bhag/ returned 404; directory and sitemap contained neither Bhag nor Delhi; /organizers/afterfly/ and its sitemap entry returned 200"
       ]
     },
     {
       "id": "LAUNCH-ANALYTICS-001",
       "severity": "P0",
-      "status": "in_progress",
+      "status": "fixed",
       "workstream": "observability",
-      "summary": "The published GTM container delivers base GA4 page views but has no explicit forwarding for consented lead, claim, CTA, or client-error dataLayer events.",
+      "summary": "Resolved: GTM Version 3 forwards an explicit allowlist of consented waitlist, host-lead, host-application, organizer-claim, CTA, and client-error dataLayer events to GA4.",
       "owner": "codex/pilot-hardening-20260722",
-      "nextAction": "Switch GTM to the Catch-owning Google account, add the safe minimum custom-event tags, publish a version, and prove exact-once delivery in Preview/GA4.",
+      "nextAction": "Retain the allowlist, exact-once Preview evidence, and clean non-preview Realtime check as the production analytics baseline.",
       "evidence": [
-        "GTM-K7KLNQXP version 2",
+        "GTM-K7KLNQXP Version 3: Website production observability v1, published 2026-07-22 20:50 IST",
+        "Tag Assistant Preview: cta_click produced Catch website custom events exactly once",
+        "Trigger Catch website observability events uses a six-event anchored regex allowlist",
         "2026-07-22 GA4 Realtime confirmed six page_view events and three production page titles",
+        "2026-07-22 clean consented production session confirmed cta_click = 1, page_view = 2, first_visit = 1, and session_start = 1 in GA4 Realtime",
         "website/src/analytics.ts"
       ]
     },
     {
       "id": "LAUNCH-ANALYTICS-002",
       "severity": "P0",
-      "status": "in_progress",
+      "status": "fixed",
       "workstream": "privacy",
-      "summary": "GA4 page_location and website analytics page_path can include query strings containing free-text organizer searches or claim request identifiers.",
+      "summary": "Resolved: source analytics remove query strings and GTM Version 3 overrides GA4 page_location with scheme, hostname, and pathname only.",
       "owner": "codex/analytics-url-privacy-20260722",
-      "nextAction": "Strip query strings in source analytics, configure the GTM base tag with a pathname-only page_location, and add regression proof.",
+      "nextAction": "Keep query strings and request identifiers out of analytics payloads as new events are added.",
       "evidence": [
         "website/src/analytics.ts",
-        "docs/ads_conversion_spec.md"
+        "docs/ads_conversion_spec.md",
+        "GTM-K7KLNQXP Version 3 Catch production GA4 page_location = https://{{Page Hostname}}{{Page Path}}"
       ]
     },
     {
       "id": "LAUNCH-SUPPLY-001",
       "severity": "P0",
-      "status": "in_progress",
+      "status": "fixed",
       "workstream": "supply",
-      "summary": "Supply Intake reads global organizer packets without requested-market filtering and accepts stale event bridges; a Mumbai run mislabeled Indore and Delhi organizers and projected seven expired events.",
+      "summary": "Resolved: Supply Intake filters organizer packets by requested market and fails stale, expired, future-dated, or market-mismatched event bridges.",
       "owner": "codex/supply-market-freshness-20260722",
-      "nextAction": "Add market isolation and bridge-freshness failures with deterministic tests before creating pilot-city runs.",
+      "nextAction": "Use the enforced failures while generating current reviewed Mumbai and Indore bridges.",
       "evidence": [
         "operations/src/workflows/supply-intake/adapters/legacy-artifacts.mjs",
-        "2026-07-22 read-only Mumbai shadow audit: 18 items, 7 expired events"
+        "2026-07-22 read-only Mumbai shadow audit: 18 items, 7 expired events",
+        "2026-07-22 Operations platform tests: 78/78 passed",
+        "PR #99 merged as 61c8db9cd9d0c2d4b675be94718c9e601c3e083b"
       ]
     },
     {
@@ -210,14 +219,15 @@
     {
       "id": "LAUNCH-SECURITY-001",
       "severity": "P0",
-      "status": "in_progress",
+      "status": "fixed",
       "workstream": "dependency_security",
-      "summary": "The installed production dependency graph contained one high-severity fast-uri host-confusion advisory and one moderate protobufjs parser denial-of-service advisory.",
+      "summary": "Resolved: lockfile-only upgrades moved fast-uri to 3.1.4 and protobufjs to 7.6.5, leaving the production dependency audit at zero known vulnerabilities.",
       "owner": "codex/pilot-hardening-20260722",
-      "nextAction": "Merge the lockfile-only upgrades to fast-uri 3.1.4 and protobufjs 7.6.5, then retain npm audit zero-findings proof in the launch handoff.",
+      "nextAction": "Retain npm audit in the release loop and triage any new production advisory before publication.",
       "evidence": [
         "package-lock.json",
-        "2026-07-22 npm audit --omit=dev: 0 vulnerabilities after remediation"
+        "2026-07-22 npm audit --omit=dev: 0 vulnerabilities after remediation",
+        "PR #99 merged as 61c8db9cd9d0c2d4b675be94718c9e601c3e083b"
       ]
     },
     {
@@ -232,6 +242,22 @@
         "website/src/features/marketing/MarketingConsentBanner.tsx",
         "website/src/analytics.ts"
       ]
+    },
+    {
+      "id": "LAUNCH-ANALYTICS-004",
+      "severity": "P1",
+      "status": "fixed",
+      "workstream": "observability",
+      "summary": "Resolved: the Catch GA4 property is available under Google account slot authuser=1, and a clean consented production session delivered cta_click to Realtime.",
+      "owner": "founder",
+      "nextAction": "Use the Catch property URL with authuser=1 and a clean non-preview browser session for future Realtime acceptance checks.",
+      "evidence": [
+        "2026-07-22 Catch GA4 property catch-dating-app-64e51 opened at property 526484083 under account slot authuser=1",
+        "GA4 web stream catch_dating_app (web), stream 13688894376, uses measurement ID G-CH7WMQY5FV and reports traffic received in the past 48 hours",
+        "Tag Assistant independently proved GTM-K7KLNQXP and G-CH7WMQY5FV connected and cta_click fired once",
+        "2026-07-22 clean Safari session accepted analytics consent, clicked Browse organizers, and GA4 Realtime showed cta_click = 1, page_view = 2, first_visit = 1, and session_start = 1",
+        "Operational gotcha: the Tag Assistant preview session did not surface in Realtime; use a clean non-preview session for this acceptance check"
+      ]
     }
   ],
   "tasks": [
@@ -239,7 +265,7 @@
       "id": "TASK-MARKETS",
       "workstream": "launch_surface",
       "title": "Align every public market claim to Mumbai and Indore only",
-      "status": "in_progress",
+      "status": "done",
       "priority": "P0",
       "owner": "codex/pilot-hardening-20260722",
       "targetDate": "2026-07-22",
@@ -250,15 +276,18 @@
         "Market-pack and website route/build checks pass.",
         "Production pages show the two-city claim after deployment."
       ],
-      "nextAction": "Deploy the generator and promotion-bridge guard, then prove waitlist organizer routes and sitemap entries are absent.",
+      "nextAction": "Preserve the two-city guard until DEC-002 expansion conditions are explicitly met.",
       "evidence": [
         "website/src/content/markets/in.ts",
         "website/scripts/marketPack.test.mjs",
         "PR #96 merged as 2a382a25432e46ec79fdb3ba8b2bf47f17513409",
         "Production workflow 29922913399",
-        "2026-07-22 live probe: / and /organizers/ returned HTTP 200 with pilot markers"
+        "2026-07-22 live probe: / and /organizers/ returned HTTP 200 with pilot markers",
+        "PR #99 merged as 61c8db9cd9d0c2d4b675be94718c9e601c3e083b",
+        "Marketing Website workflow 29934872745 and Deploy marketing Hosting completed successfully",
+        "2026-07-22 live probe: /organizers/bhag/ returned 404; Bhag and Delhi were absent from /organizers/ and /sitemap.xml; AFTER FLY Indore remained live"
       ],
-      "updatedAt": "2026-07-22T18:52:00+05:30"
+      "updatedAt": "2026-07-22T21:24:52+05:30"
     },
     {
       "id": "TASK-LEGAL-PUBLISH",
@@ -311,7 +340,7 @@
       "id": "TASK-OBS-WEB-ANALYTICS",
       "workstream": "observability",
       "title": "Deliver consented website traffic, conversion, and client-error events to GTM/GA4",
-      "status": "in_progress",
+      "status": "done",
       "priority": "P0",
       "owner": "codex/pilot-hardening-20260722",
       "targetDate": "2026-07-22",
@@ -322,18 +351,21 @@
         "No analytics or marketing tag loads before consent.",
         "Evidence is linked without exposing credentials."
       ],
-      "nextAction": "After the founder switches GTM to the Catch-owning Google account, publish pathname-only and safe custom-event tags and verify exact-once delivery.",
+      "nextAction": "Monitor the six-event allowlist and repeat the clean consented Realtime check after analytics or consent changes.",
       "evidence": [
-        "GTM-K7KLNQXP version 2: Catch website production GA4 launch",
+        "GTM-K7KLNQXP Version 3: Website production observability v1",
+        "Tag Assistant Preview: Catch website custom events fired exactly once for cta_click",
         ".github/workflows/marketing-website.yml",
         "tool/env/check_web_hosting_env.mjs",
         "website/src/analytics.ts",
         "website/src/features/marketing/tracking.test.ts",
         "Production workflow 29922913399 completed successfully",
         "Deployed site-DX9pXazw.js contains GTM-K7KLNQXP, googletagmanager, gtm.js, and dataLayer",
-        "2026-07-22 GA4 Realtime confirmed six page_view events across Home, Organizer directory, and AFTER FLY"
+        "2026-07-22 GA4 Realtime confirmed six page_view events across Home, Organizer directory, and AFTER FLY",
+        "2026-07-22 GA4 stream 13688894376 measurement ID G-CH7WMQY5FV matched the published GTM destination",
+        "2026-07-22 clean Safari session accepted analytics consent and GA4 Realtime confirmed cta_click = 1, page_view = 2, first_visit = 1, and session_start = 1"
       ],
-      "updatedAt": "2026-07-22T18:52:00+05:30"
+      "updatedAt": "2026-07-22T21:43:15+05:30"
     },
     {
       "id": "TASK-PILOT-RUNS",
