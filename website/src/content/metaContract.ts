@@ -5,6 +5,9 @@ export const staticMetaKeys = [
   "host",
   "organizers",
   "claim",
+  "privacy",
+  "terms",
+  "help",
   "not_found",
 ] as const;
 

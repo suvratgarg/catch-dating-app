@@ -1,4 +1,5 @@
 import {websiteCopy} from "@content/generated";
+import {siteFooterLegalLinks} from "@content/site";
 import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
 import type {HostCaptureMap} from "./sections/CaptureFrames";
 import {CreateEventWalkthrough} from "./sections/CreateEventWalkthrough";
@@ -62,6 +63,7 @@ export function HostPage({captures}: {captures: HostCaptureMap}) {
           {href: "#workflow", label: websiteCopy["hostpage_0275"]},
           {href: "#live", label: websiteCopy["hostpage_0271"]},
           {href: "#founding-hosts", label: websiteCopy["hostpage_0267"]},
+          ...siteFooterLegalLinks,
         ]}
       />
     </>

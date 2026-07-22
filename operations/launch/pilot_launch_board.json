@@ -5,7 +5,7 @@
   "owner": "founder",
   "updatedAt": "2026-07-22T00:00:00+05:30",
   "operatingMode": "website_first",
-  "successDefinition": "Catch is publicly operating in Mumbai and Indore with accurate market claims, reachable legal and help pages, production website monitoring, and a reviewed supply pipeline ready for the first 50-record publication tranche.",
+  "successDefinition": "Catch is publicly operating in Mumbai and Indore with accurate market claims, reachable legal and help pages, production website monitoring, and a reviewed supply pipeline ready for the first 50 organizers plus their events.",
   "statusDefinitions": {
     "todo": "Unclaimed work that can start when its dependencies are met.",
     "in_progress": "Actively owned work with a current next action.",
@@ -49,20 +49,20 @@
     },
     {
       "id": "DEC-005",
-      "status": "pending",
-      "decision": "Define whether the next supply target means 50 combined organizer/event records or 50 organizers plus their events.",
-      "decidedAt": null,
+      "status": "accepted",
+      "decision": "The next supply target is 50 organizers plus their events across the Mumbai and Indore pilot markets.",
+      "decidedAt": "2026-07-22",
       "owner": "founder",
-      "rationale": "The publication acceptance count must be unambiguous before acquisition starts."
+      "rationale": "Organizer coverage is the primary supply goal; event records attach to those organizers and do not reduce the organizer count."
     }
   ],
   "blockers": [
     {
       "id": "BLK-LEGAL-OWNER",
       "severity": "launch_blocker",
-      "status": "open",
+      "status": "resolved",
       "owner": "founder",
-      "summary": "Legal operator, public support/privacy email, formal notice address, governing courts city, and grievance officer are not confirmed.",
+      "summary": "Resolved: Torana; suvrat@catchdates.com; 65, Manish Puri, Indore, Madhya Pradesh, India 452018; Indore, Madhya Pradesh courts; Suvrat Garg, Founder.",
       "unblocks": ["TASK-LEGAL-PUBLISH"]
     },
     {
@@ -76,9 +76,9 @@
     {
       "id": "BLK-SUPPLY-SCOPE",
       "severity": "next_tranche",
-      "status": "open",
+      "status": "resolved",
       "owner": "founder",
-      "summary": "The target of 50 hosts and events needs a precise counting rule and city allocation.",
+      "summary": "Resolved: publish 50 organizers across Mumbai and Indore, plus the events belonging to those organizers.",
       "unblocks": ["TASK-SUPPLY-50"]
     }
   ],
@@ -109,19 +109,23 @@
       "id": "TASK-LEGAL-PUBLISH",
       "workstream": "trust",
       "title": "Publish privacy, terms, and help pages",
-      "status": "blocked",
+      "status": "in_progress",
       "priority": "P0",
       "owner": "codex/website-pilot-launch-20260722",
       "targetDate": "2026-07-22",
-      "dependencies": ["BLK-LEGAL-OWNER"],
+      "dependencies": [],
       "acceptance": [
         "/privacy/, /terms/, and /help/ return HTTP 200 with route-specific canonical metadata.",
         "Footer links and the public contact destination are reachable.",
         "Privacy rights, correction/deletion, grievance handling, 18+ eligibility, public-source listings, claim/correction/takedown, safety, and external-event boundaries are explained plainly.",
         "Owner facts are confirmed and no placeholder text is published."
       ],
-      "nextAction": "Insert confirmed owner facts into the drafted copy, run website gates, and deploy.",
-      "evidence": [],
+      "nextAction": "Run website gates, merge, deploy, and verify all three production routes.",
+      "evidence": [
+        "website/src/content/legal.json",
+        "website/src/features/legal/LegalPage.tsx",
+        "website/scripts/postbuild.mjs"
+      ],
       "updatedAt": "2026-07-22T00:00:00+05:30"
     },
     {
@@ -185,19 +189,19 @@
     {
       "id": "TASK-SUPPLY-50",
       "workstream": "supply",
-      "title": "Research, review, and publish the first 50-record pilot supply tranche",
-      "status": "blocked",
+      "title": "Research, review, and publish 50 pilot organizers plus their events",
+      "status": "todo",
       "priority": "P1",
       "owner": "operations",
       "targetDate": "2026-07-27",
-      "dependencies": ["BLK-SUPPLY-SCOPE", "TASK-PILOT-RUNS"],
+      "dependencies": ["TASK-PILOT-RUNS"],
       "acceptance": [
-        "The founder-approved counting rule and Mumbai/Indore allocation are recorded.",
-        "Every record has source provenance, freshness, city, claim state, and a human-reviewed publication decision.",
+        "Exactly 50 organizer records are approved across Mumbai and Indore; attached event records do not reduce that count.",
+        "Every organizer and event record has source provenance, freshness, city, claim state, and a human-reviewed publication decision.",
         "Unclaimed listings expose correction, claim, and takedown paths.",
         "Production count and sampled page checks match the approved publication receipt."
       ],
-      "nextAction": "Resolve DEC-005, then run the existing supply-intake workflow in review-first mode.",
+      "nextAction": "After the three pilot runs pass, run the existing supply-intake workflow in review-first mode for 50 organizers and their events.",
       "evidence": [
         "operations/src/workflows/supply-intake/manifest.json"
       ],

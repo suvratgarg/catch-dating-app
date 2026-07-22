@@ -8,13 +8,16 @@
     "$schema": {"const": "./meta.schema.json"},
     "routes": {
       "type": "object",
-      "required": ["home", "host", "organizers", "claim", "not_found"],
+      "required": ["home", "host", "organizers", "claim", "privacy", "terms", "help", "not_found"],
       "additionalProperties": false,
       "properties": {
         "home": {"$ref": "#/$defs/staticMeta"},
         "host": {"$ref": "#/$defs/staticMeta"},
         "organizers": {"$ref": "#/$defs/staticMeta"},
         "claim": {"$ref": "#/$defs/staticMeta"},
+        "privacy": {"$ref": "#/$defs/staticMeta"},
+        "terms": {"$ref": "#/$defs/staticMeta"},
+        "help": {"$ref": "#/$defs/staticMeta"},
         "not_found": {"$ref": "#/$defs/staticMeta"}
       }
     },

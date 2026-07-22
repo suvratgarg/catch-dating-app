@@ -28,3 +28,4 @@ export {ListingDiagnosticList, ListingDiagnostics, ListingDiagnosticsHead, Listi
 export type {OrganizerEventHighlightItem} from "./organizer2";
 export {ClaimBandGrid, ClaimBandRail, ClaimBandSection, ClaimFlowHero, ClaimFlowMain, ClaimFlowPanel, ClaimFlowStage, ClaimFlowWorkspace, ClaimListingResults, ClaimMissingEvidenceList, ClaimRequestPanel, ClaimRequestPanelHeading, EventTicketMeta, ListingSuccessMetricGrid, OrganizerResultCardFooter, OwnerResponsePrompt, OwnerUnlockBoard, ReviewSignalCard, ReviewSignalLane} from "./organizer3";
 export type {OwnerUnlockBoardItem, PublicReviewCardModel} from "./organizer3";
+export {LegalDocument, LegalDocumentContact, LegalDocumentEffective, LegalDocumentEyebrow, LegalDocumentHeader, LegalDocumentSections, LegalDocumentSummary} from "./legal";

@@ -1,4 +1,5 @@
 import {websiteCopy} from "@content/generated";
+import {siteFooterLegalLinks} from "@content/site";
 import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
 import {
   DirectoryClaimPressureStrip,
@@ -58,6 +59,7 @@ export function OrganizerSearchPage() {
           {href: "/", label: websiteCopy["organizersearchpage_0350"]},
           {href: "/organizers/?q=run", label: websiteCopy["organizersearchpage_0351"]},
           {href: "/organizers/?q=dinner", label: websiteCopy["organizersearchpage_0348"]},
+          ...siteFooterLegalLinks,
         ]}
       />
     </>

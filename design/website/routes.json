@@ -1,6 +1,6 @@
 {
   "$schema": "./website.routes.schema.json",
-  "version": 7,
+  "version": 8,
   "updated": "2026-07-22",
   "owner": "marketing_website",
   "sourceOfTruth": {
@@ -125,6 +125,63 @@
           "storybook": [],
           "manual": ["known-listing", "not-found", "pending-claim", "claim-unavailable"]
         }
+      }
+    },
+    {
+      "id": "privacy",
+      "kind": "static",
+      "path": "/privacy/",
+      "pageKey": "privacy",
+      "source": "website/src/features/legal/LegalPage.tsx",
+      "metaKey": "privacy",
+      "staticOutput": "postbuild",
+      "indexing": "index",
+      "sitemap": "included",
+      "notes": "Published privacy policy with confirmed operator, contact, grievance, data-use, rights, retention, safety, and public-source listing terms.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": ["desktop", "mobile"],
+        "states": ["published"],
+        "stateCoverage": {"storybook": ["published"], "manual": []}
+      }
+    },
+    {
+      "id": "terms",
+      "kind": "static",
+      "path": "/terms/",
+      "pageKey": "terms",
+      "source": "website/src/features/legal/LegalPage.tsx",
+      "metaKey": "terms",
+      "staticOutput": "postbuild",
+      "indexing": "index",
+      "sitemap": "included",
+      "notes": "Published terms for the website-first pilot, external events, public-source listings, accounts, conduct, safety, and governing law.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": ["desktop", "mobile"],
+        "states": ["published"],
+        "stateCoverage": {"storybook": ["published"], "manual": []}
+      }
+    },
+    {
+      "id": "help",
+      "kind": "static",
+      "path": "/help/",
+      "pageKey": "help",
+      "source": "website/src/features/legal/LegalPage.tsx",
+      "metaKey": "help",
+      "staticOutput": "postbuild",
+      "indexing": "index",
+      "sitemap": "included",
+      "notes": "Published account, privacy, listing, event, safety, website, correction, claim, and takedown support route.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": ["desktop", "mobile"],
+        "states": ["published"],
+        "stateCoverage": {"storybook": ["published"], "manual": []}
       }
     },
     {

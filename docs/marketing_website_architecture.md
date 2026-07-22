@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.4.167
-updated: 2026-07-16
+version: 0.4.168
+updated: 2026-07-22
 owner: marketing_website
 status: active
 ---
@@ -685,10 +685,11 @@ website/src/
 - `content/site.ts` owns site-wide authored labels such as app-store CTA copy.
   The feature hook owns `import.meta.env` reads and joins destinations to copy;
   environment access never belongs in the content layer.
-- `content/legal.ts` reserves the existing app-linked `/privacy`, `/terms`, and
-  `/help` contracts with null bodies; `content/site.ts` reserves an empty
-  contact destination. A pretypecheck contract requires them to remain
-  unregistered and unlinked until owner-supplied text and destinations exist.
+- `content/legal.json` owns the published `/privacy/`, `/terms/`, and `/help/`
+  content plus confirmed operator and grievance facts; `content/legal.ts`
+  exposes its typed runtime contract. `content/site.ts` owns the public contact
+  destination and site-wide legal footer links. A pretypecheck contract rejects
+  placeholders, incomplete sections, or missing route registration.
 - `content/markets/index.ts` selects the active market pack. City lists,
   currency, geo-adaptive labels, India-specific comparison columns, and example
   event name/venue/city/currency belong in that pack rather than page or

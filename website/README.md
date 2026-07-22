@@ -108,10 +108,11 @@ option order before TypeScript runs. Site-wide app-store labels live in
 `src/content/site.ts`; `useAppDownloadCtas.ts` remains the adapter that reads
 environment URLs and combines them with that plain content data.
 
-`src/content/legal.ts` holds dormant `/privacy`, `/terms`, and `/help`
-contracts with null bodies, while `src/content/site.ts` holds an empty contact
-destination. `npm run check:owner-gated-content` prevents those routes or links
-from being exposed until owner-supplied legal/support content exists.
+`src/content/legal.json` owns the published `/privacy/`, `/terms/`, and `/help/`
+documents and confirmed operator/contact facts. `src/content/legal.ts` exposes
+that data to the route, while `src/content/site.ts` owns the public mailto and
+site-wide footer links. `npm run check:published-legal-content` rejects missing
+routes, empty sections, or placeholder text before TypeScript runs.
 
 Website analytics events inherit `content_version: "website_copy_v2"` from
 the central adapter. `npm run check:analytics-contract` verifies the immutable
