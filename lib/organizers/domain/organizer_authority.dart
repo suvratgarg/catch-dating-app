@@ -1,5 +1,4 @@
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 
 const _jsonEquality = DeepCollectionEquality();
 
@@ -42,7 +41,6 @@ enum OrganizerTrustState {
   suppressed,
 }
 
-@immutable
 class OrganizerOwnership {
   const OrganizerOwnership._(this.state, this._json);
 
@@ -72,7 +70,6 @@ class OrganizerOwnership {
   int get hashCode => Object.hash(state, _jsonEquality.hash(_json));
 }
 
-@immutable
 class OrganizerClaim {
   const OrganizerClaim._(this.state, this._json);
 
@@ -102,7 +99,6 @@ class OrganizerClaim {
   int get hashCode => Object.hash(state, _jsonEquality.hash(_json));
 }
 
-@immutable
 class OrganizerPublicPage {
   const OrganizerPublicPage._({
     required this.publishStatus,
@@ -155,7 +151,6 @@ class OrganizerPublicPage {
       Object.hash(publishStatus, indexStatus, _jsonEquality.hash(_json));
 }
 
-@immutable
 class OrganizerProvenance {
   const OrganizerProvenance._({
     required this.origin,
@@ -209,7 +204,6 @@ class OrganizerProvenance {
   );
 }
 
-@immutable
 class OrganizerAuthority {
   const OrganizerAuthority({
     required this.ownershipState,

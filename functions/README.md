@@ -24,11 +24,18 @@ options when specific functions need higher or lower limits.
 | `joinEventWaitlist` / `leaveEventWaitlist` | `src/events/` | Join or leave a full event's waitlist |
 | `placeDetails` / `placesAutocomplete` | `src/places/` | Google Places lookup seam for event locations |
 | `createClub` | `src/clubs/` | Create a club and follow it as host |
+| `createOrganizer` | `src/organizers/` | Create a canonical organizer and follow it as owner |
 | `updateClub` / `archiveClub` / `deleteClub` | `src/clubs/` | Host-owned club mutation surface |
+| `updateOrganizer` / `archiveOrganizer` / `deleteOrganizer` | `src/organizers/` | Organizer-owned canonical mutation surface |
 | `addClubHost` / `removeClubHost` | `src/clubs/` | Host management surface |
+| `addOrganizerManager` / `removeOrganizerManager` / `transferOrganizerOwnership` | `src/organizers/` | Organizer team and ownership management surface |
 | `joinClub` / `leaveClub` / `setClubNotificationPreference` | `src/clubs/` | Join/leave a club and manage member notifications |
+| `followOrganizer` / `unfollowOrganizer` / `setOrganizerNotificationPreference` | `src/organizers/` | Follow/unfollow an organizer and manage follower notifications |
 | `createClubPost` | `src/clubs/` | Host-only follower update with weekly quota and activity fan-out |
+| `createOrganizerPost` | `src/organizers/` | Organizer-only follower update with quota and activity fan-out |
 | `requestClubClaim` / `adminDecideClubClaim` | `src/clubs/clubClaims.ts` | Public organizer claim submission and audited admin decision |
+| `requestOrganizerClaim` / `adminDecideOrganizerClaim` | `src/organizers/organizerClaims.ts` | Canonical organizer claim submission and audited admin decision |
+| `startOrganizerConversation` | `src/clubs/clubHostConversations.ts` | Start or resume a viewer conversation with an organizer |
 | `sendEventBroadcast` | `src/events/` | Host-only, event-scoped Activity and preference-gated push broadcast with idempotent delivery receipt |
 | `markEventAttendance` | `src/events/` | Host marks attendance |
 | `selfCheckInAttendance` | `src/events/` | Participant self-check-in with GPS |
@@ -36,6 +43,7 @@ options when specific functions need higher or lower limits.
 | `generateEventSuccessRotations` / `overrideEventSuccessRotations` | `src/eventSuccess/` | Generate or override event-success rotations |
 | `fetchEventSuccessWingmanCandidates` / `submitEventSuccessWingmanRequest` / `withdrawEventSuccessWingmanRequest` | `src/eventSuccess/` | Wingman candidate and request workflow |
 | `createEventReview` / `updateEventReview` / `deleteEventReview` | `src/reviews/` | Review mutation surface |
+| `createPublicOrganizerReview` / `listPublicOrganizerReviews` | `src/reviews/` | Create or list reviews against canonical organizers |
 | `updateUserProfile` | `src/profiles/` | Profile patch callable with generated contract validation |
 | `blockUser` / `unblockUser` | `src/safety/` | Block/unblock another user |
 | `requestAccountDeletion` | `src/safety/` | Anonymize + delete user data |
@@ -63,6 +71,7 @@ options when specific functions need higher or lower limits.
 | `adminGetMarketingOpsDashboard` | `src/admin/marketingOps.ts` | Admin read-only marketing ops dashboard bridge |
 | `adminRecordMarketingReviewDecision` | `src/admin/marketingOps.ts` | Admin audited marketing review decision, no publish |
 | `adminCreateMarketingContentDraft` | `src/admin/marketingOps.ts` | Admin editable marketing draft creation, no post publish |
+| `adminListOrganizerDetails` / `adminGetOrganizerDetails` / `adminUpdateOrganizerDetails` | `src/admin/clubDetails.ts` | Admin canonical organizer directory, detail, and audited safe patch surface |
 
 ### Firestore-triggered
 
@@ -70,7 +79,9 @@ options when specific functions need higher or lower limits.
 |----------|------|---------|
 | `syncPublicProfile` | `src/profiles/` | `users/{userId}` onWrite — mirrors public fields + age gate |
 | `syncClubMemberStats` | `src/clubs/` | `clubMemberships/{membershipId}` onWrite — recomputes `memberCount` |
+| `syncOrganizerFollowerStats` | `src/clubs/` | `organizerFollowers/{followerId}` onWrite — recomputes canonical follower totals |
 | `syncClubNextEvent` | `src/clubs/` | `events/{eventId}` onWrite — recomputes club next-event projection |
+| `syncAlgoliaOrganizerIndex` | `src/search/` | `organizers/{organizerId}` onWrite — synchronizes organizer discovery search records |
 | `onSwipeCreated` | `src/matching/` | `profileDecisions/{id}/outgoing/{id}` onCreate — mutual-like → match |
 | `onMatchCreated` | `src/matching/` | `matches/{id}` onCreate — FCM push to both users |
 | `onMessageCreated` | `src/matching/` | `matches/{id}/messages/{id}` onCreate — unread conversation flag + FCM |
@@ -90,6 +101,7 @@ options when specific functions need higher or lower limits.
 | Function | File | Trigger |
 |----------|------|---------|
 | `generateProfilePhotoThumbnail` | `src/profiles/` | Profile photo finalize — creates avatar thumbnails |
+| `generateOrganizerLogoThumbnail` | `src/organizers/` | Organizer logo finalize — creates canonical organizer thumbnails |
 | `moderatePhotoOnUpload` | `src/moderation/` | `onObjectFinalized` — SafeSearch analysis |
 
 ### HTTP

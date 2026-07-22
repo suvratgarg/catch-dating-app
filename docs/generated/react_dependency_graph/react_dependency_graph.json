@@ -19,18 +19,18 @@
     "nonLiteralDynamicImports": "report"
   },
   "summary": {
-    "scannedSourceModules": 286,
+    "scannedSourceModules": 293,
     "dependencyLeafNodes": 22,
-    "moduleNodes": 308,
-    "moduleEdges": 1066,
-    "runtimeModuleEdges": 850,
-    "typeOnlyModuleEdges": 216,
+    "moduleNodes": 315,
+    "moduleEdges": 1105,
+    "runtimeModuleEdges": 884,
+    "typeOnlyModuleEdges": 221,
     "dynamicImportEdges": 26,
     "reExportEdges": 63,
     "featureGroups": 30,
     "featureDependencies": 86,
     "crossSurfaceDependencies": 5,
-    "externalPackages": 12,
+    "externalPackages": 14,
     "unresolvedImports": 0,
     "crossSurfaceViolations": 0,
     "runtimeCycles": 6,
@@ -325,8 +325,8 @@
       "surface": "website",
       "scope": "feature",
       "feature": "claims",
-      "modules": 9,
-      "tests": 2,
+      "modules": 10,
+      "tests": 3,
       "stories": 0
     },
     {
@@ -370,8 +370,8 @@
       "surface": "website",
       "scope": "feature",
       "feature": "organizers",
-      "modules": 29,
-      "tests": 4,
+      "modules": 33,
+      "tests": 6,
       "stories": 0
     },
     {
@@ -379,8 +379,8 @@
       "surface": "website",
       "scope": "feature",
       "feature": "reviews",
-      "modules": 3,
-      "tests": 1,
+      "modules": 4,
+      "tests": 2,
       "stories": 0
     },
     {
@@ -397,7 +397,7 @@
       "surface": "website",
       "scope": "shared",
       "feature": null,
-      "modules": 45,
+      "modules": 46,
       "tests": 1,
       "stories": 0
     },
@@ -1512,14 +1512,14 @@
         "website/src/firebase.ts"
       ],
       "targetModules": [
-        "functions/src/shared/generated/createPublicClubReviewCallablePayload.ts",
-        "functions/src/shared/generated/createPublicClubReviewCallableResponse.ts",
-        "functions/src/shared/generated/listPublicClubReviewsCallablePayload.ts",
-        "functions/src/shared/generated/listPublicClubReviewsCallableResponse.ts",
+        "functions/src/shared/generated/createPublicOrganizerReviewCallablePayload.ts",
+        "functions/src/shared/generated/createPublicOrganizerReviewCallableResponse.ts",
+        "functions/src/shared/generated/listPublicOrganizerReviewsCallablePayload.ts",
+        "functions/src/shared/generated/listPublicOrganizerReviewsCallableResponse.ts",
         "functions/src/shared/generated/recordOrganizerAnalyticsEventCallablePayload.ts",
         "functions/src/shared/generated/recordOrganizerAnalyticsEventCallableResponse.ts",
-        "functions/src/shared/generated/requestClubClaimCallablePayload.ts",
-        "functions/src/shared/generated/requestClubClaimCallableResponse.ts"
+        "functions/src/shared/generated/requestOrganizerClaimCallablePayload.ts",
+        "functions/src/shared/generated/requestOrganizerClaimCallableResponse.ts"
       ]
     },
     {
@@ -1748,13 +1748,14 @@
       "targetSurface": "website",
       "targetScope": "feature",
       "targetFeature": "organizers",
-      "edges": 15,
-      "runtimeEdges": 9,
-      "typeOnlyEdges": 6,
+      "edges": 20,
+      "runtimeEdges": 13,
+      "typeOnlyEdges": 7,
       "dynamicImports": 0,
       "reExports": 0,
       "sourceModules": [
         "website/src/features/claims/claimModel.ts",
+        "website/src/features/claims/claimRouting.test.ts",
         "website/src/features/claims/claimRouting.ts",
         "website/src/features/claims/sections/ClaimPageSections.tsx",
         "website/src/features/claims/useClaimFlowController.test.tsx",
@@ -1765,6 +1766,8 @@
       "targetModules": [
         "website/src/features/organizers/OrganizerIdentity.tsx",
         "website/src/features/organizers/data.ts",
+        "website/src/features/organizers/listingPresentation.ts",
+        "website/src/features/organizers/organizerPolicy.ts",
         "website/src/features/organizers/publicDiscovery.ts",
         "website/src/features/organizers/selectors.ts",
         "website/src/features/organizers/types.ts"
@@ -1780,8 +1783,8 @@
       "targetSurface": "website",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 16,
-      "runtimeEdges": 13,
+      "edges": 17,
+      "runtimeEdges": 14,
       "typeOnlyEdges": 3,
       "dynamicImports": 0,
       "reExports": 0,
@@ -1798,6 +1801,7 @@
       "targetModules": [
         "website/src/content/generated.ts",
         "website/src/content/marketing.ts",
+        "website/src/content/organizer.ts",
         "website/src/content/templates.ts",
         "website/src/shared/forms/types.ts",
         "website/src/shared/query/queryKeys.ts",
@@ -2211,8 +2215,8 @@
       "targetSurface": "website",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 41,
-      "runtimeEdges": 38,
+      "edges": 46,
+      "runtimeEdges": 43,
       "typeOnlyEdges": 3,
       "dynamicImports": 0,
       "reExports": 0,
@@ -2222,6 +2226,8 @@
         "website/src/features/organizers/OrganizerSearchPage.tsx",
         "website/src/features/organizers/data.ts",
         "website/src/features/organizers/featuredOrganizerCardItem.tsx",
+        "website/src/features/organizers/organizerPolicy.test.ts",
+        "website/src/features/organizers/organizerPolicy.ts",
         "website/src/features/organizers/publicDiscovery.test.ts",
         "website/src/features/organizers/publicDiscovery.ts",
         "website/src/features/organizers/publicDiscoveryData.ts",
@@ -2240,6 +2246,7 @@
         "website/src/content/generated.ts",
         "website/src/content/marketing.ts",
         "website/src/content/markets/index.ts",
+        "website/src/content/organizer.ts",
         "website/src/content/templates.ts",
         "website/src/generated/hostListings.json",
         "website/src/shared/site/index.ts",
@@ -2304,19 +2311,21 @@
       "targetSurface": "website",
       "targetScope": "feature",
       "targetFeature": "organizers",
-      "edges": 5,
-      "runtimeEdges": 2,
-      "typeOnlyEdges": 3,
+      "edges": 9,
+      "runtimeEdges": 5,
+      "typeOnlyEdges": 4,
       "dynamicImports": 0,
       "reExports": 0,
       "sourceModules": [
+        "website/src/features/reviews/reviewModel.test.ts",
         "website/src/features/reviews/reviewModel.ts",
         "website/src/features/reviews/useListingReviewsController.test.tsx",
         "website/src/features/reviews/useListingReviewsController.ts"
       ],
       "targetModules": [
         "website/src/features/organizers/data.ts",
-        "website/src/features/organizers/selectors.ts",
+        "website/src/features/organizers/listingPresentation.ts",
+        "website/src/features/organizers/organizerPolicy.ts",
         "website/src/features/organizers/types.ts"
       ]
     },
@@ -2330,8 +2339,8 @@
       "targetSurface": "website",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 5,
-      "runtimeEdges": 3,
+      "edges": 6,
+      "runtimeEdges": 4,
       "typeOnlyEdges": 2,
       "dynamicImports": 0,
       "reExports": 0,
@@ -2341,6 +2350,7 @@
       ],
       "targetModules": [
         "website/src/content/generated.ts",
+        "website/src/content/organizer.ts",
         "website/src/shared/forms/types.ts",
         "website/src/shared/query/queryKeys.ts",
         "website/src/shared/ui/primitives/index.ts"
@@ -3247,8 +3257,8 @@
       "sourceLayer": "feature",
       "targetSurface": "website",
       "targetLayer": "content",
-      "edges": 56,
-      "runtimeEdges": 56,
+      "edges": 63,
+      "runtimeEdges": 63,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "reExports": 0,
@@ -3276,6 +3286,8 @@
         "website/src/features/organizers/HostListingPage.tsx",
         "website/src/features/organizers/OrganizerSearchPage.tsx",
         "website/src/features/organizers/featuredOrganizerCardItem.tsx",
+        "website/src/features/organizers/organizerPolicy.test.ts",
+        "website/src/features/organizers/organizerPolicy.ts",
         "website/src/features/organizers/publicDiscovery.test.ts",
         "website/src/features/organizers/publicDiscovery.ts",
         "website/src/features/organizers/publicDiscoveryData.ts",
@@ -3297,6 +3309,7 @@
         "website/src/content/host.ts",
         "website/src/content/marketing.ts",
         "website/src/content/markets/index.ts",
+        "website/src/content/organizer.ts",
         "website/src/content/site.ts",
         "website/src/content/templates.ts"
       ]
@@ -3459,14 +3472,14 @@
         "website/src/firebase.ts"
       ],
       "targetModules": [
-        "functions/src/shared/generated/createPublicClubReviewCallablePayload.ts",
-        "functions/src/shared/generated/createPublicClubReviewCallableResponse.ts",
-        "functions/src/shared/generated/listPublicClubReviewsCallablePayload.ts",
-        "functions/src/shared/generated/listPublicClubReviewsCallableResponse.ts",
+        "functions/src/shared/generated/createPublicOrganizerReviewCallablePayload.ts",
+        "functions/src/shared/generated/createPublicOrganizerReviewCallableResponse.ts",
+        "functions/src/shared/generated/listPublicOrganizerReviewsCallablePayload.ts",
+        "functions/src/shared/generated/listPublicOrganizerReviewsCallableResponse.ts",
         "functions/src/shared/generated/recordOrganizerAnalyticsEventCallablePayload.ts",
         "functions/src/shared/generated/recordOrganizerAnalyticsEventCallableResponse.ts",
-        "functions/src/shared/generated/requestClubClaimCallablePayload.ts",
-        "functions/src/shared/generated/requestClubClaimCallableResponse.ts"
+        "functions/src/shared/generated/requestOrganizerClaimCallablePayload.ts",
+        "functions/src/shared/generated/requestOrganizerClaimCallableResponse.ts"
       ]
     },
     {
@@ -3904,6 +3917,32 @@
       ]
     },
     {
+      "package": "node:fs",
+      "edges": 1,
+      "runtimeEdges": 1,
+      "typeOnlyEdges": 0,
+      "dynamicImports": 0,
+      "surfaces": [
+        "website"
+      ],
+      "sourceModules": [
+        "website/src/features/organizers/publicSurfaceBehavior.test.ts"
+      ]
+    },
+    {
+      "package": "node:path",
+      "edges": 1,
+      "runtimeEdges": 1,
+      "typeOnlyEdges": 0,
+      "dynamicImports": 0,
+      "surfaces": [
+        "website"
+      ],
+      "sourceModules": [
+        "website/src/features/organizers/publicSurfaceBehavior.test.ts"
+      ]
+    },
+    {
       "package": "react",
       "edges": 117,
       "runtimeEdges": 60,
@@ -4065,8 +4104,8 @@
     },
     {
       "package": "vitest",
-      "edges": 45,
-      "runtimeEdges": 45,
+      "edges": 49,
+      "runtimeEdges": 49,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "surfaces": [
@@ -4109,15 +4148,19 @@
         "admin/src/shared/ui/adminPresentation.test.ts",
         "packages/web-ui/src/primitives.test.tsx",
         "website/src/content/contentContracts.test.ts",
+        "website/src/features/claims/claimRouting.test.ts",
         "website/src/features/claims/useClaimFlowController.test.tsx",
         "website/src/features/claims/useClaimRequestMutation.test.tsx",
         "website/src/features/host/application/applicationModel.test.ts",
         "website/src/features/host/application/useHostApplicationController.test.tsx",
         "website/src/features/marketing/tracking.test.ts",
+        "website/src/features/organizers/organizerPolicy.test.ts",
         "website/src/features/organizers/publicDiscovery.test.ts",
+        "website/src/features/organizers/publicSurfaceBehavior.test.ts",
         "website/src/features/organizers/selectors.test.ts",
         "website/src/features/organizers/useHostListingPageController.test.tsx",
         "website/src/features/organizers/useOrganizerDirectoryController.test.tsx",
+        "website/src/features/reviews/reviewModel.test.ts",
         "website/src/features/reviews/useListingReviewsController.test.tsx",
         "website/src/features/waitlist/useWaitlistFormController.test.tsx"
       ]
@@ -5997,7 +6040,7 @@
       "story": false
     },
     {
-      "id": "functions/src/shared/generated/createPublicClubReviewCallablePayload.ts",
+      "id": "functions/src/shared/generated/createPublicOrganizerReviewCallablePayload.ts",
       "surface": "contracts",
       "layer": "generated",
       "scope": "shared",
@@ -6009,7 +6052,7 @@
       "story": false
     },
     {
-      "id": "functions/src/shared/generated/createPublicClubReviewCallableResponse.ts",
+      "id": "functions/src/shared/generated/createPublicOrganizerReviewCallableResponse.ts",
       "surface": "contracts",
       "layer": "generated",
       "scope": "shared",
@@ -6045,7 +6088,7 @@
       "story": false
     },
     {
-      "id": "functions/src/shared/generated/listPublicClubReviewsCallablePayload.ts",
+      "id": "functions/src/shared/generated/listPublicOrganizerReviewsCallablePayload.ts",
       "surface": "contracts",
       "layer": "generated",
       "scope": "shared",
@@ -6057,7 +6100,7 @@
       "story": false
     },
     {
-      "id": "functions/src/shared/generated/listPublicClubReviewsCallableResponse.ts",
+      "id": "functions/src/shared/generated/listPublicOrganizerReviewsCallableResponse.ts",
       "surface": "contracts",
       "layer": "generated",
       "scope": "shared",
@@ -6093,7 +6136,7 @@
       "story": false
     },
     {
-      "id": "functions/src/shared/generated/requestClubClaimCallablePayload.ts",
+      "id": "functions/src/shared/generated/requestOrganizerClaimCallablePayload.ts",
       "surface": "contracts",
       "layer": "generated",
       "scope": "shared",
@@ -6105,7 +6148,7 @@
       "story": false
     },
     {
-      "id": "functions/src/shared/generated/requestClubClaimCallableResponse.ts",
+      "id": "functions/src/shared/generated/requestOrganizerClaimCallableResponse.ts",
       "surface": "contracts",
       "layer": "generated",
       "scope": "shared",
@@ -6393,6 +6436,18 @@
       "story": false
     },
     {
+      "id": "website/src/content/organizer.ts",
+      "surface": "website",
+      "layer": "content",
+      "scope": "shared",
+      "feature": null,
+      "group": "website:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
       "id": "website/src/content/site.ts",
       "surface": "website",
       "layer": "content",
@@ -6450,6 +6505,18 @@
       "extension": ".ts",
       "scanned": true,
       "test": false,
+      "story": false
+    },
+    {
+      "id": "website/src/features/claims/claimRouting.test.ts",
+      "surface": "website",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "claims",
+      "group": "website:feature:claims",
+      "extension": ".ts",
+      "scanned": true,
+      "test": true,
       "story": false
     },
     {
@@ -6885,6 +6952,42 @@
       "story": false
     },
     {
+      "id": "website/src/features/organizers/listingPresentation.ts",
+      "surface": "website",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "organizers",
+      "group": "website:feature:organizers",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "website/src/features/organizers/organizerPolicy.test.ts",
+      "surface": "website",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "organizers",
+      "group": "website:feature:organizers",
+      "extension": ".ts",
+      "scanned": true,
+      "test": true,
+      "story": false
+    },
+    {
+      "id": "website/src/features/organizers/organizerPolicy.ts",
+      "surface": "website",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "organizers",
+      "group": "website:feature:organizers",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
       "id": "website/src/features/organizers/publicDiscovery.test.ts",
       "surface": "website",
       "layer": "feature",
@@ -6918,6 +7021,18 @@
       "extension": ".ts",
       "scanned": true,
       "test": false,
+      "story": false
+    },
+    {
+      "id": "website/src/features/organizers/publicSurfaceBehavior.test.ts",
+      "surface": "website",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "organizers",
+      "group": "website:feature:organizers",
+      "extension": ".ts",
+      "scanned": true,
+      "test": true,
       "story": false
     },
     {
@@ -7146,6 +7261,18 @@
       "extension": ".ts",
       "scanned": true,
       "test": false,
+      "story": false
+    },
+    {
+      "id": "website/src/features/reviews/reviewModel.test.ts",
+      "surface": "website",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "reviews",
+      "group": "website:feature:reviews",
+      "extension": ".ts",
+      "scanned": true,
+      "test": true,
       "story": false
     },
     {
@@ -10776,11 +10903,20 @@
     },
     {
       "source": "admin/src/features/organizers/ui/organizerDetailPanels.tsx",
+      "target": "admin/src/features/organizers/controllers/organizerPublishingHelpers.ts",
+      "specifier": "../controllers/organizerPublishingHelpers",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 92,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/organizers/ui/organizerDetailPanels.tsx",
       "target": "admin/src/shared/feedback/AdminFeedbackContext.tsx",
       "specifier": "../../../shared/feedback/AdminFeedbackContext",
       "kind": "import",
       "typeOnly": false,
-      "line": 92,
+      "line": 94,
       "column": 1
     },
     {
@@ -10789,7 +10925,7 @@
       "specifier": "./organizerDirectoryPanels",
       "kind": "import",
       "typeOnly": false,
-      "line": 93,
+      "line": 95,
       "column": 1
     },
     {
@@ -12908,6 +13044,33 @@
       "column": 1
     },
     {
+      "source": "website/src/features/claims/claimRouting.test.ts",
+      "target": "website/src/features/organizers/data.ts",
+      "specifier": "../organizers/data",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/claims/claimRouting.test.ts",
+      "target": "website/src/features/organizers/types.ts",
+      "specifier": "../organizers/types",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/claims/claimRouting.test.ts",
+      "target": "website/src/features/claims/claimRouting.ts",
+      "specifier": "./claimRouting",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 4,
+      "column": 1
+    },
+    {
       "source": "website/src/features/claims/claimRouting.ts",
       "target": "website/src/features/organizers/data.ts",
       "specifier": "../organizers/data",
@@ -12918,8 +13081,8 @@
     },
     {
       "source": "website/src/features/claims/claimRouting.ts",
-      "target": "website/src/features/organizers/selectors.ts",
-      "specifier": "../organizers/selectors",
+      "target": "website/src/features/organizers/organizerPolicy.ts",
+      "specifier": "../organizers/organizerPolicy",
       "kind": "import",
       "typeOnly": false,
       "line": 2,
@@ -12931,7 +13094,7 @@
       "specifier": "../organizers/types",
       "kind": "import",
       "typeOnly": true,
-      "line": 6,
+      "line": 3,
       "column": 1
     },
     {
@@ -12999,11 +13162,20 @@
     },
     {
       "source": "website/src/features/claims/sections/ClaimPageSections.tsx",
+      "target": "website/src/features/organizers/organizerPolicy.ts",
+      "specifier": "../../organizers/organizerPolicy",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 35,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/claims/sections/ClaimPageSections.tsx",
       "target": "website/src/features/organizers/types.ts",
       "specifier": "../../organizers/types",
       "kind": "import",
       "typeOnly": true,
-      "line": 35,
+      "line": 36,
       "column": 1
     },
     {
@@ -13012,7 +13184,7 @@
       "specifier": "../claimRouting",
       "kind": "import",
       "typeOnly": true,
-      "line": 36,
+      "line": 37,
       "column": 1
     },
     {
@@ -13021,7 +13193,7 @@
       "specifier": "../claimModel",
       "kind": "import",
       "typeOnly": false,
-      "line": 37,
+      "line": 38,
       "column": 1
     },
     {
@@ -13030,7 +13202,7 @@
       "specifier": "../useClaimFlowController",
       "kind": "import",
       "typeOnly": true,
-      "line": 44,
+      "line": 45,
       "column": 1
     },
     {
@@ -13107,11 +13279,20 @@
     },
     {
       "source": "website/src/features/claims/useClaimFlowController.ts",
+      "target": "website/src/features/organizers/organizerPolicy.ts",
+      "specifier": "../organizers/organizerPolicy",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 6,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/claims/useClaimFlowController.ts",
       "target": "website/src/features/organizers/selectors.ts",
       "specifier": "../organizers/selectors",
       "kind": "import",
       "typeOnly": false,
-      "line": 6,
+      "line": 7,
       "column": 1
     },
     {
@@ -13120,7 +13301,7 @@
       "specifier": "../organizers/types",
       "kind": "import",
       "typeOnly": true,
-      "line": 10,
+      "line": 11,
       "column": 1
     },
     {
@@ -13129,7 +13310,7 @@
       "specifier": "../../shared/forms/types",
       "kind": "import",
       "typeOnly": true,
-      "line": 11,
+      "line": 12,
       "column": 1
     },
     {
@@ -13138,7 +13319,7 @@
       "specifier": "./claimRouting",
       "kind": "import",
       "typeOnly": false,
-      "line": 12,
+      "line": 13,
       "column": 1
     },
     {
@@ -13147,7 +13328,7 @@
       "specifier": "./claimModel",
       "kind": "import",
       "typeOnly": false,
-      "line": 13,
+      "line": 14,
       "column": 1
     },
     {
@@ -13156,7 +13337,7 @@
       "specifier": "./useClaimRequestMutation",
       "kind": "import",
       "typeOnly": false,
-      "line": 23,
+      "line": 24,
       "column": 1
     },
     {
@@ -13274,7 +13455,7 @@
       "kind": "dynamic-import",
       "typeOnly": false,
       "line": 94,
-      "column": 40
+      "column": 45
     },
     {
       "source": "website/src/features/claims/useListingClaimController.ts",
@@ -13287,11 +13468,20 @@
     },
     {
       "source": "website/src/features/claims/useListingClaimController.ts",
+      "target": "website/src/content/organizer.ts",
+      "specifier": "@content/organizer",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/claims/useListingClaimController.ts",
       "target": "website/src/analytics.ts",
       "specifier": "../../analytics",
       "kind": "import",
       "typeOnly": false,
-      "line": 3,
+      "line": 4,
       "column": 1
     },
     {
@@ -13300,7 +13490,7 @@
       "specifier": "../../firebaseConfig",
       "kind": "import",
       "typeOnly": false,
-      "line": 4,
+      "line": 5,
       "column": 1
     },
     {
@@ -13309,16 +13499,25 @@
       "specifier": "../../shared/forms/types",
       "kind": "import",
       "typeOnly": true,
-      "line": 5,
+      "line": 6,
       "column": 1
     },
     {
       "source": "website/src/features/claims/useListingClaimController.ts",
-      "target": "website/src/features/organizers/selectors.ts",
-      "specifier": "../organizers/selectors",
+      "target": "website/src/features/organizers/organizerPolicy.ts",
+      "specifier": "../organizers/organizerPolicy",
       "kind": "import",
       "typeOnly": false,
-      "line": 6,
+      "line": 7,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/claims/useListingClaimController.ts",
+      "target": "website/src/features/organizers/listingPresentation.ts",
+      "specifier": "../organizers/listingPresentation",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 8,
       "column": 1
     },
     {
@@ -13327,7 +13526,7 @@
       "specifier": "../organizers/types",
       "kind": "import",
       "typeOnly": true,
-      "line": 7,
+      "line": 9,
       "column": 1
     },
     {
@@ -13336,7 +13535,7 @@
       "specifier": "./claimModel",
       "kind": "import",
       "typeOnly": false,
-      "line": 8,
+      "line": 10,
       "column": 1
     },
     {
@@ -13345,7 +13544,7 @@
       "specifier": "./useClaimRequestMutation",
       "kind": "import",
       "typeOnly": false,
-      "line": 14,
+      "line": 16,
       "column": 1
     },
     {
@@ -13480,7 +13679,7 @@
       "specifier": "../../waitlist/WaitlistForm",
       "kind": "import",
       "typeOnly": false,
-      "line": 54,
+      "line": 57,
       "column": 1
     },
     {
@@ -14142,8 +14341,8 @@
     },
     {
       "source": "website/src/features/organizers/OrganizerIdentity.tsx",
-      "target": "website/src/features/organizers/selectors.ts",
-      "specifier": "./selectors",
+      "target": "website/src/features/organizers/organizerPolicy.ts",
+      "specifier": "./organizerPolicy",
       "kind": "import",
       "typeOnly": false,
       "line": 6,
@@ -14303,16 +14502,16 @@
       "column": 1
     },
     {
-      "source": "website/src/features/organizers/publicDiscovery.test.ts",
-      "target": "website/src/content/markets/index.ts",
-      "specifier": "../../content/markets",
+      "source": "website/src/features/organizers/organizerPolicy.test.ts",
+      "target": "website/src/content/organizer.ts",
+      "specifier": "../../content/organizer",
       "kind": "import",
       "typeOnly": false,
       "line": 2,
       "column": 1
     },
     {
-      "source": "website/src/features/organizers/publicDiscovery.test.ts",
+      "source": "website/src/features/organizers/organizerPolicy.test.ts",
       "target": "website/src/features/organizers/data.ts",
       "specifier": "./data",
       "kind": "import",
@@ -14321,12 +14520,75 @@
       "column": 1
     },
     {
+      "source": "website/src/features/organizers/organizerPolicy.test.ts",
+      "target": "website/src/features/organizers/organizerPolicy.ts",
+      "specifier": "./organizerPolicy",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 4,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/organizerPolicy.test.ts",
+      "target": "website/src/features/organizers/types.ts",
+      "specifier": "./types",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 5,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/organizerPolicy.ts",
+      "target": "website/src/features/organizers/types.ts",
+      "specifier": "./types",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/organizerPolicy.ts",
+      "target": "website/src/content/organizer.ts",
+      "specifier": "../../content/organizer",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/publicDiscovery.test.ts",
+      "target": "website/src/content/organizer.ts",
+      "specifier": "../../content/organizer",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/publicDiscovery.test.ts",
+      "target": "website/src/content/markets/index.ts",
+      "specifier": "../../content/markets",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/publicDiscovery.test.ts",
+      "target": "website/src/features/organizers/data.ts",
+      "specifier": "./data",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 4,
+      "column": 1
+    },
+    {
       "source": "website/src/features/organizers/publicDiscovery.test.ts",
       "target": "website/src/features/organizers/types.ts",
       "specifier": "./types",
       "kind": "import",
       "typeOnly": true,
-      "line": 4,
+      "line": 5,
       "column": 1
     },
     {
@@ -14335,7 +14597,7 @@
       "specifier": "./publicDiscovery",
       "kind": "import",
       "typeOnly": false,
-      "line": 5,
+      "line": 10,
       "column": 1
     },
     {
@@ -14349,11 +14611,20 @@
     },
     {
       "source": "website/src/features/organizers/publicDiscovery.ts",
+      "target": "website/src/content/organizer.ts",
+      "specifier": "@content/organizer",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/publicDiscovery.ts",
       "target": "website/src/shared/ui/primitives/index.ts",
       "specifier": "../../shared/ui/primitives",
       "kind": "import",
       "typeOnly": true,
-      "line": 2,
+      "line": 3,
       "column": 1
     },
     {
@@ -14362,7 +14633,7 @@
       "specifier": "@content/marketing",
       "kind": "import",
       "typeOnly": false,
-      "line": 7,
+      "line": 8,
       "column": 1
     },
     {
@@ -14371,7 +14642,7 @@
       "specifier": "./homeEventEligibility",
       "kind": "import",
       "typeOnly": false,
-      "line": 8,
+      "line": 9,
       "column": 1
     },
     {
@@ -14380,7 +14651,25 @@
       "specifier": "./selectors",
       "kind": "import",
       "typeOnly": false,
-      "line": 9,
+      "line": 10,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/publicDiscovery.ts",
+      "target": "website/src/features/organizers/selectors.ts",
+      "specifier": "./selectors",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 11,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/publicDiscovery.ts",
+      "target": "website/src/features/organizers/organizerPolicy.ts",
+      "specifier": "./organizerPolicy",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 12,
       "column": 1
     },
     {
@@ -14389,7 +14678,7 @@
       "specifier": "./types",
       "kind": "import",
       "typeOnly": true,
-      "line": 10,
+      "line": 13,
       "column": 1
     },
     {
@@ -14420,6 +14709,51 @@
       "column": 1
     },
     {
+      "source": "website/src/features/organizers/publicSurfaceBehavior.test.ts",
+      "target": "website/src/features/organizers/data.ts",
+      "specifier": "./data",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 4,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/publicSurfaceBehavior.test.ts",
+      "target": "website/src/features/organizers/listingPresentation.ts",
+      "specifier": "./listingPresentation",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 5,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/publicSurfaceBehavior.test.ts",
+      "target": "website/src/features/organizers/organizerPolicy.ts",
+      "specifier": "./organizerPolicy",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 9,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/publicSurfaceBehavior.test.ts",
+      "target": "website/src/features/organizers/routing.ts",
+      "specifier": "./routing",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 10,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/publicSurfaceBehavior.test.ts",
+      "target": "website/src/features/organizers/types.ts",
+      "specifier": "./types",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 11,
+      "column": 1
+    },
+    {
       "source": "website/src/features/organizers/routing.ts",
       "target": "website/src/features/organizers/data.ts",
       "specifier": "./data",
@@ -14430,11 +14764,20 @@
     },
     {
       "source": "website/src/features/organizers/routing.ts",
+      "target": "website/src/features/organizers/organizerPolicy.ts",
+      "specifier": "./organizerPolicy",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/routing.ts",
       "target": "website/src/features/organizers/types.ts",
       "specifier": "./types",
       "kind": "import",
       "typeOnly": true,
-      "line": 2,
+      "line": 3,
       "column": 1
     },
     {
@@ -14534,6 +14877,15 @@
       "kind": "import",
       "typeOnly": false,
       "line": 16,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/sections/HostListingSections.tsx",
+      "target": "website/src/features/organizers/organizerPolicy.ts",
+      "specifier": "../organizerPolicy",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 17,
       "column": 1
     },
     {
@@ -14709,11 +15061,29 @@
     },
     {
       "source": "website/src/features/organizers/sections/ListingFactsSection.tsx",
+      "target": "website/src/features/organizers/organizerPolicy.ts",
+      "specifier": "../organizerPolicy",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/sections/ListingFactsSection.tsx",
+      "target": "website/src/features/organizers/selectors.ts",
+      "specifier": "../selectors",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 4,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/sections/ListingFactsSection.tsx",
       "target": "website/src/features/organizers/types.ts",
       "specifier": "../types",
       "kind": "import",
       "typeOnly": true,
-      "line": 3,
+      "line": 5,
       "column": 1
     },
     {
@@ -14781,8 +15151,8 @@
     },
     {
       "source": "website/src/features/organizers/sections/ListingHeroSection.tsx",
-      "target": "website/src/features/organizers/selectors.ts",
-      "specifier": "../selectors",
+      "target": "website/src/features/organizers/organizerPolicy.ts",
+      "specifier": "../organizerPolicy",
       "kind": "import",
       "typeOnly": false,
       "line": 9,
@@ -14835,11 +15205,20 @@
     },
     {
       "source": "website/src/features/organizers/sections/ListingReviewsSection.tsx",
+      "target": "website/src/content/organizer.ts",
+      "specifier": "@content/organizer",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/sections/ListingReviewsSection.tsx",
       "target": "website/src/shared/site/index.ts",
       "specifier": "../../../shared/site",
       "kind": "import",
       "typeOnly": false,
-      "line": 2,
+      "line": 3,
       "column": 1
     },
     {
@@ -14848,7 +15227,7 @@
       "specifier": "../../../shared/ui/primitives",
       "kind": "import",
       "typeOnly": false,
-      "line": 3,
+      "line": 4,
       "column": 1
     },
     {
@@ -14857,7 +15236,7 @@
       "specifier": "../../marketing/tracking",
       "kind": "import",
       "typeOnly": false,
-      "line": 21,
+      "line": 22,
       "column": 1
     },
     {
@@ -14866,7 +15245,16 @@
       "specifier": "../routing",
       "kind": "import",
       "typeOnly": false,
-      "line": 22,
+      "line": 23,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/sections/ListingReviewsSection.tsx",
+      "target": "website/src/features/organizers/organizerPolicy.ts",
+      "specifier": "../organizerPolicy",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 24,
       "column": 1
     },
     {
@@ -14875,7 +15263,7 @@
       "specifier": "../types",
       "kind": "import",
       "typeOnly": true,
-      "line": 23,
+      "line": 25,
       "column": 1
     },
     {
@@ -14884,7 +15272,7 @@
       "specifier": "../../reviews/useListingReviewsController",
       "kind": "import",
       "typeOnly": false,
-      "line": 24,
+      "line": 26,
       "column": 1
     },
     {
@@ -14988,11 +15376,20 @@
     },
     {
       "source": "website/src/features/organizers/sections/OrganizerSearchSections.tsx",
+      "target": "website/src/features/organizers/organizerPolicy.ts",
+      "specifier": "../organizerPolicy",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 34,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/sections/OrganizerSearchSections.tsx",
       "target": "website/src/features/organizers/routing.ts",
       "specifier": "../routing",
       "kind": "import",
       "typeOnly": false,
-      "line": 34,
+      "line": 35,
       "column": 1
     },
     {
@@ -15001,7 +15398,7 @@
       "specifier": "../selectors",
       "kind": "import",
       "typeOnly": false,
-      "line": 35,
+      "line": 36,
       "column": 1
     },
     {
@@ -15010,7 +15407,7 @@
       "specifier": "../types",
       "kind": "import",
       "typeOnly": true,
-      "line": 40,
+      "line": 41,
       "column": 1
     },
     {
@@ -15019,7 +15416,7 @@
       "specifier": "../useOrganizerDirectoryController",
       "kind": "import",
       "typeOnly": true,
-      "line": 41,
+      "line": 42,
       "column": 1
     },
     {
@@ -15119,6 +15516,15 @@
       "kind": "import",
       "typeOnly": true,
       "line": 1,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/selectors.ts",
+      "target": "website/src/features/organizers/organizerPolicy.ts",
+      "specifier": "./organizerPolicy",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
       "column": 1
     },
     {
@@ -15222,11 +15628,20 @@
     },
     {
       "source": "website/src/features/organizers/useHostListingPageController.ts",
+      "target": "website/src/features/organizers/organizerPolicy.ts",
+      "specifier": "./organizerPolicy",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 10,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/useHostListingPageController.ts",
       "target": "website/src/features/organizers/types.ts",
       "specifier": "./types",
       "kind": "import",
       "typeOnly": true,
-      "line": 10,
+      "line": 11,
       "column": 1
     },
     {
@@ -15280,7 +15695,43 @@
       "specifier": "./types",
       "kind": "import",
       "typeOnly": true,
-      "line": 21,
+      "line": 24,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/useOrganizerDirectoryController.ts",
+      "target": "website/src/features/organizers/organizerPolicy.ts",
+      "specifier": "./organizerPolicy",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 25,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/reviews/reviewModel.test.ts",
+      "target": "website/src/features/organizers/data.ts",
+      "specifier": "../organizers/data",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/reviews/reviewModel.test.ts",
+      "target": "website/src/features/organizers/types.ts",
+      "specifier": "../organizers/types",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/reviews/reviewModel.test.ts",
+      "target": "website/src/features/reviews/reviewModel.ts",
+      "specifier": "./reviewModel",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 4,
       "column": 1
     },
     {
@@ -15321,11 +15772,20 @@
     },
     {
       "source": "website/src/features/reviews/useListingReviewsController.test.tsx",
+      "target": "website/src/features/organizers/organizerPolicy.ts",
+      "specifier": "../organizers/organizerPolicy",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 6,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/reviews/useListingReviewsController.test.tsx",
       "target": "website/src/features/organizers/types.ts",
       "specifier": "../organizers/types",
       "kind": "import",
       "typeOnly": true,
-      "line": 6,
+      "line": 7,
       "column": 1
     },
     {
@@ -15334,7 +15794,7 @@
       "specifier": "./useListingReviewsController",
       "kind": "import",
       "typeOnly": false,
-      "line": 24,
+      "line": 25,
       "column": 1
     },
     {
@@ -15348,11 +15808,20 @@
     },
     {
       "source": "website/src/features/reviews/useListingReviewsController.ts",
+      "target": "website/src/content/organizer.ts",
+      "specifier": "@content/organizer",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/reviews/useListingReviewsController.ts",
       "target": "website/src/analytics.ts",
       "specifier": "../../analytics",
       "kind": "import",
       "typeOnly": false,
-      "line": 4,
+      "line": 5,
       "column": 1
     },
     {
@@ -15361,7 +15830,7 @@
       "specifier": "../../firebase",
       "kind": "import",
       "typeOnly": true,
-      "line": 5,
+      "line": 6,
       "column": 1
     },
     {
@@ -15370,7 +15839,7 @@
       "specifier": "../../firebaseConfig",
       "kind": "import",
       "typeOnly": false,
-      "line": 6,
+      "line": 7,
       "column": 1
     },
     {
@@ -15379,7 +15848,7 @@
       "specifier": "../../shared/forms/types",
       "kind": "import",
       "typeOnly": true,
-      "line": 7,
+      "line": 8,
       "column": 1
     },
     {
@@ -15388,16 +15857,25 @@
       "specifier": "../../shared/query/queryKeys",
       "kind": "import",
       "typeOnly": false,
-      "line": 8,
+      "line": 9,
       "column": 1
     },
     {
       "source": "website/src/features/reviews/useListingReviewsController.ts",
-      "target": "website/src/features/organizers/selectors.ts",
-      "specifier": "../organizers/selectors",
+      "target": "website/src/features/organizers/organizerPolicy.ts",
+      "specifier": "../organizers/organizerPolicy",
       "kind": "import",
       "typeOnly": false,
-      "line": 9,
+      "line": 10,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/reviews/useListingReviewsController.ts",
+      "target": "website/src/features/organizers/listingPresentation.ts",
+      "specifier": "../organizers/listingPresentation",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 11,
       "column": 1
     },
     {
@@ -15406,7 +15884,7 @@
       "specifier": "../organizers/types",
       "kind": "import",
       "typeOnly": true,
-      "line": 10,
+      "line": 12,
       "column": 1
     },
     {
@@ -15415,7 +15893,7 @@
       "specifier": "./reviewModel",
       "kind": "import",
       "typeOnly": false,
-      "line": 11,
+      "line": 13,
       "column": 1
     },
     {
@@ -15424,8 +15902,8 @@
       "specifier": "../../firebase",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 36,
-      "column": 45
+      "line": 51,
+      "column": 50
     },
     {
       "source": "website/src/features/reviews/useListingReviewsController.ts",
@@ -15433,8 +15911,8 @@
       "specifier": "../../firebase",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 56,
-      "column": 46
+      "line": 68,
+      "column": 51
     },
     {
       "source": "website/src/features/waitlist/WaitlistForm.tsx",
@@ -15528,8 +16006,8 @@
     },
     {
       "source": "website/src/firebase.ts",
-      "target": "functions/src/shared/generated/createPublicClubReviewCallablePayload.ts",
-      "specifier": "../../functions/src/shared/generated/createPublicClubReviewCallablePayload",
+      "target": "functions/src/shared/generated/createPublicOrganizerReviewCallablePayload.ts",
+      "specifier": "../../functions/src/shared/generated/createPublicOrganizerReviewCallablePayload",
       "kind": "import",
       "typeOnly": true,
       "line": 4,
@@ -15537,8 +16015,8 @@
     },
     {
       "source": "website/src/firebase.ts",
-      "target": "functions/src/shared/generated/createPublicClubReviewCallableResponse.ts",
-      "specifier": "../../functions/src/shared/generated/createPublicClubReviewCallableResponse",
+      "target": "functions/src/shared/generated/createPublicOrganizerReviewCallableResponse.ts",
+      "specifier": "../../functions/src/shared/generated/createPublicOrganizerReviewCallableResponse",
       "kind": "import",
       "typeOnly": true,
       "line": 5,
@@ -15546,8 +16024,8 @@
     },
     {
       "source": "website/src/firebase.ts",
-      "target": "functions/src/shared/generated/listPublicClubReviewsCallablePayload.ts",
-      "specifier": "../../functions/src/shared/generated/listPublicClubReviewsCallablePayload",
+      "target": "functions/src/shared/generated/listPublicOrganizerReviewsCallablePayload.ts",
+      "specifier": "../../functions/src/shared/generated/listPublicOrganizerReviewsCallablePayload",
       "kind": "import",
       "typeOnly": true,
       "line": 6,
@@ -15555,8 +16033,8 @@
     },
     {
       "source": "website/src/firebase.ts",
-      "target": "functions/src/shared/generated/listPublicClubReviewsCallableResponse.ts",
-      "specifier": "../../functions/src/shared/generated/listPublicClubReviewsCallableResponse",
+      "target": "functions/src/shared/generated/listPublicOrganizerReviewsCallableResponse.ts",
+      "specifier": "../../functions/src/shared/generated/listPublicOrganizerReviewsCallableResponse",
       "kind": "import",
       "typeOnly": true,
       "line": 7,
@@ -15582,8 +16060,8 @@
     },
     {
       "source": "website/src/firebase.ts",
-      "target": "functions/src/shared/generated/requestClubClaimCallablePayload.ts",
-      "specifier": "../../functions/src/shared/generated/requestClubClaimCallablePayload",
+      "target": "functions/src/shared/generated/requestOrganizerClaimCallablePayload.ts",
+      "specifier": "../../functions/src/shared/generated/requestOrganizerClaimCallablePayload",
       "kind": "import",
       "typeOnly": true,
       "line": 10,
@@ -15591,8 +16069,8 @@
     },
     {
       "source": "website/src/firebase.ts",
-      "target": "functions/src/shared/generated/requestClubClaimCallableResponse.ts",
-      "specifier": "../../functions/src/shared/generated/requestClubClaimCallableResponse",
+      "target": "functions/src/shared/generated/requestOrganizerClaimCallableResponse.ts",
+      "specifier": "../../functions/src/shared/generated/requestOrganizerClaimCallableResponse",
       "kind": "import",
       "typeOnly": true,
       "line": 11,
@@ -19345,6 +19823,15 @@
       "column": 1
     },
     {
+      "source": "website/src/features/claims/claimRouting.test.ts",
+      "package": "vitest",
+      "specifier": "vitest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
       "source": "website/src/features/claims/useClaimFlowController.test.tsx",
       "package": "@tanstack/react-query",
       "specifier": "@tanstack/react-query",
@@ -19449,7 +19936,7 @@
       "specifier": "react",
       "kind": "import",
       "typeOnly": false,
-      "line": 2,
+      "line": 3,
       "column": 1
     },
     {
@@ -19570,12 +20057,48 @@
       "column": 1
     },
     {
+      "source": "website/src/features/organizers/organizerPolicy.test.ts",
+      "package": "vitest",
+      "specifier": "vitest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
       "source": "website/src/features/organizers/publicDiscovery.test.ts",
       "package": "vitest",
       "specifier": "vitest",
       "kind": "import",
       "typeOnly": false,
       "line": 1,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/publicSurfaceBehavior.test.ts",
+      "package": "node:fs",
+      "specifier": "node:fs",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/publicSurfaceBehavior.test.ts",
+      "package": "node:path",
+      "specifier": "node:path",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/publicSurfaceBehavior.test.ts",
+      "package": "vitest",
+      "specifier": "vitest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 3,
       "column": 1
     },
     {
@@ -19687,6 +20210,15 @@
       "column": 1
     },
     {
+      "source": "website/src/features/reviews/reviewModel.test.ts",
+      "package": "vitest",
+      "specifier": "vitest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
       "source": "website/src/features/reviews/useListingReviewsController.test.tsx",
       "package": "@tanstack/react-query",
       "specifier": "@tanstack/react-query",
@@ -19728,7 +20260,7 @@
       "specifier": "@tanstack/react-query",
       "kind": "import",
       "typeOnly": false,
-      "line": 2,
+      "line": 3,
       "column": 1
     },
     {
@@ -19737,7 +20269,7 @@
       "specifier": "react",
       "kind": "import",
       "typeOnly": false,
-      "line": 3,
+      "line": 4,
       "column": 1
     },
     {
@@ -19827,7 +20359,7 @@
       "specifier": "firebase/auth",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 64,
+      "line": 66,
       "column": 42
     },
     {
@@ -19836,7 +20368,7 @@
       "specifier": "firebase/auth",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 82,
+      "line": 84,
       "column": 55
     },
     {
@@ -19845,7 +20377,7 @@
       "specifier": "firebase/auth",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 91,
+      "line": 93,
       "column": 27
     },
     {
@@ -19854,7 +20386,7 @@
       "specifier": "firebase/functions",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 102,
+      "line": 104,
       "column": 33
     },
     {
@@ -19863,7 +20395,7 @@
       "specifier": "firebase/functions",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 118,
+      "line": 120,
       "column": 33
     },
     {
@@ -19872,7 +20404,7 @@
       "specifier": "firebase/functions",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 134,
+      "line": 136,
       "column": 33
     },
     {
@@ -19881,7 +20413,7 @@
       "specifier": "firebase/functions",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 150,
+      "line": 152,
       "column": 33
     },
     {
@@ -19890,7 +20422,7 @@
       "specifier": "firebase/app",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 173,
+      "line": 175,
       "column": 5
     },
     {
@@ -19899,7 +20431,7 @@
       "specifier": "firebase/app-check",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 174,
+      "line": 176,
       "column": 5
     },
     {
@@ -19908,7 +20440,7 @@
       "specifier": "firebase/auth",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 175,
+      "line": 177,
       "column": 5
     },
     {
@@ -19917,7 +20449,7 @@
       "specifier": "firebase/functions",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 176,
+      "line": 178,
       "column": 5
     },
     {

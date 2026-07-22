@@ -22,7 +22,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/organizers/presentation/organizer_authority_badge.dart';
+import 'package:catch_dating_app/organizers/organizers.dart';
 import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
 import 'package:flutter/material.dart';
 

@@ -10,7 +10,7 @@ import 'package:catch_dating_app/events/domain/event_service.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/organizers/presentation/organizer_authority_badge.dart';
+import 'package:catch_dating_app/organizers/organizers.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
