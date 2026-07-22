@@ -25,4 +25,12 @@ describe("adminQueryKeys", () => {
       "30d:week",
     ]);
   });
+
+  it("keeps the agent activity feed under the shared admin root", () => {
+    expect(adminQueryKeys.operations.executions()).toEqual([
+      "admin",
+      "operations",
+      "executions",
+    ]);
+  });
 });

@@ -61,6 +61,10 @@ export const adminQueryKeys = {
     policyDecision: () =>
       [...adminQueryKeys.all, "organizer-intake", "policy-decision"] as const,
   },
+  operations: {
+    executions: () =>
+      [...adminQueryKeys.all, "operations", "executions"] as const,
+  },
   organizers: {
     list: (query: string) => [...adminQueryKeys.all, "organizers", "list", query] as const,
     detail: (clubId: string) =>

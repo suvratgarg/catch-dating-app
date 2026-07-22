@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "version": 6,
-  "updated": "2026-07-14",
+  "version": 7,
+  "updated": "2026-07-23",
   "owner": "web_surface_architecture",
   "statuses": {
     "required": "A behavior test must exist and import the target hook.",
@@ -57,6 +57,11 @@
     {
       "source": "admin/src/features/marketing/controllers/useMarketingOpsController.ts",
       "test": "admin/src/features/marketing/controllers/useMarketingOpsController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "admin/src/features/operations/controllers/useAdminActionExecutionsController.ts",
+      "test": "admin/src/features/operations/controllers/useAdminActionExecutionsController.test.ts",
       "status": "required"
     },
     {

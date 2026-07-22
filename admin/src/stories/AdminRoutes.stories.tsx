@@ -15,6 +15,10 @@ import {
 } from "../features/admin-roles/controllers/useAdminRoleManagementController";
 import {AdminRoleManagementWorkspace} from "../features/admin-roles/ui/AdminRoleManagementScreen";
 import {adminRolePolicyList} from "../features/admin-roles/controllers/adminRolePolicies";
+import type {AdminActionExecutionsController} from
+  "../features/operations/controllers/useAdminActionExecutionsController";
+import {AdminActionExecutionsWorkspace} from
+  "../features/operations/ui/AdminActionExecutionsScreen";
 import type {
   DataQualityController,
   DataQualityRow,
@@ -94,6 +98,7 @@ import {
   type EventIntakeSourceResult,
   type AdminRoleAssignmentRow,
   type AdminRoleClaim,
+  type AdminActionExecutionRecord,
   type AdminUserRoleRecord,
   type ExternalEventImportAction,
   type HostAnalyticsTrendPoint,
@@ -110,6 +115,84 @@ import {AdminWorkspace} from "../shared/ui/AdminPrimitives";
 
 const overview = initialOverviewSnapshot();
 const hostAnalytics = initialOverviewHostAnalytics();
+const actionExecutionRows: AdminActionExecutionRecord[] = [
+  {
+    schemaVersion: 1,
+    executionId: "44ee2154-f136-4ff0-b903-7284732bb197",
+    actionId: "events.list",
+    callable: "adminListEventDetails",
+    actorUid: "agent-release-audit",
+    actorRoles: ["admin"],
+    status: "succeeded",
+    requestHash: "a".repeat(64),
+    responseHash: "b".repeat(64),
+    target: null,
+    errorCode: null,
+    errorMessage: null,
+    cliVersion: "1.0.0",
+    startedAt: "2026-07-23T08:29:42.000Z",
+    finishedAt: "2026-07-23T08:29:43.000Z",
+    updatedAt: "2026-07-23T08:29:43.000Z",
+  },
+  {
+    schemaVersion: 1,
+    executionId: "d84258b1-a59e-4a03-9001-ab1cfd94f189",
+    actionId: "access.decide",
+    callable: "adminDecideAccessApplication",
+    actorUid: "agent-access-review",
+    actorRoles: ["support"],
+    status: "failed",
+    requestHash: "d".repeat(64),
+    responseHash: null,
+    target: "sample-applicant",
+    errorCode: "failed-precondition",
+    errorMessage: "Application state changed after review was prepared.",
+    cliVersion: "1.0.0",
+    startedAt: "2026-07-23T08:20:00.000Z",
+    finishedAt: "2026-07-23T08:20:01.000Z",
+    updatedAt: "2026-07-23T08:20:01.000Z",
+  },
+  {
+    schemaVersion: 1,
+    executionId: "c746501d-2e41-4551-9b55-1c885b045eef",
+    actionId: "events.update",
+    callable: "adminUpdateEventDetails",
+    actorUid: "agent-event-quality",
+    actorRoles: ["admin"],
+    status: "indeterminate",
+    requestHash: "e".repeat(64),
+    responseHash: null,
+    target: "mumbai-mixer-1",
+    errorCode: "ADMIN_CALLABLE_TIMEOUT",
+    errorMessage: "The callable result was lost; inspect the event before retry.",
+    cliVersion: "1.0.0",
+    startedAt: "2026-07-23T08:10:00.000Z",
+    finishedAt: "2026-07-23T08:10:30.000Z",
+    updatedAt: "2026-07-23T08:10:30.000Z",
+  },
+];
+const actionExecutionsController: AdminActionExecutionsController = {
+  actionFilter: "all",
+  generatedAt: "2026-07-23T08:30:00.000Z",
+  hasMore: false,
+  isLoading: false,
+  isLoadingMore: false,
+  query: "",
+  rows: actionExecutionRows,
+  statusFilter: "all",
+  visibleRows: actionExecutionRows,
+  loadMore: async () => false,
+  refresh: async () => true,
+  setActionFilter: (_value) => {
+    noop();
+  },
+  setQuery: (_value) => {
+    noop();
+  },
+  setStatusFilter: (_value) => {
+    noop();
+  },
+};
 const eventRows: AdminEventListRow[] =
   Object.values(sampleEventDetails).map(eventListRowFromDetails);
 const externalEventRows = sampleExternalEventRows;
@@ -1468,6 +1551,12 @@ const renderDataQualityWorkspace = () => (
   </AdminWorkspace>
 );
 
+const renderAdminActionExecutionsWorkspace = () => (
+  <AdminWorkspace>
+    <AdminActionExecutionsWorkspace controller={actionExecutionsController} />
+  </AdminWorkspace>
+);
+
 const renderAccessReviewWorkspace = () => (
   <AdminWorkspace>
     <AccessReviewWorkspace controller={accessController} />
@@ -1862,6 +1951,28 @@ export const AdminRoleManagementWorkspaceStory: Story = {
     },
   },
   render: renderAdminRoleWorkspace,
+};
+
+export const AdminActionExecutionsRouteStory: Story = {
+  name: "Agent Activity",
+  parameters: {
+    catchComponent: {
+      id: "route_admin_action_executions",
+      states: ["bounded-receipt-register"],
+    },
+  },
+  render: renderAdminActionExecutionsWorkspace,
+};
+
+export const AdminActionExecutionsWorkspaceStory: Story = {
+  name: "Agent Activity Workspace",
+  parameters: {
+    catchComponent: {
+      id: "workspace_admin_action_executions",
+      states: ["bounded-receipt-register"],
+    },
+  },
+  render: renderAdminActionExecutionsWorkspace,
 };
 
 export const OverviewRouteStory: Story = {

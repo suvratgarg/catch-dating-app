@@ -220,6 +220,10 @@ export {
   adminListIntakeOperations,
 } from "./admin/intakeOperations";
 export {
+  adminListActionExecutions,
+  adminRecordActionExecution,
+} from "./admin/adminActionExecutions";
+export {
   adminDecideOrganizerIntake,
 } from "./admin/organizerIntake";
 export {

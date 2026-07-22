@@ -1,8 +1,57 @@
 {
-  "version": 61,
-  "updated": "2026-07-22",
+  "version": 63,
+  "updated": "2026-07-23",
   "owner": "agent_operating_model",
   "entries": [
+    {
+      "id": "REG-ADMIN-MOBILE-TOOLBAR-001",
+      "title": "Admin toolbar search expands into a tall empty block on mobile",
+      "status": "active",
+      "applies_to": [
+        "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+        "admin/src/styles.css",
+        "admin/src/features/**/ui/**",
+        "design/visual_baselines/admin/**"
+      ],
+      "symptom": "A column-layout workbench toolbar retains the desktop 260px flex basis, causing its 36px search control to consume a large vertical blank area on narrow screens.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin run build:storybook && node tool/web/check_storybook_visuals.mjs --surface admin --check",
+        "guardEvidence": "registered admin route and workspace stories retain fixed desktop/mobile screenshots, including mobile workbench toolbars"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "When workbench-toolbar switches to flex-direction column, its search-control must reset the desktop flex basis to the 36px control height."
+    },
+    {
+      "id": "REG-ADMIN-CLI-PARITY-001",
+      "title": "Admin CLI drifts from the employee console or bypasses guarded callables",
+      "status": "active",
+      "applies_to": [
+        "contracts/admin/**",
+        "contracts/callables/admin_*",
+        "contracts/callable_responses/admin_*",
+        "operations/src/admin/**",
+        "operations/src/admin-cli/**",
+        "operations/scripts/check-admin-action-catalog.mjs",
+        "admin/src/features/operations/**",
+        "admin/src/shared/api/adminApi.ts",
+        "functions/src/admin/**"
+      ],
+      "symptom": "An admin console callable has no agent action, an agent command invents separate business logic, a mutation executes without dry-run and exact confirmation, a specialist role cannot record its authorized action, an ambiguous transport result is mislabeled as a safe failure, or execution monitoring stores sensitive request or response bodies.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/admin/generate_admin_action_catalog.mjs --check && node operations/scripts/check-admin-action-catalog.mjs && npm --prefix operations test",
+        "guardEvidence": "the generated catalog must be current; GUI callables, strict request schemas, Functions exports, workflow membership, examples, roles, and mutation confirmations must align; CLI tests prove start-before-effect, dry-run defaults, exact target confirmation, failed versus indeterminate outcomes, and partial terminal-receipt recovery"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "docs/web_surface_architecture.md",
+        "docs/backend_operation_catalog.md"
+      ],
+      "notes": "The action catalog is a thin parity layer over existing role-gated callables. Only features needing durable runs, leases, work items, budgets, or checkpoints become operations workflows."
+    },
     {
       "id": "REG-PUBLIC-SURFACE-BEHAVIOR-001",
       "title": "Public actions drift from viewer, authority, or runtime state",

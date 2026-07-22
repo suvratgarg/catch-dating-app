@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.2.1
-updated: 2026-07-22
+version: 1.3.0
+updated: 2026-07-23
 owner: operations_platform
 status: active
 ---
@@ -55,16 +55,20 @@ state are created.
 ```text
 operations/
   src/cli/                         stable JSON command surface
+  src/admin-cli/                   catalog-driven admin callable client
+  src/admin/                       action catalog, client, local receipts
   src/platform/                    reusable execution and persistence ports
   src/workflows/registry.mjs       workflow inventory and factories
   src/workflows/supply-intake/     reference business workflow
   test/                            engine, adapter, safety, and replay tests
 
 contracts/operations/              canonical persisted-record JSON Schemas
+contracts/admin/                   admin action/workflow catalog
 functions/src/operations/          trusted persistence and worker-side adapters
 functions/scripts/operations/      trusted, apply-guarded projection operators
 functions/src/admin/               admin-authenticated read/decision adapters
 admin/src/features/intake/         task-first human-review presentation
+admin/src/features/operations/     agent action receipt monitor
 ```
 
 Only platform primitives and generic token validation belong in
@@ -91,6 +95,59 @@ A feature should use the operations platform when at least one of these is true:
 Read-only dashboards and ordinary request/response mutations should keep their
 existing feature/controller/API architecture. Do not force every admin feature
 into a universal workflow DSL.
+
+## Admin Action Command Surface
+
+`contracts/admin/admin_action_catalog.json` is the shared inventory for the
+admin console and `operations/src/admin-cli/main.mjs`. It maps each stable
+action id to one existing role-gated Firebase callable, request schema, owning
+GUI path, workflow, risk, example, and confirmation policy. The parity gate
+fails when the admin API gains or loses a callable without the catalog, when a
+request lacks a strict schema, when a Function export is missing, or when a
+mutation lacks explicit confirmation.
+
+The command surface is intentionally thinner than the durable workflow engine.
+Ordinary admin reads and mutations remain in their existing repositories and
+callables; the CLI invokes those same contracts rather than reimplementing
+business rules. An action becomes a durable operations workflow only when it
+needs the run, work-item, lease, budget, checkpoint, or decision model described
+above.
+
+Common discovery and validation commands are:
+
+```sh
+node operations/src/admin-cli/main.mjs actions --pretty
+node operations/src/admin-cli/main.mjs workflow organizer-intake --pretty
+node operations/src/admin-cli/main.mjs describe events.update --pretty
+node operations/src/admin-cli/main.mjs loop --all --pretty
+```
+
+Reads execute live by default; `--dry-run` prevents the invocation. Mutations
+are dry-run by default and require `--apply --confirm <action-id>`. Actions tied
+to a specific record also require `--confirm-target <exact-target>`. Live calls
+need a Firebase ID token and App Check token plus a Firebase project or explicit
+Functions base URL. Tokens are accepted through `CATCH_ADMIN_ID_TOKEN` and
+`CATCH_ADMIN_APP_CHECK_TOKEN`; they are never persisted in receipts.
+
+Every live call starts a remote `adminActionExecutions/{executionId}` receipt
+before invoking the business callable, then advances it to one immutable
+terminal state: succeeded, failed, or indeterminate. Network timeouts, broken
+response envelopes, and unclassified HTTP failures are indeterminate because
+the server may have applied a mutation before the client lost its result; agents
+must inspect the target and receipt rather than retrying automatically. Only
+action identity, actor, roles, target, timestamps, hashes,
+CLI version, and bounded failure metadata are stored. Request and response
+bodies are not. A local mode-0600 hash-only receipt is written as independent
+recovery evidence. If the remote start fails, no business action runs. If the
+business action succeeds but the terminal receipt fails, the CLI reports
+`ADMIN_ACTION_RECEIPT_INCOMPLETE` with `actionCompleted: true` and the local
+receipt path so an agent cannot safely retry as if nothing happened.
+
+Employees monitor these receipts at `/operations`. Manual execution continues
+in the owning admin route named by the catalog; the monitor is read-only and
+does not become a second implementation of safety, access, finance, intake, or
+publishing behavior. Direct Firestore client access is denied. Listing and
+recording cross only App-Check-protected, rate-limited callables.
 
 ## Canonical Runtime Records
 
@@ -371,6 +428,7 @@ At minimum, changes to the platform run:
 ```sh
 npm --prefix operations test
 npm --prefix operations run check
+npm --prefix operations run admin:loop
 npm --prefix functions run build
 node tool/contracts/validate_schema_contracts.mjs
 node tool/run.mjs check --manifest-only

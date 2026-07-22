@@ -2778,6 +2778,7 @@ describe("firestore.rules", () => {
         "operationPublicationPlans",
         "operationRuleProposals",
         "operationRuleEvaluations",
+        "adminActionExecutions",
       ];
       for (const collectionName of collections) {
         await seed([collectionName, "record-1"], {schemaVersion: 1});

@@ -347,6 +347,43 @@ export const adminRoleClaimKeys = [
 
 export type AdminRoleClaim = typeof adminRoleClaimKeys[number];
 
+export type AdminActionExecutionStatus =
+  | "started"
+  | "succeeded"
+  | "failed"
+  | "indeterminate";
+
+export interface AdminActionExecutionRecord {
+  schemaVersion: 1;
+  executionId: string;
+  actionId: string;
+  callable: string;
+  actorUid: string;
+  actorRoles: AdminRoleClaim[];
+  status: AdminActionExecutionStatus;
+  requestHash: string;
+  responseHash: string | null;
+  target: string | null;
+  errorCode: string | null;
+  errorMessage: string | null;
+  cliVersion: string | null;
+  startedAt: string;
+  finishedAt: string | null;
+  updatedAt: string;
+}
+
+export interface AdminListActionExecutionsPayload {
+  limit?: number;
+  cursor?: string | null;
+}
+
+export interface AdminListActionExecutionsResponse {
+  schemaVersion: 1;
+  generatedAt: string;
+  rows: AdminActionExecutionRecord[];
+  nextCursor: string | null;
+}
+
 export interface AdminUserRoleRecord {
   targetUid: string;
   email: string | null;

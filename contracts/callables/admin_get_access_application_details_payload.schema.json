@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_access_application_details_payload.schema.json",
+  "title": "AdminGetAccessApplicationDetailsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["applicationUid"],
+  "properties": {
+    "applicationUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+  }
+}
