@@ -1,5 +1,5 @@
 {
-  "version": 71,
+  "version": 72,
   "updated": "2026-07-23",
   "owner": "agent_operating_model",
   "entries": [
@@ -2603,7 +2603,7 @@
         "design/screens/README.md",
         "tool/README.md"
       ],
-      "notes": "The reference set now includes Event Detail, Explore, Dashboard Home, Event Success, Host Home, Host Organizers, Host Event Create, Host Event Manage, Host Inbox, Catches Hub, Catches Event, Matches List, Chat Thread, Self Profile, Public Profile, and Organizer Detail. Explore is the first two-runtime feature; Organizer Detail is the first three-surface feature; Host Organizers proves that one coherent user workspace can retain separate action owners without fake fragmentation; Host Event Create proves that meaningful decisions and effects should be cardinalized while raw field-entry events remain form data; Chat Thread proves that consumer and host policy projections of the same production implementation belong in one contract while retaining exact surface-specific states, actions, and evidence. Compact state matrices reduce repeated source boilerplate while keeping the exact authority inventory explicit. Event Success demonstrates that a controller method is not sufficient action proof: the unwired compatibility callback is a disabled known gap until route-level wiring and a persistence test exist. Feature contracts orchestrate existing authorities and expose named evidence debt; they do not generate Flutter or React behavior, business algorithms, security rules, or migrations."
+      "notes": "The reference set now includes Event Detail, Explore, Dashboard Home, Event Success, Host Home, Host Organizers, Host Organizer Create, Host Event Create, Host Event Manage with its owner-edit projection, Host Inbox, Catches Hub, Catches Event, Matches List, Chat Thread, Self Profile, Public Profile, and Organizer Detail. Explore is the first two-runtime feature; Organizer Detail is the first three-surface feature; Host Organizers proves that one coherent user workspace can retain separate action owners without fake fragmentation; Host Event Create and Host Organizer Create prove that meaningful decisions and effects should be cardinalized while raw field-entry events remain form data; Chat Thread proves that consumer and host policy projections of the same production implementation belong in one contract while retaining exact surface-specific states, actions, and evidence. Compact state matrices reduce repeated source boilerplate while keeping the exact authority inventory explicit. Event Success demonstrates that a controller method is not sufficient action proof: the unwired compatibility callback is a disabled known gap until route-level wiring and a persistence test exist. Host Organizer Create and Host Event Edit expose pending-mutation snapshot drift explicitly: disabling a primary button is not equivalent to freezing every action that can change or dismiss the submitted form. Feature contracts orchestrate existing authorities and expose named evidence debt; they do not generate Flutter or React behavior, business algorithms, security rules, or migrations."
     }
   ]
 }

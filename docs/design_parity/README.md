@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.23
+version: 0.1.24
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -167,7 +167,8 @@ marketing `organizer_search` route, while their components, action owners,
 states, and evidence remain runtime-specific.
 
 Event Detail, Explore, Dashboard Home, Event Success, Host Home, Host
-Organizers, Host Event Create, Host Event Manage, Host Inbox, Catches Hub,
+Organizers, Host Organizer Create, Host Event Create, Host Event Manage with
+its owner-edit projection, Host Inbox, Catches Hub,
 Catches Event, Matches List, Chat Thread, Self Profile, Public Profile, and
 Organizer Detail are the current reference contracts. Organizer Detail is the first
 three-surface reference:
@@ -188,11 +189,24 @@ Do not split a feature merely because a spoke has its own URL, and do not merge
 routes whose state or actions do not share a coherent user goal.
 
 Cardinalize meaningful user decisions and side effects, not raw field-entry
-events. Host Event Create is the reference: wizard movement, media and location
-selection, typed activity/policy/guide choices, draft lifecycle, submission,
-and success navigation are explicit actions; text entry remains form data
-governed by field validators and event schemas. This keeps action coverage
-complete without treating every keystroke as a separate contract operation.
+events. Host Event Create and Host Organizer Create are the references: wizard
+movement, media and location selection, typed organizer/activity/policy/guide
+choices, draft lifecycle, submission, and success navigation are explicit
+actions; text entry remains form data governed by field validators and data
+schemas. This keeps action coverage complete without treating every keystroke
+as a separate contract operation.
+
+A child route should keep its own internal actions when it is already a
+registered authority. Host Event Edit owns opening Location Map and consuming
+the result; Location Map owns search, suggestion, pin, and confirmation actions.
+This preserves a typed route edge without making both contracts claim the same
+interaction workflow.
+
+Action availability must describe production behavior, including unsafe
+behavior. Host Organizer Create and Host Event Edit currently leave some
+navigation or form decisions active after a mutation snapshot is submitted.
+Their pending scenarios and screen gaps record that concurrency honestly; do
+not model the form as frozen until production state and focused tests prove it.
 
 When two registered surfaces use the same production implementation and differ
 only by viewer policy, prefer separate projections in one feature contract.

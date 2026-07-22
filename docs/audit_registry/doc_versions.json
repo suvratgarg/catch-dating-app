@@ -85,7 +85,7 @@
   },
   "agent_regression_ledger": {
     "path": "docs/agent_regression_ledger.json",
-    "version": "71",
+    "version": "72",
     "updated": "2026-07-23",
     "status": "active",
     "read_policy": "Use before touching a scope with hard-won prior fixes; context packs surface matching active/watch regression guards, including section-ownership drift, parallel-delegation ownership, enforcement-integrity drift, and reconciliation merges that can hide dropped conflict-resolution intent."
@@ -170,14 +170,14 @@
   },
   "design_parity_tracker": {
     "path": "docs/design_parity/README.md",
-    "version": "0.1.23",
+    "version": "0.1.24",
     "updated": "2026-07-23",
     "status": "active",
     "read_policy": "Use before design-parity passes to pick feature scope, state coverage, screen contracts, preview/capture requirements, visual-diff gaps, component-contract gaps, and drift-prevention follow-ups."
   },
   "design_parity_comprehensive_todo": {
     "path": "docs/design_parity/comprehensive_todo.md",
-    "version": "0.2.304",
+    "version": "0.2.305",
     "updated": "2026-07-23",
     "status": "active",
     "read_policy": "Use as the canonical and only human-readable execution checklist for remaining design-parity work; detailed state and evidence live in JSON ledgers and pass receipts. Host Event Manage participant mutation-display, report-summary, profile-lookup, Event Success provider-wave ownership, private-access/invite-link offline coverage, private-access missing-code coverage, invite-link disabled/long-label coverage, Event Success plan/scorecard offline coverage, Event Success live-rich substates, check-in QR, conversation cues, revealed round, and host-edited override coverage are reflected here."

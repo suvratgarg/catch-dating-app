@@ -6,7 +6,7 @@
   "name": "Host Event Manage",
   "owner": "hosts",
   "status": "pilot",
-  "description": "Orchestrates Host Event Manage route, workspace, lifecycle-action, and evidence contracts without duplicating the owning screen, component, data, or Widgetbook registries.",
+  "description": "Orchestrates the Host Event Manage workspace and its owner-edit projection without duplicating the owning screen, component, data, or Widgetbook registries.",
   "surfaces": [
     {
       "id": "host_flutter",
@@ -1013,6 +1013,530 @@
           ],
           "debtId": "DS-HOST-EVENT-MANAGE-006",
           "reason": "These registered Host Manage states have deterministic capture and Widgetbook proof but do not yet name focused automated test evidence in the screen contract."
+        }
+      ]
+    },
+    {
+      "id": "host_edit_flutter",
+      "runtime": "flutter",
+      "authority": {
+        "registry": "flutter_screens",
+        "id": "screen.host.event.edit"
+      },
+      "actionScope": {
+        "included": "Edit-route recovery; schedule, location, pace, admission, cohort-cap, dynamic-pricing, and cancellation-policy decisions; event update submission; and the success return to the caller.",
+        "excluded": [
+          "Raw text-field edits are form data governed by CatchField, form validators, and event data contracts rather than separately cardinalized actions.",
+          "Location search, pin placement, and confirmation belong to the Location Map child authority; this surface owns only opening that child route and consuming its result.",
+          "Generic back actions on not-found and unauthorized error scaffolds retain the shared error component's ownership; successful save feedback and caller pop are lifecycle effects rather than user actions."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "widgetbook/lib/hosts/host_operations_use_cases.dart"
+        ],
+        "actionOwners": [
+          {
+            "id": "route_screen",
+            "language": "dart",
+            "file": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",
+            "symbol": "EditHostedEventRouteScreen"
+          },
+          {
+            "id": "edit_intent",
+            "language": "dart",
+            "file": "lib/hosts/presentation/host_event_edit_screen_state.dart",
+            "symbol": "HostEventEditIntent"
+          }
+        ],
+        "componentContracts": [
+          "catch.button",
+          "catch.error_banner",
+          "catch.error_state",
+          "catch.field",
+          "catch.map_preview",
+          "catch.option_card",
+          "catch.option_group",
+          "catch.surface",
+          "catch.top_bar"
+        ],
+        "dataContracts": [
+          "contracts/callables/place_details_payload.schema.json",
+          "contracts/callables/places_autocomplete_payload.schema.json",
+          "contracts/callables/update_event_payload.schema.json",
+          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/event_private_access.schema.json",
+          "contracts/firestore/events.schema.json"
+        ]
+      },
+      "dimensions": {
+        "route": {
+          "default": "ready",
+          "values": ["ready", "loading", "error", "not_found", "unauthorized"]
+        },
+        "schedule": {
+          "default": "editable",
+          "values": ["editable", "locked"]
+        },
+        "policy": {
+          "default": "editable",
+          "values": ["editable", "locked", "invite_only"]
+        },
+        "location": {
+          "default": "existing",
+          "values": ["existing", "selected", "missing"]
+        },
+        "lifecycle": {
+          "default": "active",
+          "values": ["active", "cancelled"]
+        },
+        "content": {
+          "default": "ready",
+          "values": ["ready", "loading"]
+        },
+        "mutation": {
+          "default": "idle",
+          "values": ["idle", "validation", "pending", "error", "settled"]
+        },
+        "connectivity": {
+          "default": "online",
+          "values": ["online", "offline"]
+        },
+        "accessibility": {
+          "default": "standard",
+          "values": ["standard", "text_scale_2", "reduced_motion"]
+        },
+        "theme": {
+          "default": "standard",
+          "values": ["standard", "light_dark"]
+        }
+      },
+      "actions": [
+        {
+          "id": "retry_edit_route",
+          "owner": "route_screen",
+          "codeValue": "invalidate",
+          "cardinality": "singleton",
+          "scopeKeys": ["routeInstanceId", "clubId", "eventId", "failureStateVersion"],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": ["route_loading", "route_error", "event_not_found", "unauthorized_host", "prefilled_event"]
+            }
+          ],
+          "description": "Invalidates the organizer and event providers to retry a failed owner-edit route."
+        },
+        {
+          "id": "select_edit_date",
+          "owner": "edit_intent",
+          "codeValue": "HostEventEditPickDateIntent",
+          "cardinality": "unbounded",
+          "scopeKeys": ["routeInstanceId", "selectedDate"],
+          "outcomes": [
+            {"kind": "surface_state", "stateIds": ["schedule_editable", "validation_error"]}
+          ],
+          "description": "Selects an editable event date and recomputes start-time validation."
+        },
+        {
+          "id": "select_edit_start_time",
+          "owner": "edit_intent",
+          "codeValue": "HostEventEditPickStartTimeIntent",
+          "cardinality": "unbounded",
+          "scopeKeys": ["routeInstanceId", "selectedDate", "selectedStartTime"],
+          "outcomes": [
+            {"kind": "surface_state", "stateIds": ["schedule_editable", "validation_error"]}
+          ],
+          "description": "Selects an editable start time and recomputes schedule validation."
+        },
+        {
+          "id": "adjust_edit_duration",
+          "owner": "edit_intent",
+          "codeValue": "HostEventEditDurationChangedIntent",
+          "cardinality": "unbounded",
+          "scopeKeys": ["routeInstanceId", "durationMinutes"],
+          "outcomes": [
+            {"kind": "surface_state", "stateIds": ["schedule_editable"]}
+          ],
+          "description": "Changes the event duration within the bounded stepper range."
+        },
+        {
+          "id": "open_edit_location_picker",
+          "owner": "edit_intent",
+          "codeValue": "HostEventEditPickLocationIntent",
+          "cardinality": "unbounded",
+          "scopeKeys": ["routeInstanceId", "eventId", "locationSelectionVersion"],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {"registry": "flutter_screens", "id": "screen.event.location_map"}
+            },
+            {"kind": "surface_state", "stateIds": ["location_picker"]}
+          ],
+          "description": "Opens the Location Map child route and consumes its selected coordinate and place metadata."
+        },
+        {
+          "id": "select_edit_pace",
+          "owner": "edit_intent",
+          "codeValue": "HostEventEditPaceChangedIntent",
+          "cardinality": "domain_bounded",
+          "scopeKeys": ["routeInstanceId", "pace"],
+          "outcomes": [
+            {"kind": "surface_state", "stateIds": ["prefilled_event"]}
+          ],
+          "description": "Selects one pace from the event format's finite pace domain."
+        },
+        {
+          "id": "select_edit_admission_policy",
+          "owner": "edit_intent",
+          "codeValue": "HostEventEditAdmissionPresetChangedIntent",
+          "cardinality": "domain_bounded",
+          "scopeKeys": ["routeInstanceId", "admissionPreset"],
+          "outcomes": [
+            {"kind": "surface_state", "stateIds": ["policy_editable", "private_access_loading"]}
+          ],
+          "description": "Selects one admission preset and resets incompatible cohort or pricing choices."
+        },
+        {
+          "id": "toggle_edit_cohort_caps",
+          "owner": "edit_intent",
+          "codeValue": "HostEventEditCohortCapsChangedIntent",
+          "cardinality": "unbounded",
+          "scopeKeys": ["routeInstanceId", "cohortCapsEnabled"],
+          "outcomes": [
+            {"kind": "surface_state", "stateIds": ["policy_editable"]}
+          ],
+          "description": "Enables or disables fixed cohort caps while the event policy is editable."
+        },
+        {
+          "id": "toggle_edit_dynamic_pricing",
+          "owner": "edit_intent",
+          "codeValue": "HostEventEditDynamicPricingChangedIntent",
+          "cardinality": "unbounded",
+          "scopeKeys": ["routeInstanceId", "dynamicPricingEnabled"],
+          "outcomes": [
+            {"kind": "surface_state", "stateIds": ["policy_editable"]}
+          ],
+          "description": "Enables or disables dynamic pricing and seeds its default amounts when first enabled."
+        },
+        {
+          "id": "select_edit_cancellation_policy",
+          "owner": "edit_intent",
+          "codeValue": "HostEventEditCancellationPolicyChangedIntent",
+          "cardinality": "domain_bounded",
+          "scopeKeys": ["routeInstanceId", "cancellationPolicyId"],
+          "outcomes": [
+            {"kind": "surface_state", "stateIds": ["policy_editable"]}
+          ],
+          "description": "Selects one cancellation policy from the finite supported policy domain."
+        },
+        {
+          "id": "save_event_edits",
+          "owner": "edit_intent",
+          "codeValue": "HostEventEditSaveIntent",
+          "cardinality": "singleton",
+          "scopeKeys": ["viewerUid", "eventId", "editSignature"],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": ["validation_error", "submit_pending", "submit_error", "success_pop"]
+            }
+          ],
+          "description": "Validates the editable form, updates the event and optional private-access policy, invalidates event readers, and returns to the caller after success."
+        }
+      ],
+      "stateIds": [
+        "uid_loading",
+        "route_loading",
+        "route_error",
+        "event_not_found",
+        "unauthorized_host",
+        "prefilled_event",
+        "schedule_editable",
+        "schedule_locked",
+        "policy_editable",
+        "policy_locked",
+        "location_picker",
+        "validation_error",
+        "private_access_loading",
+        "submit_pending",
+        "submit_error",
+        "success_pop",
+        "cancelled_event_disabled",
+        "offline",
+        "text_scale_2",
+        "reduced_motion",
+        "light_dark"
+      ],
+      "scenarioDefaults": {
+        "dimensions": {},
+        "actionCases": [{"id": "default"}]
+      },
+      "scenarioOverrides": {
+        "uid_loading": {"dimensions": {"route": "loading"}},
+        "route_loading": {"dimensions": {"route": "loading"}},
+        "route_error": {
+          "dimensions": {"route": "error"},
+          "actionCases": [{"id": "retry", "enabledActions": ["retry_edit_route"]}]
+        },
+        "event_not_found": {"dimensions": {"route": "not_found"}},
+        "unauthorized_host": {"dimensions": {"route": "unauthorized"}},
+        "prefilled_event": {
+          "actionCases": [
+            {
+              "id": "editable",
+              "enabledActions": [
+                "select_edit_date",
+                "select_edit_start_time",
+                "adjust_edit_duration",
+                "open_edit_location_picker",
+                "select_edit_pace",
+                "select_edit_admission_policy",
+                "toggle_edit_cohort_caps",
+                "toggle_edit_dynamic_pricing",
+                "select_edit_cancellation_policy",
+                "save_event_edits"
+              ]
+            }
+          ]
+        },
+        "schedule_editable": {
+          "actionCases": [
+            {
+              "id": "editable",
+              "enabledActions": [
+                "select_edit_date",
+                "select_edit_start_time",
+                "adjust_edit_duration",
+                "open_edit_location_picker",
+                "select_edit_pace",
+                "select_edit_admission_policy",
+                "toggle_edit_cohort_caps",
+                "toggle_edit_dynamic_pricing",
+                "select_edit_cancellation_policy",
+                "save_event_edits"
+              ]
+            }
+          ]
+        },
+        "schedule_locked": {
+          "dimensions": {"schedule": "locked", "policy": "locked"},
+          "actionCases": [
+            {
+              "id": "locked",
+              "enabledActions": ["open_edit_location_picker", "select_edit_pace", "save_event_edits"],
+              "disabledActions": [
+                "select_edit_date",
+                "select_edit_start_time",
+                "adjust_edit_duration",
+                "select_edit_admission_policy",
+                "toggle_edit_cohort_caps",
+                "toggle_edit_dynamic_pricing",
+                "select_edit_cancellation_policy"
+              ]
+            }
+          ]
+        },
+        "policy_editable": {
+          "actionCases": [
+            {
+              "id": "editable",
+              "enabledActions": [
+                "select_edit_date",
+                "select_edit_start_time",
+                "adjust_edit_duration",
+                "open_edit_location_picker",
+                "select_edit_pace",
+                "select_edit_admission_policy",
+                "toggle_edit_cohort_caps",
+                "toggle_edit_dynamic_pricing",
+                "select_edit_cancellation_policy",
+                "save_event_edits"
+              ]
+            }
+          ]
+        },
+        "policy_locked": {
+          "dimensions": {"schedule": "locked", "policy": "locked"},
+          "actionCases": [
+            {
+              "id": "locked",
+              "enabledActions": ["open_edit_location_picker", "select_edit_pace", "save_event_edits"],
+              "disabledActions": [
+                "select_edit_date",
+                "select_edit_start_time",
+                "adjust_edit_duration",
+                "select_edit_admission_policy",
+                "toggle_edit_cohort_caps",
+                "toggle_edit_dynamic_pricing",
+                "select_edit_cancellation_policy"
+              ]
+            }
+          ]
+        },
+        "location_picker": {
+          "dimensions": {"location": "selected"},
+          "actionCases": [
+            {
+              "id": "selected",
+              "enabledActions": [
+                "select_edit_date",
+                "select_edit_start_time",
+                "adjust_edit_duration",
+                "open_edit_location_picker",
+                "select_edit_pace",
+                "select_edit_admission_policy",
+                "toggle_edit_cohort_caps",
+                "toggle_edit_dynamic_pricing",
+                "select_edit_cancellation_policy",
+                "save_event_edits"
+              ]
+            }
+          ]
+        },
+        "validation_error": {
+          "dimensions": {"mutation": "validation"},
+          "actionCases": [
+            {
+              "id": "correct",
+              "enabledActions": [
+                "select_edit_date",
+                "select_edit_start_time",
+                "adjust_edit_duration",
+                "open_edit_location_picker",
+                "select_edit_pace",
+                "select_edit_admission_policy",
+                "toggle_edit_cohort_caps",
+                "toggle_edit_dynamic_pricing",
+                "select_edit_cancellation_policy",
+                "save_event_edits"
+              ]
+            }
+          ]
+        },
+        "private_access_loading": {
+          "dimensions": {"policy": "invite_only", "content": "loading"},
+          "actionCases": [
+            {
+              "id": "editable_while_loading",
+              "enabledActions": [
+                "select_edit_date",
+                "select_edit_start_time",
+                "adjust_edit_duration",
+                "open_edit_location_picker",
+                "select_edit_pace",
+                "select_edit_admission_policy",
+                "toggle_edit_cohort_caps",
+                "toggle_edit_dynamic_pricing",
+                "select_edit_cancellation_policy",
+                "save_event_edits"
+              ]
+            }
+          ]
+        },
+        "submit_pending": {
+          "dimensions": {"mutation": "pending"},
+          "actionCases": [
+            {
+              "id": "form_still_editable",
+              "enabledActions": [
+                "select_edit_date",
+                "select_edit_start_time",
+                "adjust_edit_duration",
+                "open_edit_location_picker",
+                "select_edit_pace",
+                "select_edit_admission_policy",
+                "toggle_edit_cohort_caps",
+                "toggle_edit_dynamic_pricing",
+                "select_edit_cancellation_policy"
+              ],
+              "disabledActions": ["save_event_edits"]
+            }
+          ]
+        },
+        "submit_error": {
+          "dimensions": {"mutation": "error"},
+          "actionCases": [
+            {
+              "id": "retry",
+              "enabledActions": [
+                "select_edit_date",
+                "select_edit_start_time",
+                "adjust_edit_duration",
+                "open_edit_location_picker",
+                "select_edit_pace",
+                "select_edit_admission_policy",
+                "toggle_edit_cohort_caps",
+                "toggle_edit_dynamic_pricing",
+                "select_edit_cancellation_policy",
+                "save_event_edits"
+              ]
+            }
+          ]
+        },
+        "success_pop": {"dimensions": {"mutation": "settled"}},
+        "cancelled_event_disabled": {
+          "dimensions": {"lifecycle": "cancelled", "schedule": "locked", "policy": "locked"},
+          "actionCases": [
+            {
+              "id": "disabled",
+              "disabledActions": [
+                "select_edit_date",
+                "select_edit_start_time",
+                "adjust_edit_duration",
+                "open_edit_location_picker",
+                "select_edit_pace",
+                "select_edit_admission_policy",
+                "toggle_edit_cohort_caps",
+                "toggle_edit_dynamic_pricing",
+                "select_edit_cancellation_policy",
+                "save_event_edits"
+              ]
+            }
+          ]
+        },
+        "offline": {
+          "dimensions": {"route": "error", "connectivity": "offline"},
+          "actionCases": [{"id": "retry", "enabledActions": ["retry_edit_route"]}]
+        },
+        "text_scale_2": {"dimensions": {"accessibility": "text_scale_2"}},
+        "reduced_motion": {"dimensions": {"accessibility": "reduced_motion"}},
+        "light_dark": {"dimensions": {"theme": "light_dark"}}
+      },
+      "requiredEvidence": {
+        "captures": true,
+        "previews": true,
+        "tests": true
+      },
+      "evidenceExceptions": [
+        {
+          "stateIds": ["success_pop"],
+          "evidence": ["captures"],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "The successful update and caller-pop transition has focused test evidence but no stable image capture because the route is intentionally dismissed."
+        },
+        {
+          "stateIds": [
+            "uid_loading",
+            "route_loading",
+            "route_error",
+            "event_not_found",
+            "unauthorized_host",
+            "schedule_editable",
+            "policy_editable",
+            "policy_locked",
+            "location_picker",
+            "private_access_loading",
+            "submit_pending",
+            "submit_error",
+            "cancelled_event_disabled",
+            "offline",
+            "text_scale_2",
+            "reduced_motion",
+            "light_dark"
+          ],
+          "evidence": ["tests"],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "These deterministic owner-edit states have registered capture and Widgetbook evidence but no focused state-level automated test recorded by the screen authority yet."
         }
       ]
     }

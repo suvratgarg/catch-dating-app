@@ -19730,6 +19730,9 @@
           "kind": "populated",
           "status": "implemented",
           "source": "HostCreateClubScreen delegates directly to CreateClubScreen for the create route.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "nextAction": "Add a route/navigation test proving the host shell opens this route from Host Home and Host Clubs."
         },
         {
@@ -19737,6 +19740,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "CreateClubScreen attempts to load a saved create-club draft after the first frame and shows restored draft feedback.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "captureIds": [
             "create_club_draft_restored"
           ],
@@ -19747,6 +19753,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "The first step renders name, city, area, cover/profile media, and basics controls.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "captureIds": [
             "create_club_basics"
           ],
@@ -19757,6 +19766,9 @@
           "kind": "error",
           "status": "captured",
           "source": "Missing required basics block Next and show field-level validation errors.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "tests": [
             "test/explore/explore_widgets_test.dart"
           ],
@@ -19770,6 +19782,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "Club photo picker reads selected image bytes and previews picked club photos.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "tests": [
             "test/explore/explore_widgets_test.dart"
           ],
@@ -19783,6 +19798,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "Details step renders description and optional Instagram, phone, and email contact fields.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "captureIds": [
             "create_club_details"
           ],
@@ -19793,6 +19811,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "Host defaults step renders reusable admission, cohort, dynamic pricing, and cancellation defaults.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "captureIds": [
             "create_club_host_defaults"
           ],
@@ -19803,6 +19824,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "Event Success defaults step renders guide and default configuration for future events.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "captureIds": [
             "create_club_event_success_defaults"
           ],
@@ -19813,6 +19837,9 @@
           "kind": "mutation",
           "status": "captured",
           "source": "CreateClubDraftController.saveDraftMutation drives footer loading and CatchErrorBanner copy when saving fails; draft restore/save success feedback uses the shared Catch snackbar helper.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "nextAction": "Compare captured save-draft pending/error feedback against canonical design references once exported.",
           "captureIds": [
             "create_club_save_draft_pending",
@@ -19824,6 +19851,9 @@
           "kind": "mutation",
           "status": "captured",
           "source": "CreateClubController.submitMutation disables footer actions and shows loading while submit is pending.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "nextAction": "Compare captured submit pending footer behavior against canonical design references once exported.",
           "captureIds": [
             "create_club_submit_pending"
@@ -19834,6 +19864,9 @@
           "kind": "mutation",
           "status": "captured",
           "source": "Submit mutation errors render inline CatchErrorBanner copy.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "tests": [
             "test/explore/explore_widgets_test.dart"
           ],
@@ -19847,6 +19880,9 @@
           "kind": "mutation",
           "status": "tested",
           "source": "Successful create deletes the draft, then HostClubSubmitOutcomeState maps the pending-to-success transition to close-route before CreateClubScreen performs the Navigator pop.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "tests": [
             "test/explore/explore_widgets_test.dart"
           ],
@@ -19857,6 +19893,9 @@
           "kind": "permission",
           "status": "implemented",
           "source": "The form can render without uid, but submit/draft mutations require signed-in uid and surface failure through mutation feedback.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "nextAction": "Decide whether the route should render explicit signed-out access copy before the form."
         },
         {
@@ -19864,6 +19903,9 @@
           "kind": "offline",
           "status": "captured",
           "source": "Offline-looking create submit failures surface through shared mutation error copy.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "nextAction": "Decide whether offline submit failures need distinct retry affordances beyond shared mutation error feedback.",
           "captureIds": [
             "create_club_submit_offline"
@@ -19874,6 +19916,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "The multi-step form needs text-scale review for step header, media pickers, fields, and footer.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "captureIds": [
             "create_club_text_scale_2"
           ],
@@ -19884,6 +19929,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "PageController step transitions use CatchMotion.pageStep.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "captureIds": [
             "create_club_reduced_motion"
           ],
@@ -19894,6 +19942,9 @@
           "kind": "theme",
           "status": "captured",
           "source": "Create club uses tokenized backgrounds, fields, and footer surfaces.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "captureIds": [
             "create_club_light_dark"
           ],
@@ -20070,11 +20121,16 @@
           "status": "closed",
           "nextAction": "HostClubCreateState now owns footer action labels/enabled state, media enabled state, media display values, field/city display state, mutation error copy, draft-load retry state, and typed primary/save-draft/draft-restore intents; HostClubCreateRouteIntent owns route callback dispatch; HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction; HostClubSubmitOutcomeState owns submit-success close-route policy."
         },
-        {
-          "id": "DS-HOST-CLUB-CREATE-004",
-          "status": "blocked",
-          "nextAction": "Blocked: Host Create Club basics reference is exported and wired. Additional wizard, mutation, accessibility, and theme pixel comparisons need canonical state-specific Claude/Figma references before app-code work resumes."
-        }
+            {
+              "id": "DS-HOST-CLUB-CREATE-004",
+              "status": "blocked",
+              "nextAction": "Blocked: Host Create Club basics reference is exported and wired. Additional wizard, mutation, accessibility, and theme pixel comparisons need canonical state-specific Claude/Figma references before app-code work resumes."
+            },
+            {
+              "id": "DS-HOST-CLUB-CREATE-005",
+              "status": "open",
+              "nextAction": "REG-FEATURE-CONTRACT-DRIFT-001: submit pending disables footer actions and media but still permits header-back navigation and Event Success default changes; save-draft pending also leaves basics controls active. Decide whether pending mutations should freeze the submitted draft snapshot and route dismissal, then add focused interaction tests for the chosen policy."
+            }
       ]
     },
     {
@@ -20287,6 +20343,9 @@
           "kind": "loading",
           "status": "captured",
           "source": "Route loading is true while uidProvider is loading.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add route capture for uid loading and signed-out host-shell behavior.",
           "captureIds": [
             "edit_hosted_event_route_loading"
@@ -20297,6 +20356,9 @@
           "kind": "loading",
           "status": "captured",
           "source": "Club/event provider loading renders a tokenized Scaffold with HostRouteLoadingBody(showTabRail: true).",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add deterministic route loading capture.",
           "captureIds": [
             "edit_hosted_event_route_loading"
@@ -20307,6 +20369,9 @@
           "kind": "error",
           "status": "captured",
           "source": "uid, club, or event provider errors render CatchErrorScaffold.fromError with event context and retry invalidation.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add error/offline capture for failed club/event provider waves.",
           "captureIds": [
             "edit_hosted_event_route_error"
@@ -20317,6 +20382,9 @@
           "kind": "empty",
           "status": "captured",
           "source": "Missing club or event renders Event not found copy.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add missing/deleted event capture and recovery decision.",
           "captureIds": [
             "edit_hosted_event_not_found"
@@ -20327,6 +20395,9 @@
           "kind": "permission",
           "status": "captured",
           "source": "A uid that is not hosted by the club receives Action unavailable copy.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add unauthorized route capture and test for non-host viewer.",
           "captureIds": [
             "edit_hosted_event_unauthorized"
@@ -20337,6 +20408,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "Loaded event pre-fills schedule, location, distance, description, policy, and invite fields.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "captureIds": [
             "edit_hosted_event"
           ],
@@ -20350,6 +20424,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "Future events without booking/waitlist/attendance activity expose date, time, and duration controls.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add Widgetbook state for editable schedule controls.",
           "captureIds": [
             "edit_hosted_event"
@@ -20360,6 +20437,9 @@
           "kind": "permission",
           "status": "captured",
           "source": "Events with activity render a read-only schedule card and hide date picker controls.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "tests": [
             "test/hosts/edit_hosted_event_screen_test.dart"
           ],
@@ -20373,6 +20453,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "Unlocked events expose capacity, price, admission format, cohort caps, demand pricing, age, invite, and cancellation policy controls.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add previews for each admission preset and dynamic pricing/cohort toggle branch.",
           "captureIds": [
             "edit_hosted_event"
@@ -20383,6 +20466,9 @@
           "kind": "permission",
           "status": "captured",
           "source": "Started or active events render a read-only policy summary instead of editable policy controls.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add policy-locked capture.",
           "captureIds": [
             "edit_hosted_event_schedule_locked"
@@ -20393,6 +20479,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "MapPinTile opens LocationPickerScreen with map tiles optionally disabled for deterministic captures.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Selected-location capture is covered; add route callback proof for opening LocationPickerScreen if picker navigation becomes a product-risk area.",
           "captureIds": [
             "edit_hosted_event_location_selected"
@@ -20403,6 +20492,9 @@
           "kind": "error",
           "status": "captured",
           "source": "Required meeting point, distance, capacity, price, age, invite code, and pinned starting point requirements validate before save; missing pinned-location feedback uses the shared Catch snackbar helper.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Validation capture and save-blocking test are covered; keep moving validation state into a future HostEventEditScreenState adapter.",
           "captureIds": [
             "edit_hosted_event_validation_error"
@@ -20416,6 +20508,9 @@
           "kind": "loading",
           "status": "captured",
           "source": "Invite-only policy watches watchEventPrivateAccessProvider and shows loading copy while current invite code loads.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Compare invite-code loading treatment against private-access reference variants once exported.",
           "captureIds": [
             "edit_hosted_event_private_access_loading"
@@ -20426,6 +20521,9 @@
           "kind": "mutation",
           "status": "captured",
           "source": "HostEventEditScreenState maps updateHostedEventMutation pending into EditHostedEventFooterState loading and disabled Save changes state.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Pending footer display policy is adapter-owned; compare against mutation reference variants once exported.",
           "captureIds": [
             "edit_hosted_event_submit_pending"
@@ -20436,6 +20534,9 @@
           "kind": "mutation",
           "status": "captured",
           "source": "HostEventEditScreenState exposes updateHostedEventMutation errors before EditHostedEventScreen renders CatchErrorBanner.fromError under the scope notice.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Submit error display policy is adapter-owned; compare against mutation reference variants once exported.",
           "captureIds": [
             "edit_hosted_event_submit_error"
@@ -20446,6 +20547,9 @@
           "kind": "mutation",
           "status": "tested",
           "source": "HostEventEditScreenState owns success copy and pop-on-success policy; EditHostedEventScreen still executes the update mutation, provider invalidations, snackbar, and Navigator pop side effects.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "tests": [
             "test/hosts/edit_hosted_event_screen_test.dart"
           ],
@@ -20456,6 +20560,9 @@
           "kind": "permission",
           "status": "captured",
           "source": "Cancelled events show Cancelled event scope notice and disable save/edit controls.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add cancelled event capture.",
           "captureIds": [
             "edit_hosted_event_cancelled"
@@ -20466,6 +20573,9 @@
           "kind": "offline",
           "status": "captured",
           "source": "Network-looking route or submit failures currently use error scaffold/banner copy.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Offline route-load capture is covered; add state-specific references if the offline treatment diverges from the shared Catch error contract.",
           "captureIds": [
             "edit_hosted_event_offline"
@@ -20476,6 +20586,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "The dense long form needs text-scale coverage for scope notice, fields, policy cards, and footer.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add text-scale capture and Widgetbook section states.",
           "captureIds": [
             "edit_hosted_event_text_scale_2"
@@ -20486,6 +20599,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "Date/time picker, location picker, and route transition need reduced-motion review.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add reduced-motion review after fixtures are stable.",
           "captureIds": [
             "edit_hosted_event_reduced_motion"
@@ -20496,6 +20612,9 @@
           "kind": "theme",
           "status": "captured",
           "source": "Edit event uses tokenized surfaces and controls.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add light/dark capture pair before pixel diff enforcement.",
           "captureIds": [
             "edit_hosted_event_light_dark"
@@ -20677,11 +20796,16 @@
           "status": "closed",
           "nextAction": "HostEventEditScreenState now owns loaded editability, schedule/policy locks, field display state, save footer state, save error input, feedback copy, and pop-on-success policy. HostEventEditFieldDisplayState owns schedule, location/details, and policy display values; HostEventEditSaveRequest owns validated save payload construction; HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy; HostEventEditScheduleValidationState owns invalid-start validation state; HostEventEditIntent owns typed route callback payloads."
         },
-        {
-          "id": "DS-HOST-EVENT-EDIT-004",
-          "status": "closed",
-          "nextAction": "Closed for the owner-edit reference: edit_hosted_event compares within threshold against the registered Claude reference at 9.25% mismatch / 10.93 meanDelta. Reopen only if design adds new canonical Host Edit Event references."
-        }
+            {
+              "id": "DS-HOST-EVENT-EDIT-004",
+              "status": "closed",
+              "nextAction": "Closed for the owner-edit reference: edit_hosted_event compares within threshold against the registered Claude reference at 9.25% mismatch / 10.93 meanDelta. Reopen only if design adds new canonical Host Edit Event references."
+            },
+            {
+              "id": "DS-HOST-EVENT-EDIT-005",
+              "status": "open",
+              "nextAction": "REG-FEATURE-CONTRACT-DRIFT-001: save pending disables only the Save button while schedule, location, pace, and policy controls remain interactive after HostEventEditSaveRequest has captured its payload. Freeze the form or introduce an explicit versioned edit queue, then add a widget test proving on-screen values cannot diverge from the submitted snapshot."
+            }
       ]
     },
     {

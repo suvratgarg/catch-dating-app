@@ -242,20 +242,18 @@
     {
       "authority": "flutter_screens",
       "authorityId": "screen.host.club.create",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Multi-step host organizer creation and draft workflow.",
-      "targetFeature": "feature.host_organizer_create",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Host Organizer Create contract covers wizard navigation, media and default choices, local draft recovery, validation, submission, and route-dismissal lifecycle.",
+      "featureContract": "feature.host_organizer_create"
     },
     {
       "authority": "flutter_screens",
       "authorityId": "screen.host.event.edit",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Edit projection of the Host Event Manage lifecycle.",
-      "targetFeature": "feature.host_event_manage",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "The Host Event Manage contract now includes the owner-edit projection, route recovery, editable and locked fields, child location route, validation, update mutation, and success return.",
+      "featureContract": "feature.host_event_manage"
     },
     {
       "authority": "flutter_screens",
