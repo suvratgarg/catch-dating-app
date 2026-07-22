@@ -343,6 +343,13 @@
     "status": "active",
     "read_policy": "Read before changing website screenshot slots, marketing capture manifests, host vertical media, or app-derived marketing asset sync checks."
   },
+  "app_listing_screenshot_production_brief": {
+    "path": "docs/store/app_listing_screenshot_production_brief.md",
+    "version": "0.1.0",
+    "updated": "2026-07-23",
+    "status": "active",
+    "read_policy": "Read before selecting, capturing, composing, exporting, ordering, localizing, QA-ing, or uploading Catch consumer or Catch Host App Store and Google Play listing screenshots or feature graphics."
+  },
   "marketing_landing_page_research": {
     "path": "docs/marketing_landing_page_research.md",
     "version": "0.4.0",

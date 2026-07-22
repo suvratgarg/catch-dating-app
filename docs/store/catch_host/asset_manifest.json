@@ -7,7 +7,8 @@
     "primaryLanguage": "English (U.S.)"
   },
   "preparedAt": "2026-06-22",
-  "status": "draft_assets_prepared",
+  "status": "screenshot_revision_required",
+  "screenshotProductionBrief": "docs/store/app_listing_screenshot_production_brief.md",
   "icon": {
     "path": "docs/store/catch_host/icon/app-icon-1024.png",
     "sourcePath": "ios/Runner/Assets.xcassets/AppIcon-host-prod.appiconset/Icon-App-host-prod-1024x1024@1x.png",
@@ -38,7 +39,7 @@
         "height": 2868
       },
       "headline": "Build your host profile",
-      "status": "ready_from_demo_capture"
+      "status": "replace_draft_alpha_channel"
     },
     {
       "path": "docs/store/catch_host/screenshots/iphone_6_9/02-admission-rules.png",
@@ -49,7 +50,7 @@
         "height": 2868
       },
       "headline": "Control admission",
-      "status": "ready_from_demo_capture"
+      "status": "retain_source_move_to_h03_refresh_alpha_channel"
     },
     {
       "path": "docs/store/catch_host/screenshots/iphone_6_9/03-live-event-flow.png",
@@ -60,7 +61,7 @@
         "height": 2868
       },
       "headline": "Run live event flow",
-      "status": "ready_from_demo_capture"
+      "status": "retain_source_promote_to_h01_refresh_alpha_channel"
     },
     {
       "path": "docs/store/catch_host/screenshots/iphone_6_9/04-post-event-report.png",
@@ -71,7 +72,7 @@
         "height": 2868
       },
       "headline": "Review the outcome",
-      "status": "ready_from_demo_capture"
+      "status": "retain_event_report_evidence_refresh_alpha_channel"
     },
     {
       "path": "docs/store/catch_host/screenshots/iphone_6_9/05-guest-details.png",
@@ -82,7 +83,7 @@
         "height": 2868
       },
       "headline": "Plan guest details",
-      "status": "ready_from_demo_capture"
+      "status": "replace_draft_alpha_channel"
     }
   ],
   "remainingBlockers": [
