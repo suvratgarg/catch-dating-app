@@ -3,7 +3,7 @@
   "boardId": "catch-pilot-launch-2026-07",
   "name": "Catch website-first pilot launch",
   "owner": "founder",
-  "updatedAt": "2026-07-22T21:24:52+05:30",
+  "updatedAt": "2026-07-22T21:43:15+05:30",
   "operatingMode": "website_first",
   "successDefinition": "Catch is publicly operating in Mumbai and Indore with accurate market claims, reachable legal and help pages, production website monitoring, and a reviewed supply pipeline ready for the first 50 organizers plus their events.",
   "statusDefinitions": {
@@ -113,12 +113,13 @@
       "workstream": "observability",
       "summary": "Resolved: GTM Version 3 forwards an explicit allowlist of consented waitlist, host-lead, host-application, organizer-claim, CTA, and client-error dataLayer events to GA4.",
       "owner": "codex/pilot-hardening-20260722",
-      "nextAction": "Retain the allowlist and exact-once Preview evidence; add GA4 Realtime evidence when Catch property access is restored.",
+      "nextAction": "Retain the allowlist, exact-once Preview evidence, and clean non-preview Realtime check as the production analytics baseline.",
       "evidence": [
         "GTM-K7KLNQXP Version 3: Website production observability v1, published 2026-07-22 20:50 IST",
         "Tag Assistant Preview: cta_click produced Catch website custom events exactly once",
         "Trigger Catch website observability events uses a six-event anchored regex allowlist",
         "2026-07-22 GA4 Realtime confirmed six page_view events and three production page titles",
+        "2026-07-22 clean consented production session confirmed cta_click = 1, page_view = 2, first_visit = 1, and session_start = 1 in GA4 Realtime",
         "website/src/analytics.ts"
       ]
     },
@@ -245,14 +246,17 @@
     {
       "id": "LAUNCH-ANALYTICS-004",
       "severity": "P1",
-      "status": "open",
+      "status": "fixed",
       "workstream": "observability",
-      "summary": "The signed-in Google Analytics account picker exposes only the unrelated Momotogo property, so Catch custom-event delivery cannot yet be captured independently in GA4 Realtime or DebugView.",
+      "summary": "Resolved: the Catch GA4 property is available under Google account slot authuser=1, and a clean consented production session delivered cta_click to Realtime.",
       "owner": "founder",
-      "nextAction": "Grant suvrat.garg@gmail.com access to the Catch GA4 property for G-CH7WMQY5FV or provide the property URL, then capture cta_click in Realtime or DebugView.",
+      "nextAction": "Use the Catch property URL with authuser=1 and a clean non-preview browser session for future Realtime acceptance checks.",
       "evidence": [
-        "2026-07-22 Google Analytics universal picker showed account Suvrat Garg 155931484 with only Momotogo GA4 property 314503948",
-        "Tag Assistant independently proved GTM-K7KLNQXP and G-CH7WMQY5FV connected and cta_click fired once"
+        "2026-07-22 Catch GA4 property catch-dating-app-64e51 opened at property 526484083 under account slot authuser=1",
+        "GA4 web stream catch_dating_app (web), stream 13688894376, uses measurement ID G-CH7WMQY5FV and reports traffic received in the past 48 hours",
+        "Tag Assistant independently proved GTM-K7KLNQXP and G-CH7WMQY5FV connected and cta_click fired once",
+        "2026-07-22 clean Safari session accepted analytics consent, clicked Browse organizers, and GA4 Realtime showed cta_click = 1, page_view = 2, first_visit = 1, and session_start = 1",
+        "Operational gotcha: the Tag Assistant preview session did not surface in Realtime; use a clean non-preview session for this acceptance check"
       ]
     }
   ],
@@ -336,7 +340,7 @@
       "id": "TASK-OBS-WEB-ANALYTICS",
       "workstream": "observability",
       "title": "Deliver consented website traffic, conversion, and client-error events to GTM/GA4",
-      "status": "in_progress",
+      "status": "done",
       "priority": "P0",
       "owner": "codex/pilot-hardening-20260722",
       "targetDate": "2026-07-22",
@@ -347,7 +351,7 @@
         "No analytics or marketing tag loads before consent.",
         "Evidence is linked without exposing credentials."
       ],
-      "nextAction": "Restore access to the Catch GA4 property and capture the already-tested cta_click event in Realtime or DebugView to close the last acceptance item.",
+      "nextAction": "Monitor the six-event allowlist and repeat the clean consented Realtime check after analytics or consent changes.",
       "evidence": [
         "GTM-K7KLNQXP Version 3: Website production observability v1",
         "Tag Assistant Preview: Catch website custom events fired exactly once for cta_click",
@@ -357,9 +361,11 @@
         "website/src/features/marketing/tracking.test.ts",
         "Production workflow 29922913399 completed successfully",
         "Deployed site-DX9pXazw.js contains GTM-K7KLNQXP, googletagmanager, gtm.js, and dataLayer",
-        "2026-07-22 GA4 Realtime confirmed six page_view events across Home, Organizer directory, and AFTER FLY"
+        "2026-07-22 GA4 Realtime confirmed six page_view events across Home, Organizer directory, and AFTER FLY",
+        "2026-07-22 GA4 stream 13688894376 measurement ID G-CH7WMQY5FV matched the published GTM destination",
+        "2026-07-22 clean Safari session accepted analytics consent and GA4 Realtime confirmed cta_click = 1, page_view = 2, first_visit = 1, and session_start = 1"
       ],
-      "updatedAt": "2026-07-22T21:17:23+05:30"
+      "updatedAt": "2026-07-22T21:43:15+05:30"
     },
     {
       "id": "TASK-PILOT-RUNS",
