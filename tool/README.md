@@ -58,6 +58,7 @@ with `--check`. This graph is the canonical cross-root integration map.
   evidence lives in the audit registry and migration contract metadata.
 - `marketing/`: app-derived website media manifests and screenshot sync checks.
 - `platform/`: Apple/platform configuration helpers.
+- `store/`: deterministic App Store and Google Play asset generators.
 - `ui_capture/`: route inventory, capture coverage, and deterministic screen capture tooling.
 - `remote_ops_manifest.json`: consolidated index for Firebase, App Check, data,
   CI/CD, and App Store/TestFlight operational surfaces.

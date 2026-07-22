@@ -163,8 +163,8 @@
   },
   "docs_index": {
     "path": "docs/README.md",
-    "version": "4.7.1",
-    "updated": "2026-07-21",
+    "version": "4.7.3",
+    "updated": "2026-07-23",
     "status": "active",
     "read_policy": "Read before adding, deleting, consolidating docs, changing canonical doc routing, or adding agent-facing workflow instructions."
   },
@@ -345,10 +345,17 @@
   },
   "app_listing_screenshot_production_brief": {
     "path": "docs/store/app_listing_screenshot_production_brief.md",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "updated": "2026-07-23",
     "status": "active",
     "read_policy": "Read before selecting, capturing, composing, exporting, ordering, localizing, QA-ing, or uploading Catch consumer or Catch Host App Store and Google Play listing screenshots or feature graphics."
+  },
+  "app_listing_screenshot_prototypes": {
+    "path": "docs/store/app_listing_prototypes/README.md",
+    "version": "0.1.0",
+    "updated": "2026-07-23",
+    "status": "active",
+    "read_policy": "Read before reviewing, regenerating, or revising the first Catch consumer and Catch Host App Store listing prototype images."
   },
   "marketing_landing_page_research": {
     "path": "docs/marketing_landing_page_research.md",

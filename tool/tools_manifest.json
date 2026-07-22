@@ -3212,6 +3212,20 @@
       "role": "generator"
     },
     {
+      "id": "marketing:app-listing-prototypes",
+      "category": "marketing",
+      "path": "tool/store/generate_app_listing_screenshot_prototypes.swift",
+      "command": "swift tool/store/generate_app_listing_screenshot_prototypes.swift",
+      "safety": "local-writes-store-assets",
+      "status": "active",
+      "description": "Generates the six approved Catch and Catch Host iPhone 6.9-inch App Store listing prototypes from deterministic app captures.",
+      "checks": [
+        "swiftc -parse tool/store/generate_app_listing_screenshot_prototypes.swift",
+        "swift tool/store/generate_app_listing_screenshot_prototypes.swift --check"
+      ],
+      "role": "generator"
+    },
+    {
       "id": "marketing:website-build",
       "category": "marketing",
       "path": "website/package.json",

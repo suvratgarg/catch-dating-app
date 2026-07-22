@@ -1,6 +1,6 @@
 ---
 doc_id: app_listing_screenshot_production_brief
-version: 0.1.0
+version: 0.1.1
 updated: 2026-07-23
 owner: release_operations
 status: active
@@ -17,6 +17,10 @@ truth for what the product actually does.
 This brief does not approve an App Store or Play submission. Release-build
 parity, legal metadata, privacy answers, account state, and final upload remain
 owned by [`../release_operations.md`](../release_operations.md).
+
+The first Apple iPhone visual-review checkpoint for C01-C03 and H01-H03 lives
+in [`app_listing_prototypes/`](app_listing_prototypes/). Those images remain
+prototypes until the review and release gates below are complete.
 
 Store-format references verified on 2026-07-23:
 
