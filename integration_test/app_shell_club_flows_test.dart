@@ -30,7 +30,7 @@ void main() {
         find.text('Morning runners who like easy city loops.'),
         findsOneWidget,
       );
-      expect(find.text('Sign in to join'), findsOneWidget);
+      expect(find.text('Sign in to follow'), findsOneWidget);
     },
   );
 

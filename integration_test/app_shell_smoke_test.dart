@@ -58,7 +58,7 @@ void main() {
 
     await openClubDetail(tester, club);
     await pumpAppShellFrames(tester);
-    await tapCatchButton(tester, 'Sign in to join');
+    await tapCatchButton(tester, 'Sign in to follow');
 
     await tester.enterText(find.byKey(AuthFormKeys.phoneField), '9876543210');
     await tester.tap(find.byKey(AuthFormKeys.sendCode));

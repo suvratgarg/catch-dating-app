@@ -173,5 +173,26 @@ void main() {
       );
       expect(availability.canJoinWaitlist, isTrue);
     });
+
+    test('legacy aggregate occupancy still makes full events waitlistable', () {
+      final user = buildUser();
+      final event = buildEvent(
+        startTime: now.add(const Duration(days: 1)),
+        capacityLimit: 20,
+        bookedCount: 20,
+      );
+
+      final availability = resolveViewerEventAvailability(
+        event: event,
+        userProfile: user,
+        now: now,
+      );
+
+      expect(
+        availability.status,
+        ViewerEventAvailabilityStatus.waitlistAvailable,
+      );
+      expect(availability.canJoinWaitlist, isTrue);
+    });
   });
 }
