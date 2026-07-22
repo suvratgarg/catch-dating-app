@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 560,
+  "total": 561,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -539,7 +539,7 @@
       ]
     },
     "web": {
-      "count": 56,
+      "count": 57,
       "files": [
         "admin/src/app/App.test.tsx",
         "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
@@ -578,6 +578,7 @@
         "website/scripts/generateOrganizerListings.test.mjs",
         "website/scripts/homeEventEligibility.test.mjs",
         "website/scripts/marketPack.test.mjs",
+        "website/scripts/marketingDeployWorkflow.test.mjs",
         "website/scripts/ownerGatedContent.test.mjs",
         "website/scripts/postbuild.test.mjs",
         "website/scripts/probeProduction.test.mjs",
