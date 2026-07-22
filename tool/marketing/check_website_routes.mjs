@@ -791,7 +791,16 @@ export const OrganizerSearch = {
   const validMeta = {
     $schema: "./meta.schema.json",
     routes: Object.fromEntries(
-      ["home", "host", "organizers", "claim", "not_found"].map((key) => [
+      [
+        "home",
+        "host",
+        "organizers",
+        "claim",
+        "privacy",
+        "terms",
+        "help",
+        "not_found",
+      ].map((key) => [
         key,
         {
           title: `${key} title`,
