@@ -1,240 +1,242 @@
 {
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
-  "version": 1,
+  "version": 2,
   "generatedFrom": "design/features/explore.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:f4cec29eb9f855c91097398b21d0c1968858399f2ff581b7fa8af50c7fc4f336",
-  "resolvedDigest": "sha256:68eea5b168432162b229e50d9ef27f3f851594d617daf363344fc577ca27375f",
+  "sourceDigest": "sha256:fc7e03679c24ed00454e746d1549b297cdfe2a69cd61de87659f7e5c8b2d3ac6",
+  "resolvedDigest": "sha256:c419b47c1671e6d0b9ff20dac0ad7eb3b7002995a0346137349658688b291c20",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",
     "owner": "explore",
     "status": "pilot",
-    "description": "Orchestrates Explore discovery and map state, empty-state recovery actions, and evidence contracts without duplicating the owning screen, component, data, or Widgetbook registries.",
-    "actionScope": {
-      "included": "Empty-result recovery actions represented by ExploreDiscoveryEmptyAction.",
-      "excluded": [
-        "Search entry, city and filter editing, organizer follow/sign-in, map interaction, event or organizer navigation, and membership mutations retain their existing owners and verification paths."
-      ]
-    }
-  },
-  "bindings": {
-    "widgetbookSources": [
-      "widgetbook/lib/explore/explore_use_cases.dart",
-      "widgetbook/lib/primitives/core_catalog_use_cases.dart"
-    ],
-    "actionOwner": {
-      "file": "lib/explore/presentation/explore_screen_state.dart",
-      "symbol": "ExploreDiscoveryEmptyAction"
-    },
-    "componentContracts": [
-      "catch.button",
-      "catch.chip",
-      "catch.count_pill",
-      "catch.cover_story",
-      "catch.event_card",
-      "catch.field",
-      "catch.icon_button",
-      "catch.surface",
-      "catch.top_bar"
-    ],
-    "dataContracts": [
-      "contracts/firestore/club_memberships.schema.json",
-      "contracts/firestore/clubs.schema.json",
-      "contracts/firestore/events.schema.json",
-      "contracts/firestore/external_events.schema.json",
-      "contracts/firestore/organizers.schema.json"
-    ]
+    "description": "Orchestrates organizer discovery across Flutter and marketing-web projections without duplicating the owning screen, route, component, data, or preview registries."
   },
   "coverage": {
-    "screenStates": 21,
-    "scenarios": 21,
-    "actionCases": 23,
-    "actions": 3,
+    "surfaces": 2,
+    "states": 24,
+    "scenarios": 24,
+    "actionCases": 26,
+    "actions": 6,
     "captures": 20,
-    "previews": 8,
-    "testFiles": 3,
+    "previews": 11,
+    "testFiles": 4,
     "evidenceExceptions": 6
   },
-  "dimensions": {
-    "surface": {
-      "default": "discovery",
-      "values": [
-        "discovery",
-        "map"
-      ]
-    },
-    "load": {
-      "default": "ready",
-      "values": [
-        "ready",
-        "loading",
-        "error",
-        "offline"
-      ]
-    },
-    "content": {
-      "default": "populated",
-      "values": [
-        "populated",
-        "empty"
-      ]
-    },
-    "viewer": {
-      "default": "member",
-      "values": [
-        "guest",
-        "member"
-      ]
-    },
-    "search": {
-      "default": "inactive",
-      "values": [
-        "inactive",
-        "active"
-      ]
-    },
-    "filters": {
-      "default": "inactive",
-      "values": [
-        "inactive",
-        "active"
-      ]
-    },
-    "selection": {
-      "default": "none",
-      "values": [
-        "none",
-        "pin"
-      ]
-    },
-    "accessibility": {
-      "default": "standard",
-      "values": [
-        "standard",
-        "text_scale_2",
-        "reduced_motion"
-      ]
-    }
-  },
-  "actions": [
+  "surfaces": [
     {
-      "id": "clear_search",
-      "codeValue": "clearSearch",
-      "cardinality": "singleton",
-      "scopeKeys": [
-        "routeInstanceId",
-        "queryStateVersion"
-      ],
-      "outcomes": [
-        {
-          "kind": "screen_state",
-          "stateIds": [
-            "discovery_feed",
-            "no_search_results",
-            "empty_city"
-          ]
-        }
-      ],
-      "description": "Clears the active search term once for the current Explore query state."
-    },
-    {
-      "id": "clear_filters",
-      "codeValue": "clearFilters",
-      "cardinality": "singleton",
-      "scopeKeys": [
-        "routeInstanceId",
-        "filterStateVersion"
-      ],
-      "outcomes": [
-        {
-          "kind": "screen_state",
-          "stateIds": [
-            "discovery_feed",
-            "no_search_results",
-            "empty_city"
-          ]
-        }
-      ],
-      "description": "Clears active Explore filters once for the current filter state."
-    },
-    {
-      "id": "clear_search_and_filters",
-      "codeValue": "clearSearchAndFilters",
-      "cardinality": "singleton",
-      "scopeKeys": [
-        "routeInstanceId",
-        "queryStateVersion",
-        "filterStateVersion"
-      ],
-      "outcomes": [
-        {
-          "kind": "screen_state",
-          "stateIds": [
-            "discovery_feed",
-            "empty_city"
-          ]
-        }
-      ],
-      "description": "Clears both search and filters as one recovery transition for the current Explore state."
-    }
-  ],
-  "evidenceExceptions": [
-    {
-      "screenStateIds": [
-        "no_exact_pins",
-        "zero_radius_results"
-      ],
-      "evidence": [
-        "captures"
-      ],
-      "debtId": "DS-EXPLORE-005",
-      "reason": "These map empty variants are implemented and previewed but do not yet have dedicated deterministic capture ids."
-    },
-    {
-      "screenStateIds": [
-        "no_exact_pins",
-        "offline",
-        "text_scale_2",
-        "reduced_motion"
-      ],
-      "evidence": [
-        "tests"
-      ],
-      "debtId": "DS-EXPLORE-005",
-      "reason": "These registered route states do not yet name focused automated test evidence in the screen contract."
-    }
-  ],
-  "scenarios": [
-    {
-      "id": "loading",
-      "screenStateId": "loading",
-      "kind": "loading",
-      "status": "captured",
-      "dimensions": {
-        "surface": "discovery",
-        "load": "loading",
-        "content": "populated",
-        "viewer": "member",
-        "search": "inactive",
-        "filters": "inactive",
-        "selection": "none",
-        "accessibility": "standard"
+      "id": "consumer_flutter",
+      "runtime": "flutter",
+      "authority": {
+        "registry": "flutter_screens",
+        "id": "screen.explore.discovery"
       },
-      "evidence": {
-        "captureIds": [
-          "explore_loading"
-        ],
-        "previewIds": [
-          "ExploreScreen/Screen states"
-        ],
-        "tests": [
-          "test/explore/explore_widgets_test.dart"
+      "actionScope": {
+        "included": "Empty-result recovery actions represented by ExploreDiscoveryEmptyAction.",
+        "excluded": [
+          "Search entry, city and filter editing, organizer follow/sign-in, map interaction, event or organizer navigation, and membership mutations retain their existing owners and verification paths."
         ]
       },
-      "actionCases": [
+      "bindings": {
+        "previewSources": [
+          "widgetbook/lib/explore/explore_use_cases.dart",
+          "widgetbook/lib/primitives/core_catalog_use_cases.dart"
+        ],
+        "actionOwners": [
+          {
+            "id": "empty_recovery",
+            "language": "dart",
+            "file": "lib/explore/presentation/explore_screen_state.dart",
+            "symbol": "ExploreDiscoveryEmptyAction"
+          }
+        ],
+        "componentContracts": [
+          "catch.button",
+          "catch.chip",
+          "catch.count_pill",
+          "catch.cover_story",
+          "catch.event_card",
+          "catch.field",
+          "catch.icon_button",
+          "catch.surface",
+          "catch.top_bar"
+        ],
+        "dataContracts": [
+          "contracts/firestore/club_memberships.schema.json",
+          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/events.schema.json",
+          "contracts/firestore/external_events.schema.json",
+          "contracts/firestore/organizers.schema.json"
+        ]
+      },
+      "coverage": {
+        "states": 21,
+        "scenarios": 21,
+        "actionCases": 23,
+        "actions": 3,
+        "captures": 20,
+        "previews": 8,
+        "testFiles": 3,
+        "evidenceExceptions": 6
+      },
+      "dimensions": {
+        "surface": {
+          "default": "discovery",
+          "values": [
+            "discovery",
+            "map"
+          ]
+        },
+        "load": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "loading",
+            "error",
+            "offline"
+          ]
+        },
+        "content": {
+          "default": "populated",
+          "values": [
+            "populated",
+            "empty"
+          ]
+        },
+        "viewer": {
+          "default": "member",
+          "values": [
+            "guest",
+            "member"
+          ]
+        },
+        "search": {
+          "default": "inactive",
+          "values": [
+            "inactive",
+            "active"
+          ]
+        },
+        "filters": {
+          "default": "inactive",
+          "values": [
+            "inactive",
+            "active"
+          ]
+        },
+        "selection": {
+          "default": "none",
+          "values": [
+            "none",
+            "pin"
+          ]
+        },
+        "accessibility": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "text_scale_2",
+            "reduced_motion"
+          ]
+        }
+      },
+      "actions": [
         {
-          "id": "default",
+          "id": "clear_search",
+          "owner": "empty_recovery",
+          "codeValue": "clearSearch",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "routeInstanceId",
+            "queryStateVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "discovery_feed",
+                "no_search_results",
+                "empty_city"
+              ]
+            }
+          ],
+          "description": "Clears the active search term once for the current Explore query state."
+        },
+        {
+          "id": "clear_filters",
+          "owner": "empty_recovery",
+          "codeValue": "clearFilters",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "routeInstanceId",
+            "filterStateVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "discovery_feed",
+                "no_search_results",
+                "empty_city"
+              ]
+            }
+          ],
+          "description": "Clears active Explore filters once for the current filter state."
+        },
+        {
+          "id": "clear_search_and_filters",
+          "owner": "empty_recovery",
+          "codeValue": "clearSearchAndFilters",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "routeInstanceId",
+            "queryStateVersion",
+            "filterStateVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "discovery_feed",
+                "empty_city"
+              ]
+            }
+          ],
+          "description": "Clears both search and filters as one recovery transition for the current Explore state."
+        }
+      ],
+      "evidenceExceptions": [
+        {
+          "stateIds": [
+            "no_exact_pins",
+            "zero_radius_results"
+          ],
+          "evidence": [
+            "captures"
+          ],
+          "debtId": "DS-EXPLORE-005",
+          "reason": "These map empty variants are implemented and previewed but do not yet have dedicated deterministic capture ids."
+        },
+        {
+          "stateIds": [
+            "no_exact_pins",
+            "offline",
+            "text_scale_2",
+            "reduced_motion"
+          ],
+          "evidence": [
+            "tests"
+          ],
+          "debtId": "DS-EXPLORE-005",
+          "reason": "These registered route states do not yet name focused automated test evidence in the screen contract."
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "loading",
+          "stateId": "loading",
+          "kind": "loading",
+          "status": "captured",
           "dimensions": {
             "surface": "discovery",
             "load": "loading",
@@ -245,47 +247,47 @@
             "selection": "none",
             "accessibility": "standard"
           },
-          "actions": {
-            "enabled": [],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_filters",
-              "clear_search_and_filters"
+          "evidence": {
+            "captureIds": [
+              "explore_loading"
+            ],
+            "previewIds": [
+              "ExploreScreen/Screen states"
+            ],
+            "tests": [
+              "test/explore/explore_widgets_test.dart"
             ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "club_source_error",
-      "screenStateId": "club_source_error",
-      "kind": "error",
-      "status": "captured",
-      "dimensions": {
-        "surface": "discovery",
-        "load": "error",
-        "content": "populated",
-        "viewer": "member",
-        "search": "inactive",
-        "filters": "inactive",
-        "selection": "none",
-        "accessibility": "standard"
-      },
-      "evidence": {
-        "captureIds": [
-          "explore_club_source_error"
-        ],
-        "previewIds": [
-          "ExploreScreen/Screen states"
-        ],
-        "tests": [
-          "test/explore/explore_widgets_test.dart"
-        ]
-      },
-      "actionCases": [
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "surface": "discovery",
+                "load": "loading",
+                "content": "populated",
+                "viewer": "member",
+                "search": "inactive",
+                "filters": "inactive",
+                "selection": "none",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
+                  "clear_search_and_filters"
+                ]
+              }
+            }
+          ]
+        },
         {
-          "id": "default",
+          "id": "club_source_error",
+          "stateId": "club_source_error",
+          "kind": "error",
+          "status": "captured",
           "dimensions": {
             "surface": "discovery",
             "load": "error",
@@ -296,47 +298,47 @@
             "selection": "none",
             "accessibility": "standard"
           },
-          "actions": {
-            "enabled": [],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_filters",
-              "clear_search_and_filters"
+          "evidence": {
+            "captureIds": [
+              "explore_club_source_error"
+            ],
+            "previewIds": [
+              "ExploreScreen/Screen states"
+            ],
+            "tests": [
+              "test/explore/explore_widgets_test.dart"
             ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "event_feed_error",
-      "screenStateId": "event_feed_error",
-      "kind": "error",
-      "status": "captured",
-      "dimensions": {
-        "surface": "discovery",
-        "load": "error",
-        "content": "populated",
-        "viewer": "member",
-        "search": "inactive",
-        "filters": "inactive",
-        "selection": "none",
-        "accessibility": "standard"
-      },
-      "evidence": {
-        "captureIds": [
-          "explore_feed_error"
-        ],
-        "previewIds": [
-          "ExploreEventsSection/Feed states"
-        ],
-        "tests": [
-          "test/explore/explore_widgets_test.dart"
-        ]
-      },
-      "actionCases": [
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "surface": "discovery",
+                "load": "error",
+                "content": "populated",
+                "viewer": "member",
+                "search": "inactive",
+                "filters": "inactive",
+                "selection": "none",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
+                  "clear_search_and_filters"
+                ]
+              }
+            }
+          ]
+        },
         {
-          "id": "default",
+          "id": "event_feed_error",
+          "stateId": "event_feed_error",
+          "kind": "error",
+          "status": "captured",
           "dimensions": {
             "surface": "discovery",
             "load": "error",
@@ -347,205 +349,200 @@
             "selection": "none",
             "accessibility": "standard"
           },
-          "actions": {
-            "enabled": [],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_filters",
-              "clear_search_and_filters"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "empty_city",
-      "screenStateId": "empty_city",
-      "kind": "empty",
-      "status": "captured",
-      "dimensions": {
-        "surface": "discovery",
-        "load": "ready",
-        "content": "empty",
-        "viewer": "member",
-        "search": "inactive",
-        "filters": "inactive",
-        "selection": "none",
-        "accessibility": "standard"
-      },
-      "evidence": {
-        "captureIds": [
-          "explore_empty_city"
-        ],
-        "previewIds": [
-          "CatchEmptyState/Empty states",
-          "ExploreScreen/Screen states"
-        ],
-        "tests": [
-          "test/explore/explore_widgets_test.dart"
-        ]
-      },
-      "actionCases": [
-        {
-          "id": "default",
-          "dimensions": {
-            "surface": "discovery",
-            "load": "ready",
-            "content": "empty",
-            "viewer": "member",
-            "search": "inactive",
-            "filters": "inactive",
-            "selection": "none",
-            "accessibility": "standard"
-          },
-          "actions": {
-            "enabled": [],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_filters",
-              "clear_search_and_filters"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "no_search_results",
-      "screenStateId": "no_search_results",
-      "kind": "empty",
-      "status": "captured",
-      "dimensions": {
-        "surface": "discovery",
-        "load": "ready",
-        "content": "empty",
-        "viewer": "member",
-        "search": "inactive",
-        "filters": "inactive",
-        "selection": "none",
-        "accessibility": "standard"
-      },
-      "evidence": {
-        "captureIds": [
-          "explore_no_search_results",
-          "explore_no_filter_results"
-        ],
-        "previewIds": [
-          "CatchEmptyState/Empty states",
-          "ExploreEventsSection/Feed states",
-          "ExploreScreen/Screen states"
-        ],
-        "tests": [
-          "test/explore/explore_widgets_test.dart"
-        ]
-      },
-      "actionCases": [
-        {
-          "id": "search_only",
-          "dimensions": {
-            "surface": "discovery",
-            "load": "ready",
-            "content": "empty",
-            "viewer": "member",
-            "search": "active",
-            "filters": "inactive",
-            "selection": "none",
-            "accessibility": "standard"
-          },
-          "actions": {
-            "enabled": [
-              "clear_search"
+          "evidence": {
+            "captureIds": [
+              "explore_feed_error"
             ],
-            "disabled": [],
-            "notAllowed": [
-              "clear_filters",
-              "clear_search_and_filters"
+            "previewIds": [
+              "ExploreEventsSection/Feed states"
+            ],
+            "tests": [
+              "test/explore/explore_widgets_test.dart"
             ]
-          }
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "surface": "discovery",
+                "load": "error",
+                "content": "populated",
+                "viewer": "member",
+                "search": "inactive",
+                "filters": "inactive",
+                "selection": "none",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
+                  "clear_search_and_filters"
+                ]
+              }
+            }
+          ]
         },
         {
-          "id": "filters_only",
+          "id": "empty_city",
+          "stateId": "empty_city",
+          "kind": "empty",
+          "status": "captured",
           "dimensions": {
             "surface": "discovery",
             "load": "ready",
             "content": "empty",
             "viewer": "member",
             "search": "inactive",
-            "filters": "active",
+            "filters": "inactive",
             "selection": "none",
             "accessibility": "standard"
           },
-          "actions": {
-            "enabled": [
-              "clear_filters"
+          "evidence": {
+            "captureIds": [
+              "explore_empty_city"
             ],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_search_and_filters"
+            "previewIds": [
+              "CatchEmptyState/Empty states",
+              "ExploreScreen/Screen states"
+            ],
+            "tests": [
+              "test/explore/explore_widgets_test.dart"
             ]
-          }
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "surface": "discovery",
+                "load": "ready",
+                "content": "empty",
+                "viewer": "member",
+                "search": "inactive",
+                "filters": "inactive",
+                "selection": "none",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
+                  "clear_search_and_filters"
+                ]
+              }
+            }
+          ]
         },
         {
-          "id": "search_and_filters",
+          "id": "no_search_results",
+          "stateId": "no_search_results",
+          "kind": "empty",
+          "status": "captured",
           "dimensions": {
             "surface": "discovery",
             "load": "ready",
             "content": "empty",
             "viewer": "member",
-            "search": "active",
-            "filters": "active",
+            "search": "inactive",
+            "filters": "inactive",
             "selection": "none",
             "accessibility": "standard"
           },
-          "actions": {
-            "enabled": [
-              "clear_search_and_filters"
+          "evidence": {
+            "captureIds": [
+              "explore_no_search_results",
+              "explore_no_filter_results"
             ],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_filters"
+            "previewIds": [
+              "CatchEmptyState/Empty states",
+              "ExploreEventsSection/Feed states",
+              "ExploreScreen/Screen states"
+            ],
+            "tests": [
+              "test/explore/explore_widgets_test.dart"
             ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "discovery_feed",
-      "screenStateId": "discovery_feed",
-      "kind": "populated",
-      "status": "captured",
-      "dimensions": {
-        "surface": "discovery",
-        "load": "ready",
-        "content": "populated",
-        "viewer": "member",
-        "search": "inactive",
-        "filters": "inactive",
-        "selection": "none",
-        "accessibility": "standard"
-      },
-      "evidence": {
-        "captureIds": [
-          "member_event_discovery",
-          "explore_cover_contrast_floor",
-          "explore_joined_clubs"
-        ],
-        "previewIds": [
-          "ExploreScreen/Screen states",
-          "ExploreEventsSection/Feed states",
-          "ExploreEventTypeBrowseGrid/Activity states",
-          "CatchCountPill/Map launcher states"
-        ],
-        "tests": [
-          "test/explore/explore_widgets_test.dart"
-        ]
-      },
-      "actionCases": [
+          },
+          "actionCases": [
+            {
+              "id": "search_only",
+              "dimensions": {
+                "surface": "discovery",
+                "load": "ready",
+                "content": "empty",
+                "viewer": "member",
+                "search": "active",
+                "filters": "inactive",
+                "selection": "none",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "clear_search"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_filters",
+                  "clear_search_and_filters"
+                ]
+              }
+            },
+            {
+              "id": "filters_only",
+              "dimensions": {
+                "surface": "discovery",
+                "load": "ready",
+                "content": "empty",
+                "viewer": "member",
+                "search": "inactive",
+                "filters": "active",
+                "selection": "none",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "clear_filters"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_search_and_filters"
+                ]
+              }
+            },
+            {
+              "id": "search_and_filters",
+              "dimensions": {
+                "surface": "discovery",
+                "load": "ready",
+                "content": "empty",
+                "viewer": "member",
+                "search": "active",
+                "filters": "active",
+                "selection": "none",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "clear_search_and_filters"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters"
+                ]
+              }
+            }
+          ]
+        },
         {
-          "id": "default",
+          "id": "discovery_feed",
+          "stateId": "discovery_feed",
+          "kind": "populated",
+          "status": "captured",
           "dimensions": {
             "surface": "discovery",
             "load": "ready",
@@ -556,50 +553,52 @@
             "selection": "none",
             "accessibility": "standard"
           },
-          "actions": {
-            "enabled": [],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_filters",
-              "clear_search_and_filters"
+          "evidence": {
+            "captureIds": [
+              "member_event_discovery",
+              "explore_cover_contrast_floor",
+              "explore_joined_clubs"
+            ],
+            "previewIds": [
+              "ExploreScreen/Screen states",
+              "ExploreEventsSection/Feed states",
+              "ExploreEventTypeBrowseGrid/Activity states",
+              "CatchCountPill/Map launcher states"
+            ],
+            "tests": [
+              "test/explore/explore_widgets_test.dart"
             ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "search_query",
-      "screenStateId": "search_query",
-      "kind": "populated",
-      "status": "captured",
-      "dimensions": {
-        "surface": "discovery",
-        "load": "ready",
-        "content": "populated",
-        "viewer": "member",
-        "search": "active",
-        "filters": "inactive",
-        "selection": "none",
-        "accessibility": "standard"
-      },
-      "evidence": {
-        "captureIds": [
-          "explore_search_query"
-        ],
-        "previewIds": [
-          "ExploreBrowseHeaderContent/Chrome states",
-          "ExploreScreen/Screen states",
-          "CatchEmptyState/Empty states"
-        ],
-        "tests": [
-          "test/explore/explore_view_model_test.dart",
-          "test/explore/explore_widgets_test.dart"
-        ]
-      },
-      "actionCases": [
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "surface": "discovery",
+                "load": "ready",
+                "content": "populated",
+                "viewer": "member",
+                "search": "inactive",
+                "filters": "inactive",
+                "selection": "none",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
+                  "clear_search_and_filters"
+                ]
+              }
+            }
+          ]
+        },
         {
-          "id": "default",
+          "id": "search_query",
+          "stateId": "search_query",
+          "kind": "populated",
+          "status": "captured",
           "dimensions": {
             "surface": "discovery",
             "load": "ready",
@@ -610,52 +609,50 @@
             "selection": "none",
             "accessibility": "standard"
           },
-          "actions": {
-            "enabled": [],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_filters",
-              "clear_search_and_filters"
+          "evidence": {
+            "captureIds": [
+              "explore_search_query"
+            ],
+            "previewIds": [
+              "ExploreBrowseHeaderContent/Chrome states",
+              "ExploreScreen/Screen states",
+              "CatchEmptyState/Empty states"
+            ],
+            "tests": [
+              "test/explore/explore_view_model_test.dart",
+              "test/explore/explore_widgets_test.dart"
             ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "filters_active",
-      "screenStateId": "filters_active",
-      "kind": "populated",
-      "status": "captured",
-      "dimensions": {
-        "surface": "discovery",
-        "load": "ready",
-        "content": "populated",
-        "viewer": "member",
-        "search": "inactive",
-        "filters": "active",
-        "selection": "none",
-        "accessibility": "standard"
-      },
-      "evidence": {
-        "captureIds": [
-          "explore_filters_active",
-          "explore_joined_clubs",
-          "explore_no_filter_results"
-        ],
-        "previewIds": [
-          "ExploreFilterRail/Filter states",
-          "ExploreEventTypeBrowseGrid/Activity states",
-          "ExploreScreen/Screen states"
-        ],
-        "tests": [
-          "test/explore/explore_view_model_test.dart",
-          "test/explore/explore_widgets_test.dart"
-        ]
-      },
-      "actionCases": [
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "surface": "discovery",
+                "load": "ready",
+                "content": "populated",
+                "viewer": "member",
+                "search": "active",
+                "filters": "inactive",
+                "selection": "none",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
+                  "clear_search_and_filters"
+                ]
+              }
+            }
+          ]
+        },
         {
-          "id": "default",
+          "id": "filters_active",
+          "stateId": "filters_active",
+          "kind": "populated",
+          "status": "captured",
           "dimensions": {
             "surface": "discovery",
             "load": "ready",
@@ -666,48 +663,52 @@
             "selection": "none",
             "accessibility": "standard"
           },
-          "actions": {
-            "enabled": [],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_filters",
-              "clear_search_and_filters"
+          "evidence": {
+            "captureIds": [
+              "explore_filters_active",
+              "explore_joined_clubs",
+              "explore_no_filter_results"
+            ],
+            "previewIds": [
+              "ExploreFilterRail/Filter states",
+              "ExploreEventTypeBrowseGrid/Activity states",
+              "ExploreScreen/Screen states"
+            ],
+            "tests": [
+              "test/explore/explore_view_model_test.dart",
+              "test/explore/explore_widgets_test.dart"
             ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "anonymous_guest",
-      "screenStateId": "anonymous_guest",
-      "kind": "permission",
-      "status": "captured",
-      "dimensions": {
-        "surface": "discovery",
-        "load": "ready",
-        "content": "populated",
-        "viewer": "guest",
-        "search": "inactive",
-        "filters": "inactive",
-        "selection": "none",
-        "accessibility": "standard"
-      },
-      "evidence": {
-        "captureIds": [
-          "member_event_discovery",
-          "explore_joined_clubs"
-        ],
-        "previewIds": [
-          "ExploreScreen/Screen states"
-        ],
-        "tests": [
-          "test/explore/explore_widgets_test.dart"
-        ]
-      },
-      "actionCases": [
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "surface": "discovery",
+                "load": "ready",
+                "content": "populated",
+                "viewer": "member",
+                "search": "inactive",
+                "filters": "active",
+                "selection": "none",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
+                  "clear_search_and_filters"
+                ]
+              }
+            }
+          ]
+        },
         {
-          "id": "default",
+          "id": "anonymous_guest",
+          "stateId": "anonymous_guest",
+          "kind": "permission",
+          "status": "captured",
           "dimensions": {
             "surface": "discovery",
             "load": "ready",
@@ -718,49 +719,48 @@
             "selection": "none",
             "accessibility": "standard"
           },
-          "actions": {
-            "enabled": [],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_filters",
-              "clear_search_and_filters"
+          "evidence": {
+            "captureIds": [
+              "member_event_discovery",
+              "explore_joined_clubs"
+            ],
+            "previewIds": [
+              "ExploreScreen/Screen states"
+            ],
+            "tests": [
+              "test/explore/explore_widgets_test.dart"
             ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "unclaimed_host_projection",
-      "screenStateId": "unclaimed_host_projection",
-      "kind": "populated",
-      "status": "captured",
-      "dimensions": {
-        "surface": "discovery",
-        "load": "ready",
-        "content": "populated",
-        "viewer": "member",
-        "search": "inactive",
-        "filters": "inactive",
-        "selection": "none",
-        "accessibility": "standard"
-      },
-      "evidence": {
-        "captureIds": [
-          "explore_unclaimed_host_projection"
-        ],
-        "previewIds": [
-          "ExploreEventsSection/Feed states",
-          "ExploreScreen/Screen states"
-        ],
-        "tests": [
-          "test/clubs/clubs_repository_test.dart",
-          "test/explore/explore_view_model_test.dart"
-        ]
-      },
-      "actionCases": [
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "surface": "discovery",
+                "load": "ready",
+                "content": "populated",
+                "viewer": "guest",
+                "search": "inactive",
+                "filters": "inactive",
+                "selection": "none",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
+                  "clear_search_and_filters"
+                ]
+              }
+            }
+          ]
+        },
         {
-          "id": "default",
+          "id": "unclaimed_host_projection",
+          "stateId": "unclaimed_host_projection",
+          "kind": "populated",
+          "status": "captured",
           "dimensions": {
             "surface": "discovery",
             "load": "ready",
@@ -771,49 +771,49 @@
             "selection": "none",
             "accessibility": "standard"
           },
-          "actions": {
-            "enabled": [],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_filters",
-              "clear_search_and_filters"
+          "evidence": {
+            "captureIds": [
+              "explore_unclaimed_host_projection"
+            ],
+            "previewIds": [
+              "ExploreEventsSection/Feed states",
+              "ExploreScreen/Screen states"
+            ],
+            "tests": [
+              "test/clubs/clubs_repository_test.dart",
+              "test/explore/explore_view_model_test.dart"
             ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "map_route",
-      "screenStateId": "map_route",
-      "kind": "populated",
-      "status": "captured",
-      "dimensions": {
-        "surface": "map",
-        "load": "ready",
-        "content": "populated",
-        "viewer": "member",
-        "search": "inactive",
-        "filters": "inactive",
-        "selection": "none",
-        "accessibility": "standard"
-      },
-      "evidence": {
-        "captureIds": [
-          "explore_map",
-          "explore_map_selected_pin",
-          "explore_map_distance_ring"
-        ],
-        "previewIds": [
-          "ExploreMapScreen/Map route states"
-        ],
-        "tests": [
-          "test/explore/explore_widgets_test.dart"
-        ]
-      },
-      "actionCases": [
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "surface": "discovery",
+                "load": "ready",
+                "content": "populated",
+                "viewer": "member",
+                "search": "inactive",
+                "filters": "inactive",
+                "selection": "none",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
+                  "clear_search_and_filters"
+                ]
+              }
+            }
+          ]
+        },
         {
-          "id": "default",
+          "id": "map_route",
+          "stateId": "map_route",
+          "kind": "populated",
+          "status": "captured",
           "dimensions": {
             "surface": "map",
             "load": "ready",
@@ -824,48 +824,49 @@
             "selection": "none",
             "accessibility": "standard"
           },
-          "actions": {
-            "enabled": [],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_filters",
-              "clear_search_and_filters"
+          "evidence": {
+            "captureIds": [
+              "explore_map",
+              "explore_map_selected_pin",
+              "explore_map_distance_ring"
+            ],
+            "previewIds": [
+              "ExploreMapScreen/Map route states"
+            ],
+            "tests": [
+              "test/explore/explore_widgets_test.dart"
             ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "pins_ready",
-      "screenStateId": "pins_ready",
-      "kind": "populated",
-      "status": "captured",
-      "dimensions": {
-        "surface": "map",
-        "load": "ready",
-        "content": "populated",
-        "viewer": "member",
-        "search": "inactive",
-        "filters": "inactive",
-        "selection": "none",
-        "accessibility": "standard"
-      },
-      "evidence": {
-        "captureIds": [
-          "explore_map",
-          "explore_map_selected_pin"
-        ],
-        "previewIds": [
-          "ExploreMapScreen/Map route states"
-        ],
-        "tests": [
-          "test/explore/explore_widgets_test.dart"
-        ]
-      },
-      "actionCases": [
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "surface": "map",
+                "load": "ready",
+                "content": "populated",
+                "viewer": "member",
+                "search": "inactive",
+                "filters": "inactive",
+                "selection": "none",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
+                  "clear_search_and_filters"
+                ]
+              }
+            }
+          ]
+        },
         {
-          "id": "default",
+          "id": "pins_ready",
+          "stateId": "pins_ready",
+          "kind": "populated",
+          "status": "captured",
           "dimensions": {
             "surface": "map",
             "load": "ready",
@@ -876,47 +877,48 @@
             "selection": "none",
             "accessibility": "standard"
           },
-          "actions": {
-            "enabled": [],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_filters",
-              "clear_search_and_filters"
+          "evidence": {
+            "captureIds": [
+              "explore_map",
+              "explore_map_selected_pin"
+            ],
+            "previewIds": [
+              "ExploreMapScreen/Map route states"
+            ],
+            "tests": [
+              "test/explore/explore_widgets_test.dart"
             ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "selected_pin",
-      "screenStateId": "selected_pin",
-      "kind": "populated",
-      "status": "captured",
-      "dimensions": {
-        "surface": "map",
-        "load": "ready",
-        "content": "populated",
-        "viewer": "member",
-        "search": "inactive",
-        "filters": "inactive",
-        "selection": "pin",
-        "accessibility": "standard"
-      },
-      "evidence": {
-        "captureIds": [
-          "explore_map_selected_pin"
-        ],
-        "previewIds": [
-          "ExploreMapScreen/Map route states"
-        ],
-        "tests": [
-          "test/explore/explore_widgets_test.dart"
-        ]
-      },
-      "actionCases": [
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "surface": "map",
+                "load": "ready",
+                "content": "populated",
+                "viewer": "member",
+                "search": "inactive",
+                "filters": "inactive",
+                "selection": "none",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
+                  "clear_search_and_filters"
+                ]
+              }
+            }
+          ]
+        },
         {
-          "id": "default",
+          "id": "selected_pin",
+          "stateId": "selected_pin",
+          "kind": "populated",
+          "status": "captured",
           "dimensions": {
             "surface": "map",
             "load": "ready",
@@ -927,47 +929,47 @@
             "selection": "pin",
             "accessibility": "standard"
           },
-          "actions": {
-            "enabled": [],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_filters",
-              "clear_search_and_filters"
+          "evidence": {
+            "captureIds": [
+              "explore_map_selected_pin"
+            ],
+            "previewIds": [
+              "ExploreMapScreen/Map route states"
+            ],
+            "tests": [
+              "test/explore/explore_widgets_test.dart"
             ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "large_pan_scope",
-      "screenStateId": "large_pan_scope",
-      "kind": "populated",
-      "status": "captured",
-      "dimensions": {
-        "surface": "map",
-        "load": "ready",
-        "content": "populated",
-        "viewer": "member",
-        "search": "inactive",
-        "filters": "inactive",
-        "selection": "none",
-        "accessibility": "standard"
-      },
-      "evidence": {
-        "captureIds": [
-          "explore_map_distance_ring"
-        ],
-        "previewIds": [
-          "ExploreMapScreen/Map route states"
-        ],
-        "tests": [
-          "test/explore/explore_widgets_test.dart"
-        ]
-      },
-      "actionCases": [
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "surface": "map",
+                "load": "ready",
+                "content": "populated",
+                "viewer": "member",
+                "search": "inactive",
+                "filters": "inactive",
+                "selection": "pin",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
+                  "clear_search_and_filters"
+                ]
+              }
+            }
+          ]
+        },
         {
-          "id": "default",
+          "id": "large_pan_scope",
+          "stateId": "large_pan_scope",
+          "kind": "populated",
+          "status": "captured",
           "dimensions": {
             "surface": "map",
             "load": "ready",
@@ -978,43 +980,47 @@
             "selection": "none",
             "accessibility": "standard"
           },
-          "actions": {
-            "enabled": [],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_filters",
-              "clear_search_and_filters"
+          "evidence": {
+            "captureIds": [
+              "explore_map_distance_ring"
+            ],
+            "previewIds": [
+              "ExploreMapScreen/Map route states"
+            ],
+            "tests": [
+              "test/explore/explore_widgets_test.dart"
             ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "no_exact_pins",
-      "screenStateId": "no_exact_pins",
-      "kind": "empty",
-      "status": "implemented",
-      "dimensions": {
-        "surface": "map",
-        "load": "ready",
-        "content": "empty",
-        "viewer": "member",
-        "search": "inactive",
-        "filters": "inactive",
-        "selection": "none",
-        "accessibility": "standard"
-      },
-      "evidence": {
-        "captureIds": [],
-        "previewIds": [
-          "ExploreMapScreen/Map route states"
-        ],
-        "tests": []
-      },
-      "actionCases": [
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "surface": "map",
+                "load": "ready",
+                "content": "populated",
+                "viewer": "member",
+                "search": "inactive",
+                "filters": "inactive",
+                "selection": "none",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
+                  "clear_search_and_filters"
+                ]
+              }
+            }
+          ]
+        },
         {
-          "id": "default",
+          "id": "no_exact_pins",
+          "stateId": "no_exact_pins",
+          "kind": "empty",
+          "status": "implemented",
           "dimensions": {
             "surface": "map",
             "load": "ready",
@@ -1025,45 +1031,43 @@
             "selection": "none",
             "accessibility": "standard"
           },
-          "actions": {
-            "enabled": [],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_filters",
-              "clear_search_and_filters"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "zero_radius_results",
-      "screenStateId": "zero_radius_results",
-      "kind": "empty",
-      "status": "implemented",
-      "dimensions": {
-        "surface": "map",
-        "load": "ready",
-        "content": "empty",
-        "viewer": "member",
-        "search": "inactive",
-        "filters": "inactive",
-        "selection": "none",
-        "accessibility": "standard"
-      },
-      "evidence": {
-        "captureIds": [],
-        "previewIds": [
-          "ExploreMapScreen/Map route states"
-        ],
-        "tests": [
-          "test/explore/explore_widgets_test.dart"
-        ]
-      },
-      "actionCases": [
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "ExploreMapScreen/Map route states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "surface": "map",
+                "load": "ready",
+                "content": "empty",
+                "viewer": "member",
+                "search": "inactive",
+                "filters": "inactive",
+                "selection": "none",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
+                  "clear_search_and_filters"
+                ]
+              }
+            }
+          ]
+        },
         {
-          "id": "default",
+          "id": "zero_radius_results",
+          "stateId": "zero_radius_results",
+          "kind": "empty",
+          "status": "implemented",
           "dimensions": {
             "surface": "map",
             "load": "ready",
@@ -1074,47 +1078,45 @@
             "selection": "none",
             "accessibility": "standard"
           },
-          "actions": {
-            "enabled": [],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_filters",
-              "clear_search_and_filters"
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "ExploreMapScreen/Map route states"
+            ],
+            "tests": [
+              "test/explore/explore_widgets_test.dart"
             ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "map_loading",
-      "screenStateId": "map_loading",
-      "kind": "loading",
-      "status": "captured",
-      "dimensions": {
-        "surface": "map",
-        "load": "loading",
-        "content": "populated",
-        "viewer": "member",
-        "search": "inactive",
-        "filters": "inactive",
-        "selection": "none",
-        "accessibility": "standard"
-      },
-      "evidence": {
-        "captureIds": [
-          "explore_map_loading"
-        ],
-        "previewIds": [
-          "ExploreMapScreen/Map route states"
-        ],
-        "tests": [
-          "test/explore/explore_widgets_test.dart"
-        ]
-      },
-      "actionCases": [
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "surface": "map",
+                "load": "ready",
+                "content": "empty",
+                "viewer": "member",
+                "search": "inactive",
+                "filters": "inactive",
+                "selection": "none",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
+                  "clear_search_and_filters"
+                ]
+              }
+            }
+          ]
+        },
         {
-          "id": "default",
+          "id": "map_loading",
+          "stateId": "map_loading",
+          "kind": "loading",
+          "status": "captured",
           "dimensions": {
             "surface": "map",
             "load": "loading",
@@ -1125,47 +1127,47 @@
             "selection": "none",
             "accessibility": "standard"
           },
-          "actions": {
-            "enabled": [],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_filters",
-              "clear_search_and_filters"
+          "evidence": {
+            "captureIds": [
+              "explore_map_loading"
+            ],
+            "previewIds": [
+              "ExploreMapScreen/Map route states"
+            ],
+            "tests": [
+              "test/explore/explore_widgets_test.dart"
             ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "map_error",
-      "screenStateId": "map_error",
-      "kind": "error",
-      "status": "captured",
-      "dimensions": {
-        "surface": "map",
-        "load": "error",
-        "content": "populated",
-        "viewer": "member",
-        "search": "inactive",
-        "filters": "inactive",
-        "selection": "none",
-        "accessibility": "standard"
-      },
-      "evidence": {
-        "captureIds": [
-          "explore_map_error"
-        ],
-        "previewIds": [
-          "ExploreMapScreen/Map route states"
-        ],
-        "tests": [
-          "test/explore/explore_widgets_test.dart"
-        ]
-      },
-      "actionCases": [
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "surface": "map",
+                "load": "loading",
+                "content": "populated",
+                "viewer": "member",
+                "search": "inactive",
+                "filters": "inactive",
+                "selection": "none",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
+                  "clear_search_and_filters"
+                ]
+              }
+            }
+          ]
+        },
         {
-          "id": "default",
+          "id": "map_error",
+          "stateId": "map_error",
+          "kind": "error",
+          "status": "captured",
           "dimensions": {
             "surface": "map",
             "load": "error",
@@ -1176,45 +1178,47 @@
             "selection": "none",
             "accessibility": "standard"
           },
-          "actions": {
-            "enabled": [],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_filters",
-              "clear_search_and_filters"
+          "evidence": {
+            "captureIds": [
+              "explore_map_error"
+            ],
+            "previewIds": [
+              "ExploreMapScreen/Map route states"
+            ],
+            "tests": [
+              "test/explore/explore_widgets_test.dart"
             ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "offline",
-      "screenStateId": "offline",
-      "kind": "offline",
-      "status": "captured",
-      "dimensions": {
-        "surface": "discovery",
-        "load": "offline",
-        "content": "populated",
-        "viewer": "member",
-        "search": "inactive",
-        "filters": "inactive",
-        "selection": "none",
-        "accessibility": "standard"
-      },
-      "evidence": {
-        "captureIds": [
-          "explore_offline"
-        ],
-        "previewIds": [
-          "CatchEmptyState/Empty states"
-        ],
-        "tests": []
-      },
-      "actionCases": [
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "surface": "map",
+                "load": "error",
+                "content": "populated",
+                "viewer": "member",
+                "search": "inactive",
+                "filters": "inactive",
+                "selection": "none",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
+                  "clear_search_and_filters"
+                ]
+              }
+            }
+          ]
+        },
         {
-          "id": "default",
+          "id": "offline",
+          "stateId": "offline",
+          "kind": "offline",
+          "status": "captured",
           "dimensions": {
             "surface": "discovery",
             "load": "offline",
@@ -1225,46 +1229,45 @@
             "selection": "none",
             "accessibility": "standard"
           },
-          "actions": {
-            "enabled": [],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_filters",
-              "clear_search_and_filters"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "text_scale_2",
-      "screenStateId": "text_scale_2",
-      "kind": "accessibility",
-      "status": "captured",
-      "dimensions": {
-        "surface": "discovery",
-        "load": "ready",
-        "content": "populated",
-        "viewer": "member",
-        "search": "inactive",
-        "filters": "inactive",
-        "selection": "none",
-        "accessibility": "text_scale_2"
-      },
-      "evidence": {
-        "captureIds": [
-          "explore_text_scale_2"
-        ],
-        "previewIds": [
-          "ExploreScreen/Screen states",
-          "CatchCountPill/Map launcher states"
-        ],
-        "tests": []
-      },
-      "actionCases": [
+          "evidence": {
+            "captureIds": [
+              "explore_offline"
+            ],
+            "previewIds": [
+              "CatchEmptyState/Empty states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "surface": "discovery",
+                "load": "offline",
+                "content": "populated",
+                "viewer": "member",
+                "search": "inactive",
+                "filters": "inactive",
+                "selection": "none",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
+                  "clear_search_and_filters"
+                ]
+              }
+            }
+          ]
+        },
         {
-          "id": "default",
+          "id": "text_scale_2",
+          "stateId": "text_scale_2",
+          "kind": "accessibility",
+          "status": "captured",
           "dimensions": {
             "surface": "discovery",
             "load": "ready",
@@ -1275,45 +1278,46 @@
             "selection": "none",
             "accessibility": "text_scale_2"
           },
-          "actions": {
-            "enabled": [],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_filters",
-              "clear_search_and_filters"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "id": "reduced_motion",
-      "screenStateId": "reduced_motion",
-      "kind": "accessibility",
-      "status": "captured",
-      "dimensions": {
-        "surface": "discovery",
-        "load": "ready",
-        "content": "populated",
-        "viewer": "member",
-        "search": "inactive",
-        "filters": "inactive",
-        "selection": "none",
-        "accessibility": "reduced_motion"
-      },
-      "evidence": {
-        "captureIds": [
-          "explore_reduced_motion"
-        ],
-        "previewIds": [
-          "ExploreScreen/Screen states"
-        ],
-        "tests": []
-      },
-      "actionCases": [
+          "evidence": {
+            "captureIds": [
+              "explore_text_scale_2"
+            ],
+            "previewIds": [
+              "ExploreScreen/Screen states",
+              "CatchCountPill/Map launcher states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "surface": "discovery",
+                "load": "ready",
+                "content": "populated",
+                "viewer": "member",
+                "search": "inactive",
+                "filters": "inactive",
+                "selection": "none",
+                "accessibility": "text_scale_2"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
+                  "clear_search_and_filters"
+                ]
+              }
+            }
+          ]
+        },
         {
-          "id": "default",
+          "id": "reduced_motion",
+          "stateId": "reduced_motion",
+          "kind": "accessibility",
+          "status": "captured",
           "dimensions": {
             "surface": "discovery",
             "load": "ready",
@@ -1324,17 +1328,503 @@
             "selection": "none",
             "accessibility": "reduced_motion"
           },
-          "actions": {
-            "enabled": [],
-            "disabled": [],
-            "notAllowed": [
-              "clear_search",
-              "clear_filters",
-              "clear_search_and_filters"
-            ]
-          }
+          "evidence": {
+            "captureIds": [
+              "explore_reduced_motion"
+            ],
+            "previewIds": [
+              "ExploreScreen/Screen states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "surface": "discovery",
+                "load": "ready",
+                "content": "populated",
+                "viewer": "member",
+                "search": "inactive",
+                "filters": "inactive",
+                "selection": "none",
+                "accessibility": "reduced_motion"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "clear_search",
+                  "clear_filters",
+                  "clear_search_and_filters"
+                ]
+              }
+            }
+          ]
         }
-      ]
+      ],
+      "resolved": {
+        "authority": {
+          "id": "screen.explore.discovery",
+          "owner": "explore",
+          "routes": [
+            {
+              "id": "exploreScreen",
+              "path": "/organizers",
+              "role": "primary"
+            },
+            {
+              "id": "exploreMapScreen",
+              "path": "/organizers/map",
+              "role": "alias"
+            }
+          ]
+        },
+        "components": [
+          {
+            "id": "catch.button",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchButton",
+              "file": "lib/core/widgets/catch_button.dart",
+              "constructors": [
+                "CatchButton"
+              ]
+            }
+          },
+          {
+            "id": "catch.chip",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchChip",
+              "file": "lib/core/widgets/catch_chip.dart",
+              "constructors": [
+                "CatchChip.tag",
+                "CatchChip.selectable",
+                "CatchChip.activity",
+                "CatchChip.removable"
+              ]
+            }
+          },
+          {
+            "id": "catch.count_pill",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchCountPill",
+              "file": "lib/core/widgets/catch_count_pill.dart",
+              "constructors": [
+                "CatchCountPill.label"
+              ]
+            }
+          },
+          {
+            "id": "catch.cover_story",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchCoverStory",
+              "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
+              "constructors": [
+                "CatchCoverStory"
+              ]
+            }
+          },
+          {
+            "id": "catch.event_card",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchEventCard",
+              "file": "lib/core/widgets/catch_event_activity_cards.dart",
+              "constructors": [
+                "CatchEventCard.ticket"
+              ]
+            }
+          },
+          {
+            "id": "catch.field",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchField",
+              "file": "lib/core/widgets/catch_field.dart",
+              "constructors": [
+                "CatchField.read",
+                "CatchField.content",
+                "CatchField.nav",
+                "CatchField.action",
+                "CatchField.toggle",
+                "CatchField.input",
+                "CatchField.inputActions",
+                "CatchField.control",
+                "CatchField.choices",
+                "CatchField.optionCards",
+                "CatchField.stepper",
+                "CatchField.add",
+                "CatchField.select"
+              ]
+            }
+          },
+          {
+            "id": "catch.icon_button",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchIconButton",
+              "file": "lib/core/widgets/catch_icon_button.dart",
+              "constructors": [
+                "CatchIconButton",
+                "CatchIconButton.icon",
+                "CatchIconButton.counted"
+              ]
+            }
+          },
+          {
+            "id": "catch.surface",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchSurface",
+              "file": "lib/core/widgets/catch_surface.dart",
+              "constructors": [
+                "CatchSurface",
+                "CatchSurface.card",
+                "CatchSurface.tinted",
+                "CatchSurface.message"
+              ]
+            }
+          },
+          {
+            "id": "catch.top_bar",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchTopBar",
+              "file": "lib/core/widgets/catch_top_bar.dart",
+              "constructors": [
+                "CatchTopBar"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "CatchCountPill/Map launcher states",
+          "CatchEmptyState/Empty states",
+          "ExploreBrowseHeaderContent/Chrome states",
+          "ExploreEventTypeBrowseGrid/Activity states",
+          "ExploreEventsSection/Feed states",
+          "ExploreFilterRail/Filter states",
+          "ExploreMapScreen/Map route states",
+          "ExploreScreen/Screen states"
+        ]
+      }
+    },
+    {
+      "id": "marketing_web",
+      "runtime": "react_marketing",
+      "authority": {
+        "registry": "marketing_routes",
+        "id": "organizer_search"
+      },
+      "actionScope": {
+        "included": "URL-owned organizer directory filtering, search submission analytics, and filter reset actions represented by useOrganizerDirectoryController.",
+        "excluded": [
+          "Organizer detail navigation, organizer saving, claim navigation, and listing-card analytics retain their route, detail-controller, and component owners."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "website/src/stories/MarketingRoutes.stories.tsx",
+          "website/src/stories/OrganizerSearchSections.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "directory_controller",
+            "language": "typescript",
+            "file": "website/src/features/organizers/useOrganizerDirectoryController.ts",
+            "symbol": "useOrganizerDirectoryController"
+          }
+        ],
+        "componentContracts": [
+          "route_organizer_search",
+          "organizer_search_hero",
+          "organizer_results_section"
+        ],
+        "dataContracts": [
+          "contracts/public/website_host_listing_projection.schema.json"
+        ],
+        "testEvidence": {
+          "default": [
+            "website/src/features/organizers/useOrganizerDirectoryController.test.tsx"
+          ],
+          "filtered": [
+            "website/src/features/organizers/useOrganizerDirectoryController.test.tsx"
+          ],
+          "empty-results": [
+            "website/src/features/organizers/useOrganizerDirectoryController.test.tsx"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 3,
+        "scenarios": 3,
+        "actionCases": 3,
+        "actions": 3,
+        "captures": 0,
+        "previews": 3,
+        "testFiles": 1,
+        "evidenceExceptions": 0
+      },
+      "dimensions": {
+        "filters": {
+          "default": "default",
+          "values": [
+            "default",
+            "active"
+          ]
+        },
+        "results": {
+          "default": "populated",
+          "values": [
+            "populated",
+            "empty"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "update_filters",
+          "owner": "directory_controller",
+          "codeValue": "updateFilters",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "searchParamsVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default",
+                "filtered",
+                "empty-results"
+              ]
+            }
+          ],
+          "description": "Projects query and filter updates into canonical URL search parameters and recalculates visible organizer results."
+        },
+        {
+          "id": "submit_search",
+          "owner": "directory_controller",
+          "codeValue": "handleSearch",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "appearanceContext"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "analytics.organizer_search_submitted"
+            }
+          ],
+          "description": "Records one search submission and bounded organizer appearance events for the current query context."
+        },
+        {
+          "id": "clear_filters",
+          "owner": "directory_controller",
+          "codeValue": "clearFilters",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "searchParamsVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "analytics.organizer_search_filters_cleared"
+            }
+          ],
+          "description": "Resets the current URL-owned filter tuple once and records the reset."
+        }
+      ],
+      "evidenceExceptions": [],
+      "scenarios": [
+        {
+          "id": "default",
+          "stateId": "default",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "filters": "default",
+            "results": "populated"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "organizer_results_section/OrganizerResults",
+              "organizer_search_hero/OrganizerSearchHero",
+              "route_organizer_search/OrganizerSearch"
+            ],
+            "tests": [
+              "website/src/features/organizers/useOrganizerDirectoryController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "filters": "default",
+                "results": "populated"
+              },
+              "actions": {
+                "enabled": [
+                  "update_filters",
+                  "submit_search",
+                  "clear_filters"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "filtered",
+          "stateId": "filtered",
+          "kind": "route_state",
+          "status": "manual",
+          "dimensions": {
+            "filters": "active",
+            "results": "populated"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "organizer_search_hero/OrganizerSearchHero",
+              "route_organizer_search/OrganizerSearch"
+            ],
+            "tests": [
+              "website/src/features/organizers/useOrganizerDirectoryController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "active_filters",
+              "dimensions": {
+                "filters": "active",
+                "results": "populated"
+              },
+              "actions": {
+                "enabled": [
+                  "update_filters",
+                  "submit_search",
+                  "clear_filters"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "empty_results",
+          "stateId": "empty-results",
+          "kind": "route_state",
+          "status": "manual",
+          "dimensions": {
+            "filters": "active",
+            "results": "empty"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "organizer_results_section/OrganizerResults",
+              "route_organizer_search/OrganizerSearch"
+            ],
+            "tests": [
+              "website/src/features/organizers/useOrganizerDirectoryController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "no_matches",
+              "dimensions": {
+                "filters": "active",
+                "results": "empty"
+              },
+              "actions": {
+                "enabled": [
+                  "update_filters",
+                  "submit_search",
+                  "clear_filters"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "organizer_search",
+          "kind": "static",
+          "path": "/organizers/"
+        },
+        "components": [
+          {
+            "id": "route_organizer_search",
+            "kind": "route",
+            "source": "website/src/features/organizers/OrganizerSearchPage.tsx",
+            "exportName": "OrganizerSearchPage",
+            "storybook": {
+              "story": "website/src/stories/MarketingRoutes.stories.tsx",
+              "exportName": "OrganizerSearch",
+              "states": [
+                "default",
+                "filtered",
+                "empty-results"
+              ]
+            }
+          },
+          {
+            "id": "organizer_search_hero",
+            "kind": "section",
+            "source": "website/src/features/organizers/sections/OrganizerSearchSections.tsx",
+            "exportName": "OrganizerSearchHeroSection",
+            "storybook": {
+              "story": "website/src/stories/OrganizerSearchSections.stories.tsx",
+              "exportName": "OrganizerSearchHero",
+              "states": [
+                "default",
+                "filtered"
+              ]
+            }
+          },
+          {
+            "id": "organizer_results_section",
+            "kind": "section",
+            "source": "website/src/features/organizers/sections/OrganizerSearchSections.tsx",
+            "exportName": "OrganizerResultsSection",
+            "storybook": {
+              "story": "website/src/stories/OrganizerSearchSections.stories.tsx",
+              "exportName": "OrganizerResults",
+              "states": [
+                "default",
+                "event-backed",
+                "unclaimed",
+                "empty-results"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "organizer_results_section/OrganizerResults",
+          "organizer_search_hero/OrganizerSearchHero",
+          "route_organizer_search/OrganizerSearch"
+        ]
+      }
     }
   ]
 }

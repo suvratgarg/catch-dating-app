@@ -1,6 +1,6 @@
 ---
 doc_id: docs_index
-version: 4.7.3
+version: 4.7.4
 updated: 2026-07-23
 owner: recursive_audit_loop
 status: active
@@ -42,6 +42,7 @@ section unless the task requires a full historical audit.
 | Widget inventory and reusable widget guidance | `widget_catalog.md` | Catalog of Flutter widgets, primitive APIs, feature ownership notes, and catalog-update rules for material widget architecture changes. |
 | Visual identity / design language | `design_language.md` | Locked editorial identity — palette (B&W base + activity color), typography (Archivo/platform system/IBM Plex Mono), photo grading, ticket/polaroid metaphors, exploration log, and the UI elevation roadmap. |
 | Design parity state matrix, inventory, and composition migration | `design_parity/` | Feature-by-feature design-spec parity matrix plus Claude Design to Widgetbook inventory and layered composition migration spec connecting screens, states, captures, component contracts, previews, lints, token specimens, and visual-diff gaps. |
+| Cross-surface feature contracts | `../design/features/feature_contract.schema.json`, `../design/features/feature_coverage.json` | Executable feature identities spanning Flutter, marketing, and admin authorities while keeping each runtime's routes, actions, components, data contracts, previews, captures, and tests explicit. The coverage registry is the exhaustive migration ledger. |
 | Code, Figma, and Claude Design sync | `../design/components/README.md`, `../design/sync/README.md` | Canonical component/concept identity plus generated cross-tool mapping, contract digests, live capability evidence, and the Badge + Field rollout gate. |
 | UI migration prompts | `sizing_migration_prompt.md`, `design_token_migration_prompt.md` | Reusable agent prompts for the mechanical sizing and design-token sweeps; each pairs with its `tool/check_*.sh` scanner as the deterministic definition of done. |
 | Action cardinality | `action_cardinality_policy.md` | Product and engineering rule for whether each action is disallowed, singleton, unbounded, or domain-bounded, plus initial action-surface audit. |

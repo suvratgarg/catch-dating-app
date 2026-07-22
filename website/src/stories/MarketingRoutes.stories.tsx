@@ -220,16 +220,16 @@ export const OrganizerSearch: Story = {
     catchRoute: {
       id: "organizer_search",
       path: "/organizers/",
-      reviewStates: ["default", "filtered", "empty-results", "saved-organizers"],
+      reviewStates: ["default", "filtered", "empty-results"],
       stateCoverage: {
         storybook: ["default"],
-        manual: ["filtered", "empty-results", "saved-organizers"],
+        manual: ["filtered", "empty-results"],
       },
     },
     catchComponent: {
       id: "route_organizer_search",
       routeIds: ["organizer_search"],
-      states: ["default", "filtered", "empty-results", "saved-organizers"],
+      states: ["default", "filtered", "empty-results"],
     },
   },
   render: () => (

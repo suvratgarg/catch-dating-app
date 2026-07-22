@@ -511,19 +511,24 @@ be excluded when their existing route, metadata, and preview contracts are the
 correct authority and there is no stateful product-action workflow to model.
 
 `design/features/*.feature.json` holds reviewed feature orchestration sources.
-They reference existing screen, component, data, capture, Widgetbook, and test
-authorities instead of duplicating their semantics. The compiler resolves those
-references, expands every action case into enabled, disabled, and not-allowed
-classifications, and writes deterministic evidence artifacts under
+One semantic feature may contain Flutter, marketing React, and admin React
+surface projections. Each projection binds exactly one authoritative screen or
+route, its native component registry, one or more typed action owners, and its
+capture/preview/test evidence instead of duplicating those authorities. The
+compiler expands every action case into enabled, disabled, and not-allowed
+classifications and writes one deterministic cross-surface artifact under
 `design/features/generated/`.
 
-Each source must state its action scope. Event Detail covers the booking dock,
-Explore covers empty-result recovery, and Host Event Manage covers primary
-edit/cancel/delete lifecycle rows; generated action counts must not be read as
-coverage of excluded route or section actions. Action outcomes may be local
-screen states, route destinations, or named side effects. Missing required
-evidence must use an explicit stable-debt exception, and the compiler rejects
-that exception once the referenced evidence exists.
+Each surface must state its action scope. Event Detail covers the Flutter
+booking dock; Explore combines Flutter empty-result recovery with marketing-web
+URL filtering/search analytics; Host Event Manage covers primary Flutter
+edit/cancel/delete lifecycle rows. Generated action counts must not be read as
+coverage of excluded route or section actions. Actions name their owning Dart
+or TypeScript symbol and may end in local surface states, route destinations,
+or named side effects. Read-only surfaces use empty action/action-owner arrays
+instead of inventing synthetic behavior. Missing required evidence must use an
+explicit stable-debt exception, and the compiler rejects that exception once
+the referenced evidence exists.
 
 ```sh
 node tool/design/build_feature_contracts.mjs

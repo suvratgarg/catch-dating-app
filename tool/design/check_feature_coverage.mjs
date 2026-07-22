@@ -181,13 +181,10 @@ export function validateFeatureCoverage({coverage, featureContracts, readRegistr
 
 function contractAuthorityKeys(contract) {
   const keys = new Set();
-  if (typeof contract.screenContract === "string") {
-    keys.add(decisionKey("flutter_screens", contract.screenContract));
-  }
-  for (const binding of contract.surfaceBindings ?? []) {
-    if (typeof binding?.authority === "string" &&
-        typeof binding?.authorityId === "string") {
-      keys.add(decisionKey(binding.authority, binding.authorityId));
+  for (const surface of contract.surfaces ?? []) {
+    if (typeof surface?.authority?.registry === "string" &&
+        typeof surface?.authority?.id === "string") {
+      keys.add(decisionKey(surface.authority.registry, surface.authority.id));
     }
   }
   return keys;

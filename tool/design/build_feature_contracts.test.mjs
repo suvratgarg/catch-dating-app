@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import test from "node:test";
+
+import Ajv2020 from "ajv/dist/2020.js";
 
 import {
   compileFeatureContract,
@@ -8,95 +11,234 @@ import {
 } from "./build_feature_contracts.mjs";
 
 const actionOwnerPath = "lib/events/presentation/event_detail_screen_state.dart";
-const testPath = "test/events/event_detail_widgets_test.dart";
+const widgetbookPath = "widgetbook/lib/events/example.dart";
+const flutterTestPath = "test/events/event_detail_widgets_test.dart";
+const webOwnerPath = "website/src/features/organizers/useExampleController.ts";
+const webStoryPath = "website/src/stories/Example.stories.tsx";
+const webTestPath = "website/src/features/organizers/useExampleController.test.tsx";
+const featureSchema = JSON.parse(fs.readFileSync(
+  new URL("../../design/features/feature_contract.schema.json", import.meta.url),
+  "utf8",
+));
+const validateFeatureSchema = new Ajv2020({allErrors: true, strict: false})
+  .compile(featureSchema);
 
 function fixture() {
   return {
     source: {
-      version: 1,
+      $schema: "./feature_contract.schema.json",
+      version: 2,
       updated: "2026-07-23",
       id: "feature.example",
       name: "Example",
       owner: "events",
       status: "pilot",
       description: "Fixture contract.",
-      actionScope: {
-        included: "Fixture actions.",
-        excluded: ["Actions outside this fixture."],
-      },
-      screenContract: "screen.example",
-      bindings: {
-        widgetbookSources: ["widgetbook/lib/events/example.dart"],
-        actionOwner: {file: actionOwnerPath, symbol: "ExampleAction"},
-        componentContracts: ["catch.example"],
-        dataContracts: ["contracts/firestore/events.schema.json"],
-      },
-      dimensions: {
-        load: {default: "ready", values: ["ready", "loading"]},
-      },
-      actions: [
-        {
-          id: "book",
-          codeValue: "book",
-          cardinality: "singleton",
-          scopeKeys: ["viewerUid", "eventId"],
-          outcomes: [{kind: "screen_state", stateIds: ["ready"]}],
-          description: "Book once.",
-        },
-      ],
-      scenarios: [
-        {
-          id: "loading",
-          screenStateId: "loading",
-          dimensions: {load: "loading"},
-          actionCases: [{id: "default"}],
-        },
-        {
-          id: "ready",
-          screenStateId: "ready",
-          dimensions: {},
-          actionCases: [{id: "eligible", enabledActions: ["book"]}],
-        },
-      ],
-      requiredEvidence: {captures: true, previews: true, tests: true},
+      surfaces: [flutterSurface()],
     },
-    screenRegistry: {
-      screens: [
-        {
-          id: "screen.example",
-          captures: [
-            {id: "example_loading"},
-            {id: "example_ready"},
-          ],
-          states: [
-            {
-              id: "loading",
-              kind: "loading",
-              status: "captured",
-              captureIds: ["example_loading"],
-              previewIds: ["ExampleScreen/Screen states"],
-              tests: [testPath],
+    authorityRegistries: {
+      flutter_screens: {
+        screens: [
+          {
+            id: "screen.example",
+            owner: "events",
+            routes: [],
+            captures: [
+              {id: "example_loading"},
+              {id: "example_ready"},
+            ],
+            states: [
+              {
+                id: "loading",
+                kind: "loading",
+                status: "captured",
+                captureIds: ["example_loading"],
+                previewIds: ["ExampleScreen/Screen states"],
+                tests: [flutterTestPath],
+              },
+              {
+                id: "ready",
+                kind: "populated",
+                status: "captured",
+                captureIds: ["example_ready"],
+                previewIds: ["ExampleScreen/Screen states"],
+                tests: [flutterTestPath],
+              },
+            ],
+          },
+          {id: "screen.target", owner: "events", routes: [], states: []},
+        ],
+      },
+      marketing_routes: {
+        routes: [
+          {
+            id: "organizer_search",
+            kind: "static",
+            path: "/organizers/",
+            review: {
+              states: ["default", "filtered"],
+              stateCoverage: {storybook: ["default"], manual: ["filtered"]},
             },
-            {
-              id: "ready",
-              kind: "populated",
-              status: "captured",
-              captureIds: ["example_ready"],
-              previewIds: ["ExampleScreen/Screen states"],
-              tests: [testPath],
+          },
+        ],
+      },
+      admin_routes: {components: []},
+    },
+    componentRegistries: {
+      flutter: {
+        components: [{id: "catch.example", dart: {symbol: "ExampleWidget"}}],
+      },
+      react_marketing: {
+        components: [
+          {
+            id: "route_example",
+            kind: "route",
+            routeIds: ["organizer_search"],
+            source: "website/src/features/organizers/ExamplePage.tsx",
+            exportName: "ExamplePage",
+            storybook: {
+              story: webStoryPath,
+              exportName: "ExampleRoute",
+              states: ["default"],
             },
-          ],
-        },
-      ],
+          },
+          {
+            id: "section_example",
+            kind: "section",
+            routeIds: ["organizer_search"],
+            source: "website/src/features/organizers/ExampleSection.tsx",
+            exportName: "ExampleSection",
+            storybook: {
+              story: webStoryPath,
+              exportName: "ExampleFiltered",
+              states: ["filtered"],
+            },
+          },
+        ],
+      },
+      react_admin: {components: []},
     },
-    componentRegistry: {
-      components: [{id: "catch.example", dart: {symbol: "ExampleWidget"}}],
-    },
-    availablePreviews: new Set(["ExampleScreen/Screen states"]),
     pathExists: () => true,
-    readPath: (filePath) => filePath === actionOwnerPath
-      ? "enum ExampleAction { book }"
-      : "",
+    readPath: (filePath) => {
+      if (filePath === actionOwnerPath) return "enum ExampleAction { book }";
+      if (filePath === widgetbookPath) return widgetbookSource();
+      if (filePath === webOwnerPath) {
+        return "export function useExampleController() { function updateFilters() {} }";
+      }
+      return "";
+    },
+  };
+}
+
+function flutterSurface() {
+  return {
+    id: "consumer_flutter",
+    runtime: "flutter",
+    authority: {registry: "flutter_screens", id: "screen.example"},
+    actionScope: {
+      included: "Fixture actions.",
+      excluded: ["Actions outside this fixture."],
+    },
+    bindings: {
+      previewSources: [widgetbookPath],
+      actionOwners: [
+        {
+          id: "primary",
+          language: "dart",
+          file: actionOwnerPath,
+          symbol: "ExampleAction",
+        },
+      ],
+      componentContracts: ["catch.example"],
+      dataContracts: ["contracts/firestore/events.schema.json"],
+    },
+    dimensions: {
+      load: {default: "ready", values: ["ready", "loading"]},
+    },
+    actions: [
+      {
+        id: "book",
+        owner: "primary",
+        codeValue: "book",
+        cardinality: "singleton",
+        scopeKeys: ["viewerUid", "eventId"],
+        outcomes: [{kind: "surface_state", stateIds: ["ready"]}],
+        description: "Book once.",
+      },
+    ],
+    scenarios: [
+      {
+        id: "loading",
+        stateId: "loading",
+        dimensions: {load: "loading"},
+        actionCases: [{id: "default"}],
+      },
+      {
+        id: "ready",
+        stateId: "ready",
+        dimensions: {},
+        actionCases: [{id: "eligible", enabledActions: ["book"]}],
+      },
+    ],
+    requiredEvidence: {captures: true, previews: true, tests: true},
+  };
+}
+
+function marketingSurface() {
+  return {
+    id: "marketing_web",
+    runtime: "react_marketing",
+    authority: {registry: "marketing_routes", id: "organizer_search"},
+    actionScope: {
+      included: "URL-owned filtering.",
+      excluded: ["Organizer detail actions."],
+    },
+    bindings: {
+      previewSources: [webStoryPath],
+      actionOwners: [
+        {
+          id: "controller",
+          language: "typescript",
+          file: webOwnerPath,
+          symbol: "useExampleController",
+        },
+      ],
+      componentContracts: ["route_example", "section_example"],
+      dataContracts: ["contracts/public/website_host_listing_projection.schema.json"],
+      testEvidence: {
+        default: [webTestPath],
+        filtered: [webTestPath],
+      },
+    },
+    dimensions: {
+      filters: {default: "default", values: ["default", "active"]},
+    },
+    actions: [
+      {
+        id: "update_filters",
+        owner: "controller",
+        codeValue: "updateFilters",
+        cardinality: "unbounded",
+        scopeKeys: ["routeInstanceId", "searchParamsVersion"],
+        outcomes: [{kind: "surface_state", stateIds: ["default", "filtered"]}],
+        description: "Update URL filters.",
+      },
+    ],
+    scenarios: [
+      {
+        id: "default",
+        stateId: "default",
+        dimensions: {},
+        actionCases: [{id: "default", enabledActions: ["update_filters"]}],
+      },
+      {
+        id: "filtered",
+        stateId: "filtered",
+        dimensions: {filters: "active"},
+        actionCases: [{id: "active", enabledActions: ["update_filters"]}],
+      },
+    ],
+    requiredEvidence: {captures: false, previews: true, tests: true},
   };
 }
 
@@ -108,11 +250,12 @@ function compile(overrides = {}) {
   });
 }
 
-test("compiles exact screen-state coverage and action availability", () => {
+test("compiles exact surface-state coverage and action availability", () => {
   const artifact = compile();
 
   assert.deepEqual(artifact.coverage, {
-    screenStates: 2,
+    surfaces: 1,
+    states: 2,
     scenarios: 2,
     actionCases: 2,
     actions: 1,
@@ -122,29 +265,71 @@ test("compiles exact screen-state coverage and action availability", () => {
     evidenceExceptions: 0,
   });
   assert.deepEqual(
-    artifact.scenarios[0].actionCases[0].actions.notAllowed,
-    ["book"],
-  );
-  assert.deepEqual(
-    artifact.scenarios[1].actionCases[0].actions.enabled,
+    artifact.surfaces[0].scenarios[0].actionCases[0].actions.notAllowed,
     ["book"],
   );
   assert.match(artifact.sourceDigest, /^sha256:[a-f0-9]{64}$/u);
 });
 
-test("rejects duplicate and missing screen-state mappings", () => {
+test("compiles multiple runtime projections into one shared feature identity", () => {
   const data = fixture();
-  data.source.scenarios[1].screenStateId = "loading";
+  data.source.surfaces.push(marketingSurface());
+
+  const artifact = compileFeatureContract({
+    ...data,
+    sourcePath: "design/features/example.feature.json",
+  });
+
+  assert.equal(artifact.coverage.surfaces, 2);
+  assert.equal(artifact.coverage.states, 4);
+  assert.deepEqual(
+    artifact.surfaces[1].resolved.previews,
+    ["route_example/ExampleRoute", "section_example/ExampleFiltered"],
+  );
+  assert.equal(artifact.surfaces[1].runtime, "react_marketing");
+});
+
+test("supports read-only projections without synthetic actions or bindings", () => {
+  const data = fixture();
+  const surface = data.source.surfaces[0];
+  surface.actionScope = {
+    included: "Read-only state projection.",
+    excluded: [],
+  };
+  surface.bindings.actionOwners = [];
+  surface.bindings.dataContracts = [];
+  surface.dimensions = {};
+  surface.actions = [];
+  surface.scenarios = surface.scenarios.map((scenario) => ({
+    ...scenario,
+    dimensions: {},
+    actionCases: [{id: "default"}],
+  }));
+
+  assert.equal(
+    validateFeatureSchema(data.source),
+    true,
+    JSON.stringify(validateFeatureSchema.errors),
+  );
+
+  const artifact = compileFeatureContract({...data, sourcePath: "fixture.json"});
+  assert.equal(artifact.coverage.actions, 0);
+  assert.deepEqual(
+    artifact.surfaces[0].scenarios[0].actionCases[0].actions,
+    {enabled: [], disabled: [], notAllowed: []},
+  );
+});
+
+test("rejects duplicate and missing surface-state mappings", () => {
+  const data = fixture();
+  data.source.surfaces[0].scenarios[1].stateId = "loading";
 
   assert.throws(
-    () => compileFeatureContract({
-      ...data,
-      sourcePath: "design/features/example.feature.json",
-    }),
+    () => compileFeatureContract({...data, sourcePath: "fixture.json"}),
     (error) => {
       assert.ok(error instanceof FeatureContractError);
       assert.match(error.message, /mapped by more than one scenario/u);
-      assert.match(error.message, /unmapped screen states: ready/u);
+      assert.match(error.message, /unmapped authority states: ready/u);
       return true;
     },
   );
@@ -152,20 +337,17 @@ test("rejects duplicate and missing screen-state mappings", () => {
 
 test("rejects missing capture, preview, and test evidence", () => {
   const data = fixture();
-  const state = data.screenRegistry.screens[0].states[0];
+  const state = data.authorityRegistries.flutter_screens.screens[0].states[0];
   state.captureIds = [];
   state.previewIds = [];
   state.tests = [];
 
   assert.throws(
-    () => compileFeatureContract({
-      ...data,
-      sourcePath: "design/features/example.feature.json",
-    }),
+    () => compileFeatureContract({...data, sourcePath: "fixture.json"}),
     (error) => {
       assert.ok(error instanceof FeatureContractError);
       assert.match(error.message, /capture evidence is required/u);
-      assert.match(error.message, /Widgetbook preview evidence is required/u);
+      assert.match(error.message, /preview evidence is required/u);
       assert.match(error.message, /test evidence is required/u);
       return true;
     },
@@ -174,74 +356,59 @@ test("rejects missing capture, preview, and test evidence", () => {
 
 test("allows explicit evidence debt and rejects stale exceptions", () => {
   const data = fixture();
-  data.screenRegistry.screens[0].states[0].tests = [];
-  data.source.evidenceExceptions = [
+  data.authorityRegistries.flutter_screens.screens[0].states[0].tests = [];
+  data.source.surfaces[0].evidenceExceptions = [
     {
-      screenStateIds: ["loading"],
+      stateIds: ["loading"],
       evidence: ["tests"],
       debtId: "DEBT-EXAMPLE-001",
       reason: "The route-state test is not implemented yet.",
     },
   ];
 
-  const artifact = compileFeatureContract({
-    ...data,
-    sourcePath: "design/features/example.feature.json",
-  });
+  let artifact = compileFeatureContract({...data, sourcePath: "fixture.json"});
   assert.equal(artifact.coverage.evidenceExceptions, 1);
-  assert.deepEqual(artifact.evidenceExceptions, data.source.evidenceExceptions);
 
-  data.screenRegistry.screens[0].states[0].tests = [testPath];
+  data.authorityRegistries.flutter_screens.screens[0].states[0].tests = [flutterTestPath];
   assert.throws(
-    () => compileFeatureContract({
-      ...data,
-      sourcePath: "design/features/example.feature.json",
-    }),
+    () => compileFeatureContract({...data, sourcePath: "fixture.json"}),
     /unused exception for loading tests/u,
   );
 });
 
-test("validates screen-state, route, and side-effect action outcomes", () => {
+test("validates surface-state, route, and side-effect action outcomes", () => {
   const data = fixture();
-  data.screenRegistry.screens.push({
-    id: "screen.target",
-    captures: [],
-    states: [],
-  });
-  data.source.actions[0].outcomes = [
-    {kind: "screen_state", stateIds: ["ready", "loading"]},
-    {kind: "route", screenContract: "screen.target"},
+  data.source.surfaces[0].actions[0].outcomes = [
+    {kind: "surface_state", stateIds: ["ready", "loading"]},
+    {kind: "route", authority: {registry: "flutter_screens", id: "screen.target"}},
     {kind: "side_effect", id: "example.persisted"},
   ];
 
-  const artifact = compileFeatureContract({
-    ...data,
-    sourcePath: "design/features/example.feature.json",
-  });
-  assert.deepEqual(artifact.actions[0].outcomes, data.source.actions[0].outcomes);
+  const artifact = compileFeatureContract({...data, sourcePath: "fixture.json"});
+  assert.deepEqual(
+    artifact.surfaces[0].actions[0].outcomes,
+    data.source.surfaces[0].actions[0].outcomes,
+  );
 
-  data.source.actions[0].outcomes[1].screenContract = "screen.missing";
+  data.source.surfaces[0].actions[0].outcomes[1].authority.id = "screen.missing";
   assert.throws(
-    () => compileFeatureContract({
-      ...data,
-      sourcePath: "design/features/example.feature.json",
-    }),
-    /unknown outcome route screen\.missing/u,
+    () => compileFeatureContract({...data, sourcePath: "fixture.json"}),
+    /unknown outcome route flutter_screens:screen\.missing/u,
   );
 });
 
-test("rejects unknown action and dimension references", () => {
+test("rejects unknown action owners, actions, and dimensions", () => {
   const data = fixture();
-  data.source.scenarios[1].dimensions = {viewer: "member"};
-  data.source.scenarios[1].actionCases[0].enabledActions = ["reserve"];
+  const surface = data.source.surfaces[0];
+  surface.actions[0].owner = "missing_owner";
+  surface.scenarios[1].dimensions = {viewer: "member"};
+  surface.scenarios[1].actionCases[0].enabledActions = ["reserve"];
 
   assert.throws(
-    () => compileFeatureContract({
-      ...data,
-      sourcePath: "design/features/example.feature.json",
-    }),
+    () => compileFeatureContract({...data, sourcePath: "fixture.json"}),
     (error) => {
       assert.ok(error instanceof FeatureContractError);
+      assert.match(error.message, /unknown action owner missing_owner/u);
       assert.match(error.message, /unknown dimension viewer/u);
       assert.match(error.message, /unknown action reserve/u);
       return true;
@@ -249,15 +416,30 @@ test("rejects unknown action and dimension references", () => {
   );
 });
 
+test("rejects runtime and authority mismatches", () => {
+  const data = fixture();
+  data.source.surfaces[0].runtime = "react_marketing";
+
+  assert.throws(
+    () => compileFeatureContract({...data, sourcePath: "fixture.json"}),
+    /flutter_screens requires runtime flutter/u,
+  );
+});
+
 test("parses Widgetbook preview ids from annotated use cases", () => {
-  const previews = parseWidgetbookPreviewIds(`
+  assert.deepEqual(
+    [...parseWidgetbookPreviewIds(widgetbookSource())],
+    ["ExampleScreen/Screen states"],
+  );
+});
+
+function widgetbookSource() {
+  return `
 @widgetbook.UseCase(
   name: 'Screen states',
   type: ExampleScreen,
   path: '[Example]/Screens',
 )
 Widget example(BuildContext context) => const SizedBox();
-`);
-
-  assert.deepEqual([...previews], ["ExampleScreen/Screen states"]);
-});
+`;
+}

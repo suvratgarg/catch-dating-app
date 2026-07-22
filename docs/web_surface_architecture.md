@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.8.4
+version: 0.8.5
 updated: 2026-07-22
 owner: web_platform
 status: active
@@ -33,6 +33,12 @@ to multiple runtime projections when the user outcome is genuinely shared—for
 example organizer discovery or organizer detail. It does not make Flutter and
 React share a UI runtime: each projection keeps its own screen/route authority,
 components, action symbols, evidence, and implementation tests.
+
+`feature.explore` is the first compiled cross-runtime contract: its consumer
+projection binds `screen.explore.discovery`, while its marketing projection
+binds the `organizer_search` route and the URL-owned
+`useOrganizerDirectoryController`. The projections share feature identity and
+product intent, not UI code or state vocabulary.
 
 Run `node tool/design/check_feature_coverage.mjs --check` after adding or
 removing any registered product surface. A planned decision is migration debt,

@@ -11,8 +11,21 @@ import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 const featureRoot = fromRepo("design/features");
 const generatedRoot = fromRepo("design/features/generated");
 const schemaPath = path.join(featureRoot, "feature_contract.schema.json");
-const screenRegistryPath = fromRepo("design/screens/catch.screens.json");
-const componentRegistryPath = fromRepo("design/components/catch.components.json");
+const authorityRegistryPaths = {
+  flutter_screens: "design/screens/catch.screens.json",
+  marketing_routes: "design/website/routes.json",
+  admin_routes: "design/admin/components.json",
+};
+const componentRegistryPaths = {
+  flutter: "design/components/catch.components.json",
+  react_marketing: "design/website/components.json",
+  react_admin: "design/admin/components.json",
+};
+const runtimeForAuthority = {
+  flutter_screens: "flutter",
+  marketing_routes: "react_marketing",
+  admin_routes: "react_admin",
+};
 const isCli = process.argv[1] != null &&
   path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 
@@ -51,8 +64,18 @@ async function runCli() {
   const schema = readJson(schemaPath);
   const ajv = new Ajv2020({allErrors: true, strict: false});
   const validate = ajv.compile(schema);
-  const screenRegistry = readJson(screenRegistryPath);
-  const componentRegistry = readJson(componentRegistryPath);
+  const authorityRegistries = Object.fromEntries(
+    Object.entries(authorityRegistryPaths).map(([id, filePath]) => [
+      id,
+      readJson(fromRepo(filePath)),
+    ]),
+  );
+  const componentRegistries = Object.fromEntries(
+    Object.entries(componentRegistryPaths).map(([runtime, filePath]) => [
+      runtime,
+      readJson(fromRepo(filePath)),
+    ]),
+  );
   const sources = fs.readdirSync(featureRoot)
     .filter((name) => name.endsWith(".feature.json"))
     .sort();
@@ -72,19 +95,11 @@ async function runCli() {
       );
       throw new FeatureContractError(schemaErrors);
     }
-    const availablePreviews = new Set();
-    for (const widgetbookSource of source.bindings.widgetbookSources) {
-      const parsed = parseWidgetbookPreviewIds(
-        fs.readFileSync(fromRepo(widgetbookSource), "utf8"),
-      );
-      for (const previewId of parsed) availablePreviews.add(previewId);
-    }
     const artifact = compileFeatureContract({
       source,
       sourcePath: relative(sourcePath),
-      screenRegistry,
-      componentRegistry,
-      availablePreviews,
+      authorityRegistries,
+      componentRegistries,
       pathExists: (filePath) => fs.existsSync(fromRepo(filePath)),
       readPath: (filePath) => fs.readFileSync(fromRepo(filePath), "utf8"),
     });
@@ -149,47 +164,127 @@ async function runCli() {
 export function compileFeatureContract({
   source,
   sourcePath,
-  screenRegistry,
-  componentRegistry,
-  availablePreviews,
+  authorityRegistries,
+  componentRegistries,
   pathExists,
   readPath,
 }) {
   const errors = [];
-  const screens = new Map(
-    (screenRegistry.screens ?? []).map((screen) => [screen.id, screen]),
-  );
-  const screen = screens.get(source.screenContract);
-  if (screen == null) {
-    errors.push(`${source.id}: unknown screen contract ${source.screenContract}.`);
-    throw new FeatureContractError(errors);
+  const surfaceIds = new Set();
+  const authorityKeys = new Set();
+  const compiledSurfaces = [];
+
+  for (const surface of source.surfaces ?? []) {
+    const label = `${source.id}.surfaces.${surface.id}`;
+    if (surfaceIds.has(surface.id)) errors.push(`${source.id}: duplicate surface ${surface.id}.`);
+    surfaceIds.add(surface.id);
+    const authorityKey = `${surface.authority.registry}:${surface.authority.id}`;
+    if (authorityKeys.has(authorityKey)) {
+      errors.push(`${source.id}: authority ${authorityKey} is bound by more than one surface.`);
+    }
+    authorityKeys.add(authorityKey);
+
+    const compiled = compileSurfaceContract({
+      featureId: source.id,
+      surface,
+      label,
+      authorityRegistries,
+      componentRegistries,
+      pathExists,
+      readPath,
+      errors,
+    });
+    if (compiled != null) compiledSurfaces.push(compiled);
   }
 
-  validateBindings({source, componentRegistry, pathExists, readPath, errors});
+  if (errors.length > 0) throw new FeatureContractError(errors);
 
+  const resolvedProjection = compiledSurfaces.map((surface) => ({
+    id: surface.id,
+    runtime: surface.runtime,
+    authority: surface.authority,
+    states: surface.scenarios.map((scenario) => ({
+      id: scenario.stateId,
+      kind: scenario.kind,
+      status: scenario.status,
+      evidence: scenario.evidence,
+    })),
+    components: surface.resolved.components,
+    previews: surface.resolved.previews,
+    evidenceExceptions: surface.evidenceExceptions,
+  }));
+  const coverage = aggregateCoverage(compiledSurfaces);
+
+  return {
+    notice: "GENERATED CODE - DO NOT MODIFY BY HAND.",
+    version: 2,
+    generatedFrom: sourcePath,
+    generatedFor: source.updated,
+    sourceDigest: digest(source),
+    resolvedDigest: digest(resolvedProjection),
+    feature: {
+      id: source.id,
+      name: source.name,
+      owner: source.owner,
+      status: source.status,
+      description: source.description,
+    },
+    coverage,
+    surfaces: compiledSurfaces,
+  };
+}
+
+function compileSurfaceContract({
+  featureId,
+  surface,
+  label,
+  authorityRegistries,
+  componentRegistries,
+  pathExists,
+  readPath,
+  errors,
+}) {
+  const authority = resolveAuthority({
+    surface,
+    label,
+    authorityRegistries,
+    errors,
+  });
+  if (authority == null) return null;
+
+  const components = validateBindings({
+    surface,
+    label,
+    authority,
+    componentRegistry: componentRegistries[surface.runtime],
+    pathExists,
+    readPath,
+    errors,
+  });
+  const states = new Map(authority.states.map((state) => [state.id, state]));
   const dimensionDefaults = {};
-  for (const [id, dimension] of Object.entries(source.dimensions ?? {})) {
+  for (const [id, dimension] of Object.entries(surface.dimensions ?? {})) {
     if (!(dimension.values ?? []).includes(dimension.default)) {
-      errors.push(`${source.id}.dimensions.${id}: default must be one of values.`);
+      errors.push(`${label}.dimensions.${id}: default must be one of values.`);
     }
     dimensionDefaults[id] = dimension.default;
   }
 
-  const screenStates = new Map((screen.states ?? []).map((state) => [state.id, state]));
   const evidenceExceptions = compileEvidenceExceptions({
-    source,
-    screenStates,
+    label,
+    surface,
+    states,
     errors,
   });
   const evidenceExceptionMap = new Map();
   for (const exception of evidenceExceptions) {
-    for (const screenStateId of exception.screenStateIds) {
+    for (const stateId of exception.stateIds) {
       for (const evidenceKind of exception.evidence) {
-        const key = evidenceExceptionKey(screenStateId, evidenceKind);
+        const key = evidenceExceptionKey(stateId, evidenceKind);
         if (evidenceExceptionMap.has(key)) {
           errors.push(
-            `${source.id}.evidenceExceptions: duplicate exception for ` +
-            `${screenStateId} ${evidenceKind}.`,
+            `${label}.evidenceExceptions: duplicate exception for ` +
+            `${stateId} ${evidenceKind}.`,
           );
         } else {
           evidenceExceptionMap.set(key, exception);
@@ -198,40 +293,37 @@ export function compileFeatureContract({
     }
   }
   const usedEvidenceExceptions = new Set();
+  const actionOwners = resolveActionOwners({surface, label, pathExists, readPath, errors});
   const actionIds = new Set();
   const actions = [];
-  const actionOwnerSource = safeRead(source.bindings.actionOwner.file, readPath, errors);
-  const ownerSymbol = source.bindings.actionOwner.symbol;
-  if (actionOwnerSource != null && !hasSymbol(actionOwnerSource, ownerSymbol)) {
-    errors.push(
-      `${source.id}.bindings.actionOwner: ${ownerSymbol} is missing from ` +
-      `${source.bindings.actionOwner.file}.`,
-    );
-  }
-  for (const action of source.actions ?? []) {
-    if (actionIds.has(action.id)) errors.push(`${source.id}: duplicate action ${action.id}.`);
+  for (const action of surface.actions ?? []) {
+    if (actionIds.has(action.id)) errors.push(`${label}: duplicate action ${action.id}.`);
     actionIds.add(action.id);
+    const owner = actionOwners.get(action.owner);
+    if (owner == null) {
+      errors.push(`${label}.actions.${action.id}: unknown action owner ${action.owner}.`);
+    } else if (owner.source != null && !hasWord(owner.source, action.codeValue)) {
+      errors.push(
+        `${label}.actions.${action.id}: codeValue ${action.codeValue} is missing from ` +
+        `${owner.binding.file}.`,
+      );
+    }
     for (const outcome of action.outcomes ?? []) {
-      if (outcome.kind === "screen_state") {
+      if (outcome.kind === "surface_state") {
         for (const stateId of outcome.stateIds ?? []) {
-          if (!screenStates.has(stateId)) {
+          if (!states.has(stateId)) {
             errors.push(
-              `${source.id}.actions.${action.id}: unknown outcome screen state ${stateId}.`,
+              `${label}.actions.${action.id}: unknown outcome surface state ${stateId}.`,
             );
           }
         }
-      } else if (outcome.kind === "route" && !screens.has(outcome.screenContract)) {
+      } else if (outcome.kind === "route" &&
+          !authorityItemExists(outcome.authority, authorityRegistries)) {
         errors.push(
-          `${source.id}.actions.${action.id}: unknown outcome route ` +
-          `${outcome.screenContract}.`,
+          `${label}.actions.${action.id}: unknown outcome route ` +
+          `${outcome.authority.registry}:${outcome.authority.id}.`,
         );
       }
-    }
-    if (actionOwnerSource != null && !hasWord(actionOwnerSource, action.codeValue)) {
-      errors.push(
-        `${source.id}.actions.${action.id}: codeValue ${action.codeValue} is missing from ` +
-        `${source.bindings.actionOwner.file}.`,
-      );
     }
     actions.push(action);
   }
@@ -240,41 +332,36 @@ export function compileFeatureContract({
   const scenarioIds = new Set();
   const referencedActionIds = new Set();
   const compiledScenarios = [];
-  for (const scenario of source.scenarios ?? []) {
-    if (scenarioIds.has(scenario.id)) errors.push(`${source.id}: duplicate scenario ${scenario.id}.`);
+  for (const scenario of surface.scenarios ?? []) {
+    if (scenarioIds.has(scenario.id)) errors.push(`${label}: duplicate scenario ${scenario.id}.`);
     scenarioIds.add(scenario.id);
-    if (mappedStateIds.has(scenario.screenStateId)) {
-      errors.push(
-        `${source.id}: screen state ${scenario.screenStateId} is mapped by more than one scenario.`,
-      );
+    if (mappedStateIds.has(scenario.stateId)) {
+      errors.push(`${label}: state ${scenario.stateId} is mapped by more than one scenario.`);
     }
-    mappedStateIds.add(scenario.screenStateId);
-    const screenState = screenStates.get(scenario.screenStateId);
-    if (screenState == null) {
-      errors.push(
-        `${source.id}.scenarios.${scenario.id}: unknown screenStateId ` +
-        `${scenario.screenStateId}.`,
-      );
+    mappedStateIds.add(scenario.stateId);
+    const state = states.get(scenario.stateId);
+    if (state == null) {
+      errors.push(`${label}.scenarios.${scenario.id}: unknown stateId ${scenario.stateId}.`);
       continue;
     }
 
     validateDimensionSelection({
-      label: `${source.id}.scenarios.${scenario.id}.dimensions`,
+      label: `${label}.scenarios.${scenario.id}.dimensions`,
       selection: scenario.dimensions,
-      dimensions: source.dimensions,
+      dimensions: surface.dimensions,
       errors,
     });
     const actionCaseIds = new Set();
     const actionCases = [];
     for (const actionCase of scenario.actionCases ?? []) {
       if (actionCaseIds.has(actionCase.id)) {
-        errors.push(`${source.id}.scenarios.${scenario.id}: duplicate action case ${actionCase.id}.`);
+        errors.push(`${label}.scenarios.${scenario.id}: duplicate action case ${actionCase.id}.`);
       }
       actionCaseIds.add(actionCase.id);
       validateDimensionSelection({
-        label: `${source.id}.scenarios.${scenario.id}.actionCases.${actionCase.id}.dimensions`,
+        label: `${label}.scenarios.${scenario.id}.actionCases.${actionCase.id}.dimensions`,
         selection: actionCase.dimensions,
-        dimensions: source.dimensions,
+        dimensions: surface.dimensions,
         errors,
       });
       const enabled = actionCase.enabledActions ?? [];
@@ -282,14 +369,14 @@ export function compileFeatureContract({
       const overlap = enabled.filter((id) => disabled.includes(id));
       if (overlap.length > 0) {
         errors.push(
-          `${source.id}.scenarios.${scenario.id}.actionCases.${actionCase.id}: ` +
+          `${label}.scenarios.${scenario.id}.actionCases.${actionCase.id}: ` +
           `actions cannot be both enabled and disabled: ${overlap.join(", ")}.`,
         );
       }
       for (const actionId of [...enabled, ...disabled]) {
         if (!actionIds.has(actionId)) {
           errors.push(
-            `${source.id}.scenarios.${scenario.id}.actionCases.${actionCase.id}: ` +
+            `${label}.scenarios.${scenario.id}.actionCases.${actionCase.id}: ` +
             `unknown action ${actionId}.`,
           );
         }
@@ -312,102 +399,76 @@ export function compileFeatureContract({
       });
     }
 
-    const evidence = {
-      captureIds: [...(screenState.captureIds ?? [])],
-      previewIds: [...(screenState.previewIds ?? [])],
-      tests: [...(screenState.tests ?? [])],
-    };
+    const evidence = resolveStateEvidence({
+      surface,
+      authority,
+      state,
+      components,
+      readPath,
+      errors,
+      label: `${label}.scenarios.${scenario.id}`,
+    });
     validateEvidence({
-      featureId: source.id,
-      scenario,
-      screen,
+      label: `${label}.scenarios.${scenario.id}`,
+      stateId: scenario.stateId,
       evidence,
-      availablePreviews,
+      authority,
       pathExists,
-      requiredEvidence: source.requiredEvidence,
+      requiredEvidence: surface.requiredEvidence,
       evidenceExceptionMap,
       usedEvidenceExceptions,
       errors,
     });
     compiledScenarios.push({
       id: scenario.id,
-      screenStateId: scenario.screenStateId,
-      kind: screenState.kind,
-      status: screenState.status,
+      stateId: scenario.stateId,
+      kind: state.kind,
+      status: state.status,
       dimensions: {...dimensionDefaults, ...(scenario.dimensions ?? {})},
       evidence,
       actionCases,
     });
   }
 
-  const missingStates = [...screenStates.keys()].filter((id) => !mappedStateIds.has(id));
-  const unknownMappedStates = [...mappedStateIds].filter((id) => !screenStates.has(id));
+  const missingStates = [...states.keys()].filter((id) => !mappedStateIds.has(id));
+  const unknownMappedStates = [...mappedStateIds].filter((id) => !states.has(id));
   if (missingStates.length > 0) {
-    errors.push(`${source.id}: unmapped screen states: ${missingStates.join(", ")}.`);
+    errors.push(`${label}: unmapped authority states: ${missingStates.join(", ")}.`);
   }
   if (unknownMappedStates.length > 0) {
-    errors.push(`${source.id}: mapped unknown screen states: ${unknownMappedStates.join(", ")}.`);
+    errors.push(`${label}: mapped unknown authority states: ${unknownMappedStates.join(", ")}.`);
   }
   const orphanActions = [...actionIds].filter((id) => !referencedActionIds.has(id));
   if (orphanActions.length > 0) {
-    errors.push(`${source.id}: actions are never classified by a scenario: ${orphanActions.join(", ")}.`);
+    errors.push(`${label}: actions are never classified by a scenario: ${orphanActions.join(", ")}.`);
   }
   for (const key of evidenceExceptionMap.keys()) {
     if (!usedEvidenceExceptions.has(key)) {
-      const [screenStateId, evidenceKind] = key.split(":");
+      const [stateId, evidenceKind] = key.split(":");
       errors.push(
-        `${source.id}.evidenceExceptions: unused exception for ` +
-        `${screenStateId} ${evidenceKind}.`,
+        `${label}.evidenceExceptions: unused exception for ${stateId} ${evidenceKind}.`,
       );
     }
   }
-  if (errors.length > 0) throw new FeatureContractError(errors);
 
-  const selectedComponents = (componentRegistry.components ?? [])
-    .filter((component) => source.bindings.componentContracts.includes(component.id))
-    .map((component) => ({id: component.id, dart: component.dart}));
-  const selectedPreviews = [...new Set(compiledScenarios.flatMap(
-    (scenario) => scenario.evidence.previewIds,
-  ))].sort();
-  const resolvedProjection = {
-    screen: {
-      id: screen.id,
-      states: compiledScenarios.map((scenario) => ({
-        id: scenario.screenStateId,
-        kind: scenario.kind,
-        status: scenario.status,
-        evidence: scenario.evidence,
-      })),
-    },
-    components: selectedComponents,
-    previews: selectedPreviews,
-    evidenceExceptions,
-  };
   const uniqueCaptures = uniqueSorted(compiledScenarios.flatMap(
     (scenario) => scenario.evidence.captureIds,
+  ));
+  const uniquePreviews = uniqueSorted(compiledScenarios.flatMap(
+    (scenario) => scenario.evidence.previewIds,
   ));
   const uniqueTests = uniqueSorted(compiledScenarios.flatMap(
     (scenario) => scenario.evidence.tests,
   ));
 
   return {
-    notice: "GENERATED CODE - DO NOT MODIFY BY HAND.",
-    version: 1,
-    generatedFrom: sourcePath,
-    generatedFor: source.updated,
-    sourceDigest: digest(source),
-    resolvedDigest: digest(resolvedProjection),
-    feature: {
-      id: source.id,
-      name: source.name,
-      owner: source.owner,
-      status: source.status,
-      description: source.description,
-      actionScope: source.actionScope,
-    },
-    bindings: source.bindings,
+    id: surface.id,
+    runtime: surface.runtime,
+    authority: surface.authority,
+    actionScope: surface.actionScope,
+    bindings: surface.bindings,
     coverage: {
-      screenStates: screenStates.size,
+      states: states.size,
       scenarios: compiledScenarios.length,
       actionCases: compiledScenarios.reduce(
         (total, scenario) => total + scenario.actionCases.length,
@@ -415,56 +476,270 @@ export function compileFeatureContract({
       ),
       actions: actions.length,
       captures: uniqueCaptures.length,
-      previews: selectedPreviews.length,
+      previews: uniquePreviews.length,
       testFiles: uniqueTests.length,
       evidenceExceptions: usedEvidenceExceptions.size,
     },
-    dimensions: source.dimensions,
+    dimensions: surface.dimensions,
     actions,
     evidenceExceptions,
     scenarios: compiledScenarios,
+    resolved: {
+      authority: authority.summary,
+      components: components.map(componentProjection),
+      previews: uniquePreviews,
+    },
   };
 }
 
-function compileEvidenceExceptions({source, screenStates, errors}) {
+function resolveAuthority({surface, label, authorityRegistries, errors}) {
+  const {registry: registryId, id: authorityId} = surface.authority;
+  const expectedRuntime = runtimeForAuthority[registryId];
+  if (expectedRuntime !== surface.runtime) {
+    errors.push(
+      `${label}: ${registryId} requires runtime ${expectedRuntime}, got ${surface.runtime}.`,
+    );
+  }
+  const registry = authorityRegistries[registryId];
+  if (registry == null) {
+    errors.push(`${label}: missing authority registry ${registryId}.`);
+    return null;
+  }
+
+  if (registryId === "flutter_screens") {
+    const screen = (registry.screens ?? []).find((item) => item.id === authorityId);
+    if (screen == null) {
+      errors.push(`${label}: unknown Flutter screen ${authorityId}.`);
+      return null;
+    }
+    return {
+      id: authorityId,
+      registry: registryId,
+      raw: screen,
+      states: (screen.states ?? []).map((state) => ({
+        id: state.id,
+        kind: state.kind,
+        status: state.status,
+        captureIds: [...(state.captureIds ?? [])],
+        previewIds: [...(state.previewIds ?? [])],
+        tests: [...(state.tests ?? [])],
+      })),
+      captureIds: new Set([
+        ...(screen.captures ?? []).map((capture) => capture.id),
+        ...(screen.states ?? []).flatMap((state) => state.captureIds ?? []),
+      ]),
+      summary: {id: screen.id, owner: screen.owner, routes: screen.routes},
+    };
+  }
+
+  if (registryId === "marketing_routes") {
+    const route = (registry.routes ?? []).find((item) => item.id === authorityId);
+    if (route == null) {
+      errors.push(`${label}: unknown marketing route ${authorityId}.`);
+      return null;
+    }
+    const reviewStates = route.review?.states ?? [];
+    const storybookStates = new Set(route.review?.stateCoverage?.storybook ?? []);
+    const manualStates = new Set(route.review?.stateCoverage?.manual ?? []);
+    for (const stateId of reviewStates) {
+      if (!storybookStates.has(stateId) && !manualStates.has(stateId)) {
+        errors.push(`${label}: marketing route state ${stateId} lacks review coverage.`);
+      }
+    }
+    return {
+      id: authorityId,
+      registry: registryId,
+      raw: route,
+      states: reviewStates.map((stateId) => ({
+        id: stateId,
+        kind: "route_state",
+        status: storybookStates.has(stateId) ? "previewed" : "manual",
+        captureIds: [],
+        previewIds: [],
+        tests: [],
+      })),
+      captureIds: new Set(),
+      summary: {
+        id: route.id,
+        kind: route.kind,
+        path: route.path,
+        pathPattern: route.pathPattern,
+        pathPatterns: route.pathPatterns,
+      },
+    };
+  }
+
+  const routeComponent = (registry.components ?? [])
+    .find((item) => item.id === authorityId && item.kind === "route");
+  if (routeComponent == null) {
+    errors.push(`${label}: unknown admin route component ${authorityId}.`);
+    return null;
+  }
+  return {
+    id: authorityId,
+    registry: registryId,
+    raw: routeComponent,
+    states: (routeComponent.storybook?.states ?? []).map((stateId) => ({
+      id: stateId,
+      kind: "route_state",
+      status: routeComponent.storybook?.status ?? "registered",
+      captureIds: [],
+      previewIds: [],
+      tests: [],
+    })),
+    captureIds: new Set(),
+    summary: {
+      id: routeComponent.id,
+      source: routeComponent.source,
+      exportName: routeComponent.exportName,
+    },
+  };
+}
+
+function validateBindings({
+  surface,
+  label,
+  authority,
+  componentRegistry,
+  pathExists,
+  readPath,
+  errors,
+}) {
+  const componentsById = new Map(
+    (componentRegistry?.components ?? []).map((component) => [component.id, component]),
+  );
+  const selectedComponents = [];
+  for (const componentId of surface.bindings.componentContracts ?? []) {
+    const component = componentsById.get(componentId);
+    if (component == null) {
+      errors.push(`${label}.bindings.componentContracts: unknown ${componentId}.`);
+    } else {
+      selectedComponents.push(component);
+    }
+  }
+  for (const filePath of [
+    ...(surface.bindings.previewSources ?? []),
+    ...(surface.bindings.dataContracts ?? []),
+    ...Object.values(surface.bindings.testEvidence ?? {}).flat(),
+  ]) {
+    if (!pathExists(filePath)) errors.push(`${label}.bindings: missing path ${filePath}.`);
+  }
+  for (const previewSource of surface.bindings.previewSources ?? []) {
+    if (pathExists(previewSource)) safeRead(previewSource, readPath, errors);
+  }
+  const stateIds = new Set(authority.states.map((state) => state.id));
+  for (const stateId of Object.keys(surface.bindings.testEvidence ?? {})) {
+    if (!stateIds.has(stateId)) {
+      errors.push(`${label}.bindings.testEvidence: unknown authority state ${stateId}.`);
+    }
+  }
+  return selectedComponents;
+}
+
+function resolveActionOwners({surface, label, pathExists, readPath, errors}) {
+  const owners = new Map();
+  const expectedLanguage = surface.runtime === "flutter" ? "dart" : "typescript";
+  for (const binding of surface.bindings.actionOwners ?? []) {
+    if (owners.has(binding.id)) {
+      errors.push(`${label}.bindings.actionOwners: duplicate owner ${binding.id}.`);
+      continue;
+    }
+    if (binding.language !== expectedLanguage) {
+      errors.push(
+        `${label}.bindings.actionOwners.${binding.id}: ${surface.runtime} requires ` +
+        `${expectedLanguage}, got ${binding.language}.`,
+      );
+    }
+    if (!pathExists(binding.file)) {
+      errors.push(`${label}.bindings.actionOwners: missing path ${binding.file}.`);
+      owners.set(binding.id, {binding, source: null});
+      continue;
+    }
+    const source = safeRead(binding.file, readPath, errors);
+    if (source != null && !hasDeclaredSymbol(source, binding.symbol)) {
+      errors.push(
+        `${label}.bindings.actionOwners.${binding.id}: ${binding.symbol} is missing from ` +
+        `${binding.file}.`,
+      );
+    }
+    owners.set(binding.id, {binding, source});
+  }
+  return owners;
+}
+
+function resolveStateEvidence({
+  surface,
+  authority,
+  state,
+  components,
+  readPath,
+  errors,
+  label,
+}) {
+  if (surface.runtime === "flutter") {
+    const availablePreviews = new Set();
+    for (const previewSource of surface.bindings.previewSources ?? []) {
+      const source = safeRead(
+        previewSource,
+        readPath,
+        errors,
+      );
+      if (source == null) continue;
+      for (const previewId of parseWidgetbookPreviewIds(source)) {
+        availablePreviews.add(previewId);
+      }
+    }
+    for (const previewId of state.previewIds) {
+      if (!availablePreviews.has(previewId)) {
+        errors.push(`${label}: Widgetbook preview ${previewId} is not declared.`);
+      }
+    }
+    return {
+      captureIds: [...state.captureIds],
+      previewIds: [...state.previewIds],
+      tests: [...state.tests],
+    };
+  }
+
+  const previewSourceSet = new Set(surface.bindings.previewSources ?? []);
+  const previewIds = [];
+  for (const component of components) {
+    if (!(component.routeIds ?? []).includes(authority.id)) continue;
+    if (!(component.storybook?.states ?? []).includes(state.id)) continue;
+    if (!previewSourceSet.has(component.storybook.story)) {
+      errors.push(
+        `${label}: preview source ${component.storybook.story} for ${component.id} ` +
+        "is not declared in bindings.previewSources.",
+      );
+      continue;
+    }
+    previewIds.push(`${component.id}/${component.storybook.exportName}`);
+  }
+  return {
+    captureIds: [],
+    previewIds: uniqueSorted(previewIds),
+    tests: [...(surface.bindings.testEvidence?.[state.id] ?? [])],
+  };
+}
+
+function compileEvidenceExceptions({label, surface, states, errors}) {
   const exceptions = [];
-  for (const [index, exception] of (source.evidenceExceptions ?? []).entries()) {
-    for (const stateId of exception.screenStateIds ?? []) {
-      if (!screenStates.has(stateId)) {
+  for (const [index, exception] of (surface.evidenceExceptions ?? []).entries()) {
+    for (const stateId of exception.stateIds ?? []) {
+      if (!states.has(stateId)) {
         errors.push(
-          `${source.id}.evidenceExceptions.${index}: unknown screen state ${stateId}.`,
+          `${label}.evidenceExceptions.${index}: unknown authority state ${stateId}.`,
         );
       }
     }
     exceptions.push({
-      screenStateIds: [...(exception.screenStateIds ?? [])],
+      stateIds: [...(exception.stateIds ?? [])],
       evidence: [...(exception.evidence ?? [])],
       debtId: exception.debtId,
       reason: exception.reason,
     });
   }
   return exceptions;
-}
-
-function validateBindings({source, componentRegistry, pathExists, readPath, errors}) {
-  const componentIds = new Set(
-    (componentRegistry.components ?? []).map((component) => component.id),
-  );
-  for (const componentId of source.bindings.componentContracts ?? []) {
-    if (!componentIds.has(componentId)) {
-      errors.push(`${source.id}.bindings.componentContracts: unknown ${componentId}.`);
-    }
-  }
-  for (const filePath of [
-    ...(source.bindings.widgetbookSources ?? []),
-    source.bindings.actionOwner.file,
-    ...(source.bindings.dataContracts ?? []),
-  ]) {
-    if (!pathExists(filePath)) errors.push(`${source.id}.bindings: missing path ${filePath}.`);
-  }
-  for (const widgetbookSource of source.bindings.widgetbookSources ?? []) {
-    if (pathExists(widgetbookSource)) safeRead(widgetbookSource, readPath, errors);
-  }
 }
 
 function validateDimensionSelection({label, selection = {}, dimensions, errors}) {
@@ -481,25 +756,19 @@ function validateDimensionSelection({label, selection = {}, dimensions, errors})
 }
 
 function validateEvidence({
-  featureId,
-  scenario,
-  screen,
+  label,
+  stateId,
   evidence,
-  availablePreviews,
+  authority,
   pathExists,
   requiredEvidence,
   evidenceExceptionMap,
   usedEvidenceExceptions,
   errors,
 }) {
-  const label = `${featureId}.scenarios.${scenario.id}`;
-  const screenCaptureIds = new Set([
-    ...(screen.captures ?? []).map((capture) => capture.id),
-    ...(screen.states ?? []).flatMap((state) => state.captureIds ?? []),
-  ]);
   validateRequiredEvidence({
     label,
-    screenStateId: scenario.screenStateId,
+    stateId,
     evidenceKind: "captures",
     isRequired: requiredEvidence.captures,
     hasEvidence: evidence.captureIds.length > 0,
@@ -508,13 +777,15 @@ function validateEvidence({
     errors,
   });
   for (const captureId of evidence.captureIds) {
-    if (!screenCaptureIds.has(captureId)) {
-      errors.push(`${label}: capture ${captureId} is not registered on ${screen.id}.`);
+    if (!authority.captureIds.has(captureId)) {
+      errors.push(
+        `${label}: capture ${captureId} is not registered on ${authority.registry}:${authority.id}.`,
+      );
     }
   }
   validateRequiredEvidence({
     label,
-    screenStateId: scenario.screenStateId,
+    stateId,
     evidenceKind: "previews",
     isRequired: requiredEvidence.previews,
     hasEvidence: evidence.previewIds.length > 0,
@@ -522,14 +793,9 @@ function validateEvidence({
     usedEvidenceExceptions,
     errors,
   });
-  for (const previewId of evidence.previewIds) {
-    if (!availablePreviews.has(previewId)) {
-      errors.push(`${label}: Widgetbook preview ${previewId} is not declared.`);
-    }
-  }
   validateRequiredEvidence({
     label,
-    screenStateId: scenario.screenStateId,
+    stateId,
     evidenceKind: "tests",
     isRequired: requiredEvidence.tests,
     hasEvidence: evidence.tests.length > 0,
@@ -544,7 +810,7 @@ function validateEvidence({
 
 function validateRequiredEvidence({
   label,
-  screenStateId,
+  stateId,
   evidenceKind,
   isRequired,
   hasEvidence,
@@ -552,7 +818,7 @@ function validateRequiredEvidence({
   usedEvidenceExceptions,
   errors,
 }) {
-  const key = evidenceExceptionKey(screenStateId, evidenceKind);
+  const key = evidenceExceptionKey(stateId, evidenceKind);
   const hasException = evidenceExceptionMap.has(key);
   if (hasEvidence) return;
   if (isRequired && hasException) {
@@ -562,14 +828,75 @@ function validateRequiredEvidence({
   if (!isRequired) return;
   const labelByKind = {
     captures: "capture evidence",
-    previews: "Widgetbook preview evidence",
+    previews: "preview evidence",
     tests: "test evidence",
   };
   errors.push(`${label}: ${labelByKind[evidenceKind]} is required.`);
 }
 
-function evidenceExceptionKey(screenStateId, evidenceKind) {
-  return `${screenStateId}:${evidenceKind}`;
+function authorityItemExists(authority, authorityRegistries) {
+  const registry = authorityRegistries[authority.registry];
+  if (registry == null) return false;
+  if (authority.registry === "flutter_screens") {
+    return (registry.screens ?? []).some((item) => item.id === authority.id);
+  }
+  if (authority.registry === "marketing_routes") {
+    return (registry.routes ?? []).some((item) => item.id === authority.id);
+  }
+  return (registry.components ?? [])
+    .some((item) => item.id === authority.id && item.kind === "route");
+}
+
+function aggregateCoverage(surfaces) {
+  const totals = {
+    surfaces: surfaces.length,
+    states: 0,
+    scenarios: 0,
+    actionCases: 0,
+    actions: 0,
+    captures: 0,
+    previews: 0,
+    testFiles: 0,
+    evidenceExceptions: 0,
+  };
+  const captures = new Set();
+  const previews = new Set();
+  const tests = new Set();
+  for (const surface of surfaces) {
+    totals.states += surface.coverage.states;
+    totals.scenarios += surface.coverage.scenarios;
+    totals.actionCases += surface.coverage.actionCases;
+    totals.actions += surface.coverage.actions;
+    totals.evidenceExceptions += surface.coverage.evidenceExceptions;
+    for (const scenario of surface.scenarios) {
+      for (const id of scenario.evidence.captureIds) captures.add(id);
+      for (const id of scenario.evidence.previewIds) previews.add(`${surface.id}:${id}`);
+      for (const filePath of scenario.evidence.tests) tests.add(filePath);
+    }
+  }
+  totals.captures = captures.size;
+  totals.previews = previews.size;
+  totals.testFiles = tests.size;
+  return totals;
+}
+
+function componentProjection(component) {
+  return Object.fromEntries(Object.entries({
+    id: component.id,
+    kind: component.kind,
+    source: component.source,
+    exportName: component.exportName,
+    dart: component.dart,
+    storybook: component.storybook == null ? undefined : {
+      story: component.storybook.story,
+      exportName: component.storybook.exportName,
+      states: component.storybook.states,
+    },
+  }).filter(([, value]) => value !== undefined));
+}
+
+function evidenceExceptionKey(stateId, evidenceKind) {
+  return `${stateId}:${evidenceKind}`;
 }
 
 export function parseWidgetbookPreviewIds(source) {
@@ -593,9 +920,12 @@ function safeRead(filePath, readPath, errors) {
   }
 }
 
-function hasSymbol(source, symbol) {
-  return new RegExp(`\\b(?:class|enum|mixin|typedef)\\s+${escapeRegExp(symbol)}\\b`, "u")
-    .test(source);
+function hasDeclaredSymbol(source, symbol) {
+  return new RegExp(
+    `\\b(?:class|enum|mixin|typedef|function|interface|type|const|let|var)\\s+` +
+    `${escapeRegExp(symbol)}\\b`,
+    "u",
+  ).test(source);
 }
 
 function hasWord(source, value) {
@@ -635,7 +965,8 @@ function relative(filePath) {
 function printSummary(artifact) {
   const coverage = artifact.coverage;
   console.log(
-    `${artifact.feature.id}: ${coverage.scenarios}/${coverage.screenStates} states, ` +
+    `${artifact.feature.id}: ${coverage.surfaces} surface(s), ` +
+    `${coverage.scenarios}/${coverage.states} states, ` +
     `${coverage.actionCases} action cases, ${coverage.actions} actions, ` +
     `${coverage.captures} captures, ${coverage.previews} previews, ` +
     `${coverage.testFiles} test files, ` +
@@ -649,8 +980,9 @@ function printHelp() {
   node tool/design/build_feature_contracts.mjs --check
   node tool/design/build_feature_contracts.mjs --summary
 
-Compiles design/features/*.feature.json orchestration contracts against the
-authoritative screen, component, capture, Widgetbook, test, and data-contract
-sources. The default command writes deterministic generated artifacts; --check
-fails when those artifacts or their referenced evidence are stale.`);
+Compiles design/features/*.feature.json multi-surface orchestration contracts
+against the authoritative Flutter screen, marketing route, admin route,
+component, preview, test, capture, action-owner, and data-contract sources. The
+default command writes deterministic generated artifacts; --check fails when
+those artifacts or their referenced evidence are stale.`);
 }

@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.4.172
+version: 0.4.173
 updated: 2026-07-22
 owner: marketing_website
 status: active
@@ -52,6 +52,12 @@ The website is already split out of the old monolithic shell:
   Shared product outcomes may target a cross-runtime identity such as
   `feature.explore` or `feature.organizer_detail`; route metadata, static output,
   React components, actions, and evidence remain owned by the website runtime.
+  Organizer Search is the first live projection: the feature compiler resolves
+  its three real route states, controller actions, route/section Storybook
+  previews, focused controller tests, and public listing projection schema into
+  the same generated `feature.explore` artifact as Flutter Explore. The removed
+  `saved-organizers` route state belongs to organizer detail storage and was not
+  an Organizer Search state.
 - `website/src/generated/hostListings.json` is production-only and excludes
   `dataOrigin: "catchDemo"` plus organizer-intake and seed records that do not
   resolve to a `live` city in the active market pack. Multi-market organizer

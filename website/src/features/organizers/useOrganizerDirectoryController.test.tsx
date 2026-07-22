@@ -18,6 +18,24 @@ function wrapper(initialEntry = "/organizers/") {
 }
 
 describe("useOrganizerDirectoryController", () => {
+  it("covers the default and empty-result route states with a recoverable reset", async () => {
+    const {result} = renderHook(() => useOrganizerDirectoryController(), {
+      wrapper: wrapper(),
+    });
+
+    expect(result.current.currentFilters).toEqual(expect.objectContaining({
+      query: "",
+      statusFilter: "all",
+    }));
+    expect(result.current.results.length).toBeGreaterThan(0);
+
+    act(() => result.current.setQuery("no-organizer-can-match-this-query"));
+    await waitFor(() => expect(result.current.results).toHaveLength(0));
+
+    act(() => result.current.clearFilters());
+    await waitFor(() => expect(result.current.results.length).toBeGreaterThan(0));
+  });
+
   it("hydrates filters from the URL and composes functional updates", async () => {
     const {result} = renderHook(() => useOrganizerDirectoryController(), {
       wrapper: wrapper("/organizers/?status=unclaimed&q=after"),

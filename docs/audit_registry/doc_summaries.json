@@ -1,6 +1,6 @@
 {
-  "version": "4.5.150",
-  "updated": "2026-07-18",
+  "version": "4.5.151",
+  "updated": "2026-07-23",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -503,13 +503,35 @@
       ]
     },
     "docs/design_parity/README.md": {
-      "purpose": "Design parity folder owner and workflow for state matrices, screen contracts, captures, Widgetbook, component contracts, and route-ledger hygiene.",
+      "purpose": "Design parity folder owner and workflow for state matrices, multi-surface feature contracts, captures, Widgetbook and Storybook evidence, component contracts, and route-ledger hygiene.",
       "read_when": [
         "Starting design-parity work",
         "Changing screen contracts, capture coverage, Widgetbook references, or design parity ledgers"
       ],
       "skip_when": [
         "Only changing unrelated Flutter architecture or backend contracts"
+      ]
+    },
+    "design/features/feature_contract.schema.json": {
+      "purpose": "Executable schema for one semantic feature identity with runtime-native Flutter, marketing, and admin surface projections, action owners, state scenarios, outcomes, and evidence requirements.",
+      "read_when": [
+        "Creating or changing a feature contract",
+        "Extending one feature identity across another runtime",
+        "Changing action, scenario, outcome, or evidence semantics"
+      ],
+      "skip_when": [
+        "Only consuming already-generated feature contract output"
+      ]
+    },
+    "design/features/feature_coverage.json": {
+      "purpose": "Exhaustive migration ledger for registered Flutter screens, marketing routes, and admin route components, including planned shared identities, grouped projections, and justified exclusions.",
+      "read_when": [
+        "Choosing the next feature-contract migration",
+        "Checking whole-repository feature coverage",
+        "Adding or removing a registered Flutter or React authority"
+      ],
+      "skip_when": [
+        "Working inside one already-contracted feature without changing authority coverage"
       ]
     },
     "docs/design_parity/comprehensive_todo.md": {

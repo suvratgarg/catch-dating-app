@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 86,
-  "updated": "2026-07-22",
+  "version": 87,
+  "updated": "2026-07-23",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -1008,8 +1008,7 @@
         "states": [
           "default",
           "filtered",
-          "empty-results",
-          "saved-organizers"
+          "empty-results"
         ]
       },
       "notes": "Reference organizer-directory route story; URL state remains controller-owned through React Router search params."

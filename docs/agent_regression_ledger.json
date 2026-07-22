@@ -1,5 +1,5 @@
 {
-  "version": 64,
+  "version": 65,
   "updated": "2026-07-23",
   "owner": "agent_operating_model",
   "entries": [
@@ -2577,7 +2577,7 @@
     },
     {
       "id": "REG-FEATURE-CONTRACT-DRIFT-001",
-      "title": "Feature orchestration claims complete evidence while screen states or actions drift",
+      "title": "Feature orchestration claims complete evidence while surfaces, states, or actions drift",
       "status": "active",
       "applies_to": [
         "design/features/**",
@@ -2590,11 +2590,11 @@
         "tool/design/check_feature_coverage.mjs",
         "tool/design/build_feature_contracts.mjs"
       ],
-      "symptom": "A feature brief appears deterministic but omits an entire registered product surface, duplicates or omits a registered screen state, leaves an action unclassified, points to missing evidence, falsely claims a surface binding, or carries a stale generated projection.",
+      "symptom": "A feature brief appears deterministic but omits an entire registered product surface, conflates Flutter and React runtime ownership, duplicates or omits an authority state, leaves an action or owner unclassified, points to missing evidence, falsely claims a surface binding, or carries a stale generated projection.",
       "guard": {
         "type": "command",
         "command": "node --test tool/design/check_feature_coverage.test.mjs tool/design/build_feature_contracts.test.mjs && node tool/design/check_feature_coverage.mjs --check && node tool/design/build_feature_contracts.mjs --check && node tool/design/check_screen_contracts.mjs --check",
-        "guardEvidence": "known-bad coverage tests reject unclassified registry additions, duplicate or unknown decisions, invalid grouping, false contract bindings, and orphaned contracts; compiler tests reject duplicate and missing state mappings, missing capture/preview/test evidence, stale evidence exceptions, invalid screen-state/route/side-effect outcomes, and unknown action/dimension references"
+        "guardEvidence": "known-bad coverage tests reject unclassified registry additions, duplicate or unknown decisions, invalid grouping, false multi-runtime contract bindings, and orphaned contracts; compiler tests prove a shared feature can bind multiple runtimes and reject runtime/authority mismatches, duplicate or missing states, synthetic owner requirements on read-only surfaces, missing evidence, stale exceptions, invalid outcomes, and unknown action owners/actions/dimensions"
       },
       "owner_docs": [
         "docs/design_parity/README.md",
@@ -2603,7 +2603,7 @@
         "design/screens/README.md",
         "tool/README.md"
       ],
-      "notes": "Event Detail, Explore, and Host Event Manage are the reference contracts. The exhaustive ledger covers registered Flutter, marketing, and admin feature surfaces and may share semantic feature identity across runtime projections. Feature contracts orchestrate existing authorities and expose named evidence debt; they do not generate Flutter or React behavior, business algorithms, security rules, or migrations."
+      "notes": "Event Detail, Explore, and Host Event Manage are the reference contracts. Explore is the first compiled cross-runtime feature, binding Flutter discovery and marketing Organizer Search as separate native projections under one semantic identity. The exhaustive ledger covers registered Flutter, marketing, and admin feature surfaces. Feature contracts orchestrate existing authorities and expose named evidence debt; they do not generate Flutter or React behavior, business algorithms, security rules, or migrations."
     }
   ]
 }

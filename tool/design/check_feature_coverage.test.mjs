@@ -52,7 +52,17 @@ function fixture() {
       ],
     },
     featureContracts: [
-      {id: "feature.example", screenContract: "screen.example"},
+      {
+        id: "feature.example",
+        surfaces: [
+          {
+            authority: {
+              registry: "flutter_screens",
+              id: "screen.example",
+            },
+          },
+        ],
+      },
     ],
     registries: {
       "design/screens.json": {screens: [{id: "screen.example"}]},
@@ -80,6 +90,38 @@ test("accepts exhaustive cross-surface coverage and filtered authorities", () =>
   assert.deepEqual(result.errors, []);
   assert.equal(result.summary.totalInventory, 3);
   assert.equal(result.summary.authorityCounts.get("admin_routes"), 2);
+});
+
+test("accepts one feature contract binding multiple runtime authorities", () => {
+  const data = fixture();
+  data.coverage.authorities.push({
+    id: "marketing_routes",
+    runtime: "react_marketing",
+    registry: "design/marketing.json",
+    collection: "routes",
+    idField: "id",
+  });
+  data.coverage.decisions.push({
+    authority: "marketing_routes",
+    authorityId: "organizer_search",
+    status: "contracted",
+    priority: "P1",
+    reason: "Shared feature projection.",
+    featureContract: "feature.example",
+  });
+  data.featureContracts[0].surfaces.push({
+    authority: {
+      registry: "marketing_routes",
+      id: "organizer_search",
+    },
+  });
+  data.registries["design/marketing.json"] = {
+    routes: [{id: "organizer_search"}],
+  };
+
+  const result = validate(data);
+  assert.deepEqual(result.errors, []);
+  assert.equal(result.summary.totalInventory, 4);
 });
 
 test("rejects missing, duplicate, and unknown authority decisions", () => {
@@ -146,7 +188,14 @@ test("rejects orphaned source contracts", () => {
   const data = fixture();
   data.featureContracts.push({
     id: "feature.orphaned",
-    screenContract: "screen.orphaned",
+    surfaces: [
+      {
+        authority: {
+          registry: "flutter_screens",
+          id: "screen.orphaned",
+        },
+      },
+    ],
   });
 
   const result = validate(data);

@@ -338,11 +338,10 @@
     {
       "authority": "marketing_routes",
       "authorityId": "organizer_search",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Public-web projection of organizer discovery and filtering.",
-      "targetFeature": "feature.explore",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Public-web organizer discovery projection is compiled into the shared Explore feature contract with route-state, action-owner, preview, and test evidence.",
+      "featureContract": "feature.explore"
     },
     {
       "authority": "marketing_routes",
