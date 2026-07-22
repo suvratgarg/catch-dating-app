@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-07-19T09:35:49.089Z",
+  "generatedAt": "2026-07-22T15:02:48.253Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
   },
   "summary": {
-    "useCases": 864,
-    "components": 813,
+    "useCases": 863,
+    "components": 812,
     "stateCards": 1774,
     "reviewCandidates": 43,
     "oversizedUseCases": 43,
@@ -34594,31 +34594,6 @@
         {
           "name": "Route error",
           "functionName": "savedEventsErrorState",
-          "file": "widgetbook/lib/events/event_detail_use_cases.dart",
-          "path": "[Events]/Sections",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
-      "component": "SavedEventsHeaderSliver",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[Events]/Sections"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Header sliver",
-          "functionName": "savedEventsHeaderSliverState",
           "file": "widgetbook/lib/events/event_detail_use_cases.dart",
           "path": "[Events]/Sections",
           "stateCardCount": 0,
