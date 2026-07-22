@@ -45,6 +45,9 @@ declare global {
 const attributionStorageKey = "catch_marketing_attribution_v1";
 const consentStorageKey = "catch_marketing_consent_v1";
 const trackedPageViews = new Set<string>();
+const ga4EventNameAliases: Readonly<Record<string, string>> = {
+  host_operating_application_submit_attempt: "host_application_submit_attempt",
+};
 let gtmLoaded = false;
 let clientErrorMonitoringInstalled = false;
 
@@ -121,7 +124,7 @@ export function setMarketingConsent(choice: ConsentChoice) {
 }
 
 export function trackPageView(pageName: string) {
-  const pagePath = `${window.location.pathname}${window.location.search}`;
+  const pagePath = window.location.pathname;
   const pageKey = `${pageName}:${pagePath}`;
   if (trackedPageViews.has(pageKey)) return;
   trackedPageViews.add(pageKey);
@@ -138,9 +141,13 @@ export function trackMarketingEvent(
   eventName: string,
   parameters: Record<string, unknown> = {}
 ) {
+  const sanitizedParameters = {...parameters};
+  sanitizeAnalyticsUrlParameter(sanitizedParameters, "page_path");
+  sanitizeAnalyticsUrlParameter(sanitizedParameters, "page_location");
+
   dataLayer().push({
-    event: eventName,
-    ...parameters,
+    event: ga4EventNameAliases[eventName] ?? eventName,
+    ...sanitizedParameters,
     content_version: marketingContentVersion,
   });
 }
@@ -149,7 +156,7 @@ export function marketingCtaClickParameters(label: string, href: string) {
   return {
     cta_href: href,
     cta_label: label,
-    page_path: `${window.location.pathname}${window.location.search}`,
+    page_path: window.location.pathname,
   };
 }
 
@@ -171,7 +178,7 @@ export function waitlistAnalyticsPayload(
       consent: getMarketingConsent(),
       eventId,
       formVariant,
-      pagePath: `${window.location.pathname}${window.location.search}`,
+      pagePath: window.location.pathname,
       pageTitle: document.title,
       submittedAt: new Date().toISOString(),
     },
@@ -279,6 +286,15 @@ function currentAttributionTouch(): AttributionTouch {
     referrer: document.referrer || null,
     values,
   };
+}
+
+function sanitizeAnalyticsUrlParameter(
+  parameters: Record<string, unknown>,
+  key: "page_path" | "page_location"
+) {
+  const value = parameters[key];
+  if (typeof value !== "string") return;
+  parameters[key] = value.split("?", 1)[0];
 }
 
 function readJson<T>(key: string): T | null {

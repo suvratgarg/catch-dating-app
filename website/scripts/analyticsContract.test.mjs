@@ -23,10 +23,53 @@ test("marketing events carry the immutable website copy content version", () => 
     event: "page_view",
     content_version: "website_copy_v2",
     page_name: "contract_page",
-    page_path: "/host/?source=contract",
-    page_location: "https://catchdates.test/host/?source=contract",
+    page_path: "/host/",
+    page_location: "https://catchdates.test/host/",
     page_title: "Catch contract fixture",
   });
+});
+
+test("analytics URL parameters omit query strings without changing attribution capture", () => {
+  window.localStorage.clear();
+  window.dataLayer = [];
+
+  analytics.initializeMarketingAnalytics();
+  analytics.trackMarketingEvent("contract_url_probe", {
+    page_location: "https://catchdates.test/host/?email=private%40example.com",
+    page_path: "/host/?email=private%40example.com",
+  });
+  const payload = analytics.waitlistAnalyticsPayload("waitlist_event-1", "member");
+
+  assert.deepEqual(latestEvent("contract_url_probe"), {
+    event: "contract_url_probe",
+    content_version: "website_copy_v2",
+    page_location: "https://catchdates.test/host/",
+    page_path: "/host/",
+  });
+  assert.equal(payload.analytics.pagePath, "/host/");
+  assert.equal(payload.attribution?.firstTouch.landingPath, "/host/?source=contract");
+  assert.equal(
+    payload.attribution?.firstTouch.landingUrl,
+    "https://catchdates.test/host/?source=contract"
+  );
+  assert.deepEqual(payload.attribution?.firstTouch.values, {});
+});
+
+test("the host application attempt emits a GA4-safe event name", () => {
+  window.dataLayer = [];
+
+  analytics.trackMarketingEvent("host_operating_application_submit_attempt", {
+    city: "Indore",
+  });
+
+  assert.deepEqual(window.dataLayer, [
+    {
+      event: "host_application_submit_attempt",
+      city: "Indore",
+      content_version: "website_copy_v2",
+    },
+  ]);
+  assert.ok(window.dataLayer[0].event.length <= 40);
 });
 
 test("CTA payloads preserve the cta_label and cta_href transport contract", () => {
@@ -47,14 +90,14 @@ test("CTA payloads preserve the cta_label and cta_href transport contract", () =
       content_version: "website_copy_v2",
       cta_href: "/download",
       cta_label: "home_hero_get_app",
-      page_path: "/host/?source=contract",
+      page_path: "/host/",
     },
     {
       event: "cta_click",
       content_version: "website_copy_v2",
       cta_href: "/host/",
       cta_label: "footer_for_hosts",
-      page_path: "/host/?source=contract",
+      page_path: "/host/",
     },
   ]);
   assert.equal("cta_id" in window.dataLayer[0], false);
@@ -129,6 +172,7 @@ function installBrowserFixture() {
   };
 
   globalThis.window = {
+    addEventListener() {},
     dataLayer: [],
     location: {
       href: "https://catchdates.test/host/?source=contract",
