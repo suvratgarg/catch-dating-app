@@ -317,7 +317,7 @@
   },
   "website_readme": {
     "path": "website/README.md",
-    "version": "0.3.8",
+    "version": "0.3.9",
     "updated": "2026-07-22",
     "status": "active",
     "read_policy": "Read before running or changing the marketing website local workflow, route-contract gate, component registry gate, Storybook workbench, analytics setup, or Firebase Hosting CI/CD notes."

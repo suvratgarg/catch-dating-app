@@ -68,9 +68,9 @@
     {
       "id": "BLK-WEB-ANALYTICS",
       "severity": "measurement_blocker",
-      "status": "open",
+      "status": "resolved",
       "owner": "founder",
-      "summary": "The live website bundle contains no GTM container ID; consented traffic and conversion events have no production destination.",
+      "summary": "Resolved: GTM-K7KLNQXP is published as Version 2 with Google tag G-CH7WMQY5FV and is the enforced production deployment default.",
       "unblocks": ["TASK-OBS-WEB-ANALYTICS"]
     },
     {
@@ -150,19 +150,22 @@
       "id": "TASK-OBS-WEB-ANALYTICS",
       "workstream": "observability",
       "title": "Deliver consented website traffic, conversion, and client-error events to GTM/GA4",
-      "status": "blocked",
+      "status": "in_progress",
       "priority": "P0",
       "owner": "founder",
       "targetDate": "2026-07-22",
-      "dependencies": ["BLK-WEB-ANALYTICS"],
+      "dependencies": [],
       "acceptance": [
         "prod-hosting has a confirmed VITE_GTM_ID.",
         "A consented production session produces page_view and launch conversion events in GA4 Realtime or DebugView.",
         "No analytics or marketing tag loads before consent.",
         "Evidence is linked without exposing credentials."
       ],
-      "nextAction": "Founder supplies or creates the GTM container ID; then set the GitHub environment variable and verify GA4 delivery.",
+      "nextAction": "Deploy main, accept analytics consent in one production session, and verify page_view plus conversion delivery in GA4 Realtime or DebugView.",
       "evidence": [
+        "GTM-K7KLNQXP version 2: Catch website production GA4 launch",
+        ".github/workflows/marketing-website.yml",
+        "tool/env/check_web_hosting_env.mjs",
         "website/src/analytics.ts",
         "website/src/features/marketing/tracking.test.ts"
       ],

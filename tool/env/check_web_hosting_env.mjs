@@ -20,6 +20,7 @@ if (!["marketing", "admin"].includes(target)) {
 
 const required = target === "marketing" ? [
   ...commonFirebaseVars,
+  "VITE_GTM_ID",
   "VITE_FIREBASE_MEASUREMENT_ID",
   "VITE_WEBSITE_APPCHECK_SITE_KEY",
   "VITE_STORE_LINKS_MODE",
@@ -40,6 +41,14 @@ for (const name of required) {
 
 if (target === "marketing" && process.env.VITE_STORE_LINKS_MODE?.trim()) {
   validateMarketingStoreLinks(process.env.VITE_STORE_LINKS_MODE.trim());
+}
+
+if (
+  target === "marketing" &&
+  process.env.VITE_GTM_ID?.trim() &&
+  !/^GTM-[A-Z0-9]+$/u.test(process.env.VITE_GTM_ID.trim())
+) {
+  errors.push("VITE_GTM_ID must be a Google Tag Manager container id such as GTM-XXXXXXX.");
 }
 
 const deployEnv = process.env.CATCH_FIREBASE_DEPLOY_ENV;

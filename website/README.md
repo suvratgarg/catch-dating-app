@@ -161,9 +161,9 @@ The site has a first-party analytics layer in `src/analytics.ts` and records
 host-visible organizer metrics through `recordOrganizerAnalyticsEvent` in
 `src/firebase.ts`.
 
-- Set `VITE_GTM_ID` from `env.example` to load Google Tag Manager after consent.
-  GTM is optional for Hosting deploys until the production container exists; the
-  site skips GTM when the variable is unset.
+- Production deploys use `GTM-K7KLNQXP` unless the `prod-hosting`
+  `VITE_GTM_ID` variable explicitly overrides it. The environment gate requires
+  a valid container id, and the browser loads GTM only after analytics consent.
 - `.github/workflows/website-production-observability.yml` probes the public
   launch routes every 15 minutes without a paid monitoring service. The same
   status, canonical-metadata, and content checks run immediately after a
