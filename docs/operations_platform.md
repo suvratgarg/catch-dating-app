@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.2.0
-updated: 2026-07-19
+version: 1.2.1
+updated: 2026-07-22
 owner: operations_platform
 status: active
 ---
@@ -41,6 +41,14 @@ artifact patterns, and the workflow-manifest check fails when code consumption
 and retirement metadata drift. Compatibility files may be deleted only when
 all listed criteria are proved and the producer, adapter, manifest entry, and
 generated artifacts are retired together.
+
+Compatibility ingestion is market- and freshness-bound. A Supply Intake plan
+admits organizer publication packets only when their declared geography matches
+the requested market. Its reviewed Event Intake bridge must name that same
+market, cannot be future-dated or older than the frozen `staleAfterHours`
+policy, and must retain a review window through the plan date. Missing, stale,
+expired, or mismatched bridges fail planning before work-item counts or run
+state are created.
 
 ## Reference Layout
 

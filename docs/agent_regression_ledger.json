@@ -990,7 +990,7 @@
     },
     {
       "id": "REG-WEB-003",
-      "title": "Demo inventory or internal organizer scores leak into public discovery",
+      "title": "Demo or waitlist-market inventory and internal organizer scores leak into public discovery",
       "status": "active",
       "applies_to": [
         "website/scripts/generateOrganizerListings.mjs",
@@ -1000,17 +1000,17 @@
         "website/src/features/home/**",
         "design/website/components.json"
       ],
-      "symptom": "Deployable organizer data contains catchDemo records, Home renders past, external, or out-of-market events, or public organizer cards expose the internal profile-strength heuristic as a quality percentage.",
+      "symptom": "Deployable organizer data contains catchDemo or waitlist-market records, Home renders past, external, or out-of-market events, or public organizer cards expose the internal profile-strength heuristic as a quality percentage.",
       "guard": {
         "type": "command",
-        "command": "node --test website/scripts/generateOrganizerListings.test.mjs && npm --workspace catch-marketing run check:event-eligibility && npm --workspace catch-marketing run check:components && npm --workspace catch-marketing run build"
+        "command": "node --test website/scripts/generateOrganizerListings.test.mjs tool/organizer_intake/check_promotion_bridge.test.mjs && npm --workspace catch-marketing run check:event-eligibility && npm --workspace catch-marketing run check:components && npm --workspace catch-marketing run build"
       },
       "owner_docs": [
         "docs/marketing_website_architecture.md",
         "design/website/components.json",
         "website/README.md"
       ],
-      "notes": "Production generation excludes catchDemo by default; Storybook imports the explicit demo projection. Listing strength may rank internally but must not render as public reputation evidence."
+      "notes": "Production generation excludes catchDemo and any organizer without a live-market match by default; Storybook imports the explicit demo projection. The promotion bridge independently rejects waitlist-market organizer or legacy routes in website output. Listing strength may rank internally but must not render as public reputation evidence."
     },
     {
       "id": "REG-WEB-004",

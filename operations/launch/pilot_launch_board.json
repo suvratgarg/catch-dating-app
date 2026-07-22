@@ -3,7 +3,7 @@
   "boardId": "catch-pilot-launch-2026-07",
   "name": "Catch website-first pilot launch",
   "owner": "founder",
-  "updatedAt": "2026-07-22T00:00:00+05:30",
+  "updatedAt": "2026-07-22T20:05:50+05:30",
   "operatingMode": "website_first",
   "successDefinition": "Catch is publicly operating in Mumbai and Indore with accurate market claims, reachable legal and help pages, production website monitoring, and a reviewed supply pipeline ready for the first 50 organizers plus their events.",
   "statusDefinitions": {
@@ -13,6 +13,12 @@
     "ready": "Acceptance criteria are met and final publication or owner approval remains.",
     "done": "Acceptance criteria are met and durable evidence is linked.",
     "deferred": "Intentionally excluded until its revisit condition is true."
+  },
+  "issueStatusDefinitions": {
+    "open": "Confirmed defect or readiness gap that has not been claimed.",
+    "in_progress": "A named owner is actively implementing or externally configuring the fix.",
+    "fixed": "The fix is merged and any production-facing behavior is verified live.",
+    "deferred": "The issue is deliberately outside the current launch tranche with a revisit condition."
   },
   "decisions": [
     {
@@ -82,6 +88,152 @@
       "unblocks": ["TASK-SUPPLY-50"]
     }
   ],
+  "issues": [
+    {
+      "id": "LAUNCH-MARKET-001",
+      "severity": "P0",
+      "status": "in_progress",
+      "workstream": "launch_surface",
+      "summary": "The organizer generator projected published Delhi inventory even though Delhi is waitlisted, exposing Bhag Club through Home, directory, search, static routes, JSON-LD, and sitemap.",
+      "owner": "codex/pilot-hardening-20260722",
+      "nextAction": "Merge, deploy, and verify that the Bhag canonical and legacy routes and sitemap entry are absent while the review/Storybook projection is preserved.",
+      "evidence": [
+        "website/scripts/generateOrganizerListings.mjs",
+        "tool/organizer_intake/check_promotion_bridge.mjs",
+        "website/src/generated/hostListings.json"
+      ]
+    },
+    {
+      "id": "LAUNCH-ANALYTICS-001",
+      "severity": "P0",
+      "status": "in_progress",
+      "workstream": "observability",
+      "summary": "The published GTM container delivers base GA4 page views but has no explicit forwarding for consented lead, claim, CTA, or client-error dataLayer events.",
+      "owner": "codex/pilot-hardening-20260722",
+      "nextAction": "Switch GTM to the Catch-owning Google account, add the safe minimum custom-event tags, publish a version, and prove exact-once delivery in Preview/GA4.",
+      "evidence": [
+        "GTM-K7KLNQXP version 2",
+        "2026-07-22 GA4 Realtime confirmed six page_view events and three production page titles",
+        "website/src/analytics.ts"
+      ]
+    },
+    {
+      "id": "LAUNCH-ANALYTICS-002",
+      "severity": "P0",
+      "status": "in_progress",
+      "workstream": "privacy",
+      "summary": "GA4 page_location and website analytics page_path can include query strings containing free-text organizer searches or claim request identifiers.",
+      "owner": "codex/analytics-url-privacy-20260722",
+      "nextAction": "Strip query strings in source analytics, configure the GTM base tag with a pathname-only page_location, and add regression proof.",
+      "evidence": [
+        "website/src/analytics.ts",
+        "docs/ads_conversion_spec.md"
+      ]
+    },
+    {
+      "id": "LAUNCH-SUPPLY-001",
+      "severity": "P0",
+      "status": "in_progress",
+      "workstream": "supply",
+      "summary": "Supply Intake reads global organizer packets without requested-market filtering and accepts stale event bridges; a Mumbai run mislabeled Indore and Delhi organizers and projected seven expired events.",
+      "owner": "codex/supply-market-freshness-20260722",
+      "nextAction": "Add market isolation and bridge-freshness failures with deterministic tests before creating pilot-city runs.",
+      "evidence": [
+        "operations/src/workflows/supply-intake/adapters/legacy-artifacts.mjs",
+        "2026-07-22 read-only Mumbai shadow audit: 18 items, 7 expired events"
+      ]
+    },
+    {
+      "id": "LAUNCH-SUPPLY-002",
+      "severity": "P0",
+      "status": "open",
+      "workstream": "supply",
+      "summary": "No current Indore event-intake bridge exists, and the available Mumbai bridge is a stale June sample that correctly fails the live publisher check.",
+      "owner": "operations",
+      "nextAction": "Capture and review current Mumbai and Indore source results, candidates, and decisions, then generate two current live-checkable bridges.",
+      "evidence": [
+        "tool/marketing/event_guide/generated/mumbai/2026-06-22/event_intake_bridge.json",
+        "tool/marketing/event_guide/generated/indore/ is absent"
+      ]
+    },
+    {
+      "id": "LAUNCH-SUPPLY-003",
+      "severity": "P0",
+      "status": "open",
+      "workstream": "supply",
+      "summary": "Reviewed external-event capture and import planning stop at a no-write plan; no production writer or publication authority implementation exists yet.",
+      "owner": "backend_operations",
+      "nextAction": "Implement the accepted read-only external-event authority and reviewed writer with market identity, idempotency, takedown, and dry-run receipts before publishing organizer events.",
+      "evidence": [
+        "tool/organizer_intake/generated/external_event_import_execution_plan.json",
+        "operations/src/workflows/supply-intake/manifest.json"
+      ]
+    },
+    {
+      "id": "LAUNCH-SUPPLY-004",
+      "severity": "P1",
+      "status": "open",
+      "workstream": "supply",
+      "summary": "New search candidates cannot become schema-complete OrganizerEntity records through one governed command; the first batch requires a manual reviewed batch artifact.",
+      "owner": "operations",
+      "nextAction": "Author the first 10-organizer batch manually, then add a reviewed candidate-to-entity scaffolding command after the pilot proves the required fields.",
+      "evidence": [
+        "tool/organizer_intake/generated/search_result_candidate_queue.json",
+        "tool/organizer_intake/batches/"
+      ]
+    },
+    {
+      "id": "LAUNCH-SUPPLY-005",
+      "severity": "P1",
+      "status": "open",
+      "workstream": "admin_operations",
+      "summary": "The Event Intake publisher owns only eventIntakeDashboards/current, so publishing Indore would replace Mumbai instead of preserving both pilot markets.",
+      "owner": "admin_backend",
+      "nextAction": "Move the dashboard projection to market-scoped documents and update the admin reader before publishing two city dashboards.",
+      "evidence": [
+        "tool/marketing/event_guide/publish_event_intake_dashboard.mjs"
+      ]
+    },
+    {
+      "id": "LAUNCH-SUPPLY-006",
+      "severity": "P1",
+      "status": "open",
+      "workstream": "supply",
+      "summary": "Supply acquisition is not autonomous: Operations disables network/model access, event search needs a paid key for automation, and organizer search capture is manual.",
+      "owner": "operations",
+      "nextAction": "Use the free manual browser capture path for the first 10 organizers; decide on an acquisition provider only after measuring pilot throughput.",
+      "evidence": [
+        "operations/src/workflows/supply-intake/manifest.json",
+        "tool/organizer_intake/generated/search_run_plan.json"
+      ]
+    },
+    {
+      "id": "LAUNCH-SECURITY-001",
+      "severity": "P0",
+      "status": "in_progress",
+      "workstream": "dependency_security",
+      "summary": "The installed production dependency graph contained one high-severity fast-uri host-confusion advisory and one moderate protobufjs parser denial-of-service advisory.",
+      "owner": "codex/pilot-hardening-20260722",
+      "nextAction": "Merge the lockfile-only upgrades to fast-uri 3.1.4 and protobufjs 7.6.5, then retain npm audit zero-findings proof in the launch handoff.",
+      "evidence": [
+        "package-lock.json",
+        "2026-07-22 npm audit --omit=dev: 0 vulnerabilities after remediation"
+      ]
+    },
+    {
+      "id": "LAUNCH-ANALYTICS-003",
+      "severity": "P1",
+      "status": "open",
+      "workstream": "privacy",
+      "summary": "The website provides no visible way to revisit or withdraw a stored analytics consent choice.",
+      "owner": "website",
+      "nextAction": "Add a footer privacy-settings control and automated essential-only network proof after the launch-critical event pipeline is verified.",
+      "evidence": [
+        "website/src/features/marketing/MarketingConsentBanner.tsx",
+        "website/src/analytics.ts"
+      ]
+    }
+  ],
   "tasks": [
     {
       "id": "TASK-MARKETS",
@@ -89,7 +241,7 @@
       "title": "Align every public market claim to Mumbai and Indore only",
       "status": "in_progress",
       "priority": "P0",
-      "owner": "codex/website-pilot-launch-20260722",
+      "owner": "codex/pilot-hardening-20260722",
       "targetDate": "2026-07-22",
       "dependencies": ["DEC-001", "DEC-002"],
       "acceptance": [
@@ -98,18 +250,21 @@
         "Market-pack and website route/build checks pass.",
         "Production pages show the two-city claim after deployment."
       ],
-      "nextAction": "Merge and verify the production marketing deployment.",
+      "nextAction": "Deploy the generator and promotion-bridge guard, then prove waitlist organizer routes and sitemap entries are absent.",
       "evidence": [
         "website/src/content/markets/in.ts",
-        "website/scripts/marketPack.test.mjs"
+        "website/scripts/marketPack.test.mjs",
+        "PR #96 merged as 2a382a25432e46ec79fdb3ba8b2bf47f17513409",
+        "Production workflow 29922913399",
+        "2026-07-22 live probe: / and /organizers/ returned HTTP 200 with pilot markers"
       ],
-      "updatedAt": "2026-07-22T00:00:00+05:30"
+      "updatedAt": "2026-07-22T18:52:00+05:30"
     },
     {
       "id": "TASK-LEGAL-PUBLISH",
       "workstream": "trust",
       "title": "Publish privacy, terms, and help pages",
-      "status": "in_progress",
+      "status": "done",
       "priority": "P0",
       "owner": "codex/website-pilot-launch-20260722",
       "targetDate": "2026-07-22",
@@ -120,19 +275,21 @@
         "Privacy rights, correction/deletion, grievance handling, 18+ eligibility, public-source listings, claim/correction/takedown, safety, and external-event boundaries are explained plainly.",
         "Owner facts are confirmed and no placeholder text is published."
       ],
-      "nextAction": "Run website gates, merge, deploy, and verify all three production routes.",
+      "nextAction": "Route legal-policy changes through founder and counsel review before republishing.",
       "evidence": [
         "website/src/content/legal.json",
         "website/src/features/legal/LegalPage.tsx",
-        "website/scripts/postbuild.mjs"
+        "website/scripts/postbuild.mjs",
+        "PR #96 merged as 2a382a25432e46ec79fdb3ba8b2bf47f17513409",
+        "2026-07-22 live probe: /privacy/, /terms/, and /help/ returned HTTP 200"
       ],
-      "updatedAt": "2026-07-22T00:00:00+05:30"
+      "updatedAt": "2026-07-22T18:52:00+05:30"
     },
     {
       "id": "TASK-OBS-UPTIME",
       "workstream": "observability",
       "title": "Monitor production website availability and launch-critical content",
-      "status": "in_progress",
+      "status": "done",
       "priority": "P0",
       "owner": "codex/website-pilot-launch-20260722",
       "targetDate": "2026-07-22",
@@ -142,9 +299,13 @@
         "The probe fails on wrong status, missing canonical metadata, or missing launch markers.",
         "A successful production workflow run is linked as evidence."
       ],
-      "nextAction": "Land the scheduled probe and capture the first green workflow run.",
-      "evidence": [],
-      "updatedAt": "2026-07-22T00:00:00+05:30"
+      "nextAction": "Review scheduled failures and keep pilot markers current as supply is published.",
+      "evidence": [
+        ".github/workflows/website-production-observability.yml",
+        "Production workflow 29922913399 completed successfully",
+        "2026-07-22 independent production probe passed all five launch-critical routes"
+      ],
+      "updatedAt": "2026-07-22T18:52:00+05:30"
     },
     {
       "id": "TASK-OBS-WEB-ANALYTICS",
@@ -152,7 +313,7 @@
       "title": "Deliver consented website traffic, conversion, and client-error events to GTM/GA4",
       "status": "in_progress",
       "priority": "P0",
-      "owner": "founder",
+      "owner": "codex/pilot-hardening-20260722",
       "targetDate": "2026-07-22",
       "dependencies": [],
       "acceptance": [
@@ -161,33 +322,60 @@
         "No analytics or marketing tag loads before consent.",
         "Evidence is linked without exposing credentials."
       ],
-      "nextAction": "Deploy main, accept analytics consent in one production session, and verify page_view plus conversion delivery in GA4 Realtime or DebugView.",
+      "nextAction": "After the founder switches GTM to the Catch-owning Google account, publish pathname-only and safe custom-event tags and verify exact-once delivery.",
       "evidence": [
         "GTM-K7KLNQXP version 2: Catch website production GA4 launch",
         ".github/workflows/marketing-website.yml",
         "tool/env/check_web_hosting_env.mjs",
         "website/src/analytics.ts",
-        "website/src/features/marketing/tracking.test.ts"
+        "website/src/features/marketing/tracking.test.ts",
+        "Production workflow 29922913399 completed successfully",
+        "Deployed site-DX9pXazw.js contains GTM-K7KLNQXP, googletagmanager, gtm.js, and dataLayer",
+        "2026-07-22 GA4 Realtime confirmed six page_view events across Home, Organizer directory, and AFTER FLY"
       ],
-      "updatedAt": "2026-07-22T00:00:00+05:30"
+      "updatedAt": "2026-07-22T18:52:00+05:30"
     },
     {
       "id": "TASK-PILOT-RUNS",
       "workstream": "operations",
       "title": "Complete three documented Mumbai/Indore end-to-end test runs",
-      "status": "todo",
+      "status": "blocked",
       "priority": "P1",
       "owner": "operations",
       "targetDate": "2026-07-26",
-      "dependencies": ["TASK-MARKETS", "TASK-LEGAL-PUBLISH", "TASK-OBS-UPTIME"],
+      "dependencies": ["TASK-MARKETS", "TASK-LEGAL-PUBLISH", "TASK-OBS-UPTIME", "TASK-OBS-WEB-ANALYTICS", "TASK-SUPPLY-PILOT-10"],
       "acceptance": [
         "Three runs cover discovery, organizer detail, external registration or claim, correction/help contact, and monitoring response.",
         "Each run records city, timestamp, result, defects, and follow-up owner.",
         "No unresolved P0 trust, safety, or availability defect remains."
       ],
-      "nextAction": "Schedule the first Mumbai and Indore runs after production deployment.",
+      "nextAction": "Unblock after one reviewed organizer exists in each pilot city and the custom analytics pipeline is verified.",
       "evidence": [],
-      "updatedAt": "2026-07-22T00:00:00+05:30"
+      "updatedAt": "2026-07-22T20:05:50+05:30"
+    },
+    {
+      "id": "TASK-SUPPLY-PILOT-10",
+      "workstream": "supply",
+      "title": "Research and review the first 10 organizers: five Mumbai and five Indore",
+      "status": "in_progress",
+      "priority": "P0",
+      "owner": "operations",
+      "targetDate": "2026-07-23",
+      "dependencies": ["DEC-001", "LAUNCH-SUPPLY-001"],
+      "acceptance": [
+        "Five Mumbai and five Indore organizer candidates have source URLs and capture dates.",
+        "Each candidate is deduplicated and represented by a schema-complete organizer batch record with crawl disabled by default.",
+        "Publication packets are generated and reviewed before any website projection is approved.",
+        "At least one organizer per city is deployable for the city test runs."
+      ],
+      "nextAction": "Use the 101-query search plan and manual browser capture path to build a review packet; do not publish from search results directly.",
+      "evidence": [
+        "tool/organizer_intake/generated/search_run_plan.json",
+        "tool/organizer_intake/capture_search_results.mjs",
+        "tool/organizer_intake/batches/",
+        "operations/launch/pilot_supply_shortlist.json: 5 Mumbai + 5 Indore, 6 review-now and 4 organizer-only pending event verification"
+      ],
+      "updatedAt": "2026-07-22T20:05:50+05:30"
     },
     {
       "id": "TASK-SUPPLY-50",

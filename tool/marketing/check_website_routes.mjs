@@ -8,8 +8,15 @@ import {
   readWebsiteMeta,
   validateWebsiteMeta,
 } from "./website_meta_contract.mjs";
+import {inMarket} from "../../website/src/content/markets/in.ts";
 
 const args = parseArgs(process.argv.slice(2));
+const liveMarketKeys = new Set(
+  inMarket.cities
+    .filter((city) => city.status === "live")
+    .flatMap((city) => [city.slug, city.label, ...city.aliases])
+    .map(normalizeMarketKey)
+);
 
 if (args.help) {
   printHelp();
@@ -503,6 +510,12 @@ function validateGeneratedListingFamilies(routes, listings) {
   const paths = new Set();
   for (const listing of listings) {
     if (!listing?.id) errors.push("host listing missing id.");
+    if (!listingMatchesLiveMarket(listing)) {
+      errors.push(
+        `${listing?.id ?? "unknown"}: organizer listing market ` +
+        `${listing?.citySlug ?? listing?.city ?? "missing"} is not live in the active market pack.`
+      );
+    }
     if (!listing?.path) {
       errors.push(`${listing?.id ?? "unknown"}: listing missing canonical path.`);
       continue;
@@ -528,6 +541,16 @@ function validateGeneratedListingFamilies(routes, listings) {
       paths.add(normalizedLegacyPath);
     }
   }
+}
+
+function normalizeMarketKey(value) {
+  return String(value ?? "").toLowerCase().replace(/[^a-z0-9]+/gu, "");
+}
+
+function listingMatchesLiveMarket(listing) {
+  return [listing?.citySlug, listing?.city]
+    .map(normalizeMarketKey)
+    .some((key) => key.length > 0 && liveMarketKeys.has(key));
 }
 
 function validateStoryRouteDeclarations(declarations, routeById) {
@@ -752,6 +775,8 @@ coverage declarations.
 }
 
 function runSelfTest() {
+  assert.equal(listingMatchesLiveMarket({city: "Indore", citySlug: "indore"}), true);
+  assert.equal(listingMatchesLiveMarket({city: "Delhi NCR", citySlug: "delhi-ncr"}), false);
   const storyPath = fromRepo("website/src/stories/Example.stories.tsx");
   const declarations = storyRouteDeclarations(`
 const searchStates = ["default", "filtered"] as const;

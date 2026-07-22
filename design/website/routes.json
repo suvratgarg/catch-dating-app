@@ -1,6 +1,6 @@
 {
   "$schema": "./website.routes.schema.json",
-  "version": 8,
+  "version": 9,
   "updated": "2026-07-22",
   "owner": "marketing_website",
   "sourceOfTruth": {
@@ -217,7 +217,7 @@
       "staticOutput": "generated-postbuild",
       "indexing": "listing-controlled",
       "sitemap": "listing-controlled",
-      "notes": "Generated canonical organizer profile routes from website/src/generated/hostListings.json. Postbuild emits crawlable semantic profile content, Organization JSON-LD, canonical metadata, and lastVerifiedAt sitemap dates before React starts.",
+      "notes": "Generated canonical organizer profile routes from website/src/generated/hostListings.json. The deployable projection includes only organizers with at least one market whose status is live in the active market pack; waitlist-market records remain available to review tooling and Storybook but cannot enter static output, search, or sitemap. Postbuild emits crawlable semantic profile content, Organization JSON-LD, canonical metadata, and lastVerifiedAt sitemap dates before React starts.",
       "review": {
         "priority": "p0",
         "status": "ready",
