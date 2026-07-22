@@ -2528,6 +2528,30 @@
         "docs/app_architecture.md"
       ],
       "notes": "The temporary permission-denied fallback was retired on 2026-07-22 after production rules, indexes, and 41-of-41 organizer parity were verified. Legacy writes remain only for released-client compatibility until a separate cleanup."
+    },
+    {
+      "id": "REG-WEB-FIRST-PARTY-VERIFIED-DISCOVERY-001",
+      "title": "First-party organizers disappear from verified web discovery",
+      "status": "active",
+      "applies_to": [
+        "website/src/features/organizers/selectors.ts",
+        "website/src/features/organizers/sections/RecommendedOrganizersSection.tsx",
+        "website/src/features/organizers/useOrganizerDirectoryController.ts",
+        "website/src/stories/OrganizerListingSections.stories.tsx",
+        "design/visual_baselines/website/**"
+      ],
+      "symptom": "Splitting first-party and owner-verified trust labels causes Catch-created organizers to fall out of verified filters and recommendations, leaving a registry-ready Storybook surface blank.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-marketing run test:unit -- --run src/features/organizers/selectors.test.ts && node tool/web/check_storybook_visuals.mjs --surface website --component listing_recommended_organizers_section --check",
+        "guardEvidence": "the selector test proves both first-party and owner-verified organizers remain eligible while source-backed organizers do not; the visual contract proves the recommendation surface mounts with the distinct Catch trust badge"
+      },
+      "owner_docs": [
+        "docs/marketing_website_architecture.md",
+        "docs/web_surface_architecture.md",
+        "design/public_surface_behavior.json"
+      ],
+      "notes": "Verified discovery is a product eligibility grouping, not a request to collapse first-party and owner-verified presentation labels."
     }
   ]
 }

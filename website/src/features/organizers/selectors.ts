@@ -193,7 +193,7 @@ export function hasAnyEventSignal(listing: HostListing) {
 
 export function isVerifiedListing(listing: HostListing) {
   const policy = organizerPolicyForListing(listing);
-  return policy.trustState === "ownerVerified";
+  return ["firstParty", "ownerVerified"].includes(policy.trustState);
 }
 
 export function isPubliclyReadableListing(listing: HostListing) {
