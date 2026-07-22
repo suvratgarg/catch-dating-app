@@ -1,5 +1,5 @@
 {
-  "version": 66,
+  "version": 67,
   "updated": "2026-07-23",
   "owner": "agent_operating_model",
   "entries": [
@@ -2594,7 +2594,7 @@
       "guard": {
         "type": "command",
         "command": "node --test tool/design/check_feature_coverage.test.mjs tool/design/build_feature_contracts.test.mjs && node tool/design/check_feature_coverage.mjs --check && node tool/design/build_feature_contracts.mjs --check && node tool/design/check_screen_contracts.mjs --check",
-        "guardEvidence": "known-bad coverage tests reject unclassified registry additions, duplicate or unknown decisions, invalid grouping, false multi-runtime contract bindings, and orphaned contracts; compiler tests prove compact state matrices retain exact authority coverage, reject out-of-inventory overrides, support shared multi-runtime and read-only features, and reject runtime/authority mismatches, duplicate or missing states, missing evidence, stale exceptions, invalid outcomes, and unknown action owners/actions/dimensions"
+        "guardEvidence": "known-bad coverage tests reject unclassified registry additions, duplicate or unknown decisions, invalid grouping, false multi-runtime contract bindings, and orphaned contracts; compiler tests prove compact state matrices retain exact authority coverage, reject out-of-inventory overrides, validate explicit React route-state preview mappings, support shared multi-runtime and read-only features, and reject runtime/authority mismatches, duplicate or missing states, missing evidence, stale exceptions, invalid outcomes, and unknown action owners/actions/dimensions"
       },
       "owner_docs": [
         "docs/design_parity/README.md",
@@ -2603,7 +2603,7 @@
         "design/screens/README.md",
         "tool/README.md"
       ],
-      "notes": "The reference set now includes Event Detail, Explore, Host Event Manage, Catches Hub, Catches Event, Matches List, Member Chat, Self Profile, and Public Profile. Explore remains the first compiled cross-runtime feature, binding Flutter discovery and marketing Organizer Search as separate native projections under one semantic identity. Compact state matrices reduce repeated source boilerplate while keeping the exact authority inventory explicit. Feature contracts orchestrate existing authorities and expose named evidence debt; they do not generate Flutter or React behavior, business algorithms, security rules, or migrations."
+      "notes": "The reference set now includes Event Detail, Explore, Host Event Manage, Catches Hub, Catches Event, Matches List, Member Chat, Self Profile, Public Profile, and Organizer Detail. Explore is the first two-runtime feature; Organizer Detail is the first three-surface feature, binding consumer Flutter, host Flutter, and the canonical marketing organizer listing under one semantic identity. Compact state matrices reduce repeated source boilerplate while keeping the exact authority inventory explicit. Explicit React preview evidence maps differing route-review and Storybook vocabularies without weakening registry checks. Feature contracts orchestrate existing authorities and expose named evidence debt; they do not generate Flutter or React behavior, business algorithms, security rules, or migrations."
     }
   ]
 }

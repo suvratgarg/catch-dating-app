@@ -524,8 +524,10 @@ booking dock; Explore combines Flutter empty-result recovery with marketing-web
 URL filtering/search analytics; Host Event Manage covers primary Flutter
 edit/cancel/delete lifecycle rows; the consumer social reference batch adds
 Catches Hub, Catches Event, Matches List, Member Chat, Self Profile, and Public
-Profile. Generated action counts must not be read as coverage of excluded route
-or section actions. Actions name their owning Dart or TypeScript symbol and may
+Profile. Organizer Detail adds a three-surface reference for consumer Flutter,
+host Flutter, and the canonical marketing organizer listing. Generated action
+counts must not be read as coverage of excluded route or section actions.
+Actions name their owning Dart or TypeScript symbol and may
 end in local surface states, route destinations, or named side effects.
 Read-only surfaces use empty action/action-owner arrays instead of inventing
 synthetic behavior. Missing required evidence must use an explicit stable-debt
@@ -538,6 +540,13 @@ common dimension/action case and `scenarioOverrides` records only divergent
 states. The compiler expands this form into ordinary generated scenarios and
 fails missing or unknown state ids and overrides, so the shorter source format
 does not weaken drift detection.
+
+For React routes, `bindings.previewEvidence` maps an authority state to an
+explicitly selected registry preview when route-review and Storybook state
+names differ. The compiler verifies the component belongs to that route and
+that its story source is declared. Website static-output tests under
+`website/scripts/*.test.mjs` are valid evidence for indexing, canonical, and
+sitemap behavior that has no meaningful visual preview.
 
 ```sh
 node tool/design/build_feature_contracts.mjs

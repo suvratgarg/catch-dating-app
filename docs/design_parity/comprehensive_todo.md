@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.299
+version: 0.2.300
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -24,12 +24,14 @@ ledgers as the source of truth when counts differ:
 - Route inventory: 52 app routes.
 - Route coverage decisions: 44 contracted, 2 alias, 0 planned, 6 excluded.
 - Screen contracts: 32 contracted screens.
-- Feature orchestration coverage: 57 registered authorities, 9 source
-  contracts, 9 contracted Flutter screens, 1 contracted marketing route, and
-  23 planned Flutter screens. The new social-journey batch compiles all 99
+- Feature orchestration coverage: 57 registered authorities, 10 source
+  contracts, 11 contracted Flutter screens, 2 contracted marketing routes, and
+  21 planned Flutter screens. The social-journey batch compiles all 99
   registered states and 23 explicit actions across Catches Hub, Catches Event,
   Matches List, Member Chat, Self Profile, and Public Profile; missing focused
-  capture/test evidence remains named migration debt.
+  capture/test evidence remains named migration debt. Organizer Detail adds one
+  three-surface identity spanning 13 consumer, 19 host, and 5 marketing states
+  with 19 surface-specific actions and checked route-state-to-preview evidence.
 - Screen priority spread: 18 P1, 9 P2, and 5 P3 contracted screens.
 - Contracted screen states: 597.
 - Contracted screen sections: 228.

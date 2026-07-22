@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.18
+version: 0.1.19
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -167,8 +167,11 @@ marketing `organizer_search` route, while their components, action owners,
 states, and evidence remain runtime-specific.
 
 Event Detail, Explore, Host Event Manage, Catches Hub, Catches Event, Matches
-List, Member Chat, Self Profile, and Public Profile are the current reference
-contracts.
+List, Member Chat, Self Profile, Public Profile, and Organizer Detail are the
+current reference contracts. Organizer Detail is the first three-surface
+reference: consumer Flutter, host Flutter, and the canonical marketing listing
+share one semantic feature identity while retaining separate actions and state
+inventories.
 Actions name one of the surface's declared Dart or TypeScript owners, so a
 larger feature may compose multiple action domains without pretending one enum
 or controller owns everything. Action outcomes are typed as local surface
@@ -182,6 +185,15 @@ differences. The compiler expands this into the same generated scenario
 projection and rejects missing, unknown, duplicate, or out-of-inventory state
 overrides. This keeps source contracts reviewable without allowing a newly
 registered state to pass silently.
+
+React route review states do not always use the same vocabulary as Storybook
+component states. `bindings.previewEvidence` may map an authority state to a
+selected registry preview such as `component_id/StoryExport`; the compiler
+checks that the component belongs to the route, the story source is declared,
+and the preview is part of the selected component registry. This makes the
+relationship explicit without renaming either authority. Static-output tests
+under `website/scripts/*.test.mjs` may provide test evidence for indexing and
+canonical metadata states that cannot be meaningfully shown in Storybook.
 
 Required evidence stays strict. A real missing capture, preview, or test may be
 admitted only through an explicit evidence exception tied to a stable open debt

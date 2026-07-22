@@ -43,11 +43,10 @@
     {
       "authority": "flutter_screens",
       "authorityId": "screen.club.detail",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Primary consumer organizer profile and schedule surface.",
-      "targetFeature": "feature.organizer_detail",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Shared Organizer Detail contract covers the consumer profile, membership dock, schedule, host contact, loading, error, offline, and accessibility states.",
+      "featureContract": "feature.organizer_detail"
     },
     {
       "authority": "flutter_screens",
@@ -144,11 +143,10 @@
     {
       "authority": "flutter_screens",
       "authorityId": "screen.host.club.detail",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Host-context organizer profile projection.",
-      "targetFeature": "feature.organizer_detail",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Shared Organizer Detail contract covers the host-shell public preview, dock suppression, access variants, hosted schedule routing, and route-level side effects.",
+      "featureContract": "feature.organizer_detail"
     },
     {
       "authority": "flutter_screens",
@@ -385,11 +383,10 @@
     {
       "authority": "marketing_routes",
       "authorityId": "organizer_listing_canonical",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Public-web projection of organizer detail, events, reviews, and claim capability.",
-      "targetFeature": "feature.organizer_detail",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Shared Organizer Detail contract covers canonical listing indexing, public API availability, external event supply, claim capability, save/share, and public review actions.",
+      "featureContract": "feature.organizer_detail"
     },
     {
       "authority": "marketing_routes",

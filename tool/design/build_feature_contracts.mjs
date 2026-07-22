@@ -684,12 +684,53 @@ function validateBindings({
     if (pathExists(previewSource)) safeRead(previewSource, readPath, errors);
   }
   const stateIds = new Set(authority.states.map((state) => state.id));
-  for (const stateId of Object.keys(surface.bindings.testEvidence ?? {})) {
-    if (!stateIds.has(stateId)) {
-      errors.push(`${label}.bindings.testEvidence: unknown authority state ${stateId}.`);
+  for (const evidenceKind of ["testEvidence", "previewEvidence"]) {
+    for (const stateId of Object.keys(surface.bindings[evidenceKind] ?? {})) {
+      if (!stateIds.has(stateId)) {
+        errors.push(`${label}.bindings.${evidenceKind}: unknown authority state ${stateId}.`);
+      }
     }
   }
+  validateExplicitPreviewEvidence({
+    surface,
+    label,
+    authority,
+    components: selectedComponents,
+    errors,
+  });
   return selectedComponents;
+}
+
+function validateExplicitPreviewEvidence({surface, label, authority, components, errors}) {
+  const previewSourceSet = new Set(surface.bindings.previewSources ?? []);
+  const registeredPreviews = new Map();
+  for (const component of components) {
+    if (!(component.routeIds ?? []).includes(authority.id) || component.storybook == null) {
+      continue;
+    }
+    registeredPreviews.set(
+      `${component.id}/${component.storybook.exportName}`,
+      component,
+    );
+  }
+  for (const [stateId, previewIds] of Object.entries(
+    surface.bindings.previewEvidence ?? {},
+  )) {
+    for (const previewId of previewIds) {
+      const component = registeredPreviews.get(previewId);
+      if (component == null) {
+        errors.push(
+          `${label}.bindings.previewEvidence.${stateId}: ` +
+          `${previewId} is not a selected preview for ${authority.id}.`,
+        );
+      } else if (!previewSourceSet.has(component.storybook.story)) {
+        errors.push(
+          `${label}.bindings.previewEvidence.${stateId}: preview source ` +
+          `${component.storybook.story} is not declared in bindings.previewSources.`,
+        );
+      }
+    }
+  }
 }
 
 function resolveActionOwners({surface, label, pathExists, readPath, errors}) {
@@ -758,7 +799,7 @@ function resolveStateEvidence({
   }
 
   const previewSourceSet = new Set(surface.bindings.previewSources ?? []);
-  const previewIds = [];
+  const previewIds = [...(surface.bindings.previewEvidence?.[state.id] ?? [])];
   for (const component of components) {
     if (!(component.routeIds ?? []).includes(authority.id)) continue;
     if (!(component.storybook?.states ?? []).includes(state.id)) continue;

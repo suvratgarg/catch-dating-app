@@ -278,7 +278,22 @@
             "uniqueItems": true,
             "items": {
               "type": "string",
-              "pattern": "^(test/.+\\.dart|website/src/.+\\.test\\.tsx?|admin/src/.+\\.test\\.tsx?)$"
+              "pattern": "^(test/.+\\.dart|website/(src/.+\\.test\\.tsx?|scripts/.+\\.test\\.mjs)|admin/src/.+\\.test\\.tsx?)$"
+            }
+          }
+        },
+        "previewEvidence": {
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^[a-z0-9_.-]+$"
+          },
+          "additionalProperties": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_.-]+/[A-Za-z][A-Za-z0-9_]*$"
             }
           }
         }

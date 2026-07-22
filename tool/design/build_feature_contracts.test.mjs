@@ -345,6 +345,45 @@ test("compiles multiple runtime projections into one shared feature identity", (
   assert.equal(artifact.surfaces[1].runtime, "react_marketing");
 });
 
+test("maps route review states to explicitly registered React previews", () => {
+  const data = fixture();
+  const surface = marketingSurface();
+  surface.bindings.previewEvidence = {
+    filtered: ["route_example/ExampleRoute"],
+  };
+  data.source.surfaces = [surface];
+
+  assert.equal(validateFeatureSchema(data.source), true, JSON.stringify(
+    validateFeatureSchema.errors,
+  ));
+  const artifact = compileFeatureContract({
+    ...data,
+    sourcePath: "design/features/example.feature.json",
+  });
+
+  assert.deepEqual(
+    artifact.surfaces[0].scenarios[1].evidence.previewIds,
+    ["route_example/ExampleRoute", "section_example/ExampleFiltered"],
+  );
+});
+
+test("rejects explicit React previews outside the selected route registry", () => {
+  const data = fixture();
+  const surface = marketingSurface();
+  surface.bindings.previewEvidence = {
+    filtered: ["missing_component/MissingStory"],
+  };
+  data.source.surfaces = [surface];
+
+  assert.throws(
+    () => compileFeatureContract({
+      ...data,
+      sourcePath: "design/features/example.feature.json",
+    }),
+    /missing_component\/MissingStory is not a selected preview/u,
+  );
+});
+
 test("supports read-only projections without synthetic actions or bindings", () => {
   const data = fixture();
   const surface = data.source.surfaces[0];
