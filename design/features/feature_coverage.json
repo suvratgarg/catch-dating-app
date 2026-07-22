@@ -203,29 +203,26 @@
     {
       "authority": "flutter_screens",
       "authorityId": "screen.calendar.home",
-      "status": "planned",
-      "priority": "P2",
-      "reason": "Planned-event calendar and detail navigation surface.",
-      "targetFeature": "feature.calendar",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Event Planning Calendar projection covers merged joined/saved agenda states, date navigation, secondary organizer-name lookup, recovery, and Event Detail handoff.",
+      "featureContract": "feature.event_planning"
     },
     {
       "authority": "flutter_screens",
       "authorityId": "screen.saved_events.list",
-      "status": "planned",
-      "priority": "P2",
-      "reason": "Saved-event collection and detail navigation surface.",
-      "targetFeature": "feature.saved_events",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Event Planning binds Saved Events as a filtered projection of the same planned-event agenda and Event Detail handoff, while retaining its standalone route, back action, and saved-only evidence.",
+      "featureContract": "feature.event_planning"
     },
     {
       "authority": "flutter_screens",
       "authorityId": "screen.filters.preferences",
-      "status": "planned",
-      "priority": "P2",
-      "reason": "Matching preference editing and persistence workflow.",
-      "targetFeature": "feature.matching_preferences",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Matching Preferences contract covers profile loading/recovery, age and gender draft decisions, reset/apply lifecycle, exit behavior, accessibility, missing-profile blank state, and pending snapshot drift.",
+      "featureContract": "feature.matching_preferences"
     },
     {
       "authority": "flutter_screens",

@@ -18108,8 +18108,14 @@
           "kind": "permission",
           "status": "captured",
           "source": "When uid is unavailable, CalendarScreen renders empty signed-up/saved event streams rather than querying user-specific providers.",
+          "previewIds": [
+            "CalendarScreen/Screen states"
+          ],
           "captureIds": [
             "calendar_uid_missing"
+          ],
+          "tests": [
+            "test/events/calendar_screen_test.dart"
           ],
           "nextAction": "calendar_uid_missing captures the signed-out empty-stream fallback; decide whether signed-out calendar should show branded access copy only if product policy changes."
         },
@@ -18118,6 +18124,9 @@
           "kind": "loading",
           "status": "captured",
           "source": "signedUpEvents or savedEvents loading renders a Calendar-shaped skeleton under the Calendar top bar with pinned date-header, stats-strip, and agenda-row placeholders.",
+          "previewIds": [
+            "CalendarScreen/Screen states"
+          ],
           "captureIds": [
             "calendar_loading"
           ],
@@ -18131,8 +18140,14 @@
           "kind": "error",
           "status": "captured",
           "source": "signedUpEvents or savedEvents errors render CatchErrorState.fromError with AppErrorContext.event and retry invalidation.",
+          "previewIds": [
+            "CalendarScreen/Screen states"
+          ],
           "captureIds": [
             "calendar_events_error"
+          ],
+          "tests": [
+            "test/calendar/calendar_screen_test.dart"
           ],
           "nextAction": "Compare provider-error copy against a future Calendar Home error reference if design adds one."
         },
@@ -18141,6 +18156,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "calendar_planned_events renders booked and saved event rows with JOINED/SAVED treatment and stats.",
+          "previewIds": [
+            "CalendarScreen/Screen states"
+          ],
           "captureIds": [
             "calendar_planned_events",
             "calendar_light_dark"
@@ -18155,6 +18173,9 @@
           "kind": "empty",
           "status": "captured",
           "source": "No signed-up or saved events render the No planned events yet CatchEmptyState.",
+          "previewIds": [
+            "CalendarScreen/Screen states"
+          ],
           "captureIds": [
             "calendar_empty"
           ],
@@ -18168,9 +18189,16 @@
           "kind": "loading",
           "status": "captured",
           "source": "When event rows exist, clubNameLookupProvider controls a secondary loading/error state before the agenda list renders.",
+          "previewIds": [
+            "CalendarScreen/Screen states"
+          ],
           "captureIds": [
             "calendar_club_names_loading",
             "calendar_club_names_error"
+          ],
+          "tests": [
+            "test/calendar/calendar_screen_state_test.dart",
+            "test/calendar/calendar_screen_test.dart"
           ],
           "nextAction": "Compare agenda secondary loading/error treatment against future references if design adds them."
         },
@@ -18179,6 +18207,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "Drag and selection interactions toggle the week strip/month grid date header and preserve selected-date agenda scroll.",
+          "previewIds": [
+            "CalendarScreen/Screen states"
+          ],
           "captureIds": [
             "calendar_expanded_month",
             "calendar_selected_day"
@@ -18193,6 +18224,9 @@
           "kind": "populated",
           "status": "tested",
           "source": "Selecting an agenda row pushes the calendar Event Detail alias route with event extra.",
+          "previewIds": [
+            "CalendarScreen/Screen states"
+          ],
           "tests": [
             "test/calendar/calendar_screen_test.dart"
           ],
@@ -18203,6 +18237,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "Widgetbook CalendarScreen states include text-scale 2.0 review for header, stats, date controls, agenda rows, and state surfaces.",
+          "previewIds": [
+            "CalendarScreen/Screen states"
+          ],
           "captureIds": [
             "calendar_text_scale_2"
           ],
@@ -18213,6 +18250,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "Widgetbook CalendarScreen states include reduced-motion review; selected-day scroll animation still uses CatchMotion.calendarScroll at runtime.",
+          "previewIds": [
+            "CalendarScreen/Screen states"
+          ],
           "captureIds": [
             "calendar_reduced_motion"
           ],
@@ -18509,6 +18549,9 @@
           "kind": "permission",
           "status": "captured",
           "source": "When uid is unavailable, SavedEventsScreen renders an empty event stream instead of querying saved events.",
+          "previewIds": [
+            "SavedEventsScreen/Saved states"
+          ],
           "captureIds": [
             "saved_events_uid_missing"
           ],
@@ -18519,8 +18562,14 @@
           "kind": "loading",
           "status": "captured",
           "source": "watchSavedEventDetailsForUserProvider loading renders the Saved Events agenda/date-rail skeleton through _SavedEventsLoading.",
+          "previewIds": [
+            "SavedEventsScreen/Saved states"
+          ],
           "captureIds": [
             "saved_events_loading"
+          ],
+          "tests": [
+            "test/events/saved_events_screen_test.dart"
           ],
           "nextAction": "Compare loading skeleton hierarchy against a future Saved Events reference if design adds one."
         },
@@ -18529,6 +18578,9 @@
           "kind": "error",
           "status": "captured",
           "source": "Saved-event stream errors render CatchErrorState.fromError with AppErrorContext.event and retry invalidation.",
+          "previewIds": [
+            "SavedEventsScreen/Saved states"
+          ],
           "captureIds": [
             "saved_events_error"
           ],
@@ -18539,6 +18591,9 @@
           "kind": "empty",
           "status": "captured",
           "source": "An empty saved-event list renders No saved events yet copy through _SavedEventsMessage; repository tests prove deleted/missing event docs are omitted before this empty branch.",
+          "previewIds": [
+            "SavedEventsScreen/Saved states"
+          ],
           "captureIds": [
             "saved_events_empty"
           ],
@@ -18552,6 +18607,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "saved_events_list renders upcoming and past saved events using EventAgendaSliverList and SAVED/PAST status.",
+          "previewIds": [
+            "SavedEventsScreen/Saved states"
+          ],
           "captureIds": [
             "saved_events_list",
             "saved_events_past_only",
@@ -18567,6 +18625,9 @@
           "kind": "loading",
           "status": "captured",
           "source": "Saved event rows wait on clubNameLookupProvider and render loading/error before the agenda list when club names are unavailable.",
+          "previewIds": [
+            "SavedEventsScreen/Saved states"
+          ],
           "captureIds": [
             "saved_events_club_names_loading",
             "saved_events_club_names_error"
@@ -18578,6 +18639,9 @@
           "kind": "populated",
           "status": "tested",
           "source": "Selecting a saved event pushes the saved Event Detail alias route with event extra.",
+          "previewIds": [
+            "SavedEventsScreen/Saved states"
+          ],
           "tests": [
             "test/events/saved_events_screen_test.dart"
           ],
@@ -18588,6 +18652,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "Saved Events text scale 2.0 capture covers top bar, header, agenda rows, and state surfaces.",
+          "previewIds": [
+            "SavedEventsScreen/Saved states"
+          ],
           "captureIds": [
             "saved_events_text_scale_2"
           ],
@@ -18598,6 +18665,9 @@
           "kind": "theme",
           "status": "captured",
           "source": "Saved Events populated route capture is registered for paired light/dark output.",
+          "previewIds": [
+            "SavedEventsScreen/Saved states"
+          ],
           "captureIds": [
             "saved_events_light_dark"
           ],
@@ -18963,6 +19033,9 @@
           "captureIds": [
             "filters_save_pending"
           ],
+          "tests": [
+            "test/swipes/filters_screen_state_test.dart"
+          ],
           "nextAction": "Compare pending apply treatment against future mutation reference if design adds one.",
           "previewIds": [
             "FiltersContent/Content states"
@@ -19179,6 +19252,16 @@
           "id": "DS-FILTERS-003",
           "status": "closed",
           "nextAction": "Closed by FiltersPreferencesState owning saved defaults, draft values, dirty state, reset/apply availability, pending state, and save request fields while FiltersScreen retains provider waves, mutation listening, route close/pop behavior, and controller execution."
+        },
+        {
+          "id": "DS-FILTERS-004",
+          "status": "open",
+          "nextAction": "REG-FEATURE-CONTRACT-DRIFT-001: saveFiltersMutation captures a request and disables only Reset/Apply; close, age-range, and gender controls remain active while the write is pending. Freeze or version request-defining edits and route dismissal, then add focused interaction proof that visible values cannot diverge from the persisted snapshot."
+        },
+        {
+          "id": "DS-FILTERS-005",
+          "status": "open",
+          "nextAction": "A resolved null profile currently renders a blank body beneath the Filters top bar with no explanation or recovery action. Replace the empty SizedBox with a branded access/recovery state and focused route test."
         }
       ]
     },

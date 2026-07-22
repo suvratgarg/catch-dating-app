@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.25
+version: 0.1.26
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -171,7 +171,8 @@ Organizers, Host Organizer Create, Host Event Create, Host Event Manage with
 its owner-edit projection, Host Inbox, Catches Hub,
 Catches Event, Matches List, Chat Thread, Self Profile, Public Profile, and
 Organizer Detail, Phone Authentication, and Member Onboarding with its Start
-Welcome projection are the current reference contracts. Organizer Detail is the first
+Welcome projection, Event Planning, and Matching Preferences are the current
+reference contracts. Organizer Detail is the first
 three-surface reference:
 consumer Flutter, host Flutter, and the canonical marketing listing share one
 semantic feature identity while retaining separate actions and state
@@ -188,6 +189,19 @@ Edit, Insights, Preview, Event Defaults, Live Guide, Payments, Team, and host
 identity retain separate action owners and states inside one feature contract.
 Do not split a feature merely because a spoke has its own URL, and do not merge
 routes whose state or actions do not share a coherent user goal.
+
+A filtered route can also be a projection of a broader workspace even when it
+uses a different screen class. Saved Events is a saved-only view of the same
+planned-event agenda, organizer-name enrichment, and Event Detail handoff as
+Calendar, so both belong to Event Planning. A shared widget is useful evidence,
+but the deciding test is shared user goal plus overlapping data and action
+semantics—not class identity alone.
+
+Do not infer actions from repository capabilities. Saved Events has a
+`SavedEventRepository` in its authority metadata, but the list route exposes no
+save or unsave control; its contract contains only back, recovery, and event
+navigation actions. Mutations remain with Event Detail until production UI
+actually exposes them.
 
 Cardinalize meaningful user decisions and side effects, not raw field-entry
 events. Host Event Create and Host Organizer Create are the references: wizard
@@ -212,6 +226,10 @@ Phone Authentication adds a sharper failure mode: request-defining inputs can
 reset the mutation guard while the request is still running. Treat every control
 that can mutate, dismiss, or invalidate an in-flight snapshot as part of the
 pending action matrix, even when the primary button itself is disabled.
+Matching Preferences demonstrates the same rule across local drafts: close,
+age, and gender controls remain live after the persisted request is captured,
+so the generated pending matrix must preserve those unsafe actions until the
+screen freezes or versions them.
 
 When two registered surfaces use the same production implementation and differ
 only by viewer policy, prefer separate projections in one feature contract.
