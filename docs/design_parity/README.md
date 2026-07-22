@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.24
+version: 0.1.25
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -170,7 +170,8 @@ Event Detail, Explore, Dashboard Home, Event Success, Host Home, Host
 Organizers, Host Organizer Create, Host Event Create, Host Event Manage with
 its owner-edit projection, Host Inbox, Catches Hub,
 Catches Event, Matches List, Chat Thread, Self Profile, Public Profile, and
-Organizer Detail are the current reference contracts. Organizer Detail is the first
+Organizer Detail, Phone Authentication, and Member Onboarding with its Start
+Welcome projection are the current reference contracts. Organizer Detail is the first
 three-surface reference:
 consumer Flutter, host Flutter, and the canonical marketing listing share one
 semantic feature identity while retaining separate actions and state
@@ -207,6 +208,10 @@ behavior. Host Organizer Create and Host Event Edit currently leave some
 navigation or form decisions active after a mutation snapshot is submitted.
 Their pending scenarios and screen gaps record that concurrency honestly; do
 not model the form as frozen until production state and focused tests prove it.
+Phone Authentication adds a sharper failure mode: request-defining inputs can
+reset the mutation guard while the request is still running. Treat every control
+that can mutate, dismiss, or invalidate an in-flight snapshot as part of the
+pending action matrix, even when the primary button itself is disabled.
 
 When two registered surfaces use the same production implementation and differ
 only by viewer policy, prefer separate projections in one feature contract.
@@ -216,6 +221,20 @@ evidence, and profile/share/safety policy. Shared code alone is insufficient if
 the user goals differ; Host Inbox remains separate because event scoping,
 audience segmentation, and broadcasts are host operations rather than thread
 behavior.
+
+The same rule applies when one implementation serves two registered entry
+points for the same user goal. `WelcomePage` is both the onboarding welcome
+state and the logged-out Start route, so Member Onboarding owns two projections
+instead of creating a duplicate Start feature. Reuse the same semantic action
+ids across such projections when the user decision and production callback are
+the same; keep separate state inventories and evidence for each authority.
+
+Implemented UI is not necessarily reachable product behavior. Member
+Onboarding records the Instagram step with an explicit `orphaned` reachability
+dimension and a stable screen gap because no production entry mode or forward
+transition currently reaches it. Do not silently present previewed or captured
+states as live-flow coverage; either prove a route transition or classify the
+state as unreachable debt.
 
 Flutter preview evidence may use the stable annotated Widgetbook builder id or
 the `Type/Use case name` identity. Prefer the builder id when the same builder

@@ -179,29 +179,26 @@
     {
       "authority": "flutter_screens",
       "authorityId": "screen.start.welcome",
-      "status": "planned",
-      "priority": "P2",
-      "reason": "Logged-out welcome and authentication entry surface.",
-      "targetFeature": "feature.start_welcome",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Member Onboarding extends the same WelcomePage implementation as a logged-out Start projection, preserving its reel, CTA, reduced-motion, text-scale, and fixed-dark states without inventing a duplicate feature.",
+      "featureContract": "feature.member_onboarding"
     },
     {
       "authority": "flutter_screens",
       "authorityId": "screen.auth.phone_entry",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Phone and OTP authentication workflow.",
-      "targetFeature": "feature.phone_auth",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Phone Authentication contract covers shared phone/country input, code delivery, OTP verification, cooldown resend, change-number recovery, mutation states, and accessibility evidence.",
+      "featureContract": "feature.phone_auth"
     },
     {
       "authority": "flutter_screens",
       "authorityId": "screen.onboarding.flow",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Required member onboarding and profile creation workflow.",
-      "targetFeature": "feature.member_onboarding",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Member Onboarding contract covers three entry modes, booking identity, social profile, run preferences, draft resume, photo/prompt decisions, mutations, and the orphaned Instagram state.",
+      "featureContract": "feature.member_onboarding"
     },
     {
       "authority": "flutter_screens",

@@ -16499,6 +16499,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "Production WelcomePage starts the object reel and lands on the final welcome composition unless playIntro is false or reduced motion is active.",
+          "previewIds": [
+            "WelcomePage/Splash states"
+          ],
           "captureIds": [
             "start_welcome_animated_reel"
           ],
@@ -16512,6 +16515,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "WelcomePage(playIntro: false) renders the final Catch welcome state immediately for deterministic captures.",
+          "previewIds": [
+            "WelcomePage/Splash states"
+          ],
           "captureIds": [
             "start_welcome",
             "start_welcome_text_scale_2"
@@ -16526,6 +16532,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "The primary CTA routes to auth with the current location as from=, while the secondary CTA routes to the clubs surface.",
+          "previewIds": [
+            "WelcomePage/Splash states"
+          ],
           "captureIds": [
             "start_welcome",
             "start_welcome_reduced_motion",
@@ -16541,6 +16550,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "WelcomePage lands immediately when MediaQuery.disableAnimations is true.",
+          "previewIds": [
+            "WelcomePage/Splash states"
+          ],
           "captureIds": [
             "start_welcome_reduced_motion"
           ],
@@ -16554,6 +16566,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "Start Welcome text scale 2.0 capture covers title, body copy, and bottom CTAs.",
+          "previewIds": [
+            "WelcomePage/Splash states"
+          ],
           "captureIds": [
             "start_welcome_text_scale_2"
           ],
@@ -16564,6 +16579,9 @@
           "kind": "theme",
           "status": "captured",
           "source": "The start route intentionally uses the sunset dark landing palette; the current capture covers that dark branded state.",
+          "previewIds": [
+            "WelcomePage/Splash states"
+          ],
           "captureIds": [
             "start_welcome",
             "start_welcome_reduced_motion",
@@ -16876,6 +16894,10 @@
           "kind": "populated",
           "status": "captured",
           "source": "AuthScreen renders PhonePage while AuthController.step is AuthStep.phone, using OnboardingStepFrame and CatchField/CatchButton primitives.",
+          "previewIds": [
+            "AuthScreen/Screen states",
+            "PhonePage/Phone entry states"
+          ],
           "captureIds": [
             "auth_phone_entry",
             "auth_phone_text_scale_2"
@@ -16890,6 +16912,10 @@
           "kind": "populated",
           "status": "captured",
           "source": "PhonePage renders a country-code selector bound to AuthController.countryCode and resets sendOtpMutation on change.",
+          "previewIds": [
+            "AuthScreen/Screen states",
+            "CountryCodeSelector/Country code selector states"
+          ],
           "captureIds": [
             "auth_country_picker_open",
             "auth_country_code_australia"
@@ -16904,6 +16930,10 @@
           "kind": "error",
           "status": "captured",
           "source": "AuthInput validators drive phone/OTP validation copy before send or verify mutations run.",
+          "previewIds": [
+            "AuthScreen/Screen states",
+            "PhonePage/Phone entry states"
+          ],
           "captureIds": [
             "auth_phone_validation_error"
           ],
@@ -16918,6 +16948,10 @@
           "kind": "mutation",
           "status": "captured",
           "source": "AuthController.sendOtpMutation drives the Send code loading state and CatchErrorBanner failure surface.",
+          "previewIds": [
+            "AuthScreen/Screen states",
+            "PhonePage/Phone entry states"
+          ],
           "captureIds": [
             "auth_send_code_pending",
             "auth_send_code_error"
@@ -16932,6 +16966,10 @@
           "kind": "populated",
           "status": "captured",
           "source": "After codeSent, AuthScreen renders OtpPage with CatchOtpCodeField, verify CTA, resend cooldown, and change-number action.",
+          "previewIds": [
+            "AuthScreen/Screen states",
+            "OtpPage/OTP entry states"
+          ],
           "captureIds": [
             "auth_otp_entry",
             "auth_otp_text_scale_2",
@@ -16947,6 +16985,10 @@
           "kind": "mutation",
           "status": "captured",
           "source": "AuthController.verifyOtpMutation drives Verify loading/error behavior, while sendOtpMutation also covers resend failures on the OTP page.",
+          "previewIds": [
+            "AuthScreen/Screen states",
+            "OtpPage/OTP entry states"
+          ],
           "captureIds": [
             "auth_verify_code_pending",
             "auth_verify_code_error",
@@ -16963,6 +17005,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "Widgetbook and deterministic captures cover phone and OTP text-scale 2 states.",
+          "previewIds": [
+            "AuthScreen/Screen states"
+          ],
           "captureIds": [
             "auth_phone_text_scale_2",
             "auth_otp_text_scale_2"
@@ -16974,6 +17019,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "Widgetbook and deterministic captures cover OTP reduced-motion treatment.",
+          "previewIds": [
+            "AuthScreen/Screen states"
+          ],
           "captureIds": [
             "auth_otp_reduced_motion"
           ],
@@ -17100,11 +17148,16 @@
           "status": "closed",
           "nextAction": "Closed by auth_phone_validation_error, which drives invalid phone input and submit through the capture harness."
         },
-        {
-          "id": "DS-AUTH-003",
-          "status": "closed",
-          "nextAction": "Closed by AuthPhoneEntryViewState and AuthOtpEntryViewState, which move production phone/OTP display policy, cooldown copy, resend/verify/change-number action enablement, and mutation loading flags into provider-free adapters with focused tests. Future work is state-specific design references under DS-AUTH-001."
-        }
+            {
+              "id": "DS-AUTH-003",
+              "status": "closed",
+              "nextAction": "Closed by AuthPhoneEntryViewState and AuthOtpEntryViewState, which move production phone/OTP display policy, cooldown copy, resend/verify/change-number action enablement, and mutation loading flags into provider-free adapters with focused tests. Future work is state-specific design references under DS-AUTH-001."
+            },
+            {
+              "id": "DS-AUTH-004",
+              "status": "open",
+              "nextAction": "REG-FEATURE-CONTRACT-DRIFT-001: while sendOtpMutation is pending, phone and country controls remain interactive and their change callbacks can reset the mutation guard before the original Firebase verification request completes, permitting a second request. Freeze request-defining inputs until settlement or version/cancel stale attempts, then add a focused duplicate-request test."
+            }
       ]
     },
     {
@@ -17463,6 +17516,10 @@
           "kind": "populated",
           "status": "captured",
           "source": "OnboardingScreen starts at OnboardingStep.welcome when no signed-in profile/draft entry is available and renders WelcomePage.",
+          "previewIds": [
+            "OnboardingScreen/Route states",
+            "WelcomePage/Splash states"
+          ],
           "captureIds": [
             "onboarding_welcome"
           ],
@@ -17476,6 +17533,10 @@
           "kind": "populated",
           "status": "captured",
           "source": "NameDobPage owns the route/provider edge while OnboardingNameDobState and OnboardingNameDobStep own first name, last name, DOB, verified phone display, date policy, validation, and typed submit/date callbacks inside the shared step frame.",
+          "previewIds": [
+            "OnboardingScreen/Route states",
+            "NameDobPage/Identity form"
+          ],
           "captureIds": [
             "onboarding_name_dob",
             "onboarding_name_dob_validation_error",
@@ -17491,6 +17552,10 @@
           "kind": "populated",
           "status": "captured",
           "source": "GenderInterestPage owns the route/provider edge while OnboardingGenderInterestState and OnboardingGenderInterestStep own selected-chip display, validation copy, save pending/error display, typed submit intent, and typed chip callbacks.",
+          "previewIds": [
+            "OnboardingScreen/Route states",
+            "GenderInterestPage/Gender and interest form"
+          ],
           "captureIds": [
             "onboarding_gender_interest",
             "onboarding_gender_interest_validation_error",
@@ -17506,6 +17571,10 @@
           "kind": "populated",
           "status": "captured",
           "source": "InstagramPage owns the route/provider edge while OnboardingInstagramState and OnboardingInstagramStep own optional handle seed text, trimmed continue intent, skip intent, and typed callbacks.",
+          "previewIds": [
+            "OnboardingScreen/Route states",
+            "InstagramPage/Instagram form"
+          ],
           "captureIds": [
             "onboarding_instagram",
             "onboarding_instagram_filled",
@@ -17518,6 +17587,10 @@
           "kind": "empty",
           "status": "captured",
           "source": "PhotosPage enforces the required photo gate before profile completion, adapts copy for profileCompletionOnly mode, and routes upload-failure feedback through the shared Catch snackbar helper.",
+          "previewIds": [
+            "OnboardingScreen/Route states",
+            "PhotosPage/Photo grid states"
+          ],
           "captureIds": [
             "onboarding_photos_gate",
             "onboarding_photos_one_photo_disabled",
@@ -17535,6 +17608,10 @@
           "kind": "populated",
           "status": "captured",
           "source": "ProfilePromptsPage owns the route/provider edge while OnboardingProfilePromptsState and OnboardingProfilePromptsStep own prompt selection normalization, available prompt options, answer projection, footer progress, completion gating, mutation error display, and typed callbacks.",
+          "previewIds": [
+            "OnboardingScreen/Route states",
+            "ProfilePromptsPage/Prompt form"
+          ],
           "captureIds": [
             "onboarding_prompts_empty",
             "onboarding_prompts_partial",
@@ -17548,6 +17625,10 @@
           "kind": "populated",
           "status": "captured",
           "source": "RunningPrefsPage owns the route/provider edge while OnboardingRunningPrefsState and OnboardingRunningPrefsStep own pace labels, run-preference chip selections, mode-specific footer/reason/time labels, mutation error display, and typed complete-run-preferences submit intent.",
+          "previewIds": [
+            "OnboardingScreen/Route states",
+            "RunningPrefsPage/Run preferences form"
+          ],
           "captureIds": [
             "onboarding_running_prefs"
           ],
@@ -17562,6 +17643,11 @@
           "kind": "error",
           "status": "captured",
           "source": "Step pages validate required fields before advancing or completing the flow.",
+          "previewIds": [
+            "OnboardingScreen/Route states",
+            "NameDobPage/Identity form",
+            "GenderInterestPage/Gender and interest form"
+          ],
           "captureIds": [
             "onboarding_name_dob_validation_error",
             "onboarding_gender_interest_validation_error"
@@ -17576,6 +17662,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "OnboardingController fetches and migrates OnboardingDraft records to resume the correct step and prefill profile draft data.",
+          "previewIds": [
+            "OnboardingScreen/Route states"
+          ],
           "captureIds": [
             "onboarding_saved_draft"
           ],
@@ -17590,6 +17679,10 @@
           "kind": "mutation",
           "status": "captured",
           "source": "OnboardingController.saveProfileMutation owns profile-save operations while step pages render pending/error feedback.",
+          "previewIds": [
+            "OnboardingScreen/Route states",
+            "GenderInterestPage/Gender and interest form"
+          ],
           "captureIds": [
             "onboarding_save_profile_pending",
             "onboarding_save_profile_error"
@@ -17604,6 +17697,11 @@
           "kind": "mutation",
           "status": "captured",
           "source": "OnboardingController.completeMutation owns final completion and controller invalidation once onboarding is done.",
+          "previewIds": [
+            "OnboardingScreen/Route states",
+            "ProfilePromptsPage/Prompt form",
+            "RunningPrefsPage/Run preferences form"
+          ],
           "captureIds": [
             "onboarding_complete_run_prefs_pending",
             "onboarding_complete_run_prefs_error"
@@ -17618,6 +17716,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "Step-specific text-scale 2.0 captures cover name/DOB, photos, prompts, and running preferences layouts.",
+          "previewIds": [
+            "OnboardingScreen/Route states"
+          ],
           "captureIds": [
             "onboarding_name_dob_text_scale_2",
             "onboarding_photos_text_scale_2",
@@ -17631,6 +17732,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "Gender/interest reduced-motion capture covers the step frame with route animations disabled.",
+          "previewIds": [
+            "OnboardingScreen/Route states"
+          ],
           "captureIds": [
             "onboarding_gender_interest_reduced_motion"
           ],
@@ -17839,11 +17943,21 @@
           "status": "closed",
           "nextAction": "Closed by route-shell plus step adapters: OnboardingFlowState owns entry mode/current step/back/progress/top-bar copy, while OnboardingNameDobState, OnboardingGenderInterestState, OnboardingInstagramState, OnboardingPhotosState, OnboardingProfilePromptsState, and OnboardingRunningPrefsState own step-local display state, validation/copy policy, mutation display state, and typed callbacks or submit intents. State-specific references remain tracked under DS-ONBOARDING-004."
         },
-        {
-          "id": "DS-ONBOARDING-004",
-          "status": "blocked",
-          "nextAction": "Blocked/reference-only until a canonical interaction source exists: primary onboarding step references are exported and manifest-registered for welcome, name/DOB, gender/interest, Instagram filled, photos count-met, prompts partial, and running preferences. Remaining references and masks are interaction-specific keyboard, date picker, photo picker/upload, prompt picker/copy variants, mutation feedback, accessibility, and theme variants."
-        }
+            {
+              "id": "DS-ONBOARDING-004",
+              "status": "blocked",
+              "nextAction": "Blocked/reference-only until a canonical interaction source exists: primary onboarding step references are exported and manifest-registered for welcome, name/DOB, gender/interest, Instagram filled, photos count-met, prompts partial, and running preferences. Remaining references and masks are interaction-specific keyboard, date picker, photo picker/upload, prompt picker/copy variants, mutation feedback, accessibility, and theme variants."
+            },
+            {
+              "id": "DS-ONBOARDING-005",
+              "status": "open",
+              "nextAction": "REG-FEATURE-CONTRACT-DRIFT-001: InstagramPage and OnboardingStep.instagram are implemented, captured, and previewed, but standard onboarding exits after saveProfile, profile-completion entry begins at photos/prompts, run-preferences entry begins at runningPrefs, and saved drafts beyond genderInterest are collapsed back to genderInterest. Decide whether to retire the orphaned Instagram step or restore an explicit production transition and route test."
+            },
+            {
+              "id": "DS-ONBOARDING-006",
+              "status": "open",
+              "nextAction": "REG-FEATURE-CONTRACT-DRIFT-001: saveProfileMutation and completeMutation disable only their primary CTA while step-back, selections, prompt choices/answers, and running-preference controls remain interactive after the submitted payload is captured. Freeze the active step or version queued edits, then add interaction tests proving visible values cannot diverge from the submitted snapshot."
+            }
       ]
     },
     {
