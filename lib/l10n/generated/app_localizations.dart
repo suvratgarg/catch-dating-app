@@ -1898,12 +1898,6 @@ abstract class AppLocalizations {
   /// **'Save events you want to revisit before booking.'**
   String get eventsSavedEventsScreenMessageSaveEventsYouWant;
 
-  /// Product copy used by lib/events/presentation/saved_events_screen.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Events you saved'**
-  String get eventsSavedEventsScreenTextEventsYouSaved;
-
   /// Product copy used by lib/events/presentation/widgets/booking_conflict_sheet.dart (label).
   ///
   /// In en, this message translates to:
@@ -4831,12 +4825,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/safety/presentation/settings_screen.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Edit profile'**
-  String get safetySettingsScreenTitleEditProfile;
-
-  /// Product copy used by lib/safety/presentation/settings_screen.dart (title).
-  ///
-  /// In en, this message translates to:
   /// **'Review history'**
   String get safetySettingsScreenTitleReviewHistory;
 
@@ -4990,12 +4978,6 @@ abstract class AppLocalizations {
   /// **'Privacy policy'**
   String get safetySettingsScreenTitlePrivacyPolicy;
 
-  /// Product copy used by lib/safety/presentation/settings_screen.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'https://catchdates.com/privacy'**
-  String get safetySettingsScreenBodyHttpsCatchdatesComPrivacy;
-
   /// Product copy used by lib/safety/presentation/settings_screen.dart (title).
   ///
   /// In en, this message translates to:
@@ -5020,12 +5002,6 @@ abstract class AppLocalizations {
   /// **'Contact us'**
   String get safetySettingsScreenBodyContactUs;
 
-  /// Product copy used by lib/safety/presentation/settings_screen.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'https://catchdates.com/help'**
-  String get safetySettingsScreenBodyHttpsCatchdatesComHelp;
-
   /// Product copy used by lib/safety/presentation/settings_screen.dart (title).
   ///
   /// In en, this message translates to:
@@ -5037,12 +5013,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Legal'**
   String get safetySettingsScreenBodyLegal;
-
-  /// Product copy used by lib/safety/presentation/settings_screen.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'https://catchdates.com/terms'**
-  String get safetySettingsScreenBodyHttpsCatchdatesComTerms;
 
   /// Product copy used by lib/safety/presentation/settings_screen.dart (title).
   ///

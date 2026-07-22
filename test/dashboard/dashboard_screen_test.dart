@@ -589,7 +589,10 @@ void main() {
       );
       await _pumpDashboardUi(tester);
 
-      expect(find.text('CLUB UPDATES', findRichText: true), findsOneWidget);
+      expect(
+        find.text('ORGANIZER UPDATES', findRichText: true),
+        findsOneWidget,
+      );
       expect(find.text('RACE COURSE ROAD RUNNERS'), findsOneWidget);
       expect(
         find.text('Meet ten minutes early at the main gate.'),

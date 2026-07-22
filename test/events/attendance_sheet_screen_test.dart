@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton_layouts.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_action_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
@@ -254,15 +254,15 @@ void main() {
       tester,
       Scaffold(body: HostEventAttendancePanel(eventId: event.id)),
       overrides: [
-        watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
-        watchEventParticipationsForEventProvider(event.id).overrideWith(
-          (ref) => Stream<List<EventParticipation>>.error(Exception('failed')),
-        ),
+        attendanceSheetViewModelProvider(
+          event.id,
+        ).overrideWithValue(AsyncError(Exception('failed'), StackTrace.empty)),
       ],
     );
     await _settleAttendanceSheet(tester);
 
-    expect(find.bySubtype<CatchInlineErrorState>(), findsOneWidget);
+    expect(find.text('Event unavailable'), findsOneWidget);
+    expect(find.text('Reload event'), findsOneWidget);
   });
 
   testWidgets('renders attendee profiles and toggles attendance', (

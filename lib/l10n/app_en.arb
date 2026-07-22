@@ -2159,13 +2159,6 @@
     "x-owner": "product",
     "x-surface": "events.presentation.saved_events_screen"
   },
-  "eventsSavedEventsScreenTextEventsYouSaved": "Events you saved",
-  "@eventsSavedEventsScreenTextEventsYouSaved": {
-    "description": "Product copy used by lib/events/presentation/saved_events_screen.dart (Text).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "events.presentation.saved_events_screen"
-  },
   "eventsBookingConflictSheetLabelBookingTimeConflict": "Booking time conflict",
   "@eventsBookingConflictSheetLabelBookingTimeConflict": {
     "description": "Product copy used by lib/events/presentation/widgets/booking_conflict_sheet.dart (label).",
@@ -5587,13 +5580,6 @@
     "x-owner": "product",
     "x-surface": "safety.presentation.settings_screen"
   },
-  "safetySettingsScreenTitleEditProfile": "Edit profile",
-  "@safetySettingsScreenTitleEditProfile": {
-    "description": "Product copy used by lib/safety/presentation/settings_screen.dart (title).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "safety.presentation.settings_screen"
-  },
   "safetySettingsScreenTitleReviewHistory": "Review history",
   "@safetySettingsScreenTitleReviewHistory": {
     "description": "Product copy used by lib/safety/presentation/settings_screen.dart (title).",
@@ -5776,13 +5762,6 @@
     "x-owner": "product",
     "x-surface": "safety.presentation.settings_screen"
   },
-  "safetySettingsScreenBodyHttpsCatchdatesComPrivacy": "https://catchdates.com/privacy",
-  "@safetySettingsScreenBodyHttpsCatchdatesComPrivacy": {
-    "description": "Product copy used by lib/safety/presentation/settings_screen.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "safety.presentation.settings_screen"
-  },
   "safetySettingsScreenTitleDeleteAccount658588": "Delete account",
   "@safetySettingsScreenTitleDeleteAccount658588": {
     "description": "Product copy used by lib/safety/presentation/settings_screen.dart (title).",
@@ -5811,13 +5790,6 @@
     "x-owner": "product",
     "x-surface": "safety.presentation.settings_screen"
   },
-  "safetySettingsScreenBodyHttpsCatchdatesComHelp": "https://catchdates.com/help",
-  "@safetySettingsScreenBodyHttpsCatchdatesComHelp": {
-    "description": "Product copy used by lib/safety/presentation/settings_screen.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "safety.presentation.settings_screen"
-  },
   "safetySettingsScreenTitleTerms": "Terms",
   "@safetySettingsScreenTitleTerms": {
     "description": "Product copy used by lib/safety/presentation/settings_screen.dart (title).",
@@ -5827,13 +5799,6 @@
   },
   "safetySettingsScreenBodyLegal": "Legal",
   "@safetySettingsScreenBodyLegal": {
-    "description": "Product copy used by lib/safety/presentation/settings_screen.dart (body).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "safety.presentation.settings_screen"
-  },
-  "safetySettingsScreenBodyHttpsCatchdatesComTerms": "https://catchdates.com/terms",
-  "@safetySettingsScreenBodyHttpsCatchdatesComTerms": {
     "description": "Product copy used by lib/safety/presentation/settings_screen.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",

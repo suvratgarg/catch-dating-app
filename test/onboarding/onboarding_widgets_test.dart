@@ -296,7 +296,7 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      expect(router.routeInformationProvider.value.uri.path, '/clubs');
+      expect(router.routeInformationProvider.value.uri.path, '/organizers');
       expect(find.text('Explore route'), findsOneWidget);
       expect(
         reporter.events.map((event) => event.name),

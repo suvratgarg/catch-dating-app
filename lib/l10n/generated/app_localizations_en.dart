@@ -1084,9 +1084,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Save events you want to revisit before booking.';
 
   @override
-  String get eventsSavedEventsScreenTextEventsYouSaved => 'Events you saved';
-
-  @override
   String get eventsBookingConflictSheetLabelBookingTimeConflict =>
       'Booking time conflict';
 
@@ -2777,9 +2774,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get safetySettingsScreenTitleEmail => 'Email';
 
   @override
-  String get safetySettingsScreenTitleEditProfile => 'Edit profile';
-
-  @override
   String get safetySettingsScreenTitleReviewHistory => 'Review history';
 
   @override
@@ -2867,10 +2861,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get safetySettingsScreenTitlePrivacyPolicy => 'Privacy policy';
 
   @override
-  String get safetySettingsScreenBodyHttpsCatchdatesComPrivacy =>
-      'https://catchdates.com/privacy';
-
-  @override
   String get safetySettingsScreenTitleDeleteAccount658588 => 'Delete account';
 
   @override
@@ -2883,18 +2873,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get safetySettingsScreenBodyContactUs => 'Contact us';
 
   @override
-  String get safetySettingsScreenBodyHttpsCatchdatesComHelp =>
-      'https://catchdates.com/help';
-
-  @override
   String get safetySettingsScreenTitleTerms => 'Terms';
 
   @override
   String get safetySettingsScreenBodyLegal => 'Legal';
-
-  @override
-  String get safetySettingsScreenBodyHttpsCatchdatesComTerms =>
-      'https://catchdates.com/terms';
 
   @override
   String get safetySettingsScreenTitleVersion => 'Version';

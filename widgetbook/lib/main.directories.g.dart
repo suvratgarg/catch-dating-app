@@ -3970,16 +3970,6 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
-          _widgetbook.WidgetbookComponent(
-            name: 'SavedEventsHeaderSliver',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Header sliver',
-                builder: _widgetbook_workspace_events_event_detail_use_cases
-                    .savedEventsHeaderSliverState,
-              ),
-            ],
-          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(

@@ -1,7 +1,7 @@
 {
   "$schema": "./widget_classification.schema.json",
   "version": 2,
-  "updated": "2026-07-21",
+  "updated": "2026-07-22",
   "sourceOfTruth": {
     "scope": "Generated inventory for production Flutter widget and widget-state classes under lib/**. Widgetbook/test scaffolds are intentionally out of scope.",
     "canonicalContracts": "design/components/catch.components.json owns canonical global component contracts and governance metadata.",
@@ -10,14 +10,14 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1098,
-    "widgetClasses": 966,
+    "total": 1099,
+    "widgetClasses": 967,
     "stateClasses": 132,
-    "publicClasses": 961,
+    "publicClasses": 962,
     "privateClasses": 137,
     "byRole": {
       "atom": 57,
-      "composition": 352,
+      "composition": 353,
       "feature-adapter": 285,
       "pattern": 17,
       "screen": 255,
@@ -28,7 +28,7 @@
       "keep-public-cataloged": 702,
       "keep-widget-state": 132,
       "review-catalog-coverage": 44,
-      "review-promote-or-consolidate": 20,
+      "review-promote-or-consolidate": 21,
       "review-promote-or-inline": 5
     },
     "byCatalogStatus": {
@@ -36,15 +36,15 @@
       "contracted": 195,
       "not-applicable": 132,
       "route-covered": 54,
-      "uncataloged": 52
+      "uncataloged": 53
     },
     "conceptCount": 62,
     "memberClassCount": 116,
-    "compositionClassCount": 516,
+    "compositionClassCount": 517,
     "screenClassCount": 267,
     "unclassifiedCount": 0,
     "byConceptRole": {
-      "composition": 516,
+      "composition": 517,
       "concept": 62,
       "member": 116,
       "screen": 267
@@ -5066,6 +5066,40 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "CatchErrorBackAction",
+      "file": "lib/core/widgets/catch_error_state.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.error_back_action",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "conceptRole": "composition",
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": "error_back_action",
+      "decisionRef": "generated-rule:uncontracted-composition",
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract",
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "CatchErrorBody",
