@@ -3,7 +3,7 @@
   "boardId": "catch-pilot-launch-2026-07",
   "name": "Catch website-first pilot launch",
   "owner": "founder",
-  "updatedAt": "2026-07-22T00:00:00+05:30",
+  "updatedAt": "2026-07-22T18:52:00+05:30",
   "operatingMode": "website_first",
   "successDefinition": "Catch is publicly operating in Mumbai and Indore with accurate market claims, reachable legal and help pages, production website monitoring, and a reviewed supply pipeline ready for the first 50 organizers plus their events.",
   "statusDefinitions": {
@@ -87,7 +87,7 @@
       "id": "TASK-MARKETS",
       "workstream": "launch_surface",
       "title": "Align every public market claim to Mumbai and Indore only",
-      "status": "in_progress",
+      "status": "done",
       "priority": "P0",
       "owner": "codex/website-pilot-launch-20260722",
       "targetDate": "2026-07-22",
@@ -98,18 +98,21 @@
         "Market-pack and website route/build checks pass.",
         "Production pages show the two-city claim after deployment."
       ],
-      "nextAction": "Merge and verify the production marketing deployment.",
+      "nextAction": "Monitor pilot-market accuracy during the three end-to-end test runs.",
       "evidence": [
         "website/src/content/markets/in.ts",
-        "website/scripts/marketPack.test.mjs"
+        "website/scripts/marketPack.test.mjs",
+        "PR #96 merged as 2a382a25432e46ec79fdb3ba8b2bf47f17513409",
+        "Production workflow 29922913399",
+        "2026-07-22 live probe: / and /organizers/ returned HTTP 200 with pilot markers"
       ],
-      "updatedAt": "2026-07-22T00:00:00+05:30"
+      "updatedAt": "2026-07-22T18:52:00+05:30"
     },
     {
       "id": "TASK-LEGAL-PUBLISH",
       "workstream": "trust",
       "title": "Publish privacy, terms, and help pages",
-      "status": "in_progress",
+      "status": "done",
       "priority": "P0",
       "owner": "codex/website-pilot-launch-20260722",
       "targetDate": "2026-07-22",
@@ -120,19 +123,21 @@
         "Privacy rights, correction/deletion, grievance handling, 18+ eligibility, public-source listings, claim/correction/takedown, safety, and external-event boundaries are explained plainly.",
         "Owner facts are confirmed and no placeholder text is published."
       ],
-      "nextAction": "Run website gates, merge, deploy, and verify all three production routes.",
+      "nextAction": "Route legal-policy changes through founder and counsel review before republishing.",
       "evidence": [
         "website/src/content/legal.json",
         "website/src/features/legal/LegalPage.tsx",
-        "website/scripts/postbuild.mjs"
+        "website/scripts/postbuild.mjs",
+        "PR #96 merged as 2a382a25432e46ec79fdb3ba8b2bf47f17513409",
+        "2026-07-22 live probe: /privacy/, /terms/, and /help/ returned HTTP 200"
       ],
-      "updatedAt": "2026-07-22T00:00:00+05:30"
+      "updatedAt": "2026-07-22T18:52:00+05:30"
     },
     {
       "id": "TASK-OBS-UPTIME",
       "workstream": "observability",
       "title": "Monitor production website availability and launch-critical content",
-      "status": "in_progress",
+      "status": "done",
       "priority": "P0",
       "owner": "codex/website-pilot-launch-20260722",
       "targetDate": "2026-07-22",
@@ -142,9 +147,13 @@
         "The probe fails on wrong status, missing canonical metadata, or missing launch markers.",
         "A successful production workflow run is linked as evidence."
       ],
-      "nextAction": "Land the scheduled probe and capture the first green workflow run.",
-      "evidence": [],
-      "updatedAt": "2026-07-22T00:00:00+05:30"
+      "nextAction": "Review scheduled failures and keep pilot markers current as supply is published.",
+      "evidence": [
+        ".github/workflows/website-production-observability.yml",
+        "Production workflow 29922913399 completed successfully",
+        "2026-07-22 independent production probe passed all five launch-critical routes"
+      ],
+      "updatedAt": "2026-07-22T18:52:00+05:30"
     },
     {
       "id": "TASK-OBS-WEB-ANALYTICS",
@@ -161,15 +170,17 @@
         "No analytics or marketing tag loads before consent.",
         "Evidence is linked without exposing credentials."
       ],
-      "nextAction": "Deploy main, accept analytics consent in one production session, and verify page_view plus conversion delivery in GA4 Realtime or DebugView.",
+      "nextAction": "Accept analytics consent in one production session and verify page_view plus conversion delivery in GA4 Realtime or DebugView.",
       "evidence": [
         "GTM-K7KLNQXP version 2: Catch website production GA4 launch",
         ".github/workflows/marketing-website.yml",
         "tool/env/check_web_hosting_env.mjs",
         "website/src/analytics.ts",
-        "website/src/features/marketing/tracking.test.ts"
+        "website/src/features/marketing/tracking.test.ts",
+        "Production workflow 29922913399 completed successfully",
+        "Deployed site-DX9pXazw.js contains GTM-K7KLNQXP, googletagmanager, gtm.js, and dataLayer"
       ],
-      "updatedAt": "2026-07-22T00:00:00+05:30"
+      "updatedAt": "2026-07-22T18:52:00+05:30"
     },
     {
       "id": "TASK-PILOT-RUNS",
@@ -185,9 +196,9 @@
         "Each run records city, timestamp, result, defects, and follow-up owner.",
         "No unresolved P0 trust, safety, or availability defect remains."
       ],
-      "nextAction": "Schedule the first Mumbai and Indore runs after production deployment.",
+      "nextAction": "Schedule and execute the first Mumbai and Indore runs.",
       "evidence": [],
-      "updatedAt": "2026-07-22T00:00:00+05:30"
+      "updatedAt": "2026-07-22T18:52:00+05:30"
     },
     {
       "id": "TASK-SUPPLY-50",
