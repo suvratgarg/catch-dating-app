@@ -20,10 +20,11 @@ The migration is incremental:
 - `site.ts` owns site-wide authored labels such as app-store CTA copy. Its
   feature hook owns environment-derived destinations and combines them at the
   adapter boundary; content modules never read `import.meta.env`.
-- `legal.ts` reserves the shipped-app URL contracts `/privacy`, `/terms`, and
-  `/help` with null bodies. `site.ts` reserves an empty contact destination.
-  The owner-gated content test requires those routes and links to remain
-  dormant until the owner supplies real destinations and legal text.
+- `legal.json` owns the published `/privacy/`, `/terms/`, and `/help/` document
+  content plus confirmed operator, contact, notice-address, court, and grievance
+  facts. `legal.ts` exposes the typed content; `site.ts` owns the public contact
+  destination and footer links. The published-legal-content test rejects empty
+  sections, placeholders, or missing runtime routes.
 - Cities are structured records with stable ids/slugs, aliases, IANA timezone,
   and `live`/`waitlist` status. Event-live inventory is derived from status;
   waitlist/host options derive from the configured city records; only the

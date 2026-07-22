@@ -1,8 +1,14 @@
 import type {StoreCtaCopy} from "./types";
 
 export const ownerGatedSiteDestinations = {
-  contactHref: "",
+  contactHref: "mailto:suvrat@catchdates.com",
 } as const;
+
+export const siteFooterLegalLinks = [
+  {href: "/privacy/", label: "Privacy"},
+  {href: "/terms/", label: "Terms"},
+  {href: "/help/", label: "Help"},
+] as const;
 
 export const storeCtaCopy = [
   {

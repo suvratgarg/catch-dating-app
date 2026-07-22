@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.8.1
-updated: 2026-07-21
+version: 0.8.2
+updated: 2026-07-22
 owner: web_platform
 status: active
 ---
@@ -439,6 +439,10 @@ pipeline:
   actual HTTP 404 instead of the root SPA shell;
 - the deploy job probes a unique unknown `catchdates.com` URL and fails unless
   the response status is 404;
+- the deploy job also probes every launch-critical route for HTTP 200,
+  route-specific canonical metadata, and required public content markers;
+- `.github/workflows/website-production-observability.yml` repeats those
+  launch-critical probes every 15 minutes and can be dispatched manually;
 - deployment uses the checked `prod` Firebase alias plus the repo's existing
   Google Cloud Workload Identity environment variables.
 

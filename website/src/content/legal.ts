@@ -1,7 +1,5 @@
-import type {OwnerGatedLegalPage} from "./types";
+import legalDocument from "./legal.json";
+import type {PublishedLegalContent} from "./types";
 
-export const ownerGatedLegalPages = {
-  help: {path: "/help", body: null},
-  privacy: {path: "/privacy", body: null},
-  terms: {path: "/terms", body: null},
-} as const satisfies Readonly<Record<string, OwnerGatedLegalPage>>;
+export const publishedLegalContent = legalDocument as PublishedLegalContent;
+export const publishedLegalPages = publishedLegalContent.pages;

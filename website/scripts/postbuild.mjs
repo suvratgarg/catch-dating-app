@@ -23,9 +23,11 @@ const hostListingsPath = path.resolve(
 const metaContentPath = path.resolve(
   args.metaContent ?? path.join(websiteRoot, "src", "content", "meta.json")
 );
+const legalContentPath = path.join(websiteRoot, "src", "content", "legal.json");
 const baseUrl = String(args.baseUrl ?? "https://catchdates.com").replace(/\/+$/, "");
 const hostListings = JSON.parse(fs.readFileSync(hostListingsPath, "utf8"));
 const websiteMeta = readWebsiteMeta(metaContentPath);
+const legalContent = JSON.parse(fs.readFileSync(legalContentPath, "utf8"));
 
 const rootHtmlPath = path.join(distRoot, "index.html");
 const rootHtml = fs.readFileSync(rootHtmlPath, "utf8");
@@ -35,6 +37,18 @@ writeRoute("/", staticRouteMeta(websiteMeta, "home", baseUrl));
 writeRoute("/host/", staticRouteMeta(websiteMeta, "host", baseUrl));
 writeRoute("/organizers/", staticRouteMeta(websiteMeta, "organizers", baseUrl));
 writeRoute("/claim/", staticRouteMeta(websiteMeta, "claim", baseUrl));
+writeRoute("/privacy/", {
+  ...staticRouteMeta(websiteMeta, "privacy", baseUrl),
+  bodyHtml: buildLegalStaticBody(legalContent.pages.privacy, legalContent.effectiveDate),
+});
+writeRoute("/terms/", {
+  ...staticRouteMeta(websiteMeta, "terms", baseUrl),
+  bodyHtml: buildLegalStaticBody(legalContent.pages.terms, legalContent.effectiveDate),
+});
+writeRoute("/help/", {
+  ...staticRouteMeta(websiteMeta, "help", baseUrl),
+  bodyHtml: buildLegalStaticBody(legalContent.pages.help, legalContent.effectiveDate),
+});
 writeRoute("/404/", staticRouteMeta(websiteMeta, "not_found", baseUrl));
 writeStaticHtml("404.html", staticRouteMeta(websiteMeta, "not_found", baseUrl));
 
@@ -171,6 +185,28 @@ function buildListingStaticBody(listing, labels) {
     facts ? `<section><h2>${escapeHtml(labels.factsHeading)}</h2><dl>${facts}</dl></section>` : "",
     sources ? `<section><h2>${escapeHtml(labels.sourcesHeading)}</h2><ul>${sources}</ul></section>` : "",
     `<p>${escapeHtml(labels.lastVerifiedPrefix)} ${escapeHtml(String(listing.lastVerifiedAt ?? labels.notRecorded))}.</p>`,
+    "</main>",
+  ].join("");
+}
+
+function buildLegalStaticBody(page, effectiveDate) {
+  const sections = page.sections.map((section) => {
+    const paragraphs = section.paragraphs
+      .map((paragraph) => `<p>${escapeHtml(String(paragraph))}</p>`)
+      .join("");
+    const bullets = (section.bullets ?? [])
+      .map((bullet) => `<li>${escapeHtml(String(bullet))}</li>`)
+      .join("");
+    return `<section><h2>${escapeHtml(String(section.heading))}</h2>` +
+      `${paragraphs}${bullets ? `<ul>${bullets}</ul>` : ""}</section>`;
+  }).join("");
+  return [
+    `<main data-static-legal-page="${escapeHtml(String(page.path))}">`,
+    `<header><p>${escapeHtml(String(page.eyebrow))}</p>`,
+    `<h1>${escapeHtml(String(page.title))}</h1>`,
+    `<p>${escapeHtml(String(page.summary))}</p>`,
+    `<p>Effective ${escapeHtml(String(effectiveDate))}</p></header>`,
+    sections,
     "</main>",
   ].join("");
 }

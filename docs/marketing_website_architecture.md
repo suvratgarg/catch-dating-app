@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.4.169
-updated: 2026-07-21
+version: 0.4.170
+updated: 2026-07-22
 owner: marketing_website
 status: active
 ---
@@ -696,14 +696,15 @@ website/src/
 - `content/site.ts` owns site-wide authored labels such as app-store CTA copy.
   The feature hook owns `import.meta.env` reads and joins destinations to copy;
   environment access never belongs in the content layer.
-- `content/legal.ts` reserves the existing app-linked `/privacy`, `/terms`, and
-  `/help` contracts with null bodies; `content/site.ts` reserves an empty
-  contact destination. A pretypecheck contract requires them to remain
-  unregistered and unlinked until owner-supplied text and destinations exist.
-  Native Settings follows the same fail-closed policy: Privacy, Terms, and Help
-  rows render only when `CATCH_PRIVACY_POLICY_URL`, `CATCH_TERMS_URL`, and
-  `CATCH_HELP_URL` contain valid owner-approved external URLs. Privacy and Terms
-  remain separate documents and must never alias the same placeholder route.
+- `content/legal.json` owns the published `/privacy/`, `/terms/`, and `/help/`
+  content plus confirmed operator and grievance facts; `content/legal.ts`
+  exposes its typed runtime contract. `content/site.ts` owns the public contact
+  destination and site-wide legal footer links. A pretypecheck contract rejects
+  placeholders, incomplete sections, or missing route registration.
+  Native Settings remains fail-closed: Privacy, Terms, and Help rows render only
+  when `CATCH_PRIVACY_POLICY_URL`, `CATCH_TERMS_URL`, and `CATCH_HELP_URL`
+  contain valid owner-approved destinations. Privacy and Terms are separate
+  documents and must never alias the same route.
 - `content/markets/index.ts` selects the active market pack. City lists,
   currency, geo-adaptive labels, India-specific comparison columns, and example
   event name/venue/city/currency belong in that pack rather than page or
