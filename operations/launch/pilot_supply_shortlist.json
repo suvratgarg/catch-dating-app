@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "shortlistId": "pilot-organizers-2026-07-22",
+  "generatedAt": "2026-07-22T20:05:50+05:30",
+  "target": {
+    "organizers": 10,
+    "markets": {
+      "mumbai": 5,
+      "indore": 5
+    }
+  },
+  "publicationPolicy": "Research evidence is not publication approval. Every organizer requires a schema-complete batch record and reviewed publication packet; every event requires current date, venue, registration, provenance, and a separate reviewed event decision.",
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "Small World",
+      "city": "Mumbai",
+      "recordStatus": "review_now",
+      "existingInventory": false,
+      "formats": ["Speed dating", "Mixers", "Creative workshops", "Date activities"],
+      "sources": [
+        "https://events.smallworld.co/events/mumbai/speed-dating",
+        "https://events.smallworld.co/",
+        "https://linktr.ee/small.world"
+      ],
+      "eventSignal": "Official Mumbai speed-dating schedule lists weekend dates from 2026-07-25 through 2026-08-30 at Moxy Andheri West.",
+      "reviewNotes": "Use one multi-city Small World organizer and attach Mumbai as a market; venues and workshops are not separate organizers.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "rank": 2,
+      "name": "Link & Chill",
+      "city": "Mumbai",
+      "recordStatus": "review_now",
+      "existingInventory": false,
+      "formats": ["House parties", "Game nights", "Excursions", "Dinners", "Social meetups"],
+      "sources": [
+        "https://www.meetup.com/linkandchillmumbai/",
+        "https://www.instagram.com/linkandchill/"
+      ],
+      "eventSignal": "Official public Meetup group lists a 2026-07-25 Matheran getaway originating in Dadar and records 126 past events.",
+      "reviewNotes": "The operator is not a second organizer. Preserve origin and destination separately for excursions outside Mumbai.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "rank": 3,
+      "name": "Base Camp Board Gaming Library",
+      "city": "Mumbai",
+      "recordStatus": "organizer_only_event_blocked",
+      "existingInventory": false,
+      "formats": ["Board-game meetups", "Learn-to-play sessions", "Playtesting"],
+      "sources": [
+        "https://linktr.ee/basecamp.bg",
+        "https://www.district.in/events/beginner-friendly-board-games-meetup-jan11-2025-buy-tickets"
+      ],
+      "eventSignal": "A public 2026-07-26 beginner-friendly meetup listing exists.",
+      "reviewNotes": "Dedupe Base Camp, Base Camp BG, and the full name. Verify the suspicious midnight time and withheld location before event publication.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "rank": 4,
+      "name": "Meeplecon",
+      "city": "Mumbai",
+      "recordStatus": "review_now",
+      "existingInventory": false,
+      "formats": ["Convention", "Tabletop gaming", "Tournaments", "Workshops"],
+      "sources": [
+        "https://meeplecon.in/"
+      ],
+      "eventSignal": "Official homepage lists 2026-10-17 and 2026-10-18 at NESCO Goregaon.",
+      "reviewNotes": "Confirm the underlying organizer identity and retain the stale alternate-date conflict for reviewer resolution.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "rank": 5,
+      "name": "Sacred Space Run Club",
+      "city": "Mumbai",
+      "recordStatus": "organizer_only_event_blocked",
+      "existingInventory": false,
+      "formats": ["Run club", "Wellness", "Mindfulness", "Community fitness"],
+      "sources": [
+        "https://www.sacredspacewellness.in/event-details/sacred-space-run-club-2026-06-05-22-00"
+      ],
+      "eventSignal": "Official page describes a free recurring Friday-night Worli Promenade run; the evidenced session is closed.",
+      "reviewNotes": "Model the run club under Sacred Space Wellness and verify the next session before event publication.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "rank": 6,
+      "name": "Academy of Indore Marathoners (AIM)",
+      "city": "Indore",
+      "recordStatus": "organizer_only_event_blocked",
+      "existingInventory": false,
+      "formats": ["Runs", "Training groups", "Marathons", "Fitness community"],
+      "sources": [
+        "https://indoremarathon.in/"
+      ],
+      "eventSignal": "Official site lists Indore Rainathon on 2026-08-01.",
+      "reviewNotes": "The official page conflicts between Pitra Parvat at 22:00 and Nehru Stadium at 04:30. Resolve before publishing the event.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "rank": 7,
+      "name": "Indore Toastmasters' Meetup",
+      "city": "Indore",
+      "recordStatus": "review_now",
+      "existingInventory": false,
+      "formats": ["Public speaking", "Leadership", "Networking", "Recurring club meetings"],
+      "sources": [
+        "https://www.meetup.com/indore-toastmasters-meetup/"
+      ],
+      "eventSignal": "Official public Meetup group lists Transcendence on 2026-07-25 and Impact on 2026-07-26, followed by weekly sessions.",
+      "reviewNotes": "The discovery umbrella and the two underlying clubs are distinct identities; preserve the club on every event.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "rank": 8,
+      "name": "Student Activity Council, IIM Indore",
+      "city": "Indore",
+      "recordStatus": "review_now",
+      "existingInventory": false,
+      "formats": ["Startup networking", "Talks", "Expo", "Competitions", "Investor meetings"],
+      "sources": [
+        "https://www.i5summit.in/"
+      ],
+      "eventSignal": "Official i5 Summit site schedules the event for 2026-08-21 through 2026-08-23 on the IIM Indore campus.",
+      "reviewNotes": "Use SAC IIM Indore as organizer and i5 Summit as the event brand; verify public admission and campus access.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "rank": 9,
+      "name": "Security BSides Indore",
+      "city": "Indore",
+      "recordStatus": "review_now",
+      "existingInventory": false,
+      "formats": ["Cybersecurity conference", "Training", "CTFs", "Job fair", "Networking"],
+      "sources": [
+        "https://linktr.ee/Bsidesindore",
+        "https://in.linkedin.com/company/security-bsides-indore"
+      ],
+      "eventSignal": "Local official sources list training on 2026-09-05 and conference on 2026-09-06 at Jaal Sabha Grah.",
+      "reviewNotes": "Retain the conflict that the global BSides calendar labels the date unconfirmed while the local organizer sells tickets.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "rank": 10,
+      "name": "AFTER FLY",
+      "city": "Indore",
+      "recordStatus": "organizer_only_event_blocked",
+      "existingInventory": true,
+      "formats": ["Run-and-rave", "Coffee rave", "Cinema rave", "Social experiences"],
+      "sources": [
+        "https://luma.com/fff4m9ol",
+        "https://www.freepressjournal.in/indore/cinema-rave-party-in-indore-gen-z-enjoys-bold-mix-of-movies-music-more-video",
+        "https://www.instagram.com/afterfly.in/"
+      ],
+      "eventSignal": "Official hosted Luma evidence and recent press confirm recurring formats, but the visible registration is closed and no next official date was found.",
+      "reviewNotes": "Dedupe against the existing AFTER FLY inventory. Keep the organizer; do not invent or republish an event date.",
+      "verifiedAt": "2026-07-22"
+    }
+  ],
+  "summary": {
+    "reviewNow": 6,
+    "organizerOnlyEventBlocked": 4,
+    "existingInventory": 1,
+    "netNewOrganizers": 9
+  }
+}

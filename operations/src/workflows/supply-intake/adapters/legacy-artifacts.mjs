@@ -115,7 +115,7 @@ export class LegacyIntakeArtifactAdapter {
   }
 }
 
-export function stripArtifactData(snapshot) {
+export function stripArtifactData(snapshot, {market} = {}) {
   return {
     ...snapshot,
     artifacts: Object.fromEntries(Object.entries(snapshot.artifacts).map(([id, artifact]) => [id, {
@@ -124,19 +124,36 @@ export function stripArtifactData(snapshot) {
       relativePath: artifact.relativePath,
       sha256: artifact.sha256,
       sizeBytes: artifact.sizeBytes,
-      counts: artifactCounts(id, artifact.data),
+      counts: artifactCounts(id, artifact.data, {market}),
     }])),
   };
 }
 
-function artifactCounts(id, data) {
+export function organizerPacketSupportsMarket(packet, market) {
+  if (typeof market !== "string" || market.length === 0) return false;
+  const geography = packet?.identity?.geography;
+  const declaredMarkets = [
+    geography?.primaryMarketSlug,
+    ...(geography?.markets ?? []).flatMap((entry) => [
+      entry?.marketSlug,
+      entry?.eventFilter?.citySlug,
+    ]),
+  ].filter((entry) => typeof entry === "string" && entry.length > 0);
+  return declaredMarkets.includes(market);
+}
+
+function artifactCounts(id, data, {market} = {}) {
   if (!data) return {};
   if (id === "eventIntakeBridge") return {
     sourceProfiles: data.sourceProfiles?.length ?? 0,
     sourceResults: data.sourceResults?.length ?? 0,
     eventCandidates: data.eventCandidates?.length ?? 0,
   };
-  if (id === "organizerPublicationPackets") return {organizers: data.packets?.length ?? 0};
+  if (id === "organizerPublicationPackets") return {
+    organizers: market ?
+      (data.packets ?? []).filter((packet) => organizerPacketSupportsMarket(packet, market)).length :
+      data.packets?.length ?? 0,
+  };
   if (id === "organizerActionQueue") return {actions: data.actions?.length ?? 0};
   if (id === "llmPromptQueue") return {requests: data.requests?.length ?? 0};
   if (id === "crawlRunPlan") return {runIntents: data.runIntents?.length ?? 0};

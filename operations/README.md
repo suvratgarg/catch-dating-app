@@ -16,6 +16,9 @@ runtime is **shadow-only**:
 - public writes are disabled;
 - run projection reads reviewed local compatibility artifacts; the source
   extractors are not yet connected to an acquisition worker;
+- organizer compatibility packets are filtered by their declared market, and
+  Event Intake bridges fail planning when missing, market-mismatched,
+  future-dated, older than 168 hours, or past their reviewed week end;
 - promotion produces a review receipt, never an app, website, or Firestore
   mutation; and
 - CN Traveller is discovery-only and requires an official source before any

@@ -9,12 +9,77 @@ test("checkPromotionBridge accepts aligned public projection, website listing, a
   assert.deepEqual(result.warnings, []);
   assert.deepEqual(result.summary, {
     approvedProjections: 1,
+    pilotEligibleProjections: 1,
+    pilotSuppressedProjections: 0,
     canonicalHostEntities: 1,
     claimTargets: 1,
     claimTargetSyncPreviewWrites: 1,
     organizerIntakeListings: 1,
     websiteListings: 1,
   });
+});
+
+test("checkPromotionBridge requires waitlist-market organizers to stay out of website listings", () => {
+  const fixture = bridgeFixture();
+  const waitlistEntry = {
+    ...structuredClone(fixture.projectionPlan.entries[0]),
+    entityId: "bhag",
+    legacyPaths: ["/organizers/delhi-ncr/bhag-club/"],
+    publicListing: {
+      ...structuredClone(fixture.projectionPlan.entries[0].publicListing),
+      id: "bhag",
+      path: "/organizers/bhag/",
+      markets: [{marketSlug: "delhi-ncr", displayName: "Delhi NCR"}],
+    },
+  };
+  fixture.projectionPlan.entries.push(waitlistEntry);
+  fixture.canonicalHostEntities.entries.push({
+    canonicalHostId: "bhag",
+    entityId: "bhag",
+    publicPresence: {
+      canonicalPath: "/organizers/bhag/",
+      indexStatus: "indexed",
+      publishStatus: "published",
+    },
+    claim: {claimTargetPath: "clubs/bhag"},
+    legacyClubCompatibility: {documentId: "bhag"},
+  });
+  fixture.claimTargetPlan.targets.push({
+    claimState: "unclaimed",
+    clubDocument: {
+      claim: {state: "unclaimed"},
+      ownership: {state: "programmatic"},
+      publicPage: {canonicalPath: "/organizers/bhag/"},
+    },
+    entityId: "bhag",
+    path: "clubs/bhag",
+  });
+  fixture.claimTargetSyncPreview.actions.push({
+    entityId: "bhag",
+    path: "clubs/bhag",
+    status: "create",
+    merge: false,
+    reason: "missing_claim_target",
+    requiresFirestoreDryRun: true,
+  });
+  fixture.claimTargetSyncPreview.summary.targets = 2;
+  fixture.claimTargetSyncPreview.summary.creates = 2;
+  fixture.claimTargetSyncPreview.summary.writesNeeded = 2;
+
+  const suppressed = checkPromotionBridge(fixture);
+  assert.deepEqual(suppressed.errors, []);
+  assert.equal(suppressed.summary.pilotSuppressedProjections, 1);
+
+  fixture.hostListings.push({
+    dataOrigin: "organizerIntake",
+    id: "bhag",
+    indexing: "index, follow",
+    legacyPaths: ["/organizers/delhi-ncr/bhag-club/"],
+    path: "/organizers/bhag/",
+    status: "unclaimed",
+  });
+  const leaked = checkPromotionBridge(fixture);
+  assert.match(leaked.errors.join("\n"), /waitlist-market organizer leaked/);
 });
 
 test("checkPromotionBridge rejects legacy duplicate listings for canonical organizers", () => {
@@ -148,6 +213,7 @@ function bridgeFixture() {
           publicListing: {
             id: "afterfly",
             indexing: "index, follow",
+            markets: [{marketSlug: "indore", displayName: "Indore"}],
             path: "/organizers/afterfly/",
             status: "unclaimed",
           },

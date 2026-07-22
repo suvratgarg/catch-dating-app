@@ -9,7 +9,10 @@ export async function temporaryDirectory(prefix = "catch-operations-") {
 export async function createFixtureRepository(root) {
   await writeJson(root, "tool/marketing/event_guide/generated/mumbai/2026-07-14/event_intake_bridge.json", {
     schemaVersion: 1,
+    generatedAt: "2026-07-14T10:00:00.000Z",
     city: {id: "mumbai", label: "Mumbai"},
+    weekStart: "2026-07-14",
+    weekEnd: "2026-07-21",
     sourceProfiles: [
       {id: "legacy-web", label: "Legacy Web", type: "source_url_list", status: "needs_verification", items: []},
     ],
@@ -68,6 +71,12 @@ export async function createFixtureRepository(root) {
       entityId: "organizer-ready",
       canonicalHostId: "organizer-ready",
       displayName: "Ready Organizer",
+      identity: {
+        geography: {
+          primaryMarketSlug: "mumbai",
+          markets: [{marketSlug: "mumbai", eventFilter: {citySlug: "mumbai"}}],
+        },
+      },
       blockers: [],
       dataBlockers: [],
       evidenceBlockers: [],
