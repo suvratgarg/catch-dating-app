@@ -6,6 +6,7 @@ import {
   schemaErrorMessages,
   validateWebsiteHostListingProjection,
 } from "../../tool/contracts/generated/schema_contract_validators.mjs";
+import {inMarket} from "../src/content/markets/in.ts";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const websiteRoot = path.resolve(dirname, "..");
@@ -72,7 +73,16 @@ const claimTargetReadinessReceipt = claimTargetReadinessReceiptPath ?
     path.resolve(claimTargetReadinessReceiptPath)
   ) :
   null;
+const liveMarketKeys = new Set(
+  inMarket.cities
+    .filter((city) => city.status === "live")
+    .flatMap((city) => [city.slug, city.label, ...city.aliases])
+    .map(normalizeMarketKey)
+);
 const approvedIntakeProjections = organizerIntakeProjectionEntries();
+const productionIntakeProjections = approvedIntakeProjections.filter(
+  organizerIntakeProjectionHasLiveMarket
+);
 const publicExternalEventsByHostId =
   publicExternalEventsByCanonicalHostId(readJsonIfExists(externalEventReadinessPath));
 const suppressedLegacyPaths = new Set(
@@ -83,8 +93,12 @@ const suppressedLegacyPaths = new Set(
 );
 
 const listings = [
-  ...approvedIntakeProjections.map(listingFromOrganizerIntakeProjection),
-  ...(args.noSeeds ? [] : scrapedSeedListings(suppressedLegacyPaths)),
+  ...(args.includeDemo ? approvedIntakeProjections : productionIntakeProjections)
+    .map((entry) => listingFromOrganizerIntakeProjection(entry, {
+      liveMarketsOnly: !args.includeDemo,
+    })),
+  ...(args.noSeeds ? [] : scrapedSeedListings(suppressedLegacyPaths)
+    .filter((listing) => args.includeDemo || listingHasLiveMarket(listing))),
   ...(args.includeDemo ? appCreatedDemoListings() : []),
 ]
   .map(withPublicExternalEvents)
@@ -164,6 +178,26 @@ function compareText(a, b) {
   if (left < right) return -1;
   if (left > right) return 1;
   return 0;
+}
+
+function normalizeMarketKey(value) {
+  return String(value ?? "").toLowerCase().replace(/[^a-z0-9]+/gu, "");
+}
+
+function isLiveMarketValue(value) {
+  const key = normalizeMarketKey(value);
+  return key.length > 0 && liveMarketKeys.has(key);
+}
+
+function organizerIntakeProjectionHasLiveMarket(entry) {
+  return (entry?.publicListing?.markets ?? []).some((market) =>
+    isLiveMarketValue(market?.marketSlug) ||
+      isLiveMarketValue(market?.displayName)
+  );
+}
+
+function listingHasLiveMarket(listing) {
+  return isLiveMarketValue(listing?.citySlug) || isLiveMarketValue(listing?.city);
 }
 
 function publicExternalEventsByCanonicalHostId(readiness) {
@@ -434,9 +468,13 @@ function listingFromClubSeed(wrapper) {
   };
 }
 
-function listingFromOrganizerIntakeProjection(entry) {
+function listingFromOrganizerIntakeProjection(entry, {liveMarketsOnly = false} = {}) {
   const projection = entry.publicListing;
-  const markets = projection.markets ?? [];
+  const markets = (projection.markets ?? []).filter((market) =>
+    !liveMarketsOnly ||
+      isLiveMarketValue(market?.marketSlug) ||
+      isLiveMarketValue(market?.displayName)
+  );
   const primaryMarket = markets[0] ?? null;
   const allMarketNames = markets.map((market) => market.displayName).filter(Boolean);
   const city = allMarketNames.length > 1 ?

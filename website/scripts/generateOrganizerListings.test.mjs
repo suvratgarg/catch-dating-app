@@ -31,8 +31,18 @@ test("production output excludes demo listings while explicit story output inclu
     false
   );
   assert.equal(
+    productionListings.some((listing) => listing.id === "bhag"),
+    false,
+    "waitlist-market organizer listings must not enter the deployable projection"
+  );
+  assert.equal(
     storyListings.some((listing) => listing.dataOrigin === "catchDemo"),
     true
+  );
+  assert.equal(
+    storyListings.some((listing) => listing.id === "bhag"),
+    true,
+    "Storybook keeps non-production market fixtures available for review"
   );
 });
 

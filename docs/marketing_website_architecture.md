@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.4.168
+version: 0.4.169
 updated: 2026-07-22
 owner: marketing_website
 status: active
@@ -48,7 +48,9 @@ The website is already split out of the old monolithic shell:
   against referenced Storybook `parameters.catchComponent` declarations by
   `tool/marketing/check_website_components.mjs`.
 - `website/src/generated/hostListings.json` is production-only and excludes
-  `dataOrigin: "catchDemo"`. Storybook reads the explicit demo-inclusive
+  `dataOrigin: "catchDemo"` plus organizer-intake and seed records that do not
+  resolve to a `live` city in the active market pack. Multi-market organizer
+  listings expose only their live-market projection in production. Storybook reads the explicit demo-inclusive
   `hostListings.demo.json` projection through `stories/fixtures/hostListings.ts`.
   The generator and pretypecheck gate validate both outputs.
 - Home event discovery applies the pure `homeEventEligibility.ts` selector:

@@ -127,6 +127,88 @@ test("supply-intake runs end to end in shadow mode with one exclusive stage per 
   assert.deepEqual(JSON.parse(await fs.readFile(exported.path, "utf8")), projection);
 });
 
+test("Mumbai plans admit only organizer packets with Mumbai market evidence", async () => {
+  const repoRoot = await createFixtureRepository(
+    await temporaryDirectory("catch-ops-market-filter-")
+  );
+  const publicationPacketsPath = path.join(
+    repoRoot,
+    "tool/organizer_intake/generated/publication_review_packets.json"
+  );
+  const packetFor = (entityId, market) => ({
+    entityId,
+    canonicalHostId: entityId,
+    displayName: `${market} Organizer`,
+    blockers: [],
+    dataBlockers: [],
+    evidenceBlockers: [],
+    evidenceReview: {manualReportsWithoutArtifacts: 0, records: []},
+    identity: {
+      geography: {
+        primaryMarketSlug: market,
+        markets: [{marketSlug: market, eventFilter: {citySlug: market}}],
+      },
+    },
+    adminDecision: {currentDecision: {decision: "approve_public"}},
+  });
+  await fs.writeFile(publicationPacketsPath, `${JSON.stringify({
+    schemaVersion: 1,
+    packets: [
+      packetFor("organizer-mumbai", "mumbai"),
+      packetFor("organizer-indore", "indore"),
+      packetFor("organizer-delhi", "delhi-ncr"),
+    ],
+  }, null, 2)}\n`);
+
+  const workflow = new SupplyIntakeWorkflow({repoRoot});
+  const plan = await workflow.createPlan({
+    market: "mumbai",
+    through: "2026-07-28",
+    now: NOW,
+  });
+  assert.equal(
+    plan.artifactSnapshot.artifacts.organizerPublicationPackets.counts.organizers,
+    1
+  );
+  const items = await workflow.project(plan, {runId: "run-market-filter", now: NOW});
+  assert.deepEqual(
+    items.filter((item) => item.entityKind === "organizer")
+      .map((item) => item.sourceEntity.id),
+    ["organizer-mumbai"]
+  );
+  assert.deepEqual(plan.capabilities, {
+    network: false,
+    modelCalls: false,
+    publicWrites: false,
+    ruleDeployment: false,
+  });
+});
+
+test("plan creation rejects a stale or expired Event Intake bridge", async () => {
+  const repoRoot = await createFixtureRepository(
+    await temporaryDirectory("catch-ops-stale-bridge-")
+  );
+  const bridgePath = path.join(
+    repoRoot,
+    "tool/marketing/event_guide/generated/mumbai/2026-07-14/event_intake_bridge.json"
+  );
+  const bridge = JSON.parse(await fs.readFile(bridgePath, "utf8"));
+  bridge.generatedAt = "2026-06-25T06:54:04.777Z";
+  bridge.weekStart = "2026-06-22";
+  bridge.weekEnd = "2026-06-29";
+  await fs.writeFile(bridgePath, `${JSON.stringify(bridge, null, 2)}\n`);
+
+  const workflow = new SupplyIntakeWorkflow({repoRoot});
+  await assert.rejects(
+    workflow.createPlan({
+      market: "mumbai",
+      through: "2026-07-28",
+      now: "2026-07-22T12:00:00.000Z",
+    }),
+    {code: "ARTIFACT_STALE"}
+  );
+});
+
 test("read models honor workflow-owned lifecycle vocabulary", async () => {
   const repoRoot = await createFixtureRepository(
     await temporaryDirectory("catch-ops-semantic-repo-")
@@ -598,6 +680,10 @@ test("plans fail closed above the canonical shardable work-item capacity", async
             sha256: "capacity-fixture",
             sizeBytes: 1,
             data: {
+              generatedAt: "2026-07-14T10:00:00.000Z",
+              city: {id: "mumbai", label: "Mumbai"},
+              weekStart: "2026-07-14",
+              weekEnd: "2026-07-21",
               sourceProfiles: [],
               sourceResults: [],
               eventCandidates: Array.from(

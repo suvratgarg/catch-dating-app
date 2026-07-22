@@ -158,7 +158,7 @@ export function useHostApplicationController() {
     };
 
     setStatus({message: "", tone: ""});
-    trackMarketingEvent("host_operating_application_submit_attempt", {
+    trackMarketingEvent("host_application_submit_attempt", {
       city: body.city,
       event_id: eventId,
       format_count: draft.formats.length,
