@@ -3468,6 +3468,7 @@
         "code": "catch_async_requires_state_surface",
         "codes": [
           "catch_async_requires_retry",
+          "catch_error_state_requires_action",
           "catch_mutation_pending_requires_error",
           "catch_no_async_flush_hack",
           "catch_no_raw_error_surface"

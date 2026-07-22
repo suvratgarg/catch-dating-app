@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-07-21",
+  "updated": "2026-07-22",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "c9e5d07944483f7f8b16f2238fe7d16e12035199fe615ad8b9246841646368f4",
+  "sourceDigest": "98807e76fc77e202fe3280ad8d35a848784f9f3b1015b17dcfd6b8397c47a3b4",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -46,12 +46,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "c9e5d07944483f7f8b16f2238fe7d16e12035199fe615ad8b9246841646368f4",
-    "contractDigest": "c9e5d07944483f7f8b16f2238fe7d16e12035199fe615ad8b9246841646368f4"
+    "digest": "98807e76fc77e202fe3280ad8d35a848784f9f3b1015b17dcfd6b8397c47a3b4",
+    "contractDigest": "98807e76fc77e202fe3280ad8d35a848784f9f3b1015b17dcfd6b8397c47a3b4"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "55c4b5fdc39b020e25d7a0edeac5d0725267a471b770a201cb2df18a90964d4f",
+    "handoffRequestDigest": "bae38cc9704320b5195ab5267eea5daaadd2178b5da6afcd85b378c10d01ec08",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
