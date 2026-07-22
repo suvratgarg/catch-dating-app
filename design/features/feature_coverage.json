@@ -227,11 +227,10 @@
     {
       "authority": "flutter_screens",
       "authorityId": "screen.event.recap",
-      "status": "planned",
-      "priority": "P2",
-      "reason": "Post-event attendee recap and Catches handoff.",
-      "targetFeature": "feature.event_recap",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Event Recap contract covers route recovery, checked-in roster states, remembered-attendee selection, catch-window copy, and the selected-id handoff into Catches Event Deck.",
+      "featureContract": "feature.event_recap"
     },
     {
       "authority": "flutter_screens",
@@ -246,17 +245,16 @@
       "authorityId": "screen.host.event.edit",
       "status": "contracted",
       "priority": "P1",
-      "reason": "The Host Event Manage contract now includes the owner-edit projection, route recovery, editable and locked fields, child location route, validation, update mutation, and success return.",
+      "reason": "The Host Event Manage contract includes the owner-edit projection, route recovery, editable and locked fields, its LocationPickerScreen modal result, validation, update mutation, and success return without misbinding the picker to Event Location Map.",
       "featureContract": "feature.host_event_manage"
     },
     {
       "authority": "flutter_screens",
       "authorityId": "screen.event.location_map",
-      "status": "planned",
-      "priority": "P3",
-      "reason": "Exact-location child projection of Event Detail.",
-      "targetFeature": "feature.event_detail",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Event Detail binds its read-only exact-location map as a child projection with route recovery, unavailable-coordinate behavior, deterministic map evidence, back navigation, and external walking directions.",
+      "featureContract": "feature.event_detail"
     },
     {
       "authority": "flutter_screens",

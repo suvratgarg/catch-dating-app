@@ -1027,7 +1027,7 @@
         "included": "Edit-route recovery; schedule, location, pace, admission, cohort-cap, dynamic-pricing, and cancellation-policy decisions; event update submission; and the success return to the caller.",
         "excluded": [
           "Raw text-field edits are form data governed by CatchField, form validators, and event data contracts rather than separately cardinalized actions.",
-          "Location search, pin placement, and confirmation belong to the Location Map child authority; this surface owns only opening that child route and consuming its result.",
+          "Location search, pin placement, and confirmation run in the unregistered LocationPickerScreen modal; this surface owns opening that modal and consuming its result rather than falsely binding it to the read-only Event Location Map route.",
           "Generic back actions on not-found and unauthorized error scaffolds retain the shared error component's ownership; successful save feedback and caller pop are lifecycle effects rather than user actions."
         ]
       },
@@ -1166,13 +1166,10 @@
           "cardinality": "unbounded",
           "scopeKeys": ["routeInstanceId", "eventId", "locationSelectionVersion"],
           "outcomes": [
-            {
-              "kind": "route",
-              "authority": {"registry": "flutter_screens", "id": "screen.event.location_map"}
-            },
+            {"kind": "side_effect", "id": "navigation.location_picker_modal"},
             {"kind": "surface_state", "stateIds": ["location_picker"]}
           ],
-          "description": "Opens the Location Map child route and consumes its selected coordinate and place metadata."
+          "description": "Opens LocationPickerScreen as a fullscreen modal and consumes its selected coordinate and place metadata."
         },
         {
           "id": "select_edit_pace",

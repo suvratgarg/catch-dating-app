@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_event_manage.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:3966b0b4508324e9e30c9decee51dd7831c59220cdc233106638e30f134e40ee",
+  "sourceDigest": "sha256:391564ed546cdcb060350993335cb97a4756c647bed33b59eec8ad101c320e76",
   "resolvedDigest": "sha256:47be53a0023f8bd379013ad1a9f394fa59233e72608d3a501d7c168d37bd930d",
   "feature": {
     "id": "feature.host_event_manage",
@@ -3427,7 +3427,7 @@
         "included": "Edit-route recovery; schedule, location, pace, admission, cohort-cap, dynamic-pricing, and cancellation-policy decisions; event update submission; and the success return to the caller.",
         "excluded": [
           "Raw text-field edits are form data governed by CatchField, form validators, and event data contracts rather than separately cardinalized actions.",
-          "Location search, pin placement, and confirmation belong to the Location Map child authority; this surface owns only opening that child route and consuming its result.",
+          "Location search, pin placement, and confirmation run in the unregistered LocationPickerScreen modal; this surface owns opening that modal and consuming its result rather than falsely binding it to the read-only Event Location Map route.",
           "Generic back actions on not-found and unauthorized error scaffolds retain the shared error component's ownership; successful save feedback and caller pop are lifecycle effects rather than user actions."
         ]
       },
@@ -3662,11 +3662,8 @@
           ],
           "outcomes": [
             {
-              "kind": "route",
-              "authority": {
-                "registry": "flutter_screens",
-                "id": "screen.event.location_map"
-              }
+              "kind": "side_effect",
+              "id": "navigation.location_picker_modal"
             },
             {
               "kind": "surface_state",
@@ -3675,7 +3672,7 @@
               ]
             }
           ],
-          "description": "Opens the Location Map child route and consumes its selected coordinate and place metadata.",
+          "description": "Opens LocationPickerScreen as a fullscreen modal and consumes its selected coordinate and place metadata.",
           "implementationStatus": "implemented"
         },
         {

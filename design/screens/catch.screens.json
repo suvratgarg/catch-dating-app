@@ -19490,14 +19490,14 @@
           "id": "profile_lookup_fallback",
           "kind": "populated",
           "status": "captured",
-          "source": "Missing public-profile entries render Guest fallback tiles while profile photos use CatchNetworkImage when available.",
+          "source": "Missing public-profile entries render Guest fallback tiles while profile photos use CatchNetworkImage when available. The route currently maps profile lookup loading and errors to the same empty map, so those unresolved states are visually indistinguishable from genuinely missing profiles.",
           "captureIds": [
             "event_recap_partial_profiles"
           ],
           "tests": [
             "test/swipes/event_recap_screen_state_test.dart"
           ],
-          "nextAction": "Compare missing-profile fallback treatment against the canonical recap source once available.",
+          "nextAction": "Separate profile lookup loading, failure, and genuinely missing profiles; preserve already resolved rows and provide bounded retry instead of silently presenting every unresolved attendee as Guest.",
           "previewIds": [
             "EventRecapScreen/Event recap route states"
           ]
@@ -19702,6 +19702,11 @@
           "id": "DS-EVENT-RECAP-004",
           "status": "blocked",
           "nextAction": "Canonical Event Recap reference export is blocked until design provides a standalone recap/attendee-selection source; the current bundle only covers Catches/Event Deck and post-run catch-window references."
+        },
+        {
+          "id": "DS-EVENT-RECAP-005",
+          "status": "open",
+          "nextAction": "EventRecapScreen currently maps publicProfilesByIdsProvider loading and errors to an empty profile map, making every unresolved attendee look like a real Guest fallback with no progress, failure, or retry affordance. Introduce an explicit batched-profile lookup state and focused loading/error/recovery tests."
         }
       ]
     },
@@ -21207,11 +21212,11 @@
           "id": "directions_action",
           "kind": "mutation",
           "status": "tested",
-          "source": "Get directions invokes the route-owned callback; EventLocationMapRouteScreen delegates the state directions URI to externalLinkControllerProvider.",
+          "source": "Get directions invokes the route-owned callback; EventLocationMapRouteScreen delegates the state directions URI to externalLinkControllerProvider without awaiting or presenting false-result, pending, or failure state.",
           "tests": [
             "test/events/events_widgets_test.dart"
           ],
-          "nextAction": "Add Widgetbook/capture proof for directions pending/failure copy if design requires inline feedback.",
+          "nextAction": "Await the external-launch result, guard repeated taps while pending, and provide actionable failure feedback under DP-EVENT-MAP-005.",
           "previewIds": [
             "EventLocationMapScreen/Map states"
           ]
@@ -21420,6 +21425,11 @@
           "id": "DP-EVENT-MAP-004",
           "status": "blocked",
           "nextAction": "Canonical Event Location Map reference export is blocked until design provides a standalone full-screen map route source; current Claude sources only provide MapCard, MapPicker, and MapPin primitives."
+        },
+        {
+          "id": "DP-EVENT-MAP-005",
+          "status": "open",
+          "nextAction": "EventLocationMapRouteScreen discards the Future returned by ExternalLinkController.openExternal. A false launcher result or thrown platform/backend error has no route-level feedback, and Get directions remains repeatable while the launch is pending. Await the result, define pending/failure behavior, and add focused false/error/duplicate-tap proof."
         }
       ]
     },

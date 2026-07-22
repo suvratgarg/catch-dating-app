@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.26
+version: 0.1.27
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -171,8 +171,9 @@ Organizers, Host Organizer Create, Host Event Create, Host Event Manage with
 its owner-edit projection, Host Inbox, Catches Hub,
 Catches Event, Matches List, Chat Thread, Self Profile, Public Profile, and
 Organizer Detail, Phone Authentication, and Member Onboarding with its Start
-Welcome projection, Event Planning, and Matching Preferences are the current
-reference contracts. Organizer Detail is the first
+Welcome projection, Event Planning, Matching Preferences, Event Recap, and
+Event Detail with its exact-location projection are the current reference
+contracts. Organizer Detail is the first
 three-surface reference:
 consumer Flutter, host Flutter, and the canonical marketing listing share one
 semantic feature identity while retaining separate actions and state
@@ -212,10 +213,21 @@ schemas. This keeps action coverage complete without treating every keystroke
 as a separate contract operation.
 
 A child route should keep its own internal actions when it is already a
-registered authority. Host Event Edit owns opening Location Map and consuming
-the result; Location Map owns search, suggestion, pin, and confirmation actions.
-This preserves a typed route edge without making both contracts claim the same
-interaction workflow.
+registered authority. Event Detail owns opening its exact-location projection;
+Event Location Map owns route recovery, back navigation, and external
+directions. A fullscreen modal that is not that registered route must not borrow
+its authority merely because both involve maps. Host Event Edit actually opens
+`LocationPickerScreen`, so its contract owns that modal result locally and no
+longer claims an Event Location Map transition. This preserves typed route edges
+without making one authority describe a different production screen.
+
+Dependency fallback is not automatically a valid data state. Event Recap
+currently renders the same Guest row when a public profile is genuinely absent,
+still loading, or failed to load. A feature contract should expose that collapse
+as debt instead of calling every unresolved dependency a successful fallback.
+The same rule applies to external effects: requesting directions is implemented,
+but ignored false/error results and unrestricted repeated taps remain part of
+the action contract until production defines pending and failure behavior.
 
 Action availability must describe production behavior, including unsafe
 behavior. Host Organizer Create and Host Event Edit currently leave some
