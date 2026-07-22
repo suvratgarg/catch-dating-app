@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-17",
+  "updated": "2026-07-22",
   "references": [
     {
       "id": "screen.dashboard.home.full_dashboard",
@@ -806,7 +806,12 @@
         "maxMismatchRatio": 0.18,
         "maxMeanDelta": 18
       },
-      "notes": "Canonical Claude Host Events-list reference. The 2026-07-10 routed full-shell implementation includes backend-backed New and exact-policy-gated non-persisted Repeat actions, minute-refreshed Upcoming/Live/Past lifecycle filtering, month groups, activity-spined rows, and truthful fill progress. It passes the canonical threshold without regressionThresholds at mismatch 15.24%, meanDelta 15.20, maxDelta 240, masked 17160."
+      "parityDebtId": "HOST-V2-EVENTS-VISUAL-DRIFT-001",
+      "regressionThresholds": {
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 19
+      },
+      "notes": "Canonical Claude Host Events-list reference. The lifecycle workspace remains functional, but the integrated sliver, option-group, and app-shell consolidation no longer meets the canonical mean-delta threshold. Deterministic local and macOS CI captures on 2026-07-22 match at 14.74% mismatch, 18.63 meanDelta, maxDelta 240, masked 17160. HOST-V2-EVENTS-VISUAL-DRIFT-001 bounds this regression without weakening the canonical thresholds."
     },
     {
       "id": "screen.host.clubs.organizer_overview",

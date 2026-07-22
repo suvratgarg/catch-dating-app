@@ -5821,6 +5821,9 @@
   "safetySettingsScreenTextVersionMade": "Catch {version} · made in Bombay",
   "@safetySettingsScreenTextVersionMade": {
     "description": "Settings footer with the running app version.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "safety.presentation.settings_screen",
     "placeholders": {
       "version": {"type": "String"}
     }

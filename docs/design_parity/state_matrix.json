@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-07-21",
+  "updated": "2026-07-22",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -4704,7 +4704,7 @@
               "tests": [
                 "test/hosts/host_operations_screen_test.dart"
               ],
-              "notes": "Host Home separates HostHomeTab.today from HostHomeTab.events and mounts both through the production HostAppShell. Events implements the Host-v2 lifecycle workspace and passes the canonical reference at 15.24% mismatch / 15.20 meanDelta without a regression ceiling. Today now uses a minute-refreshing countdown, event-identified cross-event waitlist tasks with exact-event routing, lifecycle-aware live run-of-show routing, and later-event rows while omitting unsupported task types; it remains open at 28.48% / 37.31 under HOST-V2-TODAY-FUNCTIONAL-PARITY-001.",
+              "notes": "Host Home separates HostHomeTab.today from HostHomeTab.events and mounts both through the production HostAppShell. Events implements the Host-v2 lifecycle workspace and is bounded at 14.74% mismatch / 18.63 meanDelta under HOST-V2-EVENTS-VISUAL-DRIFT-001 while the canonical mean-delta threshold remains 18. Today now uses a minute-refreshing countdown, event-identified cross-event waitlist tasks with exact-event routing, lifecycle-aware live run-of-show routing, and later-event rows while omitting unsupported task types; it remains open at 28.48% / 37.31 under HOST-V2-TODAY-FUNCTIONAL-PARITY-001.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "hostHomeEventSectionStates",
@@ -4822,7 +4822,7 @@
             {
               "id": "DP-HOST-HOME-004",
               "status": "blocked",
-              "nextAction": "Events base parity is closed at the canonical threshold with its regression ceiling removed. Continue HOST-V2-TODAY-FUNCTIONAL-PARITY-001 by composing real pending-approval, offer, draft, and guest-inquiry sources; remove the Today regressionThresholds only after the canonical threshold passes. Additional loading/empty/role/theme variants still need design exports."
+              "nextAction": "Restore Events below the canonical mean-delta threshold and remove HOST-V2-EVENTS-VISUAL-DRIFT-001. Continue HOST-V2-TODAY-FUNCTIONAL-PARITY-001 by composing real pending-approval, offer, draft, and guest-inquiry sources; remove the Today regressionThresholds only after the canonical threshold passes. Additional loading/empty/role/theme variants still need design exports."
             }
           ]
         },

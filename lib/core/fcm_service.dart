@@ -230,7 +230,7 @@ class FcmService {
       try {
         await userRef.update({'fcmToken': token});
       } catch (error, stackTrace) {
-        _logTokenPersistenceError(error, stackTrace, resource: 'users');
+        _logError(error, stackTrace, resource: 'users');
       }
     }
 
@@ -249,7 +249,7 @@ class FcmService {
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
     } catch (error, stackTrace) {
-      _logTokenPersistenceError(
+      _logError(
         error,
         stackTrace,
         resource: 'push_installations',
@@ -257,7 +257,7 @@ class FcmService {
     }
   }
 
-  void _logTokenPersistenceError(
+  void _logError(
     Object error,
     StackTrace stackTrace, {
     required String resource,

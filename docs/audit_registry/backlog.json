@@ -1,5 +1,5 @@
 {
-  "version": "2.7.165",
+  "version": "2.7.166",
   "updated": "2026-07-22",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, uid-loading conflation follow-up, React component-governance follow-up including class-name boundary enforcement and exported website feature component registry coverage, admin feature export boundary, the retired website legacy site barrel/import boundary, UI label spans, empty-state variants, page shells, claim-flow route/root/auth-row shells, website Host Page route, Host Application flow, Host feature section, waitlist form shells, marketing section, marketing info-card, marketing loop-list, marketing consent banner, featured organizer card, app-download CTA group, organizer listing, organizer listing hero, organizer listing event section including event-action cards, organizer search section, organizer search result shells, PublicSearchBar ownership, public event-card shells, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin loading icon shells, admin toolbar shells/modifiers, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin marketing layout shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision/footer shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin roadmap lists, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
@@ -316,7 +316,29 @@
       "source": "deep_semantic_audit_2026-06"
     }
   ],
-  "next_up": [],
+  "next_up": [
+    {
+      "id": "HOST-V2-EVENTS-VISUAL-DRIFT-001",
+      "title": "Restore Host Events to the canonical visual threshold",
+      "status": "active",
+      "owner": "agent",
+      "area": "host,events,design-parity",
+      "priority": "medium",
+      "summary": "The functional Host Events workspace remains complete, but the integrated sliver, option-group, and app-shell consolidation moved its deterministic reference result from 15.24% mismatch / 15.20 meanDelta to 14.74% mismatch / 18.63 meanDelta. The mismatch ratio improved while mean delta crossed the unchanged canonical limit of 18. An 18% / 19 regression ceiling keeps CI sensitive without falsely claiming canonical parity.",
+      "acceptance": [
+        "host_home_events_list meets both canonical thresholds without regressionThresholds",
+        "the deterministic full-shell capture preserves lifecycle filters, New and policy-gated Repeat actions, month grouping, fill progress, and route-safe event management",
+        "remove HOST-V2-EVENTS-VISUAL-DRIFT-001 from the reference manifest after strict comparison passes"
+      ],
+      "paths": [
+        "lib/hosts/presentation/host_operations/host_events_list.dart",
+        "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
+        "design/reference_screens/manifest.json",
+        "test/ui_captures/catalog/screen_capture_catalog.dart"
+      ],
+      "source": "2026-07-22-organizer-ci-visual-follow-up"
+    }
+  ],
   "completed": [
     {
       "id": "EXPLORE-PRODUCT-DECISIONS-2026-07-10-DONE",

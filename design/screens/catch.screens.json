@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-07-21",
+  "updated": "2026-07-22",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -8274,7 +8274,7 @@
         {
           "id": "host_home_events_list",
           "status": "captured",
-          "notes": "The 2026-07-10 deterministic full-shell capture renders the production HostAppShell at HostHomeTab.events with New/exact-policy-gated Repeat actions, minute-refreshed Upcoming/Live/Past filters, month groups, activity-spined rows, and truthful fill progress. It passes the canonical reference at 15.24% mismatch / 15.20 meanDelta without regressionThresholds."
+          "notes": "The deterministic full-shell capture renders the production HostAppShell at HostHomeTab.events with New/exact-policy-gated Repeat actions, minute-refreshed Upcoming/Live/Past filters, month groups, activity-spined rows, and truthful fill progress. The 2026-07-22 integrated result is 14.74% mismatch / 18.63 meanDelta, bounded at 18% / 19 by HOST-V2-EVENTS-VISUAL-DRIFT-001 while the canonical 18 mean-delta threshold remains unchanged."
         },
         {
           "id": "host_home_switcher_cohost",
@@ -8494,7 +8494,7 @@
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
-          "nextAction": "Host Events semantic and canonical visual parity is closed at 15.24% / 15.20 without a regression ceiling. HOST-V2-TODAY-FUNCTIONAL-PARITY-001 still tracks real pending-approval, offer, draft, and guest-inquiry composition; the current truthful Today baseline is 28.48% / 37.31.",
+          "nextAction": "Restore Host Events below the canonical mean-delta threshold and remove HOST-V2-EVENTS-VISUAL-DRIFT-001. HOST-V2-TODAY-FUNCTIONAL-PARITY-001 separately tracks real pending-approval, offer, draft, and guest-inquiry composition; the current truthful Today baseline is 28.48% / 37.31.",
           "previewIds": [
             "hostHomeRouteStates"
           ],
