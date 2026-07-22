@@ -1,11 +1,15 @@
-import {act, render, screen} from "@testing-library/react";
-import {beforeEach, describe, expect, it, vi} from "vitest";
+import {act, cleanup, render, screen} from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import {App} from "./App";
 
 const mocks = vi.hoisted(() => ({
   dataMode: vi.fn(),
   getIdTokenResult: vi.fn(),
   onAuthStateChanged: vi.fn(),
+  confirmPhoneSignInCode: vi.fn(),
+  requestPhoneSignInCode: vi.fn(),
+  resetPhoneSignIn: vi.fn(),
   signInWithGoogle: vi.fn(),
   signOutAdmin: vi.fn(),
 }));
@@ -21,18 +25,59 @@ vi.mock("../shared/api/dataMode", () => ({
 
 vi.mock("../shared/api/firebase", () => ({
   auth: {},
+  confirmPhoneSignInCode: mocks.confirmPhoneSignInCode,
+  requestPhoneSignInCode: mocks.requestPhoneSignInCode,
+  resetPhoneSignIn: mocks.resetPhoneSignIn,
   signInWithGoogle: mocks.signInWithGoogle,
   signOutAdmin: mocks.signOutAdmin,
 }));
 
 describe("App live deep-link ownership", () => {
+  afterEach(cleanup);
+
   beforeEach(() => {
     mocks.dataMode.mockReturnValue("live");
     mocks.getIdTokenResult.mockReset();
     mocks.onAuthStateChanged.mockReset();
+    mocks.confirmPhoneSignInCode.mockReset();
+    mocks.requestPhoneSignInCode.mockReset();
+    mocks.resetPhoneSignIn.mockReset();
     mocks.signInWithGoogle.mockReset();
     mocks.signOutAdmin.mockReset();
     window.history.replaceState({}, "", "/overview");
+  });
+
+  it("keeps both production sign-in providers and completes the phone OTP flow", async () => {
+    const user = userEvent.setup();
+    mocks.onAuthStateChanged.mockImplementation(() => () => undefined);
+    mocks.requestPhoneSignInCode.mockResolvedValue(undefined);
+    mocks.confirmPhoneSignInCode.mockResolvedValue(undefined);
+    mocks.signInWithGoogle.mockResolvedValue(undefined);
+
+    render(<App />);
+
+    await user.click(
+      await screen.findByRole("button", {name: "Sign in with Google"})
+    );
+    expect(mocks.signInWithGoogle).toHaveBeenCalledOnce();
+    await user.type(
+      screen.getByRole("textbox", {name: "Phone number"}),
+      "+91 90000 00000"
+    );
+    await user.click(screen.getByRole("button", {
+      name: "Send verification code",
+    }));
+
+    expect(mocks.requestPhoneSignInCode).toHaveBeenCalledWith("+919000000000");
+    await user.type(
+      await screen.findByRole("textbox", {name: "Verification code"}),
+      "123456"
+    );
+    await user.click(screen.getByRole("button", {name: "Verify and sign in"}));
+
+    expect(mocks.confirmPhoneSignInCode).toHaveBeenCalledWith("123456");
+    expect(await screen.findByRole("textbox", {name: "Phone number"}))
+      .not.toBeNull();
   });
 
   it("preserves a requested route while Firebase authentication resolves", async () => {

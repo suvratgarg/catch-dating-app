@@ -1,7 +1,7 @@
 ---
 doc_id: admin_dashboard_user_stories_and_component_catalogue
-version: 0.2.25
-updated: 2026-07-14
+version: 0.2.26
+updated: 2026-07-23
 owner: admin_console
 status: active
 ---
@@ -163,8 +163,9 @@ placeholder screen structure.
 
 Current implementation:
 
-- `admin/src/shared/api/firebase.ts` initializes Firebase Auth and signs in with
-  Google popup.
+- `admin/src/shared/api/firebase.ts` initializes Firebase Auth, signs claimed
+  app operators in through phone OTP with an invisible reCAPTCHA verifier, and
+  retains Google popup sign-in for separately claimed internal accounts.
 - `admin/src/app/App.tsx` subscribes to `onAuthStateChanged` only in live mode.
 - `VITE_ADMIN_DATA_MODE=sample` bypasses Auth for local review. The top bar does
   not expose a `sample` product label; local-data context is explained inside
@@ -182,6 +183,10 @@ Current implementation:
   current role cannot call `adminGetHostAnalytics`.
 - Sign-in, claim refresh, and sign-out actions now expose pending state and
   visible errors instead of silently swallowing popup or Firebase Auth failures.
+- `admin/src/app/App.test.tsx` and `admin/src/shared/api/firebase.test.ts` are
+  the executable dual-provider guard: the rendered live sign-in screen must
+  expose Google and phone entry, phone submission must normalize E.164 input,
+  and the adapter must retain both Firebase provider integrations.
 - Backend authorization is enforced by callable functions, not by the React
   shell. `functions/src/admin/adminAuth.ts` accepts these custom claims:
   `admin`, `adminOwner`, `safetyReviewer`, `support`, `finance`,

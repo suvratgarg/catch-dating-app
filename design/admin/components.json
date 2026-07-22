@@ -4355,7 +4355,9 @@
         "story": "admin/src/stories/AdminPrimitives.stories.tsx",
         "exportName": "AdminSignInScreenStory",
         "states": [
-          "default"
+          "default",
+          "phone-entry",
+          "phone-otp"
         ]
       },
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."

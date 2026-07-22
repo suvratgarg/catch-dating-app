@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.11.1
-updated: 2026-07-22
+version: 1.11.2
+updated: 2026-07-23
 owner: recursive_audit_loop
 status: active
 ---
@@ -412,6 +412,10 @@ rollback duplicates in `prod` follow the cutover cleanup above.
 The production admin Hosting target has its own `Admin Website` workflow. It
 validates `npm run web:admin:build`, checks live prod Vite Firebase/App Check
 env, then deploys only `hosting:admin` after matching changes land on `main`.
+The same validation runs the admin unit suite, including the dual-provider
+guard in `admin/src/app/App.test.tsx` and
+`admin/src/shared/api/firebase.test.ts`; a refactor that removes either phone
+OTP or Google sign-in must fail before Hosting deploys.
 
 That local environment check cannot prove Firebase console state. After admin
 Auth, Hosting-domain, provider, reCAPTCHA-key, or App Check changes, record live
