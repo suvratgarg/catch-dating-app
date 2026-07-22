@@ -3,9 +3,9 @@
   "routes": {
     "home": {
       "title": "Catch | The event before the match",
-      "description": "Catch turns curated singles events into real dating context. Choose a hosted event, show up, catch privately, and match with people you actually met.",
+      "description": "Catch turns curated singles events in Mumbai and Indore into real dating context. Choose a hosted event, show up, catch privately, and match with people you actually met.",
       "canonicalPath": "/",
-      "twitterDescription": "Curated singles events become real dating context."
+      "twitterDescription": "Curated singles events in Mumbai and Indore become real dating context."
     },
     "host": {
       "title": "Host singles events on Catch | 0% platform fee for founding hosts",

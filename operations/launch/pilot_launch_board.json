@@ -1,0 +1,235 @@
+{
+  "schemaVersion": 1,
+  "boardId": "catch-pilot-launch-2026-07",
+  "name": "Catch website-first pilot launch",
+  "owner": "founder",
+  "updatedAt": "2026-07-22T00:00:00+05:30",
+  "operatingMode": "website_first",
+  "successDefinition": "Catch is publicly operating in Mumbai and Indore with accurate market claims, reachable legal and help pages, production website monitoring, and a reviewed supply pipeline ready for the first 50-record publication tranche.",
+  "statusDefinitions": {
+    "todo": "Unclaimed work that can start when its dependencies are met.",
+    "in_progress": "Actively owned work with a current next action.",
+    "blocked": "Cannot proceed without a named decision, credential, or external state change.",
+    "ready": "Acceptance criteria are met and final publication or owner approval remains.",
+    "done": "Acceptance criteria are met and durable evidence is linked.",
+    "deferred": "Intentionally excluded until its revisit condition is true."
+  },
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "status": "accepted",
+      "decision": "Launch only Mumbai and Indore as live markets for the pilot.",
+      "decidedAt": "2026-07-22",
+      "owner": "founder",
+      "rationale": "Concentrate supply and operating learning before expanding city claims."
+    },
+    {
+      "id": "DEC-002",
+      "status": "accepted",
+      "decision": "Keep every other configured city on the waitlist until the week of 2026-07-27 and at least three documented end-to-end pilot test runs pass.",
+      "decidedAt": "2026-07-22",
+      "owner": "founder",
+      "rationale": "Expansion follows observed pilot behavior rather than an untested nationwide claim."
+    },
+    {
+      "id": "DEC-003",
+      "status": "accepted",
+      "decision": "Launch the website aggressively before the native apps.",
+      "decidedAt": "2026-07-22",
+      "owner": "founder",
+      "rationale": "Public discovery and host acquisition can begin while store-launch blockers remain."
+    },
+    {
+      "id": "DEC-004",
+      "status": "accepted",
+      "decision": "Defer paid-event launch work from this tranche.",
+      "decidedAt": "2026-07-22",
+      "owner": "founder",
+      "rationale": "Payments have separate unresolved readiness gates."
+    },
+    {
+      "id": "DEC-005",
+      "status": "pending",
+      "decision": "Define whether the next supply target means 50 combined organizer/event records or 50 organizers plus their events.",
+      "decidedAt": null,
+      "owner": "founder",
+      "rationale": "The publication acceptance count must be unambiguous before acquisition starts."
+    }
+  ],
+  "blockers": [
+    {
+      "id": "BLK-LEGAL-OWNER",
+      "severity": "launch_blocker",
+      "status": "open",
+      "owner": "founder",
+      "summary": "Legal operator, public support/privacy email, formal notice address, governing courts city, and grievance officer are not confirmed.",
+      "unblocks": ["TASK-LEGAL-PUBLISH"]
+    },
+    {
+      "id": "BLK-WEB-ANALYTICS",
+      "severity": "measurement_blocker",
+      "status": "open",
+      "owner": "founder",
+      "summary": "The live website bundle contains no GTM container ID; consented traffic and conversion events have no production destination.",
+      "unblocks": ["TASK-OBS-WEB-ANALYTICS"]
+    },
+    {
+      "id": "BLK-SUPPLY-SCOPE",
+      "severity": "next_tranche",
+      "status": "open",
+      "owner": "founder",
+      "summary": "The target of 50 hosts and events needs a precise counting rule and city allocation.",
+      "unblocks": ["TASK-SUPPLY-50"]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-MARKETS",
+      "workstream": "launch_surface",
+      "title": "Align every public market claim to Mumbai and Indore only",
+      "status": "in_progress",
+      "priority": "P0",
+      "owner": "codex/website-pilot-launch-20260722",
+      "targetDate": "2026-07-22",
+      "dependencies": ["DEC-001", "DEC-002"],
+      "acceptance": [
+        "Mumbai and Indore are the only live website markets.",
+        "Delhi, Bangalore, Pune, and Hyderabad are presented as waitlist markets.",
+        "Market-pack and website route/build checks pass.",
+        "Production pages show the two-city claim after deployment."
+      ],
+      "nextAction": "Merge and verify the production marketing deployment.",
+      "evidence": [
+        "website/src/content/markets/in.ts",
+        "website/scripts/marketPack.test.mjs"
+      ],
+      "updatedAt": "2026-07-22T00:00:00+05:30"
+    },
+    {
+      "id": "TASK-LEGAL-PUBLISH",
+      "workstream": "trust",
+      "title": "Publish privacy, terms, and help pages",
+      "status": "blocked",
+      "priority": "P0",
+      "owner": "codex/website-pilot-launch-20260722",
+      "targetDate": "2026-07-22",
+      "dependencies": ["BLK-LEGAL-OWNER"],
+      "acceptance": [
+        "/privacy/, /terms/, and /help/ return HTTP 200 with route-specific canonical metadata.",
+        "Footer links and the public contact destination are reachable.",
+        "Privacy rights, correction/deletion, grievance handling, 18+ eligibility, public-source listings, claim/correction/takedown, safety, and external-event boundaries are explained plainly.",
+        "Owner facts are confirmed and no placeholder text is published."
+      ],
+      "nextAction": "Insert confirmed owner facts into the drafted copy, run website gates, and deploy.",
+      "evidence": [],
+      "updatedAt": "2026-07-22T00:00:00+05:30"
+    },
+    {
+      "id": "TASK-OBS-UPTIME",
+      "workstream": "observability",
+      "title": "Monitor production website availability and launch-critical content",
+      "status": "in_progress",
+      "priority": "P0",
+      "owner": "codex/website-pilot-launch-20260722",
+      "targetDate": "2026-07-22",
+      "dependencies": [],
+      "acceptance": [
+        "A free scheduled workflow probes launch-critical public routes.",
+        "The probe fails on wrong status, missing canonical metadata, or missing launch markers.",
+        "A successful production workflow run is linked as evidence."
+      ],
+      "nextAction": "Land the scheduled probe and capture the first green workflow run.",
+      "evidence": [],
+      "updatedAt": "2026-07-22T00:00:00+05:30"
+    },
+    {
+      "id": "TASK-OBS-WEB-ANALYTICS",
+      "workstream": "observability",
+      "title": "Deliver consented website traffic, conversion, and client-error events to GTM/GA4",
+      "status": "blocked",
+      "priority": "P0",
+      "owner": "founder",
+      "targetDate": "2026-07-22",
+      "dependencies": ["BLK-WEB-ANALYTICS"],
+      "acceptance": [
+        "prod-hosting has a confirmed VITE_GTM_ID.",
+        "A consented production session produces page_view and launch conversion events in GA4 Realtime or DebugView.",
+        "No analytics or marketing tag loads before consent.",
+        "Evidence is linked without exposing credentials."
+      ],
+      "nextAction": "Founder supplies or creates the GTM container ID; then set the GitHub environment variable and verify GA4 delivery.",
+      "evidence": [
+        "website/src/analytics.ts",
+        "website/src/features/marketing/tracking.test.ts"
+      ],
+      "updatedAt": "2026-07-22T00:00:00+05:30"
+    },
+    {
+      "id": "TASK-PILOT-RUNS",
+      "workstream": "operations",
+      "title": "Complete three documented Mumbai/Indore end-to-end test runs",
+      "status": "todo",
+      "priority": "P1",
+      "owner": "operations",
+      "targetDate": "2026-07-26",
+      "dependencies": ["TASK-MARKETS", "TASK-LEGAL-PUBLISH", "TASK-OBS-UPTIME"],
+      "acceptance": [
+        "Three runs cover discovery, organizer detail, external registration or claim, correction/help contact, and monitoring response.",
+        "Each run records city, timestamp, result, defects, and follow-up owner.",
+        "No unresolved P0 trust, safety, or availability defect remains."
+      ],
+      "nextAction": "Schedule the first Mumbai and Indore runs after production deployment.",
+      "evidence": [],
+      "updatedAt": "2026-07-22T00:00:00+05:30"
+    },
+    {
+      "id": "TASK-SUPPLY-50",
+      "workstream": "supply",
+      "title": "Research, review, and publish the first 50-record pilot supply tranche",
+      "status": "blocked",
+      "priority": "P1",
+      "owner": "operations",
+      "targetDate": "2026-07-27",
+      "dependencies": ["BLK-SUPPLY-SCOPE", "TASK-PILOT-RUNS"],
+      "acceptance": [
+        "The founder-approved counting rule and Mumbai/Indore allocation are recorded.",
+        "Every record has source provenance, freshness, city, claim state, and a human-reviewed publication decision.",
+        "Unclaimed listings expose correction, claim, and takedown paths.",
+        "Production count and sampled page checks match the approved publication receipt."
+      ],
+      "nextAction": "Resolve DEC-005, then run the existing supply-intake workflow in review-first mode.",
+      "evidence": [
+        "operations/src/workflows/supply-intake/manifest.json"
+      ],
+      "updatedAt": "2026-07-22T00:00:00+05:30"
+    },
+    {
+      "id": "TASK-APP-LAUNCH",
+      "workstream": "native_apps",
+      "title": "Launch consumer and host apps publicly",
+      "status": "deferred",
+      "priority": "P2",
+      "owner": "founder",
+      "targetDate": null,
+      "dependencies": [],
+      "acceptance": [],
+      "nextAction": "Revisit after the website pilot and remaining store blockers are explicitly cleared.",
+      "evidence": [],
+      "updatedAt": "2026-07-22T00:00:00+05:30"
+    },
+    {
+      "id": "TASK-PAID-EVENTS",
+      "workstream": "payments",
+      "title": "Enable paid events",
+      "status": "deferred",
+      "priority": "P2",
+      "owner": "founder",
+      "targetDate": null,
+      "dependencies": ["DEC-004"],
+      "acceptance": [],
+      "nextAction": "Revisit only after payment, refund, settlement, and legal readiness are separately approved.",
+      "evidence": [],
+      "updatedAt": "2026-07-22T00:00:00+05:30"
+    }
+  ]
+}

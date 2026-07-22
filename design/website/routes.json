@@ -1,7 +1,7 @@
 {
   "$schema": "./website.routes.schema.json",
-  "version": 6,
-  "updated": "2026-07-12",
+  "version": 7,
+  "updated": "2026-07-22",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -27,7 +27,7 @@
       "staticOutput": "postbuild",
       "indexing": "index",
       "sitemap": "included",
-      "notes": "Primary member and public discovery entrypoint.",
+      "notes": "Primary member and public discovery entrypoint. Pilot launch metadata and runtime market content name Mumbai and Indore as the only live cities.",
       "review": {
         "priority": "p0",
         "status": "ready",

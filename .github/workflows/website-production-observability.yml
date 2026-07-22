@@ -1,0 +1,27 @@
+name: Website Production Observability
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: website-production-observability
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: Probe launch-critical production routes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Check status, canonical metadata, and launch content
+        run: node website/scripts/probeProduction.mjs --base-url https://catchdates.com --json
+
