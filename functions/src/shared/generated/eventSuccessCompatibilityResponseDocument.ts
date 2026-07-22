@@ -8,6 +8,7 @@
 export interface EventSuccessCompatibilityResponseDocument {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   uid: string;
   /**
    * @minItems 1

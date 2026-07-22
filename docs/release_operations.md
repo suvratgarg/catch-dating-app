@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 1.10.7
+version: 1.11.1
 updated: 2026-07-22
 owner: recursive_audit_loop
 status: active
@@ -264,9 +264,11 @@ for project in catchdates-dev catchdates-staging catch-dating-app-64e51; do
 done
 ```
 
-Index names default to `clubs` and `events`. Only override them with
-`ALGOLIA_CLUBS_INDEX` or `ALGOLIA_EVENTS_INDEX` if an environment needs
-different index names. These are not secrets.
+Index names default to `organizers` and `events`. Only override them with
+`ALGOLIA_ORGANIZERS_INDEX` or `ALGOLIA_EVENTS_INDEX` if an environment needs
+different index names. `ALGOLIA_CLUBS_INDEX` is a temporary compatibility
+fallback and must not be used in new environment configuration. These are not
+secrets.
 
 Backfill after first setup or after changing searchable data shape:
 
@@ -283,7 +285,7 @@ For dev or staging, change `--env` and omit `--allow-prod`.
 
 Algolia index settings must allow the function filters:
 
-- Clubs index: make `location` filterable/facetable.
+- Organizers index: make `location` filterable/facetable.
 - Events index: make `discoveryCityName` filterable/facetable and store
   `startTimeEpoch` as a numeric attribute.
 

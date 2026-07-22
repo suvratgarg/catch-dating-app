@@ -81,6 +81,39 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/clubDocument.ts",
   },
   {
+    name: "OrganizerDocument",
+    source: "firestore/organizers.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerDocument.ts",
+  },
+  {
+    name: "OrganizerPostDocument",
+    source: "firestore/organizer_posts.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerPostDocument.ts",
+  },
+  {
+    name: "OrganizerTeamMembershipDocument",
+    source: "firestore/organizer_team_memberships.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerTeamMembershipDocument.ts",
+  },
+  {
+    name: "OrganizerFollowDocument",
+    source: "firestore/organizer_follows.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerFollowDocument.ts",
+  },
+  {
+    name: "OrganizerClaimRequestDocument",
+    source: "firestore/organizer_claim_requests.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerClaimRequestDocument.ts",
+  },
+  {
+    name: "OrganizerScheduleLockDocument",
+    source: "firestore/organizer_schedule_locks.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerScheduleLockDocument.ts",
+  },
+  {
     name: "ClubPostDocument",
     source: "firestore/club_posts.schema.json",
     typeOutput: "functions/src/shared/generated/clubPostDocument.ts",
@@ -360,6 +393,67 @@ const schemaSpecs = [
       "functions/src/shared/generated/createClubCallablePayload.ts",
   },
   {
+    name: "CreateOrganizerCallablePayload",
+    source: "callables/create_organizer_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createOrganizerCallablePayload.ts",
+  },
+  {
+    name: "CreateOrganizerCallableResponse",
+    source: "callable_responses/create_organizer_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createOrganizerCallableResponse.ts",
+  },
+  {
+    name: "UpdateOrganizerCallablePayload",
+    source: "callables/update_organizer_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/updateOrganizerCallablePayload.ts",
+  },
+  {
+    name: "ArchiveOrganizerCallablePayload",
+    source: "callables/archive_organizer_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/archiveOrganizerCallablePayload.ts",
+  },
+  {
+    name: "DeleteOrganizerCallablePayload",
+    source: "callables/delete_organizer_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/deleteOrganizerCallablePayload.ts",
+  },
+  {
+    name: "CreateOrganizerPostCallablePayload",
+    source: "callables/create_organizer_post_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createOrganizerPostCallablePayload.ts",
+  },
+  {
+    name: "CreateOrganizerPostCallableResponse",
+    source: "callable_responses/create_organizer_post_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createOrganizerPostCallableResponse.ts",
+  },
+  {
+    name: "RequestOrganizerClaimCallablePayload",
+    source: "callables/request_organizer_claim_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/requestOrganizerClaimCallablePayload.ts",
+  },
+  {
+    name: "RequestOrganizerClaimCallableResponse",
+    source: "callable_responses/request_organizer_claim_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/requestOrganizerClaimCallableResponse.ts",
+  },
+  {
+    name: "AdminDecideOrganizerClaimCallablePayload",
+    source: "callables/admin_decide_organizer_claim_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminDecideOrganizerClaimCallablePayload.ts",
+  },
+  {
     name: "CreateClubCallableResponse",
     source: "callable_responses/create_club_response.schema.json",
     typeOutput:
@@ -424,6 +518,39 @@ const schemaSpecs = [
     source: "callables/add_club_host_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/addClubHostCallablePayload.ts",
+  },
+  {
+    name: "OrganizerFollowCallablePayload",
+    source: "callables/organizer_follow_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerFollowCallablePayload.ts",
+  },
+  {
+    name: "SetOrganizerNotificationPreferenceCallablePayload",
+    source:
+      "callables/set_organizer_notification_preference_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "setOrganizerNotificationPreferenceCallablePayload.ts",
+  },
+  {
+    name: "AddOrganizerManagerCallablePayload",
+    source: "callables/add_organizer_manager_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/addOrganizerManagerCallablePayload.ts",
+  },
+  {
+    name: "RemoveOrganizerManagerCallablePayload",
+    source: "callables/remove_organizer_manager_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/removeOrganizerManagerCallablePayload.ts",
+  },
+  {
+    name: "TransferOrganizerOwnershipCallablePayload",
+    source: "callables/transfer_organizer_ownership_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "transferOrganizerOwnershipCallablePayload.ts",
   },
   {
     name: "RemoveClubHostCallablePayload",
@@ -524,6 +651,24 @@ const schemaSpecs = [
       "functions/src/shared/generated/adminUpdateClubDetailsCallablePayload.ts",
   },
   {
+    name: "AdminGetOrganizerDetailsCallablePayload",
+    source: "callables/admin_get_organizer_details_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminGetOrganizerDetailsCallablePayload.ts",
+  },
+  {
+    name: "AdminListOrganizerDetailsCallablePayload",
+    source: "callables/admin_list_organizer_details_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminListOrganizerDetailsCallablePayload.ts",
+  },
+  {
+    name: "AdminUpdateOrganizerDetailsCallablePayload",
+    source: "callables/admin_update_organizer_details_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminUpdateOrganizerDetailsCallablePayload.ts",
+  },
+  {
     name: "AdminGetEventDetailsCallablePayload",
     source: "callables/admin_get_event_details_payload.schema.json",
     typeOutput:
@@ -560,6 +705,13 @@ const schemaSpecs = [
     source: "callables/start_club_host_conversation_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/startClubHostConversationCallablePayload.ts",
+  },
+  {
+    name: "StartOrganizerConversationCallablePayload",
+    source: "callables/start_organizer_conversation_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "startOrganizerConversationCallablePayload.ts",
   },
   {
     name: "ArchiveClubCallablePayload",
@@ -746,6 +898,32 @@ const schemaSpecs = [
     source: "callable_responses/list_public_club_reviews_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/listPublicClubReviewsCallableResponse.ts",
+  },
+  {
+    name: "CreatePublicOrganizerReviewCallablePayload",
+    source: "callables/create_public_organizer_review_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createPublicOrganizerReviewCallablePayload.ts",
+  },
+  {
+    name: "CreatePublicOrganizerReviewCallableResponse",
+    source:
+      "callable_responses/create_public_organizer_review_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createPublicOrganizerReviewCallableResponse.ts",
+  },
+  {
+    name: "ListPublicOrganizerReviewsCallablePayload",
+    source: "callables/list_public_organizer_reviews_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listPublicOrganizerReviewsCallablePayload.ts",
+  },
+  {
+    name: "ListPublicOrganizerReviewsCallableResponse",
+    source:
+      "callable_responses/list_public_organizer_reviews_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listPublicOrganizerReviewsCallableResponse.ts",
   },
   {
     name: "UpdateEventReviewCallablePayload",

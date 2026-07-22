@@ -18,7 +18,8 @@ export interface ActivityNotificationDocument {
     | "waitlistOfferExpired"
     | "eventCancelled"
     | "eventUpdated"
-    | "clubUpdate";
+    | "clubUpdate"
+    | "organizerUpdate";
   title: string;
   body: string;
   /**
@@ -35,6 +36,7 @@ export interface ActivityNotificationDocument {
   matchId?: string | null;
   eventId?: string | null;
   clubId?: string | null;
+  organizerId?: string | null;
   postId?: string | null;
   actorUid?: string | null;
   actorName?: string | null;

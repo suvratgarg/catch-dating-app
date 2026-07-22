@@ -4,6 +4,7 @@ import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {
   clubHostInquiryMatchId,
   startClubHostConversationHandler,
+  startOrganizerConversationHandler,
 } from "./clubHostConversations";
 
 type FakeData = Record<string, unknown>;
@@ -118,6 +119,15 @@ function club(overrides: FakeData = {}): FakeData {
   };
 }
 
+function organizer(overrides: FakeData = {}): FakeData {
+  return {
+    ...club(),
+    organizerType: "club",
+    hostProfiles: [],
+    ...overrides,
+  };
+}
+
 function assertHttpsCode(error: unknown, code: string): boolean {
   return error instanceof HttpsError && error.code === code;
 }
@@ -156,10 +166,40 @@ test("startClubHostConversationHandler creates a host inquiry match",
       blockedBy: null,
       blockedAt: null,
       conversationType: "clubHostInquiry",
+      organizerId: "club-1",
       clubId: "club-1",
     });
   }
 );
+
+test("startOrganizerConversationHandler uses organizer authority", async () => {
+  const h = harness({
+    "organizers/organizer-1": organizer(),
+    "clubs/organizer-1": club({hostUserIds: ["owner-1"]}),
+  });
+
+  const result = await startOrganizerConversationHandler(
+    request("viewer-1", {
+      organizerId: "organizer-1",
+      hostUid: "host-1",
+    }),
+    h.deps
+  );
+  const matchId = clubHostInquiryMatchId({
+    clubId: "organizer-1",
+    user1Id: "host-1",
+    user2Id: "viewer-1",
+  });
+
+  assert.deepEqual(result, {matchId});
+  assert.deepEqual(h.rateLimitCalls, [
+    "viewer-1:startOrganizerConversation",
+  ]);
+  assert.equal(
+    h.firestore.get(`matches/${matchId}`)?.organizerId,
+    "organizer-1"
+  );
+});
 
 test("startClubHostConversationHandler never reuses a dating match",
   async () => {

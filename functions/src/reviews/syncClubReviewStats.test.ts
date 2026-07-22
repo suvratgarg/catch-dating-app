@@ -7,6 +7,7 @@ import {
 
 test("rating reflects verified published reviews only", async () => {
   const firestore = fakeFirestore({
+    "organizers/club-1": {rating: 0, reviewCount: 0},
     "clubs/club-1": {rating: 0, reviewCount: 0},
     // Two verified, published reviews: 5 and 3 -> average 4.
     "reviews/r1": review("club-1", 5, "verified", "published"),
@@ -19,31 +20,32 @@ test("rating reflects verified published reviews only", async () => {
 
   await refreshClubReviewStats("club-1", {firestore: () => firestore as never});
 
-  const club = firestore.get("clubs/club-1");
-  assert.equal(club?.rating, 4);
-  assert.equal(club?.reviewCount, 3);
-  assert.equal(club?.verifiedReviewCount, 2);
+  const organizer = firestore.get("organizers/club-1");
+  assert.equal(organizer?.rating, 4);
+  assert.equal(organizer?.reviewCount, 3);
+  assert.equal(organizer?.verifiedReviewCount, 2);
+  assert.deepEqual(firestore.get("clubs/club-1"), organizer);
 });
 
 test("rating is zero when no verified reviews back it", async () => {
   const firestore = fakeFirestore({
-    "clubs/club-1": {rating: 4.5, reviewCount: 0},
+    "organizers/club-1": {rating: 4.5, reviewCount: 0},
     "reviews/r1": review("club-1", 5, "unverified", "published"),
     "reviews/r2": review("club-1", 4, "unverified", "published"),
   });
 
   await refreshClubReviewStats("club-1", {firestore: () => firestore as never});
 
-  const club = firestore.get("clubs/club-1");
-  assert.equal(club?.rating, 0);
-  assert.equal(club?.reviewCount, 2);
-  assert.equal(club?.verifiedReviewCount, 0);
+  const organizer = firestore.get("organizers/club-1");
+  assert.equal(organizer?.rating, 0);
+  assert.equal(organizer?.reviewCount, 2);
+  assert.equal(organizer?.verifiedReviewCount, 0);
 });
 
 test("pending and rejected reviews are excluded from both counts",
   async () => {
     const firestore = fakeFirestore({
-      "clubs/club-1": {rating: 0, reviewCount: 0},
+      "organizers/club-1": {rating: 0, reviewCount: 0},
       "reviews/r1": review("club-1", 5, "verified", "published"),
       "reviews/r2": review("club-1", 1, "verified", "pending"),
       "reviews/r3": review("club-1", 1, "verified", "rejected"),
@@ -54,24 +56,28 @@ test("pending and rejected reviews are excluded from both counts",
       firestore: () => firestore as never,
     });
 
-    const club = firestore.get("clubs/club-1");
-    assert.equal(club?.rating, 5);
-    assert.equal(club?.reviewCount, 2);
-    assert.equal(club?.verifiedReviewCount, 1);
+    const organizer = firestore.get("organizers/club-1");
+    assert.equal(organizer?.rating, 5);
+    assert.equal(organizer?.reviewCount, 2);
+    assert.equal(organizer?.verifiedReviewCount, 1);
   }
 );
 
 test("aggregate resets to zero after the last review is removed", async () => {
   const firestore = fakeFirestore({
-    "clubs/club-1": {rating: 4.5, reviewCount: 2, verifiedReviewCount: 2},
+    "organizers/club-1": {
+      rating: 4.5,
+      reviewCount: 2,
+      verifiedReviewCount: 2,
+    },
   });
 
   await refreshClubReviewStats("club-1", {firestore: () => firestore as never});
 
-  const club = firestore.get("clubs/club-1");
-  assert.equal(club?.rating, 0);
-  assert.equal(club?.reviewCount, 0);
-  assert.equal(club?.verifiedReviewCount, 0);
+  const organizer = firestore.get("organizers/club-1");
+  assert.equal(organizer?.rating, 0);
+  assert.equal(organizer?.reviewCount, 0);
+  assert.equal(organizer?.verifiedReviewCount, 0);
 });
 
 test("missing club is a no-op", async () => {
@@ -81,21 +87,21 @@ test("missing club is a no-op", async () => {
 
   await refreshClubReviewStats("club-1", {firestore: () => firestore as never});
 
-  assert.equal(firestore.get("clubs/club-1"), undefined);
+  assert.equal(firestore.get("organizers/club-1"), undefined);
 });
 
 test("syncClubReviewStatsHandler refreshes moved review clubs", async () => {
   const refreshed: string[] = [];
   const firestore = fakeFirestore({
-    "clubs/club-1": {rating: 0, reviewCount: 0},
-    "clubs/club-2": {rating: 0, reviewCount: 0},
+    "organizers/club-1": {rating: 0, reviewCount: 0},
+    "organizers/club-2": {rating: 0, reviewCount: 0},
   });
 
   const deps = {
     firestore: () => ({
       ...firestore,
       collection: (path: string) => {
-        if (path === "clubs") {
+        if (path === "organizers") {
           return {
             doc: (id: string) => {
               refreshed.push(id);
@@ -109,8 +115,8 @@ test("syncClubReviewStatsHandler refreshes moved review clubs", async () => {
   };
 
   await syncClubReviewStatsHandler(
-    {clubId: "club-1"},
-    {clubId: "club-2"},
+    {organizerId: "club-1"},
+    {organizerId: "club-2"},
     deps
   );
 
@@ -118,12 +124,18 @@ test("syncClubReviewStatsHandler refreshes moved review clubs", async () => {
 });
 
 function review(
-  clubId: string,
+  organizerId: string,
   rating: number,
   verificationStatus: string,
   moderationStatus: string
 ) {
-  return {clubId, rating, verificationStatus, moderationStatus};
+  return {
+    organizerId,
+    clubId: organizerId,
+    rating,
+    verificationStatus,
+    moderationStatus,
+  };
 }
 
 function fakeFirestore(initialDocs: Record<string, Record<string, unknown>>) {
@@ -131,6 +143,25 @@ function fakeFirestore(initialDocs: Record<string, Record<string, unknown>>) {
   return {
     get: (path: string) => docs[path],
     collection: (collectionPath: string) => queryRef(collectionPath, []),
+    batch: () => {
+      const writes: Array<{
+        ref: ReturnType<typeof docRef>;
+        patch: Record<string, unknown>;
+        options: {merge: boolean};
+      }> = [];
+      return {
+        set: (
+          ref: ReturnType<typeof docRef>,
+          patch: Record<string, unknown>,
+          options: {merge: boolean}
+        ) => writes.push({ref, patch, options}),
+        commit: async () => {
+          await Promise.all(
+            writes.map(({ref, patch, options}) => ref.set(patch, options))
+          );
+        },
+      };
+    },
   };
 
   function docRef(path: string) {

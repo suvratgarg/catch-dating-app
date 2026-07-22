@@ -46,8 +46,8 @@ class RecommendCard extends StatelessWidget {
     return RecommendCard(
       key: key,
       event: event,
-      clubName: 'Your club',
-      reasonLabel: 'From your clubs',
+      clubName: 'Your organizer',
+      reasonLabel: 'From your organizers',
       width: width,
     );
   }

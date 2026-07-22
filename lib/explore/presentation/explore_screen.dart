@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
+import 'package:catch_dating_app/core/data/initial_load_policy.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/external_links.dart';
@@ -26,6 +28,7 @@ import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/explore/presentation/explore_city_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_discovery_window_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
@@ -58,6 +61,21 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   bool _searchRequested = false;
   bool? _wasExploreTabActive;
   bool _reentryRefreshQueued = false;
+  bool _guestJoinedFilterResetQueued = false;
+  Timer? _initialLoadDeadline;
+  bool _initialLoadTimedOut = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _startInitialLoadDeadline();
+  }
+
+  @override
+  void dispose() {
+    _initialLoadDeadline?.cancel();
+    super.dispose();
+  }
 
   @override
   void didChangeDependencies() {
@@ -79,6 +97,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final uidAsync = ref.watch(uidProvider);
     final feedAsync = ref.watch(exploreFeedViewModelProvider);
     final recommendationsAsync = ref.watch(exploreRecommendationsProvider);
     final viewModelAsync = ref.watch(exploreClubsViewModelProvider);
@@ -94,6 +113,17 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     );
     final query = ref.watch(exploreSearchQueryProvider).trim();
     final filters = ref.watch(exploreFiltersProvider);
+    final uidData = uidAsync.asData;
+    final showAccountControls = exploreShowsAccountControls(
+      authResolved: uidData != null,
+      uid: uidData?.value,
+    );
+    if (uidData?.value == null && uidData != null && filters.joinedOnly) {
+      _scheduleGuestJoinedFilterReset();
+    }
+    final visibleFilters = showAccountControls
+        ? filters
+        : filters.copyWith(joinedOnly: false);
     final sourceClubsAsync = ref.watch(exploreSourceClubsProvider);
     final sourceClubs = sourceClubsAsync.asData?.value ?? const [];
     final hasSourceClubs = sourceClubs.isNotEmpty;
@@ -101,7 +131,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     final showFeaturedCover =
         featuredItem != null && !_searchRequested && query.isEmpty;
     final filterRailState = ExploreFilterRailState.from(
-      filters,
+      visibleFilters,
       l10n: context.l10n,
     );
     final dateStripState = ExploreDateStripState.from(
@@ -110,7 +140,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       now: ref.watch(exploreDiscoveryReferenceNowProvider),
     );
     final filterSheetState = ExploreFilterSheetState.from(
-      filters: filters,
+      filters: visibleFilters,
       sourceClubs: sourceClubs,
       l10n: context.l10n,
       viewModel: feedAsync.asData?.value,
@@ -120,7 +150,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       l10n: context.l10n,
       cityLabel: city.label,
       query: query,
-      filters: filters,
+      filters: visibleFilters,
       hasSourceClubs: hasSourceClubs,
       mappableEventCount: feedAsync.asData?.value.mappableEventCount,
       viewModelLoading: viewModelAsync.isLoading,
@@ -131,15 +161,21 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       eventFeedHasContent: feedAsync.asData?.value.isEmpty == false,
     );
     final bodyState = screenState.bodyState;
+    _syncInitialLoadDeadline(bodyState.kind == ExploreScreenBodyKind.loading);
 
     void retryBodyState(ExploreScreenRetryTarget? retryTarget) {
+      _restartInitialLoadDeadline();
       switch (retryTarget) {
         case ExploreScreenRetryTarget.eventFeed:
+          ref.invalidate(exploreDiscoveryWindowProvider);
           ref.invalidate(exploreFeedViewModelProvider);
         case ExploreScreenRetryTarget.explore:
         case null:
+          ref.invalidate(watchClubsByLocationProvider(city.effectiveMarketId));
           ref.invalidate(exploreClubsViewModelProvider);
           ref.invalidate(exploreSourceClubsProvider);
+          ref.invalidate(exploreDiscoveryWindowProvider);
+          ref.invalidate(exploreFeedViewModelProvider);
       }
     }
 
@@ -234,19 +270,26 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             builder: (sheetContext, ref, _) {
               final liveFilters = ref.watch(exploreFiltersProvider);
               final liveFeed = ref.watch(exploreFeedViewModelProvider);
+              final liveUidData = ref.watch(uidProvider).asData;
+              final showJoinedOnly = liveUidData?.value != null;
+              final visibleLiveFilters = showJoinedOnly
+                  ? liveFilters
+                  : liveFilters.copyWith(joinedOnly: false);
               return ExploreFilterSheet(
-                filters: liveFilters,
+                filters: visibleLiveFilters,
                 state: filterSheetState.withLiveResults(
-                  filters: liveFilters,
+                  filters: visibleLiveFilters,
                   viewModel: liveFeed.asData?.value,
                   feedLoading: liveFeed.isLoading,
                   l10n: sheetContext.l10n,
                 ),
                 onDistanceFilterSelected: (filter) =>
                     unawaited(_applyDistanceFilter(filter)),
-                onToggleJoinedOnly: () => ref
-                    .read(exploreFiltersProvider.notifier)
-                    .toggleJoinedOnly(),
+                onToggleJoinedOnly: showJoinedOnly
+                    ? () => ref
+                          .read(exploreFiltersProvider.notifier)
+                          .toggleJoinedOnly()
+                    : null,
                 onToggleHighRatedOnly: () => ref
                     .read(exploreFiltersProvider.notifier)
                     .toggleHighRatedOnly(),
@@ -257,6 +300,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                     ref.read(exploreFiltersProvider.notifier).toggleArea(area),
                 onClearFilters: () =>
                     ref.read(exploreFiltersProvider.notifier).clear(),
+                showJoinedOnly: showJoinedOnly,
               );
             },
           ),
@@ -277,93 +321,112 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       );
     }
 
-    final bodySlivers = switch (bodyState.kind) {
-      ExploreScreenBodyKind.loading => <Widget>[
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: CatchInsets.pageBody.copyWith(bottom: 0),
-            child: const ExploreSkeletonList(),
-          ),
-        ),
-      ],
-      ExploreScreenBodyKind.error => [
-        CatchSliverErrorState.fromError(
-          bodyState.error!,
-          context: bodyState.retryTarget == ExploreScreenRetryTarget.eventFeed
-              ? AppErrorContext.event
-              : AppErrorContext.explore,
-          onRetry: () => retryBodyState(bodyState.retryTarget),
-        ),
-      ],
-      ExploreScreenBodyKind.content => buildExploreBodySlivers(
-        context: context,
-        feedAsync: feedAsync,
-        recommendationsAsync: recommendationsAsync,
-        clubsViewModel: bodyState.viewModel,
-        filters: filters,
-        searchQuery: query,
-        onRetryFeed: () => ref.invalidate(exploreFeedViewModelProvider),
-        onRetryClubs: () => retryBodyState(ExploreScreenRetryTarget.explore),
-        onClearSearch: () =>
-            ref.read(exploreSearchQueryProvider.notifier).clear(),
-        onClearFilters: () => ref.read(exploreFiltersProvider.notifier).clear(),
-        onLoadMore: () => unawaited(_loadMore(feedAsync.asData?.value)),
-        onSetTimeFilter: (filter) =>
-            ref.read(exploreFiltersProvider.notifier).setTimeFilter(filter),
-        onActivitySelected: (activityKind) => ref
-            .read(exploreFiltersProvider.notifier)
-            .toggleActivityTag(activityKind.name),
-        onEventSelected: openEvent,
-        onExternalEventOpened: openExternalEvent,
-        onClubSelected: openClub,
-        promoteFeaturedItem: showFeaturedCover,
-      ),
-      ExploreScreenBodyKind.contentWithoutClubs => buildExploreBodySlivers(
-        context: context,
-        feedAsync: feedAsync,
-        recommendationsAsync: recommendationsAsync,
-        filters: filters,
-        searchQuery: query,
-        clubSectionError: bodyState.error,
-        onRetryFeed: () => ref.invalidate(exploreFeedViewModelProvider),
-        onRetryClubs: () => retryBodyState(bodyState.retryTarget),
-        onClearSearch: () =>
-            ref.read(exploreSearchQueryProvider.notifier).clear(),
-        onClearFilters: () => ref.read(exploreFiltersProvider.notifier).clear(),
-        onLoadMore: () => unawaited(_loadMore(feedAsync.asData?.value)),
-        onSetTimeFilter: (filter) =>
-            ref.read(exploreFiltersProvider.notifier).setTimeFilter(filter),
-        onActivitySelected: (activityKind) => ref
-            .read(exploreFiltersProvider.notifier)
-            .toggleActivityTag(activityKind.name),
-        onEventSelected: openEvent,
-        onExternalEventOpened: openExternalEvent,
-        onClubSelected: openClub,
-        promoteFeaturedItem: showFeaturedCover,
-      ),
-      ExploreScreenBodyKind.empty => [
-        CatchSliverStateViewport(
-          child: ExploreScreenEmptyState(
-            state: bodyState.emptyState!,
-            onClearSearch: () =>
-                ref.read(exploreSearchQueryProvider.notifier).clear(),
-            onClearFilters: () =>
-                ref.read(exploreFiltersProvider.notifier).clear(),
-            onChangeCity: cityPickerState.enabled
-                ? () => unawaited(
-                    showExploreCityPickerSheet(
-                      context: context,
-                      state: cityPickerState,
-                      onSelected: (selectedCity) => ref
-                          .read(selectedExploreCityProvider.notifier)
-                          .setCity(selectedCity),
-                    ),
-                  )
-                : null,
-          ),
-        ),
-      ],
-    };
+    final bodySlivers =
+        _initialLoadTimedOut && bodyState.kind == ExploreScreenBodyKind.loading
+        ? <Widget>[
+            CatchSliverErrorState.fromError(
+              const NetworkException(
+                'timeout',
+                'Explore is taking longer than expected. Please try again.',
+              ),
+              context: AppErrorContext.explore,
+              onRetry: () => retryBodyState(ExploreScreenRetryTarget.explore),
+            ),
+          ]
+        : switch (bodyState.kind) {
+            ExploreScreenBodyKind.loading => <Widget>[
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: CatchInsets.pageBody.copyWith(bottom: 0),
+                  child: const ExploreSkeletonList(),
+                ),
+              ),
+            ],
+            ExploreScreenBodyKind.error => [
+              CatchSliverErrorState.fromError(
+                bodyState.error!,
+                context:
+                    bodyState.retryTarget == ExploreScreenRetryTarget.eventFeed
+                    ? AppErrorContext.event
+                    : AppErrorContext.explore,
+                onRetry: () => retryBodyState(bodyState.retryTarget),
+              ),
+            ],
+            ExploreScreenBodyKind.content => buildExploreBodySlivers(
+              context: context,
+              feedAsync: feedAsync,
+              recommendationsAsync: recommendationsAsync,
+              clubsViewModel: bodyState.viewModel,
+              filters: visibleFilters,
+              searchQuery: query,
+              onRetryFeed: () => ref.invalidate(exploreFeedViewModelProvider),
+              onRetryClubs: () =>
+                  retryBodyState(ExploreScreenRetryTarget.explore),
+              onClearSearch: () =>
+                  ref.read(exploreSearchQueryProvider.notifier).clear(),
+              onClearFilters: () =>
+                  ref.read(exploreFiltersProvider.notifier).clear(),
+              onLoadMore: () => unawaited(_loadMore(feedAsync.asData?.value)),
+              onSetTimeFilter: (filter) => ref
+                  .read(exploreFiltersProvider.notifier)
+                  .setTimeFilter(filter),
+              onActivitySelected: (activityKind) => ref
+                  .read(exploreFiltersProvider.notifier)
+                  .toggleActivityTag(activityKind.name),
+              onEventSelected: openEvent,
+              onExternalEventOpened: openExternalEvent,
+              onClubSelected: openClub,
+              promoteFeaturedItem: showFeaturedCover,
+            ),
+            ExploreScreenBodyKind.contentWithoutClubs =>
+              buildExploreBodySlivers(
+                context: context,
+                feedAsync: feedAsync,
+                recommendationsAsync: recommendationsAsync,
+                filters: visibleFilters,
+                searchQuery: query,
+                clubSectionError: bodyState.error,
+                onRetryFeed: () => ref.invalidate(exploreFeedViewModelProvider),
+                onRetryClubs: () => retryBodyState(bodyState.retryTarget),
+                onClearSearch: () =>
+                    ref.read(exploreSearchQueryProvider.notifier).clear(),
+                onClearFilters: () =>
+                    ref.read(exploreFiltersProvider.notifier).clear(),
+                onLoadMore: () => unawaited(_loadMore(feedAsync.asData?.value)),
+                onSetTimeFilter: (filter) => ref
+                    .read(exploreFiltersProvider.notifier)
+                    .setTimeFilter(filter),
+                onActivitySelected: (activityKind) => ref
+                    .read(exploreFiltersProvider.notifier)
+                    .toggleActivityTag(activityKind.name),
+                onEventSelected: openEvent,
+                onExternalEventOpened: openExternalEvent,
+                onClubSelected: openClub,
+                promoteFeaturedItem: showFeaturedCover,
+              ),
+            ExploreScreenBodyKind.empty => [
+              CatchSliverStateViewport(
+                child: ExploreScreenEmptyState(
+                  state: bodyState.emptyState!,
+                  onClearSearch: () =>
+                      ref.read(exploreSearchQueryProvider.notifier).clear(),
+                  onClearFilters: () =>
+                      ref.read(exploreFiltersProvider.notifier).clear(),
+                  onChangeCity: cityPickerState.enabled
+                      ? () => unawaited(
+                          showExploreCityPickerSheet(
+                            context: context,
+                            state: cityPickerState,
+                            onSelected: (selectedCity) => ref
+                                .read(selectedExploreCityProvider.notifier)
+                                .setCity(selectedCity),
+                          ),
+                        )
+                      : null,
+                ),
+              ),
+            ],
+          };
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -390,8 +453,12 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                       onQueryChanged: (value) => ref
                           .read(exploreSearchQueryProvider.notifier)
                           .setQuery(value),
-                      actions: [savedEventsAction()],
-                      heroActions: [savedEventsAction(onDarkBackdrop: true)],
+                      actions: showAccountControls
+                          ? [savedEventsAction()]
+                          : const [],
+                      heroActions: showAccountControls
+                          ? [savedEventsAction(onDarkBackdrop: true)]
+                          : const [],
                       searchRequested: _searchRequested,
                       onSearchRequestedChanged: (expanded) {
                         if (_searchRequested == expanded) return;
@@ -402,7 +469,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                   ),
                   SliverToBoxAdapter(
                     child: ExploreFilterRail(
-                      filters: filters,
+                      filters: visibleFilters,
                       state: filterRailState,
                       dateStripState: dateStripState,
                       sheetState: filterSheetState,
@@ -411,9 +478,11 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                           .setTimeFilter(filter),
                       onDistanceFilterSelected: (filter) =>
                           unawaited(_applyDistanceFilter(filter)),
-                      onToggleJoinedOnly: () => ref
-                          .read(exploreFiltersProvider.notifier)
-                          .toggleJoinedOnly(),
+                      onToggleJoinedOnly: showAccountControls
+                          ? () => ref
+                                .read(exploreFiltersProvider.notifier)
+                                .toggleJoinedOnly()
+                          : null,
                       onToggleHighRatedOnly: () => ref
                           .read(exploreFiltersProvider.notifier)
                           .toggleHighRatedOnly(),
@@ -426,6 +495,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                       onClearFilters: () =>
                           ref.read(exploreFiltersProvider.notifier).clear(),
                       onOpenFilters: openExploreFilters,
+                      showJoinedOnly: showAccountControls,
                     ),
                   ),
                   ...bodySlivers,
@@ -472,7 +542,22 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     _showLocationFailure(failure);
   }
 
+  void _scheduleGuestJoinedFilterReset() {
+    if (_guestJoinedFilterResetQueued) return;
+    _guestJoinedFilterResetQueued = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _guestJoinedFilterResetQueued = false;
+      if (!mounted) return;
+      final uidData = ref.read(uidProvider).asData;
+      if (uidData == null || uidData.value != null) return;
+      final filters = ref.read(exploreFiltersProvider);
+      if (!filters.joinedOnly) return;
+      ref.read(exploreFiltersProvider.notifier).toggleJoinedOnly();
+    });
+  }
+
   Future<void> _refreshExploreData() async {
+    _restartInitialLoadDeadline();
     ref.invalidate(exploreDiscoveryReferenceNowProvider);
     ref.invalidate(exploreDiscoveryWindowProvider);
     ref.invalidate(watchClubsByLocationProvider);
@@ -484,11 +569,39 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     // The feed provider is a synchronous AsyncValue composition over several
     // async repositories, so it has no `.future` to await. Hold the refresh
     // indicator until the recomposed feed reaches either data or error.
-    for (var attempt = 0; attempt < 200; attempt += 1) {
-      await Future<void>.delayed(const Duration(milliseconds: 50));
+    final deadline = DateTime.now().add(InitialLoadPolicy.refresh);
+    while (DateTime.now().isBefore(deadline)) {
+      await Future<void>.delayed(InitialLoadPolicy.settlementPoll);
       if (!mounted) return;
       if (!ref.read(exploreFeedViewModelProvider).isLoading) return;
     }
+  }
+
+  void _startInitialLoadDeadline() {
+    _initialLoadDeadline?.cancel();
+    _initialLoadDeadline = Timer(InitialLoadPolicy.standard, () {
+      if (!mounted) return;
+      setState(() => _initialLoadTimedOut = true);
+    });
+  }
+
+  void _restartInitialLoadDeadline() {
+    if (_initialLoadTimedOut) {
+      setState(() => _initialLoadTimedOut = false);
+    }
+    _startInitialLoadDeadline();
+  }
+
+  void _syncInitialLoadDeadline(bool loading) {
+    if (loading) {
+      if (_initialLoadDeadline == null && !_initialLoadTimedOut) {
+        _startInitialLoadDeadline();
+      }
+      return;
+    }
+    _initialLoadDeadline?.cancel();
+    _initialLoadDeadline = null;
+    _initialLoadTimedOut = false;
   }
 
   Future<void> _loadMore(ExploreFeedViewModel? feed) async {
@@ -540,6 +653,12 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     );
   }
 }
+
+@visibleForTesting
+bool exploreShowsAccountControls({
+  required bool authResolved,
+  required String? uid,
+}) => authResolved && uid != null;
 
 double _mapLauncherBottomOffset(BuildContext context) {
   return AppShellActiveTab.bottomOverlayClearanceOf(

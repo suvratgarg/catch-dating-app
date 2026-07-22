@@ -8,7 +8,7 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/public/website_host_listing_projection.schema.json',
   'title': 'WebsiteHostListingProjection',
-  'description': 'Public organizer listing projection consumed by the marketing website and future shared web/app listing surfaces. It is generated from approved organizer, seed, or demo data and is not the canonical club document.',
+  'description': 'Public organizer listing projection consumed by the marketing website and future shared web/app listing surfaces. It is generated from approved organizer, seed, or demo data and is not the canonical organizer document.',
   'type': 'object',
   'additionalProperties': false,
   'x-owner': 'website/scripts/generateOrganizerListings.mjs',
@@ -40,6 +40,8 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
     'sources',
     'claim',
     'publicApi',
+    'authority',
+    'capabilities',
     'lastVerifiedAt',
     'searchText',
   ],
@@ -116,9 +118,11 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
       'type': 'string',
       'enum': <Object?>[
         'first_party',
+        'seedOnly',
         'high',
         'medium',
         'low',
+        'ownerVerified',
       ],
     },
     'headline': <String, Object?>{
@@ -717,6 +721,207 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
         },
       },
     },
+    'authority': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'ownershipState',
+        'claimState',
+        'provenanceOrigin',
+        'sourceConfidence',
+        'verificationStatus',
+        'appVisibility',
+        'publishStatus',
+        'indexStatus',
+      ],
+      'properties': <String, Object?>{
+        'ownershipState': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'programmatic',
+            'userCreated',
+            'claimed',
+            'transferred',
+          ],
+        },
+        'claimState': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'unclaimed',
+            'claimPending',
+            'claimed',
+            'verified',
+            'suppressed',
+          ],
+        },
+        'provenanceOrigin': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'userCreated',
+            'scraper',
+            'adminSeed',
+            'import',
+          ],
+        },
+        'sourceConfidence': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'seedOnly',
+            'low',
+            'medium',
+            'high',
+            'ownerVerified',
+          ],
+        },
+        'verificationStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'unverified',
+            'sourceBacked',
+            'ownerVerified',
+          ],
+        },
+        'appVisibility': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'discoverable',
+            'hidden',
+          ],
+        },
+        'publishStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'draft',
+            'qa',
+            'published',
+            'suppressed',
+            'removed',
+          ],
+        },
+        'indexStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'noindex',
+            'indexReady',
+            'indexed',
+          ],
+        },
+      },
+    },
+    'capabilities': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'claimRequest',
+        'publicReviews',
+      ],
+      'properties': <String, Object?>{
+        'claimRequest': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'state',
+            'reason',
+          ],
+          'properties': <String, Object?>{
+            'state': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'enabled',
+                'disabled',
+              ],
+            },
+            'reason': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+            },
+          },
+        },
+        'publicReviews': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'targetState',
+            'readState',
+            'writeState',
+            'reason',
+          ],
+          'properties': <String, Object?>{
+            'targetState': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'enabled',
+                'disabled',
+              ],
+            },
+            'readState': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'enabled',
+                'disabled',
+              ],
+            },
+            'writeState': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'enabled',
+                'disabled',
+              ],
+            },
+            'reason': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+            },
+          },
+          'not': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'properties': <String, Object?>{
+                  'targetState': <String, Object?>{
+                    'const': 'disabled',
+                  },
+                  'readState': <String, Object?>{
+                    'const': 'enabled',
+                  },
+                },
+                'required': <Object?>[
+                  'targetState',
+                  'readState',
+                ],
+              },
+              <String, Object?>{
+                'properties': <String, Object?>{
+                  'targetState': <String, Object?>{
+                    'const': 'disabled',
+                  },
+                  'writeState': <String, Object?>{
+                    'const': 'enabled',
+                  },
+                },
+                'required': <Object?>[
+                  'targetState',
+                  'writeState',
+                ],
+              },
+              <String, Object?>{
+                'properties': <String, Object?>{
+                  'readState': <String, Object?>{
+                    'const': 'disabled',
+                  },
+                  'writeState': <String, Object?>{
+                    'const': 'enabled',
+                  },
+                },
+                'required': <Object?>[
+                  'readState',
+                  'writeState',
+                ],
+              },
+            ],
+          },
+        },
+      },
+    },
     'lastVerifiedAt': <String, Object?>{
       'type': 'string',
       'minLength': 1,
@@ -725,6 +930,27 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
     },
+  },
+  'not': <String, Object?>{
+    'properties': <String, Object?>{
+      'authority': <String, Object?>{
+        'properties': <String, Object?>{
+          'claimState': <String, Object?>{
+            'const': 'suppressed',
+          },
+          'publishStatus': <String, Object?>{
+            'const': 'published',
+          },
+        },
+        'required': <Object?>[
+          'claimState',
+          'publishStatus',
+        ],
+      },
+    },
+    'required': <Object?>[
+      'authority',
+    ],
   },
   'definitions': <String, Object?>{
     'nonEmptyString': <String, Object?>{
@@ -1253,6 +1479,311 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
             'static_fixture',
             'unknown',
           ],
+        },
+      },
+    },
+    'authority': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'ownershipState',
+        'claimState',
+        'provenanceOrigin',
+        'sourceConfidence',
+        'verificationStatus',
+        'appVisibility',
+        'publishStatus',
+        'indexStatus',
+      ],
+      'properties': <String, Object?>{
+        'ownershipState': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'programmatic',
+            'userCreated',
+            'claimed',
+            'transferred',
+          ],
+        },
+        'claimState': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'unclaimed',
+            'claimPending',
+            'claimed',
+            'verified',
+            'suppressed',
+          ],
+        },
+        'provenanceOrigin': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'userCreated',
+            'scraper',
+            'adminSeed',
+            'import',
+          ],
+        },
+        'sourceConfidence': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'seedOnly',
+            'low',
+            'medium',
+            'high',
+            'ownerVerified',
+          ],
+        },
+        'verificationStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'unverified',
+            'sourceBacked',
+            'ownerVerified',
+          ],
+        },
+        'appVisibility': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'discoverable',
+            'hidden',
+          ],
+        },
+        'publishStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'draft',
+            'qa',
+            'published',
+            'suppressed',
+            'removed',
+          ],
+        },
+        'indexStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'noindex',
+            'indexReady',
+            'indexed',
+          ],
+        },
+      },
+    },
+    'capability': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'state',
+        'reason',
+      ],
+      'properties': <String, Object?>{
+        'state': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'enabled',
+            'disabled',
+          ],
+        },
+        'reason': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+        },
+      },
+    },
+    'publicReviewCapability': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'targetState',
+        'readState',
+        'writeState',
+        'reason',
+      ],
+      'properties': <String, Object?>{
+        'targetState': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'enabled',
+            'disabled',
+          ],
+        },
+        'readState': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'enabled',
+            'disabled',
+          ],
+        },
+        'writeState': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'enabled',
+            'disabled',
+          ],
+        },
+        'reason': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+        },
+      },
+      'not': <String, Object?>{
+        'anyOf': <Object?>[
+          <String, Object?>{
+            'properties': <String, Object?>{
+              'targetState': <String, Object?>{
+                'const': 'disabled',
+              },
+              'readState': <String, Object?>{
+                'const': 'enabled',
+              },
+            },
+            'required': <Object?>[
+              'targetState',
+              'readState',
+            ],
+          },
+          <String, Object?>{
+            'properties': <String, Object?>{
+              'targetState': <String, Object?>{
+                'const': 'disabled',
+              },
+              'writeState': <String, Object?>{
+                'const': 'enabled',
+              },
+            },
+            'required': <Object?>[
+              'targetState',
+              'writeState',
+            ],
+          },
+          <String, Object?>{
+            'properties': <String, Object?>{
+              'readState': <String, Object?>{
+                'const': 'disabled',
+              },
+              'writeState': <String, Object?>{
+                'const': 'enabled',
+              },
+            },
+            'required': <Object?>[
+              'readState',
+              'writeState',
+            ],
+          },
+        ],
+      },
+    },
+    'capabilities': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'claimRequest',
+        'publicReviews',
+      ],
+      'properties': <String, Object?>{
+        'claimRequest': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'state',
+            'reason',
+          ],
+          'properties': <String, Object?>{
+            'state': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'enabled',
+                'disabled',
+              ],
+            },
+            'reason': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+            },
+          },
+        },
+        'publicReviews': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'targetState',
+            'readState',
+            'writeState',
+            'reason',
+          ],
+          'properties': <String, Object?>{
+            'targetState': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'enabled',
+                'disabled',
+              ],
+            },
+            'readState': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'enabled',
+                'disabled',
+              ],
+            },
+            'writeState': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'enabled',
+                'disabled',
+              ],
+            },
+            'reason': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+            },
+          },
+          'not': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'properties': <String, Object?>{
+                  'targetState': <String, Object?>{
+                    'const': 'disabled',
+                  },
+                  'readState': <String, Object?>{
+                    'const': 'enabled',
+                  },
+                },
+                'required': <Object?>[
+                  'targetState',
+                  'readState',
+                ],
+              },
+              <String, Object?>{
+                'properties': <String, Object?>{
+                  'targetState': <String, Object?>{
+                    'const': 'disabled',
+                  },
+                  'writeState': <String, Object?>{
+                    'const': 'enabled',
+                  },
+                },
+                'required': <Object?>[
+                  'targetState',
+                  'writeState',
+                ],
+              },
+              <String, Object?>{
+                'properties': <String, Object?>{
+                  'readState': <String, Object?>{
+                    'const': 'disabled',
+                  },
+                  'writeState': <String, Object?>{
+                    'const': 'enabled',
+                  },
+                },
+                'required': <Object?>[
+                  'readState',
+                  'writeState',
+                ],
+              },
+            ],
+          },
         },
       },
     },

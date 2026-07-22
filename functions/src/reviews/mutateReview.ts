@@ -10,6 +10,7 @@ import {
   EventParticipationDocument,
   UserProfileDocument,
   ClubDocument,
+  OrganizerDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
   checkIpRateLimit,
@@ -24,17 +25,27 @@ import {CreatePublicClubReviewCallablePayload} from
   "../shared/generated/createPublicClubReviewCallablePayload";
 import {CreatePublicClubReviewCallableResponse} from
   "../shared/generated/createPublicClubReviewCallableResponse";
+import {CreatePublicOrganizerReviewCallablePayload} from
+  "../shared/generated/createPublicOrganizerReviewCallablePayload";
+import {CreatePublicOrganizerReviewCallableResponse} from
+  "../shared/generated/createPublicOrganizerReviewCallableResponse";
 import {DeleteEventReviewCallablePayload} from
   "../shared/generated/deleteEventReviewCallablePayload";
 import {ListPublicClubReviewsCallablePayload} from
   "../shared/generated/listPublicClubReviewsCallablePayload";
 import {ListPublicClubReviewsCallableResponse} from
   "../shared/generated/listPublicClubReviewsCallableResponse";
+import {ListPublicOrganizerReviewsCallablePayload} from
+  "../shared/generated/listPublicOrganizerReviewsCallablePayload";
+import {ListPublicOrganizerReviewsCallableResponse} from
+  "../shared/generated/listPublicOrganizerReviewsCallableResponse";
 import {
   validateCreateEventReviewCallablePayload,
   validateCreatePublicClubReviewCallablePayload,
+  validateCreatePublicOrganizerReviewCallablePayload,
   validateDeleteEventReviewCallablePayload,
   validateListPublicClubReviewsCallablePayload,
+  validateListPublicOrganizerReviewsCallablePayload,
   validateSetReviewResponseCallablePayload,
   validateUpdateEventReviewCallablePayload,
 } from "../shared/generated/schemaValidators";
@@ -50,6 +61,8 @@ import {
   publicDisplayName,
 } from "../shared/profileProjection";
 import {clubHostProfiles, isClubHost} from "../shared/clubHosts";
+import {isOrganizerManager, organizerHostProfiles} from
+  "../shared/organizerHosts";
 import {assertPublicOrganizerPageEligible} from
   "../shared/publicOrganizerPage";
 
@@ -94,6 +107,8 @@ const defaultDeps: ReviewMutationDeps = {
 };
 
 export type PublicClubReview = CreatePublicClubReviewCallableResponse["review"];
+export type PublicOrganizerReview =
+  CreatePublicOrganizerReviewCallableResponse["review"];
 
 export async function createEventReviewHandler(
   request: CallableRequest<unknown>,
@@ -155,6 +170,7 @@ export async function createEventReviewHandler(
     );
     tx.create(reviewRef, {
       clubId: data.clubId,
+      organizerId: eventOrganizerId(eventSnap, data.clubId),
       eventId: data.eventId,
       reviewerUserId,
       reviewerName: publicDisplayName(user),
@@ -185,11 +201,43 @@ export async function createPublicClubReviewHandler(
     validateCreatePublicClubReviewCallablePayload,
     normalizeCreatePublicClubReviewPayload
   );
+  return createPublicOrganizerReviewFromData(
+    request,
+    {...data, organizerId: data.clubId},
+    deps,
+    "createPublicClubReview"
+  );
+}
+
+export async function createPublicOrganizerReviewHandler(
+  request: CallableRequest<unknown>,
+  deps: ReviewMutationDeps = defaultDeps
+): Promise<CreatePublicOrganizerReviewCallableResponse> {
+  const data =
+    validateCallableWithAjv<CreatePublicOrganizerReviewCallablePayload>(
+      request,
+      validateCreatePublicOrganizerReviewCallablePayload,
+      normalizeCreatePublicOrganizerReviewPayload
+    );
+  return createPublicOrganizerReviewFromData(
+    request,
+    data,
+    deps,
+    "createPublicOrganizerReview"
+  );
+}
+
+async function createPublicOrganizerReviewFromData(
+  request: CallableRequest<unknown>,
+  data: CreatePublicOrganizerReviewCallablePayload,
+  deps: ReviewMutationDeps,
+  rateLimitAction: "createPublicClubReview" | "createPublicOrganizerReview"
+): Promise<CreatePublicOrganizerReviewCallableResponse> {
   const db = deps.firestore();
   const reviewerUserId = request.auth?.uid ?? null;
 
   if (reviewerUserId) {
-    await deps.checkRateLimit?.(db, reviewerUserId, "createPublicClubReview");
+    await deps.checkRateLimit?.(db, reviewerUserId, rateLimitAction);
   } else {
     const ip = requesterIp(request);
     const allowed = deps.checkIpRateLimit?.(
@@ -205,16 +253,26 @@ export async function createPublicClubReviewHandler(
     }
   }
 
-  const clubRef = db.collection("clubs").doc(data.clubId);
+  const organizerRef = db.collection("organizers").doc(data.organizerId);
+  const legacyClubRef = db.collection("clubs").doc(data.organizerId);
   const reviewRef = db.collection("reviews").doc();
   const createdAt = new Date().toISOString();
   const reviewerName = publicReviewerName(data);
+  const moderationStatus = reviewModerationStatus(data.comment, reviewerName);
 
   await db.runTransaction(async (tx) => {
-    const clubSnap = await tx.get(clubRef);
-    assertCanReceivePublicReview(clubSnap, data.submittedFromPath);
+    const [organizerSnap, legacyClubSnap] = await Promise.all([
+      tx.get(organizerRef),
+      tx.get(legacyClubRef),
+    ]);
+    assertCanReceivePublicReview(
+      organizerSnap,
+      legacyClubSnap,
+      data.submittedFromPath
+    );
     tx.create(reviewRef, {
-      clubId: data.clubId,
+      organizerId: data.organizerId,
+      clubId: data.organizerId,
       eventId: null,
       reviewerUserId,
       reviewerName,
@@ -222,7 +280,7 @@ export async function createPublicClubReviewHandler(
       comment: data.comment,
       verificationStatus: "unverified",
       source: "publicListing",
-      moderationStatus: reviewModerationStatus(data.comment, reviewerName),
+      moderationStatus,
       isAnonymous: data.isAnonymous,
       submittedFromPath: data.submittedFromPath,
       createdAt: deps.serverTimestamp?.() ??
@@ -240,6 +298,7 @@ export async function createPublicClubReviewHandler(
       createdAt,
       verificationStatus: "unverified",
       source: "publicListing",
+      moderationStatus,
       isAnonymous: data.isAnonymous,
       ownerResponse: null,
     },
@@ -255,19 +314,61 @@ export async function listPublicClubReviewsHandler(
     validateListPublicClubReviewsCallablePayload,
     normalizeSingleIdPayload("clubId")
   );
-  const db = deps.firestore();
-  const [clubSnap, reviewsSnap] = await Promise.all([
-    db.collection("clubs").doc(data.clubId).get(),
-    db
-      .collection("reviews")
-      .where("clubId", "==", data.clubId)
-      .orderBy("createdAt", "desc")
-      .limit(50)
-      .get(),
-  ]);
-  assertCanReceivePublicReview(clubSnap, null);
+  return listPublicOrganizerReviewsFromData(
+    {organizerId: data.clubId},
+    deps
+  );
+}
 
-  const reviews = reviewsSnap.docs
+export async function listPublicOrganizerReviewsHandler(
+  request: CallableRequest<unknown>,
+  deps: ReviewMutationDeps = defaultDeps
+): Promise<ListPublicOrganizerReviewsCallableResponse> {
+  const data =
+    validateCallableWithAjv<ListPublicOrganizerReviewsCallablePayload>(
+      request,
+      validateListPublicOrganizerReviewsCallablePayload,
+      normalizeSingleIdPayload("organizerId")
+    );
+  return listPublicOrganizerReviewsFromData(data, deps);
+}
+
+async function listPublicOrganizerReviewsFromData(
+  data: ListPublicOrganizerReviewsCallablePayload,
+  deps: ReviewMutationDeps
+): Promise<ListPublicOrganizerReviewsCallableResponse> {
+  const db = deps.firestore();
+  const [organizerSnap, legacyClubSnap, reviewsSnap, legacyReviewsSnap] =
+    await Promise.all([
+      db.collection("organizers").doc(data.organizerId).get(),
+      db.collection("clubs").doc(data.organizerId).get(),
+      db
+        .collection("reviews")
+        .where("organizerId", "==", data.organizerId)
+        .orderBy("createdAt", "desc")
+        .limit(50)
+        .get(),
+      db
+        .collection("reviews")
+        .where("clubId", "==", data.organizerId)
+        .orderBy("createdAt", "desc")
+        .limit(50)
+        .get(),
+    ]);
+  assertCanReceivePublicReview(
+    organizerSnap,
+    legacyClubSnap,
+    null
+  );
+
+  const docsById = new Map([
+    ...legacyReviewsSnap.docs.map((doc) => [doc.id, doc] as const),
+    ...reviewsSnap.docs.map((doc) => [doc.id, doc] as const),
+  ]);
+  const reviews = Array.from(docsById.values())
+    .sort((a, b) => timestampMillis(b.data().createdAt) -
+      timestampMillis(a.data().createdAt))
+    .slice(0, 50)
     .map((doc) => toPublicClubReview(doc.id, doc.data() as ReviewDocument))
     .filter((review): review is PublicClubReview => review !== null);
 
@@ -359,27 +460,49 @@ export async function setReviewResponseHandler(
       reviewSnap,
       "ReviewDocument"
     );
-    const clubRef = db.collection("clubs").doc(review.clubId);
+    const organizerId = review.organizerId ?? review.clubId;
+    if (!organizerId) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Review organizer is missing."
+      );
+    }
+    const organizerRef = db.collection("organizers").doc(organizerId);
+    const legacyClubRef = db.collection("clubs").doc(organizerId);
     const [
-      clubSnap,
+      organizerSnap,
+      legacyClubSnap,
       userSnap,
       deletedUserSnap,
     ] = await Promise.all([
-      tx.get(clubRef),
+      tx.get(organizerRef),
+      tx.get(legacyClubRef),
       tx.get(userRef),
       tx.get(deletedUserRef),
     ]);
-    assertCanRespondToReview(clubSnap, userSnap, deletedUserSnap, hostUserId);
-    const club = requireDoc<ClubDocument>(
-      clubSnap,
-      "ClubDocument"
+    const authoritySnap = organizerSnap.exists ? organizerSnap : legacyClubSnap;
+    assertCanRespondToReview(
+      authoritySnap,
+      userSnap,
+      deletedUserSnap,
+      hostUserId,
+      organizerSnap.exists
     );
+    const hostProfiles = organizerSnap.exists ?
+      organizerHostProfiles(requireDoc<OrganizerDocument>(
+        organizerSnap,
+        "OrganizerDocument"
+      )) :
+      clubHostProfiles(requireDoc<ClubDocument>(
+        legacyClubSnap,
+        "ClubDocument"
+      ));
     const user = requireDoc<UserProfileDocument>(
       userSnap,
       "UserProfileDocument"
     );
     const existingResponse = responseRecord(review.ownerResponse);
-    const hostProfile = clubHostProfiles(club)
+    const hostProfile = hostProfiles
       .find((profile) => profile.uid === hostUserId);
     const timestamp = deps.serverTimestamp?.() ??
       admin.firestore.FieldValue.serverTimestamp();
@@ -408,6 +531,17 @@ function normalizeCreateEventReviewPayload(data: unknown): unknown {
 function normalizeCreatePublicClubReviewPayload(data: unknown): unknown {
   return normalizePayloadStrings(data, {
     stringFields: ["clubId", "comment", "reviewerName", "submittedFromPath"],
+  });
+}
+
+function normalizeCreatePublicOrganizerReviewPayload(data: unknown): unknown {
+  return normalizePayloadStrings(data, {
+    stringFields: [
+      "organizerId",
+      "comment",
+      "reviewerName",
+      "submittedFromPath",
+    ],
   });
 }
 
@@ -475,15 +609,43 @@ function assertCanWriteReview(
   }
 }
 
+function eventOrganizerId(
+  eventSnap: FirebaseFirestore.DocumentSnapshot,
+  fallbackClubId: string
+): string {
+  const event = eventSnap.data() as {organizerId?: unknown} | undefined;
+  return typeof event?.organizerId === "string" ?
+    event.organizerId :
+    fallbackClubId;
+}
+
 function assertCanReceivePublicReview(
-  clubSnap: FirebaseFirestore.DocumentSnapshot,
+  organizerSnap: FirebaseFirestore.DocumentSnapshot,
+  legacyClubSnap: FirebaseFirestore.DocumentSnapshot,
   submittedFromPath: string | null
 ) {
-  if (!clubSnap.exists) {
+  const candidates = [organizerSnap, legacyClubSnap]
+    .filter((snapshot) => snapshot.exists);
+  if (candidates.length === 0) {
     throw new HttpsError("not-found", "Organizer profile not found.");
   }
-  const club = requireDoc<ClubDocument>(clubSnap, "ClubDocument");
-  assertPublicOrganizerPageEligible(club, {pagePath: submittedFromPath});
+
+  const eligibilityErrors: unknown[] = [];
+  for (const candidate of candidates) {
+    try {
+      const club = requireDoc<ClubDocument>(candidate, "ClubDocument");
+      assertPublicOrganizerPageEligible(club, {pagePath: submittedFromPath});
+      return;
+    } catch (error) {
+      eligibilityErrors.push(error);
+    }
+  }
+
+  const pathError = eligibilityErrors.find((error) =>
+    error instanceof HttpsError && error.code === "invalid-argument"
+  );
+  if (pathError) throw pathError;
+  throw eligibilityErrors[0];
 }
 
 function assertOwnsReview(
@@ -509,7 +671,8 @@ function assertCanRespondToReview(
   clubSnap: FirebaseFirestore.DocumentSnapshot,
   userSnap: FirebaseFirestore.DocumentSnapshot,
   deletedUserSnap: FirebaseFirestore.DocumentSnapshot,
-  hostUserId: string
+  hostUserId: string,
+  canonicalOrganizer: boolean
 ) {
   if (deletedUserSnap.exists) {
     throw new HttpsError(
@@ -521,16 +684,21 @@ function assertCanRespondToReview(
     throw new HttpsError("not-found", "User profile not found.");
   }
   if (!clubSnap.exists) {
-    throw new HttpsError("not-found", "Club not found.");
+    throw new HttpsError("not-found", "Organizer not found.");
   }
-  const club = requireDoc<ClubDocument>(
-    clubSnap,
-    "ClubDocument"
-  );
-  if (!isClubHost(club, hostUserId)) {
+  const canRespond = canonicalOrganizer ?
+    isOrganizerManager(
+      requireDoc<OrganizerDocument>(clubSnap, "OrganizerDocument"),
+      hostUserId
+    ) :
+    isClubHost(
+      requireDoc<ClubDocument>(clubSnap, "ClubDocument"),
+      hostUserId
+    );
+  if (!canRespond) {
     throw new HttpsError(
       "permission-denied",
-      "Only the club host can respond to this review."
+      "Only the organizer team can respond to this review."
     );
   }
 }
@@ -546,7 +714,10 @@ function eventReviewId(eventId: string, reviewerUserId: string): string {
   return `${eventId}~${reviewerUserId}`;
 }
 
-function publicReviewerName(data: CreatePublicClubReviewCallablePayload) {
+function publicReviewerName(data: {
+  isAnonymous: boolean;
+  reviewerName: string;
+}) {
   if (data.isAnonymous) return "Anonymous reviewer";
   const name = data.reviewerName.trim();
   if (!name) {
@@ -586,6 +757,7 @@ function toPublicClubReview(
     verificationStatus:
       review.verificationStatus ?? (review.eventId ? "verified" : "unverified"),
     source: review.source ?? (review.eventId ? "catchEvent" : "publicListing"),
+    moderationStatus: "published",
     isAnonymous: review.isAnonymous ?? false,
     ownerResponse: ownerResponse ? {
       hostName: ownerResponse.hostName,
@@ -616,6 +788,11 @@ function timestampIso(value: unknown): string | null {
   return null;
 }
 
+function timestampMillis(value: unknown): number {
+  const iso = timestampIso(value);
+  return iso ? Date.parse(iso) : 0;
+}
+
 export const createEventReview = onCall(
   appCheckCallableOptions,
   (request) => createEventReviewHandler(request)
@@ -626,9 +803,19 @@ export const createPublicClubReview = onCall(
   (request) => createPublicClubReviewHandler(request)
 );
 
+export const createPublicOrganizerReview = onCall(
+  appCheckCallableOptions,
+  (request) => createPublicOrganizerReviewHandler(request)
+);
+
 export const listPublicClubReviews = onCall(
   appCheckCallableOptions,
   (request) => listPublicClubReviewsHandler(request)
+);
+
+export const listPublicOrganizerReviews = onCall(
+  appCheckCallableOptions,
+  (request) => listPublicOrganizerReviewsHandler(request)
 );
 
 export const updateEventReview = onCall(

@@ -6,8 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   const steps = [
-    CatchFormStepSpec(title: 'Club basics'),
-    CatchFormStepSpec(title: 'Club details'),
+    CatchFormStepSpec(title: 'Organizer basics'),
+    CatchFormStepSpec(title: 'Organizer details'),
     CatchFormStepSpec(title: 'Host defaults'),
   ];
 
@@ -20,14 +20,14 @@ void main() {
       mutationError: 'Unable to save draft.',
     );
 
-    expect(state.title, 'Club details');
+    expect(state.title, 'Organizer details');
     expect(state.subtitle, isNull);
     expect(state.currentStep, 1);
     expect(state.totalSteps, 3);
     expect(state.isLastStep, isFalse);
     expect(state.canPickMedia, isTrue);
     expect(state.canSaveDraft, isTrue);
-    expect(state.lastStepLabel, 'Create club');
+    expect(state.lastStepLabel, 'Create organizer');
     expect(state.isLoading, isTrue);
     expect(state.mutationError, 'Unable to save draft.');
     expect(state.footer.primaryEnabled, isFalse);

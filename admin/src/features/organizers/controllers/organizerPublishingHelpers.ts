@@ -3,7 +3,7 @@ import type {
   AdminSetClubIndexStatusPayload,
   AdminUpdateClubDetailsPayload,
   OrganizerAppVisibility,
-  OrganizerEntityKind,
+  OrganizerType,
   OrganizerPublishStatus,
   OrganizerSourceConfidence,
   OrganizerVerificationStatus,
@@ -21,9 +21,8 @@ export interface OrganizerPublishingFormState {
   email: string;
   imageUrl: string;
   profileImageUrl: string;
-  entityKind: OrganizerEntityKind;
-  entitySubtypesText: string;
-  displayCategory: string;
+  organizerType: OrganizerType;
+  publicCategoryLabel: string;
   cityName: string;
   regionName: string;
   countryCode: string;
@@ -105,9 +104,8 @@ export function formFromOrganizerProfile(
     email: club.email ?? "",
     imageUrl: club.imageUrl ?? "",
     profileImageUrl: club.profileImageUrl ?? "",
-    entityKind: club.entityKind ?? "club",
-    entitySubtypesText: listToText(club.entitySubtypes),
-    displayCategory: club.displayCategory ?? "",
+    organizerType: club.organizerType,
+    publicCategoryLabel: club.publicCategoryLabel ?? "",
     cityName: club.cityName ?? "",
     regionName: club.regionName ?? "",
     countryCode: club.countryCode ?? "",
@@ -167,18 +165,17 @@ export function buildOrganizerSavePayload(
     original.profileImageUrl,
     nullableText(form.profileImageUrl)
   );
-  addChanged(fields, "entityKind", original.entityKind, form.entityKind);
-  addChangedArray(
+  addChanged(
     fields,
-    "entitySubtypes",
-    original.entitySubtypesText,
-    form.entitySubtypesText
+    "organizerType",
+    original.organizerType,
+    form.organizerType
   );
   addChanged(
     fields,
-    "displayCategory",
-    original.displayCategory,
-    nullableText(form.displayCategory)
+    "publicCategoryLabel",
+    original.publicCategoryLabel,
+    nullableText(form.publicCategoryLabel)
   );
   addChanged(fields, "cityName", original.cityName, nullableText(form.cityName));
   addChanged(fields, "regionName", original.regionName, nullableText(form.regionName));
@@ -279,7 +276,7 @@ export function validateOrganizerPublishingForm(
     return [{
       id: "no-form",
       label: "No organizer loaded",
-      detail: "Load a canonical clubs/{id} document before publishing.",
+      detail: "Load a canonical organizers/{id} document before publishing.",
       severity: "blocker",
     }];
   }
@@ -325,6 +322,14 @@ export function validateOrganizerPublishingForm(
 
 export function hasBlockingIssues(issues: OrganizerValidationIssue[]): boolean {
   return issues.some((issue) => issue.severity === "blocker");
+}
+
+export function organizerTypeLabel(type: OrganizerType): string {
+  switch (type) {
+  case "eventProducer": return "Event producer";
+  case "individual": return "Individual organizer";
+  default: return type.charAt(0).toUpperCase() + type.slice(1);
+  }
 }
 
 function validateCanonicalPath(

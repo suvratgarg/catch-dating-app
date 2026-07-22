@@ -273,6 +273,26 @@ class AppConfig {
     ),
   );
 
+  /// Owner-approved public legal/support destinations. Empty values keep the
+  /// corresponding Settings rows hidden instead of launching dormant routes.
+  static const String _privacyPolicyUrl = String.fromEnvironment(
+    'CATCH_PRIVACY_POLICY_URL',
+  );
+  static const String _termsUrl = String.fromEnvironment('CATCH_TERMS_URL');
+  static const String _helpUrl = String.fromEnvironment('CATCH_HELP_URL');
+
+  static Uri? get privacyPolicyUrl =>
+      configuredExternalUriFor(_privacyPolicyUrl);
+  static Uri? get termsUrl => configuredExternalUriFor(_termsUrl);
+  static Uri? get helpUrl => configuredExternalUriFor(_helpUrl);
+
+  @visibleForTesting
+  static Uri? configuredExternalUriFor(String value) {
+    final uri = Uri.tryParse(value.trim());
+    if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) return null;
+    return uri;
+  }
+
   static const bool useFirebaseAppCheckDebugProvider = bool.fromEnvironment(
     'USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER',
   );

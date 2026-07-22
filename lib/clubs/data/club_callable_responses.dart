@@ -15,6 +15,22 @@ final class CreateClubCallableResponse {
   final String clubId;
 }
 
+final class CreateOrganizerCallableResponse {
+  const CreateOrganizerCallableResponse({required this.organizerId});
+
+  factory CreateOrganizerCallableResponse.fromCallableData(Object? data) {
+    if (data case final Map<Object?, Object?> map) {
+      final organizerId = map['organizerId'] as String?;
+      if (organizerId != null && organizerId.isNotEmpty) {
+        return CreateOrganizerCallableResponse(organizerId: organizerId);
+      }
+    }
+    throw StateError('createOrganizer response was missing organizerId.');
+  }
+
+  final String organizerId;
+}
+
 final class CreateClubPostCallableResponse {
   const CreateClubPostCallableResponse({
     required this.postId,

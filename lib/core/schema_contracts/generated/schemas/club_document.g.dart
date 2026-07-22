@@ -8,7 +8,7 @@ const schemaClubDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/clubs.schema.json',
   'title': 'ClubDocument',
-  'description': 'Canonical club document stored at clubs/{clubId}. The club id is the document id and is not stored in document data.',
+  'description': 'Legacy storage contract for an organizer document stored at clubs/{clubId} during the clubs-to-organizers migration. The organizer id is the document id and is not stored in document data.',
   'type': 'object',
   'additionalProperties': false,
   'x-firestore-collection': 'clubs',
@@ -1264,6 +1264,71 @@ const schemaClubDocumentSchema = <String, Object?>{
       },
       'x-catch-ownership': 'callable-owned',
     },
+    'organizerType': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'club',
+        'community',
+        'individual',
+        'eventProducer',
+        'venue',
+        'brand',
+      ],
+      'description': 'Canonical organizer subtype. Legacy documents without this field normalize to club until backfill is complete.',
+      'x-catch-ownership': 'callable-owned',
+    },
+    'organizerTypeUpdatedAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'Server-owned timestamp of the latest organizer type decision.',
+      'x-catch-ownership': 'server-only',
+    },
+    'organizerTypeUpdatedByUid': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'Server-owned user id that made the latest organizer type decision.',
+      'x-catch-ownership': 'server-only',
+    },
+    'publicCategoryLabel': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 120,
+      'description': 'Optional admin-curated public category copy. It never replaces organizerType as the classification authority.',
+      'x-catch-ownership': 'callable-owned',
+    },
     'entityKind': <String, Object?>{
       'type': 'string',
       'enum': <Object?>[
@@ -1273,7 +1338,7 @@ const schemaClubDocumentSchema = <String, Object?>{
         'creatorCommunity',
         'brand',
       ],
-      'description': 'Broad organizer identity. Keeps clubs as one subtype rather than forcing every host into club nomenclature.',
+      'description': 'Deprecated organizer classification retained only while legacy data and clients are migrated to organizerType.',
       'x-catch-ownership': 'callable-owned',
     },
     'entitySubtypes': <String, Object?>{
@@ -1285,6 +1350,7 @@ const schemaClubDocumentSchema = <String, Object?>{
         'minLength': 1,
         'maxLength': 80,
       },
+      'description': 'Deprecated free-form organizer classification retained only for migration reads.',
       'x-catch-ownership': 'callable-owned',
     },
     'displayCategory': <String, Object?>{
@@ -1293,7 +1359,7 @@ const schemaClubDocumentSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 120,
-      'description': 'Reader-facing category label for web and discovery surfaces.',
+      'description': 'Deprecated reader-facing category label retained until publicCategoryLabel migration is complete.',
       'x-catch-ownership': 'callable-owned',
     },
     'cityName': <String, Object?>{
@@ -2035,4 +2101,9 @@ const schemaClubDocumentSchema = <String, Object?>{
       'description': 'Internal demo-operations command name used for cleanup and diagnostics.',
     },
   },
+  'x-legacy-tolerated-fields': <Object?>[
+    'entityKind',
+    'entitySubtypes',
+    'displayCategory',
+  ],
 };

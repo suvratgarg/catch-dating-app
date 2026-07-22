@@ -6,7 +6,6 @@ import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
@@ -101,6 +100,7 @@ void main() {
         signedInUid: null,
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value(null)),
+          fetchClubProvider('club-1').overrideWith((ref) async => buildClub()),
           eventDetailViewModelProvider(
             'event-1',
           ).overrideWith((ref) => const AsyncLoading()),
@@ -118,6 +118,37 @@ void main() {
       expect(find.byTooltip('Save event'), findsOneWidget);
       expect(find.text('Sign in to book this event'), findsOneWidget);
     });
+
+    testWidgets(
+      'initial event does not impersonate a guest while auth resolves',
+      (tester) async {
+        final event = buildEvent(meetingPoint: 'Marine Drive');
+
+        await pumpEventsTestApp(
+          tester,
+          EventDetailScreen(
+            enableMapNetworkTiles: false,
+            clubId: 'club-1',
+            eventId: 'event-1',
+            initialEvent: event,
+          ),
+          signedInUid: null,
+          overrides: [
+            uidProvider.overrideWithValue(const AsyncLoading<String?>()),
+            fetchClubProvider(
+              'club-1',
+            ).overrideWith((ref) async => buildClub()),
+            eventDetailViewModelProvider(
+              'event-1',
+            ).overrideWith((ref) => const AsyncLoading()),
+          ],
+        );
+
+        expect(find.byType(EventDetailBody), findsNothing);
+        expect(find.byType(CatchSkeleton), findsWidgets);
+        expect(find.text('Sign in to book this event'), findsNothing);
+      },
+    );
 
     testWidgets('renders the error state', (tester) async {
       await pumpEventsTestApp(
@@ -656,7 +687,17 @@ void main() {
               body: ListView(
                 children: [
                   EventDetailCta(
-                    event: buildEvent(capacityLimit: 1, bookedCount: 1),
+                    event: buildEvent(
+                      capacityLimit: 1,
+                      bookedCount: 1,
+                      eventPolicy: EventPolicyBundle.openEvent(
+                        capacityLimit: 1,
+                        basePriceInPaise: 0,
+                      ),
+                      cohortCounts: const {
+                        EventCohortIds.menInterestedInWomen: 1,
+                      },
+                    ),
                     clubId: 'club1',
                     userProfile: buildUser(uid: 'runner-9'),
                     participation: null,
@@ -1384,6 +1425,76 @@ void main() {
       expect(find.text('Reviews'), findsNothing);
       expect(find.text('Write a review'), findsNothing);
     });
+
+    testWidgets(
+      'route gates a non-null incomplete profile from booking and saving',
+      (tester) async {
+        final event = buildEvent();
+        final incompleteProfile = buildUser().copyWith(
+          phoneNumber: '',
+          interestedInGenders: const [],
+          profileComplete: false,
+        );
+        final router = GoRouter(
+          initialLocation: '/detail',
+          routes: [
+            GoRoute(
+              path: '/detail',
+              builder: (context, state) => EventDetailScreen(
+                enableMapNetworkTiles: false,
+                clubId: event.clubId,
+                eventId: event.id,
+              ),
+            ),
+            GoRoute(
+              path: Routes.onboardingScreen.path,
+              builder: (context, state) => const Text(
+                'Profile completion route',
+                textDirection: TextDirection.ltr,
+              ),
+            ),
+          ],
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+              clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+              eventDetailViewModelProvider(event.id).overrideWith(
+                (ref) => AsyncData(
+                  EventDetailViewModel(
+                    event: event,
+                    userProfile: incompleteProfile,
+                    reviews: const [],
+                    isAuthenticated: true,
+                    isHost: false,
+                    isSaved: false,
+                    participation: null,
+                  ),
+                ),
+              ),
+              paymentRepositoryProvider.overrideWithValue(
+                FakePaymentRepository(),
+              ),
+            ],
+            child: MaterialApp.router(
+              theme: AppTheme.light,
+              routerConfig: router,
+            ),
+          ),
+        );
+        await tester.pump();
+
+        expect(find.text('Complete booking profile'), findsOneWidget);
+        expect(find.byType(EventDetailCta), findsNothing);
+
+        await tester.tap(find.byTooltip('Save event'));
+        await pumpFeatureUi(tester);
+
+        expect(find.text('Profile completion route'), findsOneWidget);
+      },
+    );
 
     testWidgets('does not render a host bottom action footer', (tester) async {
       final event = buildEvent();

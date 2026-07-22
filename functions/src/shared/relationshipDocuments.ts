@@ -10,6 +10,7 @@ export interface EventParticipationSnapshot {
   data: {
     eventId: string;
     clubId: string;
+    organizerId?: string;
     uid: string;
     status: EventParticipationStatus;
     genderAtSignup?: string;
@@ -25,6 +26,67 @@ export interface EventParticipationSnapshot {
  */
 export function clubMembershipId(clubId: string, uid: string): string {
   return `${clubId}_${uid}`;
+}
+
+/**
+ * Builds the deterministic organizer relationship document id.
+ * Team memberships and follows use separate collections but share this stable
+ * identity so the migration can be replayed safely.
+ * @param {string} organizerId Organizer id.
+ * @param {string} uid User id.
+ * @return {string} Relationship document id.
+ */
+export function organizerRelationshipId(
+  organizerId: string,
+  uid: string
+): string {
+  return `${organizerId}_${uid}`;
+}
+
+/**
+ * Creates the canonical active organizer-team edge patch.
+ * @param {object} params Team edge fields.
+ * @param {string} params.organizerId Organizer id.
+ * @param {string} params.uid User id.
+ * @param {"owner" | "manager"} params.role Team role.
+ * @return {Record<string, unknown>} Firestore patch.
+ */
+export function activeOrganizerTeamMembershipPatch(params: {
+  organizerId: string;
+  uid: string;
+  role: "owner" | "manager";
+}) {
+  return {
+    organizerId: params.organizerId,
+    uid: params.uid,
+    role: params.role,
+    status: "active" as const,
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    removedAt: null,
+  };
+}
+
+/**
+ * Creates the canonical active organizer-follow edge patch.
+ * @param {object} params Follow edge fields.
+ * @param {string} params.organizerId Organizer id.
+ * @param {string} params.uid User id.
+ * @param {boolean=} params.pushNotificationsEnabled Push preference.
+ * @return {Record<string, unknown>} Firestore patch.
+ */
+export function activeOrganizerFollowPatch(params: {
+  organizerId: string;
+  uid: string;
+  pushNotificationsEnabled?: boolean;
+}) {
+  return {
+    organizerId: params.organizerId,
+    uid: params.uid,
+    status: "active" as const,
+    pushNotificationsEnabled: params.pushNotificationsEnabled ?? false,
+    followedAt: admin.firestore.FieldValue.serverTimestamp(),
+    unfollowedAt: null,
+  };
 }
 
 /**
@@ -177,6 +239,7 @@ export function eventParticipationPatch(params: {
   exists: boolean;
   eventId: string;
   clubId: string;
+  organizerId?: string;
   uid: string;
   status: EventParticipationStatus;
   genderAtSignup?: string;
@@ -187,6 +250,7 @@ export function eventParticipationPatch(params: {
   const patch: Record<string, unknown> = {
     eventId: params.eventId,
     clubId: params.clubId,
+    organizerId: params.organizerId ?? params.clubId,
     uid: params.uid,
     status: params.status,
     updatedAt: now,

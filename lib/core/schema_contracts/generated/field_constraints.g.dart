@@ -88,6 +88,12 @@ abstract final class CatchContractConstraints {
     minLength: 1,
   );
 
+  static const activityNotificationDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'activityNotificationDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+  );
+
   static const activityNotificationDocumentPostId = CatchContractFieldConstraints(
     path: 'activityNotificationDocument.postId',
     maxLength: 180,
@@ -130,7 +136,7 @@ abstract final class CatchContractConstraints {
   static const activityNotificationDocumentType = CatchContractFieldConstraints(
     path: 'activityNotificationDocument.type',
     required: true,
-    enumValues: <String>['message', 'match', 'eventReminder', 'eventSignup', 'waitlistPromotion', 'waitlistOffer', 'waitlistOfferExpiring', 'waitlistOfferExpired', 'eventCancelled', 'eventUpdated', 'clubUpdate'],
+    enumValues: <String>['message', 'match', 'eventReminder', 'eventSignup', 'waitlistPromotion', 'waitlistOffer', 'waitlistOfferExpiring', 'waitlistOfferExpired', 'eventCancelled', 'eventUpdated', 'clubUpdate', 'organizerUpdate'],
   );
 
   static const activityNotificationDocumentUid = CatchContractFieldConstraints(
@@ -221,6 +227,11 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const adminUpdateClubDetailsCallablePayloadFieldsOrganizerType = CatchContractFieldConstraints(
+    path: 'adminUpdateClubDetailsCallablePayload.fields.organizerType',
+    enumValues: <String>['club', 'community', 'individual', 'eventProducer', 'venue', 'brand'],
+  );
+
   static const adminUpdateClubDetailsCallablePayloadFieldsPhoneNumber = CatchContractFieldConstraints(
     path: 'adminUpdateClubDetailsCallablePayload.fields.phoneNumber',
     maxLength: 320,
@@ -239,6 +250,11 @@ abstract final class CatchContractConstraints {
   static const adminUpdateClubDetailsCallablePayloadFieldsProvenanceVerificationStatus = CatchContractFieldConstraints(
     path: 'adminUpdateClubDetailsCallablePayload.fields.provenance.verificationStatus',
     enumValues: <String>['unverified', 'sourceBacked', 'ownerVerified'],
+  );
+
+  static const adminUpdateClubDetailsCallablePayloadFieldsPublicCategoryLabel = CatchContractFieldConstraints(
+    path: 'adminUpdateClubDetailsCallablePayload.fields.publicCategoryLabel',
+    maxLength: 120,
   );
 
   static const adminUpdateClubDetailsCallablePayloadFieldsPublicPageCanonicalPath = CatchContractFieldConstraints(
@@ -384,6 +400,179 @@ abstract final class CatchContractConstraints {
 
   static const adminUpdateEventDetailsCallablePayloadReviewNote = CatchContractFieldConstraints(
     path: 'adminUpdateEventDetailsCallablePayload.reviewNote',
+    maxLength: 1000,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsAppVisibility = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.appVisibility',
+    enumValues: <String>['discoverable', 'hidden'],
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsArea = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.area',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsCityName = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.cityName',
+    maxLength: 120,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsCountryCode = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.countryCode',
+    pattern: '^[A-Z]{2}\$',
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsCountryName = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.countryName',
+    maxLength: 120,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsDescription = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.description',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsDisplayCategory = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.displayCategory',
+    maxLength: 120,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsEmail = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.email',
+    maxLength: 320,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsEntityKind = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.entityKind',
+    enumValues: <String>['club', 'venue', 'eventOrganizer', 'creatorCommunity', 'brand'],
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsImageUrl = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.imageUrl',
+    maxLength: 2048,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsInstagramHandle = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.instagramHandle',
+    maxLength: 320,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsLocation = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.location',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    pattern: '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsName = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.name',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsOrganizerType = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.organizerType',
+    enumValues: <String>['club', 'community', 'individual', 'eventProducer', 'venue', 'brand'],
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsPhoneNumber = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.phoneNumber',
+    maxLength: 320,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsProfileImageUrl = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.profileImageUrl',
+    maxLength: 2048,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsProvenanceSourceConfidence = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.provenance.sourceConfidence',
+    enumValues: <String>['seedOnly', 'low', 'medium', 'high', 'ownerVerified'],
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsProvenanceVerificationStatus = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.provenance.verificationStatus',
+    enumValues: <String>['unverified', 'sourceBacked', 'ownerVerified'],
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsPublicCategoryLabel = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.publicCategoryLabel',
+    maxLength: 120,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsPublicPageCanonicalPath = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.publicPage.canonicalPath',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsPublicPageCitySlug = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.publicPage.citySlug',
+    maxLength: 80,
+    minLength: 1,
+    pattern: '^[a-z0-9-]+\$',
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsPublicPagePublishStatus = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.publicPage.publishStatus',
+    enumValues: <String>['draft', 'qa', 'published', 'suppressed', 'removed'],
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsPublicPageSeoDescription = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.publicPage.seoDescription',
+    maxLength: 320,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsPublicPageSeoTitle = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.publicPage.seoTitle',
+    maxLength: 120,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsPublicPageSlug = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.publicPage.slug',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    pattern: '^[a-z0-9-]+\$',
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsPublicProfileHeadline = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.publicProfile.headline',
+    maxLength: 160,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsPublicProfileSourceSummary = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.publicProfile.sourceSummary',
+    maxLength: 800,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsPublicProfileSummary = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.publicProfile.summary',
+    maxLength: 800,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsRegionName = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.regionName',
+    maxLength: 120,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadReviewNote = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.reviewNote',
     maxLength: 1000,
   );
 
@@ -1041,6 +1230,29 @@ abstract final class CatchContractConstraints {
     maxLength: 240,
   );
 
+  static const clubDocumentOrganizerType = CatchContractFieldConstraints(
+    path: 'clubDocument.organizerType',
+    enumValues: <String>['club', 'community', 'individual', 'eventProducer', 'venue', 'brand'],
+  );
+
+  static const clubDocumentOrganizerTypeUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'clubDocument.organizerTypeUpdatedAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const clubDocumentOrganizerTypeUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'clubDocument.organizerTypeUpdatedAt._seconds',
+    required: true,
+  );
+
+  static const clubDocumentOrganizerTypeUpdatedByUid = CatchContractFieldConstraints(
+    path: 'clubDocument.organizerTypeUpdatedByUid',
+    maxLength: 180,
+    minLength: 1,
+  );
+
   static const clubDocumentOwnershipClaimedAtNanoseconds = CatchContractFieldConstraints(
     path: 'clubDocument.ownership.claimedAt._nanoseconds',
     required: true,
@@ -1126,6 +1338,11 @@ abstract final class CatchContractConstraints {
     path: 'clubDocument.provenance.verificationStatus',
     required: true,
     enumValues: <String>['unverified', 'sourceBacked', 'ownerVerified'],
+  );
+
+  static const clubDocumentPublicCategoryLabel = CatchContractFieldConstraints(
+    path: 'clubDocument.publicCategoryLabel',
+    maxLength: 120,
   );
 
   static const clubDocumentPublicPageCanonicalPath = CatchContractFieldConstraints(
@@ -1735,6 +1952,13 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const eventBroadcastDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventBroadcastDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
   static const eventBroadcastDocumentPushAcceptedCount = CatchContractFieldConstraints(
     path: 'eventBroadcastDocument.pushAcceptedCount',
     required: true,
@@ -2265,6 +2489,13 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const eventDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
   static const eventDocumentPace = CatchContractFieldConstraints(
     path: 'eventDocument.pace',
     required: true,
@@ -2548,6 +2779,13 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const eventInviteLinkDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventInviteLinkDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
   static const eventInviteLinkDocumentPaidCount = CatchContractFieldConstraints(
     path: 'eventInviteLinkDocument.paidCount',
     required: true,
@@ -2720,6 +2958,13 @@ abstract final class CatchContractConstraints {
     minLength: 1,
   );
 
+  static const eventParticipationDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventParticipationDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
   static const eventParticipationDocumentPaymentId = CatchContractFieldConstraints(
     path: 'eventParticipationDocument.paymentId',
     maxLength: 180,
@@ -2870,6 +3115,13 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9_-]+\$',
   );
 
+  static const eventPrivateAccessDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventPrivateAccessDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
   static const eventSafetyReportDocumentClubId = CatchContractFieldConstraints(
     path: 'eventSafetyReportDocument.clubId',
     maxLength: 180,
@@ -2906,6 +3158,13 @@ abstract final class CatchContractConstraints {
   static const eventSafetyReportDocumentNote = CatchContractFieldConstraints(
     path: 'eventSafetyReportDocument.note',
     maxLength: 500,
+  );
+
+  static const eventSafetyReportDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSafetyReportDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
   );
 
   static const eventSafetyReportDocumentReporterUserId = CatchContractFieldConstraints(
@@ -2998,6 +3257,13 @@ abstract final class CatchContractConstraints {
 
   static const eventSuccessArrivalMissionDocumentObserverUid = CatchContractFieldConstraints(
     path: 'eventSuccessArrivalMissionDocument.observerUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
+  static const eventSuccessArrivalMissionDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSuccessArrivalMissionDocument.organizerId',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -3133,6 +3399,13 @@ abstract final class CatchContractConstraints {
     path: 'eventSuccessAssignmentDocument.moduleId',
     required: true,
     enumValues: <String>['micro_pods', 'guided_rotations'],
+  );
+
+  static const eventSuccessAssignmentDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSuccessAssignmentDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
   );
 
   static const eventSuccessAssignmentDocumentPeerUids = CatchContractFieldConstraints(
@@ -3277,6 +3550,13 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const eventSuccessCompatibilityResponseDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSuccessCompatibilityResponseDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
   static const eventSuccessCompatibilityResponseDocumentScenario = CatchContractFieldConstraints(
     path: 'eventSuccessCompatibilityResponseDocument.scenario',
     maxLength: 120,
@@ -3355,6 +3635,13 @@ abstract final class CatchContractConstraints {
     required: true,
     minimum: 0,
     maximum: 100,
+  );
+
+  static const eventSuccessFeedbackDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSuccessFeedbackDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
   );
 
   static const eventSuccessFeedbackDocumentPrivateNote = CatchContractFieldConstraints(
@@ -3504,6 +3791,13 @@ abstract final class CatchContractConstraints {
   static const eventSuccessPlanDocumentHostGoal = CatchContractFieldConstraints(
     path: 'eventSuccessPlanDocument.hostGoal',
     maxLength: 300,
+    required: true,
+  );
+
+  static const eventSuccessPlanDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
     required: true,
   );
 
@@ -3682,6 +3976,13 @@ abstract final class CatchContractConstraints {
 
   static const eventSuccessPreferenceDocumentMicroPodsOptedOut = CatchContractFieldConstraints(
     path: 'eventSuccessPreferenceDocument.microPodsOptedOut',
+    required: true,
+  );
+
+  static const eventSuccessPreferenceDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSuccessPreferenceDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
     required: true,
   );
 
@@ -3983,6 +4284,13 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const eventSuccessScorecardDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSuccessScorecardDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
   static const eventSuccessScorecardDocumentSafetyIncidentCount = CatchContractFieldConstraints(
     path: 'eventSuccessScorecardDocument.safetyIncidentCount',
     required: true,
@@ -4063,6 +4371,13 @@ abstract final class CatchContractConstraints {
   static const eventSuccessWingmanRequestDocumentNote = CatchContractFieldConstraints(
     path: 'eventSuccessWingmanRequestDocument.note',
     maxLength: 240,
+  );
+
+  static const eventSuccessWingmanRequestDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventSuccessWingmanRequestDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
   );
 
   static const eventSuccessWingmanRequestDocumentRequesterUid = CatchContractFieldConstraints(
@@ -4216,6 +4531,13 @@ abstract final class CatchContractConstraints {
     path: 'eventWaitlistOfferDocument.offeredBy',
     maxLength: 180,
     minLength: 1,
+  );
+
+  static const eventWaitlistOfferDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventWaitlistOfferDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
   );
 
   static const eventWaitlistOfferDocumentScenario = CatchContractFieldConstraints(
@@ -4803,6 +5125,16 @@ abstract final class CatchContractConstraints {
     maxLength: 160,
   );
 
+  static const hostAnalyticsSnapshotDocumentResponseScopeOrganizerIds = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.scope.organizerIds',
+    required: true,
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseScopeOrganizerName = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.scope.organizerName',
+    maxLength: 160,
+  );
+
   static const hostAnalyticsSnapshotDocumentResponseSummaryCards = CatchContractFieldConstraints(
     path: 'hostAnalyticsSnapshotDocument.response.summaryCards',
     required: true,
@@ -5079,6 +5411,13 @@ abstract final class CatchContractConstraints {
     minLength: 1,
   );
 
+  static const matchDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'matchDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
   static const matchDocumentParticipantIds = CatchContractFieldConstraints(
     path: 'matchDocument.participantIds',
     required: true,
@@ -5234,6 +5573,865 @@ abstract final class CatchContractConstraints {
   static const onboardingDraftDocumentStep = CatchContractFieldConstraints(
     path: 'onboardingDraftDocument.step',
     required: true,
+    minimum: 0,
+  );
+
+  static const organizerClaimRequestDocumentBusinessEmail = CatchContractFieldConstraints(
+    path: 'organizerClaimRequestDocument.businessEmail',
+    maxLength: 320,
+  );
+
+  static const organizerClaimRequestDocumentBusinessPhone = CatchContractFieldConstraints(
+    path: 'organizerClaimRequestDocument.businessPhone',
+    maxLength: 32,
+  );
+
+  static const organizerClaimRequestDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimRequestDocument.createdAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimRequestDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimRequestDocument.createdAt._seconds',
+    required: true,
+  );
+
+  static const organizerClaimRequestDocumentDecidedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimRequestDocument.decidedAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimRequestDocumentDecidedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimRequestDocument.decidedAt._seconds',
+    required: true,
+  );
+
+  static const organizerClaimRequestDocumentDecidedByUid = CatchContractFieldConstraints(
+    path: 'organizerClaimRequestDocument.decidedByUid',
+    maxLength: 180,
+    minLength: 1,
+  );
+
+  static const organizerClaimRequestDocumentDecisionReason = CatchContractFieldConstraints(
+    path: 'organizerClaimRequestDocument.decisionReason',
+    maxLength: 1000,
+  );
+
+  static const organizerClaimRequestDocumentMessage = CatchContractFieldConstraints(
+    path: 'organizerClaimRequestDocument.message',
+    maxLength: 1000,
+  );
+
+  static const organizerClaimRequestDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerClaimRequestDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerClaimRequestDocumentPreviousRequestId = CatchContractFieldConstraints(
+    path: 'organizerClaimRequestDocument.previousRequestId',
+    maxLength: 180,
+    minLength: 1,
+  );
+
+  static const organizerClaimRequestDocumentProofUrls = CatchContractFieldConstraints(
+    path: 'organizerClaimRequestDocument.proofUrls',
+    required: true,
+  );
+
+  static const organizerClaimRequestDocumentRequesterName = CatchContractFieldConstraints(
+    path: 'organizerClaimRequestDocument.requesterName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerClaimRequestDocumentRequesterRole = CatchContractFieldConstraints(
+    path: 'organizerClaimRequestDocument.requesterRole',
+    required: true,
+    enumValues: <String>['owner', 'founder', 'manager', 'marketer', 'venueManager', 'other'],
+  );
+
+  static const organizerClaimRequestDocumentRequesterUid = CatchContractFieldConstraints(
+    path: 'organizerClaimRequestDocument.requesterUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerClaimRequestDocumentRequestId = CatchContractFieldConstraints(
+    path: 'organizerClaimRequestDocument.requestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerClaimRequestDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerClaimRequestDocument.status',
+    required: true,
+    enumValues: <String>['pending', 'approved', 'rejected', 'withdrawn', 'superseded'],
+  );
+
+  static const organizerClaimRequestDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimRequestDocument.updatedAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimRequestDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimRequestDocument.updatedAt._seconds',
+    required: true,
+  );
+
+  static const organizerDocumentAdminSearchSortKey = CatchContractFieldConstraints(
+    path: 'organizerDocument.adminSearch.sortKey',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    pattern: '^[a-z0-9-]+(?:-[a-z0-9-]+)*\$',
+  );
+
+  static const organizerDocumentAdminSearchTokens = CatchContractFieldConstraints(
+    path: 'organizerDocument.adminSearch.tokens',
+    required: true,
+  );
+
+  static const organizerDocumentAdminSearchUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.adminSearch.updatedAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerDocumentAdminSearchUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.adminSearch.updatedAt._seconds',
+    required: true,
+  );
+
+  static const organizerDocumentAdminSearchUpdatedBySource = CatchContractFieldConstraints(
+    path: 'organizerDocument.adminSearch.updatedBySource',
+    required: true,
+    enumValues: <String>['adminUpdateClubDetails', 'adminSetClubIndexStatus', 'adminOrganizerSearchBackfill'],
+  );
+
+  static const organizerDocumentAppVisibility = CatchContractFieldConstraints(
+    path: 'organizerDocument.appVisibility',
+    enumValues: <String>['discoverable', 'hidden'],
+  );
+
+  static const organizerDocumentArchived = CatchContractFieldConstraints(
+    path: 'organizerDocument.archived',
+    required: true,
+  );
+
+  static const organizerDocumentArchivedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.archivedAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerDocumentArchivedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.archivedAt._seconds',
+    required: true,
+  );
+
+  static const organizerDocumentArchiveReason = CatchContractFieldConstraints(
+    path: 'organizerDocument.archiveReason',
+    maxLength: 500,
+  );
+
+  static const organizerDocumentArea = CatchContractFieldConstraints(
+    path: 'organizerDocument.area',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerDocumentCityName = CatchContractFieldConstraints(
+    path: 'organizerDocument.cityName',
+    maxLength: 120,
+  );
+
+  static const organizerDocumentClaimClaimHref = CatchContractFieldConstraints(
+    path: 'organizerDocument.claim.claimHref',
+    maxLength: 240,
+  );
+
+  static const organizerDocumentClaimLastClaimRequestId = CatchContractFieldConstraints(
+    path: 'organizerDocument.claim.lastClaimRequestId',
+    maxLength: 180,
+    minLength: 1,
+  );
+
+  static const organizerDocumentClaimState = CatchContractFieldConstraints(
+    path: 'organizerDocument.claim.state',
+    required: true,
+    enumValues: <String>['unclaimed', 'claimPending', 'claimed', 'verified', 'suppressed'],
+  );
+
+  static const organizerDocumentCountryCode = CatchContractFieldConstraints(
+    path: 'organizerDocument.countryCode',
+    pattern: '^[A-Z]{2}\$',
+  );
+
+  static const organizerDocumentCountryName = CatchContractFieldConstraints(
+    path: 'organizerDocument.countryName',
+    maxLength: 120,
+  );
+
+  static const organizerDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.createdAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.createdAt._seconds',
+    required: true,
+  );
+
+  static const organizerDocumentDemoOpsCommand = CatchContractFieldConstraints(
+    path: 'organizerDocument.demoOpsCommand',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerDocumentDemoOpsId = CatchContractFieldConstraints(
+    path: 'organizerDocument.demoOpsId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerDocumentDescription = CatchContractFieldConstraints(
+    path: 'organizerDocument.description',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerDocumentDisplayCategory = CatchContractFieldConstraints(
+    path: 'organizerDocument.displayCategory',
+    maxLength: 120,
+  );
+
+  static const organizerDocumentEmail = CatchContractFieldConstraints(
+    path: 'organizerDocument.email',
+    maxLength: 320,
+  );
+
+  static const organizerDocumentEntityKind = CatchContractFieldConstraints(
+    path: 'organizerDocument.entityKind',
+    enumValues: <String>['club', 'venue', 'eventOrganizer', 'creatorCommunity', 'brand'],
+  );
+
+  static const organizerDocumentFollowerCount = CatchContractFieldConstraints(
+    path: 'organizerDocument.followerCount',
+    required: true,
+    minimum: 0,
+  );
+
+  static const organizerDocumentHostAvatarUrl = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostAvatarUrl',
+    maxLength: 2048,
+  );
+
+  static const organizerDocumentHostDefaultsEventPolicyAdmissionPreset = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventPolicy.admissionPreset',
+    enumValues: <String>['openCapacity', 'inviteOnly', 'balancedSingles', 'fixedCohortCaps'],
+  );
+
+  static const organizerDocumentHostDefaultsEventPolicyCancellationPolicyId = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventPolicy.cancellationPolicyId',
+    enumValues: <String>['flexible', 'standard', 'strict'],
+  );
+
+  static const organizerDocumentHostDefaultsEventPolicyDynamicPricingMaxInPaise = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventPolicy.dynamicPricingMaxInPaise',
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const organizerDocumentHostDefaultsEventPolicyDynamicPricingStepInPaise = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventPolicy.dynamicPricingStepInPaise',
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const organizerDocumentHostDefaultsEventPolicyMaxAge = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventPolicy.maxAge',
+    minimum: 0,
+    maximum: 120,
+  );
+
+  static const organizerDocumentHostDefaultsEventPolicyMaxMen = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventPolicy.maxMen',
+    minimum: 0,
+  );
+
+  static const organizerDocumentHostDefaultsEventPolicyMaxWomen = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventPolicy.maxWomen',
+    minimum: 0,
+  );
+
+  static const organizerDocumentHostDefaultsEventPolicyMinAge = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventPolicy.minAge',
+    minimum: 0,
+    maximum: 120,
+  );
+
+  static const organizerDocumentHostDefaultsEventSuccessAttendeePrompt = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.attendeePrompt',
+    maxLength: 300,
+  );
+
+  static const organizerDocumentHostDefaultsEventSuccessHostGoal = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.hostGoal',
+    maxLength: 300,
+  );
+
+  static const organizerDocumentHostDefaultsEventSuccessPlaybookId = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.playbookId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerDocumentHostDefaultsEventSuccessQuestionnaireConfigCustomTitle = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.questionnaireConfig.customTitle',
+    maxLength: 80,
+  );
+
+  static const organizerDocumentHostDefaultsEventSuccessQuestionnaireConfigTemplateId = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.questionnaireConfig.templateId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerDocumentHostDefaultsEventSuccessStructureConfigMaxPairMeetings = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.structureConfig.maxPairMeetings',
+    minimum: 1,
+    maximum: 10,
+  );
+
+  static const organizerDocumentHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds',
+    required: true,
+    minimum: 0,
+    maximum: 60,
+  );
+
+  static const organizerDocumentHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes',
+    minimum: 5,
+    maximum: 180,
+  );
+
+  static const organizerDocumentHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy',
+    enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const organizerDocumentHostDefaultsEventSuccessStructureConfigUnitCount = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.structureConfig.unitCount',
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const organizerDocumentHostDefaultsEventSuccessStructureConfigUnitKind = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.structureConfig.unitKind',
+    required: true,
+    enumValues: <String>['wholeGroup', 'pods', 'pairs', 'teams', 'tables'],
+  );
+
+  static const organizerDocumentHostDefaultsEventSuccessStructureConfigUnitSize = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.eventSuccess.structureConfig.unitSize',
+    required: true,
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const organizerDocumentHostDefaultsPrimaryActivityKind = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostDefaults.primaryActivityKind',
+    enumValues: <String>['socialRun', 'running', 'walking', 'pickleball', 'padel', 'tennis', 'badminton', 'cycling', 'spinClass', 'yoga', 'strengthTraining', 'pubQuiz', 'barCrawl', 'dinner', 'singlesMixer', 'openActivity'],
+  );
+
+  static const organizerDocumentHostName = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostName',
+    maxLength: 120,
+  );
+
+  static const organizerDocumentHostProfiles = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostProfiles',
+    required: true,
+  );
+
+  static const organizerDocumentHostUserId = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostUserId',
+    maxLength: 180,
+    minLength: 1,
+  );
+
+  static const organizerDocumentHostUserIds = CatchContractFieldConstraints(
+    path: 'organizerDocument.hostUserIds',
+    required: true,
+  );
+
+  static const organizerDocumentImageUrl = CatchContractFieldConstraints(
+    path: 'organizerDocument.imageUrl',
+    maxLength: 2048,
+  );
+
+  static const organizerDocumentInstagramHandle = CatchContractFieldConstraints(
+    path: 'organizerDocument.instagramHandle',
+    maxLength: 320,
+  );
+
+  static const organizerDocumentLocation = CatchContractFieldConstraints(
+    path: 'organizerDocument.location',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    pattern: '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
+  );
+
+  static const organizerDocumentLocationCityId = CatchContractFieldConstraints(
+    path: 'organizerDocument.locationCityId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    pattern: '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
+  );
+
+  static const organizerDocumentLocationMarketId = CatchContractFieldConstraints(
+    path: 'organizerDocument.locationMarketId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    pattern: '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
+  );
+
+  static const organizerDocumentLogoPhotoCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.logoPhoto.createdAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerDocumentLogoPhotoCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.logoPhoto.createdAt._seconds',
+    required: true,
+  );
+
+  static const organizerDocumentLogoPhotoId = CatchContractFieldConstraints(
+    path: 'organizerDocument.logoPhoto.id',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const organizerDocumentLogoPhotoModerationReason = CatchContractFieldConstraints(
+    path: 'organizerDocument.logoPhoto.moderation.reason',
+    maxLength: 240,
+  );
+
+  static const organizerDocumentLogoPhotoModerationReviewedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.logoPhoto.moderation.reviewedAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerDocumentLogoPhotoModerationReviewedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.logoPhoto.moderation.reviewedAt._seconds',
+    required: true,
+  );
+
+  static const organizerDocumentLogoPhotoModerationStatus = CatchContractFieldConstraints(
+    path: 'organizerDocument.logoPhoto.moderation.status',
+    required: true,
+    enumValues: <String>['pending', 'approved', 'rejected'],
+  );
+
+  static const organizerDocumentLogoPhotoPosition = CatchContractFieldConstraints(
+    path: 'organizerDocument.logoPhoto.position',
+    required: true,
+    minimum: 0,
+    maximum: 19,
+  );
+
+  static const organizerDocumentLogoPhotoStoragePath = CatchContractFieldConstraints(
+    path: 'organizerDocument.logoPhoto.storagePath',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    pattern: '^[^/\\u0000][^\\u0000]*\$',
+  );
+
+  static const organizerDocumentLogoPhotoThumbnailStoragePath = CatchContractFieldConstraints(
+    path: 'organizerDocument.logoPhoto.thumbnailStoragePath',
+    maxLength: 512,
+    minLength: 1,
+    pattern: '^[^/\\u0000][^\\u0000]*\$',
+  );
+
+  static const organizerDocumentLogoPhotoThumbnailUrl = CatchContractFieldConstraints(
+    path: 'organizerDocument.logoPhoto.thumbnailUrl',
+    maxLength: 2048,
+  );
+
+  static const organizerDocumentLogoPhotoUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.logoPhoto.updatedAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerDocumentLogoPhotoUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.logoPhoto.updatedAt._seconds',
+    required: true,
+  );
+
+  static const organizerDocumentLogoPhotoUrl = CatchContractFieldConstraints(
+    path: 'organizerDocument.logoPhoto.url',
+    maxLength: 2048,
+    required: true,
+  );
+
+  static const organizerDocumentMemberCount = CatchContractFieldConstraints(
+    path: 'organizerDocument.memberCount',
+    minimum: 0,
+  );
+
+  static const organizerDocumentName = CatchContractFieldConstraints(
+    path: 'organizerDocument.name',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerDocumentNextEventAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.nextEventAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerDocumentNextEventAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.nextEventAt._seconds',
+    required: true,
+  );
+
+  static const organizerDocumentNextEventLabel = CatchContractFieldConstraints(
+    path: 'organizerDocument.nextEventLabel',
+    maxLength: 240,
+  );
+
+  static const organizerDocumentOrganizerPhotos = CatchContractFieldConstraints(
+    path: 'organizerDocument.organizerPhotos',
+    required: true,
+  );
+
+  static const organizerDocumentOrganizerType = CatchContractFieldConstraints(
+    path: 'organizerDocument.organizerType',
+    required: true,
+    enumValues: <String>['club', 'community', 'individual', 'eventProducer', 'venue', 'brand'],
+  );
+
+  static const organizerDocumentOrganizerTypeUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.organizerTypeUpdatedAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerDocumentOrganizerTypeUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.organizerTypeUpdatedAt._seconds',
+    required: true,
+  );
+
+  static const organizerDocumentOrganizerTypeUpdatedByUid = CatchContractFieldConstraints(
+    path: 'organizerDocument.organizerTypeUpdatedByUid',
+    maxLength: 180,
+    minLength: 1,
+  );
+
+  static const organizerDocumentOwnershipClaimedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.ownership.claimedAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerDocumentOwnershipClaimedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.ownership.claimedAt._seconds',
+    required: true,
+  );
+
+  static const organizerDocumentOwnershipClaimedByUid = CatchContractFieldConstraints(
+    path: 'organizerDocument.ownership.claimedByUid',
+    maxLength: 180,
+    minLength: 1,
+  );
+
+  static const organizerDocumentOwnershipHostUserIds = CatchContractFieldConstraints(
+    path: 'organizerDocument.ownership.hostUserIds',
+    required: true,
+  );
+
+  static const organizerDocumentOwnershipOwnerUserId = CatchContractFieldConstraints(
+    path: 'organizerDocument.ownership.ownerUserId',
+    maxLength: 180,
+    minLength: 1,
+  );
+
+  static const organizerDocumentOwnershipPrimaryHostUserId = CatchContractFieldConstraints(
+    path: 'organizerDocument.ownership.primaryHostUserId',
+    maxLength: 180,
+    minLength: 1,
+  );
+
+  static const organizerDocumentOwnershipState = CatchContractFieldConstraints(
+    path: 'organizerDocument.ownership.state',
+    required: true,
+    enumValues: <String>['programmatic', 'userCreated', 'claimed', 'transferred'],
+  );
+
+  static const organizerDocumentOwnerUserId = CatchContractFieldConstraints(
+    path: 'organizerDocument.ownerUserId',
+    maxLength: 180,
+    minLength: 1,
+  );
+
+  static const organizerDocumentPhoneNumber = CatchContractFieldConstraints(
+    path: 'organizerDocument.phoneNumber',
+    maxLength: 320,
+  );
+
+  static const organizerDocumentProfileImageUrl = CatchContractFieldConstraints(
+    path: 'organizerDocument.profileImageUrl',
+    maxLength: 2048,
+  );
+
+  static const organizerDocumentProvenanceLastVerifiedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.provenance.lastVerifiedAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerDocumentProvenanceLastVerifiedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.provenance.lastVerifiedAt._seconds',
+    required: true,
+  );
+
+  static const organizerDocumentProvenanceOrigin = CatchContractFieldConstraints(
+    path: 'organizerDocument.provenance.origin',
+    required: true,
+    enumValues: <String>['userCreated', 'scraper', 'adminSeed', 'import'],
+  );
+
+  static const organizerDocumentProvenanceSourceConfidence = CatchContractFieldConstraints(
+    path: 'organizerDocument.provenance.sourceConfidence',
+    required: true,
+    enumValues: <String>['seedOnly', 'low', 'medium', 'high', 'ownerVerified'],
+  );
+
+  static const organizerDocumentProvenanceVerificationStatus = CatchContractFieldConstraints(
+    path: 'organizerDocument.provenance.verificationStatus',
+    required: true,
+    enumValues: <String>['unverified', 'sourceBacked', 'ownerVerified'],
+  );
+
+  static const organizerDocumentPublicCategoryLabel = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicCategoryLabel',
+    maxLength: 120,
+  );
+
+  static const organizerDocumentPublicPageCanonicalPath = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicPage.canonicalPath',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerDocumentPublicPageCitySlug = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicPage.citySlug',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    pattern: '^[a-z0-9-]+\$',
+  );
+
+  static const organizerDocumentPublicPageIndexReviewChecklistCadenceVerified = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicPage.indexReview.checklist.cadenceVerified',
+    required: true,
+  );
+
+  static const organizerDocumentPublicPageIndexReviewChecklistMediaRightsVerified = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicPage.indexReview.checklist.mediaRightsVerified',
+    required: true,
+  );
+
+  static const organizerDocumentPublicPageIndexReviewChecklistOwnerContactVerified = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicPage.indexReview.checklist.ownerContactVerified',
+    required: true,
+  );
+
+  static const organizerDocumentPublicPageIndexReviewChecklistSourceEvidenceVerified = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicPage.indexReview.checklist.sourceEvidenceVerified',
+    required: true,
+  );
+
+  static const organizerDocumentPublicPageIndexReviewIndexStatus = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicPage.indexReview.indexStatus',
+    required: true,
+    enumValues: <String>['noindex', 'indexReady', 'indexed'],
+  );
+
+  static const organizerDocumentPublicPageIndexReviewReviewedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicPage.indexReview.reviewedAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerDocumentPublicPageIndexReviewReviewedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicPage.indexReview.reviewedAt._seconds',
+    required: true,
+  );
+
+  static const organizerDocumentPublicPageIndexReviewReviewedByUid = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicPage.indexReview.reviewedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerDocumentPublicPageIndexReviewReviewNote = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicPage.indexReview.reviewNote',
+    maxLength: 1000,
+  );
+
+  static const organizerDocumentPublicPageIndexStatus = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicPage.indexStatus',
+    required: true,
+    enumValues: <String>['noindex', 'indexReady', 'indexed'],
+  );
+
+  static const organizerDocumentPublicPageLastRenderedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicPage.lastRenderedAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerDocumentPublicPageLastRenderedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicPage.lastRenderedAt._seconds',
+    required: true,
+  );
+
+  static const organizerDocumentPublicPagePublishStatus = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicPage.publishStatus',
+    required: true,
+    enumValues: <String>['draft', 'qa', 'published', 'suppressed', 'removed'],
+  );
+
+  static const organizerDocumentPublicPageRobots = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicPage.robots',
+    required: true,
+    enumValues: <String>['noindex, follow', 'index, follow'],
+  );
+
+  static const organizerDocumentPublicPageSeoDescription = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicPage.seoDescription',
+    maxLength: 320,
+  );
+
+  static const organizerDocumentPublicPageSeoTitle = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicPage.seoTitle',
+    maxLength: 120,
+  );
+
+  static const organizerDocumentPublicPageSlug = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicPage.slug',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    pattern: '^[a-z0-9-]+\$',
+  );
+
+  static const organizerDocumentPublicProfileHeadline = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicProfile.headline',
+    maxLength: 160,
+  );
+
+  static const organizerDocumentPublicProfileSourceSummary = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicProfile.sourceSummary',
+    maxLength: 800,
+  );
+
+  static const organizerDocumentPublicProfileSummary = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicProfile.summary',
+    maxLength: 800,
+  );
+
+  static const organizerDocumentRating = CatchContractFieldConstraints(
+    path: 'organizerDocument.rating',
+    required: true,
+    minimum: 0,
+    maximum: 5,
+  );
+
+  static const organizerDocumentRegionName = CatchContractFieldConstraints(
+    path: 'organizerDocument.regionName',
+    maxLength: 120,
+  );
+
+  static const organizerDocumentReviewCount = CatchContractFieldConstraints(
+    path: 'organizerDocument.reviewCount',
+    required: true,
+    minimum: 0,
+  );
+
+  static const organizerDocumentScenario = CatchContractFieldConstraints(
+    path: 'organizerDocument.scenario',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerDocumentSeedPrefix = CatchContractFieldConstraints(
+    path: 'organizerDocument.seedPrefix',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerDocument.status',
+    required: true,
+    enumValues: <String>['active', 'archived'],
+  );
+
+  static const organizerDocumentTags = CatchContractFieldConstraints(
+    path: 'organizerDocument.tags',
+    required: true,
+  );
+
+  static const organizerDocumentVerifiedReviewCount = CatchContractFieldConstraints(
+    path: 'organizerDocument.verifiedReviewCount',
     minimum: 0,
   );
 
@@ -5462,6 +6660,55 @@ abstract final class CatchContractConstraints {
 
   static const organizerEventLocationResolutionDecisionDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
     path: 'organizerEventLocationResolutionDecisionDocument.updatedAt._seconds',
+    required: true,
+  );
+
+  static const organizerFollowDocumentFollowedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFollowDocument.followedAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFollowDocumentFollowedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFollowDocument.followedAt._seconds',
+    required: true,
+  );
+
+  static const organizerFollowDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFollowDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerFollowDocumentPushNotificationsEnabled = CatchContractFieldConstraints(
+    path: 'organizerFollowDocument.pushNotificationsEnabled',
+    required: true,
+  );
+
+  static const organizerFollowDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerFollowDocument.status',
+    required: true,
+    enumValues: <String>['active', 'inactive'],
+  );
+
+  static const organizerFollowDocumentUid = CatchContractFieldConstraints(
+    path: 'organizerFollowDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerFollowDocumentUnfollowedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFollowDocument.unfollowedAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFollowDocumentUnfollowedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFollowDocument.unfollowedAt._seconds',
     required: true,
   );
 
@@ -5860,6 +7107,150 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const organizerPostDocumentAudience = CatchContractFieldConstraints(
+    path: 'organizerPostDocument.audience',
+    required: true,
+    enumValues: <String>['followers'],
+  );
+
+  static const organizerPostDocumentAuthorUid = CatchContractFieldConstraints(
+    path: 'organizerPostDocument.authorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerPostDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerPostDocument.createdAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerPostDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerPostDocument.createdAt._seconds',
+    required: true,
+  );
+
+  static const organizerPostDocumentEventId = CatchContractFieldConstraints(
+    path: 'organizerPostDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+  );
+
+  static const organizerPostDocumentPhotoPath = CatchContractFieldConstraints(
+    path: 'organizerPostDocument.photoPath',
+    maxLength: 500,
+    minLength: 1,
+  );
+
+  static const organizerPostDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerPostDocument.status',
+    required: true,
+    enumValues: <String>['active', 'removed'],
+  );
+
+  static const organizerPostDocumentText = CatchContractFieldConstraints(
+    path: 'organizerPostDocument.text',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerScheduleLockDocumentEndTimeMillis = CatchContractFieldConstraints(
+    path: 'organizerScheduleLockDocument.endTimeMillis',
+    required: true,
+    minimum: 0,
+  );
+
+  static const organizerScheduleLockDocumentEventId = CatchContractFieldConstraints(
+    path: 'organizerScheduleLockDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerScheduleLockDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerScheduleLockDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerScheduleLockDocumentOwnerId = CatchContractFieldConstraints(
+    path: 'organizerScheduleLockDocument.ownerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerScheduleLockDocumentOwnerType = CatchContractFieldConstraints(
+    path: 'organizerScheduleLockDocument.ownerType',
+    required: true,
+  );
+
+  static const organizerScheduleLockDocumentSlot = CatchContractFieldConstraints(
+    path: 'organizerScheduleLockDocument.slot',
+    required: true,
+    minimum: 0,
+  );
+
+  static const organizerScheduleLockDocumentStartTimeMillis = CatchContractFieldConstraints(
+    path: 'organizerScheduleLockDocument.startTimeMillis',
+    required: true,
+    minimum: 0,
+  );
+
+  static const organizerTeamMembershipDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerTeamMembershipDocument.createdAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerTeamMembershipDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerTeamMembershipDocument.createdAt._seconds',
+    required: true,
+  );
+
+  static const organizerTeamMembershipDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerTeamMembershipDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
+  static const organizerTeamMembershipDocumentRemovedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerTeamMembershipDocument.removedAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerTeamMembershipDocumentRemovedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerTeamMembershipDocument.removedAt._seconds',
+    required: true,
+  );
+
+  static const organizerTeamMembershipDocumentRole = CatchContractFieldConstraints(
+    path: 'organizerTeamMembershipDocument.role',
+    required: true,
+    enumValues: <String>['owner', 'manager'],
+  );
+
+  static const organizerTeamMembershipDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerTeamMembershipDocument.status',
+    required: true,
+    enumValues: <String>['active', 'removed'],
+  );
+
+  static const organizerTeamMembershipDocumentUid = CatchContractFieldConstraints(
+    path: 'organizerTeamMembershipDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
   static const paymentDocumentAmount = CatchContractFieldConstraints(
     path: 'paymentDocument.amount',
     required: true,
@@ -6198,13 +7589,13 @@ abstract final class CatchContractConstraints {
   static const publicRouteReservationDocumentLastVerifiedSource = CatchContractFieldConstraints(
     path: 'publicRouteReservationDocument.lastVerifiedSource',
     required: true,
-    enumValues: <String>['adminUpdateClubDetails', 'adminSetClubIndexStatus'],
+    enumValues: <String>['adminUpdateClubDetails', 'adminSetClubIndexStatus', 'adminUpdateOrganizerDetails', 'adminSetOrganizerIndexStatus', 'clubsToOrganizersMigration'],
   );
 
   static const publicRouteReservationDocumentOwnerCollection = CatchContractFieldConstraints(
     path: 'publicRouteReservationDocument.ownerCollection',
     required: true,
-    enumValues: <String>['clubs'],
+    enumValues: <String>['clubs', 'organizers'],
   );
 
   static const publicRouteReservationDocumentOwnerId = CatchContractFieldConstraints(
@@ -6217,7 +7608,7 @@ abstract final class CatchContractConstraints {
   static const publicRouteReservationDocumentOwnerType = CatchContractFieldConstraints(
     path: 'publicRouteReservationDocument.ownerType',
     required: true,
-    enumValues: <String>['club'],
+    enumValues: <String>['club', 'organizer'],
   );
 
   static const publicRouteReservationDocumentReleasedAtNanoseconds = CatchContractFieldConstraints(
@@ -6290,7 +7681,7 @@ abstract final class CatchContractConstraints {
     maxLength: 260,
     minLength: 1,
     required: true,
-    pattern: '^clubs/[^/]+\$',
+    pattern: '^(clubs|organizers)/[^/]+\$',
   );
 
   static const publicRouteReservationDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
@@ -6519,6 +7910,13 @@ abstract final class CatchContractConstraints {
   static const reviewDocumentModerationStatus = CatchContractFieldConstraints(
     path: 'reviewDocument.moderationStatus',
     enumValues: <String>['published', 'pending', 'rejected'],
+  );
+
+  static const reviewDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'reviewDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
   );
 
   static const reviewDocumentOwnerResponseCreatedAtNanoseconds = CatchContractFieldConstraints(
@@ -7108,6 +8506,11 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const updateClubPatchOrganizerType = CatchContractFieldConstraints(
+    path: 'updateClubPatch.organizerType',
+    enumValues: <String>['club', 'community', 'individual', 'eventProducer', 'venue', 'brand'],
+  );
+
   static const updateClubPatchPhoneNumber = CatchContractFieldConstraints(
     path: 'updateClubPatch.phoneNumber',
     maxLength: 320,
@@ -7116,6 +8519,293 @@ abstract final class CatchContractConstraints {
   static const updateClubPatchProfileImageUrl = CatchContractFieldConstraints(
     path: 'updateClubPatch.profileImageUrl',
     maxLength: 320,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsArea = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.area',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsDescription = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.description',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsEmail = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.email',
+    maxLength: 320,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostAvatarUrl = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostAvatarUrl',
+    maxLength: 320,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyAdmissionPreset = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.admissionPreset',
+    enumValues: <String>['openCapacity', 'inviteOnly', 'balancedSingles', 'fixedCohortCaps'],
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyCancellationPolicyId = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.cancellationPolicyId',
+    enumValues: <String>['flexible', 'standard', 'strict'],
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyDynamicPricingMaxInPaise = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.dynamicPricingMaxInPaise',
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyDynamicPricingStepInPaise = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.dynamicPricingStepInPaise',
+    minimum: 0,
+    maximum: 100000000,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyMaxAge = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.maxAge',
+    minimum: 0,
+    maximum: 120,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyMaxMen = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.maxMen',
+    minimum: 0,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyMaxWomen = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.maxWomen',
+    minimum: 0,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyMinAge = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.minAge',
+    minimum: 0,
+    maximum: 120,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessAttendeePrompt = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.attendeePrompt',
+    maxLength: 300,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessHostGoal = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.hostGoal',
+    maxLength: 300,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessPlaybookId = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.playbookId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessQuestionnaireConfigCustomTitle = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.questionnaireConfig.customTitle',
+    maxLength: 80,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessQuestionnaireConfigTemplateId = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.questionnaireConfig.templateId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigMaxPairMeetings = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.maxPairMeetings',
+    minimum: 1,
+    maximum: 10,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds',
+    required: true,
+    minimum: 0,
+    maximum: 60,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes',
+    minimum: 5,
+    maximum: 180,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy',
+    enumValues: <String>['avoid', 'allowWhenExhausted'],
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigUnitCount = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.unitCount',
+    minimum: 1,
+    maximum: 200,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigUnitKind = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.unitKind',
+    required: true,
+    enumValues: <String>['wholeGroup', 'pods', 'pairs', 'teams', 'tables'],
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigUnitSize = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.unitSize',
+    required: true,
+    minimum: 1,
+    maximum: 1000,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostDefaultsPrimaryActivityKind = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostDefaults.primaryActivityKind',
+    enumValues: <String>['socialRun', 'running', 'walking', 'pickleball', 'padel', 'tennis', 'badminton', 'cycling', 'spinClass', 'yoga', 'strengthTraining', 'pubQuiz', 'barCrawl', 'dinner', 'singlesMixer', 'openActivity'],
+  );
+
+  static const updateOrganizerCallablePayloadFieldsHostName = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.hostName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsImageUrl = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.imageUrl',
+    maxLength: 320,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsInstagramHandle = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.instagramHandle',
+    maxLength: 320,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsLocation = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.location',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    pattern: '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
+  );
+
+  static const updateOrganizerCallablePayloadFieldsLogoPhotoCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.logoPhoto.createdAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsLogoPhotoCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.logoPhoto.createdAt._seconds',
+    required: true,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsLogoPhotoId = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.logoPhoto.id',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const updateOrganizerCallablePayloadFieldsLogoPhotoModerationReason = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.logoPhoto.moderation.reason',
+    maxLength: 240,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsLogoPhotoModerationReviewedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.logoPhoto.moderation.reviewedAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsLogoPhotoModerationReviewedAtSeconds = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.logoPhoto.moderation.reviewedAt._seconds',
+    required: true,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsLogoPhotoModerationStatus = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.logoPhoto.moderation.status',
+    required: true,
+    enumValues: <String>['pending', 'approved', 'rejected'],
+  );
+
+  static const updateOrganizerCallablePayloadFieldsLogoPhotoPosition = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.logoPhoto.position',
+    required: true,
+    minimum: 0,
+    maximum: 19,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsLogoPhotoStoragePath = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.logoPhoto.storagePath',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    pattern: '^[^/\\u0000][^\\u0000]*\$',
+  );
+
+  static const updateOrganizerCallablePayloadFieldsLogoPhotoThumbnailStoragePath = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.logoPhoto.thumbnailStoragePath',
+    maxLength: 512,
+    minLength: 1,
+    pattern: '^[^/\\u0000][^\\u0000]*\$',
+  );
+
+  static const updateOrganizerCallablePayloadFieldsLogoPhotoThumbnailUrl = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.logoPhoto.thumbnailUrl',
+    maxLength: 2048,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsLogoPhotoUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.logoPhoto.updatedAt._nanoseconds',
+    required: true,
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsLogoPhotoUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.logoPhoto.updatedAt._seconds',
+    required: true,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsLogoPhotoUrl = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.logoPhoto.url',
+    maxLength: 2048,
+    required: true,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsName = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.name',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsOrganizerType = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.organizerType',
+    enumValues: <String>['club', 'community', 'individual', 'eventProducer', 'venue', 'brand'],
+  );
+
+  static const updateOrganizerCallablePayloadFieldsPhoneNumber = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.phoneNumber',
+    maxLength: 320,
+  );
+
+  static const updateOrganizerCallablePayloadFieldsProfileImageUrl = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.fields.profileImageUrl',
+    maxLength: 320,
+  );
+
+  static const updateOrganizerCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'updateOrganizerCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
   );
 
   static const updateUserProfilePatchActivityPreferencesRunningPaceMaxSecsPerKm = CatchContractFieldConstraints(
@@ -7311,6 +9001,13 @@ abstract final class CatchContractConstraints {
 
   static const userEventScheduleLockDocumentEventId = CatchContractFieldConstraints(
     path: 'userEventScheduleLockDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+  );
+
+  static const userEventScheduleLockDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'userEventScheduleLockDocument.organizerId',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -7663,6 +9360,7 @@ abstract final class CatchContractConstraints {
     'activityNotificationDocument.demoOpsId': activityNotificationDocumentDemoOpsId,
     'activityNotificationDocument.eventId': activityNotificationDocumentEventId,
     'activityNotificationDocument.matchId': activityNotificationDocumentMatchId,
+    'activityNotificationDocument.organizerId': activityNotificationDocumentOrganizerId,
     'activityNotificationDocument.postId': activityNotificationDocumentPostId,
     'activityNotificationDocument.readAt._nanoseconds': activityNotificationDocumentReadAtNanoseconds,
     'activityNotificationDocument.readAt._seconds': activityNotificationDocumentReadAtSeconds,
@@ -7685,10 +9383,12 @@ abstract final class CatchContractConstraints {
     'adminUpdateClubDetailsCallablePayload.fields.instagramHandle': adminUpdateClubDetailsCallablePayloadFieldsInstagramHandle,
     'adminUpdateClubDetailsCallablePayload.fields.location': adminUpdateClubDetailsCallablePayloadFieldsLocation,
     'adminUpdateClubDetailsCallablePayload.fields.name': adminUpdateClubDetailsCallablePayloadFieldsName,
+    'adminUpdateClubDetailsCallablePayload.fields.organizerType': adminUpdateClubDetailsCallablePayloadFieldsOrganizerType,
     'adminUpdateClubDetailsCallablePayload.fields.phoneNumber': adminUpdateClubDetailsCallablePayloadFieldsPhoneNumber,
     'adminUpdateClubDetailsCallablePayload.fields.profileImageUrl': adminUpdateClubDetailsCallablePayloadFieldsProfileImageUrl,
     'adminUpdateClubDetailsCallablePayload.fields.provenance.sourceConfidence': adminUpdateClubDetailsCallablePayloadFieldsProvenanceSourceConfidence,
     'adminUpdateClubDetailsCallablePayload.fields.provenance.verificationStatus': adminUpdateClubDetailsCallablePayloadFieldsProvenanceVerificationStatus,
+    'adminUpdateClubDetailsCallablePayload.fields.publicCategoryLabel': adminUpdateClubDetailsCallablePayloadFieldsPublicCategoryLabel,
     'adminUpdateClubDetailsCallablePayload.fields.publicPage.canonicalPath': adminUpdateClubDetailsCallablePayloadFieldsPublicPageCanonicalPath,
     'adminUpdateClubDetailsCallablePayload.fields.publicPage.citySlug': adminUpdateClubDetailsCallablePayloadFieldsPublicPageCitySlug,
     'adminUpdateClubDetailsCallablePayload.fields.publicPage.publishStatus': adminUpdateClubDetailsCallablePayloadFieldsPublicPagePublishStatus,
@@ -7715,6 +9415,37 @@ abstract final class CatchContractConstraints {
     'adminUpdateEventDetailsCallablePayload.fields.pace': adminUpdateEventDetailsCallablePayloadFieldsPace,
     'adminUpdateEventDetailsCallablePayload.fields.photoUrl': adminUpdateEventDetailsCallablePayloadFieldsPhotoUrl,
     'adminUpdateEventDetailsCallablePayload.reviewNote': adminUpdateEventDetailsCallablePayloadReviewNote,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.appVisibility': adminUpdateOrganizerDetailsCallablePayloadFieldsAppVisibility,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.area': adminUpdateOrganizerDetailsCallablePayloadFieldsArea,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.cityName': adminUpdateOrganizerDetailsCallablePayloadFieldsCityName,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.countryCode': adminUpdateOrganizerDetailsCallablePayloadFieldsCountryCode,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.countryName': adminUpdateOrganizerDetailsCallablePayloadFieldsCountryName,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.description': adminUpdateOrganizerDetailsCallablePayloadFieldsDescription,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.displayCategory': adminUpdateOrganizerDetailsCallablePayloadFieldsDisplayCategory,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.email': adminUpdateOrganizerDetailsCallablePayloadFieldsEmail,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.entityKind': adminUpdateOrganizerDetailsCallablePayloadFieldsEntityKind,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.imageUrl': adminUpdateOrganizerDetailsCallablePayloadFieldsImageUrl,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.instagramHandle': adminUpdateOrganizerDetailsCallablePayloadFieldsInstagramHandle,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.location': adminUpdateOrganizerDetailsCallablePayloadFieldsLocation,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.name': adminUpdateOrganizerDetailsCallablePayloadFieldsName,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.organizerType': adminUpdateOrganizerDetailsCallablePayloadFieldsOrganizerType,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.phoneNumber': adminUpdateOrganizerDetailsCallablePayloadFieldsPhoneNumber,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.profileImageUrl': adminUpdateOrganizerDetailsCallablePayloadFieldsProfileImageUrl,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.provenance.sourceConfidence': adminUpdateOrganizerDetailsCallablePayloadFieldsProvenanceSourceConfidence,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.provenance.verificationStatus': adminUpdateOrganizerDetailsCallablePayloadFieldsProvenanceVerificationStatus,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.publicCategoryLabel': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicCategoryLabel,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.publicPage.canonicalPath': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicPageCanonicalPath,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.publicPage.citySlug': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicPageCitySlug,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.publicPage.publishStatus': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicPagePublishStatus,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.publicPage.seoDescription': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicPageSeoDescription,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.publicPage.seoTitle': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicPageSeoTitle,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.publicPage.slug': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicPageSlug,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.publicProfile.headline': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicProfileHeadline,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.publicProfile.sourceSummary': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicProfileSourceSummary,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.publicProfile.summary': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicProfileSummary,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.regionName': adminUpdateOrganizerDetailsCallablePayloadFieldsRegionName,
+    'adminUpdateOrganizerDetailsCallablePayload.organizerId': adminUpdateOrganizerDetailsCallablePayloadOrganizerId,
+    'adminUpdateOrganizerDetailsCallablePayload.reviewNote': adminUpdateOrganizerDetailsCallablePayloadReviewNote,
     'blockDocument.blockedUserId': blockDocumentBlockedUserId,
     'blockDocument.blockerUserId': blockDocumentBlockerUserId,
     'blockDocument.createdAt._nanoseconds': blockDocumentCreatedAtNanoseconds,
@@ -7824,6 +9555,10 @@ abstract final class CatchContractConstraints {
     'clubDocument.nextEventAt._nanoseconds': clubDocumentNextEventAtNanoseconds,
     'clubDocument.nextEventAt._seconds': clubDocumentNextEventAtSeconds,
     'clubDocument.nextEventLabel': clubDocumentNextEventLabel,
+    'clubDocument.organizerType': clubDocumentOrganizerType,
+    'clubDocument.organizerTypeUpdatedAt._nanoseconds': clubDocumentOrganizerTypeUpdatedAtNanoseconds,
+    'clubDocument.organizerTypeUpdatedAt._seconds': clubDocumentOrganizerTypeUpdatedAtSeconds,
+    'clubDocument.organizerTypeUpdatedByUid': clubDocumentOrganizerTypeUpdatedByUid,
     'clubDocument.ownership.claimedAt._nanoseconds': clubDocumentOwnershipClaimedAtNanoseconds,
     'clubDocument.ownership.claimedAt._seconds': clubDocumentOwnershipClaimedAtSeconds,
     'clubDocument.ownership.claimedByUid': clubDocumentOwnershipClaimedByUid,
@@ -7839,6 +9574,7 @@ abstract final class CatchContractConstraints {
     'clubDocument.provenance.origin': clubDocumentProvenanceOrigin,
     'clubDocument.provenance.sourceConfidence': clubDocumentProvenanceSourceConfidence,
     'clubDocument.provenance.verificationStatus': clubDocumentProvenanceVerificationStatus,
+    'clubDocument.publicCategoryLabel': clubDocumentPublicCategoryLabel,
     'clubDocument.publicPage.canonicalPath': clubDocumentPublicPageCanonicalPath,
     'clubDocument.publicPage.citySlug': clubDocumentPublicPageCitySlug,
     'clubDocument.publicPage.indexReview.checklist.cadenceVerified': clubDocumentPublicPageIndexReviewChecklistCadenceVerified,
@@ -7938,6 +9674,7 @@ abstract final class CatchContractConstraints {
     'eventBroadcastDocument.leaseExpiresAt._nanoseconds': eventBroadcastDocumentLeaseExpiresAtNanoseconds,
     'eventBroadcastDocument.leaseExpiresAt._seconds': eventBroadcastDocumentLeaseExpiresAtSeconds,
     'eventBroadcastDocument.leaseOwner': eventBroadcastDocumentLeaseOwner,
+    'eventBroadcastDocument.organizerId': eventBroadcastDocumentOrganizerId,
     'eventBroadcastDocument.pushAcceptedCount': eventBroadcastDocumentPushAcceptedCount,
     'eventBroadcastDocument.pushAttemptedCount': eventBroadcastDocumentPushAttemptedCount,
     'eventBroadcastDocument.pushErrorCodes': eventBroadcastDocumentPushErrorCodes,
@@ -8026,6 +9763,7 @@ abstract final class CatchContractConstraints {
     'eventDocument.meetingLocation.notes': eventDocumentMeetingLocationNotes,
     'eventDocument.meetingLocation.placeId': eventDocumentMeetingLocationPlaceId,
     'eventDocument.meetingPoint': eventDocumentMeetingPoint,
+    'eventDocument.organizerId': eventDocumentOrganizerId,
     'eventDocument.pace': eventDocumentPace,
     'eventDocument.photoUrl': eventDocumentPhotoUrl,
     'eventDocument.priceInPaise': eventDocumentPriceInPaise,
@@ -8073,6 +9811,7 @@ abstract final class CatchContractConstraints {
     'eventInviteLinkDocument.label': eventInviteLinkDocumentLabel,
     'eventInviteLinkDocument.matchCount': eventInviteLinkDocumentMatchCount,
     'eventInviteLinkDocument.openCount': eventInviteLinkDocumentOpenCount,
+    'eventInviteLinkDocument.organizerId': eventInviteLinkDocumentOrganizerId,
     'eventInviteLinkDocument.paidCount': eventInviteLinkDocumentPaidCount,
     'eventInviteLinkDocument.requestCount': eventInviteLinkDocumentRequestCount,
     'eventInviteLinkDocument.source': eventInviteLinkDocumentSource,
@@ -8101,6 +9840,7 @@ abstract final class CatchContractConstraints {
     'eventParticipationDocument.inviteCapturedAt._seconds': eventParticipationDocumentInviteCapturedAtSeconds,
     'eventParticipationDocument.inviteLinkId': eventParticipationDocumentInviteLinkId,
     'eventParticipationDocument.inviteSource': eventParticipationDocumentInviteSource,
+    'eventParticipationDocument.organizerId': eventParticipationDocumentOrganizerId,
     'eventParticipationDocument.paymentId': eventParticipationDocumentPaymentId,
     'eventParticipationDocument.scenario': eventParticipationDocumentScenario,
     'eventParticipationDocument.seedPrefix': eventParticipationDocumentSeedPrefix,
@@ -8125,12 +9865,14 @@ abstract final class CatchContractConstraints {
     'eventPrivateAccessDocument.createdAt._seconds': eventPrivateAccessDocumentCreatedAtSeconds,
     'eventPrivateAccessDocument.eventId': eventPrivateAccessDocumentEventId,
     'eventPrivateAccessDocument.inviteCode': eventPrivateAccessDocumentInviteCode,
+    'eventPrivateAccessDocument.organizerId': eventPrivateAccessDocumentOrganizerId,
     'eventSafetyReportDocument.clubId': eventSafetyReportDocumentClubId,
     'eventSafetyReportDocument.createdAt._nanoseconds': eventSafetyReportDocumentCreatedAtNanoseconds,
     'eventSafetyReportDocument.createdAt._seconds': eventSafetyReportDocumentCreatedAtSeconds,
     'eventSafetyReportDocument.eventId': eventSafetyReportDocumentEventId,
     'eventSafetyReportDocument.feedbackId': eventSafetyReportDocumentFeedbackId,
     'eventSafetyReportDocument.note': eventSafetyReportDocumentNote,
+    'eventSafetyReportDocument.organizerId': eventSafetyReportDocumentOrganizerId,
     'eventSafetyReportDocument.reporterUserId': eventSafetyReportDocumentReporterUserId,
     'eventSafetyReportDocument.source': eventSafetyReportDocumentSource,
     'eventSafetyReportDocument.status': eventSafetyReportDocumentStatus,
@@ -8146,6 +9888,7 @@ abstract final class CatchContractConstraints {
     'eventSuccessArrivalMissionDocument.demoOpsId': eventSuccessArrivalMissionDocumentDemoOpsId,
     'eventSuccessArrivalMissionDocument.eventId': eventSuccessArrivalMissionDocumentEventId,
     'eventSuccessArrivalMissionDocument.observerUid': eventSuccessArrivalMissionDocumentObserverUid,
+    'eventSuccessArrivalMissionDocument.organizerId': eventSuccessArrivalMissionDocumentOrganizerId,
     'eventSuccessArrivalMissionDocument.question': eventSuccessArrivalMissionDocumentQuestion,
     'eventSuccessArrivalMissionDocument.scenario': eventSuccessArrivalMissionDocumentScenario,
     'eventSuccessArrivalMissionDocument.seedPrefix': eventSuccessArrivalMissionDocumentSeedPrefix,
@@ -8166,6 +9909,7 @@ abstract final class CatchContractConstraints {
     'eventSuccessAssignmentDocument.eventId': eventSuccessAssignmentDocumentEventId,
     'eventSuccessAssignmentDocument.label': eventSuccessAssignmentDocumentLabel,
     'eventSuccessAssignmentDocument.moduleId': eventSuccessAssignmentDocumentModuleId,
+    'eventSuccessAssignmentDocument.organizerId': eventSuccessAssignmentDocumentOrganizerId,
     'eventSuccessAssignmentDocument.peerUids': eventSuccessAssignmentDocumentPeerUids,
     'eventSuccessAssignmentDocument.rotationFairness.assignedRoundCount': eventSuccessAssignmentDocumentRotationFairnessAssignedRoundCount,
     'eventSuccessAssignmentDocument.rotationFairness.repeatPeerCount': eventSuccessAssignmentDocumentRotationFairnessRepeatPeerCount,
@@ -8188,6 +9932,7 @@ abstract final class CatchContractConstraints {
     'eventSuccessCompatibilityResponseDocument.demoOpsCommand': eventSuccessCompatibilityResponseDocumentDemoOpsCommand,
     'eventSuccessCompatibilityResponseDocument.demoOpsId': eventSuccessCompatibilityResponseDocumentDemoOpsId,
     'eventSuccessCompatibilityResponseDocument.eventId': eventSuccessCompatibilityResponseDocumentEventId,
+    'eventSuccessCompatibilityResponseDocument.organizerId': eventSuccessCompatibilityResponseDocumentOrganizerId,
     'eventSuccessCompatibilityResponseDocument.scenario': eventSuccessCompatibilityResponseDocumentScenario,
     'eventSuccessCompatibilityResponseDocument.seedPrefix': eventSuccessCompatibilityResponseDocumentSeedPrefix,
     'eventSuccessCompatibilityResponseDocument.uid': eventSuccessCompatibilityResponseDocumentUid,
@@ -8200,6 +9945,7 @@ abstract final class CatchContractConstraints {
     'eventSuccessFeedbackDocument.demoOpsId': eventSuccessFeedbackDocumentDemoOpsId,
     'eventSuccessFeedbackDocument.eventId': eventSuccessFeedbackDocumentEventId,
     'eventSuccessFeedbackDocument.metNewPeopleCount': eventSuccessFeedbackDocumentMetNewPeopleCount,
+    'eventSuccessFeedbackDocument.organizerId': eventSuccessFeedbackDocumentOrganizerId,
     'eventSuccessFeedbackDocument.privateNote': eventSuccessFeedbackDocumentPrivateNote,
     'eventSuccessFeedbackDocument.safetyConcern': eventSuccessFeedbackDocumentSafetyConcern,
     'eventSuccessFeedbackDocument.scenario': eventSuccessFeedbackDocumentScenario,
@@ -8224,6 +9970,7 @@ abstract final class CatchContractConstraints {
     'eventSuccessPlanDocument.frozenAt._nanoseconds': eventSuccessPlanDocumentFrozenAtNanoseconds,
     'eventSuccessPlanDocument.frozenAt._seconds': eventSuccessPlanDocumentFrozenAtSeconds,
     'eventSuccessPlanDocument.hostGoal': eventSuccessPlanDocumentHostGoal,
+    'eventSuccessPlanDocument.organizerId': eventSuccessPlanDocumentOrganizerId,
     'eventSuccessPlanDocument.playbookId': eventSuccessPlanDocumentPlaybookId,
     'eventSuccessPlanDocument.questionnaireConfig.customTitle': eventSuccessPlanDocumentQuestionnaireConfigCustomTitle,
     'eventSuccessPlanDocument.questionnaireConfig.templateId': eventSuccessPlanDocumentQuestionnaireConfigTemplateId,
@@ -8253,6 +10000,7 @@ abstract final class CatchContractConstraints {
     'eventSuccessPreferenceDocument.eventId': eventSuccessPreferenceDocumentEventId,
     'eventSuccessPreferenceDocument.guidedRotationsOptedOut': eventSuccessPreferenceDocumentGuidedRotationsOptedOut,
     'eventSuccessPreferenceDocument.microPodsOptedOut': eventSuccessPreferenceDocumentMicroPodsOptedOut,
+    'eventSuccessPreferenceDocument.organizerId': eventSuccessPreferenceDocumentOrganizerId,
     'eventSuccessPreferenceDocument.scenario': eventSuccessPreferenceDocumentScenario,
     'eventSuccessPreferenceDocument.seedPrefix': eventSuccessPreferenceDocumentSeedPrefix,
     'eventSuccessPreferenceDocument.uid': eventSuccessPreferenceDocumentUid,
@@ -8301,6 +10049,7 @@ abstract final class CatchContractConstraints {
     'eventSuccessScorecardDocument.funnel.waitlistOfferDeclinedCount': eventSuccessScorecardDocumentFunnelWaitlistOfferDeclinedCount,
     'eventSuccessScorecardDocument.funnel.waitlistOfferExpiredCount': eventSuccessScorecardDocumentFunnelWaitlistOfferExpiredCount,
     'eventSuccessScorecardDocument.mutualMatchCount': eventSuccessScorecardDocumentMutualMatchCount,
+    'eventSuccessScorecardDocument.organizerId': eventSuccessScorecardDocumentOrganizerId,
     'eventSuccessScorecardDocument.safetyIncidentCount': eventSuccessScorecardDocumentSafetyIncidentCount,
     'eventSuccessScorecardDocument.scenario': eventSuccessScorecardDocumentScenario,
     'eventSuccessScorecardDocument.seedPrefix': eventSuccessScorecardDocumentSeedPrefix,
@@ -8314,6 +10063,7 @@ abstract final class CatchContractConstraints {
     'eventSuccessWingmanRequestDocument.eventId': eventSuccessWingmanRequestDocumentEventId,
     'eventSuccessWingmanRequestDocument.hostVisibleConsent': eventSuccessWingmanRequestDocumentHostVisibleConsent,
     'eventSuccessWingmanRequestDocument.note': eventSuccessWingmanRequestDocumentNote,
+    'eventSuccessWingmanRequestDocument.organizerId': eventSuccessWingmanRequestDocumentOrganizerId,
     'eventSuccessWingmanRequestDocument.requesterUid': eventSuccessWingmanRequestDocumentRequesterUid,
     'eventSuccessWingmanRequestDocument.scenario': eventSuccessWingmanRequestDocumentScenario,
     'eventSuccessWingmanRequestDocument.seedPrefix': eventSuccessWingmanRequestDocumentSeedPrefix,
@@ -8338,6 +10088,7 @@ abstract final class CatchContractConstraints {
     'eventWaitlistOfferDocument.offeredAt._nanoseconds': eventWaitlistOfferDocumentOfferedAtNanoseconds,
     'eventWaitlistOfferDocument.offeredAt._seconds': eventWaitlistOfferDocumentOfferedAtSeconds,
     'eventWaitlistOfferDocument.offeredBy': eventWaitlistOfferDocumentOfferedBy,
+    'eventWaitlistOfferDocument.organizerId': eventWaitlistOfferDocumentOrganizerId,
     'eventWaitlistOfferDocument.scenario': eventWaitlistOfferDocumentScenario,
     'eventWaitlistOfferDocument.seedPrefix': eventWaitlistOfferDocumentSeedPrefix,
     'eventWaitlistOfferDocument.source': eventWaitlistOfferDocumentSource,
@@ -8438,6 +10189,8 @@ abstract final class CatchContractConstraints {
     'hostAnalyticsSnapshotDocument.response.scope.clubName': hostAnalyticsSnapshotDocumentResponseScopeClubName,
     'hostAnalyticsSnapshotDocument.response.scope.eventIds': hostAnalyticsSnapshotDocumentResponseScopeEventIds,
     'hostAnalyticsSnapshotDocument.response.scope.eventTitle': hostAnalyticsSnapshotDocumentResponseScopeEventTitle,
+    'hostAnalyticsSnapshotDocument.response.scope.organizerIds': hostAnalyticsSnapshotDocumentResponseScopeOrganizerIds,
+    'hostAnalyticsSnapshotDocument.response.scope.organizerName': hostAnalyticsSnapshotDocumentResponseScopeOrganizerName,
     'hostAnalyticsSnapshotDocument.response.summaryCards': hostAnalyticsSnapshotDocumentResponseSummaryCards,
     'hostAnalyticsSnapshotDocument.response.timezone': hostAnalyticsSnapshotDocumentResponseTimezone,
     'hostAnalyticsSnapshotDocument.response.topEvents': hostAnalyticsSnapshotDocumentResponseTopEvents,
@@ -8485,6 +10238,7 @@ abstract final class CatchContractConstraints {
     'matchDocument.lastMessageAt._seconds': matchDocumentLastMessageAtSeconds,
     'matchDocument.lastMessagePreview': matchDocumentLastMessagePreview,
     'matchDocument.lastMessageSenderId': matchDocumentLastMessageSenderId,
+    'matchDocument.organizerId': matchDocumentOrganizerId,
     'matchDocument.participantIds': matchDocumentParticipantIds,
     'matchDocument.scenario': matchDocumentScenario,
     'matchDocument.seedPrefix': matchDocumentSeedPrefix,
@@ -8512,6 +10266,152 @@ abstract final class CatchContractConstraints {
     'onboardingDraftDocument.lastName': onboardingDraftDocumentLastName,
     'onboardingDraftDocument.phoneNumber': onboardingDraftDocumentPhoneNumber,
     'onboardingDraftDocument.step': onboardingDraftDocumentStep,
+    'organizerClaimRequestDocument.businessEmail': organizerClaimRequestDocumentBusinessEmail,
+    'organizerClaimRequestDocument.businessPhone': organizerClaimRequestDocumentBusinessPhone,
+    'organizerClaimRequestDocument.createdAt._nanoseconds': organizerClaimRequestDocumentCreatedAtNanoseconds,
+    'organizerClaimRequestDocument.createdAt._seconds': organizerClaimRequestDocumentCreatedAtSeconds,
+    'organizerClaimRequestDocument.decidedAt._nanoseconds': organizerClaimRequestDocumentDecidedAtNanoseconds,
+    'organizerClaimRequestDocument.decidedAt._seconds': organizerClaimRequestDocumentDecidedAtSeconds,
+    'organizerClaimRequestDocument.decidedByUid': organizerClaimRequestDocumentDecidedByUid,
+    'organizerClaimRequestDocument.decisionReason': organizerClaimRequestDocumentDecisionReason,
+    'organizerClaimRequestDocument.message': organizerClaimRequestDocumentMessage,
+    'organizerClaimRequestDocument.organizerId': organizerClaimRequestDocumentOrganizerId,
+    'organizerClaimRequestDocument.previousRequestId': organizerClaimRequestDocumentPreviousRequestId,
+    'organizerClaimRequestDocument.proofUrls': organizerClaimRequestDocumentProofUrls,
+    'organizerClaimRequestDocument.requesterName': organizerClaimRequestDocumentRequesterName,
+    'organizerClaimRequestDocument.requesterRole': organizerClaimRequestDocumentRequesterRole,
+    'organizerClaimRequestDocument.requesterUid': organizerClaimRequestDocumentRequesterUid,
+    'organizerClaimRequestDocument.requestId': organizerClaimRequestDocumentRequestId,
+    'organizerClaimRequestDocument.status': organizerClaimRequestDocumentStatus,
+    'organizerClaimRequestDocument.updatedAt._nanoseconds': organizerClaimRequestDocumentUpdatedAtNanoseconds,
+    'organizerClaimRequestDocument.updatedAt._seconds': organizerClaimRequestDocumentUpdatedAtSeconds,
+    'organizerDocument.adminSearch.sortKey': organizerDocumentAdminSearchSortKey,
+    'organizerDocument.adminSearch.tokens': organizerDocumentAdminSearchTokens,
+    'organizerDocument.adminSearch.updatedAt._nanoseconds': organizerDocumentAdminSearchUpdatedAtNanoseconds,
+    'organizerDocument.adminSearch.updatedAt._seconds': organizerDocumentAdminSearchUpdatedAtSeconds,
+    'organizerDocument.adminSearch.updatedBySource': organizerDocumentAdminSearchUpdatedBySource,
+    'organizerDocument.appVisibility': organizerDocumentAppVisibility,
+    'organizerDocument.archived': organizerDocumentArchived,
+    'organizerDocument.archivedAt._nanoseconds': organizerDocumentArchivedAtNanoseconds,
+    'organizerDocument.archivedAt._seconds': organizerDocumentArchivedAtSeconds,
+    'organizerDocument.archiveReason': organizerDocumentArchiveReason,
+    'organizerDocument.area': organizerDocumentArea,
+    'organizerDocument.cityName': organizerDocumentCityName,
+    'organizerDocument.claim.claimHref': organizerDocumentClaimClaimHref,
+    'organizerDocument.claim.lastClaimRequestId': organizerDocumentClaimLastClaimRequestId,
+    'organizerDocument.claim.state': organizerDocumentClaimState,
+    'organizerDocument.countryCode': organizerDocumentCountryCode,
+    'organizerDocument.countryName': organizerDocumentCountryName,
+    'organizerDocument.createdAt._nanoseconds': organizerDocumentCreatedAtNanoseconds,
+    'organizerDocument.createdAt._seconds': organizerDocumentCreatedAtSeconds,
+    'organizerDocument.demoOpsCommand': organizerDocumentDemoOpsCommand,
+    'organizerDocument.demoOpsId': organizerDocumentDemoOpsId,
+    'organizerDocument.description': organizerDocumentDescription,
+    'organizerDocument.displayCategory': organizerDocumentDisplayCategory,
+    'organizerDocument.email': organizerDocumentEmail,
+    'organizerDocument.entityKind': organizerDocumentEntityKind,
+    'organizerDocument.followerCount': organizerDocumentFollowerCount,
+    'organizerDocument.hostAvatarUrl': organizerDocumentHostAvatarUrl,
+    'organizerDocument.hostDefaults.eventPolicy.admissionPreset': organizerDocumentHostDefaultsEventPolicyAdmissionPreset,
+    'organizerDocument.hostDefaults.eventPolicy.cancellationPolicyId': organizerDocumentHostDefaultsEventPolicyCancellationPolicyId,
+    'organizerDocument.hostDefaults.eventPolicy.dynamicPricingMaxInPaise': organizerDocumentHostDefaultsEventPolicyDynamicPricingMaxInPaise,
+    'organizerDocument.hostDefaults.eventPolicy.dynamicPricingStepInPaise': organizerDocumentHostDefaultsEventPolicyDynamicPricingStepInPaise,
+    'organizerDocument.hostDefaults.eventPolicy.maxAge': organizerDocumentHostDefaultsEventPolicyMaxAge,
+    'organizerDocument.hostDefaults.eventPolicy.maxMen': organizerDocumentHostDefaultsEventPolicyMaxMen,
+    'organizerDocument.hostDefaults.eventPolicy.maxWomen': organizerDocumentHostDefaultsEventPolicyMaxWomen,
+    'organizerDocument.hostDefaults.eventPolicy.minAge': organizerDocumentHostDefaultsEventPolicyMinAge,
+    'organizerDocument.hostDefaults.eventSuccess.attendeePrompt': organizerDocumentHostDefaultsEventSuccessAttendeePrompt,
+    'organizerDocument.hostDefaults.eventSuccess.hostGoal': organizerDocumentHostDefaultsEventSuccessHostGoal,
+    'organizerDocument.hostDefaults.eventSuccess.playbookId': organizerDocumentHostDefaultsEventSuccessPlaybookId,
+    'organizerDocument.hostDefaults.eventSuccess.questionnaireConfig.customTitle': organizerDocumentHostDefaultsEventSuccessQuestionnaireConfigCustomTitle,
+    'organizerDocument.hostDefaults.eventSuccess.questionnaireConfig.templateId': organizerDocumentHostDefaultsEventSuccessQuestionnaireConfigTemplateId,
+    'organizerDocument.hostDefaults.eventSuccess.structureConfig.maxPairMeetings': organizerDocumentHostDefaultsEventSuccessStructureConfigMaxPairMeetings,
+    'organizerDocument.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds': organizerDocumentHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds,
+    'organizerDocument.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes': organizerDocumentHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes,
+    'organizerDocument.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy': organizerDocumentHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy,
+    'organizerDocument.hostDefaults.eventSuccess.structureConfig.unitCount': organizerDocumentHostDefaultsEventSuccessStructureConfigUnitCount,
+    'organizerDocument.hostDefaults.eventSuccess.structureConfig.unitKind': organizerDocumentHostDefaultsEventSuccessStructureConfigUnitKind,
+    'organizerDocument.hostDefaults.eventSuccess.structureConfig.unitSize': organizerDocumentHostDefaultsEventSuccessStructureConfigUnitSize,
+    'organizerDocument.hostDefaults.primaryActivityKind': organizerDocumentHostDefaultsPrimaryActivityKind,
+    'organizerDocument.hostName': organizerDocumentHostName,
+    'organizerDocument.hostProfiles': organizerDocumentHostProfiles,
+    'organizerDocument.hostUserId': organizerDocumentHostUserId,
+    'organizerDocument.hostUserIds': organizerDocumentHostUserIds,
+    'organizerDocument.imageUrl': organizerDocumentImageUrl,
+    'organizerDocument.instagramHandle': organizerDocumentInstagramHandle,
+    'organizerDocument.location': organizerDocumentLocation,
+    'organizerDocument.locationCityId': organizerDocumentLocationCityId,
+    'organizerDocument.locationMarketId': organizerDocumentLocationMarketId,
+    'organizerDocument.logoPhoto.createdAt._nanoseconds': organizerDocumentLogoPhotoCreatedAtNanoseconds,
+    'organizerDocument.logoPhoto.createdAt._seconds': organizerDocumentLogoPhotoCreatedAtSeconds,
+    'organizerDocument.logoPhoto.id': organizerDocumentLogoPhotoId,
+    'organizerDocument.logoPhoto.moderation.reason': organizerDocumentLogoPhotoModerationReason,
+    'organizerDocument.logoPhoto.moderation.reviewedAt._nanoseconds': organizerDocumentLogoPhotoModerationReviewedAtNanoseconds,
+    'organizerDocument.logoPhoto.moderation.reviewedAt._seconds': organizerDocumentLogoPhotoModerationReviewedAtSeconds,
+    'organizerDocument.logoPhoto.moderation.status': organizerDocumentLogoPhotoModerationStatus,
+    'organizerDocument.logoPhoto.position': organizerDocumentLogoPhotoPosition,
+    'organizerDocument.logoPhoto.storagePath': organizerDocumentLogoPhotoStoragePath,
+    'organizerDocument.logoPhoto.thumbnailStoragePath': organizerDocumentLogoPhotoThumbnailStoragePath,
+    'organizerDocument.logoPhoto.thumbnailUrl': organizerDocumentLogoPhotoThumbnailUrl,
+    'organizerDocument.logoPhoto.updatedAt._nanoseconds': organizerDocumentLogoPhotoUpdatedAtNanoseconds,
+    'organizerDocument.logoPhoto.updatedAt._seconds': organizerDocumentLogoPhotoUpdatedAtSeconds,
+    'organizerDocument.logoPhoto.url': organizerDocumentLogoPhotoUrl,
+    'organizerDocument.memberCount': organizerDocumentMemberCount,
+    'organizerDocument.name': organizerDocumentName,
+    'organizerDocument.nextEventAt._nanoseconds': organizerDocumentNextEventAtNanoseconds,
+    'organizerDocument.nextEventAt._seconds': organizerDocumentNextEventAtSeconds,
+    'organizerDocument.nextEventLabel': organizerDocumentNextEventLabel,
+    'organizerDocument.organizerPhotos': organizerDocumentOrganizerPhotos,
+    'organizerDocument.organizerType': organizerDocumentOrganizerType,
+    'organizerDocument.organizerTypeUpdatedAt._nanoseconds': organizerDocumentOrganizerTypeUpdatedAtNanoseconds,
+    'organizerDocument.organizerTypeUpdatedAt._seconds': organizerDocumentOrganizerTypeUpdatedAtSeconds,
+    'organizerDocument.organizerTypeUpdatedByUid': organizerDocumentOrganizerTypeUpdatedByUid,
+    'organizerDocument.ownership.claimedAt._nanoseconds': organizerDocumentOwnershipClaimedAtNanoseconds,
+    'organizerDocument.ownership.claimedAt._seconds': organizerDocumentOwnershipClaimedAtSeconds,
+    'organizerDocument.ownership.claimedByUid': organizerDocumentOwnershipClaimedByUid,
+    'organizerDocument.ownership.hostUserIds': organizerDocumentOwnershipHostUserIds,
+    'organizerDocument.ownership.ownerUserId': organizerDocumentOwnershipOwnerUserId,
+    'organizerDocument.ownership.primaryHostUserId': organizerDocumentOwnershipPrimaryHostUserId,
+    'organizerDocument.ownership.state': organizerDocumentOwnershipState,
+    'organizerDocument.ownerUserId': organizerDocumentOwnerUserId,
+    'organizerDocument.phoneNumber': organizerDocumentPhoneNumber,
+    'organizerDocument.profileImageUrl': organizerDocumentProfileImageUrl,
+    'organizerDocument.provenance.lastVerifiedAt._nanoseconds': organizerDocumentProvenanceLastVerifiedAtNanoseconds,
+    'organizerDocument.provenance.lastVerifiedAt._seconds': organizerDocumentProvenanceLastVerifiedAtSeconds,
+    'organizerDocument.provenance.origin': organizerDocumentProvenanceOrigin,
+    'organizerDocument.provenance.sourceConfidence': organizerDocumentProvenanceSourceConfidence,
+    'organizerDocument.provenance.verificationStatus': organizerDocumentProvenanceVerificationStatus,
+    'organizerDocument.publicCategoryLabel': organizerDocumentPublicCategoryLabel,
+    'organizerDocument.publicPage.canonicalPath': organizerDocumentPublicPageCanonicalPath,
+    'organizerDocument.publicPage.citySlug': organizerDocumentPublicPageCitySlug,
+    'organizerDocument.publicPage.indexReview.checklist.cadenceVerified': organizerDocumentPublicPageIndexReviewChecklistCadenceVerified,
+    'organizerDocument.publicPage.indexReview.checklist.mediaRightsVerified': organizerDocumentPublicPageIndexReviewChecklistMediaRightsVerified,
+    'organizerDocument.publicPage.indexReview.checklist.ownerContactVerified': organizerDocumentPublicPageIndexReviewChecklistOwnerContactVerified,
+    'organizerDocument.publicPage.indexReview.checklist.sourceEvidenceVerified': organizerDocumentPublicPageIndexReviewChecklistSourceEvidenceVerified,
+    'organizerDocument.publicPage.indexReview.indexStatus': organizerDocumentPublicPageIndexReviewIndexStatus,
+    'organizerDocument.publicPage.indexReview.reviewedAt._nanoseconds': organizerDocumentPublicPageIndexReviewReviewedAtNanoseconds,
+    'organizerDocument.publicPage.indexReview.reviewedAt._seconds': organizerDocumentPublicPageIndexReviewReviewedAtSeconds,
+    'organizerDocument.publicPage.indexReview.reviewedByUid': organizerDocumentPublicPageIndexReviewReviewedByUid,
+    'organizerDocument.publicPage.indexReview.reviewNote': organizerDocumentPublicPageIndexReviewReviewNote,
+    'organizerDocument.publicPage.indexStatus': organizerDocumentPublicPageIndexStatus,
+    'organizerDocument.publicPage.lastRenderedAt._nanoseconds': organizerDocumentPublicPageLastRenderedAtNanoseconds,
+    'organizerDocument.publicPage.lastRenderedAt._seconds': organizerDocumentPublicPageLastRenderedAtSeconds,
+    'organizerDocument.publicPage.publishStatus': organizerDocumentPublicPagePublishStatus,
+    'organizerDocument.publicPage.robots': organizerDocumentPublicPageRobots,
+    'organizerDocument.publicPage.seoDescription': organizerDocumentPublicPageSeoDescription,
+    'organizerDocument.publicPage.seoTitle': organizerDocumentPublicPageSeoTitle,
+    'organizerDocument.publicPage.slug': organizerDocumentPublicPageSlug,
+    'organizerDocument.publicProfile.headline': organizerDocumentPublicProfileHeadline,
+    'organizerDocument.publicProfile.sourceSummary': organizerDocumentPublicProfileSourceSummary,
+    'organizerDocument.publicProfile.summary': organizerDocumentPublicProfileSummary,
+    'organizerDocument.rating': organizerDocumentRating,
+    'organizerDocument.regionName': organizerDocumentRegionName,
+    'organizerDocument.reviewCount': organizerDocumentReviewCount,
+    'organizerDocument.scenario': organizerDocumentScenario,
+    'organizerDocument.seedPrefix': organizerDocumentSeedPrefix,
+    'organizerDocument.status': organizerDocumentStatus,
+    'organizerDocument.tags': organizerDocumentTags,
+    'organizerDocument.verifiedReviewCount': organizerDocumentVerifiedReviewCount,
     'organizerEventCandidateReviewDecisionDocument.candidateId': organizerEventCandidateReviewDecisionDocumentCandidateId,
     'organizerEventCandidateReviewDecisionDocument.checklist.dedupeReviewed': organizerEventCandidateReviewDecisionDocumentChecklistDedupeReviewed,
     'organizerEventCandidateReviewDecisionDocument.checklist.identityReviewed': organizerEventCandidateReviewDecisionDocumentChecklistIdentityReviewed,
@@ -8551,6 +10451,14 @@ abstract final class CatchContractConstraints {
     'organizerEventLocationResolutionDecisionDocument.schemaVersion': organizerEventLocationResolutionDecisionDocumentSchemaVersion,
     'organizerEventLocationResolutionDecisionDocument.updatedAt._nanoseconds': organizerEventLocationResolutionDecisionDocumentUpdatedAtNanoseconds,
     'organizerEventLocationResolutionDecisionDocument.updatedAt._seconds': organizerEventLocationResolutionDecisionDocumentUpdatedAtSeconds,
+    'organizerFollowDocument.followedAt._nanoseconds': organizerFollowDocumentFollowedAtNanoseconds,
+    'organizerFollowDocument.followedAt._seconds': organizerFollowDocumentFollowedAtSeconds,
+    'organizerFollowDocument.organizerId': organizerFollowDocumentOrganizerId,
+    'organizerFollowDocument.pushNotificationsEnabled': organizerFollowDocumentPushNotificationsEnabled,
+    'organizerFollowDocument.status': organizerFollowDocumentStatus,
+    'organizerFollowDocument.uid': organizerFollowDocumentUid,
+    'organizerFollowDocument.unfollowedAt._nanoseconds': organizerFollowDocumentUnfollowedAtNanoseconds,
+    'organizerFollowDocument.unfollowedAt._seconds': organizerFollowDocumentUnfollowedAtSeconds,
     'organizerIntakeCurationDecisionDocument.decision': organizerIntakeCurationDecisionDocumentDecision,
     'organizerIntakeCurationDecisionDocument.entityId': organizerIntakeCurationDecisionDocumentEntityId,
     'organizerIntakeCurationDecisionDocument.newEntityId': organizerIntakeCurationDecisionDocumentNewEntityId,
@@ -8617,6 +10525,29 @@ abstract final class CatchContractConstraints {
     'organizerPolicyGapReviewDecisionDocument.schemaVersion': organizerPolicyGapReviewDecisionDocumentSchemaVersion,
     'organizerPolicyGapReviewDecisionDocument.updatedAt._nanoseconds': organizerPolicyGapReviewDecisionDocumentUpdatedAtNanoseconds,
     'organizerPolicyGapReviewDecisionDocument.updatedAt._seconds': organizerPolicyGapReviewDecisionDocumentUpdatedAtSeconds,
+    'organizerPostDocument.audience': organizerPostDocumentAudience,
+    'organizerPostDocument.authorUid': organizerPostDocumentAuthorUid,
+    'organizerPostDocument.createdAt._nanoseconds': organizerPostDocumentCreatedAtNanoseconds,
+    'organizerPostDocument.createdAt._seconds': organizerPostDocumentCreatedAtSeconds,
+    'organizerPostDocument.eventId': organizerPostDocumentEventId,
+    'organizerPostDocument.photoPath': organizerPostDocumentPhotoPath,
+    'organizerPostDocument.status': organizerPostDocumentStatus,
+    'organizerPostDocument.text': organizerPostDocumentText,
+    'organizerScheduleLockDocument.endTimeMillis': organizerScheduleLockDocumentEndTimeMillis,
+    'organizerScheduleLockDocument.eventId': organizerScheduleLockDocumentEventId,
+    'organizerScheduleLockDocument.organizerId': organizerScheduleLockDocumentOrganizerId,
+    'organizerScheduleLockDocument.ownerId': organizerScheduleLockDocumentOwnerId,
+    'organizerScheduleLockDocument.ownerType': organizerScheduleLockDocumentOwnerType,
+    'organizerScheduleLockDocument.slot': organizerScheduleLockDocumentSlot,
+    'organizerScheduleLockDocument.startTimeMillis': organizerScheduleLockDocumentStartTimeMillis,
+    'organizerTeamMembershipDocument.createdAt._nanoseconds': organizerTeamMembershipDocumentCreatedAtNanoseconds,
+    'organizerTeamMembershipDocument.createdAt._seconds': organizerTeamMembershipDocumentCreatedAtSeconds,
+    'organizerTeamMembershipDocument.organizerId': organizerTeamMembershipDocumentOrganizerId,
+    'organizerTeamMembershipDocument.removedAt._nanoseconds': organizerTeamMembershipDocumentRemovedAtNanoseconds,
+    'organizerTeamMembershipDocument.removedAt._seconds': organizerTeamMembershipDocumentRemovedAtSeconds,
+    'organizerTeamMembershipDocument.role': organizerTeamMembershipDocumentRole,
+    'organizerTeamMembershipDocument.status': organizerTeamMembershipDocumentStatus,
+    'organizerTeamMembershipDocument.uid': organizerTeamMembershipDocumentUid,
     'paymentDocument.amount': paymentDocumentAmount,
     'paymentDocument.amountMinor': paymentDocumentAmountMinor,
     'paymentDocument.applicationFeeAmount': paymentDocumentApplicationFeeAmount,
@@ -8724,6 +10655,7 @@ abstract final class CatchContractConstraints {
     'reviewDocument.demoOpsId': reviewDocumentDemoOpsId,
     'reviewDocument.eventId': reviewDocumentEventId,
     'reviewDocument.moderationStatus': reviewDocumentModerationStatus,
+    'reviewDocument.organizerId': reviewDocumentOrganizerId,
     'reviewDocument.ownerResponse.createdAt._nanoseconds': reviewDocumentOwnerResponseCreatedAtNanoseconds,
     'reviewDocument.ownerResponse.createdAt._seconds': reviewDocumentOwnerResponseCreatedAtSeconds,
     'reviewDocument.ownerResponse.hostName': reviewDocumentOwnerResponseHostName,
@@ -8819,8 +10751,57 @@ abstract final class CatchContractConstraints {
     'updateClubPatch.logoPhoto.updatedAt._seconds': updateClubPatchLogoPhotoUpdatedAtSeconds,
     'updateClubPatch.logoPhoto.url': updateClubPatchLogoPhotoUrl,
     'updateClubPatch.name': updateClubPatchName,
+    'updateClubPatch.organizerType': updateClubPatchOrganizerType,
     'updateClubPatch.phoneNumber': updateClubPatchPhoneNumber,
     'updateClubPatch.profileImageUrl': updateClubPatchProfileImageUrl,
+    'updateOrganizerCallablePayload.fields.area': updateOrganizerCallablePayloadFieldsArea,
+    'updateOrganizerCallablePayload.fields.description': updateOrganizerCallablePayloadFieldsDescription,
+    'updateOrganizerCallablePayload.fields.email': updateOrganizerCallablePayloadFieldsEmail,
+    'updateOrganizerCallablePayload.fields.hostAvatarUrl': updateOrganizerCallablePayloadFieldsHostAvatarUrl,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.admissionPreset': updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyAdmissionPreset,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.cancellationPolicyId': updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyCancellationPolicyId,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.dynamicPricingMaxInPaise': updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyDynamicPricingMaxInPaise,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.dynamicPricingStepInPaise': updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyDynamicPricingStepInPaise,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.maxAge': updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyMaxAge,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.maxMen': updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyMaxMen,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.maxWomen': updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyMaxWomen,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventPolicy.minAge': updateOrganizerCallablePayloadFieldsHostDefaultsEventPolicyMinAge,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.attendeePrompt': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessAttendeePrompt,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.hostGoal': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessHostGoal,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.playbookId': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessPlaybookId,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.questionnaireConfig.customTitle': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessQuestionnaireConfigCustomTitle,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.questionnaireConfig.templateId': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessQuestionnaireConfigTemplateId,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.maxPairMeetings': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigMaxPairMeetings,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.revealCountdownSeconds': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigRevealCountdownSeconds,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.rotationIntervalMinutes': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigRotationIntervalMinutes,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.rotationRepeatStrategy': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigRotationRepeatStrategy,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.unitCount': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigUnitCount,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.unitKind': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigUnitKind,
+    'updateOrganizerCallablePayload.fields.hostDefaults.eventSuccess.structureConfig.unitSize': updateOrganizerCallablePayloadFieldsHostDefaultsEventSuccessStructureConfigUnitSize,
+    'updateOrganizerCallablePayload.fields.hostDefaults.primaryActivityKind': updateOrganizerCallablePayloadFieldsHostDefaultsPrimaryActivityKind,
+    'updateOrganizerCallablePayload.fields.hostName': updateOrganizerCallablePayloadFieldsHostName,
+    'updateOrganizerCallablePayload.fields.imageUrl': updateOrganizerCallablePayloadFieldsImageUrl,
+    'updateOrganizerCallablePayload.fields.instagramHandle': updateOrganizerCallablePayloadFieldsInstagramHandle,
+    'updateOrganizerCallablePayload.fields.location': updateOrganizerCallablePayloadFieldsLocation,
+    'updateOrganizerCallablePayload.fields.logoPhoto.createdAt._nanoseconds': updateOrganizerCallablePayloadFieldsLogoPhotoCreatedAtNanoseconds,
+    'updateOrganizerCallablePayload.fields.logoPhoto.createdAt._seconds': updateOrganizerCallablePayloadFieldsLogoPhotoCreatedAtSeconds,
+    'updateOrganizerCallablePayload.fields.logoPhoto.id': updateOrganizerCallablePayloadFieldsLogoPhotoId,
+    'updateOrganizerCallablePayload.fields.logoPhoto.moderation.reason': updateOrganizerCallablePayloadFieldsLogoPhotoModerationReason,
+    'updateOrganizerCallablePayload.fields.logoPhoto.moderation.reviewedAt._nanoseconds': updateOrganizerCallablePayloadFieldsLogoPhotoModerationReviewedAtNanoseconds,
+    'updateOrganizerCallablePayload.fields.logoPhoto.moderation.reviewedAt._seconds': updateOrganizerCallablePayloadFieldsLogoPhotoModerationReviewedAtSeconds,
+    'updateOrganizerCallablePayload.fields.logoPhoto.moderation.status': updateOrganizerCallablePayloadFieldsLogoPhotoModerationStatus,
+    'updateOrganizerCallablePayload.fields.logoPhoto.position': updateOrganizerCallablePayloadFieldsLogoPhotoPosition,
+    'updateOrganizerCallablePayload.fields.logoPhoto.storagePath': updateOrganizerCallablePayloadFieldsLogoPhotoStoragePath,
+    'updateOrganizerCallablePayload.fields.logoPhoto.thumbnailStoragePath': updateOrganizerCallablePayloadFieldsLogoPhotoThumbnailStoragePath,
+    'updateOrganizerCallablePayload.fields.logoPhoto.thumbnailUrl': updateOrganizerCallablePayloadFieldsLogoPhotoThumbnailUrl,
+    'updateOrganizerCallablePayload.fields.logoPhoto.updatedAt._nanoseconds': updateOrganizerCallablePayloadFieldsLogoPhotoUpdatedAtNanoseconds,
+    'updateOrganizerCallablePayload.fields.logoPhoto.updatedAt._seconds': updateOrganizerCallablePayloadFieldsLogoPhotoUpdatedAtSeconds,
+    'updateOrganizerCallablePayload.fields.logoPhoto.url': updateOrganizerCallablePayloadFieldsLogoPhotoUrl,
+    'updateOrganizerCallablePayload.fields.name': updateOrganizerCallablePayloadFieldsName,
+    'updateOrganizerCallablePayload.fields.organizerType': updateOrganizerCallablePayloadFieldsOrganizerType,
+    'updateOrganizerCallablePayload.fields.phoneNumber': updateOrganizerCallablePayloadFieldsPhoneNumber,
+    'updateOrganizerCallablePayload.fields.profileImageUrl': updateOrganizerCallablePayloadFieldsProfileImageUrl,
+    'updateOrganizerCallablePayload.organizerId': updateOrganizerCallablePayloadOrganizerId,
     'updateUserProfilePatch.activityPreferences.running.paceMaxSecsPerKm': updateUserProfilePatchActivityPreferencesRunningPaceMaxSecsPerKm,
     'updateUserProfilePatch.activityPreferences.running.paceMinSecsPerKm': updateUserProfilePatchActivityPreferencesRunningPaceMinSecsPerKm,
     'updateUserProfilePatch.activityPreferences.running.preferredDistances': updateUserProfilePatchActivityPreferencesRunningPreferredDistances,
@@ -8855,6 +10836,7 @@ abstract final class CatchContractConstraints {
     'userEventScheduleLockDocument.demoOpsId': userEventScheduleLockDocumentDemoOpsId,
     'userEventScheduleLockDocument.endTimeMillis': userEventScheduleLockDocumentEndTimeMillis,
     'userEventScheduleLockDocument.eventId': userEventScheduleLockDocumentEventId,
+    'userEventScheduleLockDocument.organizerId': userEventScheduleLockDocumentOrganizerId,
     'userEventScheduleLockDocument.ownerId': userEventScheduleLockDocumentOwnerId,
     'userEventScheduleLockDocument.ownerType': userEventScheduleLockDocumentOwnerType,
     'userEventScheduleLockDocument.scenario': userEventScheduleLockDocumentScenario,

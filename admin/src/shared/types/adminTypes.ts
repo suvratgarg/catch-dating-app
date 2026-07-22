@@ -147,6 +147,8 @@ export interface AdminAssignSafetyTriageItemResponse {
 }
 
 export interface HostAnalyticsQueryPayload {
+  organizerId?: string | null;
+  /** @deprecated Use organizerId. */
   clubId?: string | null;
   eventId?: string | null;
   rangePreset?: "7d" | "30d" | "90d" | "month" | "custom";
@@ -172,6 +174,8 @@ export interface HostAnalyticsTrendPoint {
 
 export interface HostAnalyticsEventRow {
   eventId: string;
+  organizerId?: string;
+  /** @deprecated Use organizerId. */
   clubId: string;
   title: string;
   startTime: string;
@@ -208,8 +212,12 @@ export interface HostAnalyticsResponse {
     preset?: string | null;
   };
   scope: {
+    organizerIds: string[];
+    /** @deprecated Use organizerIds. */
     clubIds: string[];
     eventIds: string[];
+    organizerName?: string | null;
+    /** @deprecated Use organizerName. */
     clubName?: string | null;
     eventTitle?: string | null;
   };
@@ -399,6 +407,13 @@ export type OrganizerEntityKind =
   | "venue"
   | "eventOrganizer"
   | "creatorCommunity"
+  | "brand";
+export type OrganizerType =
+  | "club"
+  | "community"
+  | "individual"
+  | "eventProducer"
+  | "venue"
   | "brand";
 export type OrganizerAppVisibility = "discoverable" | "hidden";
 export type OrganizerPublishStatus =
@@ -740,6 +755,8 @@ export interface AdminClubDetails {
   email: string | null;
   imageUrl: string | null;
   profileImageUrl: string | null;
+  organizerType: OrganizerType;
+  publicCategoryLabel: string | null;
   entityKind: OrganizerEntityKind | null;
   entitySubtypes: string[];
   displayCategory: string | null;
@@ -786,6 +803,8 @@ export interface AdminGetClubDetailsResponse {
 export interface AdminClubListRow {
   clubId: string;
   name: string;
+  organizerType: OrganizerType;
+  publicCategoryLabel: string | null;
   displayCategory: string | null;
   cityName: string | null;
   citySlug: string | null;
@@ -832,6 +851,8 @@ export interface AdminUpdateClubDetailsPayload {
     email?: string | null;
     imageUrl?: string | null;
     profileImageUrl?: string | null;
+    organizerType?: OrganizerType;
+    publicCategoryLabel?: string | null;
     entityKind?: OrganizerEntityKind;
     entitySubtypes?: string[];
     displayCategory?: string | null;

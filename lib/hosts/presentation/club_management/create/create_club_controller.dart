@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
@@ -96,6 +97,7 @@ class CreateClubController extends _$CreateClubController {
     required String location,
     required String area,
     required String description,
+    OrganizerType organizerType = OrganizerType.club,
     List<ClubPhotoInput>? clubPhotoInputs,
     String? instagramHandle,
     String? phoneNumber,
@@ -103,7 +105,7 @@ class CreateClubController extends _$CreateClubController {
     ClubHostDefaults hostDefaults = const ClubHostDefaults(),
     XFile? profileImage,
   }) async {
-    final uid = requireSignedInUid(ref, action: 'create a club');
+    final uid = requireSignedInUid(ref, action: 'create an organizer');
 
     final clubsRepo = ref.read(clubsRepositoryProvider);
     final selectedClubPhotoInputs = clubPhotoInputs ?? const <ClubPhotoInput>[];
@@ -117,6 +119,7 @@ class CreateClubController extends _$CreateClubController {
       description: description,
       location: location,
       area: area,
+      organizerType: organizerType,
       instagramHandle: instagramHandle,
       phoneNumber: phoneNumber,
       email: email,

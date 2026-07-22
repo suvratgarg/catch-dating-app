@@ -15,9 +15,11 @@ export interface HostAnalyticsCallableResponse {
     preset?: string | null;
   };
   scope: {
+    organizerIds: string[];
     clubIds: string[];
     eventIds: string[];
     clubName?: string | null;
+    organizerName?: string | null;
     eventTitle?: string | null;
   };
   summaryCards: {
@@ -42,6 +44,7 @@ export interface HostAnalyticsCallableResponse {
   topEvents: {
     eventId: string;
     clubId: string;
+    organizerId?: string;
     title: string;
     startTime: string;
     status: string;

@@ -284,6 +284,7 @@ test("cancelEventSignUpHandler promotes free waitlist users", async () => {
     body: "A spot opened for your 5 km event from Carter Road.",
     eventId: "event-1",
     clubId: "club-1",
+    organizerId: "club-1",
   }]);
 });
 

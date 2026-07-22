@@ -8,6 +8,7 @@
 export interface EventParticipationDocument {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   uid: string;
   status: "signedUp" | "waitlisted" | "attended" | "cancelled" | "deleted";
   /**

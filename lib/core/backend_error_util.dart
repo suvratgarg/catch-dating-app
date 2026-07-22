@@ -183,6 +183,17 @@ AppException _mapCommonFirebaseException(
 }) {
   final debugMessage = _firebaseDebugMessage(error, context);
   return switch (error.code) {
+    'permission-denied' when context.service == BackendService.firestore =>
+      BackendOperationException(
+        code: 'backend-permission-denied',
+        message: 'Unable to load this data right now. Please try again.',
+        debugMessage: debugMessage,
+        cause: error,
+        stackTrace: stackTrace,
+        context: context,
+        retryable: true,
+        severity: AppErrorSeverity.error,
+      ),
     'permission-denied' => PermissionException(
       "You don't have permission to do that.",
       debugMessage: debugMessage,

@@ -23,7 +23,6 @@ test("production probe accepts the expected route contract", async () => {
   assert.equal(result.ok, true);
   assert.deepEqual(result.findings, []);
 });
-
 test("production probe reports status, metadata, and content drift", async () => {
   const result = await probePage({
     baseUrl: "https://catchdates.com",
@@ -40,4 +39,3 @@ test("production probe reports status, metadata, and content drift", async () =>
     "missing marker: Privacy policy",
   ]);
 });
-

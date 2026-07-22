@@ -10,7 +10,7 @@ part of 'club_membership_controller.dart';
 // ignore_for_file: type=lint, type=warning
 /// **Pattern A: Action controller + static Mutations**
 ///
-/// Owns membership actions from both the club list and detail screens.
+/// Owns follow actions from both the organizer list and detail screens.
 /// The UI watches mutation state to show loading spinners and error banners.
 
 @ProviderFor(ClubMembershipController)
@@ -18,13 +18,13 @@ final clubMembershipControllerProvider = ClubMembershipControllerProvider._();
 
 /// **Pattern A: Action controller + static Mutations**
 ///
-/// Owns membership actions from both the club list and detail screens.
+/// Owns follow actions from both the organizer list and detail screens.
 /// The UI watches mutation state to show loading spinners and error banners.
 final class ClubMembershipControllerProvider
     extends $NotifierProvider<ClubMembershipController, void> {
   /// **Pattern A: Action controller + static Mutations**
   ///
-  /// Owns membership actions from both the club list and detail screens.
+  /// Owns follow actions from both the organizer list and detail screens.
   /// The UI watches mutation state to show loading spinners and error banners.
   ClubMembershipControllerProvider._()
     : super(
@@ -54,11 +54,11 @@ final class ClubMembershipControllerProvider
 }
 
 String _$clubMembershipControllerHash() =>
-    r'a7242ce2d0e188043a4c1e0a6a4265c2196b1799';
+    r'aa0bc92ce05b21f4ff46513cd60f0528b8987390';
 
 /// **Pattern A: Action controller + static Mutations**
 ///
-/// Owns membership actions from both the club list and detail screens.
+/// Owns follow actions from both the organizer list and detail screens.
 /// The UI watches mutation state to show loading spinners and error banners.
 
 abstract class _$ClubMembershipController extends $Notifier<void> {

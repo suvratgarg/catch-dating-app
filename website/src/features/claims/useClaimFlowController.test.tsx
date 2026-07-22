@@ -14,7 +14,7 @@ const watchClaimAuthState = vi.hoisted(() => vi.fn((callback: (user: null) => vo
 
 vi.mock("../../analytics", () => ({trackMarketingEvent}));
 vi.mock("../../firebase", () => ({
-  requestClubClaim: vi.fn(),
+  requestOrganizerClaim: vi.fn(),
   signInForClaim: vi.fn(),
   signOutClaimUser: vi.fn(),
   watchClaimAuthState,
@@ -33,7 +33,16 @@ function wrapper() {
 function enabledListing(): HostListing {
   return {
     ...hostListings[0],
-    publicApi: {...hostListings[0].publicApi, state: "enabled", reason: ""},
+    authority: {
+      ...hostListings[0].authority,
+      claimState: "unclaimed",
+      ownershipState: "programmatic",
+      publishStatus: "published",
+    },
+    capabilities: {
+      ...hostListings[0].capabilities,
+      claimRequest: {state: "enabled", reason: ""},
+    },
   };
 }
 

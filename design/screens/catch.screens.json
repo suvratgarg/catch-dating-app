@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-07-19",
+  "updated": "2026-07-22",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -42,27 +42,27 @@
       "routes": [
         {
           "id": "eventDetailScreen",
-          "path": "/clubs/:clubId/events/:eventId",
+          "path": "/organizers/:clubId/events/:eventId",
           "role": "primary"
         },
         {
           "id": "calendarEventDetailScreen",
-          "path": "/calendar/clubs/:clubId/events/:eventId",
+          "path": "/calendar/organizers/:clubId/events/:eventId",
           "role": "alias"
         },
         {
           "id": "savedEventDetailScreen",
-          "path": "/saved-events/clubs/:clubId/events/:eventId",
+          "path": "/saved-events/organizers/:clubId/events/:eventId",
           "role": "alias"
         },
         {
           "id": "dashboardEventDetailScreen",
-          "path": "/dashboard/clubs/:clubId/events/:eventId",
+          "path": "/dashboard/organizers/:clubId/events/:eventId",
           "role": "alias"
         },
         {
           "id": "hostAppEventDetailScreen",
-          "path": "/host/clubs/:clubId/events/:eventId",
+          "path": "/host/organizers/:clubId/events/:eventId",
           "role": "host"
         }
       ],
@@ -973,7 +973,7 @@
       "routes": [
         {
           "id": "clubDetailScreen",
-          "path": "/clubs/:clubId",
+          "path": "/organizers/:clubId",
           "role": "primary"
         }
       ],
@@ -1636,12 +1636,12 @@
       "routes": [
         {
           "id": "exploreScreen",
-          "path": "/clubs",
+          "path": "/organizers",
           "role": "primary"
         },
         {
           "id": "exploreMapScreen",
-          "path": "/clubs/map",
+          "path": "/organizers/map",
           "role": "alias"
         }
       ],
@@ -3170,7 +3170,7 @@
       "routes": [
         {
           "id": "eventSuccessCompanionScreen",
-          "path": "/clubs/:clubId/events/:eventId/companion",
+          "path": "/organizers/:clubId/events/:eventId/companion",
           "role": "primary"
         }
       ],
@@ -8274,7 +8274,7 @@
         {
           "id": "host_home_events_list",
           "status": "captured",
-          "notes": "The 2026-07-10 deterministic full-shell capture renders the production HostAppShell at HostHomeTab.events with New/exact-policy-gated Repeat actions, minute-refreshed Upcoming/Live/Past filters, month groups, activity-spined rows, and truthful fill progress. It passes the canonical reference at 15.24% mismatch / 15.20 meanDelta without regressionThresholds."
+          "notes": "The deterministic full-shell capture renders the production HostAppShell at HostHomeTab.events with New/exact-policy-gated Repeat actions, minute-refreshed Upcoming/Live/Past filters, month groups, activity-spined rows, and truthful fill progress. The 2026-07-22 integrated result is 14.74% mismatch / 18.63 meanDelta, bounded at 18% / 19 by HOST-V2-EVENTS-VISUAL-DRIFT-001 while the canonical 18 mean-delta threshold remains unchanged."
         },
         {
           "id": "host_home_switcher_cohost",
@@ -8494,7 +8494,7 @@
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
-          "nextAction": "Host Events semantic and canonical visual parity is closed at 15.24% / 15.20 without a regression ceiling. HOST-V2-TODAY-FUNCTIONAL-PARITY-001 still tracks real pending-approval, offer, draft, and guest-inquiry composition; the current truthful Today baseline is 28.48% / 37.31.",
+          "nextAction": "Restore Host Events below the canonical mean-delta threshold and remove HOST-V2-EVENTS-VISUAL-DRIFT-001. HOST-V2-TODAY-FUNCTIONAL-PARITY-001 separately tracks real pending-approval, offer, draft, and guest-inquiry composition; the current truthful Today baseline is 28.48% / 37.31.",
           "previewIds": [
             "hostHomeRouteStates"
           ],
@@ -8850,32 +8850,32 @@
         },
         {
           "id": "hostClubsScreen",
-          "path": "/host/clubs",
+          "path": "/host/organizers",
           "role": "alias"
         },
         {
           "id": "hostEditClubScreen",
-          "path": "/host/clubs/:clubId/edit",
+          "path": "/host/organizers/:clubId/edit",
           "role": "alias"
         },
         {
           "id": "hostClubEventDefaultsScreen",
-          "path": "/host/clubs/event-defaults",
+          "path": "/host/organizers/event-defaults",
           "role": "host"
         },
         {
           "id": "hostClubLiveGuideScreen",
-          "path": "/host/clubs/live-guide",
+          "path": "/host/organizers/live-guide",
           "role": "host"
         },
         {
           "id": "hostClubTeamScreen",
-          "path": "/host/clubs/team",
+          "path": "/host/organizers/team",
           "role": "host"
         },
         {
           "id": "hostClubPaymentsScreen",
-          "path": "/host/clubs/payments",
+          "path": "/host/organizers/payments",
           "role": "host"
         }
       ],
@@ -10579,7 +10579,7 @@
       "routes": [
         {
           "id": "hostClubDetailScreen",
-          "path": "/host/clubs/:clubId",
+          "path": "/host/organizers/:clubId",
           "role": "primary"
         }
       ],
@@ -11378,7 +11378,7 @@
       "routes": [
         {
           "id": "hostCreateEventScreen",
-          "path": "/host/clubs/:clubId/create-event",
+          "path": "/host/organizers/:clubId/create-event",
           "role": "primary"
         }
       ],
@@ -12649,7 +12649,7 @@
       "routes": [
         {
           "id": "hostAppEventManageScreen",
-          "path": "/host/clubs/:clubId/events/:eventId/manage",
+          "path": "/host/organizers/:clubId/events/:eventId/manage",
           "role": "primary"
         }
       ],
@@ -18184,7 +18184,7 @@
             "symbol": "SavedEventRepository"
           }
         ],
-        "notes": "SavedEventsScreen watches the current uid, streams saved event details, owns the route Scaffold, retry invalidation, club-name lookup, and saved-event detail navigation. SavedEventsListState owns event ordering, saved/past badge labels, tile statuses, today, and club-id lookup input. SavedEventsHeaderSliver, SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, and SavedEventsMessage own provider-free header, agenda, loading, error, lookup-error, and empty surfaces."
+        "notes": "SavedEventsScreen watches the current uid, streams saved event details, owns CatchRouteScaffold chrome, retry invalidation, club-name lookup, and saved-event detail navigation. SavedEventsListState owns event ordering, saved/past badge labels, tile statuses, today, and club-id lookup input. SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, and SavedEventsMessage own provider-free agenda, loading, error, lookup-error, and empty surfaces; the duplicate body headline was removed."
       },
       "designRefs": [
         {
@@ -18355,8 +18355,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "SavedEventsScreen owns uid/provider orchestration, route Scaffold, club-name lookup, retry invalidation, and event-detail navigation, then resolves SavedEventsListState before passing typed data into provider-free SavedEventsHeaderSliver, SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, and SavedEventsMessage sections.",
-        "targetLayout": "Saved Events should keep providers at the route boundary, SavedEventsListState as the ordered-row adapter, and public section widgets as the owner of header, agenda, loading/error, lookup-error, and empty surfaces.",
+        "currentLayout": "SavedEventsScreen owns uid/provider orchestration, CatchRouteScaffold chrome, club-name lookup, retry invalidation, and event-detail navigation, then resolves SavedEventsListState before passing typed data into provider-free SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, and SavedEventsMessage sections.",
+        "targetLayout": "Saved Events should keep providers at the route boundary, one compact route title in CatchRouteScaffold, SavedEventsListState as the ordered-row adapter, and public section widgets as the owner of agenda, loading/error, lookup-error, and empty surfaces.",
         "sections": [
           {
             "id": "section.saved_events.list_adapter",
@@ -18382,29 +18382,6 @@
               "populated_saved_events"
             ],
             "migration": "SavedEventsListState now owns event ordering, saved/past badge labels, tile statuses, today, and club-id lookup input; route-owned provider waves, retry intents, club-name lookup, and navigation callbacks stay at the screen boundary."
-          },
-          {
-            "id": "section.saved_events.header",
-            "name": "Saved events list header",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "SavedEventsHeader"
-            ],
-            "flutter": {
-              "file": "lib/events/presentation/saved_events_screen.dart",
-              "symbol": "SavedEventsHeaderSliver"
-            },
-            "currentOwner": "SavedEventsHeaderSliver",
-            "targetOwner": "SavedEventsHeaderSliver",
-            "dependencies": [
-              "catch.top_bar"
-            ],
-            "states": [
-              "populated_saved_events",
-              "text_scale_2"
-            ],
-            "migration": "SavedEventsHeaderSliver owns page title/header copy as a provider-free sliver section."
           },
           {
             "id": "section.saved_events.agenda",
@@ -18472,7 +18449,7 @@
         {
           "id": "DS-SAVED-EVENTS-003",
           "status": "closed",
-          "nextAction": "Closed by SavedEventsHeaderSliver, SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, SavedEventsMessage, and SavedEventsListState provider-free section boundaries."
+          "nextAction": "Closed by one CatchRouteScaffold title plus SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, SavedEventsMessage, and SavedEventsListState provider-free section boundaries."
         },
         {
           "id": "DS-SAVED-EVENTS-004",
@@ -19425,7 +19402,7 @@
       "routes": [
         {
           "id": "hostCreateClubScreen",
-          "path": "/host/clubs/create-club",
+          "path": "/host/organizers/create-organizer",
           "role": "primary"
         }
       ],
@@ -19996,7 +19973,7 @@
       "routes": [
         {
           "id": "hostAppEditEventScreen",
-          "path": "/host/clubs/:clubId/events/:eventId/edit",
+          "path": "/host/organizers/:clubId/events/:eventId/edit",
           "role": "primary"
         }
       ],
@@ -21484,10 +21461,10 @@
           "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
         },
         "topBar": {
-          "role": "screen",
-          "expression": "CatchScreenTopBar",
-          "owner": "CatchScreenTopBar",
-          "reason": "The source owns canonical screen-level top-bar chrome."
+          "role": "compact",
+          "expression": "CatchTopBar",
+          "owner": "CatchRouteScaffold",
+          "reason": "The pushed route uses canonical compact back chrome and a scroll-derived divider."
         },
         "statePolicy": {
           "requiredStates": [
@@ -21945,10 +21922,10 @@
           "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
         },
         "topBar": {
-          "role": "screen",
-          "expression": "CatchScreenTopBar",
-          "owner": "CatchScreenTopBar",
-          "reason": "The source owns canonical screen-level top-bar chrome."
+          "role": "compact",
+          "expression": "CatchTopBar",
+          "owner": "CatchRouteScaffold",
+          "reason": "The pushed route uses canonical compact back chrome and a scroll-derived divider."
         },
         "statePolicy": {
           "requiredStates": [
@@ -22679,10 +22656,10 @@
           "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
         },
         "topBar": {
-          "role": "screen",
-          "expression": "CatchScreenTopBar",
-          "owner": "CatchScreenTopBar",
-          "reason": "The source owns canonical screen-level top-bar chrome."
+          "role": "compact",
+          "expression": "CatchTopBar",
+          "owner": "CatchRouteScaffold",
+          "reason": "The pushed route uses canonical compact back chrome and a scroll-derived divider."
         },
         "statePolicy": {
           "requiredStates": [

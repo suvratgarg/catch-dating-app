@@ -15,10 +15,12 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_person_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
+import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -133,6 +135,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final packageInfo = ref.watch(appPackageInfoProvider).asData?.value;
+    final version = packageInfo?.version ?? '—';
     final userProfileAsync = ref.watch(watchUserProfileProvider);
     final userProfile = userProfileAsync.asData?.value;
     final blockedUsersAsync = ref.watch(watchBlockedUsersProvider);
@@ -180,10 +184,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         SettingsController.requestAccountDeletionMutation,
         SettingsController.unblockUserMutation,
       ],
-      child: Scaffold(
-        appBar: CatchScreenTopBar(
-          context: context,
+      child: CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.safetySettingsScreenTitleSettings,
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
         ),
         body: CatchScreenBody(
           pt: CatchSpacing.s2,
@@ -214,13 +219,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         title: context.l10n.safetySettingsScreenTitleEmail,
                         valueText: state.profile.email,
                         icon: CatchIcons.emailOutlined,
-                      ),
-                      CatchField.nav(
-                        title:
-                            context.l10n.safetySettingsScreenTitleEditProfile,
-                        icon: CatchIcons.personOutlined,
-                        onTap: () =>
-                            context.pushNamed(Routes.profileScreen.name),
                       ),
                       CatchField.nav(
                         key: SettingsKeys.reviewHistoryRow,
@@ -429,18 +427,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 value: value,
                               ),
                       ),
-                      CatchField.nav(
-                        title:
-                            context.l10n.safetySettingsScreenTitlePrivacyPolicy,
-                        icon: CatchIcons.lockOutline,
-                        onTap: () => _openExternal(
-                          Uri.parse(
-                            context
-                                .l10n
-                                .safetySettingsScreenBodyHttpsCatchdatesComPrivacy,
-                          ),
+                      if (AppConfig.privacyPolicyUrl case final uri?)
+                        CatchField.nav(
+                          title: context
+                              .l10n
+                              .safetySettingsScreenTitlePrivacyPolicy,
+                          icon: CatchIcons.lockOutline,
+                          onTap: () => _openExternal(uri),
                         ),
-                      ),
                       CatchField.nav(
                         key: SettingsKeys.deleteAccountRow,
                         title: context
@@ -463,35 +457,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   CatchSection.fieldRows(
                     title: context.l10n.safetySettingsScreenTitleAbout,
                     children: [
-                      CatchField.nav(
-                        title:
-                            context.l10n.safetySettingsScreenTitleHelpSupport,
-                        valueText:
-                            context.l10n.safetySettingsScreenBodyContactUs,
-                        icon: CatchIcons.helpOutline,
-                        onTap: () => _openExternal(
-                          Uri.parse(
-                            context
-                                .l10n
-                                .safetySettingsScreenBodyHttpsCatchdatesComHelp,
-                          ),
+                      if (AppConfig.helpUrl case final uri?)
+                        CatchField.nav(
+                          title:
+                              context.l10n.safetySettingsScreenTitleHelpSupport,
+                          valueText:
+                              context.l10n.safetySettingsScreenBodyContactUs,
+                          icon: CatchIcons.helpOutline,
+                          onTap: () => _openExternal(uri),
                         ),
-                      ),
-                      CatchField.nav(
-                        title: context.l10n.safetySettingsScreenTitleTerms,
-                        valueText: context.l10n.safetySettingsScreenBodyLegal,
-                        icon: CatchIcons.descriptionOutlined,
-                        onTap: () => _openExternal(
-                          Uri.parse(
-                            context
-                                .l10n
-                                .safetySettingsScreenBodyHttpsCatchdatesComTerms,
-                          ),
+                      if (AppConfig.termsUrl case final uri?)
+                        CatchField.nav(
+                          title: context.l10n.safetySettingsScreenTitleTerms,
+                          valueText: context.l10n.safetySettingsScreenBodyLegal,
+                          icon: CatchIcons.descriptionOutlined,
+                          onTap: () => _openExternal(uri),
                         ),
-                      ),
                       CatchField.read(
                         title: context.l10n.safetySettingsScreenTitleVersion,
-                        valueText: '1.0',
+                        valueText: version,
                         icon: CatchIcons.infoOutline,
                       ),
                     ],
@@ -516,7 +500,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   gapH20,
                   Center(
                     child: Text(
-                      context.l10n.safetySettingsScreenTextCatch10Made,
+                      context.l10n.safetySettingsScreenTextVersionMade(
+                        version: version,
+                      ),
                       style: CatchTextStyles.statusLabel(
                         context,
                         color: t.ink3,

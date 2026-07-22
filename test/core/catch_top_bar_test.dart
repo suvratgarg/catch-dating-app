@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:flutter/material.dart';
@@ -58,6 +59,33 @@ void main() {
       ),
     );
     expect(find.text('Notifications'), findsOneWidget);
+  });
+
+  testWidgets('CatchRouteScaffold reveals its divider only after scroll', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: CatchRouteScaffold(
+          topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+            title: 'Payment history',
+            leadingType: CatchTopBarLeading.back,
+            divider: scrolledUnder,
+          ),
+          body: ListView.builder(
+            itemCount: 40,
+            itemBuilder: (_, index) =>
+                SizedBox(height: 48, child: Text('Payment $index')),
+          ),
+        ),
+      ),
+    );
+
+    expect(_topBarBorder(tester).bottom.style, BorderStyle.none);
+    await tester.drag(find.byType(ListView), const Offset(0, -180));
+    await tester.pump();
+    expect(_topBarBorder(tester).bottom.style, BorderStyle.solid);
   });
 
   testWidgets('CatchScreenTopBar inherits the accessible text scale', (
@@ -613,4 +641,17 @@ Material _topBarMaterial(WidgetTester tester) {
         )
         .first,
   );
+}
+
+Border _topBarBorder(WidgetTester tester) {
+  final containers = tester.widgetList<Container>(
+    find.descendant(
+      of: find.byType(CatchTopBar),
+      matching: find.byType(Container),
+    ),
+  );
+  final frame = containers.firstWhere(
+    (container) => container.constraints?.maxHeight == CatchLayout.topBarHeight,
+  );
+  return (frame.decoration! as BoxDecoration).border! as Border;
 }

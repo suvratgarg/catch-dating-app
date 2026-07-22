@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.4.43
-updated: 2026-07-19
+version: 1.5.4
+updated: 2026-07-22
 owner: recursive_audit_loop
 status: active
 ---
@@ -43,6 +43,29 @@ This spec consolidates and normalizes guidance from:
 
 This section is intentionally explicit so architecture decisions stay in one
 place.
+
+### Organizer Domain Cutover
+
+The consumer and Hosts apps treat `Organizer` as the product entity and `club`
+as one organizer subtype. Primary repository reads use `organizers`,
+`organizerFollows`, and organizer-named callables; events carry
+`organizerId`; organizer media uploads use `organizers/{id}`; public/detail and
+Hosts routes use `/organizers` and `/host/organizers`. `/host/clubs` is a
+redirect-only compatibility route. Current Flutter repositories never fall
+back to the legacy `clubs` collection; a canonical read failure remains visible
+and recoverable through the shared async error policy.
+
+The Hosts owner can edit the required `organizerType` field using the closed
+taxonomy `club`, `community`, `individual`, `eventProducer`, `venue`, and
+`brand`. Managers do not own this classification change. Generic visible copy
+must say organizer/follow rather than club/join; “Club” remains valid only as
+the label for the `club` subtype or as specific real-world content.
+
+`lib/organizers/` is the canonical import surface. Existing `Club` Dart model,
+repository, provider, and `lib/clubs/` filenames are transitional aliases for
+binary/source compatibility and may not justify new club-specific persistence,
+routes, or copy. Their removal follows the remote parity and released-client
+window in `docs/migrations/clubs_to_organizers.md`.
 
 1. Keep the canonical feature folder shape as `domain`, `data`, and
    `presentation`. Do not rename `data` to `repositories`.
@@ -140,6 +163,11 @@ display adapters by naming convention. They may depend on domain/core/value
 types and `CatchAsyncState`, but they must not import Riverpod, declare
 providers, or call `ref.watch/read/listen`; provider-owned composition belongs
 in a neighboring `_view_model.dart`, `_controller.dart`, or route screen.
+When a route edge translates Riverpod `AsyncValue` into `CatchAsyncState`, it
+must use `catchAsyncStateFromAsyncValue` from
+`lib/core/presentation/catch_async_value_adapter.dart`. That adapter gives a
+known error precedence over refresh loading, then preserves credible data, and
+uses loading only when neither exists.
 
 Allowed exceptions:
 
@@ -228,8 +256,8 @@ Explore social proof must not create profile reads per event row. The discovery
 ticket may render `signedUpCount` through veiled activity avatars using the
 shared Event Detail privacy contract. Identified people, mutuals, or Cross Paths
 require an explicit consent-safe relationship source and batched provider seam;
-without one, keep the proposal retired. Club cards may reuse already-loaded
-club host and aggregate rating data through shared club identity atoms.
+without one, keep the proposal retired. Organizer cards may reuse already-loaded
+organizer-manager and aggregate rating data through shared identity atoms.
 
 ## Dependency Direction
 
@@ -773,6 +801,22 @@ Use `CatchAsyncValueView` for simple body screens with one async value.
 
 Use `CatchAsyncValueSliver` for simple sliver surfaces.
 
+Both primitives apply `InitialLoadPolicy.standard` (12 seconds) to the first
+user-visible resolution. When the deadline expires, the skeleton becomes a
+branded timeout state. Every presentation call site must supply `onRetry`; the
+`catch_async_requires_retry` analyzer diagnostic enforces that contract. The
+deadline is a presentation/provider-boundary policy only: never apply an idle
+timeout to a long-lived Firestore stream after its first value.
+
+Every full-screen or sliver error must also leave the user a truthful next
+step. Use `onRetry` when the failed operation is safe to rerun. For terminal
+route conditions such as a deleted resource, invalid route argument, or lost
+authorization, supply `secondaryAction: CatchErrorBackAction()` (or another
+explicit destination action) instead. Inline errors may inherit recovery from
+their surrounding section. The `catch_error_state_requires_action` analyzer
+diagnostic rejects actionless full-screen and sliver error surfaces in feature
+presentation code.
+
 Use a feature-owned typed UI state when a screen has richer behavior, such as:
 
 - partial secondary failures;
@@ -802,7 +846,10 @@ delivery channels:
 - `CatchErrorState` owns app-facing branded error content through one resolved
   descriptor and one shared body renderer.
 - `CatchErrorScaffold`, `CatchSliverErrorState`, and `CatchInlineErrorState`
-  are placement adapters for root, sliver, and section errors.
+  are placement adapters for root, sliver, and section errors. Every adapter
+  supports the same primary retry and optional secondary-action contract.
+- `CatchErrorBackAction` is the canonical route-exit action when retry would
+  be dishonest or impossible.
 - `CatchErrorBanner` is the persistent inline mutation/form error channel.
 - `CatchMutationErrorBanner` is the persistent Riverpod mutation adapter.
 - `CatchMutationErrorListener` and `CatchMutationErrorListeners` are transient
@@ -813,6 +860,10 @@ delivery channels:
 
 Do not reintroduce `CatchErrorText`, raw `Center(Text(error.toString()))`,
 raw vendor messages, or bespoke error cards that discard retry/error context.
+An explicit caller retry callback is authoritative and must not be suppressed
+by exception metadata. Firestore `permission-denied` is an operational backend
+failure unless a domain/callable boundary has explicitly classified it as a
+user authorization decision.
 
 ### Failure Channels
 
@@ -1625,12 +1676,12 @@ Rules:
   graph wiring. Feature widgets should not infer role from bundle ids,
   Firebase project ids, or platform flavor strings.
 - Consumer routing must not mount host create/edit/manage screens. Consumer
-  surfaces may show host identity and public event/club information, but not
+  surfaces may show host identity and public event/organizer information, but not
   host-management affordances.
 - Host routing may show attendee, booking, roster, and operational state needed
   to run events, but it must not become a dating browse or match surface.
 - Host identity is professional and separate from dating identity:
-  `hostProfiles/{uid}` and club host snapshots own host display names, logos,
+  `hostProfiles/{uid}` and organizer-manager snapshots own host display names, logos,
   roles, verification, and operational permissions. Dating `users/{uid}` /
   `publicProfiles/{uid}` must not be the source of truth for host display.
 - The same auth user may have both a consumer dating profile and a host profile,
@@ -1766,6 +1817,21 @@ Rules:
 - Legacy/deep-link aliases should delegate to canonical screens rather than
   duplicate product behavior.
 
+### Public route decision contract
+
+Public-route visibility and action eligibility are governed by
+`design/public_surface_behavior.json` and the canonical explanation in
+`docs/web_surface_architecture.md#public-viewer-and-listing-authority-matrix`.
+Do not reduce the decision to `uid != null` or a crawled/claimed boolean. Auth
+resolution, app role, profile readiness, viewer relationship, organizer
+visibility, effective lifecycle availability, and authority, event
+availability, and capability/runtime evidence remain separate inputs. Every
+consumer route in `go_router.dart` must have
+exactly one matrix owner; a route hidden from guest tab chrome still needs an
+explicit guest and profile-readiness redirect. Run
+`node tool/run.mjs check design:public-surface-behavior` whenever a covered
+route, decision helper, action, or source enum changes.
+
 ## Testing Expectations
 
 Test at the boundary that owns the behavior:
@@ -1807,6 +1873,29 @@ and identity routes use `CatchTopBar.identity`. A canonical call elsewhere in
 the file cannot bless helper-owned or raw chrome inside the actual `appBar`
 value.
 
+Pushed utility/list and identity routes use `CatchRouteScaffold`. It owns the
+page background and derives the top-bar divider from real vertical scroll
+notifications: no divider at rest, divider only while content is scrolled
+under the pinned compact bar. Root tab titles remain sliver content and scroll
+away; only deliberately declared search/filter/tab controls may pin.
+
+### Exhibit ARCH-ROUTE-CHROME-001: Pushed Route Chrome
+
+<!-- exhibit-freshness: ARCH-ROUTE-CHROME-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+
+`CatchRouteScaffold` is the reference boundary for pushed Consumer and Host
+routes. The route supplies a `CatchTopBar` builder and body; the shell alone
+owns surface color and the scroll-under divider. Loading, empty, error, and
+content branches retain the same title voice and back behavior instead of
+building competing scaffolds.
+
+The adopters are Saved Events, Review History, Payment History, Settings, Chat
+Detail, Host Event Manage, Host Event Edit, Host team, every Host organizer
+settings spoke, and Host route loading. Host create-organizer and create-event
+flows remain step-header routes, and event detail remains the declared media
+hero exception. When another pushed list or form is touched, migrate it to
+this boundary rather than copying `Scaffold(backgroundColor:, appBar:)` flags.
+
 Pushed routes that must always expose an exit declare `leading: "back"` in
 the same manifest entry. The gate then requires an explicit
 `CatchTopBarLeading.back` (or `showBackButton: true`) configuration, so a
@@ -1827,6 +1916,8 @@ workspace, or temporary legacy role by symbol and owner. Role-to-owner policy
 is enforced; raw Material app bars cannot be relabeled as workspace or hero
 exceptions. Legacy entries are visible migration debt, not generic
 exceptions.
+The same gate consumes `tool/design/tab_root_scroll_contracts.json` and must
+report every consumer and Host tab-root branch; a zero-root pass is invalid.
 
 Full-screen editors that must cover persistent shell navigation declare their
 launcher in the same contract and push through
@@ -2356,6 +2447,12 @@ route edge, but widgets below the screen consume the presentation state object
 instead of reading repositories or recomputing product policy. In this exhibit,
 `CalendarHomeState` owns the screen-level selected-date/header/view inputs and
 `CalendarEventSummary` owns the merged event list.
+
+Riverpod translation remains at that route edge. Use
+`catchAsyncStateFromAsyncValue` rather than `AsyncValue.when`: refresh-time
+`AsyncError` can also report `isLoading`, so the shared adapter intentionally
+selects error, then available data, then loading. `CatchAsyncState` itself stays
+provider-free.
 
 This is a narrow state-boundary exhibit. The first full route/controller
 migration still needs its own reference exhibit before a broad rollout.

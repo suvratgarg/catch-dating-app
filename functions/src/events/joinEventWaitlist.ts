@@ -152,6 +152,8 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
       uid: userId,
       eventId,
       clubId: event.clubId,
+
+      organizerId: event.organizerId ?? event.clubId,
       startTimeMillis: event.startTime.toMillis(),
       endTimeMillis: event.endTime.toMillis(),
     });
@@ -168,6 +170,8 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
         exists: participationSnap.exists,
         eventId,
         clubId: event.clubId,
+
+        organizerId: event.organizerId ?? event.clubId,
         uid: userId,
         status: "waitlisted",
         genderAtSignup: user.gender,
@@ -273,6 +277,8 @@ export const leaveEventWaitlist = onCall(appCheckCallableOptions, async (
       exists: participationSnap.exists,
       eventId,
       clubId: event.clubId,
+
+      organizerId: event.organizerId ?? event.clubId,
       uid: userId,
       status: "cancelled",
     }), {merge: true});

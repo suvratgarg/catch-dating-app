@@ -52,7 +52,7 @@ writeRoute("/help/", {
 writeRoute("/404/", staticRouteMeta(websiteMeta, "not_found", baseUrl));
 writeStaticHtml("404.html", staticRouteMeta(websiteMeta, "not_found", baseUrl));
 
-for (const listing of hostListings) {
+for (const listing of hostListings.filter(isPubliclyReadableListing)) {
   const listingMeta = {
     title: formatContentTemplate(websiteMeta.listing.titleTemplate, {
       name: listing.name,
@@ -158,6 +158,10 @@ function buildListingStaticBody(listing, labels) {
     .map((format) => `<li>${escapeHtml(String(format))}</li>`)
     .join("");
   const facts = (listing.facts ?? [])
+    .filter((fact) =>
+      canReadPublicReviews(listing) ||
+      !/(?:rating|review)/iu.test(`${fact.label ?? ""} ${fact.value ?? ""}`)
+    )
     .map((fact) =>
       `<div><dt>${escapeHtml(String(fact.label))}</dt>` +
         `<dd>${escapeHtml(String(fact.value))}</dd></div>`
@@ -264,6 +268,19 @@ function safePublicUrl(value) {
   } catch {
     return false;
   }
+}
+
+function isPubliclyReadableListing(listing) {
+  if (!listing?.authority) return true;
+  return listing.authority.publishStatus === "published" &&
+    listing.authority.claimState !== "suppressed";
+}
+
+function canReadPublicReviews(listing) {
+  if (!isPubliclyReadableListing(listing)) return false;
+  if (!listing?.capabilities) return true;
+  return listing.capabilities.publicReviews?.targetState === "enabled" &&
+    listing.capabilities.publicReviews?.readState === "enabled";
 }
 
 function escapeHtml(value) {

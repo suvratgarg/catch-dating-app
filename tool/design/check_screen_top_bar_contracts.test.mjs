@@ -20,6 +20,72 @@ test("accepts registered app-bar, tab-root, geometry, and hero contracts", () =>
   assert.equal(result.rawChromeCount, 1);
 });
 
+test("accepts canonical route-scaffold top-bar builders", () => {
+  const root = fixtureRoot({
+    source: `
+      CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: 'Review history',
+          leadingType: CatchTopBarLeading.back,
+          divider: scrolledUnder,
+        ),
+        body: ListView(),
+      );
+    `,
+    contract: compactContract({
+      leading: "back",
+      surface: "CatchRouteScaffold",
+    }),
+  });
+
+  const result = checkScreenTopBarContracts({root});
+
+  assert.deepEqual(result.findings, []);
+});
+
+test("flags a route contract that drops its canonical surface", () => {
+  const root = fixtureRoot({
+    source: `
+      Scaffold(
+        appBar: CatchTopBar(
+          title: 'Review history',
+          leadingType: CatchTopBarLeading.back,
+        ),
+        body: ListView(),
+      );
+    `,
+    contract: compactContract({
+      leading: "back",
+      surface: "CatchRouteScaffold",
+    }),
+  });
+
+  const result = checkScreenTopBarContracts({root});
+
+  assert.ok(hasFinding(result, "missing-route-scaffold-surface"));
+});
+
+test("resolves canonical root chrome owned by a StatefulWidget state", () => {
+  const root = fixtureRoot({
+    source: "Scaffold(appBar: CatchScreenTopBar(title: 'Fallback'));",
+    contract: screenContract(),
+    rootSurface: rootSurface({owner: "CatchScreenTopBar"}),
+    rootSource: `
+      class RootHeader extends StatefulWidget {
+        State<RootHeader> createState() => _RootHeaderState();
+      }
+      class _RootHeaderState extends State<RootHeader> {
+        Widget build(BuildContext context) =>
+          CatchScreenTopBar(title: 'Chats');
+      }
+    `,
+  });
+
+  const result = checkScreenTopBarContracts({root});
+
+  assert.deepEqual(result.findings, []);
+});
+
 test("accepts the shared tabbed scaffold as a canonical root-header owner", () => {
   const root = fixtureRoot({
     source: "Scaffold(appBar: CatchScreenTopBar(title: 'Fallback'));",
@@ -564,13 +630,14 @@ function screenContract({
   };
 }
 
-function compactContract({expression = "CatchTopBar", leading} = {}) {
+function compactContract({expression = "CatchTopBar", leading, surface} = {}) {
   return {
     path: "lib/calendar/calendar_screen.dart",
     role: "compact",
     expression,
     owner: "CatchTopBar",
     ...(leading == null ? {} : {leading}),
+    ...(surface == null ? {} : {surface}),
   };
 }
 

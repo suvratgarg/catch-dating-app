@@ -24,4 +24,3 @@ jobs:
           node-version: 24
       - name: Check status, canonical metadata, and launch content
         run: node website/scripts/probeProduction.mjs --base-url https://catchdates.com --json
-

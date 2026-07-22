@@ -1,8 +1,9 @@
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {hostListings} from "./data";
-import type {HostListingCatchEvent} from "./types";
+import type {HostListing, HostListingCatchEvent} from "./types";
 import {
   defaultOrganizerDirectoryFilters,
+  isVerifiedListing,
   nextFutureCatchEvent,
   organizerDirectorySearchParams,
   readOrganizerFiltersFromUrl,
@@ -37,5 +38,29 @@ describe("organizer selectors", () => {
       } as HostListingCatchEvent],
     };
     expect(nextFutureCatchEvent(listing)).toEqual({title: eventTitle});
+  });
+
+  it("keeps first-party and owner-verified organizers in verified discovery", () => {
+    const firstParty: HostListing = {
+      ...hostListings[0],
+      authority: {
+        ...hostListings[0].authority,
+        claimState: "verified",
+        ownershipState: "userCreated",
+        verificationStatus: "ownerVerified",
+      },
+    };
+    expect(isVerifiedListing(firstParty)).toBe(true);
+
+    const ownerVerified = {
+      ...hostListings[0],
+      authority: {
+        ...hostListings[0].authority,
+        claimState: "verified" as const,
+        verificationStatus: "ownerVerified" as const,
+      },
+    };
+    expect(isVerifiedListing(ownerVerified)).toBe(true);
+    expect(isVerifiedListing(hostListings[0])).toBe(false);
   });
 });

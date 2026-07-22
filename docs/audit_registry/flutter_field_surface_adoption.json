@@ -101,7 +101,7 @@
       "reachability": "production_embedded",
       "screenIds": ["screen.host.clubs"],
       "routeIds": ["hostClubsScreen"],
-      "semanticFieldCount": 7,
+      "semanticFieldCount": 8,
       "bindings": [
         {"file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart", "symbol": "HostClubEditTab"},
         {"file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart", "symbol": "HostClubEventDefaultsScreen"},
@@ -109,13 +109,13 @@
       ],
       "anchors": [
         {"file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart", "symbol": "CatchFormRowList<UpdateClubPatch>", "expected": 2},
-        {"file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart", "symbol": "CatchFormSingleChoiceRow", "expected": 1}
+        {"file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart", "symbol": "CatchFormSingleChoiceRow", "expected": 2}
       ],
       "targetModes": ["CatchFormRowList", "CatchField.choices"],
       "preserve": ["inline expansion ownership", "UpdateClubPatch typing", "save and cancel behavior"],
       "verification": [
         "Host Club Identity and Contact sections render through two typed CatchFormRowList<UpdateClubPatch> instances",
-        "Contract alignment test covers all seven editable Host Club patch fields",
+        "Contract alignment test covers all eight editable Host Club patch fields, including organizer type",
         "Deleted HostInline editors leave zero production legacy call sites"
       ],
       "recommendation": "Completed: Host Club Identity and Contact editing now use typed form descriptors; the former HostInline editor file and hand-rolled choice chips are deleted."

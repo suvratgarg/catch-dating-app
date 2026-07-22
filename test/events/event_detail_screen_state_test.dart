@@ -6,6 +6,10 @@ import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen_state.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
+import 'package:catch_dating_app/organizers/domain/organizer_authority.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../clubs/clubs_test_helpers.dart' as clubs;
@@ -14,6 +18,20 @@ import 'events_test_helpers.dart' as events;
 final _l10n = AppLocalizationsEn();
 
 void main() {
+  test('booking profile gate rejects a non-null incomplete profile', () {
+    final now = DateTime(2026, 7, 21);
+    final bookingReady = events.buildUser();
+    final incomplete = bookingReady.copyWith(
+      phoneNumber: '',
+      interestedInGenders: const [],
+      profileComplete: false,
+    );
+
+    expect(eventDetailHasBookingReadyProfile(incomplete, now: now), isFalse);
+    expect(eventDetailHasBookingReadyProfile(bookingReady, now: now), isTrue);
+    expect(eventDetailHasBookingReadyProfile(null, now: now), isFalse);
+  });
+
   group('EventDetail booking dock state', () {
     test('derives eligible paid and paid-unsupported booking states', () {
       final event = events.buildEvent(bookedCount: 17, priceInPaise: 15000);
@@ -63,7 +81,7 @@ void main() {
       final state = eventDetailBookingDockStateFrom(
         l10n: _l10n,
         event: event,
-        userProfile: events.buildUser(),
+        userProfile: _socialReadyUser(),
         participation: null,
         now: event.startTime.subtract(const Duration(hours: 1)),
         hasInviteCode: false,
@@ -79,6 +97,27 @@ void main() {
       expect(state.isLoading, true);
       expect(state.isPrimaryActionEnabled, false);
       expect(state.error, isA<StateError>());
+    });
+
+    test('cancelled events never fall through to the ended state', () {
+      final event = events.buildEvent().copyWith(
+        status: EventLifecycleStatus.cancelled,
+        cancellationReason: 'Unsafe weather',
+      );
+
+      final state = eventDetailBookingDockStateFrom(
+        l10n: _l10n,
+        event: event,
+        userProfile: _socialReadyUser(),
+        participation: null,
+        now: event.startTime.subtract(const Duration(hours: 1)),
+        hasInviteCode: false,
+        supportsPaidBookings: true,
+      );
+
+      expect(state.label, 'This event was cancelled');
+      expect(state.primaryAction, EventDetailBookingDockAction.none);
+      expect(state.isPrimaryActionEnabled, isFalse);
     });
 
     test('derives request-to-join and run preference gate actions', () {
@@ -421,7 +460,7 @@ void main() {
       final beforeEnd = eventDetailSocialStateFrom(
         event: event,
         hasReviews: false,
-        userProfile: events.buildUser(),
+        userProfile: _socialReadyUser(),
         isAuthenticated: true,
         renderAsHost: false,
         participation: attended,
@@ -433,7 +472,7 @@ void main() {
       final afterEnd = eventDetailSocialStateFrom(
         event: event,
         hasReviews: false,
-        userProfile: events.buildUser(),
+        userProfile: _socialReadyUser(),
         isAuthenticated: true,
         renderAsHost: false,
         participation: attended,
@@ -446,7 +485,7 @@ void main() {
       final hostWithReviews = eventDetailSocialStateFrom(
         event: event,
         hasReviews: true,
-        userProfile: events.buildUser(),
+        userProfile: _socialReadyUser(),
         isAuthenticated: true,
         renderAsHost: true,
         participation: null,
@@ -513,7 +552,7 @@ void main() {
       expect(state.hostUid, 'host-1');
       expect(state.hostName, 'Mira');
       expect(state.photoUrl, 'https://example.com/mira.jpg');
-      expect(state.meta, 'BANDRA · 4.8 FROM 12 CLUB REVIEWS');
+      expect(state.meta, 'Claimed · BANDRA · 4.8 FROM 12 ORGANIZER REVIEWS');
       expect(state.verified, false);
       expect(state.canMessage, true);
 
@@ -525,5 +564,43 @@ void main() {
       );
       expect(self.canMessage, false);
     });
+
+    test('shows the verified seal only for owner-verified authority', () {
+      final club = clubs.buildClub().copyWith(
+        claim: OrganizerClaim.fromJson({'state': 'verified'}),
+        provenance: OrganizerProvenance.fromJson({
+          'origin': 'scraper',
+          'sourceConfidence': 'ownerVerified',
+          'verificationStatus': 'ownerVerified',
+        }),
+      );
+
+      final state = eventDetailHostStateFrom(
+        l10n: _l10n,
+        clubState: CatchAsyncState<Club?>.data(club),
+        currentUid: 'runner-1',
+        canMessageHost: true,
+      );
+
+      expect(state.verified, isTrue);
+      expect(state.meta, startsWith('Owner verified'));
+    });
   });
+}
+
+UserProfile _socialReadyUser() {
+  return events.buildUser(
+    photoUrls: List.generate(
+      minimumProfilePhotoCount,
+      (index) => 'https://example.com/social-$index.jpg',
+    ),
+    profilePrompts: [
+      for (final promptId in defaultProfilePromptIds)
+        ProfilePromptAnswer(
+          promptId: promptId,
+          prompt: promptId,
+          answer: 'Ready for social actions.',
+        ),
+    ],
+  );
 }

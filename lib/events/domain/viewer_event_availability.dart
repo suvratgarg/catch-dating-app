@@ -211,6 +211,18 @@ ViewerEventAvailability resolveViewerEventAvailability({
         quotedPriceInPaise: quotedPriceInPaise,
       );
     case EventAdmissionDecisionType.manualReviewRequired:
+      // A manual-review event still needs the same current run-preference
+      // context as an immediately admitted event. Collect that prerequisite
+      // before opening the approval request so the host never receives an
+      // incomplete request.
+      if (needsRunPreferences) {
+        return base.build(
+          ViewerEventAvailabilityStatus.runPreferencesRequired,
+          eligibility: const Eligible(),
+          admissionDecision: decision,
+          quotedPriceInPaise: quotedPriceInPaise,
+        );
+      }
       return base.build(
         ViewerEventAvailabilityStatus.requestRequired,
         eligibility: const GenderCapacityReached(),

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updated": "2026-07-16",
+  "updated": "2026-07-22",
   "owner": "app_architecture",
   "candidatePolicy": {
     "highFanOutUniqueDependencies": 8,
@@ -47,6 +47,11 @@
       "id": "high-fan-out:chatRouteStateProvider",
       "status": "accepted",
       "rationale": "The eight dependencies form one route projection: conversation, match and host-inquiry context, event/profile enrichment, share capability, and action pending state. The provider has no cycles and prevents the screen from assembling those waves itself."
+    },
+    {
+      "id": "high-fan-out:eventDetailViewModelProvider",
+      "status": "accepted",
+      "rationale": "The eight dependencies form one Event Detail route projection: auth resolution, event and organizer authority, viewer profile, reviews, saved state, participation, and organizer membership. Their loading and error precedence is intentionally centralized so Event Detail and its map route cannot render inconsistent visibility or viewer actions."
     },
     {
       "id": "high-fan-out:exploreFeedViewModelProvider",

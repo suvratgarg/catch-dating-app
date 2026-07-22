@@ -285,7 +285,7 @@ function assertHttpsCode(error: unknown, code: string): boolean {
 
 test("adminSetClubIndexStatusHandler marks a page index-ready", async () => {
   const h = harness({
-    "clubs/afterfly-run-club-indore": clubDoc(),
+    "organizers/afterfly-run-club-indore": clubDoc(),
   });
 
   const result = await adminSetClubIndexStatusHandler(
@@ -305,7 +305,7 @@ test("adminSetClubIndexStatusHandler marks a page index-ready", async () => {
     robots: "index, follow",
   });
   assert.deepEqual(
-    h.firestore.get("clubs/afterfly-run-club-indore")?.publicPage,
+    h.firestore.get("organizers/afterfly-run-club-indore")?.publicPage,
     {
       slug: "afterfly-run-club",
       citySlug: "indore",
@@ -330,14 +330,17 @@ test("adminSetClubIndexStatusHandler marks a page index-ready", async () => {
     "publicRouteReservations/organizers__indore__afterfly-run-club"
   );
   assert.equal(reservation?.status, "active");
-  assert.equal(reservation?.targetPath, "clubs/afterfly-run-club-indore");
+  assert.equal(
+    reservation?.targetPath,
+    "organizers/afterfly-run-club-indore"
+  );
   assert.equal(
     reservation?.routePath,
     "/organizers/indore/afterfly-run-club/"
   );
   assert.equal(reservation?.lastVerifiedByUid, "admin-1");
   assert.equal(reservation?.lastVerifiedSource, "adminSetClubIndexStatus");
-  const search = h.firestore.get("clubs/afterfly-run-club-indore")
+  const search = h.firestore.get("organizers/afterfly-run-club-indore")
     ?.adminSearch as FakeData | undefined;
   assert.equal(search?.updatedBySource, "adminSetClubIndexStatus");
   assert.ok((search?.tokens as string[]).includes("afterfly"));
@@ -347,10 +350,10 @@ test("adminSetClubIndexStatusHandler marks a page index-ready", async () => {
 test("adminSetClubIndexStatusHandler rejects reserved route conflicts",
   async () => {
     const h = harness({
-      "clubs/afterfly-run-club-indore": clubDoc(),
+      "organizers/afterfly-run-club-indore": clubDoc(),
       "publicRouteReservations/organizers__indore__afterfly-run-club": {
         status: "active",
-        targetPath: "clubs/other-organizer",
+        targetPath: "organizers/other-organizer",
         routePath: "/organizers/indore/afterfly-run-club/",
       },
     });
@@ -373,7 +376,7 @@ test("adminSetClubIndexStatusHandler rejects reserved route conflicts",
 test("adminSetClubIndexStatusHandler rejects incomplete index checklist",
   async () => {
     const h = harness({
-      "clubs/afterfly-run-club-indore": clubDoc(),
+      "organizers/afterfly-run-club-indore": clubDoc(),
     });
 
     await assert.rejects(
@@ -395,7 +398,7 @@ test("adminSetClubIndexStatusHandler rejects incomplete index checklist",
 
 test("adminSetClubIndexStatusHandler blocks viewer-only admins", async () => {
   const h = harness({
-    "clubs/afterfly-run-club-indore": clubDoc(),
+    "organizers/afterfly-run-club-indore": clubDoc(),
   });
 
   await assert.rejects(
@@ -413,7 +416,7 @@ test("adminSetClubIndexStatusHandler blocks viewer-only admins", async () => {
 
 test("adminSetClubIndexStatusHandler requires review notes", async () => {
   const h = harness({
-    "clubs/afterfly-run-club-indore": clubDoc(),
+    "organizers/afterfly-run-club-indore": clubDoc(),
   });
 
   await assert.rejects(
@@ -432,7 +435,7 @@ test("adminSetClubIndexStatusHandler requires review notes", async () => {
 test("adminSetClubIndexStatusHandler enforces the rate limit before writing",
   async () => {
     const h = harness({
-      "clubs/afterfly-run-club-indore": clubDoc(),
+      "organizers/afterfly-run-club-indore": clubDoc(),
     });
     const rateLimitCalls: string[] = [];
 
@@ -461,7 +464,7 @@ test("adminSetClubIndexStatusHandler enforces the rate limit before writing",
 
     assert.deepEqual(rateLimitCalls, ["admin-1:adminSetClubIndexStatus"]);
     // The page must be untouched when the request is throttled.
-    const page = h.firestore.get("clubs/afterfly-run-club-indore")
+    const page = h.firestore.get("organizers/afterfly-run-club-indore")
       ?.publicPage as {indexStatus?: string} | undefined;
     assert.equal(page?.indexStatus, "noindex");
     assert.equal(h.firestore.auditLogs().length, 0);

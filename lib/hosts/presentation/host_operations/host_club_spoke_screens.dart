@@ -79,6 +79,7 @@ class HostClubSpokeResolver extends ConsumerWidget {
     final clubsAsync = ref.watch(_hostClubsForUserProvider(uid));
     return CatchAsyncValueView<List<Club>>(
       value: clubsAsync,
+      onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
       loadingBuilder: (_) => HostLoadingScreen(title: title),
       errorBuilder: (_, error, _) => CatchErrorScaffold.fromError(
         error,
@@ -89,7 +90,7 @@ class HostClubSpokeResolver extends ConsumerWidget {
         final club = clubs.where((item) => item.id == clubId).firstOrNull;
         if (club == null) {
           return CatchErrorScaffold.fromError(
-            StateError('Club unavailable'),
+            StateError('Organizer unavailable'),
             context: AppErrorContext.club,
             onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
           );
@@ -117,14 +118,12 @@ class HostClubSpokeScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: CatchTokens.of(context).bg,
-      appBar: CatchScreenTopBar(
-        context: context,
-        eyebrow: club.name,
+    return CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: title,
+        subtitle: club.name,
         leadingType: CatchTopBarLeading.back,
-        border: true,
+        divider: scrolledUnder,
       ),
       body: SafeArea(
         top: false,

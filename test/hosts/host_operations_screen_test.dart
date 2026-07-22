@@ -19,6 +19,7 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_tabbed_screen.dart';
@@ -316,7 +317,7 @@ void main() {
     );
 
     expect(find.byType(HostLoadingScreen), findsOneWidget);
-    expect(find.text('Clubs'), findsOneWidget);
+    expect(find.text('Organizers'), findsOneWidget);
     expect(find.text('Sign in required'), findsNothing);
     expect(
       tester.widget<CatchSectionStack>(find.byType(CatchSectionStack)).padding,
@@ -801,8 +802,8 @@ void main() {
     );
 
     expect(find.text('Events'), findsWidgets);
-    expect(find.byTooltip('Create club'), findsNothing);
-    expect(find.byTooltip('Switch club'), findsNothing);
+    expect(find.byTooltip('Create organizer'), findsNothing);
+    expect(find.byTooltip('Switch organizer'), findsNothing);
     expect(find.text('New event'), findsOneWidget);
     expect(find.text('Repeat last'), findsOneWidget);
     expect(find.text('View club'), findsNothing);
@@ -1048,7 +1049,7 @@ void main() {
     expect(find.text(ownedEvent.title), findsOneWidget);
     expect(find.text(hostedEvent.title), findsNothing);
 
-    await tester.tap(find.byTooltip('Switch club'));
+    await tester.tap(find.byTooltip('Switch organizer'));
     await pumpFeatureUi(tester);
     expect(find.text('Quizzicals'), findsOneWidget);
     expect(find.text('Host team'), findsOneWidget);
@@ -1116,9 +1117,14 @@ void main() {
       'Media',
       'Identity',
       'Contact',
-      'Club settings',
+      'Organizer settings',
     ]);
-    for (final title in ['Media', 'Identity', 'Contact', 'Club settings']) {
+    for (final title in [
+      'Media',
+      'Identity',
+      'Contact',
+      'Organizer settings',
+    ]) {
       expect(
         find.byWidgetPredicate(
           (widget) => widget is CatchSection && widget.title == title,
@@ -1222,14 +1228,14 @@ void main() {
       expect(tab('Insights'), findsOneWidget);
       expect(tab('Preview'), findsOneWidget);
       expect(
-        find.byTooltip('Switch club'),
+        find.byTooltip('Switch organizer'),
         switcherVisible ? findsOneWidget : findsNothing,
       );
       final workspaceSemantics = tester.widget<Semantics>(
         find.byWidgetPredicate(
           (widget) =>
               widget is Semantics &&
-              widget.properties.label == 'Club workspace tabs',
+              widget.properties.label == 'Organizer workspace tabs',
         ),
       );
       expect(
@@ -1537,6 +1543,35 @@ void main() {
     expect(actions.mediaWrites.single.single, isA<HostNewClubPhotoInput>());
   });
 
+  testWidgets('Organizer owners can edit the organizer type', (tester) async {
+    final actions = _RecordingHostClubEditActions();
+    final club = buildClub(id: 'typed-organizer', ownerUserId: _hostUid);
+
+    await _pumpHostClubEditTab(tester, club: club, actions: actions);
+    final organizerTypeEditor = find.byKey(
+      const ValueKey('catch-form-single-choice-organizerType'),
+    );
+    await Scrollable.ensureVisible(tester.element(organizerTypeEditor));
+    await tester.tap(organizerTypeEditor);
+    await pumpFeatureUi(tester);
+
+    final communityChoice = find.widgetWithText(
+      CatchFieldChoiceChip,
+      'Community',
+    );
+    expect(communityChoice, findsOneWidget);
+    await tester.tap(communityChoice);
+    await pumpFeatureUi(tester);
+    await tester.tap(find.byKey(const ValueKey('catch-field-done')));
+    await pumpFeatureUi(tester);
+
+    expect(actions.profileWrites, hasLength(1));
+    expect(
+      actions.profileWrites.single.toFieldsJson()['organizerType'],
+      OrganizerType.community.name,
+    );
+  });
+
   testWidgets('Club settings rows push every spoke with the selected club id', (
     tester,
   ) async {
@@ -1592,13 +1627,12 @@ void main() {
       HostClubEventDefaultsScreen(clubId: club.id),
       overrides: overrides,
     );
-    final topBar = tester.widget<CatchScreenTopBar>(
-      find.byType(CatchScreenTopBar),
-    );
+    final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
     expect(topBar.title, 'Event defaults');
-    expect(topBar.eyebrow, club.name);
+    expect(topBar.subtitle, club.name);
     expect(topBar.leadingType, CatchTopBarLeading.back);
-    expect(topBar.border, isTrue);
+    expect(topBar.divider, isFalse);
+    expect(find.byType(CatchRouteScaffold), findsOneWidget);
     expect(find.byType(CatchFieldToggle), findsNothing);
     expect(find.byType(CatchFieldActionBar), findsNothing);
     expect(find.text('Default activity'), findsOneWidget);
@@ -1865,10 +1899,10 @@ void main() {
     expect(find.text('Sunday sea-face crew'), findsWidgets);
     expect(find.text('Edit'), findsOneWidget);
     expect(find.text('Preview'), findsWidgets);
-    expect(find.byTooltip('Switch club'), findsOneWidget);
-    expect(find.byTooltip('Create club'), findsNothing);
+    expect(find.byTooltip('Switch organizer'), findsOneWidget);
+    expect(find.byTooltip('Create organizer'), findsNothing);
     expect(find.text('IDENTITY'), findsOneWidget);
-    expect(find.text('Club name'), findsOneWidget);
+    expect(find.text('Organizer name'), findsOneWidget);
     expect(find.text('City'), findsOneWidget);
     expect(find.text('Delhi NCR'), findsOneWidget);
     expect(find.textContaining('IN-DL-DELHI-NCR'), findsNothing);
@@ -1877,7 +1911,7 @@ void main() {
     expect(find.text('CONTACT'), findsOneWidget);
     expect(find.text('Instagram'), findsOneWidget);
     expect(find.text('@sundayseafacecrew'), findsOneWidget);
-    expect(find.text('CLUB SETTINGS'), findsOneWidget);
+    expect(find.text('ORGANIZER SETTINGS'), findsOneWidget);
     expect(find.text('Event defaults'), findsOneWidget);
     expect(find.text('Payments'), findsOneWidget);
     expect(find.text('Host team'), findsOneWidget);
@@ -1910,16 +1944,17 @@ void main() {
     expect(find.text('View club'), findsNothing);
     expect(find.text('Owned club'), findsNothing);
 
-    await tester.tap(find.byTooltip('Switch club'));
+    await tester.tap(find.byTooltip('Switch organizer'));
     await pumpFeatureUi(tester);
     await tester.tap(find.text('Co-hosted Club · Host team'));
     await pumpFeatureUi(tester);
 
     expect(find.text('Co-hosted Club'), findsWidgets);
-    expect(find.text('CLUB SETTINGS'), findsOneWidget);
+    expect(find.text('ORGANIZER SETTINGS'), findsOneWidget);
     expect(
       find.byWidgetPredicate(
-        (widget) => widget is CatchSection && widget.title == 'Club settings',
+        (widget) =>
+            widget is CatchSection && widget.title == 'Organizer settings',
       ),
       findsOneWidget,
     );
@@ -1937,7 +1972,7 @@ void main() {
       findsNothing,
     );
     expect(find.text('IDENTITY'), findsOneWidget);
-    expect(find.text('Club name'), findsOneWidget);
+    expect(find.text('Organizer name'), findsOneWidget);
     expect(
       find.byWidgetPredicate(
         (widget) => widget is CatchSection && widget.title == 'Media',
@@ -2436,7 +2471,7 @@ void main() {
     );
 
     final clubsSection = find.ancestor(
-      of: find.text('CLUBS YOU HOST'),
+      of: find.text('ORGANIZERS YOU HOST'),
       matching: find.byType(CatchSection),
     );
     final clubFields = find.descendant(
@@ -2509,14 +2544,14 @@ void main() {
 
       expect(find.text('Add host'), findsOneWidget);
       expect(find.byKey(const ValueKey('host-team-sign-out')), findsOneWidget);
-      expect(find.text('CLUBS YOU HOST'), findsOneWidget);
+      expect(find.text('ORGANIZERS YOU HOST'), findsOneWidget);
 
       await tester.tap(find.text('Preview'));
       await pumpFeatureUi(tester);
 
       expect(find.text('Add host'), findsNothing);
       expect(find.byKey(const ValueKey('host-team-sign-out')), findsNothing);
-      expect(find.text('CLUBS YOU HOST'), findsOneWidget);
+      expect(find.text('ORGANIZERS YOU HOST'), findsOneWidget);
       expect(find.text('Catch Host'), findsWidgets);
     },
   );
@@ -2756,13 +2791,16 @@ class _RecordingHostClubEditActions implements HostClubEditActions {
   _RecordingHostClubEditActions({this.pickedPhotos = const []});
 
   final List<HostPickedClubPhoto> pickedPhotos;
+  final List<UpdateClubPatch> profileWrites = [];
   final List<List<HostClubMediaInput>> mediaWrites = [];
 
   @override
   Future<void> updateClub({
     required String clubId,
     required UpdateClubPatch patch,
-  }) async {}
+  }) async {
+    profileWrites.add(patch);
+  }
 
   @override
   Future<List<HostPickedClubPhoto>> pickClubPhotos({

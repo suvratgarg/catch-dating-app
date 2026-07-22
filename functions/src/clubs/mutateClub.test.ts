@@ -220,6 +220,7 @@ test("updateClubHandler updates hosted club profile fields", async () => {
       clubId: "club-1",
       fields: {
         description: "Updated city loops.",
+        organizerType: "community",
         tags: ["easy"],
         instagramHandle: "@indorestriders",
       },
@@ -231,6 +232,11 @@ test("updateClubHandler updates hosted club profile fields", async () => {
   assert.deepEqual(h.rateLimitCalls, ["host-1:updateClub"]);
   const updated = h.firestore.get("clubs/club-1");
   assert.equal(updated?.description, "Updated city loops.");
+  assert.equal(updated?.organizerType, "community");
+  assert.deepEqual(updated?.organizerTypeUpdatedAt, {
+    kind: "serverTimestamp",
+  });
+  assert.equal(updated?.organizerTypeUpdatedByUid, "host-1");
   assert.deepEqual(updated?.tags, ["easy"]);
   assert.equal(updated?.instagramHandle, "@indorestriders");
 });

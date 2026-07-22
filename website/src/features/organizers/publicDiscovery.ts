@@ -1,4 +1,5 @@
 import {websiteCopy} from "@content/generated";
+import {organizerListingCopy} from "@content/organizer";
 import type {
   EventActionCardModel,
   PublicEventCardModel,
@@ -7,6 +8,8 @@ import type {
 import {activityMeta, type ActivityMeta} from "@content/marketing";
 import {eligibleHomeCatchEvents} from "./homeEventEligibility";
 import {isFutureCatchEvent} from "./selectors";
+import {isPubliclyReadableListing} from "./selectors";
+import {organizerPolicyForListing} from "./organizerPolicy";
 import type {HostListing, HostListingCatchEvent, HostListingExternalEvent} from "./types";
 
 export interface OrganizerEventHighlight {
@@ -31,7 +34,7 @@ export function buildPublicEventSummaries(
   }
 ): PublicEventCardModel[] {
   return eligibleHomeCatchEvents<HostListingCatchEvent, HostListing>(
-    listings,
+    listings.filter(isPubliclyReadableListing),
     options
   ).map(({event, listing}) => {
     const activity = activityForKind(event.activityKind);
@@ -58,8 +61,9 @@ export function buildPublicSearchSuggestions(
   listings: HostListing[],
   events: PublicEventCardModel[]
 ): PublicSearchSuggestion[] {
+  const publicListings = listings.filter(isPubliclyReadableListing);
   const formatSuggestions = new Map<string, PublicSearchSuggestion>();
-  for (const listing of listings) {
+  for (const listing of publicListings) {
     for (const format of listing.formats) {
       const key = format.toLowerCase();
       if (formatSuggestions.has(key)) continue;
@@ -84,13 +88,13 @@ export function buildPublicSearchSuggestions(
       type: "event" as const,
       activityToken: event.activityToken,
     })),
-    ...listings.map((listing) => {
+    ...publicListings.map((listing) => {
       const activity = activityForListing(listing);
       return {
         id: `organizer-${listing.id}`,
         href: listing.path,
         label: listing.name,
-        meta: `${listing.category} · ${listing.city} · ${listing.status}`,
+        meta: `${listing.category} · ${listing.city} · ${organizerPolicyForListing(listing).badge.label}`,
         type: "organizer" as const,
         activityToken: activity.token,
       };
@@ -257,13 +261,7 @@ export function eventActionCardForListing(
 ): EventActionCardModel {
   const isFuture = isFutureCatchEvent(event);
   const activity = activityForKind(event.activityKind);
-  const actions: EventActionCardModel["actions"] = [
-    {
-      href: eventDeepLinkForListing(listing, event),
-      label: isFuture ? "Open event link" : "Open event record",
-      trackingLabel: isFuture ? "listing_event_open_upcoming" : "listing_event_open_past",
-    },
-  ];
+  const actions: EventActionCardModel["actions"] = [];
 
   if (event.scorecard) {
     actions.push({
@@ -272,12 +270,12 @@ export function eventActionCardForListing(
       variant: "secondary",
       trackingLabel: "listing_event_success",
     });
-  } else {
+  } else if (organizerPolicyForListing(listing).canReadPublicReviews) {
     actions.push({
       href: "#reviews",
-      label: isFuture ? "Read reviews" : "Review event feedback",
+      label: organizerListingCopy.eventActions.readOrganizerReviews,
       variant: "secondary",
-      trackingLabel: "listing_event_reviews",
+      trackingLabel: "listing_organizer_reviews",
     });
   }
 
@@ -308,6 +306,23 @@ export function externalEventActionCardForListing(
 ): EventActionCardModel {
   const isFuture = isFutureExternalEvent(event);
   const activity = activityForKind(event.activityKind);
+  const actions: EventActionCardModel["actions"] = [
+    {
+      href: event.sourceHref,
+      label: websiteCopy["publicdiscovery_0359"],
+      target: "_blank",
+      rel: "noreferrer",
+      trackingLabel: "external_event_source",
+    },
+  ];
+  if (organizerPolicyForListing(listing).canRequestClaim) {
+    actions.push({
+      href: "#claim",
+      label: websiteCopy["publicdiscovery_0356"],
+      variant: "secondary",
+      trackingLabel: "external_event_claim",
+    });
+  }
   return {
     id: externalEventAnchorId(event),
     eyebrow: isFuture ? "Upcoming external event" : "Read-only external event",
@@ -326,20 +341,6 @@ export function externalEventActionCardForListing(
         value: event.externalLinkCount,
       },
     ],
-    actions: [
-      {
-        href: event.sourceHref,
-        label: websiteCopy["publicdiscovery_0359"],
-        target: "_blank",
-        rel: "noreferrer",
-        trackingLabel: "external_event_source",
-      },
-      {
-        href: "#claim",
-        label: websiteCopy["publicdiscovery_0356"],
-        variant: "secondary",
-        trackingLabel: "external_event_claim",
-      },
-    ],
+    actions,
   };
 }

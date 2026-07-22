@@ -12,6 +12,7 @@ export interface FcmParams {
   matchId?: string;
   eventId?: string;
   clubId?: string;
+  organizerId?: string;
   postId?: string;
 }
 
@@ -26,7 +27,8 @@ export type ActivityNotificationType =
   | "waitlistOfferExpired"
   | "eventCancelled"
   | "eventUpdated"
-  | "clubUpdate";
+  | "clubUpdate"
+  | "organizerUpdate";
 
 export interface ActivityNotificationParams {
   id: string;
@@ -38,6 +40,7 @@ export interface ActivityNotificationParams {
   matchId?: string;
   eventId?: string;
   clubId?: string;
+  organizerId?: string;
   postId?: string;
   actorUid?: string;
   actorName?: string;
@@ -106,6 +109,7 @@ export async function sendFcmNotification(params: FcmParams): Promise<void> {
       matchId: params.matchId,
       eventId: params.eventId,
       clubId: params.clubId,
+      organizerId: params.organizerId,
       postId: params.postId,
     }),
     apns: {payload: {aps: {sound: "default"}}},
@@ -308,6 +312,7 @@ function activityNotificationData(
       matchId: params.matchId,
       eventId: params.eventId,
       clubId: params.clubId,
+      organizerId: params.organizerId,
       postId: params.postId,
       actorUid: params.actorUid,
       actorName: params.actorName,

@@ -141,6 +141,8 @@ export async function createRazorpayOrderHandler(
     uid,
     eventId,
     clubId: event.clubId,
+
+    organizerId: event.organizerId ?? event.clubId,
     startTimeMillis: event.startTime.toMillis(),
     endTimeMillis: event.endTime.toMillis(),
   });

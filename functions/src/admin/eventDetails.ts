@@ -57,6 +57,7 @@ type EventDetailsPatch = AdminUpdateEventDetailsCallablePayload["fields"];
 export interface AdminEventDetailsSnapshot {
   eventId: string;
   clubId: string;
+  organizerId: string;
   organizerName: string | null;
   title: string;
   startTime: string | null;
@@ -99,6 +100,7 @@ export interface AdminEventDetailsSnapshot {
 export interface AdminEventListRow {
   eventId: string;
   clubId: string;
+  organizerId: string;
   organizerName: string | null;
   title: string;
   activityKind: EventFormatSnapshot["activityKind"];
@@ -162,7 +164,8 @@ export async function adminListEventDetailsHandler(
       searchTokens
     );
   }
-  if (data.clubId) query = query.where("clubId", "==", data.clubId);
+  const organizerId = data.organizerId ?? data.clubId;
+  if (organizerId) query = query.where("organizerId", "==", organizerId);
   if (data.citySlug) {
     query = query.where("discoveryMarketId", "==", data.citySlug);
   } else if (data.citySlugs && data.citySlugs.length > 0) {
@@ -182,11 +185,15 @@ export async function adminListEventDetailsHandler(
   }));
   const clubNames = await loadClubNames(
     db,
-    events.map((row) => row.event.clubId)
+    events.map((row) => row.event.organizerId ?? row.event.clubId)
   );
   const rows = events
     .map(({eventId, event}) =>
-      publicEventListRow(eventId, event, clubNames.get(event.clubId) ?? null))
+      publicEventListRow(
+        eventId,
+        event,
+        clubNames.get(event.organizerId ?? event.clubId) ?? null
+      ))
     .filter((row) => eventListRowMatchesQuery(row, queryText))
     .sort((a, b) => compareEventRows(a, b, timeWindow))
     .slice(0, limit);
@@ -219,7 +226,7 @@ export async function adminGetEventDetailsHandler(
     throw new HttpsError("not-found", "Event not found.");
   }
   const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
-  const club = await loadClub(db, event.clubId);
+  const club = await loadClub(db, event.organizerId ?? event.clubId);
   return {
     event: publicEventDetails(data.eventId, event, club?.name ?? null),
   };
@@ -269,7 +276,8 @@ export async function adminUpdateEventDetailsHandler(
         "Cancelled events cannot be edited from admin details."
       );
     }
-    const clubRef = db.collection("clubs").doc(before.clubId);
+    const clubRef = db.collection("organizers")
+      .doc(before.organizerId ?? before.clubId);
     const clubSnap = await tx.get(clubRef);
     const club = clubSnap.exists ?
       requireDoc<ClubDocument>(clubSnap, "ClubDocument") :
@@ -326,6 +334,8 @@ function publicEventListRow(
   return {
     eventId,
     clubId: event.clubId,
+
+    organizerId: event.organizerId ?? event.clubId,
     organizerName,
     title: eventTitleLabel(event),
     activityKind: event.eventFormat.activityKind,
@@ -360,6 +370,8 @@ function publicEventDetails(
   return {
     eventId,
     clubId: event.clubId,
+
+    organizerId: event.organizerId ?? event.clubId,
     organizerName,
     title: eventTitleLabel(event),
     startTime: timestampIso(event.startTime),
@@ -477,7 +489,7 @@ async function loadClub(
   db: FirebaseFirestore.Firestore,
   clubId: string
 ): Promise<ClubDocument | null> {
-  const snap = await db.collection("clubs").doc(clubId).get();
+  const snap = await db.collection("organizers").doc(clubId).get();
   return snap.exists ? requireDoc<ClubDocument>(snap, "ClubDocument") : null;
 }
 
@@ -525,6 +537,7 @@ function normalizeAdminListEventDetailsPayload(value: unknown): unknown {
     ...data,
     query: normalizeNullableString(data.query),
     clubId: normalizeNullableString(data.clubId),
+    organizerId: normalizeNullableString(data.organizerId),
     citySlug: normalizeNullableMarketId(data.citySlug),
     citySlugs: normalizeCityMarketIds(data.citySlugs),
     activityKind: normalizeNullableString(data.activityKind),

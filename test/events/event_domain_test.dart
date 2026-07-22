@@ -151,6 +151,7 @@ void main() {
       expect(event.signedUpCount, 4);
       expect(event.spotsRemaining, 1);
       expect(event.isFull, isFalse);
+      expect(event.effectiveCohortCounts.values.single, 4);
     });
 
     test('uses projected checked-in and waitlist counts', () {

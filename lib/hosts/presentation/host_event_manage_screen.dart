@@ -5,6 +5,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -20,6 +21,7 @@ import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_tab_rail.dart';
@@ -157,12 +159,11 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             sharePending: shareMutation.isPending,
           )
         : null;
-    return Scaffold(
-      backgroundColor: t.bg,
-      appBar: CatchTopBar(
+    return CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         showBackButton: true,
         onBack: onBackToSuccess,
-        border: true,
+        divider: scrolledUnder,
         height: CatchLayout.hostEventManageTopBarHeight,
         titleWidget: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -749,6 +750,7 @@ class HostPrivateAccessCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchAsyncValueView<EventPrivateAccess?>(
       value: accessAsync,
+      onRetry: onRetryPrivateAccess,
       loadingBuilder: (_) => HostPrivateAccessShell(
         child: Row(
           children: [
@@ -802,11 +804,7 @@ class HostPrivateAccessCard extends StatelessWidget {
 }
 
 CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
-  return value.when(
-    data: CatchAsyncState<T>.data,
-    loading: () => const CatchAsyncState.loading(),
-    error: (error, stackTrace) => CatchAsyncState<T>.error(error),
-  );
+  return catchAsyncStateFromAsyncValue(value);
 }
 
 CatchAsyncState<T>? _nullableCatchAsyncState<T>(AsyncValue<T>? value) {
@@ -1049,6 +1047,7 @@ class HostInviteLinksList extends StatelessWidget {
         gapH12,
         CatchAsyncValueView<List<EventInviteLink>>(
           value: linksAsync,
+          onRetry: onRetry,
           loadingBuilder: (_) => Text(
             context.l10n.hostsHostEventManageScreenTextLoadingInviteLinks,
             style: CatchTextStyles.supporting(context, color: t.ink2),

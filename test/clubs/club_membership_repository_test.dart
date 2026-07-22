@@ -22,13 +22,13 @@ void main() {
 
     test('watchMembership emits the matching membership edge', () async {
       final id = clubMembershipId(clubId: 'club-1', uid: 'runner-1');
-      await firestore.collection('clubMemberships').doc(id).set({
-        'clubId': 'club-1',
+      await firestore.collection('organizerFollows').doc(id).set({
+        'organizerId': 'club-1',
         'uid': 'runner-1',
-        'role': ClubMembershipRole.member.name,
         'status': ClubMembershipStatus.active.name,
-        'joinedAt': DateTime(2026),
-        'leftAt': null,
+        'followedAt': DateTime(2026),
+        'unfollowedAt': null,
+        'pushNotificationsEnabled': true,
       });
 
       await expectLater(

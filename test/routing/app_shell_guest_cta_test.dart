@@ -167,7 +167,7 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.text('Auth /clubs'), findsOneWidget);
+    expect(find.text('Auth /organizers'), findsOneWidget);
   });
 
   testWidgets('authenticated app shell loads Chats and Profile branches', (

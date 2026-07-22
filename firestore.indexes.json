@@ -165,6 +165,23 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
         {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"},
         {"fieldPath": "startTime", "mode": "ASCENDING"}
       ]
@@ -407,6 +424,54 @@
       "fields": [
         {"fieldPath": "locationMarketId", "mode": "ASCENDING"},
         {"fieldPath": "createdAt", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizers",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "locationMarketId", "mode": "ASCENDING"},
+        {"fieldPath": "createdAt", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizers",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "locationMarketId", "mode": "ASCENDING"},
+        {"fieldPath": "rating", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizers",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "publicPage.citySlug", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
+      ]
+    },
+    {
+      "collectionGroup": "organizers",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "publicPage.publishStatus", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
+      ]
+    },
+    {
+      "collectionGroup": "organizers",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "appVisibility", "mode": "ASCENDING"},
+        {"fieldPath": "adminSearch.tokens", "arrayConfig": "CONTAINS"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerFollows",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"}
       ]
     },
     {

@@ -119,7 +119,7 @@ export function useOrganizerPublishingController({
   const loadClub = useCallback(async (nextClubId = clubId) => {
     const normalizedClubId = nextClubId.trim();
     if (!normalizedClubId) {
-      onError("Enter a clubs/{id} document id before loading.");
+      onError("Enter an organizers/{id} document id before loading.");
       return;
     }
     if (onSelectClubId && normalizedClubId !== detailClubId) {

@@ -8,6 +8,7 @@
   "required": ["clubId", "eventId", "rating", "comment"],
   "properties": {
     "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "rating": {"type": "integer", "minimum": 1, "maximum": 5},
     "comment": {"type": "string", "maxLength": 1000}

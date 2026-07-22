@@ -42,6 +42,7 @@ interface EventSuccessFeedbackDocument {
 export interface EventSuccessScorecardDocument {
   eventId: string;
   clubId: string;
+  organizerId: string;
   bookedCount: number;
   checkedInCount: number;
   feedbackCount: number;
@@ -255,6 +256,8 @@ export function buildEventSuccessScorecard(params: {
   return {
     eventId,
     clubId: event.clubId,
+
+    organizerId: event.organizerId ?? event.clubId,
     bookedCount: event.bookedCount ?? 0,
     checkedInCount,
     feedbackCount,

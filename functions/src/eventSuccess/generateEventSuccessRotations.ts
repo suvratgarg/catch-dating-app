@@ -1,7 +1,7 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {EventDocument, ClubDocument, BlockDocument, UserProfileDocument} from
+import {EventDocument, BlockDocument, UserProfileDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {EventIdCallablePayload} from
@@ -17,7 +17,11 @@ import {validateCallableWithAjv, requireDoc} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
-import {isClubHost} from "../shared/clubHosts";
+import {
+  eventOrganizerRef,
+  isEventOrganizerManager,
+  requireEventOrganizer,
+} from "../shared/eventOrganizers";
 import {
   AssignmentParticipant,
   assignmentPairKey,
@@ -158,6 +162,7 @@ interface GeneratedSitOutSlot {
 interface GeneratedAssignment {
   eventId: string;
   clubId: string;
+  organizerId: string;
   uid: string;
   moduleId: string;
   label: string;
@@ -232,6 +237,8 @@ export async function generateEventSuccessRotationsHandler(
   const assignments = buildAssignments({
     eventId,
     clubId: event.clubId,
+
+    organizerId: event.organizerId ?? event.clubId,
     participants,
     rounds,
     eventStartMillis: event.startTime.toMillis(),
@@ -287,6 +294,8 @@ export async function overrideEventSuccessRotationsHandler(
   const assignments = buildAssignments({
     eventId: payload.eventId,
     clubId: event.clubId,
+
+    organizerId: event.organizerId ?? event.clubId,
     participants,
     rounds,
     eventStartMillis: event.startTime.toMillis(),
@@ -352,17 +361,11 @@ async function loadRotationEventContext(
       "This event has been cancelled.");
   }
 
-  const clubSnap = await db.collection("clubs").doc(event.clubId).get();
-  if (!clubSnap.exists) {
-    throw new HttpsError("not-found", "Club not found.");
-  }
-  const club = requireDoc<ClubDocument>(
-    clubSnap,
-    "ClubDocument"
-  );
-  if (!isClubHost(club, uid)) {
+  const organizerSnap = await eventOrganizerRef(db, event).get();
+  const organizer = requireEventOrganizer(organizerSnap, event);
+  if (!isEventOrganizerManager(organizer, event, uid)) {
     throw new HttpsError("permission-denied",
-      "Only the club host can manage event rotations.");
+      "Only an organizer manager can manage event rotations.");
   }
 
   const plan = requireDoc<EventSuccessPlanDocument>(
@@ -801,6 +804,7 @@ function toRotationPair(
 function buildAssignments(params: {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   participants: RotationParticipant[];
   rounds: RotationRound[];
   eventStartMillis: number;
@@ -912,6 +916,7 @@ function buildAssignments(params: {
     assignments.set(docId, {
       eventId: params.eventId,
       clubId: params.clubId,
+      organizerId: params.organizerId ?? params.clubId,
       uid,
       moduleId: GUIDED_ROTATIONS_MODULE_ID,
       label: "Guided rotations",

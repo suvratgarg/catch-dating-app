@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.7.153
+version: 0.8.2
 updated: 2026-07-22
 owner: web_platform
 status: active
@@ -23,6 +23,82 @@ Keep the Flutter web app separate from the public website. The Flutter web app i
 the consumer app surface and should continue sharing mobile app code. The
 marketing and admin surfaces are web-native products and should use the same
 React + TypeScript stack where practical.
+
+## Organizer Entity Boundary
+
+Both React surfaces use organizer nomenclature and canonical organizer
+callables. The marketing website claims, reviews, analytics, generated listing
+records, and public routes use `organizerId` and `/organizers/...`. The admin
+Organizers workspace invokes `adminGetOrganizerDetails`,
+`adminListOrganizerDetails`, and `adminUpdateOrganizerDetails` and presents
+`organizers/{id}` as the source collection.
+
+Internal `AdminClub*` adapter types may remain during the released-client
+window, but they are compatibility types only. React code must not add a new
+`clubs/{id}` authority, club-named callable, or product-facing generic club
+label. Retirement follows `docs/migrations/clubs_to_organizers.md`.
+
+## Public Viewer And Listing Authority Matrix
+
+`design/public_surface_behavior.json` is the executable decision table for
+public discovery, organizer detail, event detail, and the related route/action
+boundaries in the Flutter app and marketing website. Its schema is
+`design/public_surface_behavior.schema.json`. The matrix records deliberate
+configurations rather than generating a meaningless full Cartesian product;
+every declared dimension value must either appear in a configuration or be
+listed under that surface's `excludedDecisionValues` with a rationale.
+
+The decision inputs are independent unless the matrix says otherwise:
+
+| Variable group | Why it changes behavior |
+|---|---|
+| Viewer lifecycle | Auth may still be resolving, the viewer may be a guest, or a signed-in viewer may have an incomplete, booking-ready, or social-ready profile. Resolving auth never borrows guest actions. |
+| Runtime and relationship | Consumer and host apps have different preview authority; visitor, member, and host relationships suppress or enable different actions. Relationship reads fail closed while loading or on error. |
+| Organizer authority | App visibility, effective lifecycle availability, ownership, claim state, provenance verification, host identity, contact availability, and marketing publication are separate facts. Crawled, claimed, and owner-verified are not aliases; archived lifecycle state denies native public browsing even when visibility is stale. |
+| Event capability | Catch-native versus external supply, lifecycle, viewer-specific availability, location precision, and payment support independently affect navigation and booking. |
+| Website capability | Claim submission, canonical public-review target readiness, public-review reads, public-review writes, and their Firebase/App Check runtimes are separate capabilities. A review submission is moderated and never implies immediate publication. |
+
+The app matrix also owns every consumer route exactly once. Explore, Explore
+Map, public Organizer Detail, public Event Detail, and exact Event Location are
+guest-readable. Saved Events and the remaining account routes require a
+booking-ready profile; social routes and social actions require a social-ready
+profile; Event Success companion routes keep their own protected class; and
+onboarding owns the incomplete-profile resume path. The guest shell therefore
+shows only Explore navigation, but private deep links are still classified and
+guarded instead of relying on a hidden tab.
+
+The marketing website never infers capability from a badge or from login
+alone. Generated projections carry canonical authority plus independent claim,
+review-target, review-read, and review-write capabilities. Unpublished and
+claim-suppressed listings are absent from public outputs even if stale data says
+`published`; missing target, capability, or runtime evidence renders a truthful
+disabled/absent action. `WEB-ORGANIZER-CLAIM-TARGET-001` tracks the remaining
+producer cutover needed before a generated listing can safely enable a
+canonical claim target; legacy `clubs/{id}` receipts do not enable claims.
+`WEB-ORGANIZER-REVIEW-TARGET-001` tracks verified `organizers/{id}` or
+compatibility `clubs/{id}` target readiness before public review reads or
+writes can be enabled. The checked-in sync preview is advisory only: even an
+`in_sync` preview action cannot enable claim or review UI. Only a validated,
+read-only Firestore receipt bound to the current target plan can do that. The
+review callables evaluate both canonical and compatibility documents and accept
+the first eligible public target, so an ineligible canonical shadow cannot mask
+an eligible compatibility listing.
+
+Run the full non-vacuous gate with:
+
+```sh
+node tool/run.mjs check design:public-surface-behavior
+```
+
+The gate validates source enums, route ownership, tuple uniqueness, explicit
+exclusions, enabled-action witnesses, verified status, and exact proof-harness
+coverage. `test/design/public_surface_behavior_test.dart` executes every app
+row against production decision helpers, and
+`website/src/features/organizers/publicSurfaceBehavior.test.ts` executes every
+website row against the generated-listing policy and the same claim/review
+presentation adapters consumed by the rendered sections. The current contract
+contains 115 configurations across 14 surfaces. Adding a configuration without
+both implementation and proof fails strict mode.
 
 ## Current Stack
 
@@ -764,7 +840,7 @@ A future host dashboard still fits this architecture. Prefer:
 
 | Domain | Surface | Stack | Permission model |
 |---|---|---|---|
-| `hosts.catchdates.com` | Authenticated host portal for club/event management, scoped analytics, payout readiness, and event operations | React + TypeScript | Server-side Functions authorize host ownership per club/event |
+| `hosts.catchdates.com` | Authenticated host portal for organizer/event management, scoped analytics, payout readiness, and event operations | React + TypeScript | Server-side Functions authorize organizer ownership or management per organizer/event |
 
 Do not put host tools under `admin.catchdates.com`. Hosts are external operators,
 not internal admins. Keep `/host/` on `catchdates.com` as the public host
@@ -776,7 +852,7 @@ Host portal APIs should follow the same server-owned pattern as admin APIs:
 - the browser client never receives service-account credentials;
 - Functions validate Firebase Auth and host ownership;
 - mutations write audit or activity records where operationally useful;
-- analytics responses are scoped to clubs/events the signed-in host can manage.
+- analytics responses are scoped to organizers/events the signed-in host can manage.
 
 ## Why Subdomains Instead Of Paths
 

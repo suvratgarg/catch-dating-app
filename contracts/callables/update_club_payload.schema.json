@@ -18,6 +18,9 @@
         "description": {"type": "string", "minLength": 1, "maxLength": 2000},
         "location": {"$ref": "../shared/event_common.schema.json#/definitions/marketId"},
         "area": {"type": "string", "minLength": 1, "maxLength": 120},
+        "organizerType": {
+          "$ref": "../shared/event_common.schema.json#/definitions/organizerType"
+        },
         "hostName": {"type": "string", "minLength": 1, "maxLength": 120},
         "hostAvatarUrl": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
         "imageUrl": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},

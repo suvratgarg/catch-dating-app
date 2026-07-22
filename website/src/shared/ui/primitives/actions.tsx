@@ -159,23 +159,25 @@ export function EventActionCard({
           items={event.counts}
         />
       ) : null}
-      <div className="event-action-card__actions">
-        {event.actions.map((action, index) => (
-          <ButtonLink
-            href={action.href}
-            key={`${action.href}-${index}`}
-            target={action.target}
-            rel={action.rel}
-            variant={action.variant === "secondary" ? "ghost" : "primary"}
-            onClick={(clickEvent) => {
-              onActionClick?.(action, clickEvent);
-              action.onClick?.();
-            }}
-          >
-            {action.label}
-          </ButtonLink>
-        ))}
-      </div>
+      {event.actions.length ? (
+        <div className="event-action-card__actions">
+          {event.actions.map((action, index) => (
+            <ButtonLink
+              href={action.href}
+              key={`${action.href}-${index}`}
+              target={action.target}
+              rel={action.rel}
+              variant={action.variant === "secondary" ? "ghost" : "primary"}
+              onClick={(clickEvent) => {
+                onActionClick?.(action, clickEvent);
+                action.onClick?.();
+              }}
+            >
+              {action.label}
+            </ButtonLink>
+          ))}
+        </div>
+      ) : null}
     </article>
   );
 }

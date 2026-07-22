@@ -1,7 +1,7 @@
 {
   "$schema": "./widget_classification.schema.json",
   "version": 2,
-  "updated": "2026-07-19",
+  "updated": "2026-07-22",
   "sourceOfTruth": {
     "scope": "Generated inventory for production Flutter widget and widget-state classes under lib/**. Widgetbook/test scaffolds are intentionally out of scope.",
     "canonicalContracts": "design/components/catch.components.json owns canonical global component contracts and governance metadata.",
@@ -10,44 +10,44 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1094,
-    "widgetClasses": 965,
-    "stateClasses": 129,
-    "publicClasses": 960,
-    "privateClasses": 134,
+    "total": 1099,
+    "widgetClasses": 967,
+    "stateClasses": 132,
+    "publicClasses": 962,
+    "privateClasses": 137,
     "byRole": {
       "atom": 57,
-      "composition": 351,
-      "feature-adapter": 284,
+      "composition": 353,
+      "feature-adapter": 285,
       "pattern": 17,
-      "screen": 256,
-      "widget-state": 129
+      "screen": 255,
+      "widget-state": 132
     },
     "byDecision": {
       "keep-canonical-contract": 195,
-      "keep-public-cataloged": 703,
-      "keep-widget-state": 129,
-      "review-catalog-coverage": 43,
-      "review-promote-or-consolidate": 19,
+      "keep-public-cataloged": 702,
+      "keep-widget-state": 132,
+      "review-catalog-coverage": 44,
+      "review-promote-or-consolidate": 21,
       "review-promote-or-inline": 5
     },
     "byCatalogStatus": {
-      "cataloged": 666,
+      "cataloged": 665,
       "contracted": 195,
-      "not-applicable": 129,
+      "not-applicable": 132,
       "route-covered": 54,
-      "uncataloged": 50
+      "uncataloged": 53
     },
     "conceptCount": 62,
     "memberClassCount": 116,
-    "compositionClassCount": 514,
-    "screenClassCount": 268,
+    "compositionClassCount": 517,
+    "screenClassCount": 267,
     "unclassifiedCount": 0,
     "byConceptRole": {
-      "composition": 514,
+      "composition": 517,
       "concept": 62,
       "member": 116,
-      "screen": 268
+      "screen": 267
     },
     "collisionGroupCount": 32,
     "collisions": [
@@ -366,7 +366,7 @@
       "memberClasses": 116,
       "memberClassesCataloged": 116,
       "compositionsCataloged": 469,
-      "screensCataloged": 214
+      "screensCataloged": 213
     }
   },
   "widgets": [
@@ -3846,6 +3846,64 @@
       ]
     },
     {
+      "name": "_CatchAsyncValueSliverState",
+      "file": "lib/core/widgets/catch_async_value_view.dart",
+      "classKind": "widget-state",
+      "baseClass": "State<CatchAsyncValueSliver<T>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.catch_async_value_sliver_t",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "conceptRole": null,
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": null,
+      "decisionRef": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
+      "name": "_CatchAsyncValueViewState",
+      "file": "lib/core/widgets/catch_async_value_view.dart",
+      "classKind": "widget-state",
+      "baseClass": "State<CatchAsyncValueView<T>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.catch_async_value_view_t",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "conceptRole": null,
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": null,
+      "decisionRef": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
       "name": "CatchAsyncScreenLoading",
       "file": "lib/core/widgets/catch_async_value_view.dart",
       "classKind": "widget",
@@ -3873,6 +3931,7 @@
         "mergeIntoCanonical"
       ],
       "flags": [
+        "primitive-imports-data-layer",
         "primitive-imports-provider-layer"
       ]
     },
@@ -3904,6 +3963,7 @@
         "mergeIntoCanonical"
       ],
       "flags": [
+        "primitive-imports-data-layer",
         "primitive-imports-provider-layer"
       ]
     },
@@ -3911,7 +3971,7 @@
       "name": "CatchAsyncValueSliver",
       "file": "lib/core/widgets/catch_async_value_view.dart",
       "classKind": "widget",
-      "baseClass": "StatelessWidget",
+      "baseClass": "StatefulWidget",
       "visibility": "public",
       "role": "pattern",
       "canonicalFamily": "catch.async_value",
@@ -3935,6 +3995,7 @@
         "mergeIntoCanonical"
       ],
       "flags": [
+        "primitive-imports-data-layer",
         "primitive-imports-provider-layer"
       ]
     },
@@ -3942,7 +4003,7 @@
       "name": "CatchAsyncValueView",
       "file": "lib/core/widgets/catch_async_value_view.dart",
       "classKind": "widget",
-      "baseClass": "StatelessWidget",
+      "baseClass": "StatefulWidget",
       "visibility": "public",
       "role": "pattern",
       "canonicalFamily": "catch.async_value",
@@ -3966,6 +4027,7 @@
         "mergeIntoCanonical"
       ],
       "flags": [
+        "primitive-imports-data-layer",
         "primitive-imports-provider-layer"
       ]
     },
@@ -5004,6 +5066,40 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "CatchErrorBackAction",
+      "file": "lib/core/widgets/catch_error_state.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.error_back_action",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "conceptRole": "composition",
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": "error_back_action",
+      "decisionRef": "generated-rule:uncontracted-composition",
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract",
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "CatchErrorBody",
@@ -7742,6 +7838,69 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "_CatchRouteScaffoldState",
+      "file": "lib/core/widgets/catch_route_scaffold.dart",
+      "classKind": "widget-state",
+      "baseClass": "State<CatchRouteScaffold>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.catch_route_scaffold",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "conceptRole": null,
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": null,
+      "decisionRef": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
+      "name": "CatchRouteScaffold",
+      "file": "lib/core/widgets/catch_route_scaffold.dart",
+      "classKind": "widget",
+      "baseClass": "StatefulWidget",
+      "visibility": "public",
+      "role": "composition",
+      "canonicalFamily": "catch.route_scaffold",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "conceptRole": "composition",
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": "route_scaffold",
+      "decisionRef": "generated-rule:uncontracted-composition",
+      "allowedDependencyLevel": "primitives-and-slots",
+      "stateOwnership": "slot-state-only",
+      "asyncOwnership": "none",
+      "layoutOwnership": "slot-layout",
+      "actionOwnership": "callbacks-only",
+      "decision": "review-promote-or-consolidate",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "core-widget-without-contract",
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "_CatchRowPressSurfaceState",
@@ -17874,35 +18033,6 @@
       "flags": []
     },
     {
-      "name": "SavedEventsHeaderSliver",
-      "file": "lib/events/presentation/saved_events_screen.dart",
-      "classKind": "widget",
-      "baseClass": "StatelessWidget",
-      "visibility": "public",
-      "role": "screen",
-      "canonicalFamily": "screen.saved_events_header_sliver",
-      "publicApi": true,
-      "catalogStatus": "cataloged",
-      "contractId": null,
-      "conceptRole": "screen",
-      "conceptId": null,
-      "parentConceptId": null,
-      "qualifier": null,
-      "collisionKey": "saved_events_header_sliver",
-      "decisionRef": "generated-rule:screen-boundary",
-      "allowedDependencyLevel": "route-boundary",
-      "stateOwnership": "screen-owned",
-      "asyncOwnership": "screen-owned",
-      "layoutOwnership": "page-safe-area-sliver",
-      "actionOwnership": "navigation-and-controller-calls",
-      "decision": "keep-public-cataloged",
-      "remediationOptions": [
-        "keepPublicCataloged",
-        "mergeIntoCanonical"
-      ],
-      "flags": []
-    },
-    {
       "name": "SavedEventsLoading",
       "file": "lib/events/presentation/saved_events_screen.dart",
       "classKind": "widget",
@@ -27988,6 +28118,39 @@
         "mergeIntoCanonical"
       ],
       "flags": []
+    },
+    {
+      "name": "OrganizerAuthorityBadge",
+      "file": "lib/organizers/presentation/organizer_authority_badge.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "feature-adapter",
+      "canonicalFamily": "feature.organizers.organizer_authority_badge",
+      "publicApi": true,
+      "catalogStatus": "uncataloged",
+      "contractId": null,
+      "conceptRole": "composition",
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": "organizer_authority_badge",
+      "decisionRef": "generated-rule:uncontracted-composition",
+      "allowedDependencyLevel": "feature-display-models",
+      "stateOwnership": "feature-display-state",
+      "asyncOwnership": "display-state-only",
+      "layoutOwnership": "feature-section-layout",
+      "actionOwnership": "feature-callbacks",
+      "decision": "review-catalog-coverage",
+      "remediationOptions": [
+        "promoteToCanonicalContract",
+        "promoteToPublicCatalog",
+        "mergeIntoCanonical",
+        "inlineDelete"
+      ],
+      "flags": [
+        "public-widget-missing-widgetbook"
+      ]
     },
     {
       "name": "PaymentConfirmationLoadingScreen",

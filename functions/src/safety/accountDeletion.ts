@@ -8,6 +8,7 @@ import {eventBroadcastDeliveryKey} from "../shared/eventBroadcasts";
 import {
   ProfilePhoto,
   ClubMembershipDocument,
+  OrganizerFollowDocument,
   EventParticipationDocument,
 } from "../shared/generated/firestoreAdminTypes";
 
@@ -220,10 +221,23 @@ async function queueClubMembershipCleanup(
   now: FirebaseFirestore.FieldValue,
   writer: BatchQueue
 ) {
-  const memberships = await db
-    .collection("clubMemberships")
-    .where("uid", "==", uid)
-    .get();
+  const [follows, memberships] = await Promise.all([
+    db.collection("organizerFollows").where("uid", "==", uid).get(),
+    db.collection("clubMemberships").where("uid", "==", uid).get(),
+  ]);
+  follows.forEach((doc) => {
+    const follow = doc.data() as OrganizerFollowDocument;
+    writer.set(doc.ref, {
+      status: "inactive",
+      unfollowedAt: now,
+      pushNotificationsEnabled: false,
+    }, {merge: true});
+    if (follow.status === "active") {
+      writer.update(db.collection("organizers").doc(follow.organizerId), {
+        followerCount: admin.firestore.FieldValue.increment(-1),
+      });
+    }
+  });
   memberships.forEach((doc) => {
     const membership = doc.data() as ClubMembershipDocument;
     writer.set(doc.ref, {

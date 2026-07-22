@@ -315,17 +315,26 @@ function withPublicExternalEvents(listing) {
 }
 
 function publicApiForOrganizerIntake(entityId) {
-  const readiness = claimTargetReadinessReceipt ?? claimTargetSyncPreview;
-  const action = (readiness?.actions ?? []).find((item) =>
-    item?.entityId === entityId || item?.path === `clubs/${entityId}`
-  );
-  if (!readiness) {
+  const action = claimTargetAction(claimTargetReadinessReceipt, entityId);
+  if (!claimTargetReadinessReceipt) {
+    const previewAction = claimTargetAction(claimTargetSyncPreview, entityId);
     return disabledPublicApi(
-      "Claiming is not available for this organizer yet.",
-      "unknown"
+      "Claiming is not available until target readiness is verified against Firestore.",
+      previewAction && previewAction.status !== "in_sync" ?
+        "write_needed" :
+        "unknown"
     );
   }
   if (!action) {
+    return disabledPublicApi(
+      "Claiming is not available because the organizer is absent from the readiness receipt.",
+      "unknown"
+    );
+  }
+  if (
+    action.status === "in_sync" &&
+    action.path === `organizers/${entityId}`
+  ) {
     return {
       state: "enabled",
       reason: "The organizer claim target is ready.",
@@ -333,15 +342,44 @@ function publicApiForOrganizerIntake(entityId) {
     };
   }
   if (action.status === "in_sync") {
-    return {
-      state: "enabled",
-      reason: "The organizer claim target is ready.",
-      claimTargetSyncStatus: "in_sync",
-    };
+    return disabledPublicApi(
+      "Claiming is unavailable until the canonical organizer target is ready.",
+      "unknown"
+    );
   }
   return disabledPublicApi(
     "Claiming is not available for this organizer yet.",
     "write_needed"
+  );
+}
+
+function publicReviewTargetForOrganizerIntake(entityId) {
+  const action = claimTargetAction(claimTargetReadinessReceipt, entityId);
+  if (
+    action?.status === "in_sync" &&
+    [
+      `organizers/${entityId}`,
+      `clubs/${entityId}`,
+    ].includes(action.path)
+  ) {
+    return {
+      state: "enabled",
+      reason: "The canonical public review target is ready.",
+    };
+  }
+  return {
+    state: "disabled",
+    reason: !claimTargetReadinessReceipt ?
+      "Public reviews are unavailable until canonical target readiness is verified." :
+      "Public reviews are unavailable until the canonical organizer target is ready.",
+  };
+}
+
+function claimTargetAction(readiness, entityId) {
+  return (readiness?.actions ?? []).find((item) =>
+    item?.entityId === entityId ||
+    item?.path === `organizers/${entityId}` ||
+    item?.path === `clubs/${entityId}`
   );
 }
 
@@ -355,6 +393,110 @@ function disabledPublicApi(reason, claimTargetSyncStatus) {
     reason,
     claimTargetSyncStatus,
   };
+}
+
+function organizerAuthority({
+  ownershipState = "programmatic",
+  claimState = "unclaimed",
+  provenanceOrigin = "import",
+  sourceConfidence = "seedOnly",
+  verificationStatus = "unverified",
+  appVisibility = "hidden",
+  publishStatus = "draft",
+  indexStatus = "noindex",
+} = {}) {
+  return {
+    ownershipState: enumValue(
+      ownershipState,
+      ["programmatic", "userCreated", "claimed", "transferred"],
+      "programmatic"
+    ),
+    claimState: enumValue(
+      claimState,
+      ["unclaimed", "claimPending", "claimed", "verified", "suppressed"],
+      "unclaimed"
+    ),
+    provenanceOrigin: enumValue(
+      provenanceOrigin,
+      ["userCreated", "scraper", "adminSeed", "import"],
+      "import"
+    ),
+    sourceConfidence: enumValue(
+      sourceConfidence,
+      ["seedOnly", "low", "medium", "high", "ownerVerified"],
+      "seedOnly"
+    ),
+    verificationStatus: enumValue(
+      verificationStatus,
+      ["unverified", "sourceBacked", "ownerVerified"],
+      "unverified"
+    ),
+    appVisibility: enumValue(
+      appVisibility,
+      ["discoverable", "hidden"],
+      "hidden"
+    ),
+    publishStatus: enumValue(
+      publishStatus,
+      ["draft", "qa", "published", "suppressed", "removed"],
+      "draft"
+    ),
+    indexStatus: enumValue(
+      indexStatus,
+      ["noindex", "indexReady", "indexed"],
+      "noindex"
+    ),
+  };
+}
+
+function enumValue(value, allowed, fallback) {
+  return allowed.includes(value) ? value : fallback;
+}
+
+function listingCapabilities(
+  authority,
+  backendReadiness,
+  publicReviewTarget = {
+    state: "disabled",
+    reason: "Public reviews are unavailable until canonical target readiness is verified.",
+  }
+) {
+  const claimable = authority.claimState === "unclaimed";
+  const claimBackendEnabled = backendReadiness.state === "enabled";
+  const publicReviewTargetEnabled = publicReviewTarget.state === "enabled";
+  const publicReviewsEligible =
+    authority.publishStatus === "published" &&
+    authority.indexStatus !== "noindex" &&
+    authority.claimState !== "suppressed";
+  const publicReviewsEnabled =
+    publicReviewsEligible && publicReviewTargetEnabled;
+  return {
+    claimRequest: {
+      state: claimable && claimBackendEnabled ? "enabled" : "disabled",
+      reason: !claimable ?
+        claimCapabilityReason(authority.claimState) :
+        backendReadiness.reason,
+    },
+    publicReviews: {
+      targetState: publicReviewTargetEnabled ? "enabled" : "disabled",
+      readState: publicReviewsEnabled ? "enabled" : "disabled",
+      writeState: publicReviewsEnabled ? "enabled" : "disabled",
+      reason: !publicReviewsEligible ?
+        "Public reviews require a published, index-ready organizer page." :
+        !publicReviewTargetEnabled ? publicReviewTarget.reason :
+        "Public reviews are available for this published organizer page.",
+    },
+  };
+}
+
+function claimCapabilityReason(claimState) {
+  switch (claimState) {
+  case "claimPending": return "A claim request is already under review.";
+  case "claimed": return "This organizer has already been claimed.";
+  case "verified": return "This organizer is owner verified.";
+  case "suppressed": return "This organizer is not accepting claim requests.";
+  default: return "Claiming is not available for this organizer yet.";
+  }
 }
 
 function validateListingProjections(listings) {
@@ -401,6 +543,33 @@ function appCreatedDemoListings() {
     .filter(Boolean);
 }
 
+function canonicalOrganizerType(club) {
+  const value = club?.organizerType;
+  if ([
+    "club",
+    "community",
+    "individual",
+    "eventProducer",
+    "venue",
+    "brand",
+  ].includes(value)) return value;
+  switch (club?.entityKind) {
+  case "creatorCommunity": return "community";
+  case "eventOrganizer": return "eventProducer";
+  case "venue": return "venue";
+  case "brand": return "brand";
+  default: return "club";
+  }
+}
+
+function organizerTypeLabel(type) {
+  switch (type) {
+  case "eventProducer": return "Event producer";
+  case "individual": return "Individual organizer";
+  default: return `${type.charAt(0).toUpperCase()}${type.slice(1)}`;
+  }
+}
+
 function listingFromClubSeed(wrapper) {
   if (!wrapper || typeof wrapper !== "object") return null;
   const {path: firestorePath, data: club} = wrapper;
@@ -413,9 +582,22 @@ function listingFromClubSeed(wrapper) {
   const citySlug = club.publicPage.citySlug || club.location || "unknown";
   const publicProfile = club.publicProfile ?? {};
   const claimState = club.claim?.state ?? "unclaimed";
-  const claimHref = claimState === "claimed" ?
-    club.claim?.claimHref ?? "/host/#founding-hosts" :
-    `${club.publicPage.canonicalPath}#claim`;
+  const claimHref = claimState === "unclaimed" ?
+    `${club.publicPage.canonicalPath}#claim` :
+    club.publicPage.canonicalPath;
+  const authority = organizerAuthority({
+    ownershipState: club.ownership?.state,
+    claimState,
+    provenanceOrigin: club.provenance?.origin,
+    sourceConfidence: club.provenance?.sourceConfidence,
+    verificationStatus: club.provenance?.verificationStatus,
+    appVisibility: club.appVisibility,
+    publishStatus: club.publicPage.publishStatus,
+    indexStatus: club.publicPage.indexStatus,
+  });
+  const publicApi = staticPublicApi(
+    "Legacy scraped seed listings are static until their Firestore claim target sync is verified."
+  );
 
   return {
     id,
@@ -429,7 +611,9 @@ function listingFromClubSeed(wrapper) {
     country: club.countryName ?? "",
     path: club.publicPage.canonicalPath,
     legacyPaths: [],
-    category: club.displayCategory ?? "Organizer",
+    category: club.publicCategoryLabel ??
+      club.displayCategory ??
+      organizerTypeLabel(canonicalOrganizerType(club)),
     status: claimState,
     indexing: club.publicPage.robots ?? "noindex, follow",
     sourceConfidence: club.provenance?.sourceConfidence ?? "low",
@@ -450,16 +634,18 @@ function listingFromClubSeed(wrapper) {
     sources: publicSourcesForListing(club.publicSources ?? []),
     claim: {
       href: claimHref,
-      label: claimState === "claimed" ? "View organizer tools" : "Claim this listing",
+      label: claimState === "unclaimed" ? "Claim this listing" : "View organizer profile",
     },
-    publicApi: staticPublicApi(
-      "Legacy scraped seed listings are static until their Firestore claim target sync is verified."
-    ),
+    publicApi,
+    authority,
+    capabilities: listingCapabilities(authority, publicApi),
     lastVerifiedAt: dateLabel(club.provenance?.lastVerifiedAt),
     searchText: searchText([
       club.name,
       city,
       club.area,
+      club.organizerType,
+      club.publicCategoryLabel,
       club.displayCategory,
       club.instagramHandle,
       ...(club.tags ?? []),
@@ -483,6 +669,29 @@ function listingFromOrganizerIntakeProjection(entry, {liveMarketsOnly = false} =
   const citySlug = primaryMarket?.marketSlug ?? "multi-city";
   const country = countryNameForCode(primaryMarket?.countryCode);
   const sources = publicSourcesForOrganizerIntake(projection.sources ?? []);
+  const sourceConfidence = highestSourceConfidence(sources);
+  const claimState = enumValue(
+    projection.status,
+    ["unclaimed", "claimPending", "claimed", "verified", "suppressed"],
+    "unclaimed"
+  );
+  const authority = organizerAuthority({
+    ownershipState: claimState === "claimed" || claimState === "verified" ?
+      "claimed" : "programmatic",
+    claimState,
+    provenanceOrigin: "import",
+    sourceConfidence,
+    verificationStatus: claimState === "verified" ?
+      "ownerVerified" :
+      ["medium", "high"].includes(sourceConfidence) ? "sourceBacked" : "unverified",
+    appVisibility: entry.appVisibility ?? "hidden",
+    publishStatus: projection.indexing === "index, follow" ? "published" : "qa",
+    indexStatus: projection.indexing === "index, follow" ? "indexed" : "noindex",
+  });
+  const publicApi = publicApiForOrganizerIntake(entry.entityId);
+  const publicReviewTarget = publicReviewTargetForOrganizerIntake(
+    entry.entityId
+  );
 
   return {
     id: projection.id,
@@ -497,9 +706,9 @@ function listingFromOrganizerIntakeProjection(entry, {liveMarketsOnly = false} =
     path: projection.path,
     legacyPaths: entry.legacyPaths ?? [],
     category: projection.category,
-    status: projection.status,
+    status: claimState,
     indexing: projection.indexing,
-    sourceConfidence: highestSourceConfidence(sources),
+    sourceConfidence,
     headline: projection.headline ?? `${projection.name} organizer profile`,
     description: projection.description,
     sourceSummary: projection.sourceSummary,
@@ -530,10 +739,16 @@ function listingFromOrganizerIntakeProjection(entry, {liveMarketsOnly = false} =
     missingEvidence: projection.missingEvidence ?? [],
     sources,
     claim: {
-      href: `${projection.path}#claim`,
-      label: "Claim this listing",
+      href: claimState === "unclaimed" ? `${projection.path}#claim` : projection.path,
+      label: claimState === "unclaimed" ? "Claim this listing" : "View organizer profile",
     },
-    publicApi: publicApiForOrganizerIntake(entry.entityId),
+    publicApi,
+    authority,
+    capabilities: listingCapabilities(
+      authority,
+      publicApi,
+      publicReviewTarget
+    ),
     lastVerifiedAt: dateLabel(entry.reviewDecision?.decidedAt),
     searchText: searchText([
       projection.name,
@@ -559,6 +774,19 @@ function listingFromSalesDemo(config) {
   const reviews = salesDemoReviews(demo);
   const scorecard = events.find((event) => event.scorecard)?.scorecard ?? null;
   const nextEvent = events.find((event) => event.timeline === "upcoming");
+  const authority = organizerAuthority({
+    ownershipState: "userCreated",
+    claimState: "verified",
+    provenanceOrigin: "userCreated",
+    sourceConfidence: "ownerVerified",
+    verificationStatus: "ownerVerified",
+    appVisibility: "discoverable",
+    publishStatus: "published",
+    indexStatus: "noindex",
+  });
+  const publicApi = staticPublicApi(
+    "Catch demo listings use static fixture data and do not call public organizer APIs."
+  );
 
   return {
     id: club.id,
@@ -634,9 +862,9 @@ function listingFromSalesDemo(config) {
       href: `${path}#events`,
       label: "View events",
     },
-    publicApi: staticPublicApi(
-      "Catch demo listings use static fixture data and do not call public organizer APIs."
-    ),
+    publicApi,
+    authority,
+    capabilities: listingCapabilities(authority, publicApi),
     lastVerifiedAt: dateLabel({_seconds: Date.parse(demo.referenceNow) / 1000}),
     searchText: searchText([
       club.name,
@@ -649,13 +877,13 @@ function listingFromSalesDemo(config) {
   };
 }
 
-function publicReviewsForListing(reviews, clubId) {
+function publicReviewsForListing(reviews, organizerId) {
   if (!Array.isArray(reviews)) return [];
   return reviews
     .map((entry) => {
       const review = entry?.data ?? entry;
       if (!review || typeof review !== "object") return null;
-      if (review.clubId !== clubId) return null;
+      if ((review.organizerId ?? review.clubId) !== organizerId) return null;
       if (review.moderationStatus && review.moderationStatus !== "published") {
         return null;
       }

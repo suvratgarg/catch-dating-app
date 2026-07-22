@@ -24,6 +24,8 @@ vi.mock("../api/organizerPublishingRepository", () => repository);
 const readyRow: AdminClubListRow = {
   clubId: "afterfly",
   name: "AFTER FLY",
+  organizerType: "eventProducer",
+  publicCategoryLabel: "Event organizer",
   displayCategory: "eventOrganizer",
   cityName: "Indore",
   citySlug: "in-mp-indore",

@@ -35,6 +35,7 @@ class EventLocationMapRouteScreen extends ConsumerWidget {
 
     return CatchAsyncValueView<EventDetailViewModel?>(
       value: vmAsync,
+      onRetry: () => ref.invalidate(eventDetailViewModelProvider(eventId)),
       loadingBuilder: (_) =>
           const ChromelessMapScaffold(child: EventLocationMapLoadingBody()),
       errorBuilder: (_, error, _) => ChromelessMapScaffold(
@@ -53,6 +54,7 @@ class EventLocationMapRouteScreen extends ConsumerWidget {
                   context.l10n.eventsEventLocationMapScreenTitleEventNotFound,
               message:
                   context.l10n.eventsEventLocationMapScreenMessageThisEventIsNo,
+              secondaryAction: const CatchErrorBackAction(),
             ),
           );
         }

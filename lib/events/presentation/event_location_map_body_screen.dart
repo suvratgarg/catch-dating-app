@@ -35,6 +35,7 @@ class EventLocationMapScreen extends StatelessWidget {
           message: context
               .l10n
               .eventsEventLocationMapBodyScreenMessageThisEventDoesNot,
+          secondaryAction: const CatchErrorBackAction(),
         ),
       );
     }

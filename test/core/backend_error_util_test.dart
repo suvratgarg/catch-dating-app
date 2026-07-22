@@ -55,7 +55,9 @@ void main() {
           ),
           context: firestoreContext,
         ),
-        isA<PermissionException>(),
+        isA<BackendOperationException>()
+            .having((error) => error.code, 'code', 'backend-permission-denied')
+            .having((error) => error.retryable, 'retryable', isTrue),
       );
 
       final network = normalizeBackendError(

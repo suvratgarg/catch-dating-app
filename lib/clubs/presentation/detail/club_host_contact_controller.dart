@@ -17,11 +17,11 @@ class ClubHostContactController extends _$ClubHostContactController {
     required String hostUid,
     String? eventId,
   }) async {
-    requireSignedInUid(ref, action: 'message a club host');
+    requireSignedInUid(ref, action: 'message an organizer host');
     return ref
         .read(clubsRepositoryProvider)
-        .startClubHostConversation(
-          clubId: clubId,
+        .startOrganizerConversation(
+          organizerId: clubId,
           hostUid: hostUid,
           eventId: eventId,
         );

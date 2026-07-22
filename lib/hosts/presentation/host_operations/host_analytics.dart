@@ -71,6 +71,7 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
     final analyticsAsync = ref.watch(hostAnalyticsProvider(query));
     return CatchAsyncValueView<HostAnalyticsReport>(
       value: analyticsAsync,
+      onRetry: () => ref.invalidate(hostAnalyticsProvider(query)),
       loadingBuilder: (_) => const HostAnalyticsReportSkeleton(),
       errorBuilder: (_, error, _) => CatchErrorState.fromError(
         error,

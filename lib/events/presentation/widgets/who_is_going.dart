@@ -67,6 +67,8 @@ class WhoIsGoing extends ConsumerWidget {
 
     return CatchAsyncValueView<EventParticipationRoster>(
       value: rosterAsync,
+      onRetry: () =>
+          ref.invalidate(watchEventParticipationRosterProvider(event.id)),
       loadingBuilder: (_) => WhoIsGoingContent(
         event: event,
         roster: EventParticipationRoster.empty(),

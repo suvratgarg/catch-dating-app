@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 4.6.3
-updated: 2026-07-19
+version: 4.7.1
+updated: 2026-07-21
 owner: recursive_audit_loop
 status: active
 ---
@@ -48,6 +48,7 @@ section unless the task requires a full historical audit.
 | Release operations | `release_operations.md` | CI/release gates, Firebase deploy ordering, environment prerequisites, smoke tests, and human release evidence. |
 | Durable business operations | `operations_platform.md` | Canonical boundary for resumable human/worker/agent workflows, persisted runs and work items, authority lanes, Supply Intake stages, source learning, publication plans, and future admin-workflow adoption. |
 | Web surface architecture | `web_surface_architecture.md` | Domain/subdomain ownership, Firebase Hosting targets, stack boundaries for marketing/app/admin, marketing CI/CD, public website route contracts, and future host-portal placement. |
+| Public viewer and listing authority behavior | `web_surface_architecture.md#public-viewer-and-listing-authority-matrix`, `../design/public_surface_behavior.json` | Executable app/website matrix for auth resolution, profile readiness, app role, listing lifecycle/authority/publication, event capability, claim/review target and runtime capability, action disposition, exact consumer-route ownership, and proof harnesses. |
 | Marketing website architecture | `marketing_website_architecture.md` | Code organization, route-first/page-controller-component boundaries, target feature structure, and refactor order for `website/**`. |
 | Admin and analytics dashboard | `admin_analytics_dashboard_spec.md` | Internal admin console and analytics product spec: safety/access ops, cohort retention, host/event analytics, user value, finance, BigQuery marts, and admin API boundaries. |
 | Admin dashboard user stories and component catalogue | `admin_dashboard_user_stories_and_component_catalogue.md` | Tab-by-tab user stories, current workflow fit, top admin-console weaknesses, inspected-file log, and React admin primitive/component migration catalogue. |
@@ -56,6 +57,7 @@ section unless the task requires a full historical audit.
 | Marketing landing page research | `marketing_landing_page_research.md` | Reference-site research, production rewrite rationale, guardrails, and residual marketing-site product decisions after the old tracker was folded in. |
 | Organizer/event discovery and claimable listings | `plans/host_listing_discovery_architecture.md` | Deterministic organizer/event discovery, claim workflow, source-mention resolution, clustering, bounded LLM extraction/adjudication, candidate backlog, source-evidence ledger, index-readiness gates, and Firestore projection planning. |
 | Data contracts and Firestore/Functions ownership | `data_contracts.md` | Firestore document shape, repository query/index discipline, schema tooling, relationship documents, rules-test workflow, migration policy, and data-contract watch items. |
+| Clubs-to-organizers migration | `migrations/clubs_to_organizers.md`, `../contracts/migrations/clubs_to_organizers.json` | Organizer subtype taxonomy, canonical/compatibility authority map, dry-run/apply order, parity evidence, recovery, and legacy retirement boundary. |
 | Backend operation ownership | `backend_operation_catalog.md` | Human-readable catalog of direct client writes, callable-owned mutations, trigger-owned projections, server-only collections, and notification starting points. |
 | Event success | `event_success.md` | Live event-success architecture, product guardrails, Firestore contracts, manual QA, participant metrics, and open product decisions. |
 | Location stack | `location_stack_plan.md` | Google Maps/Places, location permissions, run coordinates, check-in geofencing, map navigation, and current map/demo readiness. |

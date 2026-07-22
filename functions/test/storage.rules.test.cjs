@@ -370,6 +370,39 @@ describe("storage.rules", () => {
   });
 
   describe("club and event media", () => {
+    it("allows organizer managers to upload canonical organizer media", async () => {
+      await seedFirestore(["organizers", "organizer-1"], {
+        hostUserId: "owner-1",
+        ownerUserId: "owner-1",
+        hostUserIds: ["owner-1", "manager-1"],
+      });
+
+      await assertSucceeds(
+        uploadImage(
+          authedStorage("manager-1"),
+          "organizers/organizer-1/photos/0_123.jpg",
+        ),
+      );
+      await assertSucceeds(
+        uploadImage(
+          authedStorage("owner-1"),
+          "organizers/organizer-1/logo/123.jpg",
+        ),
+      );
+      await assertFails(
+        uploadImage(
+          authedStorage("runner-1"),
+          "organizers/organizer-1/photos/0_123.jpg",
+        ),
+      );
+      await assertFails(
+        uploadImage(
+          authedStorage("manager-1"),
+          "organizers/organizer-1/photos/6_123.jpg",
+        ),
+      );
+    });
+
     it("allows club hosts to upload club photos and logos", async () => {
       await seedFirestore(["clubs", "club-1"], {
         hostUserId: "owner-1",
@@ -447,6 +480,10 @@ describe("storage.rules", () => {
     it("allows public reads for club logos and event photos", async () => {
       await seedStorageFile("clubs/club-1/logo/123.jpg");
       await seedStorageFile("clubs/club-1/logoThumbnails/123.jpg");
+      await seedStorageFile("organizers/organizer-1/logo/123.jpg");
+      await seedStorageFile(
+        "organizers/organizer-1/logoThumbnails/123.jpg",
+      );
       await seedStorageFile("events/event-1/photos/0_123.jpg");
 
       await assertSucceeds(
@@ -455,6 +492,16 @@ describe("storage.rules", () => {
       await assertSucceeds(
         unauthenticatedStorage()
           .ref("clubs/club-1/logoThumbnails/123.jpg")
+          .getMetadata(),
+      );
+      await assertSucceeds(
+        unauthenticatedStorage()
+          .ref("organizers/organizer-1/logo/123.jpg")
+          .getMetadata(),
+      );
+      await assertSucceeds(
+        unauthenticatedStorage()
+          .ref("organizers/organizer-1/logoThumbnails/123.jpg")
           .getMetadata(),
       );
       await assertSucceeds(

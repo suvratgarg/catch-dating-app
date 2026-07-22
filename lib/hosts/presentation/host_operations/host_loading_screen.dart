@@ -12,9 +12,9 @@ class HostLoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: CatchTokens.of(context).bg,
-      appBar: CatchTopBar(title: title, border: true),
+    return CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) =>
+          CatchTopBar(title: title, divider: scrolledUnder),
       body: SafeArea(child: HostRouteLoadingBody(showTabRail: showTabRail)),
     );
   }

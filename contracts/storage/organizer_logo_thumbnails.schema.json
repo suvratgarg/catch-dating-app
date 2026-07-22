@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/storage/organizer_logo_thumbnails.schema.json",
+  "title": "OrganizerLogoThumbnailsStoragePath",
+  "description": "Server-generated organizer logo thumbnails stored at organizers/{organizerId}/logoThumbnails/{fileName}.",
+  "type": "object",
+  "x-storage-rules-match": "match /organizers/{organizerId}/logoThumbnails/{fileName}",
+  "x-storage-read": "public",
+  "x-storage-write": "server only (clients are denied)",
+  "x-storage-content-type-pattern": "image/.*",
+  "x-storage-rules-test-file": "functions/test/storage.rules.test.cjs",
+  "x-storage-related-collection": "organizers",
+  "x-storage-known-consumers": ["lib/organizers/data/organizers_repository.dart"],
+  "properties": {
+    "organizerId": {"type": "string", "description": "Organizer document id; path segment."},
+    "fileName": {"type": "string", "description": "Derived from the source organizer logo object name."}
+  }
+}

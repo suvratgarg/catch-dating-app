@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -77,6 +78,7 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
         EventRecapMissingEvent() => CatchErrorState(
           title: context.l10n.swipesEventRecapScreenTitleEventNotFound,
           message: context.l10n.swipesEventRecapScreenMessageThisEventIsNo,
+          secondaryAction: const CatchErrorBackAction(),
         ),
         EventRecapReady ready => EventRecapReadyBody(
           state: ready,
@@ -537,11 +539,7 @@ class VibeTile extends StatelessWidget {
 }
 
 CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
-  return value.when(
-    data: CatchAsyncState<T>.data,
-    loading: () => const CatchAsyncState.loading(),
-    error: (error, stackTrace) => CatchAsyncState<T>.error(error),
-  );
+  return catchAsyncStateFromAsyncValue(value);
 }
 
 class RecapProfilePhoto extends StatelessWidget {

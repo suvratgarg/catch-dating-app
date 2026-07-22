@@ -5,7 +5,6 @@ import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -15,17 +14,12 @@ part 'club_membership_repository.g.dart';
 class ClubMembershipRepository {
   const ClubMembershipRepository(this._db);
 
-  static const _collectionPath = 'clubMemberships';
+  static const _collectionPath = 'organizerFollows';
 
   final FirebaseFirestore _db;
 
-  CollectionReference<ClubMembership> get _membershipsRef => _db
-      .collection(_collectionPath)
-      .withDocumentIdConverter<ClubMembership>(
-        idField: 'id',
-        fromJson: ClubMembership.fromJson,
-        toJson: (membership) => membership.toJson(),
-      );
+  CollectionReference<Map<String, dynamic>> get _membershipsRef =>
+      _db.collection(_collectionPath);
 
   Stream<List<ClubMembership>> watchActiveMembershipsForUser({
     required String uid,
@@ -35,10 +29,10 @@ class ClubMembershipRepository {
         .where('status', isEqualTo: ClubMembershipStatus.active.name)
         .limit(ReadLimitPolicy.boundedWorkingSet)
         .snapshots()
-        .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
+        .map((snap) => snap.docs.map(_followAsMembership).toList()),
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'watch user club memberships',
+      action: 'watch user organizer follows',
       resource: _collectionPath,
     ),
   );
@@ -47,14 +41,14 @@ class ClubMembershipRepository {
     required String clubId,
   }) => withBackendErrorStream(
     () => _membershipsRef
-        .where('clubId', isEqualTo: clubId)
+        .where('organizerId', isEqualTo: clubId)
         .where('status', isEqualTo: ClubMembershipStatus.active.name)
         .limit(ReadLimitPolicy.boundedWorkingSet)
         .snapshots()
-        .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
+        .map((snap) => snap.docs.map(_followAsMembership).toList()),
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'watch club memberships',
+      action: 'watch organizer follows',
       resource: _collectionPath,
     ),
   );
@@ -64,17 +58,43 @@ class ClubMembershipRepository {
     required String uid,
   }) => withBackendErrorStream(
     () => _membershipsRef
-        .where('clubId', isEqualTo: clubId)
+        .where('organizerId', isEqualTo: clubId)
         .where('uid', isEqualTo: uid)
         .limit(ReadLimitPolicy.lookup)
         .snapshots()
-        .map((snap) => snap.docs.isEmpty ? null : snap.docs.first.data()),
+        .map(
+          (snap) =>
+              snap.docs.isEmpty ? null : _followAsMembership(snap.docs.first),
+        ),
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'watch club membership',
+      action: 'watch organizer follow',
       resource: _collectionPath,
     ),
   );
+
+  static ClubMembership _followAsMembership(
+    QueryDocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
+    final data = doc.data();
+    final followedAt = data['followedAt'];
+    final unfollowedAt = data['unfollowedAt'];
+    return ClubMembership(
+      id: doc.id,
+      clubId: data['organizerId'] as String,
+      uid: data['uid'] as String,
+      role: ClubMembershipRole.member,
+      status: data['status'] == 'active'
+          ? ClubMembershipStatus.active
+          : ClubMembershipStatus.left,
+      pushNotificationsEnabled:
+          data['pushNotificationsEnabled'] as bool? ?? false,
+      joinedAt: followedAt is Timestamp
+          ? followedAt.toDate()
+          : DateTime.fromMillisecondsSinceEpoch(0),
+      leftAt: unfollowedAt is Timestamp ? unfollowedAt.toDate() : null,
+    );
+  }
 }
 
 // keepalive: membership repository is a shared Firestore facade for club

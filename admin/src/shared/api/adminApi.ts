@@ -709,7 +709,12 @@ function sampleSafetyEvidence({
       sampleUserPath(secondaryUserId), false),
     safetyEvidence("Event", eventId, eventId ? `events/${eventId}` : null,
       false),
-    safetyEvidence("Club", clubId, clubId ? `clubs/${clubId}` : null, false),
+    safetyEvidence(
+      "Organizer",
+      clubId,
+      clubId ? `organizers/${clubId}` : null,
+      false
+    ),
     safetyEvidence("Source", source, null, false),
     safetyEvidence("Context", contextId, contextId, false),
     safetyEvidence("Queue detail", `${title} - ${detail}`, null, true),
@@ -1429,11 +1434,14 @@ export async function loadClubDetails(
   }
 
   const callable = httpsCallable<
-    AdminGetClubDetailsPayload,
-    AdminGetClubDetailsResponse
-  >(functions, "adminGetClubDetails");
-  const result = await callable(payload);
-  return result.data;
+    {organizerId: string},
+    {organizer: Omit<AdminGetClubDetailsResponse["club"], "clubId"> & {
+      organizerId: string;
+    }}
+  >(functions, "adminGetOrganizerDetails");
+  const result = await callable({organizerId: payload.clubId});
+  const {organizerId, ...organizer} = result.data.organizer;
+  return {club: {...organizer, clubId: organizerId}};
 }
 
 export async function listClubDetails(
@@ -1454,10 +1462,19 @@ export async function listClubDetails(
 
   const callable = httpsCallable<
     AdminListClubDetailsPayload,
-    AdminListClubDetailsResponse
-  >(functions, "adminListClubDetails");
+    {
+      generatedAt: string;
+      rows: Array<Omit<AdminClubListRow, "clubId"> & {organizerId: string}>;
+    }
+  >(functions, "adminListOrganizerDetails");
   const result = await callable(payload);
-  return result.data;
+  return {
+    generatedAt: result.data.generatedAt,
+    rows: result.data.rows.map(({organizerId, ...row}) => ({
+      ...row,
+      clubId: organizerId,
+    })),
+  };
 }
 
 export async function saveClubDetails(
@@ -1474,11 +1491,15 @@ export async function saveClubDetails(
   }
 
   const callable = httpsCallable<
-    AdminUpdateClubDetailsPayload,
-    AdminUpdateClubDetailsResponse
-  >(functions, "adminUpdateClubDetails");
-  const result = await callable(payload);
-  return result.data;
+    Omit<AdminUpdateClubDetailsPayload, "clubId"> & {organizerId: string},
+    {organizerId: string; updatedFieldCount: number}
+  >(functions, "adminUpdateOrganizerDetails");
+  const {clubId, ...fields} = payload;
+  const result = await callable({...fields, organizerId: clubId});
+  return {
+    clubId: result.data.organizerId,
+    updatedFieldCount: result.data.updatedFieldCount,
+  };
 }
 
 export async function loadEventDetails(
@@ -1641,6 +1662,8 @@ function sampleClubListRow(club: AdminGetClubDetailsResponse["club"]):
   return {
     clubId: club.clubId,
     name: club.name,
+    organizerType: club.organizerType,
+    publicCategoryLabel: club.publicCategoryLabel,
     displayCategory: club.displayCategory,
     cityName: club.cityName ?? club.area,
     citySlug: club.location ?? club.publicPage.citySlug,

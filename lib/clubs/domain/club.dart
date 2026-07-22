@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/organizers/domain/organizer_authority.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'club.freezed.dart';
@@ -9,6 +10,31 @@ part 'club.g.dart';
 enum ClubLifecycleStatus { active, archived }
 
 enum ClubAppVisibility { discoverable, hidden }
+
+/// Canonical organizer classification shared by clubs, communities,
+/// individuals, event producers, venues, and brands.
+enum OrganizerType { club, community, individual, eventProducer, venue, brand }
+
+Object? _readOrganizerType(Map<dynamic, dynamic> json, String key) {
+  final organizerType = json[key];
+  if (organizerType is String &&
+      OrganizerType.values.any((value) => value.name == organizerType)) {
+    return organizerType;
+  }
+  return switch (json['entityKind']) {
+    'creatorCommunity' => OrganizerType.community.name,
+    'eventOrganizer' => OrganizerType.eventProducer.name,
+    'venue' => OrganizerType.venue.name,
+    'brand' => OrganizerType.brand.name,
+    _ => OrganizerType.club.name,
+  };
+}
+
+Object? _readOrganizerPhotos(Map<dynamic, dynamic> json, String key) =>
+    json[key] ?? json['clubPhotos'];
+
+Object? _readFollowerCount(Map<dynamic, dynamic> json, String key) =>
+    json[key] ?? json['memberCount'];
 
 @freezed
 abstract class Club with _$Club {
@@ -31,10 +57,14 @@ abstract class Club with _$Club {
     @TimestampConverter() required DateTime createdAt,
     String? imageUrl,
     String? profileImageUrl,
-    @Default([]) List<UploadedPhoto> clubPhotos,
+    @JsonKey(name: 'organizerPhotos', readValue: _readOrganizerPhotos)
+    @Default([])
+    List<UploadedPhoto> clubPhotos,
     UploadedPhoto? logoPhoto,
     @Default([]) List<String> tags,
-    @Default(0) int memberCount,
+    @JsonKey(name: 'followerCount', readValue: _readFollowerCount)
+    @Default(0)
+    int memberCount,
     @Default(0.0) double rating,
     @Default(0) int reviewCount,
     @NullableTimestampConverter() DateTime? nextEventAt,
@@ -47,6 +77,14 @@ abstract class Club with _$Club {
     @NullableTimestampConverter() DateTime? archivedAt,
     String? archiveReason,
     @Default(ClubAppVisibility.discoverable) ClubAppVisibility appVisibility,
+    OrganizerOwnership? ownership,
+    OrganizerClaim? claim,
+    OrganizerPublicPage? publicPage,
+    OrganizerProvenance? provenance,
+    @JsonKey(readValue: _readOrganizerType)
+    @Default(OrganizerType.club)
+    OrganizerType organizerType,
+    String? publicCategoryLabel,
     @Default(ClubHostDefaults()) ClubHostDefaults hostDefaults,
   }) = _Club;
 
@@ -91,12 +129,33 @@ abstract class Club with _$Club {
     return imageUrl;
   }
 
+  List<UploadedPhoto> get organizerPhotos => clubPhotos;
+
+  int get followerCount => memberCount;
+
   String? get logoPhotoUrl => logoPhoto?.thumbnailOrUrl ?? profileImageUrl;
 
   bool get isAppDiscoverable =>
       appVisibility == ClubAppVisibility.discoverable &&
       status == ClubLifecycleStatus.active &&
       !archived;
+
+  OrganizerAuthority get organizerAuthority => OrganizerAuthority.resolve(
+    hasLegacyOwner:
+        ownerOrPrimaryHostUserId != null ||
+        hostUserIds.isNotEmpty ||
+        hostProfiles.isNotEmpty,
+    ownership: ownership,
+    claim: claim,
+    publicPage: publicPage,
+    provenance: provenance,
+  );
+
+  /// Public consumer routes require both app visibility and an authority state
+  /// that has not been suppressed or removed. Web publication/indexing remains
+  /// a separate capability because QA/noindex pages may still be previewed.
+  bool get isPubliclyBrowseable =>
+      isAppDiscoverable && !organizerAuthority.blocksPublicRead;
 }
 
 enum ClubHostRole { owner, host }

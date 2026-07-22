@@ -408,7 +408,7 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final sourceClubIds = sourceClubs.map((club) => club.id).toSet();
   final searchResult = searchAsync.asData?.value;
   final serverEventIds = searchResult?.eventIds.toSet();
-  final serverClubIds = searchResult?.clubIds.toSet();
+  final serverClubIds = searchResult?.organizerIds.toSet();
 
   final uid = uidAsync.asData?.value;
   final viewerCohortIdAsync = uid == null
@@ -602,7 +602,7 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
       .where((event) => event.isUpcomingAt(now))
       .map((event) {
         final club = clubById[event.clubId];
-        if (club == null) return null;
+        if (club == null || !club.isPubliclyBrowseable) return null;
         final isClubMember = membershipClubIds.contains(event.clubId);
         final distanceFromUserKm = _distanceFromUserKm(
           event: event,

@@ -95,7 +95,7 @@ void main() {
     expect(find.text('Remove host?'), findsOneWidget);
     expect(
       find.text(
-        'Rishi Mehta will stay a club member but will lose host tools.',
+        'Rishi Mehta will stay an organizer follower but will lose host tools.',
       ),
       findsOneWidget,
     );
@@ -124,7 +124,7 @@ void main() {
     expect(find.text('Transfer ownership?'), findsOneWidget);
     expect(
       find.text(
-        'Rishi Mehta will become the club owner. You will remain a host.',
+        'Rishi Mehta will become the organizer owner. You will remain a host.',
       ),
       findsOneWidget,
     );

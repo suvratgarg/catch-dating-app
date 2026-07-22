@@ -49,22 +49,28 @@ class FirebaseExploreSearchRepository implements ExploreSearchRepository {
 }
 
 class ExploreSearchResult {
-  const ExploreSearchResult({required this.clubIds, required this.eventIds});
+  const ExploreSearchResult({
+    required this.organizerIds,
+    required this.eventIds,
+  });
 
   factory ExploreSearchResult.fromCallableData(Object? data) {
     if (data case final Map<Object?, Object?> map) {
       return ExploreSearchResult(
-        clubIds: _stringList(map['clubIds']),
+        organizerIds: _stringList(map['organizerIds'] ?? map['clubIds']),
         eventIds: _stringList(map['eventIds']),
       );
     }
     return empty;
   }
 
-  static const empty = ExploreSearchResult(clubIds: [], eventIds: []);
+  static const empty = ExploreSearchResult(organizerIds: [], eventIds: []);
 
-  final List<String> clubIds;
+  final List<String> organizerIds;
   final List<String> eventIds;
+
+  @Deprecated('Use organizerIds')
+  List<String> get clubIds => organizerIds;
 }
 
 List<String> _stringList(Object? value) {

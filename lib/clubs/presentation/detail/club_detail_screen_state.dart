@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
 enum HostClubDetailRetryIntent { reloadDetail }
@@ -12,6 +13,11 @@ enum HostClubDetailRetryIntent { reloadDetail }
 enum ClubContactActionKind { instagram, phone, email }
 
 enum ClubDetailEventRouteTarget { consumerEventDetail, hostEventDetail }
+
+Club? clubDetailInitialClubForRoute({
+  required String clubId,
+  required Club? initialClub,
+}) => initialClub?.id == clubId ? initialClub : null;
 
 class ClubContactAction {
   const ClubContactAction._({
@@ -171,9 +177,14 @@ class ClubDetailBodyState {
     bool isMessageHostPending = false,
     AppRole appRole = AppRole.consumer,
     bool? showMembershipDock,
+    DateTime? now,
   }) {
-    final shouldShowDock = showMembershipDock ?? !appRole.isHost;
-    final canMessageHosts = isAuthenticated && !appRole.isHost;
+    final shouldShowDock = showMembershipDock ?? (!appRole.isHost && !isHost);
+    final canMessageHosts =
+        isAuthenticated &&
+        userProfile?.hasSocialReadyProfileOn(now ?? DateTime.now()) == true &&
+        !appRole.isHost &&
+        !isHost;
     final messageableHostUids = {
       if (canMessageHosts && uid != null)
         for (final host in club.displayHostProfiles)
@@ -248,6 +259,7 @@ sealed class HostClubDetailScreenState {
     required UserProfile? currentUserProfile,
     required ClubMembership? currentMembership,
     required AppRole appRole,
+    bool authResolved = true,
   }) {
     final liveViewModel = viewModel.value;
     if (viewModel.status == CatchAsyncStatus.data && liveViewModel != null) {
@@ -255,6 +267,26 @@ sealed class HostClubDetailScreenState {
         liveViewModel,
         appRole: appRole,
       );
+    }
+
+    if (viewModel.status == CatchAsyncStatus.loading &&
+        initialClub != null &&
+        !appRole.isHost &&
+        !initialClub.isPubliclyBrowseable) {
+      return const HostClubDetailNotFound();
+    }
+
+    // Route extras are only an optimistic data cache. Until auth resolves they
+    // must not choose guest actions for a viewer who may already be signed in.
+    if (viewModel.status == CatchAsyncStatus.loading && !authResolved) {
+      return const HostClubDetailLoading();
+    }
+
+    if (viewModel.status == CatchAsyncStatus.loading &&
+        initialClub != null &&
+        appRole.isHost &&
+        (currentUid == null || !initialClub.isHostedBy(currentUid))) {
+      return const HostClubDetailNotFound();
     }
 
     if (viewModel.status == CatchAsyncStatus.loading && initialClub != null) {
@@ -265,17 +297,16 @@ sealed class HostClubDetailScreenState {
         reviews: const [],
         userProfile: currentUserProfile,
         uid: currentUid,
-        isHost:
-            appRole.isHost &&
-            isAuthenticated &&
-            initialClub.isHostedBy(currentUid),
+        isHost: isAuthenticated && initialClub.isHostedBy(currentUid),
         isMember:
             isAuthenticated &&
             currentMembership?.status == ClubMembershipStatus.active,
         isAuthenticated: isAuthenticated,
         isInitialFallback: true,
         publicPreviewMode: appRole.isHost,
-        showMembershipDock: !appRole.isHost,
+        showMembershipDock:
+            !appRole.isHost &&
+            !(isAuthenticated && initialClub.isHostedBy(currentUid)),
       );
     }
 
@@ -335,7 +366,7 @@ final class HostClubDetailContent extends HostClubDetailScreenState {
       isAuthenticated: viewModel.isAuthenticated,
       isInitialFallback: false,
       publicPreviewMode: appRole.isHost,
-      showMembershipDock: !appRole.isHost,
+      showMembershipDock: !appRole.isHost && !viewModel.isHost,
     );
   }
 

@@ -3,11 +3,11 @@
   "generatedBy": "tool/design/generate_flutter_field_surface_inventory.mjs",
   "source": {
     "manifest": "docs/audit_registry/flutter_field_surface_adoption.json",
-    "manifestSha256": "56ceae1445f117cad56c0d09bc86cc50f1d8d8a995727d7123f25171f180507a",
+    "manifestSha256": "3557928e192754aea43616bd99b41ddaef91d848f7227abad3bad3952c7865cf",
     "routeInventory": "tool/ui_capture/route_inventory.json",
-    "routeInventorySha256": "2e07af70390e9ab6b5430555bc3404789dcb11e5ee010468002554aaf8516885",
+    "routeInventorySha256": "f92fe6fc7058c567b3603d9fa3ae46f122871a70ded3aa43eb17017b6470e245",
     "screenContracts": "design/screens/catch.screens.json",
-    "screenContractsSha256": "2925ca86759abbf274d95ef3132b24e48edbb33f2f4f0226ed434d78541058dd"
+    "screenContractsSha256": "6951e62ffd37d15c59a4e914a1d4e46c59944885808ae19467e699a22d5092f2"
   },
   "summary": {
     "candidateCount": 10,
@@ -304,7 +304,7 @@
       "routeIds": [
         "hostClubsScreen"
       ],
-      "semanticFieldCount": 7,
+      "semanticFieldCount": 8,
       "bindings": [
         {
           "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
@@ -328,7 +328,7 @@
         {
           "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
           "symbol": "CatchFormSingleChoiceRow",
-          "expected": 1
+          "expected": 2
         }
       ],
       "targetModes": [
@@ -342,7 +342,7 @@
       ],
       "verification": [
         "Host Club Identity and Contact sections render through two typed CatchFormRowList<UpdateClubPatch> instances",
-        "Contract alignment test covers all seven editable Host Club patch fields",
+        "Contract alignment test covers all eight editable Host Club patch fields, including organizer type",
         "Deleted HostInline editors leave zero production legacy call sites"
       ],
       "recommendation": "Completed: Host Club Identity and Contact editing now use typed form descriptors; the former HostInline editor file and hand-rolled choice chips are deleted.",
@@ -354,18 +354,19 @@
           "expected": 2,
           "observed": 2,
           "lines": [
-            286,
-            293
+            287,
+            294
           ]
         },
         {
           "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
           "kind": "call",
           "symbol": "CatchFormSingleChoiceRow",
-          "expected": 1,
-          "observed": 1,
+          "expected": 2,
+          "observed": 2,
           "lines": [
-            388
+            393,
+            415
           ]
         }
       ]
@@ -415,9 +416,9 @@
           "expected": 3,
           "observed": 3,
           "lines": [
-            480,
-            505,
-            529
+            477,
+            502,
+            526
           ]
         }
       ]
@@ -469,11 +470,11 @@
           "expected": 5,
           "observed": 5,
           "lines": [
-            270,
-            289,
-            296,
-            315,
-            338
+            275,
+            295,
+            303,
+            322,
+            345
           ]
         }
       ]
@@ -808,9 +809,9 @@
           "expected": 3,
           "observed": 3,
           "lines": [
-            309,
-            324,
-            342
+            313,
+            328,
+            346
           ]
         },
         {
@@ -820,7 +821,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            288
+            292
           ]
         },
         {
@@ -830,7 +831,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            360
+            364
           ]
         },
         {
@@ -840,10 +841,10 @@
           "expected": 4,
           "observed": 4,
           "lines": [
-            376,
-            392,
-            408,
-            423
+            380,
+            396,
+            412,
+            427
           ]
         }
       ]

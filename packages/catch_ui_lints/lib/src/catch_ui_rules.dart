@@ -457,6 +457,18 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     severity: DiagnosticSeverity.INFO,
   );
 
+  static const asyncRequiresRetry = LintCode(
+    'catch_async_requires_retry',
+    'CatchAsyncValueView/CatchAsyncValueSliver must declare onRetry so both provider errors and initial-load timeouts have an actionable recovery path.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
+  static const errorStateRequiresAction = LintCode(
+    'catch_error_state_requires_action',
+    'Full-screen and sliver Catch error states must declare onRetry or secondaryAction so the user always has a recovery or exit path.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
   static const noRawErrorSurface = LintCode(
     'catch_no_raw_error_surface',
     'Use CatchErrorState/CatchSliverErrorState/CatchInlineErrorState instead of a raw Center(Text(...)) failure surface.',
@@ -521,6 +533,8 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     fieldRequiresSectionContext,
     sectionListRequiresEmptyPolicy,
     asyncRequiresStateSurface,
+    asyncRequiresRetry,
+    errorStateRequiresAction,
     noRawErrorSurface,
     noShellLocalMeasurement,
   ];
@@ -747,6 +761,22 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
         !_hasNamedArgument(node, 'emptyBuilder') &&
         !_hasNamedArgument(node, 'emptyStateOmitted')) {
       _reportAtNode(node, CatchUiLayoutRules.sectionListRequiresEmptyPolicy);
+    }
+
+    if (isFeaturePresentationPath &&
+        (typeName == 'CatchAsyncValueView' ||
+            typeName == 'CatchAsyncValueSliver') &&
+        !_hasNamedArgument(node, 'onRetry')) {
+      _reportAtNode(node, CatchUiLayoutRules.asyncRequiresRetry);
+    }
+
+    if (isFeaturePresentationPath &&
+        (typeName == 'CatchErrorState' ||
+            typeName == 'CatchErrorScaffold' ||
+            typeName == 'CatchSliverErrorState') &&
+        !_hasNamedArgument(node, 'onRetry') &&
+        !_hasNamedArgument(node, 'secondaryAction')) {
+      _reportAtNode(node, CatchUiLayoutRules.errorStateRequiresAction);
     }
 
     if (typeName == 'Image' &&

@@ -129,7 +129,7 @@ void main() {
       expect(find.text('Host access required'), findsOneWidget);
       expect(
         find.text(
-          "Only this club's host team can create events for this club.",
+          "Only this organizer's host team can create events for this organizer.",
         ),
         findsOneWidget,
       );
@@ -538,7 +538,7 @@ void main() {
         expect(find.text('PRIVATE LINK'), findsOneWidget);
         expect(
           find.text(
-            'https://catchdates.com/clubs/club-1/events/event-private?invite=CATCH-DELHI',
+            'https://catchdates.com/organizers/club-1/events/event-private?invite=CATCH-DELHI',
           ),
           findsOneWidget,
         );
@@ -549,7 +549,7 @@ void main() {
           findsOneWidget,
         );
         expect(find.text('Manage event'), findsOneWidget);
-        expect(find.text('Back to club'), findsOneWidget);
+        expect(find.text('Back to organizer'), findsOneWidget);
       },
     );
 

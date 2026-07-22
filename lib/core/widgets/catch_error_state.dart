@@ -12,6 +12,25 @@ import 'package:flutter/material.dart';
 
 enum CatchErrorStateMode { fullScreen, inline, compact }
 
+/// Canonical exit affordance for terminal error states where retry is not a
+/// truthful action (for example a deleted event or an unauthorized route).
+class CatchErrorBackAction extends StatelessWidget {
+  const CatchErrorBackAction({super.key, this.label, this.onPressed});
+
+  final String? label;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchButton(
+      label: label ?? MaterialLocalizations.of(context).backButtonTooltip,
+      onPressed: onPressed ?? () => Navigator.of(context).maybePop(),
+      variant: CatchButtonVariant.secondary,
+      icon: Icon(CatchIcons.arrowBackIosNewRounded),
+    );
+  }
+}
+
 class CatchErrorState extends StatelessWidget {
   const CatchErrorState({
     super.key,
@@ -185,7 +204,11 @@ class _CatchErrorSpec {
       title: descriptor.title,
       message: descriptor.message,
       icon: icon ?? descriptor.icon,
-      onRetry: descriptor.retryable ? onRetry : null,
+      // An explicit recovery callback is authoritative. Error metadata still
+      // controls inferred actions, but must never silently discard a recovery
+      // path the caller knows is safe (for example reloading after rules or
+      // deployment configuration catches up).
+      onRetry: onRetry,
       retryLabel: retryLabel ?? descriptor.retryLabel,
       secondaryAction: secondaryAction,
     );
@@ -252,6 +275,7 @@ class CatchErrorScaffold extends StatelessWidget {
     required this.message,
     this.onRetry,
     this.retryLabel,
+    this.secondaryAction,
     this.icon = CatchIcons.errorOutlineRounded,
     this.backgroundColor,
   });
@@ -263,6 +287,7 @@ class CatchErrorScaffold extends StatelessWidget {
     VoidCallback? onRetry,
     String? retryLabel,
     IconData? icon,
+    Widget? secondaryAction,
   }) {
     return _LocalizedCatchErrorScaffold(
       key: key,
@@ -271,6 +296,7 @@ class CatchErrorScaffold extends StatelessWidget {
       retry: onRetry,
       retryLabelOverride: retryLabel,
       iconOverride: icon,
+      secondaryActionOverride: secondaryAction,
     );
   }
 
@@ -278,6 +304,7 @@ class CatchErrorScaffold extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
   final String? retryLabel;
+  final Widget? secondaryAction;
   final IconData icon;
   final Color? backgroundColor;
 
@@ -292,6 +319,7 @@ class CatchErrorScaffold extends StatelessWidget {
           icon: icon,
           onRetry: onRetry,
           retryLabel: retryLabel,
+          secondaryAction: secondaryAction,
         ),
       ),
     );
@@ -306,6 +334,7 @@ class _LocalizedCatchErrorScaffold extends CatchErrorScaffold {
     required this.retry,
     required this.retryLabelOverride,
     required this.iconOverride,
+    required this.secondaryActionOverride,
   }) : super(title: '', message: '');
 
   final Object error;
@@ -313,6 +342,7 @@ class _LocalizedCatchErrorScaffold extends CatchErrorScaffold {
   final VoidCallback? retry;
   final String? retryLabelOverride;
   final IconData? iconOverride;
+  final Widget? secondaryActionOverride;
 
   @override
   Widget build(BuildContext context) {
@@ -323,6 +353,7 @@ class _LocalizedCatchErrorScaffold extends CatchErrorScaffold {
       onRetry: retry,
       retryLabel: retryLabelOverride,
       icon: iconOverride,
+      secondaryAction: secondaryActionOverride,
     );
     return Scaffold(
       backgroundColor: CatchTokens.of(context).bg,
@@ -333,6 +364,7 @@ class _LocalizedCatchErrorScaffold extends CatchErrorScaffold {
           icon: spec.icon,
           onRetry: spec.onRetry,
           retryLabel: spec.retryLabel,
+          secondaryAction: spec.secondaryAction,
         ),
       ),
     );
@@ -346,6 +378,7 @@ class CatchSliverErrorState extends StatelessWidget {
     required this.message,
     this.onRetry,
     this.retryLabel,
+    this.secondaryAction,
     this.icon = CatchIcons.errorOutlineRounded,
     this.fillRemaining = true,
   });
@@ -357,6 +390,7 @@ class CatchSliverErrorState extends StatelessWidget {
     VoidCallback? onRetry,
     String? retryLabel,
     IconData? icon,
+    Widget? secondaryAction,
     bool fillRemaining = true,
   }) {
     return _LocalizedCatchSliverErrorState(
@@ -366,6 +400,7 @@ class CatchSliverErrorState extends StatelessWidget {
       retry: onRetry,
       retryLabelOverride: retryLabel,
       iconOverride: icon,
+      secondaryActionOverride: secondaryAction,
       fillRemaining: fillRemaining,
     );
   }
@@ -374,6 +409,7 @@ class CatchSliverErrorState extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
   final String? retryLabel;
+  final Widget? secondaryAction;
   final IconData icon;
   final bool fillRemaining;
 
@@ -385,6 +421,7 @@ class CatchSliverErrorState extends StatelessWidget {
       icon: icon,
       onRetry: onRetry,
       retryLabel: retryLabel,
+      secondaryAction: secondaryAction,
     );
 
     if (fillRemaining) {
@@ -403,6 +440,7 @@ class _LocalizedCatchSliverErrorState extends CatchSliverErrorState {
     required this.retry,
     required this.retryLabelOverride,
     required this.iconOverride,
+    required this.secondaryActionOverride,
     required super.fillRemaining,
   }) : super(title: '', message: '');
 
@@ -411,6 +449,7 @@ class _LocalizedCatchSliverErrorState extends CatchSliverErrorState {
   final VoidCallback? retry;
   final String? retryLabelOverride;
   final IconData? iconOverride;
+  final Widget? secondaryActionOverride;
 
   @override
   Widget build(BuildContext context) {
@@ -421,6 +460,7 @@ class _LocalizedCatchSliverErrorState extends CatchSliverErrorState {
       onRetry: retry,
       retryLabel: retryLabelOverride,
       icon: iconOverride,
+      secondaryAction: secondaryActionOverride,
     );
     final child = CatchErrorBody(
       title: spec.title,
@@ -428,6 +468,7 @@ class _LocalizedCatchSliverErrorState extends CatchSliverErrorState {
       icon: spec.icon,
       onRetry: spec.onRetry,
       retryLabel: spec.retryLabel,
+      secondaryAction: spec.secondaryAction,
     );
     return fillRemaining
         ? CatchSliverStateViewport(child: child)
@@ -442,6 +483,7 @@ class CatchInlineErrorState extends StatelessWidget {
     required this.message,
     this.onRetry,
     this.retryLabel,
+    this.secondaryAction,
     this.icon = CatchIcons.errorOutlineRounded,
     this.compact = false,
   });
@@ -453,6 +495,7 @@ class CatchInlineErrorState extends StatelessWidget {
     VoidCallback? onRetry,
     String? retryLabel,
     IconData? icon,
+    Widget? secondaryAction,
     bool compact = false,
   }) {
     return _LocalizedCatchInlineErrorState(
@@ -462,6 +505,7 @@ class CatchInlineErrorState extends StatelessWidget {
       retry: onRetry,
       retryLabelOverride: retryLabel,
       iconOverride: icon,
+      secondaryActionOverride: secondaryAction,
       compact: compact,
     );
   }
@@ -470,6 +514,7 @@ class CatchInlineErrorState extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
   final String? retryLabel;
+  final Widget? secondaryAction;
   final IconData icon;
   final bool compact;
 
@@ -481,6 +526,7 @@ class CatchInlineErrorState extends StatelessWidget {
       icon: icon,
       onRetry: onRetry,
       retryLabel: retryLabel,
+      secondaryAction: secondaryAction,
       mode: compact ? CatchErrorStateMode.compact : CatchErrorStateMode.inline,
     );
   }
@@ -494,6 +540,7 @@ class _LocalizedCatchInlineErrorState extends CatchInlineErrorState {
     required this.retry,
     required this.retryLabelOverride,
     required this.iconOverride,
+    required this.secondaryActionOverride,
     required super.compact,
   }) : super(title: '', message: '');
 
@@ -502,6 +549,7 @@ class _LocalizedCatchInlineErrorState extends CatchInlineErrorState {
   final VoidCallback? retry;
   final String? retryLabelOverride;
   final IconData? iconOverride;
+  final Widget? secondaryActionOverride;
 
   @override
   Widget build(BuildContext context) {
@@ -512,6 +560,7 @@ class _LocalizedCatchInlineErrorState extends CatchInlineErrorState {
       onRetry: retry,
       retryLabel: retryLabelOverride,
       icon: iconOverride,
+      secondaryAction: secondaryActionOverride,
     );
     return CatchErrorBody(
       title: spec.title,
@@ -519,6 +568,7 @@ class _LocalizedCatchInlineErrorState extends CatchInlineErrorState {
       icon: spec.icon,
       onRetry: spec.onRetry,
       retryLabel: spec.retryLabel,
+      secondaryAction: spec.secondaryAction,
       mode: compact ? CatchErrorStateMode.compact : CatchErrorStateMode.inline,
     );
   }

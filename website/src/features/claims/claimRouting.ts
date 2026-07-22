@@ -1,8 +1,5 @@
 import {hostListings} from "../organizers/data";
-import {
-  isClaimSubmissionEnabledListing,
-  isUnclaimedListing,
-} from "../organizers/selectors";
+import {organizerPolicyForListing} from "../organizers/organizerPolicy";
 import type {HostListing} from "../organizers/types";
 
 export type ClaimRouteLocation = Pick<Location, "pathname" | "search">;
@@ -38,22 +35,20 @@ export function claimRouteStateForLocation(
     lookup,
     listing,
     requestId,
-    urlState: claimStateForLocation({
-      listing,
-      location,
-      lookup,
-      requestId,
-    }),
+    urlState: claimUrlStateForListing(listing, lookup),
   };
 }
 
 export function getClaimListingForLookup(lookup: string | null) {
   if (!lookup) return null;
   return hostListings.find((listing) =>
-    listing.id === lookup ||
-    listing.slug === lookup ||
-    listing.path === lookup ||
-    listing.legacyPaths?.includes(lookup)
+    organizerPolicyForListing(listing).isPubliclyReadable &&
+    (
+      listing.id === lookup ||
+      listing.slug === lookup ||
+      listing.path === lookup ||
+      listing.legacyPaths?.includes(lookup)
+    )
   ) ?? null;
 }
 
@@ -74,26 +69,19 @@ export function getClaimRequestIdFromLocation(location: ClaimRouteLocation) {
   return normalizedLookup(params.get("requestId") ?? params.get("claimRequestId"));
 }
 
-function claimStateForLocation({
-  listing,
-  location,
-  lookup,
-  requestId,
-}: {
-  listing: HostListing | null;
-  location: ClaimRouteLocation;
-  lookup: string | null;
-  requestId: string | null;
-}): ClaimUrlState {
-  const params = new URLSearchParams(location.search);
-  const status = (params.get("claimStatus") ?? params.get("status") ?? "").toLowerCase();
-  if (listing && (status === "pending" || Boolean(requestId))) {
-    return "pendingClaim";
-  }
+export function claimUrlStateForListing(
+  listing: HostListing | null,
+  lookup: string | null
+): ClaimUrlState {
   if (lookup && !listing) return "notFound";
-  if (listing && !isUnclaimedListing(listing)) return "alreadyClaimed";
-  if (listing && !isClaimSubmissionEnabledListing(listing)) {
-    return "claimUnavailable";
+  if (listing) {
+    const policy = organizerPolicyForListing(listing);
+    if (policy.claimState === "claimPending") return "pendingClaim";
+    if (
+      ["claimed", "verified"].includes(policy.claimState) ||
+      ["claimed", "transferred", "userCreated"].includes(policy.ownershipState)
+    ) return "alreadyClaimed";
+    if (!policy.canRequestClaim) return "claimUnavailable";
   }
   return null;
 }

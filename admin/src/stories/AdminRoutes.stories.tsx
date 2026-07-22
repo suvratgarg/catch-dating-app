@@ -1291,6 +1291,8 @@ function organizerListRowFromDetails(club: AdminClubDetails): AdminClubListRow {
     claimState: club.claimState,
     clubId: club.clubId,
     countryCode: club.countryCode,
+    organizerType: club.organizerType,
+    publicCategoryLabel: club.publicCategoryLabel,
     displayCategory: club.displayCategory,
     indexStatus: club.publicPage.indexStatus,
     name: club.name,

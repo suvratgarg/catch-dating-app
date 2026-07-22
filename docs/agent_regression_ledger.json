@@ -1,8 +1,39 @@
 {
-  "version": 52,
+  "version": 60,
   "updated": "2026-07-22",
   "owner": "agent_operating_model",
   "entries": [
+    {
+      "id": "REG-PUBLIC-SURFACE-BEHAVIOR-001",
+      "title": "Public actions drift from viewer, authority, or runtime state",
+      "status": "active",
+      "applies_to": [
+        "design/public_surface_behavior.json",
+        "design/public_surface_behavior.schema.json",
+        "lib/routing/**",
+        "lib/explore/**",
+        "lib/clubs/**",
+        "lib/events/**",
+        "lib/organizers/**",
+        "website/src/features/claims/**",
+        "website/src/features/organizers/**",
+        "website/src/features/reviews/**",
+        "website/scripts/**",
+        "tool/design/check_public_surface_behavior.mjs"
+      ],
+      "symptom": "A resolving viewer receives guest actions, a crawled or claimed listing is presented as owner verified, an archived, hidden, unpublished, or claim-suppressed listing leaks into public discovery, an event action ignores viewer-specific availability, or claim/review UI is enabled from preview-only or otherwise incomplete target, capability, and runtime evidence.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check design:public-surface-behavior && flutter test test/design/public_surface_behavior_test.dart && npm --prefix website run test:unit -- src/features/organizers/publicSurfaceBehavior.test.ts",
+        "guardEvidence": "the strict gate rejects source-enum drift, duplicate tuples, unowned routes, unverified rows, unexplained exclusions, and harness coverage gaps; the app and website harnesses execute every registered configuration against production decision and presentation helpers"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/app_architecture.md",
+        "docs/marketing_website_architecture.md"
+      ],
+      "notes": "Only Explore and its public detail/map children are guest-readable in the consumer app, but hidden tabs are not treated as access control: every consumer deep link has exactly one route class. WEB-ORGANIZER-CLAIM-TARGET-001 and WEB-ORGANIZER-REVIEW-TARGET-001 keep claim and review actions fail-closed until their canonical target evidence is live. Preview-only sync state is advisory, and review callables select an eligible canonical or compatibility target instead of allowing an ineligible canonical document to shadow a valid legacy target."
+    },
     {
       "id": "REG-CATCH-UI-LINT-VACUITY-001",
       "title": "Catch UI lint gates pass after the analyzer plugin silently skips or fails setup",
@@ -1825,7 +1856,7 @@
       "guard": {
         "type": "command",
         "command": "flutter test test/routing/router_redirect_test.dart",
-        "guardEvidence": "GoRouter keeps the create-event child route"
+        "guardEvidence": "GoRouter keeps the canonical create-event child route"
       },
       "owner_docs": [
         "docs/app_architecture.md",
@@ -2352,6 +2383,175 @@
         "docs/web_surface_architecture.md"
       ],
       "notes": "The manifest classifies the visual gate as build-artifact-producing and routes it through the browser-prepared design category; screenshot comparison depends on neither an ignored Storybook directory nor an undeclared machine browser."
+    },
+    {
+      "id": "REG-ORGANIZER-AUTHORITY-001",
+      "title": "Club compatibility names silently become product authority again",
+      "status": "active",
+      "applies_to": [
+        "contracts/**",
+        "functions/src/**",
+        "lib/**",
+        "website/src/**",
+        "admin/src/**",
+        "tool/check_organizer_nomenclature.mjs"
+      ],
+      "symptom": "A new client, contract, route, media path, callable, or generic product label uses club as the parent entity even though club is only an organizer subtype, recreating split authority after the migration.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/check_organizer_nomenclature.test.mjs && node tool/check_organizer_nomenclature.mjs",
+        "guardEvidence": "the seeded legacy callable and generic club-copy fixture fails while the canonical cross-surface fixture and current repository pass"
+      },
+      "owner_docs": [
+        "docs/migrations/clubs_to_organizers.md",
+        "docs/data_contracts.md",
+        "docs/app_architecture.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "Legacy club collections, fields, Dart aliases, and callable wrappers remain only for the released-client compatibility window; remote backfill and retirement have separate evidence gates."
+    },
+    {
+      "id": "REG-ORGANIZER-COUNT-SEMANTICS-001",
+      "title": "Follower backfill overwrites the legacy membership aggregate",
+      "status": "active",
+      "applies_to": [
+        "functions/src/clubs/syncClubMemberStats.ts",
+        "tool/data/migrate_clubs_to_organizers.mjs",
+        "contracts/firestore/organizers.schema.json"
+      ],
+      "symptom": "Creating organizer follow edges asynchronously rewrites clubs.memberCount from followerCount, dropping owner and manager membership edges and causing delayed post-migration parity drift.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions test && node --test tool/data/migrate_clubs_to_organizers.test.mjs",
+        "guardEvidence": "the organizer follower trigger test proves legacy memberCount is unchanged, while the migration test derives an explicit recovery patch from active clubMemberships and excludes memberCount from canonical organizer parity"
+      },
+      "owner_docs": [
+        "docs/migrations/clubs_to_organizers.md",
+        "docs/data_contracts.md"
+      ],
+      "notes": "The two aggregates intentionally have different semantics during compatibility: organizer followers exclude team roles, while legacy club memberships include them."
+    },
+    {
+      "id": "REG-ASYNC-DEADLINE-RETRY-001",
+      "title": "Initial provider loads remain indefinite or discard recovery callbacks",
+      "status": "active",
+      "applies_to": [
+        "lib/core/data/initial_load_policy.dart",
+        "lib/core/presentation/catch_async_value_adapter.dart",
+        "lib/core/widgets/catch_async_value_view.dart",
+        "lib/core/widgets/catch_error_state.dart",
+        "lib/**/presentation/**",
+        "packages/catch_ui_lints/**"
+      ],
+      "symptom": "A screen can display a skeleton forever, a known error loses to a loading flag, or an explicit retry callback disappears because generic exception metadata classifies the error as non-retryable.",
+      "guard": {
+        "type": "command",
+        "command": "bash tool/check_catch_ui_lints.sh && flutter test test/core/catch_async_state_test.dart test/core/catch_primitives_test.dart test/explore/explore_view_model_test.dart",
+        "guardEvidence": "the analyzer rejects CatchAsyncValue surfaces without onRetry; adapter tests prove refresh-time errors outrank simultaneous loading flags; primitive tests prove the initial-load deadline and explicit recovery callback; Explore state tests prove known errors outrank loading"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/widget_catalog.md",
+        "docs/audit_registry/rules.json"
+      ],
+      "notes": "The 12-second policy is a presentation deadline for initial provider resolution, not an idle timeout for healthy Firestore streams."
+    },
+    {
+      "id": "REG-PUSHED-ROUTE-CHROME-001",
+      "title": "Pushed route titles, surfaces, and dividers drift by caller",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_route_scaffold.dart",
+        "lib/events/presentation/saved_events_screen.dart",
+        "lib/reviews/presentation/reviews_history_screen.dart",
+        "lib/payments/presentation/payment_history_screen.dart",
+        "lib/safety/presentation/settings_screen.dart",
+        "lib/chats/presentation/**",
+        "lib/hosts/presentation/**",
+        "tool/design/screen_top_bar_contracts.json"
+      ],
+      "symptom": "One route has a permanent underline, another never separates scrolled content, a detail bar changes surface color, or loading/content branches render different title hierarchies.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check design:screen-top-bar-contracts && flutter test test/core/catch_top_bar_test.dart test/events/saved_events_screen_test.dart test/chats/chat_screen_test.dart",
+        "guardEvidence": "the route shell test proves the divider follows scroll depth, the contract gate inventories Consumer and Host roots, and focused tests reject duplicate Saved Events titles and drifting chat chrome"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/design_language.md",
+        "docs/widget_catalog.md"
+      ],
+      "notes": "Root tab titles stay in scroll content; pushed routes use CatchRouteScaffold."
+    },
+    {
+      "id": "REG-TERMINAL-ERROR-ACTION-001",
+      "title": "Blocking error surfaces strand the user without a next action",
+      "status": "active",
+      "applies_to": [
+        "lib/core/widgets/catch_error_state.dart",
+        "lib/**/presentation/**",
+        "packages/catch_ui_lints/**",
+        "tool/check_catch_ui_lints.sh"
+      ],
+      "symptom": "A full-screen or sliver error replaces the route content but exposes neither a safe retry nor a way to leave the dead end.",
+      "guard": {
+        "type": "command",
+        "command": "bash tool/check_catch_ui_lints.sh && flutter test test/core/catch_primitives_test.dart",
+        "guardEvidence": "catch_error_state_requires_action rejects actionless blocking error primitives and widget tests prove the canonical alternate action is preserved by every placement adapter"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/widget_catalog.md",
+        "docs/audit_registry/rules.json"
+      ],
+      "notes": "Use retry for rerunnable failures and CatchErrorBackAction or another explicit destination for terminal route conditions. Inline errors may inherit nearby recovery controls."
+    },
+    {
+      "id": "REG-ORGANIZER-ROLLOUT-READ-FALLBACK-001",
+      "title": "Legacy organizer read fallback returns after canonical cutover",
+      "status": "active",
+      "applies_to": [
+        "lib/clubs/data/clubs_repository.dart",
+        "docs/migrations/clubs_to_organizers.md",
+        "tool/check_organizer_nomenclature.mjs",
+        "test/clubs/clubs_repository_test.dart"
+      ],
+      "symptom": "Current clients silently read clubs after a canonical organizer error, masking rollout defects and restoring two competing read authorities.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/check_organizer_nomenclature.mjs && flutter test test/clubs/clubs_repository_test.dart",
+        "guardEvidence": "the nomenclature gate rejects legacy fallback seams and repository tests prove legacy-only documents are ignored"
+      },
+      "owner_docs": [
+        "docs/migrations/clubs_to_organizers.md",
+        "docs/data_contracts.md",
+        "docs/app_architecture.md"
+      ],
+      "notes": "The temporary permission-denied fallback was retired on 2026-07-22 after production rules, indexes, and 41-of-41 organizer parity were verified. Legacy writes remain only for released-client compatibility until a separate cleanup."
+    },
+    {
+      "id": "REG-WEB-FIRST-PARTY-VERIFIED-DISCOVERY-001",
+      "title": "First-party organizers disappear from verified web discovery",
+      "status": "active",
+      "applies_to": [
+        "website/src/features/organizers/selectors.ts",
+        "website/src/features/organizers/sections/RecommendedOrganizersSection.tsx",
+        "website/src/features/organizers/useOrganizerDirectoryController.ts",
+        "website/src/stories/OrganizerListingSections.stories.tsx",
+        "design/visual_baselines/website/**"
+      ],
+      "symptom": "Splitting first-party and owner-verified trust labels causes Catch-created organizers to fall out of verified filters and recommendations, leaving a registry-ready Storybook surface blank.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-marketing run test:unit -- --run src/features/organizers/selectors.test.ts && node tool/web/check_storybook_visuals.mjs --surface website --component listing_recommended_organizers_section --check",
+        "guardEvidence": "the selector test proves both first-party and owner-verified organizers remain eligible while source-backed organizers do not; the visual contract proves the recommendation surface mounts with the distinct Catch trust badge"
+      },
+      "owner_docs": [
+        "docs/marketing_website_architecture.md",
+        "docs/web_surface_architecture.md",
+        "design/public_surface_behavior.json"
+      ],
+      "notes": "Verified discovery is a product eligibility grouping, not a request to collapse first-party and owner-verified presentation labels."
     }
   ]
 }

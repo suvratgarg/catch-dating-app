@@ -40,6 +40,7 @@ class ChatMessageList extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchAsyncValueView<List<ChatMessage>>(
       value: messagesAsync,
+      onRetry: onRetry,
       loadingBuilder: (_) {
         final t = CatchTokens.of(context);
         const bubbleSpecs = [

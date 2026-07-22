@@ -509,8 +509,14 @@ abstract final class CatchInsets {
   // The horizontal page gutter stays [CatchSpacing.screenPx] (s5) everywhere.
 
   /// (1) Title block padding for tab screens whose header pairs a title with a
-  /// subtitle (Chats, Clubs browse headers). Canonical = [pageHeaderBody].
-  static const EdgeInsets screenTitleBlock = pageHeaderBody;
+  /// subtitle (Chats, Explore, and Host browse headers). Root titles begin at
+  /// the safe-area content edge; the title component owns its internal height.
+  static const EdgeInsets screenTitleBlock = EdgeInsets.fromLTRB(
+    CatchSpacing.s5,
+    CatchSpacing.s0,
+    CatchSpacing.s5,
+    CatchSpacing.s3,
+  );
 
   /// (1) Title block padding for tab screens whose header is a compact
   /// eyebrow/title or title-only row (Home dashboard, Profile-style headers).

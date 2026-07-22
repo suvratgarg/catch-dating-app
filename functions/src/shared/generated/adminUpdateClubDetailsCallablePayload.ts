@@ -21,6 +21,17 @@ export interface AdminUpdateClubDetailsCallablePayload {
     email?: string | null;
     imageUrl?: string | null;
     profileImageUrl?: string | null;
+    /**
+     * Canonical organizer classification. Club is one organizer subtype; missing legacy values normalize to club during migration.
+     */
+    organizerType?:
+      | "club"
+      | "community"
+      | "individual"
+      | "eventProducer"
+      | "venue"
+      | "brand";
+    publicCategoryLabel?: string | null;
     entityKind?:
       | "club"
       | "venue"

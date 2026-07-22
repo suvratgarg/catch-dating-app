@@ -93,6 +93,9 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
 
     return CatchAsyncValueView<HostPaymentAccount?>(
       value: accountAsync,
+      onRetry: uid == null
+          ? null
+          : () => ref.invalidate(watchHostPaymentAccountProvider(uid)),
       loadingBuilder: (_) => const HostPaymentAccountLoadingCard(),
       errorBuilder: (_, error, _) => HostPaymentAccountErrorCard(
         error: error,

@@ -15,9 +15,12 @@ import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
+import 'package:catch_dating_app/organizers/domain/organizer_authority.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
-import 'package:cloud_functions/cloud_functions.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
@@ -39,30 +42,6 @@ ClubMembership _membership({
 
 void main() {
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
-
-  test(
-    'Host conversation legacy retry only matches the old eventId schema',
-    () {
-      expect(
-        isLegacyHostConversationEventIdRejection(
-          _TestFirebaseFunctionsException(
-            code: 'invalid-argument',
-            message: 'eventId: must NOT have additional properties',
-          ),
-        ),
-        isTrue,
-      );
-      expect(
-        isLegacyHostConversationEventIdRejection(
-          _TestFirebaseFunctionsException(
-            code: 'invalid-argument',
-            message: 'Event does not belong to this club.',
-          ),
-        ),
-        isFalse,
-      );
-    },
-  );
 
   group('ClubMembershipController', () {
     test('join requires sign-in and forwards the club id', () async {
@@ -239,7 +218,7 @@ void main() {
       expect(result.isLoading, isTrue);
     });
 
-    test('consumer role keeps owned club detail in consumer mode', () {
+    test('consumer owner relationship suppresses self-directed actions', () {
       final now = DateTime(2025, 1, 1, 9);
       final futureEvent = buildEvent(
         id: 'future-event',
@@ -257,11 +236,96 @@ void main() {
       );
 
       final vm = result.requireValue!;
-      expect(vm.isHost, isFalse);
+      expect(vm.isHost, isTrue);
       expect(vm.upcomingEvents.map((event) => event.id), ['future-event']);
       expect(vm.reviews, isEmpty);
       expect(vm.userProfile, isNull);
       expect(vm.isMember, isFalse);
+    });
+
+    test('consumer direct reads reject hidden or suppressed organizers', () {
+      final hidden = buildClub().copyWith(
+        appVisibility: ClubAppVisibility.hidden,
+      );
+      final suppressed = buildClub().copyWith(
+        claim: OrganizerClaim.fromJson({'state': 'suppressed'}),
+      );
+
+      for (final club in [hidden, suppressed]) {
+        final result = buildClubDetailViewModel(
+          clubAsync: AsyncData(club),
+          eventsAsync: const AsyncData(<Event>[]),
+          reviewsAsync: const AsyncData(<Review>[]),
+          userProfileAsync: const AsyncData(null),
+          uidAsync: const AsyncData(null),
+          membershipAsync: const AsyncData(null),
+        );
+        expect(
+          result.value,
+          isNull,
+          reason: club.organizerAuthority.trustState.name,
+        );
+      }
+    });
+
+    test('host runtime may preview a hidden organizer', () {
+      final result = buildClubDetailViewModel(
+        clubAsync: AsyncData(
+          buildClub().copyWith(appVisibility: ClubAppVisibility.hidden),
+        ),
+        eventsAsync: const AsyncData(<Event>[]),
+        reviewsAsync: const AsyncData(<Review>[]),
+        userProfileAsync: AsyncData(buildUser(uid: 'host-1')),
+        uidAsync: const AsyncData('host-1'),
+        membershipAsync: const AsyncData(null),
+        appRole: AppRole.host,
+      );
+
+      expect(result.requireValue, isNotNull);
+      expect(result.requireValue!.isHost, isTrue);
+    });
+
+    test(
+      'host runtime denies a discoverable organizer owned by someone else',
+      () {
+        final result = buildClubDetailViewModel(
+          clubAsync: AsyncData(buildClub(hostUserId: 'owner-1')),
+          eventsAsync: const AsyncData(<Event>[]),
+          reviewsAsync: const AsyncData(<Review>[]),
+          userProfileAsync: AsyncData(buildUser(uid: 'other-host')),
+          uidAsync: const AsyncData('other-host'),
+          membershipAsync: const AsyncData(null),
+          appRole: AppRole.host,
+        );
+
+        expect(result.value, isNull);
+      },
+    );
+
+    test('cancelled events do not appear in organizer schedules', () {
+      final now = DateTime(2026, 1, 1);
+      final cancelled = buildEvent(
+        id: 'cancelled',
+        startTime: now.add(const Duration(days: 1)),
+      ).copyWith(status: EventLifecycleStatus.cancelled);
+      final active = buildEvent(
+        id: 'active',
+        startTime: now.add(const Duration(days: 2)),
+      );
+
+      final result = buildClubDetailViewModel(
+        clubAsync: AsyncData(buildClub()),
+        eventsAsync: AsyncData([cancelled, active]),
+        reviewsAsync: const AsyncData(<Review>[]),
+        userProfileAsync: const AsyncData(null),
+        uidAsync: const AsyncData(null),
+        membershipAsync: const AsyncData(null),
+        now: now,
+      );
+
+      expect(result.requireValue!.upcomingEvents.map((event) => event.id), [
+        'active',
+      ]);
     });
 
     test('host role derives host club detail state', () {
@@ -368,6 +432,16 @@ void main() {
   });
 
   group('HostClubDetailScreenState', () {
+    test('rejects an optimistic organizer for a different route id', () {
+      expect(
+        clubDetailInitialClubForRoute(
+          clubId: 'expected-club',
+          initialClub: buildClub(id: 'different-club'),
+        ),
+        isNull,
+      );
+    });
+
     test('wraps a live host view model as public preview content', () {
       final club = buildClub();
       final state = HostClubDetailScreenState.fromState(
@@ -430,6 +504,20 @@ void main() {
       expect(content.publicPreviewMode, isTrue);
       expect(content.showMembershipDock, isFalse);
       expect(content.isInitialFallback, isTrue);
+    });
+
+    test('does not derive guest fallback actions before auth resolves', () {
+      final state = HostClubDetailScreenState.fromState(
+        viewModel: const CatchAsyncState<ClubDetailViewModel?>.loading(),
+        initialClub: buildClub(),
+        currentUid: null,
+        currentUserProfile: null,
+        currentMembership: null,
+        appRole: AppRole.consumer,
+        authResolved: false,
+      );
+
+      expect(state, isA<HostClubDetailLoading>());
     });
 
     test('maps blocking async branches to loading, error, and not found', () {
@@ -498,7 +586,7 @@ void main() {
         club: club,
         upcomingEvents: [laterEvent, earlierEvent],
         reviews: [buildReview()],
-        userProfile: buildUser(uid: 'runner-1'),
+        userProfile: _socialReadyUser('runner-1'),
         uid: 'runner-1',
         isMember: true,
         isAuthenticated: true,
@@ -589,8 +677,8 @@ void main() {
         expect(state.isHost, isFalse);
         expect(state.isMember, isFalse);
         expect(state.dockState, isNull);
-        expect(state.canMessageHosts, isTrue);
-        expect(state.messageableHostUids, {'host-2'});
+        expect(state.canMessageHosts, isFalse);
+        expect(state.messageableHostUids, isEmpty);
         expect(
           state.eventRouteTarget,
           ClubDetailEventRouteTarget.consumerEventDetail,
@@ -655,6 +743,7 @@ void main() {
               location: buildClub().location,
               area: 'Bandra',
               description: 'Easy social club',
+              organizerType: OrganizerType.eventProducer,
             );
 
         expect(fakeRepository.lastCreateCall, isNotNull);
@@ -663,6 +752,10 @@ void main() {
           fakeRepository.generatedId,
         );
         expect(fakeRepository.lastCreateCall!.imageUrl, isNull);
+        expect(
+          fakeRepository.lastCreateCall!.organizerType,
+          OrganizerType.eventProducer,
+        );
         expect(fakeImageUploadRepository.lastUploadClubId, isNull);
       },
     );
@@ -881,9 +974,21 @@ void main() {
   });
 }
 
-class _TestFirebaseFunctionsException extends FirebaseFunctionsException {
-  _TestFirebaseFunctionsException({
-    required super.code,
-    required super.message,
-  });
+UserProfile _socialReadyUser(String uid) {
+  return buildUser(
+    uid: uid,
+    photoUrls: List.generate(
+      minimumProfilePhotoCount,
+      (index) => 'https://example.com/$uid-$index.jpg',
+    ),
+  ).copyWith(
+    profilePrompts: [
+      for (final promptId in defaultProfilePromptIds)
+        ProfilePromptAnswer(
+          promptId: promptId,
+          prompt: promptId,
+          answer: 'Ready for social actions.',
+        ),
+    ],
+  );
 }

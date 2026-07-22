@@ -7,7 +7,7 @@ part 'club_membership_controller.g.dart';
 
 /// **Pattern A: Action controller + static Mutations**
 ///
-/// Owns membership actions from both the club list and detail screens.
+/// Owns follow actions from both the organizer list and detail screens.
 /// The UI watches mutation state to show loading spinners and error banners.
 @riverpod
 class ClubMembershipController extends _$ClubMembershipController {
@@ -19,12 +19,12 @@ class ClubMembershipController extends _$ClubMembershipController {
   void build() {}
 
   Future<void> join(String clubId) async {
-    requireSignedInUid(ref, action: 'join a club');
+    requireSignedInUid(ref, action: 'follow an organizer');
     await ref.read(clubsRepositoryProvider).joinClub(clubId);
   }
 
   Future<void> leave(String clubId) async {
-    requireSignedInUid(ref, action: 'leave a club');
+    requireSignedInUid(ref, action: 'unfollow an organizer');
     await ref.read(clubsRepositoryProvider).leaveClub(clubId);
   }
 
@@ -32,7 +32,7 @@ class ClubMembershipController extends _$ClubMembershipController {
     required String clubId,
     required bool enabled,
   }) async {
-    requireSignedInUid(ref, action: 'update club notifications');
+    requireSignedInUid(ref, action: 'update organizer notifications');
     await ref
         .read(clubsRepositoryProvider)
         .setClubPushNotifications(clubId: clubId, enabled: enabled);

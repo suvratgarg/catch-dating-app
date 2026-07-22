@@ -76,6 +76,8 @@ import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -229,10 +231,19 @@ class _ProviderProbe extends ConsumerWidget {
     final CatchTokens tokens = CatchTokens.of(context);
     final repositoryValue = ref.watch(eventRepositoryProvider);
     final asyncValue = ref.watch(eventAsyncProvider);
-    return Text(
-      asyncValue.when(data: (value) => '$value', loading: () => 'loading') +
-          repositoryValue.toString(),
-      style: CatchTextStyles.supporting(context, color: tokens.ink),
+    return Column(
+      children: [
+        Text(
+          '${asyncValue.when(data: (value) => value, loading: () => 0)}'
+          '$repositoryValue',
+          style: CatchTextStyles.supporting(context, color: tokens.ink),
+        ),
+        CatchAsyncValueView<int>(
+          value: asyncValue,
+          builder: (_, value) => Text('$value'),
+        ),
+        const CatchErrorState(title: 'Unavailable', message: 'Try elsewhere.'),
+      ],
     );
   }
 }
@@ -332,6 +343,14 @@ expect_code_count \
 expect_code_count \
   "seeded violation corpus" \
   "catch_async_requires_state_surface" \
+  1
+expect_code_count \
+  "seeded violation corpus" \
+  "catch_async_requires_retry" \
+  1
+expect_code_count \
+  "seeded violation corpus" \
+  "catch_error_state_requires_action" \
   1
 expect_code_count "seeded violation corpus" "catch_no_raw_error_surface" 1
 expect_code_count \

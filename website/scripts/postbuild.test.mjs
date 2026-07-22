@@ -129,6 +129,13 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
   assert.doesNotMatch(sitemap, /organizers\/$/);
   assert.doesNotMatch(sitemap, /afterfly-run-club/);
   assert.doesNotMatch(sitemap, /noindex-sample/);
+  assert.doesNotMatch(sitemap, /published-suppressed/);
+  assert.equal(
+    fs.existsSync(
+      path.join(distRoot, "organizers", "published-suppressed", "index.html")
+    ),
+    false
+  );
 
   const robots = fs.readFileSync(path.join(distRoot, "robots.txt"), "utf8");
   assert.match(robots, /User-agent: \*/);
@@ -251,6 +258,22 @@ function hostListings() {
       name: "Noindex Sample",
       path: "/organizers/noindex-sample/",
       sourceSummary: "Noindex source summary.",
+      sources: [],
+    },
+    {
+      authority: {
+        claimState: "suppressed",
+        publishStatus: "published",
+      },
+      city: "Delhi",
+      description: "A stale published record that must remain private.",
+      formats: [],
+      facts: [],
+      indexing: "index, follow",
+      legacyPaths: [],
+      name: "Published Suppressed",
+      path: "/organizers/published-suppressed/",
+      sourceSummary: "Suppressed listing.",
       sources: [],
     },
   ];

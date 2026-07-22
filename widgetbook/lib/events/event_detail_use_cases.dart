@@ -2181,18 +2181,6 @@ Widget savedEventsScreenStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Header sliver',
-  type: SavedEventsHeaderSliver,
-  path: '[Events]/Sections',
-)
-Widget savedEventsHeaderSliverState(BuildContext context) {
-  return const SizedBox(
-    height: 160,
-    child: CustomScrollView(slivers: [SavedEventsHeaderSliver()]),
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Agenda sliver states',
   type: SavedEventsAgendaSliver,
   path: '[Events]/Sections',

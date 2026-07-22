@@ -3,9 +3,10 @@ import {type FormEvent, useCallback, useMemo, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
 import {claimFirebaseConfigured} from "../../firebaseConfig";
 import {hostListings} from "../organizers/data";
+import {organizerPolicyForListing} from "../organizers/organizerPolicy";
 import {
   isClaimSubmissionEnabledListing,
-  isPublicApiEnabled,
+  isPubliclyReadableListing,
 } from "../organizers/selectors";
 import type {HostListing} from "../organizers/types";
 import type {FormStatus} from "../../shared/forms/types";
@@ -27,7 +28,10 @@ import {
 
 export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimRouteState) {
   const claimLookup = routeState.lookup;
-  const preselectedListing = routeState.listing;
+  const preselectedListing = routeState.listing &&
+    isPubliclyReadableListing(routeState.listing) ?
+    routeState.listing :
+    null;
   const claimUrlState = routeState.urlState;
   const urlRequestId = routeState.requestId;
   const [step, setStep] = useState<ClaimFlowStep>(
@@ -107,9 +111,10 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
       setStep("listing");
       return;
     }
-    if (!isPublicApiEnabled(listing)) {
+    const policy = organizerPolicyForListing(listing);
+    if (!policy.canRequestClaim) {
       setStatus({
-        message: listing.publicApi.reason,
+        message: policy.claimRequestReason,
         tone: "is-error",
       });
       return;
@@ -156,7 +161,7 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
 
     try {
       const response = await claimRequestMutation.mutateAsync({
-        clubId: listing.id,
+        organizerId: listing.id,
         requesterName: requesterName.trim(),
         requesterRole,
         businessEmail: businessEmail.trim() || null,
@@ -198,6 +203,7 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
     handleSignOut,
     isSigningIn,
     isSubmitting: claimRequestMutation.isPending,
+    claimRuntimeAvailable: claimFirebaseConfigured,
     listing,
     message,
     proofUrls,

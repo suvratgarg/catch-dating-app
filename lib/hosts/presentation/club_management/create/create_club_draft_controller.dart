@@ -20,14 +20,14 @@ class CreateClubDraftController extends _$CreateClubDraftController {
   void build() {}
 
   Future<ClubDraft?> loadDraft() {
-    final uid = requireSignedInUid(ref, action: 'load club draft');
+    final uid = requireSignedInUid(ref, action: 'load organizer draft');
     return ref.read(clubDraftRepositoryProvider).loadDraft(userId: uid);
   }
 
   Future<ClubDraft?> saveDraft(ClubDraft draft) async {
     if (draft.isEmpty) return null;
 
-    final uid = requireSignedInUid(ref, action: 'save club draft');
+    final uid = requireSignedInUid(ref, action: 'save organizer draft');
     await ref
         .read(clubDraftRepositoryProvider)
         .saveDraft(userId: uid, draft: draft);
@@ -35,7 +35,7 @@ class CreateClubDraftController extends _$CreateClubDraftController {
   }
 
   Future<void> deleteDraft() {
-    final uid = requireSignedInUid(ref, action: 'delete club draft');
+    final uid = requireSignedInUid(ref, action: 'delete organizer draft');
     return ref.read(clubDraftRepositoryProvider).deleteDraft(userId: uid);
   }
 }

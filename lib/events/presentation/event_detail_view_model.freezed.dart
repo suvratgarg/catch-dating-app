@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$EventDetailViewModel {
 
- Event get event; UserProfile? get userProfile; List<Review> get reviews; bool get isAuthenticated; bool get isHost; bool get isSaved; EventParticipation? get participation;
+ Event get event; UserProfile? get userProfile; List<Review> get reviews; bool get isAuthenticated; bool get isHost; bool get isSaved; bool get isClubMember; EventParticipation? get participation;
 /// Create a copy of EventDetailViewModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $EventDetailViewModelCopyWith<EventDetailViewModel> get copyWith => _$EventDetai
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventDetailViewModel&&(identical(other.event, event) || other.event == event)&&(identical(other.userProfile, userProfile) || other.userProfile == userProfile)&&const DeepCollectionEquality().equals(other.reviews, reviews)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated)&&(identical(other.isHost, isHost) || other.isHost == isHost)&&(identical(other.isSaved, isSaved) || other.isSaved == isSaved)&&(identical(other.participation, participation) || other.participation == participation));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventDetailViewModel&&(identical(other.event, event) || other.event == event)&&(identical(other.userProfile, userProfile) || other.userProfile == userProfile)&&const DeepCollectionEquality().equals(other.reviews, reviews)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated)&&(identical(other.isHost, isHost) || other.isHost == isHost)&&(identical(other.isSaved, isSaved) || other.isSaved == isSaved)&&(identical(other.isClubMember, isClubMember) || other.isClubMember == isClubMember)&&(identical(other.participation, participation) || other.participation == participation));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,event,userProfile,const DeepCollectionEquality().hash(reviews),isAuthenticated,isHost,isSaved,participation);
+int get hashCode => Object.hash(runtimeType,event,userProfile,const DeepCollectionEquality().hash(reviews),isAuthenticated,isHost,isSaved,isClubMember,participation);
 
 @override
 String toString() {
-  return 'EventDetailViewModel(event: $event, userProfile: $userProfile, reviews: $reviews, isAuthenticated: $isAuthenticated, isHost: $isHost, isSaved: $isSaved, participation: $participation)';
+  return 'EventDetailViewModel(event: $event, userProfile: $userProfile, reviews: $reviews, isAuthenticated: $isAuthenticated, isHost: $isHost, isSaved: $isSaved, isClubMember: $isClubMember, participation: $participation)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $EventDetailViewModelCopyWith<$Res>  {
   factory $EventDetailViewModelCopyWith(EventDetailViewModel value, $Res Function(EventDetailViewModel) _then) = _$EventDetailViewModelCopyWithImpl;
 @useResult
 $Res call({
- Event event, UserProfile? userProfile, List<Review> reviews, bool isAuthenticated, bool isHost, bool isSaved, EventParticipation? participation
+ Event event, UserProfile? userProfile, List<Review> reviews, bool isAuthenticated, bool isHost, bool isSaved, bool isClubMember, EventParticipation? participation
 });
 
 
@@ -62,7 +62,7 @@ class _$EventDetailViewModelCopyWithImpl<$Res>
 
 /// Create a copy of EventDetailViewModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? event = null,Object? userProfile = freezed,Object? reviews = null,Object? isAuthenticated = null,Object? isHost = null,Object? isSaved = null,Object? participation = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? event = null,Object? userProfile = freezed,Object? reviews = null,Object? isAuthenticated = null,Object? isHost = null,Object? isSaved = null,Object? isClubMember = null,Object? participation = freezed,}) {
   return _then(_self.copyWith(
 event: null == event ? _self.event : event // ignore: cast_nullable_to_non_nullable
 as Event,userProfile: freezed == userProfile ? _self.userProfile : userProfile // ignore: cast_nullable_to_non_nullable
@@ -70,6 +70,7 @@ as UserProfile?,reviews: null == reviews ? _self.reviews : reviews // ignore: ca
 as List<Review>,isAuthenticated: null == isAuthenticated ? _self.isAuthenticated : isAuthenticated // ignore: cast_nullable_to_non_nullable
 as bool,isHost: null == isHost ? _self.isHost : isHost // ignore: cast_nullable_to_non_nullable
 as bool,isSaved: null == isSaved ? _self.isSaved : isSaved // ignore: cast_nullable_to_non_nullable
+as bool,isClubMember: null == isClubMember ? _self.isClubMember : isClubMember // ignore: cast_nullable_to_non_nullable
 as bool,participation: freezed == participation ? _self.participation : participation // ignore: cast_nullable_to_non_nullable
 as EventParticipation?,
   ));
@@ -189,10 +190,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Event event,  UserProfile? userProfile,  List<Review> reviews,  bool isAuthenticated,  bool isHost,  bool isSaved,  EventParticipation? participation)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Event event,  UserProfile? userProfile,  List<Review> reviews,  bool isAuthenticated,  bool isHost,  bool isSaved,  bool isClubMember,  EventParticipation? participation)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EventDetailViewModel() when $default != null:
-return $default(_that.event,_that.userProfile,_that.reviews,_that.isAuthenticated,_that.isHost,_that.isSaved,_that.participation);case _:
+return $default(_that.event,_that.userProfile,_that.reviews,_that.isAuthenticated,_that.isHost,_that.isSaved,_that.isClubMember,_that.participation);case _:
   return orElse();
 
 }
@@ -210,10 +211,10 @@ return $default(_that.event,_that.userProfile,_that.reviews,_that.isAuthenticate
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Event event,  UserProfile? userProfile,  List<Review> reviews,  bool isAuthenticated,  bool isHost,  bool isSaved,  EventParticipation? participation)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Event event,  UserProfile? userProfile,  List<Review> reviews,  bool isAuthenticated,  bool isHost,  bool isSaved,  bool isClubMember,  EventParticipation? participation)  $default,) {final _that = this;
 switch (_that) {
 case _EventDetailViewModel():
-return $default(_that.event,_that.userProfile,_that.reviews,_that.isAuthenticated,_that.isHost,_that.isSaved,_that.participation);case _:
+return $default(_that.event,_that.userProfile,_that.reviews,_that.isAuthenticated,_that.isHost,_that.isSaved,_that.isClubMember,_that.participation);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -230,10 +231,10 @@ return $default(_that.event,_that.userProfile,_that.reviews,_that.isAuthenticate
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Event event,  UserProfile? userProfile,  List<Review> reviews,  bool isAuthenticated,  bool isHost,  bool isSaved,  EventParticipation? participation)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Event event,  UserProfile? userProfile,  List<Review> reviews,  bool isAuthenticated,  bool isHost,  bool isSaved,  bool isClubMember,  EventParticipation? participation)?  $default,) {final _that = this;
 switch (_that) {
 case _EventDetailViewModel() when $default != null:
-return $default(_that.event,_that.userProfile,_that.reviews,_that.isAuthenticated,_that.isHost,_that.isSaved,_that.participation);case _:
+return $default(_that.event,_that.userProfile,_that.reviews,_that.isAuthenticated,_that.isHost,_that.isSaved,_that.isClubMember,_that.participation);case _:
   return null;
 
 }
@@ -245,7 +246,7 @@ return $default(_that.event,_that.userProfile,_that.reviews,_that.isAuthenticate
 
 
 class _EventDetailViewModel implements EventDetailViewModel {
-  const _EventDetailViewModel({required this.event, required this.userProfile, required final  List<Review> reviews, required this.isAuthenticated, required this.isHost, required this.isSaved, required this.participation}): _reviews = reviews;
+  const _EventDetailViewModel({required this.event, required this.userProfile, required final  List<Review> reviews, required this.isAuthenticated, required this.isHost, required this.isSaved, this.isClubMember = false, required this.participation}): _reviews = reviews;
   
 
 @override final  Event event;
@@ -260,6 +261,7 @@ class _EventDetailViewModel implements EventDetailViewModel {
 @override final  bool isAuthenticated;
 @override final  bool isHost;
 @override final  bool isSaved;
+@override@JsonKey() final  bool isClubMember;
 @override final  EventParticipation? participation;
 
 /// Create a copy of EventDetailViewModel
@@ -272,16 +274,16 @@ _$EventDetailViewModelCopyWith<_EventDetailViewModel> get copyWith => __$EventDe
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventDetailViewModel&&(identical(other.event, event) || other.event == event)&&(identical(other.userProfile, userProfile) || other.userProfile == userProfile)&&const DeepCollectionEquality().equals(other._reviews, _reviews)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated)&&(identical(other.isHost, isHost) || other.isHost == isHost)&&(identical(other.isSaved, isSaved) || other.isSaved == isSaved)&&(identical(other.participation, participation) || other.participation == participation));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventDetailViewModel&&(identical(other.event, event) || other.event == event)&&(identical(other.userProfile, userProfile) || other.userProfile == userProfile)&&const DeepCollectionEquality().equals(other._reviews, _reviews)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated)&&(identical(other.isHost, isHost) || other.isHost == isHost)&&(identical(other.isSaved, isSaved) || other.isSaved == isSaved)&&(identical(other.isClubMember, isClubMember) || other.isClubMember == isClubMember)&&(identical(other.participation, participation) || other.participation == participation));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,event,userProfile,const DeepCollectionEquality().hash(_reviews),isAuthenticated,isHost,isSaved,participation);
+int get hashCode => Object.hash(runtimeType,event,userProfile,const DeepCollectionEquality().hash(_reviews),isAuthenticated,isHost,isSaved,isClubMember,participation);
 
 @override
 String toString() {
-  return 'EventDetailViewModel(event: $event, userProfile: $userProfile, reviews: $reviews, isAuthenticated: $isAuthenticated, isHost: $isHost, isSaved: $isSaved, participation: $participation)';
+  return 'EventDetailViewModel(event: $event, userProfile: $userProfile, reviews: $reviews, isAuthenticated: $isAuthenticated, isHost: $isHost, isSaved: $isSaved, isClubMember: $isClubMember, participation: $participation)';
 }
 
 
@@ -292,7 +294,7 @@ abstract mixin class _$EventDetailViewModelCopyWith<$Res> implements $EventDetai
   factory _$EventDetailViewModelCopyWith(_EventDetailViewModel value, $Res Function(_EventDetailViewModel) _then) = __$EventDetailViewModelCopyWithImpl;
 @override @useResult
 $Res call({
- Event event, UserProfile? userProfile, List<Review> reviews, bool isAuthenticated, bool isHost, bool isSaved, EventParticipation? participation
+ Event event, UserProfile? userProfile, List<Review> reviews, bool isAuthenticated, bool isHost, bool isSaved, bool isClubMember, EventParticipation? participation
 });
 
 
@@ -309,7 +311,7 @@ class __$EventDetailViewModelCopyWithImpl<$Res>
 
 /// Create a copy of EventDetailViewModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? event = null,Object? userProfile = freezed,Object? reviews = null,Object? isAuthenticated = null,Object? isHost = null,Object? isSaved = null,Object? participation = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? event = null,Object? userProfile = freezed,Object? reviews = null,Object? isAuthenticated = null,Object? isHost = null,Object? isSaved = null,Object? isClubMember = null,Object? participation = freezed,}) {
   return _then(_EventDetailViewModel(
 event: null == event ? _self.event : event // ignore: cast_nullable_to_non_nullable
 as Event,userProfile: freezed == userProfile ? _self.userProfile : userProfile // ignore: cast_nullable_to_non_nullable
@@ -317,6 +319,7 @@ as UserProfile?,reviews: null == reviews ? _self._reviews : reviews // ignore: c
 as List<Review>,isAuthenticated: null == isAuthenticated ? _self.isAuthenticated : isAuthenticated // ignore: cast_nullable_to_non_nullable
 as bool,isHost: null == isHost ? _self.isHost : isHost // ignore: cast_nullable_to_non_nullable
 as bool,isSaved: null == isSaved ? _self.isSaved : isSaved // ignore: cast_nullable_to_non_nullable
+as bool,isClubMember: null == isClubMember ? _self.isClubMember : isClubMember // ignore: cast_nullable_to_non_nullable
 as bool,participation: freezed == participation ? _self.participation : participation // ignore: cast_nullable_to_non_nullable
 as EventParticipation?,
   ));

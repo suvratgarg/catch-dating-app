@@ -1,4 +1,5 @@
 import {hostListings} from "./data";
+import {organizerPolicyForListing} from "./organizerPolicy";
 import type {HostListing, HostListingRoute} from "./types";
 
 export function getHostListingRouteForPath(
@@ -8,7 +9,7 @@ export function getHostListingRouteForPath(
   const canonicalListing = hostListings.find((listing) =>
     listing.path === normalizedPath
   );
-  if (canonicalListing) {
+  if (canonicalListing && organizerPolicyForListing(canonicalListing).isPubliclyReadable) {
     return {
       isLegacyPath: false,
       listing: canonicalListing,
@@ -18,7 +19,7 @@ export function getHostListingRouteForPath(
   const legacyListing = hostListings.find((listing) =>
     listing.legacyPaths?.includes(normalizedPath)
   );
-  return legacyListing ? {
+  return legacyListing && organizerPolicyForListing(legacyListing).isPubliclyReadable ? {
     isLegacyPath: true,
     listing: legacyListing,
   } : null;

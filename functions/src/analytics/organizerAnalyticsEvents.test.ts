@@ -145,7 +145,7 @@ test("recordOrganizerAnalyticsEvent rejects unpublished pages", async () => {
       }),
       deps(new FakeFirestore({
         ...baseDocs(),
-        "clubs/club-1": clubDoc({
+        "organizers/club-1": clubDoc({
           publishStatus: "qa",
           robots: "noindex, follow",
         }),
@@ -227,7 +227,7 @@ function deps(
 
 function baseDocs(): Record<string, FakeData> {
   return {
-    "clubs/club-1": clubDoc(),
+    "organizers/club-1": clubDoc(),
     "events/event-1": {clubId: "club-1"},
   };
 }

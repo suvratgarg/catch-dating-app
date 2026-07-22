@@ -638,6 +638,113 @@ describe("firestore.rules", () => {
     });
   });
 
+  describe("organizers", () => {
+    it("exposes organizer profiles but keeps profile writes callable-owned", async () => {
+      await seed(["organizers", "organizer-1"], club({
+        ownerUserId: "owner-1",
+        hostUserIds: ["owner-1", "manager-1"],
+        organizerType: "club",
+        organizerPhotos: [],
+        followerCount: 0,
+      }));
+
+      await assertSucceeds(
+        getDoc(doc(
+          testEnv.unauthenticatedContext().firestore(),
+          "organizers",
+          "organizer-1",
+        )),
+      );
+      await assertFails(
+        updateDoc(doc(authedDb("owner-1"), "organizers", "organizer-1"), {
+          organizerType: "venue",
+        }),
+      );
+      await assertFails(
+        setDoc(doc(authedDb("owner-1"), "organizers", "organizer-2"), {
+          name: "Direct organizer",
+        }),
+      );
+      await assertFails(
+        deleteDoc(doc(authedDb("owner-1"), "organizers", "organizer-1")),
+      );
+    });
+
+    it("scopes team and follow reads while keeping writes callable-owned", async () => {
+      await seed(["organizers", "organizer-1"], {
+        ownerUserId: "owner-1",
+        hostUserId: "owner-1",
+        hostUserIds: ["owner-1", "manager-1"],
+      });
+      await seed(["organizerTeamMemberships", "organizer-1_manager-1"], {
+        organizerId: "organizer-1",
+        uid: "manager-1",
+        role: "manager",
+        status: "active",
+      });
+      await seed(["organizerFollows", "organizer-1_runner-1"], {
+        organizerId: "organizer-1",
+        uid: "runner-1",
+        status: "active",
+        pushNotificationsEnabled: true,
+      });
+
+      await assertSucceeds(getDoc(doc(
+        authedDb("manager-1"),
+        "organizerTeamMemberships",
+        "organizer-1_manager-1",
+      )));
+      await assertSucceeds(getDoc(doc(
+        authedDb("owner-1"),
+        "organizerTeamMemberships",
+        "organizer-1_manager-1",
+      )));
+      await assertFails(getDoc(doc(
+        authedDb("runner-1"),
+        "organizerTeamMemberships",
+        "organizer-1_manager-1",
+      )));
+      await assertSucceeds(getDoc(doc(
+        authedDb("runner-1"),
+        "organizerFollows",
+        "organizer-1_runner-1",
+      )));
+      await assertFails(getDoc(doc(
+        authedDb("runner-2"),
+        "organizerFollows",
+        "organizer-1_runner-1",
+      )));
+      await assertFails(updateDoc(doc(
+        authedDb("runner-1"),
+        "organizerFollows",
+        "organizer-1_runner-1",
+      ), {status: "inactive"}));
+    });
+
+    it("keeps organizer claims and schedule locks server-only", async () => {
+      await seed(["organizerClaimRequests", "claim-1"], {
+        organizerId: "organizer-1",
+        requesterUid: "owner-1",
+        status: "pending",
+      });
+      await seed(["organizerScheduleLocks", "lock-1"], {
+        organizerId: "organizer-1",
+        eventId: "event-1",
+      });
+
+      await assertFails(getDoc(doc(
+        authedDb("owner-1"),
+        "organizerClaimRequests",
+        "claim-1",
+      )));
+      await assertFails(getDoc(doc(
+        authedDb("owner-1"),
+        "organizerScheduleLocks",
+        "lock-1",
+      )));
+    });
+  });
+
   describe("relationship documents", () => {
     it("keeps club host claims server-only", async () => {
       await seed(["clubHostClaims", "host-1"], {

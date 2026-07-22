@@ -101,7 +101,8 @@ void main() {
         expect(decoded?.id, 'event-88');
         expect(decoded?.meetingPoint, 'Carter Road');
         expect(encoded.containsKey('id'), isFalse);
-        expect(encoded['clubId'], 'club-1');
+        expect(encoded['organizerId'], 'club-1');
+        expect(encoded.containsKey('clubId'), isFalse);
         expect(encoded['constraints'], {
           'minAge': 21,
           'maxAge': 99,
@@ -402,6 +403,7 @@ void main() {
           {
             'eventId': 'event-42',
             'clubId': event.clubId,
+            'organizerId': event.organizerId,
             'startTimeMillis': event.startTime.millisecondsSinceEpoch,
             'endTimeMillis': event.endTime.millisecondsSinceEpoch,
             'meetingPoint': event.meetingPoint,

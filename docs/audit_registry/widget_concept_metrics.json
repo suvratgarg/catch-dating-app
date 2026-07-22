@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-19",
+  "updated": "2026-07-22",
   "sourceOfTruth": {
     "componentContracts": "design/components/catch.components.json",
     "classification": "docs/audit_registry/widget_classification.json",
@@ -15,7 +15,7 @@
     "concepts": 63,
     "conceptDelta": -1,
     "publicContractClasses": 198,
-    "productionWidgetAndStateClasses": 1094,
+    "productionWidgetAndStateClasses": 1099,
     "members": 118,
     "membersPerConcept": 1.87,
     "unclassifiedContractEntries": 0,
@@ -24,8 +24,8 @@
     "ownerReviewQueueSize": 3
   },
   "ledgerCoverage": {
-    "normalizedMemberSetCoveredClusters": 41,
-    "totalClusters": 42,
+    "normalizedMemberSetCoveredClusters": 40,
+    "totalClusters": 41,
     "unresolvedClusters": 1,
     "rankedPairsCovered": 144,
     "totalRankedPairs": 200,
@@ -48,12 +48,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "028dff00c4a320e45a3adbc65e85f97287fcb845a29f293491d402be0d6a09be",
-    "contractDigest": "028dff00c4a320e45a3adbc65e85f97287fcb845a29f293491d402be0d6a09be"
+    "digest": "98807e76fc77e202fe3280ad8d35a848784f9f3b1015b17dcfd6b8397c47a3b4",
+    "contractDigest": "98807e76fc77e202fe3280ad8d35a848784f9f3b1015b17dcfd6b8397c47a3b4"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "05678800b0bbdf837ec1bab2824d962774a4e926d8adf318c8367e0a0ee8657e",
+    "handoffRequestDigest": "bae38cc9704320b5195ab5267eea5daaadd2178b5da6afcd85b378c10d01ec08",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -275,7 +275,7 @@
     {
       "requirement": "1. Reconcile the existing decision ledger",
       "status": "pending",
-      "evidence": "41/42 exact normalized-member-set cluster decisions"
+      "evidence": "40/41 exact normalized-member-set cluster decisions"
     },
     {
       "requirement": "2. Prove all four vertical-slice outcomes",
@@ -300,7 +300,7 @@
     {
       "requirement": "6. Report concept and class counts separately",
       "status": "proven",
-      "evidence": "63 concepts, 198 contracted public classes, 1094 production widget/state classes"
+      "evidence": "63 concepts, 198 contracted public classes, 1099 production widget/state classes"
     },
     {
       "requirement": "7. Complete live Figma/Claude Badge + Field round trip",

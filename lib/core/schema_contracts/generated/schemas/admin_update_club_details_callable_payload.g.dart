@@ -103,6 +103,25 @@ const schemaAdminUpdateClubDetailsCallablePayloadSchema = <String, Object?>{
             },
           ],
         },
+        'organizerType': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'club',
+            'community',
+            'individual',
+            'eventProducer',
+            'venue',
+            'brand',
+          ],
+          'description': 'Canonical organizer classification. Club is one organizer subtype; missing legacy values normalize to club during migration.',
+        },
+        'publicCategoryLabel': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 120,
+        },
         'entityKind': <String, Object?>{
           'type': 'string',
           'enum': <Object?>[

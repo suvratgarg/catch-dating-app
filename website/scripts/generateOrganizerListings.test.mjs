@@ -6,8 +6,29 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
+import {
+  validateWebsiteHostListingProjection,
+} from "../../tool/contracts/generated/schema_contract_validators.mjs";
 
 const scriptPath = fileURLToPath(new URL("./generateOrganizerListings.mjs", import.meta.url));
+
+test("listing schema rejects stale publication and review target contradictions", () => {
+  const listing = JSON.parse(fs.readFileSync(
+    fileURLToPath(new URL("../src/generated/hostListings.json", import.meta.url)),
+    "utf8"
+  ))[0];
+  assert.equal(validateWebsiteHostListingProjection(listing), true);
+
+  const staleSuppression = structuredClone(listing);
+  staleSuppression.authority.publishStatus = "published";
+  staleSuppression.authority.claimState = "suppressed";
+  assert.equal(validateWebsiteHostListingProjection(staleSuppression), false);
+
+  const staleReviewCapability = structuredClone(listing);
+  staleReviewCapability.capabilities.publicReviews.targetState = "disabled";
+  staleReviewCapability.capabilities.publicReviews.readState = "enabled";
+  assert.equal(validateWebsiteHostListingProjection(staleReviewCapability), false);
+});
 
 test("production output excludes demo listings while explicit story output includes them", () => {
   const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-organizer-demo-split-"));
@@ -93,8 +114,14 @@ test("approved organizer intake projections render canonical listings and suppre
   assert.equal(listings[0].claim.href, "/organizers/afterfly/#claim");
   assert.deepEqual(listings[0].publicApi, {
     state: "disabled",
-    reason: "Claiming is not available for this organizer yet.",
+    reason: "Claiming is not available until target readiness is verified against Firestore.",
     claimTargetSyncStatus: "write_needed",
+  });
+  assert.deepEqual(listings[0].capabilities.publicReviews, {
+    targetState: "disabled",
+    readState: "disabled",
+    writeState: "disabled",
+    reason: "Public reviews are unavailable until canonical target readiness is verified.",
   });
   assert.equal(listings[0].city, "Indore");
   assert.equal(listings[0].country, "India");
@@ -126,6 +153,39 @@ test("approved organizer intake projections render canonical listings and suppre
     "--no-demo",
     "--check",
   ], {stdio: "pipe"});
+
+  fs.writeFileSync(
+    claimTargetSyncPreviewPath,
+    `${JSON.stringify(
+      claimTargetSyncPreview("in_sync", "organizers/afterfly"),
+      null,
+      2
+    )}\n`
+  );
+  execFileSync(process.execPath, [
+    scriptPath,
+    "--projection-plan",
+    projectionPath,
+    "--claim-target-sync-preview",
+    claimTargetSyncPreviewPath,
+    "--external-event-readiness",
+    externalEventReadinessPath,
+    "--seed-root",
+    seedRoot,
+    "--output",
+    outputPath,
+    "--no-demo",
+  ], {stdio: "pipe"});
+  const previewOnlyListings = JSON.parse(fs.readFileSync(outputPath, "utf8"));
+  assert.equal(previewOnlyListings[0].publicApi.state, "disabled");
+  assert.equal(
+    previewOnlyListings[0].capabilities.publicReviews.targetState,
+    "disabled"
+  );
+  assert.match(
+    previewOnlyListings[0].publicApi.reason,
+    /verified against Firestore/u
+  );
 
   const claimTargetPlanPath = path.join(tmpRoot, "organizer_claim_targets.json");
   const readinessReceiptPath = path.join(tmpRoot, "claim_target_readiness.json");
@@ -167,15 +227,70 @@ test("approved organizer intake projections render canonical listings and suppre
     reason: "The organizer claim target is ready.",
     claimTargetSyncStatus: "in_sync",
   });
+  assert.deepEqual(readyListings[0].capabilities.publicReviews, {
+    targetState: "enabled",
+    readState: "enabled",
+    writeState: "enabled",
+    reason: "Public reviews are available for this published organizer page.",
+  });
+
+  fs.writeFileSync(
+    claimTargetPlanPath,
+    `${JSON.stringify(claimTargetPlan("clubs/afterfly"), null, 2)}\n`
+  );
+  fs.writeFileSync(
+    readinessReceiptPath,
+    `${JSON.stringify(
+      claimTargetReadinessReceipt(claimTargetPlanPath, "clubs/afterfly"),
+      null,
+      2
+    )}\n`
+  );
+  execFileSync(process.execPath, [
+    scriptPath,
+    "--projection-plan",
+    projectionPath,
+    "--claim-target-sync-preview",
+    claimTargetSyncPreviewPath,
+    "--claim-target-plan",
+    claimTargetPlanPath,
+    "--claim-target-readiness-receipt",
+    readinessReceiptPath,
+    "--external-event-readiness",
+    externalEventReadinessPath,
+    "--seed-root",
+    seedRoot,
+    "--output",
+    outputPath,
+    "--no-demo",
+  ], {
+    env: {
+      ...process.env,
+      ORGANIZER_CLAIM_TARGET_PROJECT_ID: "catch-dating-app-64e51",
+    },
+    stdio: "pipe",
+  });
+  const compatibilityTargetListings = JSON.parse(
+    fs.readFileSync(outputPath, "utf8")
+  );
+  assert.equal(compatibilityTargetListings[0].publicApi.state, "disabled");
+  assert.equal(
+    compatibilityTargetListings[0].capabilities.publicReviews.targetState,
+    "enabled"
+  );
+  assert.equal(
+    compatibilityTargetListings[0].capabilities.publicReviews.writeState,
+    "enabled"
+  );
 });
 
-function claimTargetPlan() {
+function claimTargetPlan(targetPath = "organizers/afterfly") {
   return {
     schemaVersion: 1,
     targets: [
       {
         entityId: "afterfly",
-        path: "clubs/afterfly",
+        path: targetPath,
         claimState: "unclaimed",
         clubDocument: {name: "AFTER FLY"},
       },
@@ -183,7 +298,10 @@ function claimTargetPlan() {
   };
 }
 
-function claimTargetReadinessReceipt(planPath) {
+function claimTargetReadinessReceipt(
+  planPath,
+  targetPath = "organizers/afterfly"
+) {
   return {
     schemaVersion: 1,
     receiptType: "organizer_claim_target_readiness",
@@ -200,7 +318,7 @@ function claimTargetReadinessReceipt(planPath) {
     actions: [
       {
         entityId: "afterfly",
-        path: "clubs/afterfly",
+        path: targetPath,
         status: "in_sync",
         merge: false,
         reason: "public_fields_current",
@@ -263,15 +381,23 @@ function approvedProjectionPlan() {
   };
 }
 
-function claimTargetSyncPreview() {
+function claimTargetSyncPreview(
+  status = "create",
+  targetPath = "clubs/afterfly"
+) {
   return {
     actions: [
       {
         entityId: "afterfly",
-        path: "clubs/afterfly",
-        status: "create",
+        path: targetPath,
+        status,
       },
     ],
+    mode: {
+      previewOnly: true,
+      remoteReads: 0,
+      remoteWrites: 0,
+    },
     schemaVersion: 1,
     summary: {
       targets: 1,

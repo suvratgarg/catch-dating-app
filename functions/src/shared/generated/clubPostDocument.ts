@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Canonical organizer post stored at clubs/{clubId}/posts/{postId}.
+ * Legacy organizer-post projection stored at clubs/{clubId}/posts/{postId} during the clubs-to-organizers migration.
  */
 export interface ClubPostDocument {
   authorUid: string;

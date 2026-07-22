@@ -45,6 +45,7 @@ class PaymentConfirmationScreen extends ConsumerWidget {
 
     return CatchAsyncValueView<Event?>(
       value: eventAsync,
+      onRetry: () => ref.invalidate(watchEventProvider(data.eventId)),
       loadingBuilder: (_) => const PaymentConfirmationLoadingScreen(),
       errorBuilder: (_, e, _) => Scaffold(
         body: CatchErrorState.fromError(
@@ -63,6 +64,7 @@ class PaymentConfirmationScreen extends ConsumerWidget {
               message: context
                   .l10n
                   .paymentsPaymentConfirmationScreenMessageThisEventIsNo,
+              secondaryAction: const CatchErrorBackAction(),
             ),
           );
         }

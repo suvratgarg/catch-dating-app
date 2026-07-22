@@ -69,7 +69,15 @@ export async function updateClubHandler(
       tx.get(deletedUserRef),
     ]);
     assertCanUpdateClub(clubSnap, deletedUserSnap, hostUserId, data.fields);
-    tx.update(clubRef, clubPatchWithLegacyFields(data.fields));
+    tx.update(
+      clubRef,
+      clubPatchWithLegacyFields(
+        data.fields,
+        hostUserId,
+        deps.serverTimestamp?.() ??
+          admin.firestore.FieldValue.serverTimestamp()
+      )
+    );
   });
 
   return {updated: true};
@@ -246,9 +254,15 @@ function assertCanUpdateClub(
 }
 
 function clubPatchWithLegacyFields(
-  fields: UpdateClubCallablePayload["fields"]
+  fields: UpdateClubCallablePayload["fields"],
+  actorUid: string,
+  serverTimestamp: FirebaseFirestore.FieldValue
 ): Record<string, unknown> {
   const patch: Record<string, unknown> = {...fields};
+  if (fields.organizerType !== undefined) {
+    patch.organizerTypeUpdatedAt = serverTimestamp;
+    patch.organizerTypeUpdatedByUid = actorUid;
+  }
   if (fields.location !== undefined) {
     const market = marketForIdOrAlias(fields.location);
     if (!market || !market.hostCreatable) {

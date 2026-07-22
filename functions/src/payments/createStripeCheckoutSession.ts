@@ -8,6 +8,7 @@ import {
   ClubDocument,
   EventDocument,
   HostPaymentAccountDocument,
+  OrganizerDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {hasBlockingRelationship} from "../safety/blocking";
@@ -19,6 +20,7 @@ import {eventParticipationId} from "../shared/relationshipDocuments";
 import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {clubOwnerUserId} from "../shared/clubHosts";
+import {organizerOwnerUserId} from "../shared/organizerHosts";
 import {
   assertPolicyAllowsSignup,
   cohortIdForUser,
@@ -146,6 +148,8 @@ export async function createStripeCheckoutSessionHandler(
     uid,
     eventId,
     clubId: event.clubId,
+
+    organizerId: event.organizerId ?? event.clubId,
     startTimeMillis: event.startTime.toMillis(),
     endTimeMillis: event.endTime.toMillis(),
   });
@@ -198,15 +202,25 @@ export async function createStripeCheckoutSessionHandler(
     );
   }
 
-  const [clubSnap] = await Promise.all([
-    db.collection("clubs").doc(event.clubId).get(),
+  const organizerRef = event.organizerId ?
+    db.collection("organizers").doc(event.organizerId) :
+    db.collection("clubs").doc(event.clubId);
+  const [organizerSnap] = await Promise.all([
+    organizerRef.get(),
     deps.checkRateLimit?.(db, uid, "createStripeCheckoutSession"),
   ]);
-  if (!clubSnap.exists) {
-    throw new HttpsError("not-found", "Club not found.");
+  if (!organizerSnap.exists) {
+    throw new HttpsError("not-found", "Organizer not found.");
   }
-  const club = requireDoc<ClubDocument>(clubSnap, "ClubDocument");
-  const hostUserId = clubOwnerUserId(club);
+  const hostUserId = event.organizerId ?
+    organizerOwnerUserId(requireDoc<OrganizerDocument>(
+      organizerSnap,
+      "OrganizerDocument"
+    )) :
+    clubOwnerUserId(requireDoc<ClubDocument>(
+      organizerSnap,
+      "ClubDocument"
+    ));
   if (!hostUserId) {
     throw new HttpsError(
       "failed-precondition",
@@ -250,6 +264,8 @@ export async function createStripeCheckoutSessionHandler(
     paymentId: paymentRef.id,
     eventId,
     clubId: event.clubId,
+
+    organizerId: event.organizerId ?? event.clubId,
     userId: uid,
     hostUserId,
     stripeAccountId: hostAccount.stripeAccountId,

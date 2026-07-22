@@ -6,6 +6,7 @@ const topLevelStringFields = [
   "description",
   "location",
   "area",
+  "organizerType",
   "reason",
 ];
 
@@ -24,6 +25,7 @@ const updateStringFields = [
   "location",
   "area",
   "hostName",
+  "organizerType",
 ];
 
 /**

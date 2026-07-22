@@ -92,8 +92,30 @@
     },
     "publicApi": {
       "state": "disabled",
-      "reason": "Claiming is not available for this organizer yet.",
+      "reason": "Claiming is not available until target readiness is verified against Firestore.",
       "claimTargetSyncStatus": "write_needed"
+    },
+    "authority": {
+      "ownershipState": "programmatic",
+      "claimState": "unclaimed",
+      "provenanceOrigin": "import",
+      "sourceConfidence": "high",
+      "verificationStatus": "sourceBacked",
+      "appVisibility": "hidden",
+      "publishStatus": "published",
+      "indexStatus": "indexed"
+    },
+    "capabilities": {
+      "claimRequest": {
+        "state": "disabled",
+        "reason": "Claiming is not available until target readiness is verified against Firestore."
+      },
+      "publicReviews": {
+        "targetState": "disabled",
+        "readState": "disabled",
+        "writeState": "disabled",
+        "reason": "Public reviews are unavailable until canonical target readiness is verified."
+      }
     },
     "lastVerifiedAt": "2026-06-18",
     "searchText": "after fly eventorganizer indore indore social runs run-and-rave fitness/wellness community music social indore luma luma was reviewed as an organizer-intake surface with high confidence. instagram instagram was reviewed as an organizer-intake surface with high confidence."

@@ -7,6 +7,7 @@ import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dar
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
@@ -50,13 +51,7 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
         child: CustomScrollView(
           slivers: [
             ...CatchSliverHeader(
-              title: const SizedBox.shrink(),
-              bottomHeight: chatsBrowseHeaderHeight(
-                context: context,
-                hasHostFilter: screenState.hostFilter != null,
-                hasHeaderSubtitle: isHostApp,
-              ),
-              bottom: ChatsBrowseHeader(
+              title: ChatsBrowseHeader(
                 showSearchAction: screenState.showSearchAction,
                 searchValue: searchValue,
                 onSearchChanged: ref
@@ -103,9 +98,5 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen> {
 }
 
 CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
-  return value.when(
-    data: CatchAsyncState<T>.data,
-    loading: () => const CatchAsyncState.loading(),
-    error: (error, stackTrace) => CatchAsyncState<T>.error(error),
-  );
+  return catchAsyncStateFromAsyncValue(value);
 }

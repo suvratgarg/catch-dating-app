@@ -10,6 +10,7 @@ import 'package:catch_dating_app/chats/presentation/suvbot_controller.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
@@ -92,9 +93,5 @@ ChatRouteState chatRouteState(Ref ref, ChatRouteStateArgs args) {
 }
 
 CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
-  return value.when(
-    data: CatchAsyncState<T>.data,
-    loading: () => const CatchAsyncState.loading(),
-    error: (error, stackTrace) => CatchAsyncState<T>.error(error),
-  );
+  return catchAsyncStateFromAsyncValue(value);
 }

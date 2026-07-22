@@ -1,9 +1,15 @@
 {
   "version": 1,
   "generatedFrom": "design/components/catch.components.json",
-  "registryUpdated": "2026-07-19",
+  "registryUpdated": "2026-07-21",
   "codeToComponents": {
+    "catch_async_requires_retry": [
+      "catch.async_value"
+    ],
     "catch_async_requires_state_surface": [
+      "catch.async_value"
+    ],
+    "catch_error_state_requires_action": [
       "catch.async_value"
     ],
     "catch_event_detail_prefers_photo_thumbnail": [

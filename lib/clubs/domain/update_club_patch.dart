@@ -1,11 +1,12 @@
 // ignore_for_file: use_null_aware_elements
 
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/sentinels.dart';
 
-/// Typed patch helper for the `updateClub` callable.
+/// Typed patch helper for the canonical `updateOrganizer` callable.
 ///
 /// This remains handwritten because the schema generator cannot currently emit
 /// patch helpers for array fields that contain embedded objects.
@@ -13,6 +14,7 @@ final class UpdateClubPatch {
   UpdateClubPatch({
     String? name,
     String? description,
+    OrganizerType? organizerType,
     Object? location = unsetSentinel,
     String? area,
     String? hostName,
@@ -29,6 +31,7 @@ final class UpdateClubPatch {
   }) : _fields = {
          if (name != null) 'name': name,
          if (description != null) 'description': description,
+         if (organizerType != null) 'organizerType': organizerType.name,
          if (!identical(location, unsetSentinel)) 'location': location,
          if (area != null) 'area': area,
          if (hostName != null) 'hostName': hostName,
@@ -38,7 +41,7 @@ final class UpdateClubPatch {
          if (!identical(profileImageUrl, unsetSentinel))
            'profileImageUrl': profileImageUrl,
          if (clubPhotos != null)
-           'clubPhotos': clubPhotos
+           'organizerPhotos': clubPhotos
                .map((photo) => firestoreCallableJsonValue(photo.toJson()))
                .toList(),
          if (!identical(logoPhoto, unsetSentinel))
@@ -69,7 +72,7 @@ final class UpdateClubPatch {
       Map<String, Object?>.unmodifiable(_fields);
 
   Map<String, Object?> toCallableJson({required String clubId}) => {
-    'clubId': clubId,
+    'organizerId': clubId,
     'fields': toFieldsJson(),
   };
 }

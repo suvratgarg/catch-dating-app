@@ -51,8 +51,10 @@ selected Firebase project and writes a temporary readiness receipt. Organizer
 listing generation accepts that receipt only when its project id and exact
 claim-target-plan SHA-256 match, so claim CTAs cannot be enabled from the
 checked-in empty fixture or from a stale environment snapshot. This preflight
-does not write Firestore. The reviewed organizer promotion pipeline uses the
-same receipt handoff in `--claim-sync firestore` mode.
+does not write Firestore. Checked-in or fixture-generated sync previews remain
+advisory even when an action says `in_sync`; they never enable claim or review
+capabilities. The reviewed organizer promotion pipeline uses the same receipt
+handoff in `--claim-sync firestore` mode.
 
 The deploy job uses the repo's existing `prod` Firebase alias and Google Cloud
 Workload Identity variables:

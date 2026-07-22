@@ -31,7 +31,7 @@ void main() {
           'clubId': 'club-1',
           'eventId': 'event-7',
         }),
-        '/clubs/club-1/events/event-7/companion',
+        '/organizers/club-1/events/event-7/companion',
       );
     });
 
@@ -59,7 +59,7 @@ void main() {
           'clubId': 'club-1',
           'eventId': 'event-7',
         }),
-        '/clubs/club-1/events/event-7/companion',
+        '/organizers/club-1/events/event-7/companion',
       );
     });
   });
@@ -81,7 +81,7 @@ void main() {
                     Text(state.pathParameters['matchId']!),
               ),
               GoRoute(
-                path: 'clubs/:clubId/events/:eventId/companion',
+                path: 'organizers/:clubId/events/:eventId/companion',
                 builder: (context, state) => Text(
                   'Companion ${state.pathParameters['clubId']} '
                   '${state.pathParameters['eventId']}',

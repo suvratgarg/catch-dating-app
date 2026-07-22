@@ -47,7 +47,7 @@ class ClubDraftRepository {
           stackTrace: stackTrace,
           context: const BackendErrorContext(
             service: BackendService.local,
-            action: 'load club draft',
+            action: 'load organizer draft',
             resource: 'shared_preferences',
           ),
         ),
@@ -56,20 +56,18 @@ class ClubDraftRepository {
     }
   }
 
-  Future<void> saveDraft({
-    required String userId,
-    required ClubDraft draft,
-  }) => withBackendErrorContext(
-    () async {
-      final prefs = await _prefs;
-      await prefs.setString(_key(userId), ClubDraft.toJsonString(draft));
-    },
-    context: const BackendErrorContext(
-      service: BackendService.local,
-      action: 'save club draft',
-      resource: 'shared_preferences',
-    ),
-  );
+  Future<void> saveDraft({required String userId, required ClubDraft draft}) =>
+      withBackendErrorContext(
+        () async {
+          final prefs = await _prefs;
+          await prefs.setString(_key(userId), ClubDraft.toJsonString(draft));
+        },
+        context: const BackendErrorContext(
+          service: BackendService.local,
+          action: 'save organizer draft',
+          resource: 'shared_preferences',
+        ),
+      );
 
   Future<void> deleteDraft({required String userId}) => withBackendErrorContext(
     () async {
@@ -78,7 +76,7 @@ class ClubDraftRepository {
     },
     context: const BackendErrorContext(
       service: BackendService.local,
-      action: 'delete club draft',
+      action: 'delete organizer draft',
       resource: 'shared_preferences',
     ),
   );
@@ -90,6 +88,6 @@ ClubDraftRepository clubDraftRepository(Ref ref) =>
 
 @riverpod
 Future<ClubDraft?> clubDraft(Ref ref) async {
-  final uid = requireSignedInUid(ref, action: 'load club draft');
+  final uid = requireSignedInUid(ref, action: 'load organizer draft');
   return ref.read(clubDraftRepositoryProvider).loadDraft(userId: uid);
 }

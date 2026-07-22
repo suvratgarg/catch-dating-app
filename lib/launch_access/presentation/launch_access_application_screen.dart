@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -70,11 +71,14 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
                     final applicationAsync = ref.watch(
                       watchLaunchAccessApplicationProvider(uid),
                     );
-                    return applicationAsync.when(
-                      loading: () => const LaunchAccessLoadingBody(),
-                      error: (error, _) =>
-                          Center(child: CatchErrorBanner.fromError(error)),
-                      data: (application) {
+                    return CatchAsyncValueView<LaunchAccessApplication?>(
+                      value: applicationAsync,
+                      loadingBuilder: (_) => const LaunchAccessLoadingBody(),
+                      errorContext: AppErrorContext.auth,
+                      onRetry: () => ref.invalidate(
+                        watchLaunchAccessApplicationProvider(uid),
+                      ),
+                      builder: (context, application) {
                         if (application != null &&
                             !application.status.canEditApplication) {
                           return Center(

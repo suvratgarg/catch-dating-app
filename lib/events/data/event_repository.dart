@@ -130,14 +130,14 @@ class EventRepository {
       withBackendErrorStream(
         // firestore-index: events (clubId:ASCENDING,startTime:ASCENDING)
         () => _eventsRef
-            .where('clubId', isEqualTo: clubId)
+            .where('organizerId', isEqualTo: clubId)
             .orderBy('startTime')
             .limit(ReadLimitPolicy.historyPage)
             .snapshots()
             .map((snap) => snap.docs.map((d) => d.data()).toList()),
         context: const BackendErrorContext(
           service: BackendService.firestore,
-          action: 'watch club events',
+          action: 'watch organizer events',
           resource: _collectionPath,
         ),
       );
@@ -148,7 +148,7 @@ class EventRepository {
         eventsRef: _eventsRef,
         context: const BackendErrorContext(
           service: BackendService.firestore,
-          action: 'watch events for hosted clubs',
+          action: 'watch events for hosted organizers',
           resource: _collectionPath,
         ),
       );
@@ -237,7 +237,7 @@ class EventRepository {
       final events = <Event>[];
       for (final chunk in chunkedForWhereIn(uniqueClubIds)) {
         final snap = await _eventsRef
-            .where('clubId', whereIn: chunk)
+            .where('organizerId', whereIn: chunk)
             .where('startTime', isGreaterThan: now)
             .orderBy('startTime')
             .limit(ReadLimitPolicy.directoryPage)

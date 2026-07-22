@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -32,10 +33,11 @@ class PaymentHistoryScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
 
-    return Scaffold(
-      appBar: CatchScreenTopBar(
-        context: context,
+    return CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.paymentsPaymentHistoryScreenTitlePaymentHistory,
+        leadingType: CatchTopBarLeading.back,
+        divider: scrolledUnder,
       ),
       body: CatchAsyncValueView<String?>(
         value: uidAsync,
