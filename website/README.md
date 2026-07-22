@@ -108,10 +108,11 @@ option order before TypeScript runs. Site-wide app-store labels live in
 `src/content/site.ts`; `useAppDownloadCtas.ts` remains the adapter that reads
 environment URLs and combines them with that plain content data.
 
-`src/content/legal.ts` holds dormant `/privacy`, `/terms`, and `/help`
-contracts with null bodies, while `src/content/site.ts` holds an empty contact
-destination. `npm run check:owner-gated-content` prevents those routes or links
-from being exposed until owner-supplied legal/support content exists.
+`src/content/legal.json` owns the published `/privacy/`, `/terms/`, and `/help/`
+documents and confirmed operator/contact facts. `src/content/legal.ts` exposes
+that data to the route, while `src/content/site.ts` owns the public mailto and
+site-wide footer links. `npm run check:published-legal-content` rejects missing
+routes, empty sections, or placeholder text before TypeScript runs.
 
 Website analytics events inherit `content_version: "website_copy_v2"` from
 the central adapter. `npm run check:analytics-contract` verifies the immutable
@@ -160,9 +161,16 @@ The site has a first-party analytics layer in `src/analytics.ts` and records
 host-visible organizer metrics through `recordOrganizerAnalyticsEvent` in
 `src/firebase.ts`.
 
-- Set `VITE_GTM_ID` from `env.example` to load Google Tag Manager after consent.
-  GTM is optional for Hosting deploys until the production container exists; the
-  site skips GTM when the variable is unset.
+- Production deploys use `GTM-K7KLNQXP` unless the `prod-hosting`
+  `VITE_GTM_ID` variable explicitly overrides it. The environment gate requires
+  a valid container id, and the browser loads GTM only after analytics consent.
+- `.github/workflows/website-production-observability.yml` probes the public
+  launch routes every 15 minutes without a paid monitoring service. The same
+  status, canonical-metadata, and content checks run immediately after a
+  marketing deployment.
+- Browser errors and unhandled promise rejections emit only a coarse
+  `client_error` event after analytics consent. Error messages, stacks, query
+  strings, and user identifiers are deliberately excluded.
 - Configure GA4, Google Ads, Meta Pixel, LinkedIn Insight Tag, and other pixels in
   GTM against the pushed `dataLayer` events.
 - Set `VITE_WEBSITE_APPCHECK_SITE_KEY` and the Firebase web config in
@@ -177,6 +185,7 @@ host-visible organizer metrics through `recordOrganizerAnalyticsEvent` in
 Primary web events:
 
 - `page_view`
+- `client_error`
 - `cta_click`
 - `city_selected`
 - `role_selected`

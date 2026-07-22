@@ -3,7 +3,16 @@ import metaContent from "../content/meta.json";
 import {interpolateContent} from "../content/interpolate";
 import {validatedWebsiteMeta} from "../content/metaContract";
 
-export type PageKey = "home" | "host" | "organizers" | "listing" | "claim" | "not_found";
+export type PageKey =
+  | "home"
+  | "host"
+  | "organizers"
+  | "listing"
+  | "claim"
+  | "privacy"
+  | "terms"
+  | "help"
+  | "not_found";
 
 export interface PageMeta {
   title: string;
@@ -36,6 +45,9 @@ export function pageMetaForListing(
 
 export function getPageKey(pathname: string = window.location.pathname): Exclude<PageKey, "listing"> {
   if (pathname.startsWith("/claim")) return "claim";
+  if (pathname.startsWith("/privacy")) return "privacy";
+  if (pathname.startsWith("/terms")) return "terms";
+  if (pathname.startsWith("/help")) return "help";
   if (pathname.startsWith("/host")) return "host";
   if (pathname.startsWith("/organizers")) return "organizers";
   if (pathname === "/" || pathname === "") return "home";
@@ -47,6 +59,7 @@ export function pageClassFor(page: PageKey) {
   if (page === "listing") return "listing-page";
   if (page === "organizers") return "organizers-page";
   if (page === "claim") return "claim-page";
+  if (page === "privacy" || page === "terms" || page === "help") return "legal-page";
   if (page === "not_found") return "not-found-page";
   return "home-page";
 }

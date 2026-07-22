@@ -16,6 +16,7 @@ import {
 } from "./usePageLifecycle";
 import {isOrganizerSearchPath, marketingRoutePaths} from "./routeRegistry";
 import {MarketingConsentBanner} from "../features/marketing/MarketingConsentBanner";
+import {publishedLegalContent} from "../content/legal";
 import {claimRouteStateForLocation} from "../features/claims/claimRouting";
 import {
   getHostListingRouteForPath,
@@ -40,6 +41,9 @@ const NotFoundPage = lazy(async () => ({
 }));
 const OrganizerSearchPage = lazy(async () => ({
   default: (await import("../features/organizers/OrganizerSearchPage")).OrganizerSearchPage,
+}));
+const LegalPage = lazy(async () => ({
+  default: (await import("../features/legal/LegalPage")).LegalPage,
 }));
 
 function App() {
@@ -103,6 +107,33 @@ function MarketingRouteShell() {
           <Route
             path={marketingRoutePaths.claim_lookup}
             element={<ClaimRoute />}
+          />
+          <Route
+            path={marketingRoutePaths.privacy}
+            element={(
+              <LegalPage
+                page={publishedLegalContent.pages.privacy}
+                effectiveDate={publishedLegalContent.effectiveDate}
+              />
+            )}
+          />
+          <Route
+            path={marketingRoutePaths.terms}
+            element={(
+              <LegalPage
+                page={publishedLegalContent.pages.terms}
+                effectiveDate={publishedLegalContent.effectiveDate}
+              />
+            )}
+          />
+          <Route
+            path={marketingRoutePaths.help}
+            element={(
+              <LegalPage
+                page={publishedLegalContent.pages.help}
+                effectiveDate={publishedLegalContent.effectiveDate}
+              />
+            )}
           />
           <Route
             path={marketingRoutePaths.not_found}

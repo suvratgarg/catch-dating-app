@@ -80,7 +80,7 @@
           },
           "pageKey": {
             "type": "string",
-            "enum": ["home", "host", "organizers", "listing", "claim", "not_found"]
+            "enum": ["home", "host", "organizers", "listing", "claim", "privacy", "terms", "help", "not_found"]
           },
           "source": {"type": "string"},
           "metaKey": {"type": "string"},

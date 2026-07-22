@@ -70,6 +70,20 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
   );
   assert.match(claimHtml, /<meta name="robots" content="noindex, follow" \/>/);
 
+  for (const [route, title] of [
+    ["privacy", "Privacy policy"],
+    ["terms", "Terms of use"],
+    ["help", "Help and safety"],
+  ]) {
+    const legalHtml = fs.readFileSync(path.join(distRoot, route, "index.html"), "utf8");
+    assert.match(legalHtml, new RegExp(`<h1>${title}<\\/h1>`));
+    assert.match(legalHtml, new RegExp(`data-static-legal-page="/${route}/"`));
+    assert.match(
+      legalHtml,
+      new RegExp(`canonical" href="https:\\/\\/example\\.test\\/${route}\\/"`)
+    );
+  }
+
   const notFoundHtml = fs.readFileSync(
     path.join(distRoot, "404.html"),
     "utf8"
@@ -87,6 +101,9 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
     ["host", path.join("host", "index.html")],
     ["organizers", path.join("organizers", "index.html")],
     ["claim", path.join("claim", "index.html")],
+    ["privacy", path.join("privacy", "index.html")],
+    ["terms", path.join("terms", "index.html")],
+    ["help", path.join("help", "index.html")],
     ["not_found", "404.html"],
   ]) {
     assertStaticRouteMeta(
@@ -99,6 +116,9 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
   const sitemap = fs.readFileSync(path.join(distRoot, "sitemap.xml"), "utf8");
   assert.match(sitemap, /<loc>https:\/\/example\.test\/<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/example\.test\/host\/<\/loc>/);
+  assert.match(sitemap, /<loc>https:\/\/example\.test\/privacy\/<\/loc>/);
+  assert.match(sitemap, /<loc>https:\/\/example\.test\/terms\/<\/loc>/);
+  assert.match(sitemap, /<loc>https:\/\/example\.test\/help\/<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/example\.test\/organizers\/afterfly\/<\/loc>/);
   assert.match(
     sitemap,

@@ -46,6 +46,7 @@ const attributionStorageKey = "catch_marketing_attribution_v1";
 const consentStorageKey = "catch_marketing_consent_v1";
 const trackedPageViews = new Set<string>();
 let gtmLoaded = false;
+let clientErrorMonitoringInstalled = false;
 
 const attributionKeys = [
   "utm_source",
@@ -75,7 +76,17 @@ function gtag(...args: unknown[]) {
 export function initializeMarketingAnalytics() {
   captureAttribution();
   installConsentDefaults();
+  installClientErrorMonitoring();
   maybeLoadGtm();
+}
+
+export function trackClientErrorSignal(errorSource: "window_error" | "unhandled_rejection") {
+  if (!getMarketingConsent()?.analytics) return false;
+  trackMarketingEvent("client_error", {
+    error_source: errorSource,
+    page_path: window.location.pathname,
+  });
+  return true;
 }
 
 export function getMarketingConsent(): MarketingConsent | null {
@@ -213,6 +224,17 @@ function maybeLoadGtm() {
     gtmId
   )}`;
   document.head.appendChild(script);
+}
+
+function installClientErrorMonitoring() {
+  if (clientErrorMonitoringInstalled) return;
+  clientErrorMonitoringInstalled = true;
+  window.addEventListener("error", () => {
+    trackClientErrorSignal("window_error");
+  });
+  window.addEventListener("unhandledrejection", () => {
+    trackClientErrorSignal("unhandled_rejection");
+  });
 }
 
 function captureAttribution() {

@@ -1,4 +1,5 @@
 import {websiteCopy} from "@content/generated";
+import {siteFooterLegalLinks} from "@content/site";
 import {
   HomeCapturesSection,
   HomeDiscoverySection,
@@ -56,6 +57,7 @@ export function HomePage({captures}: {captures: Record<string, CaptureRecord>}) 
           {href: "#download-app", label: websiteCopy["homepage_0109"]},
           {href: "#trust", label: websiteCopy["homepage_0117"]},
           {href: "#waitlist", label: websiteCopy["homepage_0118"]},
+          ...siteFooterLegalLinks,
         ]}
       />
     </>

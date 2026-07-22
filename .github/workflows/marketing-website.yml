@@ -129,7 +129,7 @@ jobs:
 
       - name: Validate production marketing environment
         env:
-          VITE_GTM_ID: ${{ vars.VITE_GTM_ID }}
+          VITE_GTM_ID: ${{ vars.VITE_GTM_ID || 'GTM-K7KLNQXP' }}
           VITE_STORE_LINKS_MODE: ${{ vars.VITE_STORE_LINKS_MODE || 'prelaunch' }}
           VITE_APP_STORE_URL: ${{ vars.VITE_APP_STORE_URL }}
           VITE_PLAY_STORE_URL: ${{ vars.VITE_PLAY_STORE_URL }}
@@ -150,7 +150,7 @@ jobs:
         env:
           ORGANIZER_CLAIM_TARGET_PROJECT_ID: catch-dating-app-64e51
           ORGANIZER_CLAIM_TARGET_RECEIPT: /tmp/organizer-claim-target-readiness.json
-          VITE_GTM_ID: ${{ vars.VITE_GTM_ID }}
+          VITE_GTM_ID: ${{ vars.VITE_GTM_ID || 'GTM-K7KLNQXP' }}
           VITE_STORE_LINKS_MODE: ${{ vars.VITE_STORE_LINKS_MODE || 'prelaunch' }}
           VITE_APP_STORE_URL: ${{ vars.VITE_APP_STORE_URL }}
           VITE_PLAY_STORE_URL: ${{ vars.VITE_PLAY_STORE_URL }}
@@ -166,3 +166,6 @@ jobs:
 
       - name: Verify production unknown paths return HTTP 404
         run: node website/scripts/verifyHosting404.mjs https://catchdates.com
+
+      - name: Verify launch-critical production routes
+        run: node website/scripts/probeProduction.mjs --base-url https://catchdates.com --json

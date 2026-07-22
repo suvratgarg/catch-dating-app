@@ -5,6 +5,8 @@ import {emptyClaimRouteState} from "../features/claims/claimRouting";
 import {HomePage} from "../features/home/HomePage";
 import {HostPage} from "../features/host/HostPage";
 import {NotFoundPage} from "../features/notFound/NotFoundPage";
+import {LegalPage} from "../features/legal/LegalPage";
+import {publishedLegalContent} from "../content/legal";
 import {hostListings} from "./fixtures/hostListings";
 import {HostListingPage} from "../features/organizers/HostListingPage";
 import {OrganizerSearchPage} from "../features/organizers/OrganizerSearchPage";
@@ -155,6 +157,62 @@ export const NotFound: Story = {
   ),
 };
 
+export const Privacy: Story = {
+  name: "/privacy/",
+  parameters: {
+    catchRoute: {
+      id: "privacy",
+      path: "/privacy/",
+      reviewStates: ["published"],
+      stateCoverage: {storybook: ["published"], manual: []},
+    },
+    catchComponent: {
+      id: "route_legal",
+      routeIds: ["privacy", "terms", "help"],
+      states: ["privacy", "terms", "help"],
+    },
+  },
+  render: () => <LegalStoryPage pageKey="privacy" />,
+};
+
+export const Terms: Story = {
+  name: "/terms/",
+  parameters: {
+    catchRoute: {
+      id: "terms",
+      path: "/terms/",
+      reviewStates: ["published"],
+      stateCoverage: {storybook: ["published"], manual: []},
+    },
+  },
+  render: () => <LegalStoryPage pageKey="terms" />,
+};
+
+export const Help: Story = {
+  name: "/help/",
+  parameters: {
+    catchRoute: {
+      id: "help",
+      path: "/help/",
+      reviewStates: ["published"],
+      stateCoverage: {storybook: ["published"], manual: []},
+    },
+  },
+  render: () => <LegalStoryPage pageKey="help" />,
+};
+
+export const LegalDocumentShell: Story = {
+  name: "Legal document shell",
+  parameters: {
+    catchComponent: {
+      id: "shared_legal_document_shell",
+      routeIds: ["privacy", "terms", "help"],
+      states: ["document", "sections", "contact"],
+    },
+  },
+  render: () => <LegalStoryPage pageKey="privacy" />,
+};
+
 export const OrganizerSearch: Story = {
   name: "/organizers/",
   parameters: {
@@ -225,4 +283,15 @@ function requireListing(id: string): HostListing {
     throw new Error(`Missing generated organizer listing fixture: ${id}`);
   }
   return listing;
+}
+
+function LegalStoryPage({pageKey}: {pageKey: "privacy" | "terms" | "help"}) {
+  return (
+    <PageShell pageClassName="legal-page">
+      <LegalPage
+        page={publishedLegalContent.pages[pageKey]}
+        effectiveDate={publishedLegalContent.effectiveDate}
+      />
+    </PageShell>
+  );
 }

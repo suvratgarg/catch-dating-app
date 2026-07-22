@@ -142,6 +142,9 @@ function validateRoutes(routes, storyDeclarations) {
     "host",
     "organizer_search",
     "claim",
+    "privacy",
+    "terms",
+    "help",
     "not_found",
     "organizer_listing_canonical",
     "organizer_listing_legacy",
@@ -249,7 +252,9 @@ function marketingNotFoundHostingErrors(config) {
 }
 
 function validatePageKey(route) {
-  const allowedPageKeys = new Set(["home", "host", "organizers", "listing", "claim", "not_found"]);
+  const allowedPageKeys = new Set([
+    "home", "host", "organizers", "listing", "claim", "privacy", "terms", "help", "not_found",
+  ]);
   if (!allowedPageKeys.has(route.pageKey)) {
     errors.push(`${route.id}: invalid pageKey ${route.pageKey}.`);
     return;
@@ -264,6 +269,9 @@ function validatePageKey(route) {
   const routePath = route.path ?? route.pathPattern ?? "";
   const expectedChecks = {
     claim: "pathname.startsWith(\"/claim\")",
+    privacy: "pathname.startsWith(\"/privacy\")",
+    terms: "pathname.startsWith(\"/terms\")",
+    help: "pathname.startsWith(\"/help\")",
     host: "pathname.startsWith(\"/host\")",
     organizers: "pathname.startsWith(\"/organizers\")",
   };
@@ -783,7 +791,16 @@ export const OrganizerSearch = {
   const validMeta = {
     $schema: "./meta.schema.json",
     routes: Object.fromEntries(
-      ["home", "host", "organizers", "claim", "not_found"].map((key) => [
+      [
+        "home",
+        "host",
+        "organizers",
+        "claim",
+        "privacy",
+        "terms",
+        "help",
+        "not_found",
+      ].map((key) => [
         key,
         {
           title: `${key} title`,

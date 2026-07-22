@@ -8,6 +8,7 @@ const scriptPath = fileURLToPath(
 );
 
 const validMarketingEnv = {
+  VITE_GTM_ID: "GTM-K7KLNQXP",
   VITE_FIREBASE_API_KEY: "api-key",
   VITE_FIREBASE_AUTH_DOMAIN: "catch.example",
   VITE_FIREBASE_PROJECT_ID: "catch-dating-app-64e51",
@@ -71,6 +72,16 @@ test("marketing deploy requires an explicit supported store-link mode", () => {
   const invalid = runMarketing({VITE_STORE_LINKS_MODE: "placeholder"});
   assert.equal(invalid.status, 1);
   assert.match(invalid.stderr, /must be prelaunch or live/u);
+});
+
+test("marketing deploy requires a valid GTM container id", () => {
+  const missing = runMarketing({VITE_GTM_ID: ""});
+  assert.equal(missing.status, 1);
+  assert.match(missing.stderr, /VITE_GTM_ID is required/u);
+
+  const invalid = runMarketing({VITE_GTM_ID: "G-CH7WMQY5FV"});
+  assert.equal(invalid.status, 1);
+  assert.match(invalid.stderr, /must be a Google Tag Manager container id/u);
 });
 
 function runMarketing(overrides = {}) {

@@ -1,4 +1,5 @@
 import {websiteCopy} from "@content/generated";
+import {siteFooterLegalLinks} from "@content/site";
 import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
 import type {HostListing} from "./types";
 import {useListingClaimController} from "../claims/useListingClaimController";
@@ -29,7 +30,7 @@ export function HostListingPage({listing}: {listing: HostListing}) {
       <SiteFooter
         brandHref="/"
         body={websiteCopy["hostlistingpage_0346"]}
-        links={controller.footerLinks}
+        links={[...controller.footerLinks, ...siteFooterLegalLinks]}
       />
     </>
   );
