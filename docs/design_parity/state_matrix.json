@@ -6546,6 +6546,11 @@
               "id": "DS-HOST-EVENT-CREATE-005",
               "status": "closed",
               "nextAction": "Closed. HostCreateEventRouteState now watches signed-in uid state and renders a host-access error before CreateEventScreen for signed-out or non-host-team users, with state and widget coverage."
+            },
+            {
+              "id": "DS-HOST-EVENT-CREATE-006",
+              "status": "open",
+              "nextAction": "feature.host_event_create compiles all 31 registered states and 33 meaningful actions. Add focused state tests for the nine registered test exceptions and one dedicated location-picker offline Widgetbook scenario to retire its ten evidence exceptions."
             }
           ]
         },

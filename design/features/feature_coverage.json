@@ -147,11 +147,10 @@
     {
       "authority": "flutter_screens",
       "authorityId": "screen.host.event.create",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Multi-step host event creation and draft workflow.",
-      "targetFeature": "feature.host_event_create",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Host Event Create contract covers route authorization, wizard choices and validation, media/location selection, drafts, submission, offline recovery, and success navigation.",
+      "featureContract": "feature.host_event_create"
     },
     {
       "authority": "flutter_screens",

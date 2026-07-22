@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.21
+version: 0.1.22
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -167,9 +167,10 @@ marketing `organizer_search` route, while their components, action owners,
 states, and evidence remain runtime-specific.
 
 Event Detail, Explore, Dashboard Home, Event Success, Host Home, Host
-Organizers, Host Event Manage, Catches Hub, Catches Event, Matches List, Member
-Chat, Self Profile, Public Profile, and Organizer Detail are the current
-reference contracts. Organizer Detail is the first three-surface reference:
+Organizers, Host Event Create, Host Event Manage, Catches Hub, Catches Event,
+Matches List, Member Chat, Self Profile, Public Profile, and Organizer Detail
+are the current reference contracts. Organizer Detail is the first
+three-surface reference:
 consumer Flutter, host Flutter, and the canonical marketing listing share one
 semantic feature identity while retaining separate actions and state
 inventories.
@@ -185,6 +186,13 @@ Edit, Insights, Preview, Event Defaults, Live Guide, Payments, Team, and host
 identity retain separate action owners and states inside one feature contract.
 Do not split a feature merely because a spoke has its own URL, and do not merge
 routes whose state or actions do not share a coherent user goal.
+
+Cardinalize meaningful user decisions and side effects, not raw field-entry
+events. Host Event Create is the reference: wizard movement, media and location
+selection, typed activity/policy/guide choices, draft lifecycle, submission,
+and success navigation are explicit actions; text entry remains form data
+governed by field validators and event schemas. This keeps action coverage
+complete without treating every keystroke as a separate contract operation.
 
 Flutter preview evidence may use the stable annotated Widgetbook builder id or
 the `Type/Use case name` identity. Prefer the builder id when the same builder
