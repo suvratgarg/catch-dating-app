@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_admin_user_roles_payload.schema.json",
+  "title": "AdminGetAdminUserRolesCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["targetUid"],
+  "properties": {
+    "targetUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+  }
+}

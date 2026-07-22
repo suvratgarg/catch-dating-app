@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.8.3
-updated: 2026-07-22
+version: 0.9.0
+updated: 2026-07-23
 owner: web_platform
 status: active
 ---
@@ -275,7 +275,8 @@ local-data context, and sign-out live in the account disclosure.
 Operational directories and record review use URL-owned master-detail routes.
 Canonical list/workspace roots are `/overview`, `/safety`, `/access`, `/growth`,
 `/organizers`, `/organizers/claims`, `/events`, `/events/readiness`,
-`/events/external`, `/users`, `/finance`, `/quality`, and `/admin-roles`.
+`/events/external`, `/users`, `/finance`, `/quality`, `/operations`, and
+`/admin-roles`.
 
 Intake owns `/intake/organizers`, `/intake/events`, and `/intake/operations`.
 Marketing owns `/marketing` (default Posts), `/marketing/posts`,
@@ -347,6 +348,25 @@ run; a later Supply Intake run can see that decision only after the owning
 compatibility artifact is regenerated. Reconciliation creates a separate
 immutable child run for expiry and stale-evidence changes rather than editing an
 already imported run.
+
+## Admin Agent Activity Monitor
+
+`/operations` is the read-only employee monitor for catalogued CLI/agent
+actions. `admin/src/features/operations/` uses the standard
+repository/controller/workspace split and reads only the bounded
+`adminListActionExecutions` callable. It filters the loaded page by action,
+status, actor, target, or error text and exposes explicit pagination. The table
+shows hash-bound metadata, including transport-ambiguous actions that need
+reconciliation, never request or response bodies. Manual actions
+remain in their owning routes; this route does not reproduce their mutation
+forms or authority decisions.
+
+`contracts/admin/admin_action_catalog.json` binds every admin API callable to a
+stable CLI action id, request schema, roles, workflow, GUI path, and
+confirmation policy. `tool/admin/generate_admin_action_catalog.mjs` produces
+the typed browser and Functions views; the operations parity checker rejects
+drift among the catalog, admin API, strict request validators, Functions
+exports, and workflow membership.
 
 ## Admin Callable Validation Boundary
 

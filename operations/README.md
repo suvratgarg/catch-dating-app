@@ -29,11 +29,42 @@ runtime is **shadow-only**:
 ```text
 operations/
   src/cli/                       stable JSON command surface
+  src/admin-cli/                 stable admin-action JSON command surface
+  src/admin/                     catalog, callable client, receipt storage
   src/platform/                  runs, leases, budgets, ledger, storage, models
   src/workflows/registry.mjs     workflow definitions and factories
   src/workflows/supply-intake/   the reference workflow and source profiles
   test/                          deterministic engine and workflow tests
 ```
+
+## Admin action CLI
+
+The admin action CLI gives agents the same callable operations that employees
+use through the admin console. Its source of truth is
+`contracts/admin/admin_action_catalog.json`; it does not copy callable business
+logic or turn every request/response action into a durable workflow.
+
+```sh
+# Discover actions and the ergonomic sequence for a workflow.
+node operations/src/admin-cli/main.mjs actions --pretty
+node operations/src/admin-cli/main.mjs workflow events --pretty
+
+# Validate one safe, schema-backed example for all workflows without effects.
+node operations/src/admin-cli/main.mjs loop --all --pretty
+
+# Reads execute live unless --dry-run is supplied.
+node operations/src/admin-cli/main.mjs run overview.get --project PROJECT_ID
+
+# Mutations remain dry-run until action and target are confirmed exactly.
+node operations/src/admin-cli/main.mjs run events.update --example
+node operations/src/admin-cli/main.mjs run events.update --example --apply \
+  --confirm events.update --confirm-target example-event --project PROJECT_ID
+```
+
+Live invocations require `CATCH_ADMIN_ID_TOKEN` and
+`CATCH_ADMIN_APP_CHECK_TOKEN` (or their explicit flags). Receipts persist only
+hashes and bounded metadata. See `docs/operations_platform.md` for authority,
+failure, and employee-monitoring behavior.
 
 The file store is the local implementation of the runtime ports. It exists for
 CLI, tests, migration parity, and local agents. The trusted Functions adapter

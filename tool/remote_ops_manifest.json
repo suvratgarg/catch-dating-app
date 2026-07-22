@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-07-16",
+  "updated": "2026-07-23",
   "description": "Consolidated inventory of remote operational surfaces. This file groups Firebase deploys, environment switching, data repair/backfill, App Check/security console work, CI gates, and App Store/TestFlight/Play release operations without changing the underlying tools.",
   "operations": [
     {
@@ -194,6 +194,10 @@
           "ref": "operations:import-admin-projection"
         },
         {
+          "kind": "tool-id",
+          "ref": "operations:admin-cli"
+        },
+        {
           "kind": "workflow",
           "ref": ".github/workflows/data-validation.yml"
         },
@@ -208,13 +212,15 @@
       ],
       "requiredChecks": [
         "Prefer --json dry run before --apply.",
+        "For admin callable mutations, review the dry-run receipt and require --apply, --confirm <action-id>, and any exact --confirm-target named by the catalog.",
         "Use --allow-prod only after reviewing prod dry-run output.",
         "Validate a Supply Intake export without --apply, then repeat with explicit --environment, --project, and --confirm-run only to import the immutable internal shadow projection."
       ],
       "notes": [
         "Destructive tools require an explicit confirmation flag in addition to --apply.",
         "Fraud/safety-related data changes should be tied back to backend_operation_catalog ownership before apply.",
-        "The Supply Intake projection importer writes only operationRuns and operationWorkItems; it cannot publish events or organizers, and a changed artifact requires a new run id."
+        "The Supply Intake projection importer writes only operationRuns and operationWorkItems; it cannot publish events or organizers, and a changed artifact requires a new run id.",
+        "The admin action CLI requires Firebase Auth and App Check tokens, starts a remote receipt before invoking a callable, and persists no request or response body in its receipt stores."
       ]
     },
     {
