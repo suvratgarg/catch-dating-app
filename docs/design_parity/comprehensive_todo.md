@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.309
+version: 0.2.310
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -24,9 +24,11 @@ ledgers as the source of truth when counts differ:
 - Route inventory: 52 app routes.
 - Route coverage decisions: 44 contracted, 2 alias, 0 planned, 6 excluded.
 - Screen contracts: 32 contracted screens.
-- Feature orchestration coverage: 57 registered authorities, 26 source
-  contracts, 32 contracted Flutter screens, 2 contracted marketing routes, and
-  0 planned Flutter screens. The social-journey batch compiles all 99
+- Feature orchestration coverage: 57 registered authorities, 29 source
+  contracts, 32 contracted Flutter screens, 6 contracted marketing routes, and
+  0 planned Flutter or marketing authorities. Four static/fallback marketing
+  routes remain deliberately excluded and the legacy organizer-listing route
+  remains a grouped static-output projection. The social-journey batch compiles all 99
   registered states and 23 explicit actions across Catches Hub, Catches Event,
   Matches List, Member Chat, Self Profile, and Public Profile; missing focused
   capture/test evidence remains named migration debt. Organizer Detail adds one
@@ -70,6 +72,13 @@ ledgers as the source of truth when counts differ:
   support guidance from a real support handoff, and independent mutation guards
   from whole-surface concurrency. Missing behavior is retained as seven stable
   product gaps rather than normalized into false success states.
+  Marketing Home, Host Acquisition, and Organizer Claim add 16 exact route
+  states and 45 surface actions. The dynamic Claim lookup is compiled as a
+  second projection because its four authority states are independently useful;
+  Home and Host expose that `/api/join-waitlist` lacks a shared network schema,
+  while all three form workflows preserve request-snapshot concurrency debt
+  under `WEB-LEAD-API-CONTRACT-001` and
+  `WEB-FORM-SUBMISSION-SNAPSHOT-001`.
 - Screen priority spread: 18 P1, 9 P2, and 5 P3 contracted screens.
 - Contracted screen states: 597.
 - Contracted screen sections: 227.

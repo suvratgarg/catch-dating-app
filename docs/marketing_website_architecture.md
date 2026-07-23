@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.4.173
-updated: 2026-07-22
+version: 0.4.174
+updated: 2026-07-23
 owner: marketing_website
 status: active
 ---
@@ -58,6 +58,22 @@ The website is already split out of the old monolithic shell:
   the same generated `feature.explore` artifact as Flutter Explore. The removed
   `saved-organizers` route state belongs to organizer detail storage and was not
   an Organizer Search state.
+- All stateful marketing route authorities are now compiled. Marketing Home
+  owns public discovery handoffs, store availability, Host routing, and member
+  waitlist conversion. Host Acquisition owns the interactive operating
+  previews and the five-stage Host application. Organizer Claim binds both the
+  canonical workspace and dynamic lookup route so known, not-found, pending,
+  already-claimed, and unavailable authority states remain exact. Privacy,
+  Terms, Help, and 404 stay explicitly excluded as static/fallback surfaces;
+  the legacy organizer-listing route stays grouped because its difference is
+  static canonical/noindex policy rather than an independent workflow.
+- The contract pass exposes two shared boundaries rather than hiding them.
+  `WEB-FORM-SUBMISSION-SNAPSHOT-001` owns the freeze-or-version policy for
+  waitlist, Host application, and Claim controls that remain live after a
+  request payload is captured. `WEB-LEAD-API-CONTRACT-001` owns the missing
+  shared request/response schema for `/api/join-waitlist`; until it closes,
+  Marketing Home and Host Acquisition deliberately have no false data-contract
+  reference for their remote lead mutation.
 - `website/src/generated/hostListings.json` is production-only and excludes
   `dataOrigin: "catchDemo"` plus organizer-intake and seed records that do not
   resolve to a `live` city in the active market pack. Multi-market organizer

@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.8.5
-updated: 2026-07-22
+version: 0.8.6
+updated: 2026-07-23
 owner: web_platform
 status: active
 ---
@@ -39,6 +39,24 @@ projection binds `screen.explore.discovery`, while its marketing projection
 binds the `organizer_search` route and the URL-owned
 `useOrganizerDirectoryController`. The projections share feature identity and
 product intent, not UI code or state vocabulary.
+
+The marketing migration now compiles every stateful public route. Marketing
+Home and Host Acquisition remain website-only identities because conversion
+and acquisition are different user goals from consumer or Host app operation.
+Organizer Claim owns both `/claim/` and the dynamic lookup projection because
+they use the same controller and outcome but retain different exact route-state
+inventories. The legacy organizer listing remains grouped under canonical
+Organizer Detail because it adds static canonical/noindex behavior, not another
+interactive workflow. Static legal/support and 404 routes remain explicit
+exclusions rather than synthetic zero-action product features.
+
+Cross-surface orchestration does not make an unversioned HTTP boundary
+deterministic. The two `/api/join-waitlist` callers and the Function currently
+declare separate TypeScript shapes; `WEB-LEAD-API-CONTRACT-001` owns a future
+shared schema and generated/validated types. Pending request snapshots are a
+separate concern: `WEB-FORM-SUBMISSION-SNAPSHOT-001` covers form controls,
+steps, auth, and route exits that remain live after waitlist, Host application,
+or Claim submission captures its payload.
 
 Run `node tool/design/check_feature_coverage.mjs --check` after adding or
 removing any registered product surface. A planned decision is migration debt,

@@ -1,6 +1,6 @@
 {
-  "version": "2.7.166",
-  "updated": "2026-07-22",
+  "version": "2.7.167",
+  "updated": "2026-07-23",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, uid-loading conflation follow-up, React component-governance follow-up including class-name boundary enforcement and exported website feature component registry coverage, admin feature export boundary, the retired website legacy site barrel/import boundary, UI label spans, empty-state variants, page shells, claim-flow route/root/auth-row shells, website Host Page route, Host Application flow, Host feature section, waitlist form shells, marketing section, marketing info-card, marketing loop-list, marketing consent banner, featured organizer card, app-download CTA group, organizer listing, organizer listing hero, organizer listing event section including event-action cards, organizer search section, organizer search result shells, PublicSearchBar ownership, public event-card shells, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin loading icon shells, admin toolbar shells/modifiers, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin marketing layout shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision/footer shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin roadmap lists, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
   "scanner_snapshot": {
@@ -314,6 +314,55 @@
         "docs/demo_data_seeding.md"
       ],
       "source": "deep_semantic_audit_2026-06"
+    },
+    {
+      "id": "WEB-FORM-SUBMISSION-SNAPSHOT-001",
+      "title": "Define one pending-submission snapshot policy for marketing forms",
+      "status": "active",
+      "owner": "agent",
+      "area": "website,forms,mutations,feature-contracts",
+      "priority": "high",
+      "summary": "Member waitlist, Host application, and Organizer Claim capture a request payload before awaiting their mutation but leave request-defining fields, steps, verification choices, back navigation, or claim sign-out active. The visible draft or auth state can therefore diverge from the in-flight request. The compiled feature contracts preserve this current action availability instead of falsely modeling a frozen transaction.",
+      "acceptance": [
+        "choose and document one shared freeze-or-version policy for request-defining form state",
+        "apply the policy to member waitlist, Host application, and Organizer Claim including back, step, auth, and route-exit controls",
+        "add focused pending-state tests proving duplicate requests and visible-versus-submitted snapshot drift cannot occur"
+      ],
+      "paths": [
+        "website/src/features/waitlist/useWaitlistFormController.ts",
+        "website/src/features/host/application/useHostApplicationController.ts",
+        "website/src/features/claims/useClaimFlowController.ts",
+        "website/src/features/claims/sections/ClaimPageSections.tsx",
+        "design/features/marketing_home.feature.json",
+        "design/features/host_acquisition.feature.json",
+        "design/features/organizer_claim.feature.json"
+      ],
+      "source": "2026-07-23-marketing-feature-contracts"
+    },
+    {
+      "id": "WEB-LEAD-API-CONTRACT-001",
+      "title": "Create one shared schema for the marketing lead API",
+      "status": "active",
+      "owner": "agent",
+      "area": "website,functions,contracts,waitlist,host-acquisition",
+      "priority": "high",
+      "summary": "The member waitlist and Host application both POST to /api/join-waitlist, but website controllers and Functions own separate TypeScript request/response shapes and no checked schema or generated type spans the boundary. Feature contracts can prove the action owner and UI lifecycle but cannot claim a deterministic network payload contract until this seam is centralized.",
+      "acceptance": [
+        "add versioned request and response schemas for /api/join-waitlist including the optional Host application packet",
+        "generate or validate both website and Functions types from the same schema and reject drift in the data-contract gate",
+        "add valid, invalid, compatibility, and response-error fixtures across both producers and consumers",
+        "bind Marketing Home and Host Acquisition feature contracts to the new schemas"
+      ],
+      "paths": [
+        "website/src/features/waitlist/useWaitlistFormController.ts",
+        "website/src/features/host/application/useHostApplicationController.ts",
+        "functions/src/waitlist/joinWaitlist.ts",
+        "contracts",
+        "tool/check_data_contract.sh",
+        "design/features/marketing_home.feature.json",
+        "design/features/host_acquisition.feature.json"
+      ],
+      "source": "2026-07-23-marketing-feature-contracts"
     }
   ],
   "next_up": [

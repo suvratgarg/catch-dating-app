@@ -291,20 +291,18 @@
     {
       "authority": "marketing_routes",
       "authorityId": "home",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Public product entry, app-download, and waitlist conversion workflow.",
-      "targetFeature": "feature.marketing_home",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Marketing Home contract covers organizer/event discovery handoffs, Host routing, configured and unavailable store CTAs, and member waitlist submission.",
+      "featureContract": "feature.marketing_home"
     },
     {
       "authority": "marketing_routes",
       "authorityId": "host",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Public host acquisition and application workflow.",
-      "targetFeature": "feature.host_acquisition",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Host Acquisition contract covers the interactive product narrative, operating previews, founding-host application, and post-submission handoffs.",
+      "featureContract": "feature.host_acquisition"
     },
     {
       "authority": "marketing_routes",
@@ -317,19 +315,18 @@
     {
       "authority": "marketing_routes",
       "authorityId": "claim",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Organizer claim discovery, eligibility, and submission workflow.",
-      "targetFeature": "feature.organizer_claim",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Organizer Claim contract covers organizer selection, claimant proof, verification, auth, typed submission, and authority-derived route states.",
+      "featureContract": "feature.organizer_claim"
     },
     {
       "authority": "marketing_routes",
       "authorityId": "claim_lookup",
-      "status": "grouped",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Dynamic lookup projection of the canonical organizer claim feature.",
-      "primaryAuthorityId": "claim"
+      "reason": "Compiled dynamic lookup projection of Organizer Claim preserves its own exact known, missing, pending, and unavailable authority states.",
+      "featureContract": "feature.organizer_claim"
     },
     {
       "authority": "marketing_routes",

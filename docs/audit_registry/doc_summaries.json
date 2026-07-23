@@ -1,5 +1,5 @@
 {
-  "version": "4.5.162",
+  "version": "4.5.163",
   "updated": "2026-07-23",
   "owner": "recursive_audit_loop",
   "summaries": {
@@ -503,7 +503,7 @@
       ]
     },
     "docs/design_parity/README.md": {
-      "purpose": "Design parity folder owner and workflow for state matrices, multi-surface and coordinated-workspace feature contracts, exact route versus modal ownership, dependency and identity loading/failure versus genuine fallback states, actual CTA outcome naming, external-effect result handling, honest pending-mutation and cross-domain concurrency availability, shared-implementation and filtered-route goal projections, action wiring versus repository capability, explicit unreachable and blank-data state classification, meaningful-action versus raw-form-data boundaries, stable Flutter preview-builder evidence, top-level Dart action owners, known implementation-gap actions, explicit React route-state preview mappings, captures, Widgetbook and Storybook evidence, component contracts, and route-ledger hygiene.",
+      "purpose": "Design parity folder owner and workflow for state matrices, multi-surface and coordinated-workspace feature contracts, exact route versus modal ownership, stateful secondary-route projection versus static grouping, dependency and identity loading/failure versus genuine fallback states, actual CTA outcome naming, missing network-schema disclosure, external-effect result handling, honest pending-mutation and cross-domain concurrency availability, shared-implementation and filtered-route goal projections, action wiring versus repository capability, explicit unreachable and blank-data state classification, meaningful-action versus raw-form-data boundaries, stable Flutter preview-builder evidence, top-level Dart action owners, known implementation-gap actions, explicit React route-state preview mappings, captures, Widgetbook and Storybook evidence, component contracts, and route-ledger hygiene.",
       "read_when": [
         "Starting design-parity work",
         "Changing screen contracts, capture coverage, Widgetbook references, or design parity ledgers"
@@ -612,7 +612,7 @@
       ]
     },
     "docs/marketing_website_architecture.md": {
-      "purpose": "Marketing website source layout, route shell ownership, route Storybook evidence through parameters.catchRoute, React dependency choices, feature/page/controller/component boundaries, CSS ownership, component registry, and shared primitive/component-family governance including admin marketing guide shells, admin marketing stacked-section shells, and website route/section shell families.",
+      "purpose": "Marketing website source layout, complete stateful route feature contracts, route shell ownership, route Storybook evidence through parameters.catchRoute, pending form snapshot and lead API schema debt, React dependency choices, feature/page/controller/component boundaries, CSS ownership, component registry, and shared primitive/component-family governance including admin marketing guide shells, admin marketing stacked-section shells, and website route/section shell families.",
       "read_when": [
         "Changing marketing website source layout, React routing, route Storybook evidence, dependency choices, controller seams, CSS ownership, component registry, or shared primitive/component governance",
         "Changing Home, Host, Host Preview, claim, organizer listing, organizer search, or marketing section decomposition"

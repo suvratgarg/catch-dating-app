@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.28
+version: 0.1.29
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -173,7 +173,9 @@ Hub, Catches Event, Matches List, Chat Thread, Self Profile, Public Profile,
 Organizer Detail, Phone Authentication, Member Onboarding with its Start
 Welcome projection, Event Planning, Matching Preferences, Event Recap,
 Notifications, Reviews, Payments, and Account Settings are the current Flutter
-reference contracts. Organizer Detail is the first
+reference contracts. Marketing Home, Host Acquisition, and Organizer Claim
+complete the stateful marketing routes, while Explore and Organizer Detail
+retain their existing marketing projections. Organizer Detail is the first
 three-surface reference:
 consumer Flutter, host Flutter, and the canonical marketing listing share one
 semantic feature identity while retaining separate actions and state
@@ -314,6 +316,21 @@ and the preview is part of the selected component registry. This makes the
 relationship explicit without renaming either authority. Static-output tests
 under `website/scripts/*.test.mjs` may provide test evidence for indexing and
 canonical metadata states that cannot be meaningfully shown in Storybook.
+
+Grouped route coverage is appropriate only when the secondary authority adds
+no independent workflow state worth compiling. Organizer Claim binds both the
+canonical `/claim/` workspace and its dynamic lookup route because the latter
+has its own exact known, missing, pending, and unavailable state inventory.
+The legacy organizer-listing family stays grouped because its only differences
+are canonical/noindex static-output policy already proved by route tests.
+
+A feature orchestration contract cannot replace a missing network schema.
+Marketing Home and Host Acquisition can prove controller ownership, action
+availability, UI evidence, and mutation outcomes, but `/api/join-waitlist`
+still has separately declared website and Functions types. Keep their
+`dataContracts` empty and name `WEB-LEAD-API-CONTRACT-001` until one checked
+request/response schema spans that boundary; do not cite nearby Firestore or
+analytics schemas as false proof.
 
 Required evidence stays strict. A real missing capture, preview, or test may be
 admitted only through an explicit evidence exception tied to a stable open debt

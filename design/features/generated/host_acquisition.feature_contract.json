@@ -1,0 +1,830 @@
+{
+  "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
+  "version": 2,
+  "generatedFrom": "design/features/host_acquisition.feature.json",
+  "generatedFor": "2026-07-23",
+  "sourceDigest": "sha256:23cdeea677d63454e64196b349ce12bd499b2b97722fe58333c187008f9d2e9a",
+  "resolvedDigest": "sha256:52b20125c77d8dd7714c8b879980543b5abdeb7d47fb7dd45a4b76a170de655e",
+  "feature": {
+    "id": "feature.host_acquisition",
+    "name": "Host Acquisition",
+    "owner": "marketing_website",
+    "status": "pilot",
+    "description": "Orchestrates the public Host product narrative, interactive operating previews, founding-host application, and post-submission organizer and claim handoffs."
+  },
+  "coverage": {
+    "surfaces": 1,
+    "states": 4,
+    "scenarios": 4,
+    "actionCases": 8,
+    "actions": 12,
+    "captures": 0,
+    "previews": 3,
+    "testFiles": 2,
+    "evidenceExceptions": 3
+  },
+  "surfaces": [
+    {
+      "id": "marketing_web",
+      "runtime": "react_marketing",
+      "authority": {
+        "registry": "marketing_routes",
+        "id": "host"
+      },
+      "actionScope": {
+        "included": "Opening the application, operating the create-event and Playbook previews, expanding the comparison, navigating the application, choosing bounded format/module decisions, submitting the host packet, and following post-submission routes.",
+        "excluded": [
+          "Site-header anchors, consent choices, static FAQ/trust content, and capture rendering retain shared shell or presentation ownership.",
+          "Host application text and select field edits remain form data governed by the application model rather than separate feature actions.",
+          "The /api/join-waitlist host-application payload and response have no shared schema; WEB-LEAD-API-CONTRACT-001 tracks the missing data-contract boundary.",
+          "Application steps and request-defining draft controls remain live after the submit payload is captured; WEB-FORM-SUBMISSION-SNAPSHOT-001 tracks the shared pending policy."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "website/src/stories/HostSections.stories.tsx",
+          "website/src/stories/MarketingRoutes.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "host_sections",
+            "language": "typescript",
+            "file": "website/src/features/host/sections/HostPageSections.tsx",
+            "symbol": "HostHeroSection"
+          },
+          {
+            "id": "create_walkthrough",
+            "language": "typescript",
+            "file": "website/src/features/host/sections/CreateEventWalkthrough.tsx",
+            "symbol": "CreateEventWalkthrough"
+          },
+          {
+            "id": "playbook",
+            "language": "typescript",
+            "file": "website/src/features/host/sections/PlaybookShowcase.tsx",
+            "symbol": "PlaybookShowcase"
+          },
+          {
+            "id": "comparison",
+            "language": "typescript",
+            "file": "website/src/features/host/sections/HostComparisonSection.tsx",
+            "symbol": "HostComparisonSection"
+          },
+          {
+            "id": "application_controller",
+            "language": "typescript",
+            "file": "website/src/features/host/application/useHostApplicationController.ts",
+            "symbol": "useHostApplicationController"
+          },
+          {
+            "id": "application_flow",
+            "language": "typescript",
+            "file": "website/src/features/host/application/HostApplicationFlow.tsx",
+            "symbol": "HostApplicationFlow"
+          }
+        ],
+        "componentContracts": [
+          "route_host",
+          "host_application_flow",
+          "host_create_event_walkthrough",
+          "host_playbook_showcase",
+          "host_comparison_section"
+        ],
+        "dataContracts": [],
+        "testEvidence": {
+          "host-application": [
+            "website/src/features/host/application/applicationModel.test.ts",
+            "website/src/features/host/application/useHostApplicationController.test.tsx"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 4,
+        "scenarios": 4,
+        "actionCases": 8,
+        "actions": 12,
+        "captures": 0,
+        "previews": 3,
+        "testFiles": 2,
+        "evidenceExceptions": 3
+      },
+      "dimensions": {
+        "presentation": {
+          "default": "default",
+          "values": [
+            "default",
+            "offer",
+            "application",
+            "capture_placeholders"
+          ]
+        },
+        "application_step": {
+          "default": "profile",
+          "values": [
+            "profile",
+            "event",
+            "policy",
+            "success",
+            "review",
+            "submitted"
+          ]
+        },
+        "application_mutation": {
+          "default": "idle",
+          "values": [
+            "idle",
+            "pending",
+            "failed",
+            "success"
+          ]
+        },
+        "preview": {
+          "default": "idle",
+          "values": [
+            "idle",
+            "create_step_selected",
+            "playbook_stage_selected",
+            "module_expanded",
+            "comparison_expanded"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "open_host_application",
+          "owner": "host_sections",
+          "codeValue": "trackCtaClick",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "placement"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "host-application"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "analytics.host_application_opened"
+            }
+          ],
+          "description": "Moves to the founding-host application section and records the CTA placement.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "select_create_walkthrough_step",
+          "owner": "create_walkthrough",
+          "codeValue": "setActiveStep",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "walkthroughStepId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default",
+                "capture-placeholders"
+              ]
+            }
+          ],
+          "description": "Selects a bounded create-event demonstration step and its matching capture or fallback.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "select_playbook_stage",
+          "owner": "playbook",
+          "codeValue": "setStage",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "playbookStageId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default",
+                "capture-placeholders"
+              ]
+            }
+          ],
+          "description": "Selects the activity, after, or debrief Playbook stage and its corresponding capture.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "expand_playbook_module",
+          "owner": "playbook",
+          "codeValue": "trackMarketingEvent",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "moduleId"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "analytics.playbook_module_expanded"
+            }
+          ],
+          "description": "Expands one Playbook module and records its module and lifecycle-stage identity.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "toggle_host_comparison",
+          "owner": "comparison",
+          "codeValue": "setOpen",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "comparisonVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default"
+              ]
+            }
+          ],
+          "description": "Shows or hides the full Host comparison table and scrolls the expanded table into view.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "go_to_application_step",
+          "owner": "application_controller",
+          "codeValue": "goToStep",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "formInstanceId",
+            "stepId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "host-application"
+              ]
+            }
+          ],
+          "description": "Moves to a selected application step; the current StepRail permits any selected step, including during submission.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "continue_application",
+          "owner": "application_controller",
+          "codeValue": "goNext",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "formInstanceId",
+            "draftVersion",
+            "stepId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "host-application"
+              ]
+            }
+          ],
+          "description": "Validates the current application stage and advances to the next bounded step.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "back_application",
+          "owner": "application_controller",
+          "codeValue": "goBack",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "formInstanceId",
+            "stepId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "host-application"
+              ]
+            }
+          ],
+          "description": "Returns to the previous application stage, including while submission remains pending.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "toggle_application_choice",
+          "owner": "application_controller",
+          "codeValue": "toggleDraftList",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "formInstanceId",
+            "choiceDomain",
+            "choiceValue",
+            "draftVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "host-application"
+              ]
+            }
+          ],
+          "description": "Adds or removes a bounded event-format or Event Success module choice from the local application draft.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "submit_host_application",
+          "owner": "application_controller",
+          "codeValue": "handleSubmit",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "formInstanceId",
+            "submissionVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "host-application"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "marketing.host_application_submitted"
+            }
+          ],
+          "description": "Validates and submits one normalized host operating packet, then renders success or actionable failure status.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_organizer_search_after_submit",
+          "owner": "application_flow",
+          "codeValue": "ButtonLink",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "submissionVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "organizer_search"
+              }
+            }
+          ],
+          "description": "Opens the public organizer directory from the submitted application confirmation.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_claim_after_submit",
+          "owner": "application_flow",
+          "codeValue": "ButtonLink",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "submissionVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "claim"
+              }
+            }
+          ],
+          "description": "Opens the organizer claim workflow from the submitted application confirmation.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [
+        {
+          "stateIds": [
+            "default",
+            "founding-host-offer",
+            "capture-placeholders"
+          ],
+          "evidence": [
+            "tests"
+          ],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "These route-level narrative and capture-fallback states have registered route/section Storybook evidence but no focused interaction test registered for their Host section composition."
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "default",
+          "stateId": "default",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "presentation": "default",
+            "application_step": "profile",
+            "application_mutation": "idle",
+            "preview": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "host_create_event_walkthrough/CreateEventWalkthroughSection",
+              "host_playbook_showcase/PlaybookShowcaseSection",
+              "route_host/Host"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "interactive_brochure",
+              "dimensions": {
+                "presentation": "default",
+                "application_step": "profile",
+                "application_mutation": "idle",
+                "preview": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "open_host_application",
+                  "select_create_walkthrough_step",
+                  "select_playbook_stage",
+                  "expand_playbook_module",
+                  "toggle_host_comparison"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "go_to_application_step",
+                  "continue_application",
+                  "back_application",
+                  "toggle_application_choice",
+                  "submit_host_application",
+                  "open_organizer_search_after_submit",
+                  "open_claim_after_submit"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "founding_host_offer",
+          "stateId": "founding-host-offer",
+          "kind": "route_state",
+          "status": "manual",
+          "dimensions": {
+            "presentation": "offer",
+            "application_step": "profile",
+            "application_mutation": "idle",
+            "preview": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_host/Host"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "offer_visible",
+              "dimensions": {
+                "presentation": "offer",
+                "application_step": "profile",
+                "application_mutation": "idle",
+                "preview": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "open_host_application",
+                  "select_create_walkthrough_step",
+                  "select_playbook_stage",
+                  "expand_playbook_module",
+                  "toggle_host_comparison"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "go_to_application_step",
+                  "continue_application",
+                  "back_application",
+                  "toggle_application_choice",
+                  "submit_host_application",
+                  "open_organizer_search_after_submit",
+                  "open_claim_after_submit"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "host_application",
+          "stateId": "host-application",
+          "kind": "route_state",
+          "status": "manual",
+          "dimensions": {
+            "presentation": "application",
+            "application_step": "profile",
+            "application_mutation": "idle",
+            "preview": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_host/Host"
+            ],
+            "tests": [
+              "website/src/features/host/application/applicationModel.test.ts",
+              "website/src/features/host/application/useHostApplicationController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "profile_or_form_step",
+              "dimensions": {
+                "presentation": "application",
+                "application_step": "profile",
+                "application_mutation": "idle",
+                "preview": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "go_to_application_step",
+                  "continue_application",
+                  "back_application",
+                  "toggle_application_choice"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_host_application",
+                  "select_create_walkthrough_step",
+                  "select_playbook_stage",
+                  "expand_playbook_module",
+                  "toggle_host_comparison",
+                  "submit_host_application",
+                  "open_organizer_search_after_submit",
+                  "open_claim_after_submit"
+                ]
+              }
+            },
+            {
+              "id": "review_ready",
+              "dimensions": {
+                "presentation": "application",
+                "application_step": "review",
+                "application_mutation": "idle",
+                "preview": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "go_to_application_step",
+                  "back_application",
+                  "toggle_application_choice",
+                  "submit_host_application"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_host_application",
+                  "select_create_walkthrough_step",
+                  "select_playbook_stage",
+                  "expand_playbook_module",
+                  "toggle_host_comparison",
+                  "continue_application",
+                  "open_organizer_search_after_submit",
+                  "open_claim_after_submit"
+                ]
+              }
+            },
+            {
+              "id": "submission_pending_live_draft",
+              "dimensions": {
+                "presentation": "application",
+                "application_step": "review",
+                "application_mutation": "pending",
+                "preview": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "go_to_application_step",
+                  "back_application",
+                  "toggle_application_choice"
+                ],
+                "disabled": [
+                  "submit_host_application"
+                ],
+                "notAllowed": [
+                  "open_host_application",
+                  "select_create_walkthrough_step",
+                  "select_playbook_stage",
+                  "expand_playbook_module",
+                  "toggle_host_comparison",
+                  "continue_application",
+                  "open_organizer_search_after_submit",
+                  "open_claim_after_submit"
+                ]
+              }
+            },
+            {
+              "id": "submission_failed",
+              "dimensions": {
+                "presentation": "application",
+                "application_step": "review",
+                "application_mutation": "failed",
+                "preview": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "go_to_application_step",
+                  "back_application",
+                  "toggle_application_choice",
+                  "submit_host_application"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_host_application",
+                  "select_create_walkthrough_step",
+                  "select_playbook_stage",
+                  "expand_playbook_module",
+                  "toggle_host_comparison",
+                  "continue_application",
+                  "open_organizer_search_after_submit",
+                  "open_claim_after_submit"
+                ]
+              }
+            },
+            {
+              "id": "submitted",
+              "dimensions": {
+                "presentation": "application",
+                "application_step": "submitted",
+                "application_mutation": "success",
+                "preview": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "open_organizer_search_after_submit",
+                  "open_claim_after_submit"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_host_application",
+                  "select_create_walkthrough_step",
+                  "select_playbook_stage",
+                  "expand_playbook_module",
+                  "toggle_host_comparison",
+                  "go_to_application_step",
+                  "continue_application",
+                  "back_application",
+                  "toggle_application_choice",
+                  "submit_host_application"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "capture_placeholders",
+          "stateId": "capture-placeholders",
+          "kind": "route_state",
+          "status": "manual",
+          "dimensions": {
+            "presentation": "capture_placeholders",
+            "application_step": "profile",
+            "application_mutation": "idle",
+            "preview": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_host/Host"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "fallback_captures",
+              "dimensions": {
+                "presentation": "capture_placeholders",
+                "application_step": "profile",
+                "application_mutation": "idle",
+                "preview": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "open_host_application",
+                  "select_create_walkthrough_step",
+                  "select_playbook_stage",
+                  "expand_playbook_module",
+                  "toggle_host_comparison"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "go_to_application_step",
+                  "continue_application",
+                  "back_application",
+                  "toggle_application_choice",
+                  "submit_host_application",
+                  "open_organizer_search_after_submit",
+                  "open_claim_after_submit"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "host",
+          "kind": "static",
+          "path": "/host/"
+        },
+        "components": [
+          {
+            "id": "route_host",
+            "kind": "route",
+            "source": "website/src/features/host/HostPage.tsx",
+            "exportName": "HostPage",
+            "storybook": {
+              "story": "website/src/stories/MarketingRoutes.stories.tsx",
+              "exportName": "Host",
+              "states": [
+                "default",
+                "founding-host-offer",
+                "host-application",
+                "capture-placeholders"
+              ]
+            }
+          },
+          {
+            "id": "host_application_flow",
+            "kind": "flow",
+            "source": "website/src/features/host/application/HostApplicationFlow.tsx",
+            "exportName": "HostApplicationFlow",
+            "storybook": {
+              "story": "website/src/stories/HostSections.stories.tsx",
+              "exportName": "HostApplicationFlowInitial",
+              "states": [
+                "initial",
+                "interactive-steps"
+              ]
+            }
+          },
+          {
+            "id": "host_create_event_walkthrough",
+            "kind": "section",
+            "source": "website/src/features/host/sections/CreateEventWalkthrough.tsx",
+            "exportName": "CreateEventWalkthrough",
+            "storybook": {
+              "story": "website/src/stories/HostSections.stories.tsx",
+              "exportName": "CreateEventWalkthroughSection",
+              "states": [
+                "default",
+                "interactive-steps",
+                "capture-fallback"
+              ]
+            }
+          },
+          {
+            "id": "host_playbook_showcase",
+            "kind": "section",
+            "source": "website/src/features/host/sections/PlaybookShowcase.tsx",
+            "exportName": "PlaybookShowcase",
+            "storybook": {
+              "story": "website/src/stories/HostSections.stories.tsx",
+              "exportName": "PlaybookShowcaseSection",
+              "states": [
+                "default",
+                "activity",
+                "after",
+                "debrief",
+                "module-expanded",
+                "deep-link"
+              ]
+            }
+          },
+          {
+            "id": "host_comparison_section",
+            "kind": "section",
+            "source": "website/src/features/host/sections/HostComparisonSection.tsx",
+            "exportName": "HostComparisonSection",
+            "storybook": {
+              "story": "website/src/stories/HostSections.stories.tsx",
+              "exportName": "HostComparisonSectionStory",
+              "states": [
+                "collapsed",
+                "expanded-interaction"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "host_create_event_walkthrough/CreateEventWalkthroughSection",
+          "host_playbook_showcase/PlaybookShowcaseSection",
+          "route_host/Host"
+        ]
+      }
+    }
+  ]
+}
