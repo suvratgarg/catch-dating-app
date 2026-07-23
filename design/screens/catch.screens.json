@@ -20038,7 +20038,7 @@
           "id": "save_draft_pending_error",
           "kind": "mutation",
           "status": "captured",
-          "source": "CreateClubDraftController.saveDraftMutation drives footer loading and CatchErrorBanner copy when saving fails; draft restore/save success feedback uses the shared Catch snackbar helper.",
+          "source": "CreateClubDraftController.saveDraftMutation freezes route, wizard, media, fields/defaults, and footer actions while pending; CatchErrorBanner owns failure copy and the shared Catch snackbar owns success feedback.",
           "previewIds": [
             "HostCreateClubScreen/Route and wizard states"
           ],
@@ -20046,19 +20046,27 @@
           "captureIds": [
             "create_club_save_draft_pending",
             "create_club_save_draft_error"
+          ],
+          "tests": [
+            "test/hosts/host_club_create_state_test.dart",
+            "test/explore/explore_widgets_test.dart"
           ]
         },
         {
           "id": "submit_pending",
           "kind": "mutation",
           "status": "captured",
-          "source": "CreateClubController.submitMutation disables footer actions and shows loading while submit is pending.",
+          "source": "CreateClubController.submitMutation freezes route, wizard, media, fields/defaults, and footer actions while pending; CreateClubController returns the active Future for duplicate direct calls.",
           "previewIds": [
             "HostCreateClubScreen/Route and wizard states"
           ],
           "nextAction": "Compare captured submit pending footer behavior against canonical design references once exported.",
           "captureIds": [
             "create_club_submit_pending"
+          ],
+          "tests": [
+            "test/clubs/clubs_controllers_test.dart",
+            "test/explore/explore_widgets_test.dart"
           ]
         },
         {
@@ -20330,8 +20338,8 @@
             },
             {
               "id": "DS-HOST-CLUB-CREATE-005",
-              "status": "open",
-              "nextAction": "REG-FEATURE-CONTRACT-DRIFT-001: submit pending disables footer actions and media but still permits header-back navigation and Event Success default changes; save-draft pending also leaves basics controls active. Decide whether pending mutations should freeze the submitted draft snapshot and route dismissal, then add focused interaction tests for the chosen policy."
+              "status": "closed",
+              "nextAction": "Closed: organizer submit, draft save, and initial draft restore use frozen route snapshots. Header/gesture dismissal, step movement, media, all form/default decisions, and footer actions are disabled while pending; submit and draft controllers deduplicate direct duplicate calls, with focused controller/state/widget proof."
             }
       ]
     },
@@ -20722,13 +20730,17 @@
           "id": "submit_pending",
           "kind": "mutation",
           "status": "captured",
-          "source": "HostEventEditScreenState maps updateHostedEventMutation pending into EditHostedEventFooterState loading and disabled Save changes state.",
+          "source": "HostEventEditScreenState maps updateHostedEventMutation pending into a frozen route and form plus loading/disabled Save state; HostEventBookingController returns the active Future for duplicate direct calls.",
           "previewIds": [
             "EditHostedEventRouteScreen/Route and section states"
           ],
           "nextAction": "Pending footer display policy is adapter-owned; compare against mutation reference variants once exported.",
           "captureIds": [
             "edit_hosted_event_submit_pending"
+          ],
+          "tests": [
+            "test/hosts/host_event_booking_controller_test.dart",
+            "test/hosts/edit_hosted_event_screen_test.dart"
           ]
         },
         {
@@ -21005,8 +21017,8 @@
             },
             {
               "id": "DS-HOST-EVENT-EDIT-005",
-              "status": "open",
-              "nextAction": "REG-FEATURE-CONTRACT-DRIFT-001: save pending disables only the Save button while schedule, location, pace, and policy controls remain interactive after HostEventEditSaveRequest has captured its payload. Freeze the form or introduce an explicit versioned edit queue, then add a widget test proving on-screen values cannot diverge from the submitted snapshot."
+              "status": "closed",
+              "nextAction": "Closed: event edit save uses a frozen route snapshot. Route dismissal and the complete schedule, location, pace, policy, and text-field form are non-interactive while pending; the update controller returns the active Future for duplicates, with focused state, controller, and widget proof."
             }
       ]
     },

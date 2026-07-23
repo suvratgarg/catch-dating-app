@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.5.6
+version: 1.5.7
 updated: 2026-07-22
 owner: recursive_audit_loop
 status: active
@@ -1247,6 +1247,14 @@ its controller deduplicates both profile-save and completion operations.
 Matching Preferences freezes route dismissal, reset, age, gender, and apply
 controls while its controller deduplicates the save. Their focused tests prove
 the route, presentation state, and controller layers together.
+
+Host Organizer Create and Host Event Edit are also promoted frozen-snapshot
+adopters. Organizer creation freezes route dismissal, step movement, media,
+form/default decisions, and footer actions across submit, draft-save, and
+initial draft-restore operations. Event editing freezes route dismissal and
+the complete schedule, location, pace, policy, and text-field form during
+save. Their action controllers return the active future to duplicate callers,
+so widget disabling and controller behavior enforce the same request snapshot.
 
 Every adopting feature must declare the chosen policy in its feature contract.
 If the implementation is not yet safe, the pending-state action matrix must

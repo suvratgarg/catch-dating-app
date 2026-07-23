@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.34
+version: 0.1.35
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -252,10 +252,10 @@ the visible label must change before the contract can truthfully call that
 action a support handoff.
 
 Action availability must describe production behavior, including unsafe
-behavior. Host Organizer Create and Host Event Edit currently leave some
-navigation or form decisions active after a mutation snapshot is submitted.
-Their pending scenarios and screen gaps record that concurrency honestly; do
-not model the form as frozen until production state and focused tests prove it.
+behavior. Host Organizer Create and Host Event Edit now use frozen request
+snapshots: route dismissal and every request-defining form decision are
+disabled during submit/save, and controller-level deduplication prevents a
+programmatic duplicate from starting a second operation.
 Phone Authentication is now the frozen-snapshot reference: phone and country
 controls disable while the request is pending, duplicate controller dispatches
 share one future, and flow reset invalidates stale Firebase callbacks. Treat
@@ -263,11 +263,13 @@ every control that can mutate, dismiss, or invalidate an in-flight snapshot as
 part of the pending action matrix, even when the primary button itself is
 disabled. Versioned editing and independently keyed concurrency remain explicit
 tested variants under `ARCH-PENDING-SNAPSHOT-001`, not implicit exceptions.
-Member Onboarding and Matching Preferences are now the first promoted
-adopters. Onboarding freezes step-back plus identity, prompt, and running
-preference controls; Matching Preferences freezes route exit, reset, age,
-gender, and apply. Both add controller-level deduplication and focused route,
-state, and widget proof.
+Member Onboarding, Matching Preferences, Host Organizer Create, and Host Event
+Edit are promoted adopters. Onboarding freezes step-back plus identity, prompt,
+and running-preference controls; Matching Preferences freezes route exit,
+reset, age, gender, and apply; Host Organizer Create freezes route, steps,
+media, fields, defaults, and footer actions; Host Event Edit freezes route and
+the complete form. All four add controller-level deduplication and focused
+route, state, and widget proof.
 Account Settings extends the rule across independent mutation domains:
 preference, unblock, delete, and sign-out guards currently disable only their
 own controls, so destructive and route actions can overlap. Contract the whole

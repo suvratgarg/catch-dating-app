@@ -1,5 +1,5 @@
 {
-  "version": "1.5.52",
+  "version": "1.5.53",
   "updated": "2026-07-23",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
@@ -1790,6 +1790,30 @@
           "role": "controller and route proof for one persisted request and frozen filter controls",
           "status": "aligned",
           "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "lib/hosts/presentation/club_management/create",
+          "role": "frozen-snapshot adopter across organizer submit, draft save, and draft restore with route, step, media, form, and default-decision freezing plus controller deduplication",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "test/clubs/clubs_controllers_test.dart and test/explore/explore_widgets_test.dart",
+          "role": "controller and widget proof for one organizer submission and a frozen create route",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+          "role": "frozen-snapshot adopter disabling route exit and the full editable event form while save is pending",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "test/hosts/host_event_booking_controller_test.dart and test/hosts/edit_hosted_event_screen_test.dart",
+          "role": "controller, state, and widget proof for one event update and a frozen edit route",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
         }
       ],
       "variantPatterns": [
@@ -1805,18 +1829,6 @@
         }
       ],
       "candidateQueue": [
-        {
-          "id": "DS-HOST-CLUB-CREATE-005",
-          "path": "lib/hosts/presentation/club_management/create",
-          "reason": "Pending submit and save operations do not consistently freeze header navigation or form decisions.",
-          "addedPass": "2026-07-23-feature-contract-debt-audit"
-        },
-        {
-          "id": "DS-HOST-EVENT-EDIT-005",
-          "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-          "reason": "Save pending leaves form choices live after request capture.",
-          "addedPass": "2026-07-23-feature-contract-debt-audit"
-        },
         {
           "id": "DP-REVIEWS-HISTORY-006",
           "path": "lib/reviews/presentation",
@@ -1854,7 +1866,7 @@
         "dart analyze",
         "node tool/agent/check_agent_readiness.mjs"
       ],
-      "notes": "Frozen snapshot is the default for one submitted form or route action. Versioned editing and independently keyed concurrency are explicit variants, not implicit exceptions. Phone Authentication is the reference; Member Onboarding and Matching Preferences are aligned adopters. Remaining Flutter, marketing, and Admin candidates stay open until production behavior and focused tests align."
+      "notes": "Frozen snapshot is the default for one submitted form or route action. Versioned editing and independently keyed concurrency are explicit variants, not implicit exceptions. Phone Authentication is the reference; Member Onboarding, Matching Preferences, Host Organizer Create, and Host Event Edit are aligned adopters. Remaining Flutter, marketing, and Admin candidates stay open until production behavior and focused tests align."
     },
     {
       "id": "ARCH-ROUTER-LIFECYCLE-001",

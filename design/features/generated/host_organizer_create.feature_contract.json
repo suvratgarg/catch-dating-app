@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_organizer_create.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:6c933399783c1038bea55b1c5ceba35117bb1c8181b6a9f578ed2a4a197384a6",
-  "resolvedDigest": "sha256:2c7a7af84685af5cab61099422ce7f4a1f034ece1b0341988783d17eab5b714a",
+  "sourceDigest": "sha256:38c103b03568be338a3d66fe372203d0f37154c828caa79e70b1c88760c21350",
+  "resolvedDigest": "sha256:f74b0e9da3db62644be48c833b6ce4c5ee2851aa1ae878792d2e4de7126049bd",
   "feature": {
     "id": "feature.host_organizer_create",
     "name": "Host Organizer Create",
@@ -20,8 +20,8 @@
     "actions": 12,
     "captures": 15,
     "previews": 1,
-    "testFiles": 1,
-    "evidenceExceptions": 16
+    "testFiles": 3,
+    "evidenceExceptions": 14
   },
   "surfaces": [
     {
@@ -92,8 +92,8 @@
         "actions": 12,
         "captures": 15,
         "previews": 1,
-        "testFiles": 1,
-        "evidenceExceptions": 16
+        "testFiles": 3,
+        "evidenceExceptions": 14
       },
       "dimensions": {
         "step": {
@@ -446,8 +446,6 @@
             "details_step",
             "host_defaults_step",
             "event_success_defaults_step",
-            "save_draft_pending_error",
-            "submit_pending",
             "uid_missing_submit",
             "offline",
             "text_scale_2",
@@ -991,7 +989,10 @@
             "previewIds": [
               "HostCreateClubScreen/Route and wizard states"
             ],
-            "tests": []
+            "tests": [
+              "test/hosts/host_club_create_state_test.dart",
+              "test/explore/explore_widgets_test.dart"
+            ]
           },
           "actionCases": [
             {
@@ -1007,24 +1008,22 @@
                 "theme": "standard"
               },
               "actions": {
-                "enabled": [
+                "enabled": [],
+                "disabled": [
                   "navigate_back",
+                  "next_step",
                   "select_club_photos",
                   "select_profile_image",
-                  "select_city",
-                  "select_organizer_type"
-                ],
-                "disabled": [
-                  "next_step",
-                  "save_draft"
-                ],
-                "notAllowed": [
                   "remove_club_photo",
                   "reorder_club_photo",
+                  "select_city",
+                  "select_organizer_type",
                   "update_defaults",
+                  "save_draft",
                   "retry_draft_restore",
                   "submit_organizer"
-                ]
+                ],
+                "notAllowed": []
               }
             },
             {
@@ -1083,7 +1082,10 @@
             "previewIds": [
               "HostCreateClubScreen/Route and wizard states"
             ],
-            "tests": []
+            "tests": [
+              "test/clubs/clubs_controllers_test.dart",
+              "test/explore/explore_widgets_test.dart"
+            ]
           },
           "actionCases": [
             {
@@ -1099,15 +1101,9 @@
                 "theme": "standard"
               },
               "actions": {
-                "enabled": [
-                  "navigate_back",
-                  "update_defaults"
-                ],
+                "enabled": [],
                 "disabled": [
-                  "submit_organizer",
-                  "save_draft"
-                ],
-                "notAllowed": [
+                  "navigate_back",
                   "next_step",
                   "select_club_photos",
                   "select_profile_image",
@@ -1115,8 +1111,12 @@
                   "reorder_club_photo",
                   "select_city",
                   "select_organizer_type",
-                  "retry_draft_restore"
-                ]
+                  "update_defaults",
+                  "save_draft",
+                  "retry_draft_restore",
+                  "submit_organizer"
+                ],
+                "notAllowed": []
               }
             }
           ]

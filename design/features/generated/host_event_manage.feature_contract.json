@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_event_manage.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:391564ed546cdcb060350993335cb97a4756c647bed33b59eec8ad101c320e76",
-  "resolvedDigest": "sha256:47be53a0023f8bd379013ad1a9f394fa59233e72608d3a501d7c168d37bd930d",
+  "sourceDigest": "sha256:37d4cf0b1e8b6c5d890272ea653eb1e53e3ccb803867a4fcd88fb0cd14c02ef4",
+  "resolvedDigest": "sha256:c529e74b872aae9dc72da060d025db77110c7657ba772fa020dea04de134f8b0",
   "feature": {
     "id": "feature.host_event_manage",
     "name": "Host Event Manage",
@@ -20,8 +20,8 @@
     "actions": 14,
     "captures": 74,
     "previews": 2,
-    "testFiles": 6,
-    "evidenceExceptions": 51
+    "testFiles": 7,
+    "evidenceExceptions": 50
   },
   "surfaces": [
     {
@@ -3476,8 +3476,8 @@
         "actions": 11,
         "captures": 16,
         "previews": 1,
-        "testFiles": 1,
-        "evidenceExceptions": 18
+        "testFiles": 2,
+        "evidenceExceptions": 17
       },
       "dimensions": {
         "route": {
@@ -3824,7 +3824,6 @@
             "policy_locked",
             "location_picker",
             "private_access_loading",
-            "submit_pending",
             "submit_error",
             "cancelled_event_disabled",
             "offline",
@@ -4674,11 +4673,14 @@
             "previewIds": [
               "EditHostedEventRouteScreen/Route and section states"
             ],
-            "tests": []
+            "tests": [
+              "test/hosts/host_event_booking_controller_test.dart",
+              "test/hosts/edit_hosted_event_screen_test.dart"
+            ]
           },
           "actionCases": [
             {
-              "id": "form_still_editable",
+              "id": "frozen_request_snapshot",
               "dimensions": {
                 "route": "ready",
                 "schedule": "editable",
@@ -4692,7 +4694,9 @@
                 "theme": "standard"
               },
               "actions": {
-                "enabled": [
+                "enabled": [],
+                "disabled": [
+                  "retry_edit_route",
                   "select_edit_date",
                   "select_edit_start_time",
                   "adjust_edit_duration",
@@ -4701,14 +4705,10 @@
                   "select_edit_admission_policy",
                   "toggle_edit_cohort_caps",
                   "toggle_edit_dynamic_pricing",
-                  "select_edit_cancellation_policy"
-                ],
-                "disabled": [
+                  "select_edit_cancellation_policy",
                   "save_event_edits"
                 ],
-                "notAllowed": [
-                  "retry_edit_route"
-                ]
+                "notAllowed": []
               }
             }
           ]

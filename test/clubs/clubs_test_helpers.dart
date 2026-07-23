@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
@@ -188,6 +190,8 @@ Future<void> pumpTestApp(
 
 class FakeClubsRepository implements ClubsRepository {
   String generatedId = 'generated-club-id';
+  Completer<String>? createClubCompleter;
+  int createClubCallCount = 0;
   String? joinedClubId;
   String? leftClubId;
   String? notificationsClubId;
@@ -232,8 +236,13 @@ class FakeClubsRepository implements ClubsRepository {
     String? email,
     ClubHostDefaults? hostDefaults,
   }) async {
+    createClubCallCount += 1;
     if (createError != null) {
       throw createError!;
+    }
+    final pendingCreate = createClubCompleter;
+    if (pendingCreate != null) {
+      await pendingCreate.future;
     }
     final resolvedClubId = clubId ?? generatedId;
     lastCreateCall = CreateClubCall(

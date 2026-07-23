@@ -1434,8 +1434,10 @@
           "dimensions": {"mutation": "pending"},
           "actionCases": [
             {
-              "id": "form_still_editable",
-              "enabledActions": [
+              "id": "frozen_request_snapshot",
+              "enabledActions": [],
+              "disabledActions": [
+                "retry_edit_route",
                 "select_edit_date",
                 "select_edit_start_time",
                 "adjust_edit_duration",
@@ -1444,9 +1446,9 @@
                 "select_edit_admission_policy",
                 "toggle_edit_cohort_caps",
                 "toggle_edit_dynamic_pricing",
-                "select_edit_cancellation_policy"
-              ],
-              "disabledActions": ["save_event_edits"]
+                "select_edit_cancellation_policy",
+                "save_event_edits"
+              ]
             }
           ]
         },
@@ -1523,7 +1525,6 @@
             "policy_locked",
             "location_picker",
             "private_access_loading",
-            "submit_pending",
             "submit_error",
             "cancelled_event_disabled",
             "offline",

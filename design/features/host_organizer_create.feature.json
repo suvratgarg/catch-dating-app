@@ -570,16 +570,20 @@
                 "draft": "saving",
                 "mutation": "pending"
               },
-              "enabledActions": [
+              "enabledActions": [],
+              "disabledActions": [
                 "navigate_back",
+                "next_step",
                 "select_club_photos",
                 "select_profile_image",
+                "remove_club_photo",
+                "reorder_club_photo",
                 "select_city",
-                "select_organizer_type"
-              ],
-              "disabledActions": [
-                "next_step",
-                "save_draft"
+                "select_organizer_type",
+                "update_defaults",
+                "save_draft",
+                "retry_draft_restore",
+                "submit_organizer"
               ]
             },
             {
@@ -608,13 +612,20 @@
           "actionCases": [
             {
               "id": "pending",
-              "enabledActions": [
-                "navigate_back",
-                "update_defaults"
-              ],
+              "enabledActions": [],
               "disabledActions": [
-                "submit_organizer",
-                "save_draft"
+                "navigate_back",
+                "next_step",
+                "select_club_photos",
+                "select_profile_image",
+                "remove_club_photo",
+                "reorder_club_photo",
+                "select_city",
+                "select_organizer_type",
+                "update_defaults",
+                "save_draft",
+                "retry_draft_restore",
+                "submit_organizer"
               ]
             }
           ]
@@ -720,8 +731,6 @@
             "details_step",
             "host_defaults_step",
             "event_success_defaults_step",
-            "save_draft_pending_error",
-            "submit_pending",
             "uid_missing_submit",
             "offline",
             "text_scale_2",
