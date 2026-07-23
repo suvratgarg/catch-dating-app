@@ -1,5 +1,5 @@
 {
-  "version": 92,
+  "version": 93,
   "updated": "2026-07-24",
   "owner": "agent_operating_model",
   "entries": [
@@ -2897,6 +2897,31 @@
         "docs/agent_operating_model.md"
       ],
       "notes": "Keep syntax-only checks platform-neutral only when they are useful; the owning native generator check must remain declared for its actual operating system."
+    },
+    {
+      "id": "REG-CI-APPLE-SDK-COMPAT-001",
+      "title": "Apple-native CI compiles dependencies with an obsolete SDK",
+      "status": "active",
+      "applies_to": [
+        "pubspec.yaml",
+        "pubspec.lock",
+        "tool/ci/toolchain.env",
+        "tool/ci/check_toolchain_consistency.sh",
+        ".github/workflows/app-build-matrix.yml",
+        ".github/workflows/mobile-internal-release.yml",
+        ".github/workflows/visual-integration-ci.yml"
+      ],
+      "symptom": "A hosted Apple-native job uses macos-15 with Xcode 16.4 while connectivity_plus 7.1.1 compiles NWPath.isUltraConstrained, a symbol available only to an Xcode 26.1.1-or-newer SDK, so native smoke fails before execution.",
+      "guard": {
+        "type": "command",
+        "command": "bash tool/ci/check_toolchain_consistency.sh",
+        "guardEvidence": "the checked dependency constraint owns an explicit minimum Xcode version, the Apple runner major matches that Xcode major, and every native build, release, and hosted visual-smoke workflow uses the declared runner"
+      },
+      "owner_docs": [
+        "docs/release_operations.md",
+        "tool/README.md"
+      ],
+      "notes": "Do not downgrade connectivity_plus to hide an obsolete hosted SDK. Advance the checked Apple runner and minimum Xcode contract together when an Apple-native dependency raises its build requirement."
     }
   ]
 }

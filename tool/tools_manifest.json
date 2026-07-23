@@ -2002,7 +2002,7 @@
       "command": "bash tool/ci/check_toolchain_consistency.sh",
       "safety": "local",
       "status": "active",
-      "description": "Validates checked-in CI toolchain pins against package-level runtime declarations.",
+      "description": "Validates checked-in CI toolchain pins, package-level runtime declarations, and Apple-native workflow runner compatibility.",
       "checks": [
         "bash -n tool/ci/check_toolchain_consistency.sh",
         "bash tool/ci/check_toolchain_consistency.sh"

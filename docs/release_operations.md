@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.11.3
-updated: 2026-07-23
+version: 1.11.4
+updated: 2026-07-24
 owner: recursive_audit_loop
 status: active
 ---
@@ -26,10 +26,14 @@ production project. A development or staging `hosting:<target>` deployment
 therefore fails until that target is explicitly created and mapped; do not
 work around that failure by falling back to production.
 
-Flutter, Node, Java, Firebase CLI, and CocoaPods versions are owned together in
-`tool/ci/toolchain.env`. GitHub Actions and Xcode Cloud read that contract;
-`bash tool/ci/check_toolchain_consistency.sh` fails when a required pin or the
-Functions Node engine drifts.
+Flutter, Node, Java, Firebase CLI, CocoaPods, the GitHub-hosted Apple runner,
+and the minimum Xcode version are owned together in `tool/ci/toolchain.env`.
+GitHub Actions and Xcode Cloud read that contract;
+`bash tool/ci/check_toolchain_consistency.sh` fails when a required pin, the
+Functions Node engine, or an Apple-native workflow runner drifts. Keep the
+Apple runner major aligned with the minimum Xcode major. `connectivity_plus`
+7.x requires Xcode 26.1.1 or newer, so the native build, release, and hosted
+visual-smoke workflows use `macos-26`.
 
 ## Storage Rules Cross-Service Readiness
 

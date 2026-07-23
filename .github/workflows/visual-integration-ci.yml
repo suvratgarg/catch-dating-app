@@ -9,6 +9,10 @@ on:
       - "test/goldens/**"
       - "test/integration/**"
       - "tool/test_app_shell_integration.sh"
+      - "tool/ci/check_toolchain_consistency.sh"
+      - "tool/ci/toolchain.env"
+      - "pubspec.yaml"
+      - "pubspec.lock"
       - ".github/workflows/visual-integration-ci.yml"
   push:
     branches: [main]
@@ -19,6 +23,10 @@ on:
       - "test/goldens/**"
       - "test/integration/**"
       - "tool/test_app_shell_integration.sh"
+      - "tool/ci/check_toolchain_consistency.sh"
+      - "tool/ci/toolchain.env"
+      - "pubspec.yaml"
+      - "pubspec.lock"
       - ".github/workflows/visual-integration-ci.yml"
   schedule:
     - cron: "17 3 * * 1-5"
@@ -31,7 +39,7 @@ concurrency:
 jobs:
   visual-and-integration:
     name: macOS goldens, headless integration & native smoke
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 60
 
     steps:
