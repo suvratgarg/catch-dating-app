@@ -6,20 +6,38 @@ export const eventDetailCopy = {
   },
   hero: {
     catchEyebrow: "Catch event · app booking",
-    externalEyebrow: "External event · read-only listing",
+    externalEyebrow: "Source-backed event · {source}",
     catchSupply: "Created and managed in Catch",
     externalSupply: "Published by {source}",
     byOrganizer: "Hosted by {organizer}",
     catchActionHeading: "Booking stays in the Catch app",
     catchActionBody:
       "This website is read-only. Open Catch on iOS or Android to check live availability, join a waitlist, or book.",
-    externalActionHeading: "Registration stays with the official source",
+    externalActionHeading: "Registration stays with {source}",
     externalActionBody:
       "Catch does not sell, reserve, or waitlist places for this event. Confirm the latest details before you go.",
     officialSourceAction: "Open official source",
     viewDetailsAction: "View event details",
     organizerAction: "View organizer profile",
     claimAction: "Claim this organizer listing",
+    hostedByLabel: "Hosted by",
+    planLabel: "The plan",
+    facts: {
+      when: "When",
+      where: "Where",
+      format: "Format",
+    },
+    organizerMetrics: {
+      rating: "Rating",
+      reviews: "Organizer reviews",
+      members: "Members",
+    },
+    media: {
+      alt:
+        "Catch members gathering at an evening social event; illustrative activity photography, not organizer-supplied event media.",
+      src: "/assets/events/social-run-music-hero.jpg",
+      mobileSrcSet: "/assets/events/social-run-music-hero-960.jpg",
+    },
   },
   details: {
     eyebrow: "Event details",
@@ -69,6 +87,9 @@ export const eventDetailCopy = {
     emptyTitle: "No event-specific reviews yet",
     emptyBody:
       "The organizer may still have reviews on its profile, but Catch does not attribute them to this event without an event ID.",
+    unavailableTitle: "Event reviews are not available yet",
+    unavailableBody:
+      "Catch will show event-specific reviews here after the organizer review target is verified. No organizer-level review is attributed to this event.",
   },
   footerBody:
     "Read event details on the web, then use Catch or the official source for registration.",

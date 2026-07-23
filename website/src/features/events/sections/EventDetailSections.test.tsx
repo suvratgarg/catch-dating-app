@@ -1,5 +1,5 @@
-import {render, screen} from "@testing-library/react";
-import {describe, expect, it} from "vitest";
+import {cleanup, render, screen} from "@testing-library/react";
+import {afterEach, describe, expect, it} from "vitest";
 import {hostListings} from "../../organizers/data";
 import type {HostListing} from "../../organizers/types";
 import type {EventDetailRecord} from "../eventDetailModel";
@@ -9,6 +9,8 @@ import {
   EventDetailProvenanceSection,
   EventDetailReviewsSection,
 } from "./EventDetailSections";
+
+afterEach(cleanup);
 
 describe("Event Detail sections", () => {
   it("keeps external events read-only and sends registration to the source", () => {
@@ -23,7 +25,8 @@ describe("Event Detail sections", () => {
 
     expect(screen.getByRole("link", {name: "Open official source"}).getAttribute("href"))
       .toBe("https://luma.com/example");
-    expect(screen.getByText("External event · read-only listing")).toBeTruthy();
+    expect(screen.getByText("Source-backed event · Luma")).toBeTruthy();
+    expect(screen.getByText("Registration stays with Luma")).toBeTruthy();
     expect(screen.getByText("Asia/Kolkata")).toBeTruthy();
     expect(screen.queryByRole("link", {name: /book|checkout|sign in/iu})).toBeNull();
     expect(screen.queryByRole("button", {name: /book|checkout|sign in/iu})).toBeNull();
@@ -39,9 +42,21 @@ describe("Event Detail sections", () => {
     );
 
     expect(screen.getByText("Booking stays in the Catch app")).toBeTruthy();
-    expect(screen.getByText("Scoped attendee")).toBeTruthy();
+    expect(screen.getAllByText("Scoped attendee")).toHaveLength(2);
     expect(screen.queryByText("Organizer-only reviewer")).toBeNull();
     expect(screen.queryByRole("link", {name: /book|checkout|sign in/iu})).toBeNull();
+  });
+
+  it("shows claim and unavailable-review states only when their capabilities allow it", () => {
+    const event = claimableExternalEvent();
+    render(
+      <EventDetailHeroSection appDownloadCtas={appDownloadCtas} event={event} />
+    );
+
+    expect(screen.getByRole("link", {name: "Claim this organizer listing"})
+      .getAttribute("href")).toBe(`/claim/?listing=${event.listing.id}`);
+    expect(screen.getByText("Event reviews are not available yet")).toBeTruthy();
+    expect(screen.queryByText("No event-specific reviews yet")).toBeNull();
   });
 });
 
@@ -147,5 +162,28 @@ function externalEvent(): EventDetailRecord {
     sourceLabel: "Luma",
     supply: "external",
     title: "External social run",
+  };
+}
+
+function claimableExternalEvent(): EventDetailRecord {
+  const event = externalEvent();
+  return {
+    ...event,
+    listing: {
+      ...event.listing,
+      capabilities: {
+        ...event.listing.capabilities,
+        claimRequest: {
+          state: "enabled",
+          reason: "Claim handoff is enabled for this fixture.",
+        },
+        publicReviews: {
+          targetState: "disabled",
+          readState: "disabled",
+          writeState: "disabled",
+          reason: "Review target is not ready for this fixture.",
+        },
+      },
+    },
   };
 }

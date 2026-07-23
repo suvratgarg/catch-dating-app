@@ -304,7 +304,13 @@ export const EventDetailCatch: Story = {
     catchComponent: {
       id: "route_event_detail",
       routeIds: ["event_detail_canonical"],
-      states: ["catch-native", "external-source", "event-reviews"],
+      states: [
+        "catch-native",
+        "external-source",
+        "event-reviews",
+        "desktop-ticket-rail",
+        "mobile-single-column",
+      ],
     },
   },
   render: () => <EventDetailRouteStory event={catchEventDetailFixture} />,

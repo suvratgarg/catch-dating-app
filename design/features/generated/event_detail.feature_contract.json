@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_detail.feature.json",
   "generatedFor": "2026-07-24",
   "sourceDigest": "sha256:02b67ce10a852696111604db53ab443c86ec59717c3b9d7730ee92abe733bbe8",
-  "resolvedDigest": "sha256:513a0b192643d481ebff23ce9159c530e2047c66ea95afaea1e27b8330b38ddb",
+  "resolvedDigest": "sha256:1dc2355420eeeef0e665b7d89e8158fe446c9eb4fdf68faf8b3915bf7c8e7abb",
   "feature": {
     "id": "feature.event_detail",
     "name": "Event Detail",
@@ -1905,7 +1905,9 @@
               "states": [
                 "catch-native",
                 "external-source",
-                "event-reviews"
+                "event-reviews",
+                "desktop-ticket-rail",
+                "mobile-single-column"
               ]
             }
           },
@@ -1922,7 +1924,10 @@
                 "catch-native",
                 "external-source",
                 "fact-grid",
-                "provenance"
+                "provenance",
+                "event-media",
+                "organizer-panel",
+                "review-preview"
               ]
             }
           },
@@ -1937,7 +1942,10 @@
               "exportName": "EventDetailHero",
               "states": [
                 "catch-native",
-                "external-source"
+                "external-source",
+                "desktop-ticket-rail",
+                "mobile-single-column",
+                "review-preview"
               ]
             }
           },

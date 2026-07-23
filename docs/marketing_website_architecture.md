@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.4.177
+version: 0.4.178
 updated: 2026-07-24
 owner: marketing_website
 status: active
@@ -358,7 +358,10 @@ The website is already split out of the old monolithic shell:
 - `website/src/features/events/**` owns the generated event-detail route,
   event projection normalization, and event-scoped review filtering. It
   composes organizer authority, review presentation, and app-download adapters
-  without introducing website booking, checkout, or sign-in state.
+  without introducing website booking, checkout, or sign-in state. The route
+  uses the shared event-detail primitives for a ticket plus organizer/action
+  rail at wide viewports and a single-column, app-aligned stack on mobile;
+  shared Catch tokens own its type, color, spacing, radius, and activity accent.
 
 The next refactor should focus on page and style decomposition, not another
 top-level framework rewrite. The largest current files are page or style

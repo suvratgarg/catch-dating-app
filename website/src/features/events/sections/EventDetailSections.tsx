@@ -6,8 +6,11 @@ import {
   EventDetailActionPanel,
   EventDetailFactGrid,
   EventDetailHeroLayout,
+  EventDetailMedia,
+  EventDetailOrganizerPanel,
   EventDetailProvenanceFacts,
   EventDetailProvenanceLayout,
+  EventDetailReviewPreview,
   EventDetailSection,
   EventDetailSourceLink,
   ReviewSignalLane,
@@ -15,8 +18,12 @@ import {
 import {SectionHeader} from "../../../shared/site";
 import {eventDetailCopy} from "../../../content/events";
 import {interpolateContent} from "../../../content/interpolate";
-import {StatusBadge} from "../../organizers/OrganizerIdentity";
+import {
+  ActivityMark,
+  StatusBadge,
+} from "../../organizers/OrganizerIdentity";
 import {organizerPolicyForListing} from "../../organizers/organizerPolicy";
+import {activityForKind} from "../../organizers/publicDiscovery";
 import {claimHrefForListing} from "../../organizers/routing";
 import {buildListingReviewSummary} from "../../reviews/reviewModel";
 import type {EventDetailRecord} from "../eventDetailModel";
@@ -31,15 +38,68 @@ export function EventDetailHeroSection({
   const isExternal = event.supply === "external";
   const listingPath = event.listing.path;
   const organizerPolicy = organizerPolicyForListing(event.listing);
+  const activity = activityForKind(event.activityKind);
+  const reviewSummary = buildListingReviewSummary(
+    event.listing,
+    event.eventReviews
+  );
+  const previewReview = reviewSummary.verifiedReviews[0];
+  const organizerMetrics = [
+    event.listing.metrics?.rating
+      ? {
+        label: eventDetailCopy.hero.organizerMetrics.rating,
+        value: event.listing.metrics.rating.toFixed(1),
+      }
+      : null,
+    event.listing.metrics?.reviewCount
+      ? {
+        label: eventDetailCopy.hero.organizerMetrics.reviews,
+        value: String(event.listing.metrics.reviewCount),
+      }
+      : null,
+    event.listing.metrics?.memberCount
+      ? {
+        label: eventDetailCopy.hero.organizerMetrics.members,
+        value: String(event.listing.metrics.memberCount),
+      }
+      : null,
+  ].filter((item): item is Exclude<typeof item, null> => item !== null);
   return (
     <EventDetailHeroLayout
-      badge={<StatusBadge listing={event.listing} />}
+      activityToken={activity.token}
       eyebrow={isExternal
-        ? eventDetailCopy.hero.externalEyebrow
+        ? interpolateContent(eventDetailCopy.hero.externalEyebrow, {
+          source: event.sourceLabel,
+        })
         : eventDetailCopy.hero.catchEyebrow}
-      organizerLine={interpolateContent(eventDetailCopy.hero.byOrganizer, {
-        organizer: event.listing.name,
-      })}
+      facts={[
+        {label: eventDetailCopy.hero.facts.when, value: event.date},
+        {label: eventDetailCopy.hero.facts.where, value: event.location},
+        {label: eventDetailCopy.hero.facts.format, value: activity.label},
+      ]}
+      media={<EventDetailMedia
+        alt={eventDetailCopy.hero.media.alt}
+        src={eventDetailCopy.hero.media.src}
+        srcSet={eventDetailCopy.hero.media.mobileSrcSet}
+      />}
+      metaLine={`${activity.label} · ${event.location}`}
+      reviewPreview={<EventDetailReviewPreview
+        body={previewReview
+          ? previewReview.comment
+          : organizerPolicy.canReadPublicReviews
+            ? eventDetailCopy.reviews.emptyBody
+            : eventDetailCopy.reviews.unavailableBody}
+        eyebrow={eventDetailCopy.reviews.eyebrow}
+        meta={previewReview
+          ? `${previewReview.rating.toFixed(1)} / 5 · ${previewReview.reviewerName}`
+          : undefined}
+        title={previewReview
+          ? previewReview.reviewerName
+          : organizerPolicy.canReadPublicReviews
+            ? eventDetailCopy.reviews.emptyTitle
+            : eventDetailCopy.reviews.unavailableTitle}
+      />}
+      planLabel={eventDetailCopy.hero.planLabel}
       summary={event.summary}
       supplyLabel={isExternal
         ? interpolateContent(eventDetailCopy.hero.externalSupply, {
@@ -48,13 +108,38 @@ export function EventDetailHeroSection({
         : eventDetailCopy.hero.catchSupply}
       title={event.title}
     >
+      <EventDetailOrganizerPanel
+        activity={<ActivityMark listing={event.listing} size="lg" />}
+        badge={<StatusBadge listing={event.listing} />}
+        claimAction={organizerPolicy.canRequestClaim ? (
+          <ButtonLink
+            href={claimHrefForListing(event.listing)}
+            variant="ghost"
+          >
+            {eventDetailCopy.hero.claimAction}
+          </ButtonLink>
+        ) : undefined}
+        eyebrow={eventDetailCopy.hero.hostedByLabel}
+        location={[event.listing.city, event.listing.country]
+          .filter(Boolean)
+          .join(", ")}
+        metrics={organizerMetrics}
+        name={event.listing.name}
+        primaryAction={(
+          <ButtonLink href={listingPath} variant="ghost">
+            {eventDetailCopy.nav.organizerAction}
+          </ButtonLink>
+        )}
+      />
       <EventDetailActionPanel
         date={event.date}
         description={isExternal
           ? eventDetailCopy.hero.externalActionBody
           : eventDetailCopy.hero.catchActionBody}
         title={isExternal
-          ? eventDetailCopy.hero.externalActionHeading
+          ? interpolateContent(eventDetailCopy.hero.externalActionHeading, {
+            source: event.sourceLabel,
+          })
           : eventDetailCopy.hero.catchActionHeading}
       >
         {isExternal && event.sourceHref ? (
@@ -67,32 +152,14 @@ export function EventDetailHeroSection({
             >
               {eventDetailCopy.hero.officialSourceAction}
             </ButtonLink>
-            <ButtonLink href={listingPath} variant="ghost">
-              {eventDetailCopy.hero.organizerAction}
-            </ButtonLink>
           </ActionGroup>
         ) : (
-          <>
-            <AppDownloadCtaGroup
-              {...appDownloadCtas}
-              reveal={false}
-              variant="compact"
-            />
-            <ActionGroup variant="flow">
-              <ButtonLink href={listingPath} variant="ghost">
-                {eventDetailCopy.hero.organizerAction}
-              </ButtonLink>
-            </ActionGroup>
-          </>
+          <AppDownloadCtaGroup
+            {...appDownloadCtas}
+            reveal={false}
+            variant="compact"
+          />
         )}
-        {organizerPolicy.canRequestClaim ? (
-          <ButtonLink
-            href={claimHrefForListing(event.listing)}
-            variant="ghost"
-          >
-            {eventDetailCopy.hero.claimAction}
-          </ButtonLink>
-        ) : null}
       </EventDetailActionPanel>
     </EventDetailHeroLayout>
   );
@@ -208,6 +275,8 @@ export function EventDetailReviewsSection({
     event.listing,
     event.eventReviews
   );
+  const reviewsUnavailable = !organizerPolicyForListing(event.listing)
+    .canReadPublicReviews;
   return (
     <EventDetailSection
       id="reviews"
@@ -223,8 +292,12 @@ export function EventDetailReviewsSection({
       />
       <ReviewSignalLane
         body={eventDetailCopy.reviews.laneBody}
-        emptyBody={eventDetailCopy.reviews.emptyBody}
-        emptyTitle={eventDetailCopy.reviews.emptyTitle}
+        emptyBody={reviewsUnavailable
+          ? eventDetailCopy.reviews.unavailableBody
+          : eventDetailCopy.reviews.emptyBody}
+        emptyTitle={reviewsUnavailable
+          ? eventDetailCopy.reviews.unavailableTitle
+          : eventDetailCopy.reviews.emptyTitle}
         reviews={reviewSummary.verifiedReviews}
         title={eventDetailCopy.reviews.laneTitle}
       />
