@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.5.12
-updated: 2026-07-23
+version: 1.5.13
+updated: 2026-07-24
 owner: recursive_audit_loop
 status: active
 ---
@@ -188,11 +188,12 @@ must be able to mount a new router without retaining navigation state.
 
 App-shell integration suites use keyed `ProviderScope` roots, bounded frame
 advancement, and deterministic repository/provider overrides. They run through
-the wrappers in `test/integration/` for headless CI; the original
-`integration_test/` files remain the optional native-device entrypoints. Do not
-use `pumpAndSettle` or process event-queue drains while the mounted app owns
-timers. Do not add an asynchronous localization delegate when the requested
-behavior is already the component's nonlocalized fallback.
+the wrappers in `test/integration/` for the complete headless CI pass; the
+original `integration_test/` files provide a bounded hosted native smoke and
+remain the explicit entrypoints for a full selected-device pass. Do not use
+`pumpAndSettle` or process event-queue drains while the mounted app owns timers.
+Do not add an asynchronous localization delegate when the requested behavior is
+already the component's nonlocalized fallback.
 
 <!-- exhibit-freshness: ARCH-ROUTER-LIFECYCLE-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
 
@@ -1095,6 +1096,13 @@ Use stable, low-cardinality keys: `app_env`, `app_version`, platform, Firebase
 project alias, `error_family`, stable code, severity, retryable, expected,
 service, feature, action, resource, and presentation context. Do not log PII.
 
+`ErrorLogger` owns a replaceable console sink. Production construction keeps the
+normal debug console and Crashlytics path. Expected-error tests and deterministic
+captures may use `ErrorLogger.silent(...)` or inject a recording `consoleSink`
+so asserted failures do not flood the runner with stack traces. Silencing the
+console must never disable an explicitly supplied crash reporter or turn an
+unexpected production failure into a swallowed error.
+
 ### Privacy And Safety
 
 - Never show raw `FirebaseException.message`, stack traces, callable details, or
@@ -1963,6 +1971,20 @@ Test at the boundary that owns the behavior:
 Brittle tests are design feedback. If a test needs private finders, timing
 hacks, or duplicate-text counts, inspect whether the production seam should be
 more explicit.
+
+Flutter LCOV is a visibility artifact, not an aggregate percentage gate.
+`tool/test/flutter_coverage_report.mjs` reports observed handwritten lines by
+top-level feature and explicitly excludes generated/config code from its
+headline. Files never loaded by the test process are not represented, so use
+the report to choose risk-based additions rather than to claim repository-wide
+completeness.
+
+New or split Flutter test specs stay at or below 1,200 lines. Reviewed legacy
+specs above the ceiling are exact, decrease-only debt in
+`tool/test/flutter_test_size_baseline.json`; reductions refresh the baseline,
+growth fails. Split by coherent behavior group and keep shared fixtures in the
+same Dart test library when that avoids duplication without hiding source-level
+failure locations.
 
 ## Enforcement And Overrides
 

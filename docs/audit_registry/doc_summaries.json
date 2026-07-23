@@ -1,6 +1,6 @@
 {
-  "version": "4.5.165",
-  "updated": "2026-07-23",
+  "version": "4.5.166",
+  "updated": "2026-07-24",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -23,16 +23,6 @@
       ],
       "skip_when": [
         "Only source refactoring is needed"
-      ]
-    },
-    "docs/README.md": {
-      "purpose": "Canonical documentation index, lifecycle policy, source-of-truth routing, and the reviewed 99-file feature-contract retirement boundary with 11 retirement-ready documents.",
-      "read_when": [
-        "Adding, deleting, consolidating, or routing documentation",
-        "Checking whether a feature spec or completed handoff is retirement-ready"
-      ],
-      "skip_when": [
-        "A narrow code-only change does not affect documentation ownership"
       ]
     },
     "AGENTS.md": {
@@ -104,7 +94,7 @@
       ]
     },
     "docs/app_architecture.md": {
-      "purpose": "Canonical Flutter app architecture spec for dependency-direction seams, generated Riverpod provider topology and reviewed relationship candidates, Firebase/domain boundaries, mutation-cardinality grain, pending request snapshot integrity, app-role boundaries, feature/layer/screen/controller/repository/widget ownership, exhaustive screen-chrome role contracts, async state boundaries, error-surface taxonomy, UI layout/scroll/sizing, routing/navigation constants, realtime stream lifecycle, reference implementation exhibits, exhibit-freshness markers, and enforcement policy.",
+      "purpose": "Canonical Flutter app architecture spec for dependency-direction seams, generated Riverpod provider topology and reviewed relationship candidates, Firebase/domain boundaries, mutation-cardinality grain, pending request snapshot integrity, app-role boundaries, feature/layer/screen/controller/repository/widget ownership, exhaustive screen-chrome role contracts, async state boundaries, error-surface taxonomy, logging test seams, coverage and test-spec maintainability, UI layout/scroll/sizing, routing/navigation constants, realtime stream lifecycle, reference implementation exhibits, exhibit-freshness markers, and enforcement policy.",
       "read_when": [
         "Changing code organization under lib/",
         "Starting or continuing an architecture migration rollout",
@@ -121,7 +111,8 @@
         "Changing keepAlive, autoDispose, or retained-tab stream ownership",
         "Adding architecture lints, scanners, or overrides",
         "Changing route literal scanners, frontend error scanner ratchets, or rule enforcement metadata for Flutter app architecture",
-        "Changing dependency-direction controller-seam carve-outs, Firebase/domain target policy, mutation-cardinality grain, or architecture exhibit freshness checks"
+        "Changing dependency-direction controller-seam carve-outs, Firebase/domain target policy, mutation-cardinality grain, or architecture exhibit freshness checks",
+        "Changing Flutter coverage reporting, expected-error test logging, or test-spec maintainability enforcement"
       ],
       "skip_when": [
         "Only changing a backend data contract already covered by data_contracts.md",
@@ -397,7 +388,7 @@
       ]
     },
     "docs/release_operations.md": {
-      "purpose": "Consolidated CI, release, deploy, environment, app-shell integration, smoke-test, store-readiness, host TestFlight, and release-evidence runbook.",
+      "purpose": "Consolidated CI, release, deploy, environment, Flutter coverage evidence, app-shell headless/native integration, smoke-test, store-readiness, host TestFlight, and release-evidence runbook.",
       "read_when": [
         "Changing GitHub Actions release gates",
         "Deploying Firebase/Functions/rules/storage changes",
@@ -523,28 +514,6 @@
         "Only changing unrelated Flutter architecture or backend contracts"
       ]
     },
-    "design/features/feature_contract.schema.json": {
-      "purpose": "Executable schema for one semantic feature identity with runtime-native Flutter, marketing, and Admin surface projections, compact exact state matrices, explicit registered-preview evidence mappings, exact Admin callable request/response validation strength, action owners, known implementation gaps, outcomes, and evidence requirements.",
-      "read_when": [
-        "Creating or changing a feature contract",
-        "Extending one feature identity across another runtime",
-        "Changing action, scenario, outcome, or evidence semantics"
-      ],
-      "skip_when": [
-        "Only consuming already-generated feature contract output"
-      ]
-    },
-    "design/features/feature_coverage.json": {
-      "purpose": "Exhaustive migration ledger for registered Flutter screens, marketing routes, and admin route components, including planned shared identities, grouped projections, and justified exclusions.",
-      "read_when": [
-        "Choosing the next feature-contract migration",
-        "Checking whole-repository feature coverage",
-        "Adding or removing a registered Flutter or React authority"
-      ],
-      "skip_when": [
-        "Working inside one already-contracted feature without changing authority coverage"
-      ]
-    },
     "docs/design_parity/comprehensive_todo.md": {
       "purpose": "Canonical and only human-readable execution checklist for remaining design-parity work; JSON ledgers own detailed evidence and counts.",
       "read_when": [
@@ -667,6 +636,38 @@
       "skip_when": [
         "Working only on shared admin primitives",
         "Changing website-only component coverage"
+      ]
+    },
+    "docs/README.md": {
+      "purpose": "Canonical documentation index, lifecycle policy, source-of-truth routing, and the reviewed 99-file feature-contract retirement boundary with 11 retirement-ready documents.",
+      "read_when": [
+        "Adding, deleting, consolidating, or routing documentation",
+        "Checking whether a feature spec or completed handoff is retirement-ready"
+      ],
+      "skip_when": [
+        "A narrow code-only change does not affect documentation ownership"
+      ]
+    },
+    "design/features/feature_contract.schema.json": {
+      "purpose": "Executable schema for one semantic feature identity with runtime-native Flutter, marketing, and Admin surface projections, compact exact state matrices, explicit registered-preview evidence mappings, exact Admin callable request/response validation strength, action owners, known implementation gaps, outcomes, and evidence requirements.",
+      "read_when": [
+        "Creating or changing a feature contract",
+        "Extending one feature identity across another runtime",
+        "Changing action, scenario, outcome, or evidence semantics"
+      ],
+      "skip_when": [
+        "Only consuming already-generated feature contract output"
+      ]
+    },
+    "design/features/feature_coverage.json": {
+      "purpose": "Exhaustive migration ledger for registered Flutter screens, marketing routes, and admin route components, including planned shared identities, grouped projections, and justified exclusions.",
+      "read_when": [
+        "Choosing the next feature-contract migration",
+        "Checking whole-repository feature coverage",
+        "Adding or removing a registered Flutter or React authority"
+      ],
+      "skip_when": [
+        "Working inside one already-contracted feature without changing authority coverage"
       ]
     }
   }

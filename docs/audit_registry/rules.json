@@ -95,6 +95,44 @@
         }
       ]
     },
+    "FLUTTER-TEST-MAINTAINABILITY-001": {
+      "title": "Keep Flutter test specs bounded while coverage remains honest evidence",
+      "status": "active",
+      "kind": "scar",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.5.5"
+      },
+      "applies_to": [
+        "test/**/*_test.dart",
+        "test/**/*_tests.dart",
+        "integration_test/**/*_test.dart",
+        "integration_test/**/*_tests.dart",
+        "tool/test/**",
+        ".github/workflows/flutter-ci.yml"
+      ],
+      "instruction": "Keep new and split Flutter test specs at or below 1,200 lines, reject growth in every reviewed oversized legacy spec, and use feature-level LCOV as visibility rather than an unsupported aggregate percentage threshold.",
+      "sunset_when": [
+        "A stronger structure-aware test-maintainability gate replaces line-based spec bounds without losing decrease-only legacy tracking"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "test:flutter-test-size",
+          "stage": "scanner-ratchet",
+          "docAnchor": "TESTS.md#coverage-and-test-maintainability",
+          "baseline": "tool/test/flutter_test_size_baseline.json"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/app_architecture.md#testing-expectations"
+        }
+      ]
+    },
     "EXHIBIT-FRESHNESS-001": {
       "title": "Keep architecture exhibits fresh against their tracker anchors",
       "status": "active",
@@ -536,7 +574,9 @@
         "lib/core/widgets/catch_toggle.dart",
         "lib/**/presentation/**",
         "test/core/forms/contract_alignment_test.dart",
-        "tool/contracts/generate_flutter_form_contract_inventory.test.mjs"
+        "tool/contracts/generate_flutter_form_contract_inventory.test.mjs",
+        "lib/user_profile/presentation/**",
+        "lib/hosts/presentation/**"
       ],
       "instruction": "Every editable canonical control and form-descriptor instance in the Consumer and Catch Host apps must bind generated CatchContractFieldConstraints instead of repeating length, required, pattern, collection, enum, format, or numeric constraints. Typed choices must declare their wire-value serializer, range controls must bind both endpoints, and genuinely non-editable disclosures must carry an explicit audited exemption.",
       "sunset_when": [
@@ -1472,43 +1512,6 @@
         {
           "stage": "manual",
           "docAnchor": "docs/audit_registry/rules.json"
-        }
-      ]
-    },
-    "PENDING-SNAPSHOT-001": {
-      "title": "Protect the submitted request snapshot while an operation is pending",
-      "status": "active",
-      "kind": "contract",
-      "introduced_in": {
-        "doc_id": "app_architecture",
-        "version": "1.5.5"
-      },
-      "applies_to": [
-        "lib/**/presentation/**",
-        "website/src/features/**",
-        "admin/src/features/**",
-        "design/features/**",
-        "design/screens/catch.screens.json",
-        "test/**"
-      ],
-      "instruction": "Every pending user operation must declare one integrity policy. Frozen snapshots disable request-defining inputs, conflicting actions, mutation-reset callbacks, and unsafe route exits until settlement. Versioned snapshots require immutable generations plus stale-result rejection or cancellation and tests. Independently keyed concurrency requires distinct typed scope keys and separate pending/error surfaces. A loading button alone is not sufficient; controllers must also deduplicate duplicate dispatches or use an equivalent idempotency boundary.",
-      "sunset_when": [
-        "Never; pending request integrity remains a permanent cross-runtime contract"
-      ],
-      "sunset_signals": [
-        {
-          "type": "manual"
-        }
-      ],
-      "enforcement": [
-        {
-          "tool": "design:feature-contracts",
-          "stage": "scanner-gate",
-          "docAnchor": "docs/design_parity/README.md#feature-contract-compiler"
-        },
-        {
-          "stage": "manual",
-          "docAnchor": "docs/app_architecture.md#exhibit-arch-pending-snapshot-001-pending-request-snapshot-integrity"
         }
       ]
     },
@@ -3186,8 +3189,45 @@
           "docAnchor": "docs/web_surface_architecture.md#current-stack"
         }
       ]
+    },
+    "PENDING-SNAPSHOT-001": {
+      "title": "Protect the submitted request snapshot while an operation is pending",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.5.5"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "website/src/features/**",
+        "admin/src/features/**",
+        "design/features/**",
+        "design/screens/catch.screens.json",
+        "test/**"
+      ],
+      "instruction": "Every pending user operation must declare one integrity policy. Frozen snapshots disable request-defining inputs, conflicting actions, mutation-reset callbacks, and unsafe route exits until settlement. Versioned snapshots require immutable generations plus stale-result rejection or cancellation and tests. Independently keyed concurrency requires distinct typed scope keys and separate pending/error surfaces. A loading button alone is not sufficient; controllers must also deduplicate duplicate dispatches or use an equivalent idempotency boundary.",
+      "sunset_when": [
+        "Never; pending request integrity remains a permanent cross-runtime contract"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "design:feature-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/design_parity/README.md#feature-contract-compiler"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/app_architecture.md#exhibit-arch-pending-snapshot-001-pending-request-snapshot-integrity"
+        }
+      ]
     }
   },
-  "version": "2.8.4",
-  "updated": "2026-07-23"
+  "version": "2.8.5",
+  "updated": "2026-07-24"
 }

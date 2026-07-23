@@ -1,5 +1,5 @@
 {
-  "version": "1.5.59",
+  "version": "1.5.60",
   "updated": "2026-07-24",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
@@ -1793,12 +1793,22 @@
           "role": "exact macOS golden and deterministic headless app-shell CI lane",
           "status": "aligned",
           "lastReviewedPass": "root-cohesion-integration-20260719"
+        },
+        {
+          "path": ".github/workflows/visual-integration-ci.yml",
+          "role": "exact macOS golden, deterministic headless app-shell, and bounded hosted native smoke CI lane",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-flutter-test-hardening"
         }
       ],
       "exceptions": [
         {
           "path": "integration_test/**",
           "reason": "original suites remain optional native-device entrypoints when APP_SHELL_NATIVE_INTEGRATION is explicitly enabled"
+        },
+        {
+          "path": "integration_test/**",
+          "reason": "the smoke suite runs through the hosted native macOS binding; the remaining suites stay explicit selected-device entrypoints when APP_SHELL_NATIVE_INTEGRATION is enabled"
         }
       ],
       "requiredBackPropagation": "When the app root, GoRouter ownership, public route classification, integration binding, app-shell navigation, localization delegates, or mounted async behavior changes, update the public-surface matrix and harness, shared integration harness, headless wrappers, native runner, CI lane, regression ledger, and focused shell/golden coverage together.",
@@ -1809,7 +1819,9 @@
         "flutter test --concurrency=1 test/goldens",
         "flutter test --concurrency=1 test/core/catch_primitives_test.dart --plain-name 'CatchTabBar keeps four animated destinations within 390px'",
         "node tool/architecture/check_app_architecture_exhibits.mjs",
-        "node tool/agent/check_agent_readiness.mjs"
+        "node tool/agent/check_agent_readiness.mjs",
+        "bash tool/test_app_shell_integration.sh --self-test",
+        "bash tool/test_app_shell_integration.sh macos smoke"
       ],
       "notes": "Every consumer route is owned by exactly one public-surface matrix class even when guest tab chrome hides it. Consumer integration cases cover consumer-owned routes only. Host creation and attendance remain in host surface/controller tests; Dashboard recommendations remain owned by Explore."
     },

@@ -60,9 +60,31 @@ with `--check`. This graph is the canonical cross-root integration map.
 - `marketing/`: app-derived website media manifests and screenshot sync checks.
 - `platform/`: Apple/platform configuration helpers.
 - `store/`: deterministic App Store and Google Play asset generators.
+- `test/`: Flutter coverage reporting and test-maintainability ratchets.
 - `ui_capture/`: route inventory, capture coverage, and deterministic screen capture tooling.
 - `remote_ops_manifest.json`: consolidated index for Firebase, App Check, data,
   CI/CD, and App Store/TestFlight operational surfaces.
+
+## Flutter Test Evidence
+
+`tool/test/flutter_coverage_report.mjs` converts `coverage/lcov.info` into
+handwritten-code and top-level-feature visibility. It deliberately has no
+aggregate percentage threshold and calls out that uninstrumented files do not
+appear in LCOV.
+
+`tool/test/check_flutter_test_size.mjs` keeps new and split Flutter test specs
+at or below 1,200 lines. The exact reviewed legacy debt lives in
+`tool/test/flutter_test_size_baseline.json`; growth and stale reductions both
+fail so every improvement is ratcheted. `tool/test_inventory.mjs --check`
+remains the cross-surface filename inventory, and the agent readiness gate also
+performs that exact freshness proof.
+
+```sh
+node --test tool/test/flutter_coverage_report.test.mjs
+node tool/test/flutter_coverage_report.mjs --lcov coverage/lcov.info
+node tool/test/check_flutter_test_size.mjs --check
+node tool/test_inventory.mjs --check
+```
 
 ## Analyzer-Backed UI Reports
 

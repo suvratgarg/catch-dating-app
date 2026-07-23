@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 572,
+  "total": 574,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -403,7 +403,7 @@
       ]
     },
     "tooling": {
-      "count": 136,
+      "count": 138,
       "files": [
         "tool/admin/generate_admin_action_catalog.test.mjs",
         "tool/agent/check_agent_readiness.test.mjs",
@@ -538,6 +538,8 @@
         "tool/platform/verify_ios_release_identity.test.mjs",
         "tool/repository_hygiene.test.mjs",
         "tool/run.test.mjs",
+        "tool/test/check_flutter_test_size.test.mjs",
+        "tool/test/flutter_coverage_report.test.mjs",
         "tool/test_inventory.test.mjs",
         "tool/web/react_dependency_graph.test.mjs",
         "tool/widget_dedupe/test/fingerprint_extractor_test.dart"

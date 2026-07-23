@@ -1,5 +1,5 @@
 {
-  "version": 88,
+  "version": 89,
   "updated": "2026-07-24",
   "owner": "agent_operating_model",
   "entries": [
@@ -2802,6 +2802,33 @@
         "docs/design_parity/README.md"
       ],
       "notes": "Public HTTP and callable schemas are boundary contracts, not substitutes for authorization, business rules, Firestore ownership, or feature-state evidence. Structural validators remain valid but must stay labeled structural until a dedicated field-level schema exists."
+    },
+    {
+      "id": "REG-FLUTTER-TEST-EVIDENCE-DRIFT-001",
+      "title": "Flutter test confidence is overstated by stale inventory, invisible coverage, or growing monolithic specs",
+      "status": "active",
+      "applies_to": [
+        "test/**",
+        "integration_test/**",
+        "tool/test/**",
+        "tool/test_inventory.mjs",
+        "tool/agent/check_agent_readiness.mjs",
+        "docs/audit_registry/test_inventory.json",
+        ".github/workflows/flutter-ci.yml",
+        "TESTS.md"
+      ],
+      "symptom": "A green suite can still hide newly untracked tests, lose feature-level coverage evidence, or let already monolithic Flutter specs grow until failures are difficult to localize.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/test/flutter_coverage_report.test.mjs tool/test/check_flutter_test_size.test.mjs tool/test_inventory.test.mjs tool/agent/check_agent_readiness.test.mjs && node tool/test/check_flutter_test_size.mjs --check && node tool/test_inventory.mjs --check && node tool/agent/check_agent_readiness.mjs",
+        "guardEvidence": "known-bad LCOV, oversized-spec, and stale-inventory fixtures fail closed; the exact legacy size baseline cannot grow; readiness independently proves the generated test inventory matches the current Git-backed surface"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/agent_operating_model.md",
+        "TESTS.md"
+      ],
+      "notes": "Coverage remains visibility-only rather than a global percentage gate. The dashboard full-home-shell group is the reference physical decomposition, and all remaining oversized specs are exact decrease-only debt."
     }
   ]
 }
