@@ -78,6 +78,17 @@
 - Pass 4: compared target and implementation in paired frames and inspected the
   lower facts, provenance, and review sections.
 
-No P0, P1, or P2 design, behavior, accessibility, or responsive findings remain.
+No P0, P1, or P2 behavior, accessibility, or responsive findings remain.
 
-**Final result: passed.**
+## Open visual-fidelity follow-up
+
+- Owner feedback on 2026-07-24: the implementation still has material
+  fit-and-finish drift from the selected proposal. Revisit the desktop content
+  width, image-to-content proportions, title scale and wrapping, fact-strip
+  density, organizer/action rail hierarchy, card finishing, and above-the-fold
+  plan/review visibility in a dedicated comparison pass.
+- Keep this open while the Organizer Detail direction is selected. The two
+  public-detail surfaces should receive one shared finishing pass so their
+  visual grammar converges instead of being polished independently.
+
+**Final result: functional and responsive QA passed; visual-fidelity follow-up open.**
