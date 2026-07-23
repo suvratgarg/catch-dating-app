@@ -38,7 +38,7 @@ if (selfTest) {
   if (renderAdmin(changed) === renderAdmin(catalog)) {
     throw new Error("Admin action catalog self-test did not detect drift.");
   }
-  console.log("Admin action catalog generator self-test passed.");
+  console.log("Admin action catalog generator self-test detected drift.");
   process.exit(0);
 }
 

@@ -49,6 +49,8 @@ options when specific functions need higher or lower limits.
 | `requestAccountDeletion` | `src/safety/` | Anonymize + delete user data |
 | `reportUser` | `src/safety/` | File a safety report |
 | `listSuvbotDemoActions` / `requestSuvbotDemoOperation` | `src/demoOps/` | Demo-data operation catalogue and request surface |
+| `adminListActionExecutions` | `src/admin/adminActionExecutions.ts` | Admin bounded execution-receipt register for catalog-driven action monitoring |
+| `adminRecordActionExecution` | `src/admin/adminActionExecutions.ts` | Admin append-only bounded execution receipt for catalog-driven actions |
 | `adminGetAdminUserRoles` | `src/admin/adminUserRoles.ts` | Admin-owner exact Firebase Auth uid role lookup |
 | `adminListAdminRoleAssignments` | `src/admin/adminUserRoles.ts` | Admin-owner bounded role assignment register |
 | `adminSetAdminUserRoles` | `src/admin/adminUserRoles.ts` | Admin-owner audited Firebase Auth custom-claim assignment |
