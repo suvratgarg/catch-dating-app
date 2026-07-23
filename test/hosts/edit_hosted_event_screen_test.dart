@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -11,6 +14,7 @@ import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_view_model.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
@@ -145,6 +149,7 @@ void main() {
       l10n: _l10n,
       saveError: error,
     );
+    expect(pending.canEdit, isFalse);
     expect(pending.footer.isEnabled, isFalse);
     expect(pending.footer.isLoading, isTrue);
     expect(pending.saveError, same(error));
@@ -559,6 +564,69 @@ void main() {
     );
     expect(repository.updatedEvent!.startingPointLat, 19.076);
     expect(repository.updatedEvent!.startingPointLng, 72.8777);
+  });
+
+  testWidgets('freezes route and form controls while event save is pending', (
+    tester,
+  ) async {
+    _setTallViewport(tester);
+    final start = DateTime(2026, 5, 22, 7);
+    final event = buildEvent(
+      id: 'hosted-event',
+      startTime: start,
+      endTime: start.add(const Duration(hours: 1)),
+      startingPointLat: 19.076,
+      startingPointLng: 72.8777,
+    );
+
+    await pumpEventsTestApp(
+      tester,
+      EditHostedEventScreen(
+        club: buildClub(id: event.clubId),
+        event: event,
+        now: () => DateTime(2026, 5, 21, 9),
+      ),
+      signedInUid: 'host-1',
+    );
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(EditHostedEventScreen)),
+    );
+    HostEventBookingController.updateHostedEventMutation.reset(container);
+    final pendingSave = Completer<void>();
+    final request = HostEventBookingController.updateHostedEventMutation.run(
+      container,
+      (_) => pendingSave.future,
+    );
+    await tester.pump();
+
+    expect(
+      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).leadingType,
+      CatchTopBarLeading.none,
+    );
+    expect(
+      tester
+          .widget<CatchField>(
+            find.byKey(CreateEventFormKeys.meetingPoint, skipOffstage: false),
+          )
+          .enabled,
+      isFalse,
+    );
+    final saveButton = tester.widget<CatchButton>(
+      find.byKey(EditHostedEventKeys.saveButton),
+    );
+    expect(saveButton.onPressed, isNull);
+    expect(saveButton.isLoading, isTrue);
+    expect(
+      tester
+          .widgetList<PopScope<dynamic>>(find.byType(PopScope))
+          .any((scope) => !scope.canPop),
+      isTrue,
+    );
+
+    pendingSave.complete();
+    await request;
+    await tester.pump();
+    HostEventBookingController.updateHostedEventMutation.reset(container);
   });
 
   testWidgets('locks schedule controls when the event has activity', (

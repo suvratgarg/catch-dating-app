@@ -1,9 +1,9 @@
 ---
 doc_id: event_detail_composition_tracker
 version: 0.1.3
-updated: 2026-07-12
+updated: 2026-07-23
 owner: product_design_parity
-status: active
+status: retirement_ready
 ---
 
 # Event Detail Composition Tracker

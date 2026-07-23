@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.4.171
-updated: 2026-07-22
+version: 0.4.176
+updated: 2026-07-23
 owner: marketing_website
 status: active
 ---
@@ -47,6 +47,38 @@ The website is already split out of the old monolithic shell:
   ownership, and Storybook coverage status. It is validated bidirectionally
   against referenced Storybook `parameters.catchComponent` declarations by
   `tool/marketing/check_website_components.mjs`.
+- `design/features/feature_coverage.json` classifies every marketing route as a
+  contracted, grouped, planned, or explicitly excluded feature projection.
+  Shared product outcomes may target a cross-runtime identity such as
+  `feature.explore` or `feature.organizer_detail`; route metadata, static output,
+  React components, actions, and evidence remain owned by the website runtime.
+  Organizer Search is the first live projection: the feature compiler resolves
+  its three real route states, controller actions, route/section Storybook
+  previews, focused controller tests, and public listing projection schema into
+  the same generated `feature.explore` artifact as Flutter Explore. The removed
+  `saved-organizers` route state belongs to organizer detail storage and was not
+  an Organizer Search state.
+- All stateful marketing route authorities are now compiled. Marketing Home
+  owns public discovery handoffs, store availability, Host routing, and member
+  waitlist conversion. Host Acquisition owns the interactive operating
+  previews and the five-stage Host application. Organizer Claim binds both the
+  canonical workspace and dynamic lookup route so known, not-found, pending,
+  already-claimed, and unavailable authority states remain exact. Privacy,
+  Terms, Help, and 404 stay explicitly excluded as static/fallback surfaces;
+  the legacy organizer-listing route stays grouped because its difference is
+  static canonical/noindex policy rather than an independent workflow.
+- Marketing mutations use the frozen-snapshot variant of
+  `ARCH-PENDING-SNAPSHOT-001`. Waitlist, Host application, canonical Claim,
+  and listing Claim register one active request, disable their complete native
+  form boundary, guard controller entry points against same-tick duplicates,
+  and temporarily block sibling forms, shared route links, and browser exit.
+  This keeps the visible draft, auth session, step, and submitted payload
+  identical until the request settles.
+- Marketing Home and Host Acquisition bind their remote lead mutation to the
+  shared `contracts/http/join_waitlist_request.schema.json` and
+  `join_waitlist_response.schema.json` contracts. The generator projects the
+  same types into website and Functions code, while both boundaries reject
+  malformed payloads and responses.
 - `website/src/generated/hostListings.json` is production-only and excludes
   `dataOrigin: "catchDemo"` plus organizer-intake and seed records that do not
   resolve to a `live` city in the active market pack. Multi-market organizer
@@ -316,8 +348,10 @@ The website is already split out of the old monolithic shell:
   external row, and edited event form state remain local to the controller.
   Listing public reviews are the first website reference migration for remote
   reads, mutations, cache updates, and invalidation. Claim request submission,
-  waitlist submission, and host application submission now follow the same
-  website mutation convention.
+  waitlist submission, and host application submission follow the same website
+  mutation convention and frozen-snapshot pending boundary. TanStack mutation
+  state drives the visible disabled boundary; a synchronous controller ref
+  prevents a duplicate before React can publish that state.
 - Feature folders exist under `website/src/features/**`.
 
 The next refactor should focus on page and style decomposition, not another

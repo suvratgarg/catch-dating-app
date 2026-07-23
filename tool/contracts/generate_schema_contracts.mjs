@@ -1141,6 +1141,185 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/resetMatchUnreadCountClientWrite.ts",
   },
+  {
+    name: "AdminGetOverviewCallablePayload",
+    source: "callables/admin_get_overview_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminGetOverviewCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminGetOverviewCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminGetOverviewCallableResponse",
+    source: "callable_responses/admin_get_overview_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminGetOverviewCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminGetOverviewCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminDecideAccessApplicationCallablePayload",
+    source:
+      "callables/admin_decide_access_application_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminDecideAccessApplicationCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminDecideAccessApplicationCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminDecideAccessApplicationCallableResponse",
+    source:
+      "callable_responses/" +
+      "admin_decide_access_application_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminDecideAccessApplicationCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminDecideAccessApplicationCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminSetAdminUserRolesCallablePayload",
+    source: "callables/admin_set_admin_user_roles_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminSetAdminUserRolesCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminSetAdminUserRolesCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminSetAdminUserRolesCallableResponse",
+    source:
+      "callable_responses/admin_set_admin_user_roles_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminSetAdminUserRolesCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminSetAdminUserRolesCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminDecideSafetyTriageItemCallablePayload",
+    source:
+      "callables/admin_decide_safety_triage_item_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminDecideSafetyTriageItemCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminDecideSafetyTriageItemCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminDecideSafetyTriageItemCallableResponse",
+    source:
+      "callable_responses/" +
+      "admin_decide_safety_triage_item_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminDecideSafetyTriageItemCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminDecideSafetyTriageItemCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminAssignSafetyTriageItemCallablePayload",
+    source:
+      "callables/admin_assign_safety_triage_item_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminAssignSafetyTriageItemCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminAssignSafetyTriageItemCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminAssignSafetyTriageItemCallableResponse",
+    source:
+      "callable_responses/" +
+      "admin_assign_safety_triage_item_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminAssignSafetyTriageItemCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminAssignSafetyTriageItemCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminCreateMarketingContentDraftCallablePayload",
+    source:
+      "callables/admin_create_marketing_content_draft_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminCreateMarketingContentDraftCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminCreateMarketingContentDraftCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminCreateMarketingContentDraftCallableResponse",
+    source:
+      "callable_responses/" +
+      "admin_create_marketing_content_draft_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminCreateMarketingContentDraftCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminCreateMarketingContentDraftCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminRecordMarketingReviewDecisionCallablePayload",
+    source:
+      "callables/" +
+      "admin_record_marketing_review_decision_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminRecordMarketingReviewDecisionCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminRecordMarketingReviewDecisionCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminRecordMarketingReviewDecisionCallableResponse",
+    source:
+      "callable_responses/" +
+      "admin_record_marketing_review_decision_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminRecordMarketingReviewDecisionCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminRecordMarketingReviewDecisionCallableResponse.ts",
+    ],
+  },
+  {
+    name: "JoinWaitlistHTTPRequest",
+    source: "http/join_waitlist_request.schema.json",
+    typeOutput: "functions/src/shared/generated/joinWaitlistHttpRequest.ts",
+    additionalTypeOutputs: [
+      "website/src/shared/contracts/generated/joinWaitlistHttpRequest.ts",
+    ],
+  },
+  {
+    name: "JoinWaitlistHTTPResponse",
+    source: "http/join_waitlist_response.schema.json",
+    typeOutput: "functions/src/shared/generated/joinWaitlistHttpResponse.ts",
+    additionalTypeOutputs: [
+      "website/src/shared/contracts/generated/joinWaitlistHttpResponse.ts",
+    ],
+  },
 ];
 
 const FIRESTORE_ADMIN_EMBEDDED_SPECS = [
@@ -1418,6 +1597,13 @@ async function main() {
     renderToolValidators()
   );
   addTextOutput(
+    "website/src/shared/contracts/generated/joinWaitlistSchemas.ts",
+    renderWebsiteJoinWaitlistSchemas({
+      requestSchema: bundledSchemas.get("JoinWaitlistHTTPRequest"),
+      responseSchema: bundledSchemas.get("JoinWaitlistHTTPResponse"),
+    })
+  );
+  addTextOutput(
     "lib/core/schema_contracts/generated/profile_schema_contracts.g.dart",
     renderDartContracts({
       profileCatalog,
@@ -1558,10 +1744,13 @@ async function addTypeOutput(spec, schema) {
   let types = await compileTs(schema, spec.name);
   types = normalizeExternalTypeReferences(spec.name, types);
   const imports = tsTypeImports(spec.name, types);
-  addTextOutput(
+  const content = `${tsGeneratedHeader()}${imports}${types.trim()}\n`;
+  for (const output of [
     spec.typeOutput,
-    `${tsGeneratedHeader()}${imports}${types.trim()}\n`
-  );
+    ...(spec.additionalTypeOutputs ?? []),
+  ]) {
+    addTextOutput(output, content);
+  }
 }
 
 function compileTs(schema, name) {
@@ -1958,6 +2147,16 @@ export function assertValidSchemaPayload(validator, payload, label) {
   const details = schemaErrorMessages(validator).join("; ");
   throw new Error(\`\${label} failed schema validation: \${details}\`);
 }
+`;
+}
+
+function renderWebsiteJoinWaitlistSchemas({requestSchema, responseSchema}) {
+  return `${tsGeneratedHeader()}` +
+`export const joinWaitlistRequestSchema: Record<string, unknown> =
+  ${jsonForTs(requestSchema)};
+
+export const joinWaitlistResponseSchema: Record<string, unknown> =
+  ${jsonForTs(responseSchema)};
 `;
 }
 

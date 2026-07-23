@@ -54,7 +54,7 @@ final class CreateClubDraftControllerProvider
 }
 
 String _$createClubDraftControllerHash() =>
-    r'b8be906c89e5f188ceb40eea114db588747a5bd1';
+    r'91d7dd6534e7ca877eddefc95eed5c0f51fd3990';
 
 /// **Pattern A: Action controller + static Mutations**
 ///

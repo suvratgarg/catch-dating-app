@@ -40,6 +40,8 @@ function runGate() {
     "node tool/design/check_comprehensive_todo_summary.mjs --check",
     "node tool/design/check_screen_coverage.mjs --check --summary",
     "node tool/design/check_screen_contracts.mjs --check --summary",
+    "node tool/design/check_feature_coverage.mjs --check",
+    "node tool/design/build_feature_contracts.mjs --check",
     "node tool/design/check_screen_top_bar_contracts.mjs --check",
     "node tool/design/check_widgetbook_contract_refs.mjs --check",
     "node tool/design/check_widgetbook_coverage.mjs --check",
@@ -91,6 +93,7 @@ coverage, pattern-family decisions, Figma/Claude sync drift, quantitative
 report drift, role-derived Widgetbook obligations, seeded dedupe probes, route
 inventory, capture coverage, screen coverage, screen
 contracts, screen-chrome ownership, state matrix, comprehensive todo summaries,
-and Widgetbook references. Advisory checks print
-known screen-contract migration debt without failing the gate.`);
+exhaustive cross-surface feature coverage, feature orchestration contracts, and
+Widgetbook references. Advisory checks print known screen-contract migration
+debt without failing the gate.`);
 }

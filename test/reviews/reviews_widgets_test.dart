@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -10,6 +14,8 @@ import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
 import 'package:catch_dating_app/reviews/shared/review_keys.dart';
 import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
+import 'package:catch_dating_app/reviews/shared/star_rating.dart';
+import 'package:catch_dating_app/reviews/shared/write_review_controller.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -189,6 +195,56 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(repository.deletedReviewId, 'review-1');
+  });
+
+  testWidgets('pending review write freezes draft and sheet dismissal', (
+    tester,
+  ) async {
+    final repository = _FakeReviewsRepository();
+    final user = buildUser(name: 'Asha');
+    final container = _reviewsContainer(repository);
+    addTearDown(container.dispose);
+
+    await _pumpReviewsSection(
+      tester,
+      container: container,
+      user: user,
+      reviews: const [],
+    );
+    await tester.tap(find.byKey(ReviewKeys.writeReviewButton));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.byKey(ReviewKeys.ratingStar(4)));
+
+    final pendingWrite = Completer<void>();
+    final request = WriteReviewController.submitMutation.run(
+      container,
+      (_) => pendingWrite.future,
+    );
+    await tester.pump();
+
+    expect(
+      tester.widget<StarRatingPicker>(find.byType(StarRatingPicker)).enabled,
+      isFalse,
+    );
+    expect(
+      tester.widget<CatchField>(find.byKey(ReviewKeys.commentField)).enabled,
+      isFalse,
+    );
+    final submitButton = tester.widget<CatchButton>(
+      find.byKey(ReviewKeys.submitReviewButton),
+    );
+    expect(submitButton.onPressed, isNull);
+    expect(submitButton.isLoading, isTrue);
+    expect(
+      tester
+          .widgetList<PopScope<dynamic>>(find.byType(PopScope))
+          .any((scope) => !scope.canPop),
+      isTrue,
+    );
+
+    pendingWrite.complete();
+    await request;
+    await tester.pump();
   });
 
   testWidgets('review cards display host responses', (tester) async {
@@ -483,6 +539,7 @@ class _FakeReviewsRepository extends Fake implements ReviewsRepository {
   }) : reviewsByUserStream = reviewsByUserStream ?? Stream.value(reviewsByUser);
 
   final Stream<List<Review>> reviewsByUserStream;
+  Completer<void>? writeCompleter;
   Review? addedReview;
   String? deletedReviewId;
   String? responseReviewId;
@@ -494,6 +551,8 @@ class _FakeReviewsRepository extends Fake implements ReviewsRepository {
 
   @override
   Future<void> addReview(Review review) async {
+    final pendingWrite = writeCompleter;
+    if (pendingWrite != null) await pendingWrite.future;
     addedReview = review;
   }
 

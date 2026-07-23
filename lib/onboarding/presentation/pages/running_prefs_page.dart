@@ -85,6 +85,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
   }
 
   void _submit() {
+    if (ref.read(OnboardingController.completeMutation).isPending) return;
     final intent = _stateFor(
       isCompleting: false,
       l10n: context.l10n,
@@ -117,11 +118,17 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
       state: state,
       callbacks: OnboardingRunningPrefsCallbacks(
         onPaceChanged: (next) {
-          OnboardingController.completeMutation.reset(ref);
+          if (mutation.isPending) return;
+          ref
+              .read(onboardingControllerProvider.notifier)
+              .clearCompleteErrorIfIdle();
           setState(() => _paceRange = next);
         },
         onDistancesChanged: (next) {
-          OnboardingController.completeMutation.reset(ref);
+          if (mutation.isPending) return;
+          ref
+              .read(onboardingControllerProvider.notifier)
+              .clearCompleteErrorIfIdle();
           setState(() {
             _distances
               ..clear()
@@ -129,7 +136,10 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
           });
         },
         onReasonsChanged: (next) {
-          OnboardingController.completeMutation.reset(ref);
+          if (mutation.isPending) return;
+          ref
+              .read(onboardingControllerProvider.notifier)
+              .clearCompleteErrorIfIdle();
           setState(() {
             _reasons
               ..clear()
@@ -137,7 +147,10 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
           });
         },
         onRunTimesChanged: (next) {
-          OnboardingController.completeMutation.reset(ref);
+          if (mutation.isPending) return;
+          ref
+              .read(onboardingControllerProvider.notifier)
+              .clearCompleteErrorIfIdle();
           setState(() {
             _runTimes
               ..clear()
@@ -236,7 +249,9 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                         min: 240,
                         max: 540,
                         divisions: 20,
-                        onChanged: callbacks.onPaceChanged,
+                        onChanged: state.requestControlsEnabled
+                            ? callbacks.onPaceChanged
+                            : null,
                       ),
                       gapH4,
                       Row(
@@ -277,8 +292,11 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                   values: PreferredDistance.values,
                   itemLabel: (value) => value.label,
                   selected: state.distances,
-                  onSelectionChanged: callbacks.onDistancesChanged,
+                  onSelectionChanged: state.requestControlsEnabled
+                      ? callbacks.onDistancesChanged
+                      : null,
                   multi: true,
+                  enabled: state.requestControlsEnabled,
                   initiallyOpen: true,
                   isOptional: true,
                 ),
@@ -296,8 +314,11 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                   values: RunReason.values,
                   itemLabel: (value) => value.label,
                   selected: state.reasons,
-                  onSelectionChanged: callbacks.onReasonsChanged,
+                  onSelectionChanged: state.requestControlsEnabled
+                      ? callbacks.onReasonsChanged
+                      : null,
                   multi: true,
+                  enabled: state.requestControlsEnabled,
                   initiallyOpen: true,
                   isOptional: true,
                 ),
@@ -315,8 +336,11 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                   values: PreferredRunTime.values,
                   itemLabel: (value) => value.label,
                   selected: state.runTimes,
-                  onSelectionChanged: callbacks.onRunTimesChanged,
+                  onSelectionChanged: state.requestControlsEnabled
+                      ? callbacks.onRunTimesChanged
+                      : null,
                   multi: true,
+                  enabled: state.requestControlsEnabled,
                   initiallyOpen: true,
                   isOptional: true,
                 ),

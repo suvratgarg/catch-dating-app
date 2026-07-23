@@ -46,6 +46,7 @@ import 'package:catch_dating_app/core/widgets/catch_option_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -5316,6 +5317,61 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets(
+      'CreateClubScreen freezes route and draft controls while submit is pending',
+      (tester) async {
+        SharedPreferences.setMockInitialValues({});
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
+        final pendingSubmit = Completer<void>();
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: const CreateClubScreen(restoreSavedDraft: false),
+            ),
+          ),
+        );
+        await tester.pump();
+
+        final request = CreateClubController.submitMutation.run(
+          container,
+          (_) => pendingSubmit.future,
+        );
+        await tester.pump();
+
+        expect(
+          tester.widget<CatchStepHeader>(find.byType(CatchStepHeader)).showBack,
+          isFalse,
+        );
+        expect(
+          tester
+              .widget<CatchField>(
+                find.byWidgetPredicate(
+                  (widget) =>
+                      widget is CatchField &&
+                      widget.title == 'Organizer name',
+                ),
+              )
+              .enabled,
+          isFalse,
+        );
+        expect(find.text('Save draft'), findsNothing);
+        expect(
+          tester
+              .widgetList<PopScope<dynamic>>(find.byType(PopScope))
+              .any((scope) => !scope.canPop),
+          isTrue,
+        );
+
+        pendingSubmit.complete();
+        await request;
+        await tester.pump();
+      },
+    );
 
     testWidgets(
       'CreateClubScreen validates and pops after a successful submit',

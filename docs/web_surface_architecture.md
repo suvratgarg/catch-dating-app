@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.9.0
+version: 0.9.1
 updated: 2026-07-23
 owner: web_platform
 status: active
@@ -23,6 +23,65 @@ Keep the Flutter web app separate from the public website. The Flutter web app i
 the consumer app surface and should continue sharing mobile app code. The
 marketing and admin surfaces are web-native products and should use the same
 React + TypeScript stack where practical.
+
+## Cross-Surface Feature Identity
+
+`design/features/feature_coverage.json` is the exhaustive migration boundary
+across the Flutter screen registry, marketing route registry, and route-kind
+entries in the admin component registry. It can assign one semantic feature id
+to multiple runtime projections when the user outcome is genuinely shared—for
+example organizer discovery or organizer detail. It does not make Flutter and
+React share a UI runtime: each projection keeps its own screen/route authority,
+components, action symbols, evidence, and implementation tests.
+
+`feature.explore` is the first compiled cross-runtime contract: its consumer
+projection binds `screen.explore.discovery`, while its marketing projection
+binds the `organizer_search` route and the URL-owned
+`useOrganizerDirectoryController`. The projections share feature identity and
+product intent, not UI code or state vocabulary.
+
+The marketing migration now compiles every stateful public route. Marketing
+Home and Host Acquisition remain website-only identities because conversion
+and acquisition are different user goals from consumer or Host app operation.
+Organizer Claim owns both `/claim/` and the dynamic lookup projection because
+they use the same controller and outcome but retain different exact route-state
+inventories. The legacy organizer listing remains grouped under canonical
+Organizer Detail because it adds static canonical/noindex behavior, not another
+interactive workflow. Static legal/support and 404 routes remain explicit
+exclusions rather than synthetic zero-action product features.
+
+The Admin migration compiles all 14 registered route authorities across 12
+feature identities. Access Review, Role Management, Data Quality, Event
+Publishing, Finance Operations, Growth KPI, Marketing Operations, Organizer
+Publishing, Safety Triage, and User Analytics each use one route projection.
+Intake and Overview each use two because Organizer Intake and the live Overview
+controller wrapper own independently reviewable states and actions. No Admin
+authority remains planned or grouped.
+
+Marketing Home and Host Acquisition now share the versioned
+`contracts/http/join_waitlist_{request,response}.schema.json` boundary with the
+Function. The schema generator emits website and Functions types plus runtime
+schema projections; browser responses and Functions requests/responses are
+validated, including the legacy `runner` role compatibility case. Pending
+request snapshots remain a separate, closed concern for Marketing: waitlist,
+Host application, and Claim use the frozen-snapshot policy from
+`ARCH-PENDING-SNAPSHOT-001`, including request-defining controls, steps, auth,
+sibling forms, shared route links, and browser exit.
+
+Admin applies a whole-console frozen-snapshot policy to operator writes and
+submitted analytics queries. `AdminPendingOperationProvider` grants one
+synchronous exclusive lease across all controllers; while held, the complete
+workspace, Admin navigation, shared links, and browser unload are blocked.
+Controllers capture their request payload before dispatch and release the lease
+in `finally`, so visible inputs cannot drift from the audited request and peer
+operations cannot overlap. The compiled Admin action matrices disable every
+surface action in those pending states. This deliberately trades small amounts
+of operator throughput for deterministic receipts and unambiguous recovery.
+
+Run `node tool/design/check_feature_coverage.mjs --check` after adding or
+removing any registered product surface. A planned decision is migration debt,
+not completed contract coverage; a grouped decision is a secondary route
+projection, not a shortcut for combining unrelated workflows.
 
 ## Organizer Entity Boundary
 
@@ -382,6 +441,18 @@ committed typed registry under `admin/src/generated/validators/`. Callables
 without a dedicated JSON contract receive an explicit top-level object
 validator and remain listed separately from strict schema coverage; they must
 not disappear from the registry or be described as strictly validated.
+
+Each Admin feature surface binds its callable dependencies through
+`bindings.runtimeContracts`. Request and response directions are declared
+independently as `strict_schema` or `structural_object`, and the feature
+compiler compares those declarations with the generated registry. This rejects
+both overclaiming a structural validator as field-level proof and retaining a
+stale structural declaration after a strict schema lands.
+The highest-risk access decision, role mutation, safety assignment/decision,
+marketing draft/decision, and shared overview request/response directions now
+use dedicated strict schemas. Other callables remain explicitly structural
+where no field-level contract exists, so the registry still reports their
+weaker boundary honestly.
 
 Run `node tool/run.mjs check web:admin-callable-validators`. Admin
 `pretypecheck` runs the same drift check, so a callable or schema change cannot

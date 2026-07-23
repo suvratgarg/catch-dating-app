@@ -16,6 +16,8 @@ class CreateClubDraftController extends _$CreateClubDraftController {
   static final saveDraftMutation = Mutation<ClubDraft?>();
   static final deleteDraftMutation = Mutation<void>();
 
+  Future<ClubDraft?>? _saveDraftInFlight;
+
   @override
   void build() {}
 
@@ -24,7 +26,21 @@ class CreateClubDraftController extends _$CreateClubDraftController {
     return ref.read(clubDraftRepositoryProvider).loadDraft(userId: uid);
   }
 
-  Future<ClubDraft?> saveDraft(ClubDraft draft) async {
+  Future<ClubDraft?> saveDraft(ClubDraft draft) {
+    final existingRequest = _saveDraftInFlight;
+    if (existingRequest != null) return existingRequest;
+
+    late final Future<ClubDraft?> trackedRequest;
+    trackedRequest = _saveDraft(draft).whenComplete(() {
+      if (identical(_saveDraftInFlight, trackedRequest)) {
+        _saveDraftInFlight = null;
+      }
+    });
+    _saveDraftInFlight = trackedRequest;
+    return trackedRequest;
+  }
+
+  Future<ClubDraft?> _saveDraft(ClubDraft draft) async {
     if (draft.isEmpty) return null;
 
     final uid = requireSignedInUid(ref, action: 'save organizer draft');

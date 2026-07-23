@@ -1037,6 +1037,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Get directions';
 
   @override
+  String get eventsEventLocationMapDirectionsOpenFailed =>
+      'Could not open directions. Please try again.';
+
+  @override
   String get eventsEventMapScreenTitleNoMappedEventsYet =>
       'No mapped events yet';
 
@@ -2637,7 +2641,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paymentsPaymentHistoryScreenLabelGetHelpWithThis =>
-      'Get help with this booking';
+      'How to get help with this booking';
 
   @override
   String get publicProfilePublicProfileScreenTooltipProfileActions =>
@@ -2871,6 +2875,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get safetySettingsScreenBodyContactUs => 'Contact us';
+
+  @override
+  String get safetySettingsScreenExternalLinkOpenFailed =>
+      'Could not open that link. Please try again.';
 
   @override
   String get safetySettingsScreenTitleTerms => 'Terms';
@@ -11294,7 +11302,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paymentsHistorySupportMessage =>
-      'Please contact Catch support for assistance with this booking.';
+      'Contact Catch support and include the payment and order IDs shown on this receipt.';
 
   @override
   String get safetyAccountUnblockedMessage => 'Account unblocked.';

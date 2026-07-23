@@ -10,12 +10,14 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
@@ -84,16 +86,30 @@ class PaymentHistoryListController extends ConsumerWidget {
       loadingBuilder: (_) => const PaymentHistorySkeleton(),
       errorContext: AppErrorContext.payments,
       onRetry: () => ref.invalidate(watchPaymentsForUserProvider(userId)),
-      builder: (context, paymentHistory) =>
-          PaymentHistoryList(paymentHistory: paymentHistory),
+      builder: (context, paymentHistory) => PaymentHistoryList(
+        paymentHistory: paymentHistory,
+        onRetryEventTitles: () {
+          final eventIds = {
+            for (final row in paymentHistory.rows) row.payment.eventId,
+          };
+          if (eventIds.isNotEmpty) {
+            ref.invalidate(watchEventsByIdsProvider(EventsByIdQuery(eventIds)));
+          }
+        },
+      ),
     );
   }
 }
 
 class PaymentHistoryList extends StatelessWidget {
-  const PaymentHistoryList({super.key, required this.paymentHistory});
+  const PaymentHistoryList({
+    super.key,
+    required this.paymentHistory,
+    this.onRetryEventTitles,
+  });
 
   final PaymentHistoryViewModel paymentHistory;
+  final VoidCallback? onRetryEventTitles;
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +126,19 @@ class PaymentHistoryList extends StatelessWidget {
           ),
         ),
       );
+    }
+
+    switch (paymentHistory.eventTitleStatus) {
+      case PaymentEventTitleStatus.loading:
+        return const PaymentHistorySkeleton();
+      case PaymentEventTitleStatus.error:
+        return CatchErrorState.fromError(
+          paymentHistory.eventTitleError!,
+          context: AppErrorContext.event,
+          onRetry: onRetryEventTitles,
+        );
+      case PaymentEventTitleStatus.ready:
+        break;
     }
 
     return ListView.separated(
@@ -221,7 +250,9 @@ class PaymentHistoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final payment = row.payment;
-    final eventTitle = row.eventTitle;
+    final eventTitle =
+        row.eventTitle ??
+        context.l10n.coreAppErrorMessageVisiblecopyEventUnavailable;
     final statusPresentation = paymentStatusPresentation(payment, context.l10n);
 
     return Semantics(

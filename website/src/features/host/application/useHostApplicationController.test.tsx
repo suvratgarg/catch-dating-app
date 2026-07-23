@@ -24,6 +24,7 @@ function wrapper() {
 
 describe("useHostApplicationController", () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     createMarketingEventId.mockReturnValue("host_lead_event-1");
     waitlistAnalyticsPayload.mockReturnValue({attribution: null, analytics: {eventId: "host_lead_event-1"}});
   });
@@ -39,7 +40,10 @@ describe("useHostApplicationController", () => {
   });
 
   it("submits a complete operating packet and reports success", async () => {
-    const fetchMock = vi.fn().mockResolvedValue({ok: true, json: async () => ({alreadyJoined: false})});
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ok: true, alreadyJoined: false}),
+    });
     vi.stubGlobal("fetch", fetchMock);
     const {result} = renderHook(() => useHostApplicationController(), {wrapper: wrapper()});
 
@@ -66,5 +70,59 @@ describe("useHostApplicationController", () => {
         nextEventName: "Sunday Dinner",
       },
     });
+  });
+
+  it("freezes the submitted draft and step until the request settles", async () => {
+    let resolveFetch!: (value: {
+      ok: boolean;
+      json: () => Promise<{alreadyJoined: boolean}>;
+    }) => void;
+    const fetchMock = vi.fn().mockReturnValue(new Promise((resolve) => {
+      resolveFetch = resolve;
+    }));
+    vi.stubGlobal("fetch", fetchMock);
+    const {result} = renderHook(
+      () => useHostApplicationController(),
+      {wrapper: wrapper()}
+    );
+
+    act(() => {
+      result.current.updateDraft("fullName", "A Host");
+      result.current.updateDraft("email", "host@example.com");
+      result.current.updateDraft("organizationName", "Sunday Club");
+      result.current.updateDraft("communityLink", "https://example.com");
+      result.current.updateDraft("nextEventName", "Sunday Dinner");
+      result.current.updateDraft("eventLocation", "Delhi");
+      result.current.updateDraft("hostGoals", "Create thoughtful introductions");
+      result.current.goToStep("review");
+    });
+    const event = {preventDefault: vi.fn()} as never;
+    let firstSubmit!: Promise<void>;
+
+    act(() => {
+      firstSubmit = result.current.handleSubmit(event);
+    });
+    await waitFor(() => expect(result.current.isSubmitting).toBe(true));
+
+    act(() => {
+      result.current.updateDraft("fullName", "Changed Host");
+      result.current.toggleDraftList("formats", "Changed format");
+      result.current.goBack();
+      result.current.goToStep("profile");
+      void result.current.handleSubmit(event);
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(result.current.draft.fullName).toBe("A Host");
+    expect(result.current.draft.formats).not.toContain("Changed format");
+    expect(result.current.step).toBe("review");
+    expect(trackMarketingEvent).toHaveBeenCalledTimes(1);
+
+    resolveFetch({
+      ok: true,
+      json: async () => ({ok: true, alreadyJoined: false}),
+    });
+    await act(async () => firstSubmit);
+    expect(result.current.submitted).toBe(true);
   });
 });

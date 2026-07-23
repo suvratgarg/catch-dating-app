@@ -1,0 +1,313 @@
+{
+  "$schema": "./feature_contract.schema.json",
+  "version": 2,
+  "updated": "2026-07-23",
+  "id": "feature.catches_hub",
+  "name": "Catches Hub",
+  "owner": "swipes",
+  "status": "pilot",
+  "description": "Orchestrates the signed-in consumer hub for active post-event Catch windows, event-scoped Catches entry, recap navigation, and empty-state recovery.",
+  "surfaces": [
+    {
+      "id": "consumer_flutter",
+      "runtime": "flutter",
+      "authority": {
+        "registry": "flutter_screens",
+        "id": "screen.catches.hub"
+      },
+      "actionScope": {
+        "included": "Navigation from active Catch-window rows plus the no-active-window recovery route.",
+        "excluded": [
+          "Authentication recovery remains shell-owned; event loading and open-window filtering remain provider/controller responsibilities."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "widgetbook/lib/catches/catches_use_cases.dart"
+        ],
+        "actionOwners": [
+          {
+            "id": "hub_route",
+            "language": "dart",
+            "file": "lib/swipes/presentation/swipe_hub_screen.dart",
+            "symbol": "SwipeHubScreen"
+          }
+        ],
+        "componentContracts": [
+          "catch.badge",
+          "catch.button",
+          "catch.surface"
+        ],
+        "dataContracts": [
+          "contracts/firestore/event_participations.schema.json",
+          "contracts/firestore/events.schema.json"
+        ]
+      },
+      "dimensions": {
+        "load": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "loading",
+            "error",
+            "offline"
+          ]
+        },
+        "access": {
+          "default": "signed_in",
+          "values": [
+            "signed_in",
+            "signed_out"
+          ]
+        },
+        "content": {
+          "default": "active_windows",
+          "values": [
+            "active_windows",
+            "empty"
+          ]
+        },
+        "accessibility": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "text_scale_2",
+            "reduced_motion"
+          ]
+        },
+        "theme": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "dark_component",
+            "light_dark"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "open_catch_window",
+          "owner": "hub_route",
+          "codeValue": "onOpenCatch",
+          "cardinality": "domain_bounded",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId",
+            "windowClosesAt"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.catches.event"
+              }
+            }
+          ],
+          "description": "Opens the event-scoped Catch deck for an attended event whose Catch window is still open."
+        },
+        {
+          "id": "open_event_recap",
+          "owner": "hub_route",
+          "codeValue": "onOpenRecap",
+          "cardinality": "domain_bounded",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.event.recap"
+              }
+            }
+          ],
+          "description": "Opens the recap for one attended event represented by the hub row."
+        },
+        {
+          "id": "find_event",
+          "owner": "hub_route",
+          "codeValue": "onFindEvent",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "routeInstanceId",
+            "emptyStateVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.explore.discovery"
+              }
+            }
+          ],
+          "description": "Leaves the empty hub for Explore once for the current empty-state presentation."
+        }
+      ],
+      "stateIds": [
+        "uid_loading",
+        "uid_error",
+        "signed_out_hidden",
+        "attended_events_loading",
+        "attended_events_error",
+        "active_windows",
+        "no_active_windows",
+        "dark_intro_cta",
+        "offline",
+        "text_scale_2",
+        "reduced_motion",
+        "light_dark"
+      ],
+      "scenarioDefaults": {
+        "dimensions": {},
+        "actionCases": [
+          {
+            "id": "default"
+          }
+        ]
+      },
+      "scenarioOverrides": {
+        "uid_loading": {
+          "dimensions": {
+            "load": "loading"
+          }
+        },
+        "uid_error": {
+          "dimensions": {
+            "load": "error"
+          }
+        },
+        "signed_out_hidden": {
+          "dimensions": {
+            "access": "signed_out"
+          }
+        },
+        "attended_events_loading": {
+          "dimensions": {
+            "load": "loading"
+          }
+        },
+        "attended_events_error": {
+          "dimensions": {
+            "load": "error"
+          }
+        },
+        "active_windows": {
+          "actionCases": [
+            {
+              "id": "active",
+              "enabledActions": [
+                "open_catch_window",
+                "open_event_recap"
+              ]
+            }
+          ]
+        },
+        "no_active_windows": {
+          "dimensions": {
+            "content": "empty"
+          },
+          "actionCases": [
+            {
+              "id": "empty_recovery",
+              "enabledActions": [
+                "find_event"
+              ]
+            }
+          ]
+        },
+        "dark_intro_cta": {
+          "dimensions": {
+            "theme": "dark_component"
+          },
+          "actionCases": [
+            {
+              "id": "active",
+              "enabledActions": [
+                "open_catch_window",
+                "open_event_recap"
+              ]
+            }
+          ]
+        },
+        "offline": {
+          "dimensions": {
+            "load": "offline"
+          }
+        },
+        "text_scale_2": {
+          "dimensions": {
+            "accessibility": "text_scale_2"
+          },
+          "actionCases": [
+            {
+              "id": "active",
+              "enabledActions": [
+                "open_catch_window",
+                "open_event_recap"
+              ]
+            }
+          ]
+        },
+        "reduced_motion": {
+          "dimensions": {
+            "accessibility": "reduced_motion"
+          },
+          "actionCases": [
+            {
+              "id": "active",
+              "enabledActions": [
+                "open_catch_window",
+                "open_event_recap"
+              ]
+            }
+          ]
+        },
+        "light_dark": {
+          "dimensions": {
+            "theme": "light_dark"
+          },
+          "actionCases": [
+            {
+              "id": "active",
+              "enabledActions": [
+                "open_catch_window",
+                "open_event_recap"
+              ]
+            }
+          ]
+        }
+      },
+      "requiredEvidence": {
+        "captures": true,
+        "previews": true,
+        "tests": true
+      },
+      "evidenceExceptions": [
+        {
+          "stateIds": [
+            "uid_loading",
+            "uid_error",
+            "signed_out_hidden",
+            "attended_events_loading",
+            "attended_events_error",
+            "no_active_windows",
+            "offline",
+            "text_scale_2",
+            "reduced_motion",
+            "light_dark"
+          ],
+          "evidence": [
+            "tests"
+          ],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "These registered states have deterministic captures and Widgetbook evidence but no focused state-level automated test recorded by the screen authority yet."
+        }
+      ]
+    }
+  ]
+}

@@ -18,6 +18,8 @@ part 'filters_controller.g.dart';
 class FiltersController extends _$FiltersController {
   static final saveFiltersMutation = Mutation<void>();
 
+  Future<void>? _saveInFlight;
+
   @override
   void build() {}
 
@@ -26,7 +28,32 @@ class FiltersController extends _$FiltersController {
     required int minAgePreference,
     required int maxAgePreference,
     required List<String> interestedInGenders,
-  }) async {
+  }) {
+    final existingRequest = _saveInFlight;
+    if (existingRequest != null) return existingRequest;
+
+    late final Future<void> trackedRequest;
+    trackedRequest =
+        _saveFilters(
+          uid: uid,
+          minAgePreference: minAgePreference,
+          maxAgePreference: maxAgePreference,
+          interestedInGenders: interestedInGenders,
+        ).whenComplete(() {
+          if (identical(_saveInFlight, trackedRequest)) {
+            _saveInFlight = null;
+          }
+        });
+    _saveInFlight = trackedRequest;
+    return trackedRequest;
+  }
+
+  Future<void> _saveFilters({
+    required String uid,
+    required int minAgePreference,
+    required int maxAgePreference,
+    required List<String> interestedInGenders,
+  }) {
     return withBackendErrorContext(
       () async {
         await ref

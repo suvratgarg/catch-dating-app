@@ -6,6 +6,7 @@ import {DataTable, StoreButton} from "./actions2";
 import {LiveStatus, defaultAppDownloadPendingStatus} from "./feedback";
 import {StatStrip, actionGroupClassNames, buttonClassName, classNames} from "./foundation";
 import {UiLabel} from "./layout";
+import {usePendingRequestNavigationBlocked} from "../../pendingRequest";
 
 export type ButtonVariant = "primary" | "ghost" | "ghost-light";
 
@@ -109,7 +110,9 @@ export function Button({
 export function ButtonLink({
   children,
   className,
+  onClick,
   size,
+  tabIndex,
   variant,
   ...props
 }: AnchorHTMLAttributes<HTMLAnchorElement> & {
@@ -117,8 +120,23 @@ export function ButtonLink({
   size?: ButtonSize;
   variant?: ButtonVariant;
 }) {
+  const navigationBlocked = usePendingRequestNavigationBlocked();
   return (
-    <a className={buttonClassName({className, size, variant})} {...props}>
+    <a
+      {...props}
+      aria-disabled={navigationBlocked || undefined}
+      className={buttonClassName({className, size, variant})}
+      data-pending-navigation-blocked={navigationBlocked || undefined}
+      onClick={(event) => {
+        if (navigationBlocked) {
+          event.preventDefault();
+          event.stopPropagation();
+          return;
+        }
+        onClick?.(event);
+      }}
+      tabIndex={navigationBlocked ? -1 : tabIndex}
+    >
       {children}
     </a>
   );
@@ -199,12 +217,29 @@ export function PlainButton({
 export function PlainLink({
   children,
   className,
+  onClick,
+  tabIndex,
   ...props
 }: AnchorHTMLAttributes<HTMLAnchorElement> & {
   children: ReactNode;
 }) {
+  const navigationBlocked = usePendingRequestNavigationBlocked();
   return (
-    <a className={className} {...props}>
+    <a
+      {...props}
+      aria-disabled={navigationBlocked || undefined}
+      className={className}
+      data-pending-navigation-blocked={navigationBlocked || undefined}
+      onClick={(event) => {
+        if (navigationBlocked) {
+          event.preventDefault();
+          event.stopPropagation();
+          return;
+        }
+        onClick?.(event);
+      }}
+      tabIndex={navigationBlocked ? -1 : tabIndex}
+    >
       {children}
     </a>
   );

@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.5.5
+version: 1.5.12
 updated: 2026-07-23
 owner: recursive_audit_loop
 status: active
@@ -35,7 +35,7 @@ This spec consolidates and normalizes guidance from:
   widget catalog, and private-helper remediation.
 - `docs/audit_registry/rules.json`: active enforceable rules such as
   `ASYNC-UI-001`, `CONTROLLER-BOUNDARY-001`, `PROVIDER-SEAM-001`,
-  `ERROR-UI-001`, `MUTATION-ERROR-SURFACE-001`,
+  `ERROR-UI-001`, `MUTATION-ERROR-SURFACE-001`, `PENDING-SNAPSHOT-001`,
   `EXTERNAL-SIDE-EFFECT-001`, `UI-LINT-001`, and
   `WIDGET-CATALOG-001`.
 
@@ -832,6 +832,15 @@ The typed state should still expose explicit loading/error/data semantics. Do
 not hide `AsyncError` by calling `requireValue` or by converting failures into
 empty states.
 
+When one screen composes a secondary async dependency, loading, failure,
+resolved absence, and resolved partial data remain separate product truths.
+Translate the dependency to a typed state before applying fallbacks; never use
+`async.asData?.value ?? emptyValue` when that would make an unresolved or failed
+lookup look like a successful empty result. Optional enrichment may keep the
+primary content alive with a section skeleton or inline retry, while
+comprehension-critical enrichment may gate its section, but only a successfully
+resolved missing record may use missing-resource copy or a domain fallback.
+
 ## Error Handling Contract
 
 This section is the current error architecture contract. Historical migration
@@ -1182,6 +1191,109 @@ rendered multiple times on one surface must key mutation state per target with
 equality, not concatenated strings. Use
 `lib/hosts/presentation/host_event_booking_controller.dart` as the reference
 implementation.
+
+### Exhibit ARCH-PENDING-SNAPSHOT-001: Pending Request Snapshot Integrity
+
+<!-- exhibit-freshness: ARCH-PENDING-SNAPSHOT-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+
+Reference files:
+
+- `lib/auth/presentation/auth_controller.dart`
+- `lib/auth/presentation/auth_presentation_state.dart`
+- `lib/auth/presentation/phone_page.dart`
+- `test/auth/presentation/auth_controller_test.dart`
+- `test/auth/presentation/auth_screen_test.dart`
+
+An in-flight request owns the exact input snapshot that was submitted. A
+loading button is feedback, not request integrity. Every control that can
+change, dismiss, invalidate, or overlap that snapshot must follow one explicit
+policy until the request settles:
+
+| Policy | Product behavior | Required proof |
+|---|---|---|
+| Frozen snapshot | Disable request-defining fields, conflicting actions, mutation-reset callbacks, and unsafe route exits. This is the default for one form submission or route-level action. | Widget or integration coverage proves the controls cannot change the request and a duplicate trigger does not start a second operation. |
+| Versioned snapshot | Keep editing available, but attach an immutable generation/version to the submitted request and ignore or cancel stale results. The UI must explain whether edits are queued or belong to a later submit. | Controller tests prove stale success and failure cannot overwrite the current draft or advance the current flow. |
+| Independently keyed concurrency | Permit parallel work only when each operation has a distinct typed scope key and its own pending/error surface. | Tests prove one key cannot disable, overwrite, clear, or surface failure for a sibling key. |
+
+Do not let an input callback call `Mutation.reset` while its operation is
+pending. A controller-level in-flight future or idempotency key must
+deduplicate duplicate dispatches as defense in depth; disabling the widget
+alone is insufficient because keyboard submission, delayed callbacks, and
+programmatic callers can bypass it. Flow reset or cancellation must invalidate
+the current generation so late external callbacks become no-ops.
+
+Phone Authentication is the reference frozen-snapshot implementation. The
+phone field and country selector derive their enabled state from the send
+mutation, while the controller returns the same future for duplicate sends and
+checks a flow generation before accepting Firebase callbacks:
+
+```dart
+Future<void> sendOtp(String phoneNumber, String countryCode) {
+  final existingRequest = _sendOtpInFlight;
+  if (existingRequest != null) return existingRequest;
+
+  late final Future<void> trackedRequest;
+  trackedRequest = _sendOtp(phoneNumber, countryCode).whenComplete(() {
+    if (identical(_sendOtpInFlight, trackedRequest)) {
+      _sendOtpInFlight = null;
+    }
+  });
+  _sendOtpInFlight = trackedRequest;
+  return trackedRequest;
+}
+
+void setCountryCode(String code) {
+  if (_sendOtpInFlight != null) return;
+  state = state.copyWith(countryCode: code);
+  sendOtpMutation.reset(ref);
+}
+```
+
+Member Onboarding and Matching Preferences are promoted frozen-snapshot
+adopters. Onboarding freezes backward navigation and the active step's
+request-defining controls across identity, prompts, and running preferences;
+its controller deduplicates both profile-save and completion operations.
+Matching Preferences freezes route dismissal, reset, age, gender, and apply
+controls while its controller deduplicates the save. Their focused tests prove
+the route, presentation state, and controller layers together.
+
+Host Organizer Create and Host Event Edit are also promoted frozen-snapshot
+adopters. Organizer creation freezes route dismissal, step movement, media,
+form/default decisions, and footer actions across submit, draft-save, and
+initial draft-restore operations. Event editing freezes route dismissal and
+the complete schedule, location, pace, policy, and text-field form during
+save. Their action controllers return the active future to duplicate callers,
+so widget disabling and controller behavior enforce the same request snapshot.
+
+Reviews and Account Settings extend the reference beyond single-submit forms.
+The review sheet freezes rating, comment, both write actions, and dismissal
+during submit or delete, while its controller returns one active write future.
+Account Settings treats preference, unblock, delete, and sign-out as one
+surface-exclusive operation domain: any pending mutation disables every
+settings action and route exit, confirmation callbacks recheck the shared
+pending state, and the settings controller deduplicates overlapping writes.
+External platform effects follow the same contract even when they do not write
+backend data. Await the platform result, expose progress on the initiating
+control, enforce the declared singleton or keyed concurrency policy, and make
+both `false` and thrown outcomes visible before restoring the action. Account
+Settings extends its surface-exclusive domain to host/legal/support links;
+Event Location Map keeps back navigation available but makes the directions
+launch itself singleton. Starting and discarding a platform Future is not a
+successful action outcome.
+
+The Admin console uses the same whole-surface exclusive policy for operator
+writes and submitted analytics queries. A synchronous provider-level lease is
+acquired before dispatch, so controllers in different workspaces cannot start
+overlapping operations in the same tick. While held, the workspace fieldset,
+Admin navigation, shared links, and browser unload are blocked; each controller
+submits an immutable payload and releases the lease in `finally`. This
+intentionally favors an unambiguous audited operation over parallel Admin
+throughput.
+
+Every adopting feature must declare the chosen policy in its feature contract.
+If the implementation is not yet safe, the pending-state action matrix must
+describe the unsafe controls honestly and retain stable debt instead of
+claiming a frozen form.
 
 ### Action Controller
 

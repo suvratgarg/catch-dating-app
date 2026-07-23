@@ -1,6 +1,6 @@
 {
-  "version": "1.5.50",
-  "updated": "2026-07-23",
+  "version": "1.5.59",
+  "updated": "2026-07-24",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
   "patterns": [
@@ -279,7 +279,7 @@
           "id": "ARCH-SCREEN-001-CHATS-INBOX-BOUNDARY",
           "path": "lib/chats/presentation/inbox/widgets/chats_list.dart",
           "reason": "ChatsList still re-watches route providers for celebration and display-state construction. Keep this as explicit screen-boundary migration debt; do not mark the Chats inbox route aligned until the route owns those reads and passes display state/callbacks down.",
-          "detectedBy": "docs/plans/explore_findings_remediation_spec.md#phase-48-chats-register-the-pattern-adoption",
+          "detectedBy": "docs/audit_registry/passes.jsonl#2026-07-03-profile-chats-state-governance",
           "addedPass": "2026-07-03-profile-chats-state-governance"
         },
         {
@@ -928,6 +928,27 @@
           "role": "ChatRouteState, HostChatScreenState, ChatThreadLookupState, ChatReadMarkerState, route retry, safety action, Suvbot, and host-inquiry behavior coverage",
           "status": "aligned",
           "lastReviewedPass": "2026-07-03-profile-chats-state-governance"
+        },
+        {
+          "path": "lib/swipes/presentation/event_recap_screen_state.dart",
+          "role": "provider-free Event Recap adapter preserving primary recap loading/error/missing plus batched attendee-profile loading, error, resolved absence, rows, selection, and handoff state",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-truthful-secondary-async-states"
+        },
+        {
+          "path": "lib/swipes/presentation/filters_screen_state.dart",
+          "role": "provider-free Matching Preferences adapter for saved and draft values, dirty/reset/apply availability, pending state, and frozen save request construction",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-truthful-secondary-async-states"
+        },
+        {
+          "path": "lib/payments/presentation/payment_history_state.dart",
+          "role": "provider-free Payment History adapter preserving payment rows plus event-title loading, failure, resolved title, and genuinely missing-event state",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-truthful-secondary-async-states"
         }
       ],
       "variantPatterns": [],
@@ -949,7 +970,7 @@
         {
           "id": "ARCH-UI-STATE-001-DASHBOARD-PRESENTATION-NOTIFICATIONS-LIST-STATE",
           "path": "lib/dashboard/presentation/notifications_list_state.dart",
-          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass.",
+          "reason": "NotificationsListState now preserves identity error separately from resolved sign-out, but notificationRoute still imports app routing. Move route-path derivation behind a typed route intent before marking this adapter provider-free.",
           "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
           "addedPass": "2026-07-03-audit-generalization-scanners"
         },
@@ -1088,7 +1109,10 @@
         "flutter test test/chats/chat_screen_test.dart test/chats/chat_inbox_screen_test.dart",
         "flutter analyze --no-fatal-infos",
         "node tool/architecture/check_adopted_architecture_boundaries.mjs",
-        "node tool/agent/check_agent_readiness.mjs"
+        "node tool/agent/check_agent_readiness.mjs",
+        "flutter test test/swipes/filters_screen_test.dart test/swipes/event_recap_screen_state_test.dart test/swipes/event_recap_screen_test.dart",
+        "flutter test test/dashboard/dashboard_screen_test.dart --plain-name 'notifications identity failure is not shown as signed out'",
+        "flutter test test/payments/payment_history_screen_test.dart"
       ],
       "notes": "This is a narrow display-state reference. CalendarHomeState remains the reference. CatchAsyncState is the provider-free async branch primitive for route-edge translations. EventDetailHostState, EventDetailCompanionState, and EventDetailBookingDockState are aligned small adapters for host-card, companion entry, and booking dock display data; EventDetailCta keeps provider mutations and router side effects at the edge. CatchesEventScreenState is aligned for queue provider-wave mapping, empty/access copy, and active deck display data; SwipeScreen now owns CatchesProfileReviewActionState for write-pending/failure display while the remaining Catches Event work is capture/reference coverage. HostClubDetailScreenState and ClubDetailBodyState are aligned for Club Detail route async branch mapping, live data, initial route fallback, host public-preview mode, next-event selection, contact actions, host-message eligibility, event-route target, review visibility, membership dock state, and retry typing; capture work remains open under the Club Detail screen contract. ExploreFeedSectionState, ExploreCoverStoryState, ExploreChromeState, ExploreEventRowState, ExploreExternalEventRowState, ExploreClubCardState, ExploreMapLauncherState, ExploreCityPickerState, ExploreCityTriggerState, ExploreFilterRailState, ExploreFilterSheetState, ExploreCollapsedMapSummaryState, ExplorePeekRailState, ExploreMapEventTicketState, ExploreScreenBodyState, ExploreDiscoveryEmptyState, and ExploreEventsEmptyState are aligned adopters for mixed-feed planning, cover-story/search-open/event-row/external-row/club-card/map-sheet/filter/chrome display data, route/body branch, city picker availability, map launcher, and empty-state actions. EventSuccessRevealActionState is aligned as a provider-free live reveal action-state adapter after the host route now translates mutation state into plain pending/error snapshots. SelfProfileScreenState and SelfProfileEditTabState are aligned provider-free Profile adopters after the route provider split and photo intent-factory rename. ChatsListScreenState, HostChatScreenState, ChatThreadLookupState, ChatReadMarkerState, and ChatRouteState are aligned provider-free Chats adopters after the route view-model split and batched inbox roster lookups. The main Explore route/feed body migration is tracked under ARCH-SCREEN-001; only the explicitly recorded ARCH-SCREEN-001D provider islands remain. The Chats inbox widget-level route reads are recorded as ARCH-SCREEN-001-CHATS-INBOX-BOUNDARY candidate debt, not as aligned screen-boundary adoption."
     },
@@ -1623,7 +1647,7 @@
           "path": "test/core/forms/contract_alignment_test.dart",
           "role": "consumer and Host descriptor-to-schema alignment gate with a seeded drift fixture",
           "status": "aligned",
-          "lastReviewedPass": "2026-07-23-flutter-form-contract-rollout"
+          "lastReviewedPass": "catch-system-stretch-20260718"
         },
         {
           "path": "docs/audit_registry/flutter_form_contract_inventory.json",
@@ -1654,7 +1678,7 @@
         "node tool/architecture/check_app_architecture_exhibits.mjs",
         "node tool/agent/check_agent_readiness.mjs"
       ],
-      "notes": "Only the consumer Profile About You section is the descriptor reference, while Host Club Identity and Contact are promoted adopters. CatchFormCustomRow keeps the profile height stepper feature-owned while routing accordion and save behavior through CatchFormRowScope. Descriptor adoption remains incremental, but generated form constraints now cover every canonical editable control and descriptor instance in both installable apps."
+      "notes": "Only the consumer Profile About You section is promoted. CatchFormCustomRow keeps the profile height stepper feature-owned while routing accordion and save behavior through CatchFormRowScope."
     },
     {
       "id": "ARCH-DATA-CURSOR-001",
@@ -1788,6 +1812,197 @@
         "node tool/agent/check_agent_readiness.mjs"
       ],
       "notes": "Every consumer route is owned by exactly one public-surface matrix class even when guest tab chrome hides it. Consumer integration cases cover consumer-owned routes only. Host creation and attendance remain in host surface/controller tests; Dashboard recommendations remain owned by Explore."
+    },
+    {
+      "id": "ARCH-PENDING-SNAPSHOT-001",
+      "name": "Pending request snapshot integrity",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-pending-snapshot-001-pending-request-snapshot-integrity",
+      "prototypeFiles": [
+        "lib/auth/presentation/auth_controller.dart",
+        "lib/auth/presentation/auth_presentation_state.dart",
+        "lib/auth/presentation/phone_page.dart",
+        "test/auth/presentation/auth_controller_test.dart",
+        "test/auth/presentation/auth_presentation_state_test.dart",
+        "test/auth/presentation/auth_screen_test.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/auth/presentation/auth_controller.dart",
+          "role": "reference controller deduplicating one Firebase verification request, freezing request-defining country state, and rejecting stale callbacks after flow reset",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "lib/auth/presentation/phone_page.dart",
+          "role": "reference frozen-snapshot form disabling phone and country controls while the submitted request is pending",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "test/auth/presentation/auth_controller_test.dart",
+          "role": "controller proof for duplicate-request deduplication, immutable submitted values, and stale callback rejection",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "test/auth/presentation/auth_screen_test.dart",
+          "role": "widget proof that request-defining phone and country controls stay disabled and cannot launch a second request",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "lib/onboarding/presentation",
+          "role": "frozen-snapshot adopter across booking identity, prompt completion, and running preferences with route back freezing, request-control disabling, error-reset guards, and controller deduplication",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "test/onboarding",
+          "role": "controller, flow-state, and widget proof for immutable pending identity, prompt, and running-preference snapshots",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "lib/swipes/presentation/filters_screen.dart",
+          "role": "frozen-snapshot adopter disabling route exit, close, reset, age, gender, and apply controls during save",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "lib/swipes/presentation/filters_controller.dart",
+          "role": "controller defense returning one in-flight future for duplicate filter saves",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "test/swipes/filters_screen_test.dart",
+          "role": "controller and route proof for one persisted request and frozen filter controls",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "lib/hosts/presentation/club_management/create",
+          "role": "frozen-snapshot adopter across organizer submit, draft save, and draft restore with route, step, media, form, and default-decision freezing plus controller deduplication",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "test/clubs/clubs_controllers_test.dart and test/explore/explore_widgets_test.dart",
+          "role": "controller and widget proof for one organizer submission and a frozen create route",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+          "role": "frozen-snapshot adopter disabling route exit and the full editable event form while save is pending",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "test/hosts/host_event_booking_controller_test.dart and test/hosts/edit_hosted_event_screen_test.dart",
+          "role": "controller, state, and widget proof for one event update and a frozen edit route",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "lib/reviews/shared/write_review_sheet.dart and lib/reviews/shared/write_review_controller.dart",
+          "role": "frozen-snapshot adopter disabling rating, comment, submit, delete, and sheet dismissal across review writes with controller deduplication",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "test/reviews/write_review_controller_test.dart and test/reviews/reviews_widgets_test.dart",
+          "role": "controller and widget proof for one review write and a frozen edit-sheet snapshot",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "lib/safety/presentation/settings_account_state.dart, lib/safety/presentation/settings_controller.dart, lib/safety/presentation/settings_screen.dart, and lib/auth/presentation/auth_session_controller.dart",
+          "role": "whole-surface exclusive adopter freezing route, recovery, navigation, external, preference, unblock, delete, and sign-out actions during any settings mutation or external-link launch, with selected-link progress, visible false/error outcomes, settings-write deduplication, and sign-out deduplication",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-truthful-action-outcomes"
+        },
+        {
+          "path": "test/safety/settings_account_state_test.dart, test/safety/settings_controller_test.dart, test/safety/settings_screen_test.dart, and test/auth/presentation/auth_controller_test.dart",
+          "role": "state, controller, and widget proof for global settings exclusivity, one overlapping settings write, one sign-out operation, and external-link success, pending, duplicate-tap, false-result, and thrown-failure outcomes",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-truthful-action-outcomes"
+        },
+        {
+          "path": "lib/events/presentation/event_location_map_screen.dart and lib/events/presentation/event_location_map_body_screen.dart",
+          "role": "route-action adopter making the directions launch singleton while pending, exposing button progress, awaiting the platform result, and presenting visible false or thrown failure outcomes",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-truthful-action-outcomes"
+        },
+        {
+          "path": "test/events/events_widgets_test.dart",
+          "role": "widget proof for directions success, pending progress, duplicate-tap exclusion, false launcher results, thrown failures, and action restoration",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-truthful-action-outcomes"
+        },
+        {
+          "path": "website/src/features/waitlist, website/src/features/host/application, website/src/features/claims, and website/src/shared/pendingRequest.tsx",
+          "role": "marketing frozen-snapshot adopters disabling request-defining form, step, auth, sibling-form, shared-link, and browser-exit controls with controller single-flight guards",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-marketing-pending-operation-integrity"
+        },
+        {
+          "path": "website/src/features/waitlist/useWaitlistFormController.test.tsx, website/src/features/host/application/useHostApplicationController.test.tsx, website/src/features/claims/useClaimFlowController.test.tsx, website/src/features/claims/useClaimRequestMutation.test.tsx, and website/src/shared/pendingRequest.test.tsx",
+          "role": "controller and UI proof for immutable marketing form snapshots, one request per submit, frozen auth and steps, and blocked route exits",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-marketing-pending-operation-integrity"
+        },
+        {
+          "path": "admin/src/shared/pendingOperation.tsx, admin/src/app/App.tsx, and admin/src/shared/ui/AdminPrimitives",
+          "role": "Admin whole-surface exclusive operation lease freezing workspace controls, shared links, route navigation, peer operations, and browser unload until settlement",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-admin-pending-operation-integrity"
+        },
+        {
+          "path": "admin/src/features/access, admin/src/features/admin-roles, admin/src/features/events, admin/src/features/intake, admin/src/features/marketing, admin/src/features/organizers, admin/src/features/safety, and admin/src/features/users",
+          "role": "Admin controller adopters acquiring one synchronous global lease around immutable mutation or submitted-query snapshots",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-admin-pending-operation-integrity"
+        },
+        {
+          "path": "admin/src/shared/pendingOperation.test.tsx and design/features/admin_*.feature.json",
+          "role": "cross-controller, visible-snapshot, navigation, unload, and compiled pending-action proof for the Admin exclusive policy",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-admin-pending-operation-integrity"
+        }
+      ],
+      "variantPatterns": [
+        {
+          "id": "ARCH-PENDING-SNAPSHOT-001-VERSIONED",
+          "name": "Versioned editable snapshot",
+          "rule": "Keep edits live only with an immutable request generation and stale-result rejection or cancellation plus explicit queued-or-next-submit UI."
+        },
+        {
+          "id": "ARCH-PENDING-SNAPSHOT-001-INDEPENDENT-KEYED",
+          "name": "Independently keyed concurrency",
+          "rule": "Allow simultaneous operations only when typed scope keys and separate pending/error surfaces prevent sibling interference."
+        }
+      ],
+      "candidateQueue": [],
+      "exceptions": [],
+      "requiredBackPropagation": "When pending ownership, request-defining inputs, reset behavior, cancellation, deduplication, route exits, scope keys, or stale-result handling change, update the Phone Authentication reference, every promoted adopter, feature-contract action matrices, screen debt, regression guard, and focused interaction tests in the same pass.",
+      "requiredChecks": [
+        "flutter test --concurrency=1 test/auth/presentation/auth_controller_test.dart test/auth/presentation/auth_presentation_state_test.dart test/auth/presentation/auth_screen_test.dart",
+        "flutter test --concurrency=1 test/onboarding/onboarding_controller_test.dart test/onboarding/onboarding_flow_state_test.dart test/onboarding/onboarding_widgets_test.dart",
+        "flutter test --concurrency=1 test/swipes/filters_screen_test.dart test/swipes/filters_screen_state_test.dart",
+        "flutter test --concurrency=1 test/events/events_widgets_test.dart test/safety/settings_screen_test.dart",
+        "npm --prefix website exec vitest run -- --project=unit src/features/waitlist/useWaitlistFormController.test.tsx src/features/host/application/useHostApplicationController.test.tsx src/features/claims/useClaimFlowController.test.tsx src/features/claims/useClaimRequestMutation.test.tsx src/shared/pendingRequest.test.tsx",
+        "npm --prefix admin test -- --run",
+        "npm --prefix admin run typecheck",
+        "node tool/run.mjs check web:admin-pending-operations",
+        "node tool/design/build_feature_contracts.mjs --check",
+        "node tool/design/check_screen_contracts.mjs --check",
+        "node tool/architecture/check_app_architecture_exhibits.mjs",
+        "dart analyze",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "notes": "Frozen snapshot is the default for one submitted form or route action, including external platform launches. Versioned editing and independently keyed concurrency are explicit variants, not implicit exceptions. Phone Authentication is the reference; Member Onboarding, Matching Preferences, Host Organizer Create, Host Event Edit, Reviews, Account Settings, Event Location Map, Marketing forms, and the Admin console are aligned adopters. Admin deliberately uses one global exclusive lease because operator writes and submitted queries share navigation, feedback, query-cache, and selection surfaces; the small throughput trade-off prevents cross-workspace ambiguity."
     }
   ]
 }

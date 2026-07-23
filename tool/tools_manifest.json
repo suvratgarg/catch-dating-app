@@ -812,6 +812,28 @@
       }
     },
     {
+      "id": "web:admin-pending-operations",
+      "category": "lint",
+      "path": "tool/web/check_admin_pending_operations.mjs",
+      "command": "node tool/web/check_admin_pending_operations.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Enforces one exclusive Admin operation lease across every controller derived from frozen pending feature-contract cases, the shared workspace/navigation boundary, and immutable-snapshot regression proof.",
+      "checks": [
+        "node --check tool/web/check_admin_pending_operations.mjs",
+        "node tool/web/check_admin_pending_operations.mjs --self-test",
+        "node tool/web/check_admin_pending_operations.mjs --check --summary"
+      ],
+      "role": "gate",
+      "rules": [
+        "REG-PENDING-SNAPSHOT-001"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/web/check_admin_pending_operations.mjs --self-test"
+      }
+    },
+    {
       "id": "web:admin-components",
       "category": "lint",
       "path": "tool/web/check_admin_components.mjs",
@@ -3239,6 +3261,20 @@
       "role": "generator"
     },
     {
+      "id": "marketing:app-listing-prototypes",
+      "category": "marketing",
+      "path": "tool/store/generate_app_listing_screenshot_prototypes.swift",
+      "command": "swift tool/store/generate_app_listing_screenshot_prototypes.swift",
+      "safety": "local-writes-store-assets",
+      "status": "active",
+      "description": "Generates the six approved Catch and Catch Host iPhone 6.9-inch App Store listing prototypes from deterministic app captures.",
+      "checks": [
+        "swiftc -parse tool/store/generate_app_listing_screenshot_prototypes.swift",
+        "swift tool/store/generate_app_listing_screenshot_prototypes.swift --check"
+      ],
+      "role": "generator"
+    },
+    {
       "id": "marketing:website-build",
       "category": "marketing",
       "path": "website/package.json",
@@ -3476,6 +3512,74 @@
           "strict verification rejects unverified configurations and planned harnesses",
           "rejects duplicate configuration tuples",
           "rejects unclassified or multiply owned consumer routes"
+        ]
+      }
+    },
+    {
+      "id": "design:feature-coverage",
+      "category": "design",
+      "path": "tool/design/check_feature_coverage.mjs",
+      "command": "node tool/design/check_feature_coverage.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Fails when a registered Flutter screen, marketing route, or admin route component lacks exactly one contracted, grouped, planned, or excluded feature-contract decision.",
+      "checks": [
+        "node --check tool/design/check_feature_coverage.mjs",
+        "node --test tool/design/check_feature_coverage.test.mjs",
+        "node tool/design/check_feature_coverage.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "AGENT-HARNESS-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_feature_coverage.test.mjs",
+        "contains": [
+          "accepts one feature contract binding multiple runtime authorities",
+          "rejects missing, duplicate, and unknown authority decisions",
+          "rejects contracted decisions that do not bind their authority item",
+          "rejects missing or chained grouped primaries",
+          "fails when a registry adds an unclassified feature surface",
+          "rejects orphaned source contracts"
+        ]
+      }
+    },
+    {
+      "id": "design:feature-contracts",
+      "category": "design",
+      "path": "tool/design/build_feature_contracts.mjs",
+      "command": "node tool/design/build_feature_contracts.mjs --check",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Compiles reviewed multi-surface feature sources, including compact exact state matrices, stable annotated Flutter preview-builder ids, checked React route-state preview mappings, and explicitly disabled known implementation gaps, into deterministic state, action-cardinality, and evidence contracts while rejecting authority/runtime drift, enabled known-gap actions, and missing or duplicate authority-state coverage.",
+      "checks": [
+        "node --check tool/design/build_feature_contracts.mjs",
+        "node --test tool/design/build_feature_contracts.test.mjs",
+        "node tool/design/build_feature_contracts.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "ACTION-CARDINALITY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/build_feature_contracts.test.mjs",
+        "contains": [
+          "projects known implementation gaps and rejects enabling them",
+          "requires debt metadata only for known implementation gaps",
+          "compiles compact state matrices without weakening exact authority coverage",
+          "rejects compact state overrides outside the declared inventory",
+          "compiles multiple runtime projections into one shared feature identity",
+          "maps route review states to explicitly registered React previews",
+          "rejects explicit React previews outside the selected route registry",
+          "supports read-only projections without synthetic actions or bindings",
+          "rejects duplicate and missing surface-state mappings",
+          "rejects missing capture, preview, and test evidence",
+          "allows explicit evidence debt and rejects stale exceptions",
+          "validates surface-state, route, and side-effect action outcomes",
+          "rejects unknown action owners, actions, and dimensions",
+          "rejects runtime and authority mismatches"
         ]
       }
     },

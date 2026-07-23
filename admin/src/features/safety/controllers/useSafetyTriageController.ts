@@ -8,6 +8,7 @@ import type {
   AdminQueueItem,
 } from "../../../shared/types/adminTypes";
 import {adminQueryKeys} from "../../../shared/query/queryKeys";
+import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {
   assignSafetyTriageItemOwner,
   decideSafetyTriageItemStatus,
@@ -53,6 +54,7 @@ export function useSafetyTriageController({
   selectedTargetPath?: string | null;
 }) {
   const queryClient = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const [localSelectedTargetPath, setLocalSelectedTargetPath] = useState<string | null>(
     null
   );
@@ -203,6 +205,8 @@ export function useSafetyTriageController({
     const assigneeUid = nullableText(assignmentForm.assigneeUid);
     onError(null);
     onNotice(null);
+    const operation = beginOperation();
+    if (!operation) return false;
     try {
       const response = await assignmentMutation.mutateAsync({
         targetPath: selected.targetPath,
@@ -232,12 +236,16 @@ export function useSafetyTriageController({
     } catch (error) {
       onError(messageFromError(error, "Unable to assign safety item."));
       return false;
+    } finally {
+      endOperation(operation);
     }
   }, [
     assignmentForm.assigneeUid,
     assignmentForm.note,
     assignmentMutation,
     assignmentValidationIssue,
+    beginOperation,
+    endOperation,
     onError,
     onNotice,
     queryClient,
@@ -260,6 +268,8 @@ export function useSafetyTriageController({
     }
     onError(null);
     onNotice(null);
+    const operation = beginOperation();
+    if (!operation) return false;
     try {
       const response = await decisionMutation.mutateAsync({
         targetPath: selected.targetPath,
@@ -284,10 +294,14 @@ export function useSafetyTriageController({
     } catch (error) {
       onError(messageFromError(error, "Unable to decide safety item."));
       return false;
+    } finally {
+      endOperation(operation);
     }
   }, [
+    beginOperation,
     decisionForm.note,
     decisionMutation,
+    endOperation,
     onError,
     onNotice,
     queryClient,

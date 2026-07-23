@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -8,7 +10,6 @@ import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_keys.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
-import 'package:catch_dating_app/payments/presentation/payment_history_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -107,7 +108,7 @@ void main() {
       expect(find.text('10 Feb 2025 · 12:00 AM'), findsWidgets);
     });
 
-    testWidgets('detail sheet shows Get help button for sign-up failures', (
+    testWidgets('detail sheet labels and performs support guidance honestly', (
       tester,
     ) async {
       await _pumpPaymentHistory(
@@ -128,7 +129,18 @@ void main() {
       await tester.tap(find.byKey(PaymentHistoryKeys.paymentTile('pay-4')));
       await _pumpPaymentSheet(tester);
 
-      expect(find.text('Get help with this booking'), findsOneWidget);
+      expect(find.text('How to get help with this booking'), findsOneWidget);
+
+      await tester.tap(find.text('How to get help with this booking'));
+      await pumpFeatureUi(tester);
+
+      expect(find.byType(PaymentReceiptSheet), findsNothing);
+      expect(
+        find.text(
+          'Contact Catch support and include the payment and order IDs shown on this receipt.',
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('shows all status badge variants correctly', (tester) async {
@@ -175,37 +187,96 @@ void main() {
       expect(find.text('Pending'), findsOneWidget);
     });
 
-    testWidgets('uses batched event titles with missing-title fallback', (
+    testWidgets(
+      'uses batched event titles and labels missing events honestly',
+      (tester) async {
+        final resolvedEvent = buildEvent(
+          id: 'event-resolved',
+          startTime: DateTime(2025, 4, 7, 7),
+        );
+
+        await _pumpPaymentHistory(
+          tester,
+          payments: [
+            _payment(
+              id: 'pay-resolved',
+              orderId: 'order-resolved',
+              eventId: resolvedEvent.id,
+              status: PaymentStatus.completed,
+              createdAt: DateTime(2025, 4, 8),
+            ),
+            _payment(
+              id: 'pay-missing',
+              orderId: 'order-missing',
+              eventId: 'event-missing',
+              status: PaymentStatus.completed,
+              createdAt: DateTime(2025, 4, 7),
+            ),
+          ],
+          events: {resolvedEvent.id: resolvedEvent},
+        );
+
+        expect(find.text(resolvedEvent.title), findsOneWidget);
+        expect(find.text('Event unavailable'), findsOneWidget);
+        expect(find.text('Event booking'), findsNothing);
+      },
+    );
+
+    testWidgets('keeps event-title loading distinct from missing events', (
       tester,
     ) async {
-      final resolvedEvent = buildEvent(
-        id: 'event-resolved',
-        startTime: DateTime(2025, 4, 7, 7),
-      );
+      final events = StreamController<List<Event>>();
+      addTearDown(events.close);
 
       await _pumpPaymentHistory(
         tester,
         payments: [
           _payment(
-            id: 'pay-resolved',
-            orderId: 'order-resolved',
-            eventId: resolvedEvent.id,
+            id: 'pay-loading',
+            orderId: 'order-loading',
+            eventId: 'event-loading',
             status: PaymentStatus.completed,
             createdAt: DateTime(2025, 4, 8),
           ),
-          _payment(
-            id: 'pay-missing',
-            orderId: 'order-missing',
-            eventId: 'event-missing',
-            status: PaymentStatus.completed,
-            createdAt: DateTime(2025, 4, 7),
-          ),
         ],
-        events: {resolvedEvent.id: resolvedEvent},
+        events: const {},
+        eventStream: events.stream,
+        settle: false,
       );
 
+      expect(find.byType(PaymentHistorySkeleton), findsOneWidget);
+      expect(find.text('Event unavailable'), findsNothing);
+
+      final resolvedEvent = buildEvent(id: 'event-loading');
+      events.add([resolvedEvent]);
+      await pumpFeatureUi(tester);
       expect(find.text(resolvedEvent.title), findsOneWidget);
-      expect(find.text(paymentHistoryFallbackEventTitle), findsOneWidget);
+    });
+
+    testWidgets('event-title failure exposes an event-specific retry state', (
+      tester,
+    ) async {
+      await _pumpPaymentHistory(
+        tester,
+        payments: [
+          _payment(
+            id: 'pay-error',
+            orderId: 'order-error',
+            eventId: 'event-error',
+            status: PaymentStatus.completed,
+            createdAt: DateTime(2025, 4, 8),
+          ),
+        ],
+        events: const {},
+        eventStream: Stream.error(StateError('event titles failed')),
+      );
+
+      expect(find.text('Event unavailable'), findsOneWidget);
+      expect(find.text('Reload event'), findsOneWidget);
+      expect(
+        find.byKey(PaymentHistoryKeys.paymentTile('pay-error')),
+        findsNothing,
+      );
     });
   });
 }
@@ -229,6 +300,8 @@ Future<void> _pumpPaymentHistory(
   WidgetTester tester, {
   required List<Payment> payments,
   required Map<String, Event> events,
+  Stream<List<Event>>? eventStream,
+  bool settle = true,
 }) async {
   final eventIds = {for (final payment in payments) payment.eventId};
 
@@ -240,14 +313,19 @@ Future<void> _pumpPaymentHistory(
           'runner-1',
         ).overrideWith((ref) => Stream.value(payments)),
         if (eventIds.isNotEmpty)
-          watchEventsByIdsProvider(
-            EventsByIdQuery(eventIds),
-          ).overrideWith((ref) => Stream.value(events.values.toList())),
+          watchEventsByIdsProvider(EventsByIdQuery(eventIds)).overrideWith(
+            (ref) => eventStream ?? Stream.value(events.values.toList()),
+          ),
       ],
       child: _wrapPhoneSized(const PaymentHistoryScreen()),
     ),
   );
-  await pumpFeatureUi(tester);
+  if (settle) {
+    await pumpFeatureUi(tester);
+  } else {
+    await tester.pump();
+    await tester.pump();
+  }
 }
 
 Payment _payment({

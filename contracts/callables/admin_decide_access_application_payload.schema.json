@@ -1,14 +1,42 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_decide_access_application_payload.schema.json",
-  "title": "AdminDecideAccessApplicationCallablePayload",
+  "title": "Admin Decide Access Application Callable Payload",
   "type": "object",
   "additionalProperties": false,
-  "required": ["applicationUid", "decision", "note"],
+  "required": [
+    "applicationUid",
+    "decision",
+    "note"
+  ],
   "properties": {
-    "applicationUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "decision": {"type": "string", "enum": ["approve", "deny"]},
-    "note": {"type": "string", "minLength": 1, "maxLength": 1000},
-    "cohortId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180}
+    "applicationUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approve",
+        "deny"
+      ]
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "cohortId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
   }
 }

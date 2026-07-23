@@ -1,9 +1,9 @@
 ---
 doc_id: explore_screen_quality_pass_spec
 version: 1.1.0
-updated: 2026-07-19
+updated: 2026-07-23
 owner: app
-status: complete
+status: retirement_ready
 ---
 
 # Explore Screen Quality Pass — UX, Data Layer & Visual Craft Spec

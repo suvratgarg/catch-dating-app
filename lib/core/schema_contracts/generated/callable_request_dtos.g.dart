@@ -15,11 +15,15 @@
 
 export 'callables/add_club_host_callable_request.g.dart';
 export 'callables/add_organizer_manager_callable_request.g.dart';
+export 'callables/admin_assign_safety_triage_item_callable_request.g.dart';
+export 'callables/admin_create_marketing_content_draft_callable_request.g.dart';
+export 'callables/admin_decide_access_application_callable_request.g.dart';
 export 'callables/admin_decide_club_claim_callable_request.g.dart';
 export 'callables/admin_decide_organizer_claim_callable_request.g.dart';
 export 'callables/admin_decide_organizer_event_candidate_callable_request.g.dart';
 export 'callables/admin_decide_organizer_intake_callable_request.g.dart';
 export 'callables/admin_decide_organizer_policy_gap_callable_request.g.dart';
+export 'callables/admin_decide_safety_triage_item_callable_request.g.dart';
 export 'callables/admin_get_club_details_callable_request.g.dart';
 export 'callables/admin_get_event_details_callable_request.g.dart';
 export 'callables/admin_get_organizer_details_callable_request.g.dart';
@@ -32,8 +36,10 @@ export 'callables/admin_list_organizer_details_callable_request.g.dart';
 export 'callables/admin_publish_external_event_callable_request.g.dart';
 export 'callables/admin_record_action_execution_callable_request.g.dart';
 export 'callables/admin_record_event_intake_review_decision_callable_request.g.dart';
+export 'callables/admin_record_marketing_review_decision_callable_request.g.dart';
 export 'callables/admin_record_organizer_curation_callable_request.g.dart';
 export 'callables/admin_resolve_organizer_event_location_callable_request.g.dart';
+export 'callables/admin_set_admin_user_roles_callable_request.g.dart';
 export 'callables/admin_set_club_index_status_callable_request.g.dart';
 export 'callables/archive_club_callable_request.g.dart';
 export 'callables/archive_organizer_callable_request.g.dart';

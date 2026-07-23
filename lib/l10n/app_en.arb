@@ -2075,6 +2075,13 @@
     "x-owner": "product",
     "x-surface": "events.presentation.event_location_map_body_screen"
   },
+  "eventsEventLocationMapDirectionsOpenFailed": "Could not open directions. Please try again.",
+  "@eventsEventLocationMapDirectionsOpenFailed": {
+    "description": "Failure feedback when the device cannot open walking directions.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "events.presentation.event_location_map_screen"
+  },
   "eventsEventMapScreenTitleNoMappedEventsYet": "No mapped events yet",
   "@eventsEventMapScreenTitleNoMappedEventsYet": {
     "description": "Product copy used by lib/events/presentation/event_map_screen.dart (title).",
@@ -5293,7 +5300,7 @@
     "x-owner": "product",
     "x-surface": "payments.presentation.payment_history_screen"
   },
-  "paymentsPaymentHistoryScreenLabelGetHelpWithThis": "Get help with this booking",
+  "paymentsPaymentHistoryScreenLabelGetHelpWithThis": "How to get help with this booking",
   "@paymentsPaymentHistoryScreenLabelGetHelpWithThis": {
     "description": "Product copy used by lib/payments/presentation/payment_history_screen.dart (label).",
     "x-audience": "consumer",
@@ -5786,6 +5793,13 @@
   "safetySettingsScreenBodyContactUs": "Contact us",
   "@safetySettingsScreenBodyContactUs": {
     "description": "Product copy used by lib/safety/presentation/settings_screen.dart (body).",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "safety.presentation.settings_screen"
+  },
+  "safetySettingsScreenExternalLinkOpenFailed": "Could not open that link. Please try again.",
+  "@safetySettingsScreenExternalLinkOpenFailed": {
+    "description": "Failure feedback when a Settings external link cannot be opened.",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "safety.presentation.settings_screen"
@@ -20105,8 +20119,8 @@
   "@onboardingGenderValidationSelectGender": {"description": "Validation message when onboarding gender is missing.", "x-audience": "consumer", "x-owner": "product", "x-surface": "onboarding.presentation.pages.gender_interest_page_state"},
   "onboardingGenderValidationSelectInterest": "Please select who you want to see",
   "@onboardingGenderValidationSelectInterest": {"description": "Validation message when onboarding match interests are missing.", "x-audience": "consumer", "x-owner": "product", "x-surface": "onboarding.presentation.pages.gender_interest_page_state"},
-  "paymentsHistorySupportMessage": "Please contact Catch support for assistance with this booking.",
-  "@paymentsHistorySupportMessage": {"description": "Guidance when a payment-history booking needs support.", "x-audience": "consumer", "x-owner": "product", "x-surface": "payments.presentation.payment_history_screen"},
+  "paymentsHistorySupportMessage": "Contact Catch support and include the payment and order IDs shown on this receipt.",
+  "@paymentsHistorySupportMessage": {"description": "Actionable guidance when a payment-history booking needs support.", "x-audience": "consumer", "x-owner": "product", "x-surface": "payments.presentation.payment_history_screen"},
   "safetyAccountUnblockedMessage": "Account unblocked.",
   "@safetyAccountUnblockedMessage": {"description": "Confirmation after removing an account block.", "x-audience": "consumer", "x-owner": "product", "x-surface": "safety.presentation.settings_screen"},
   "eventsEventPriceCopyFree": "Free",

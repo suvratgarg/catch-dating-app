@@ -59,6 +59,7 @@ with `--check`. This graph is the canonical cross-root integration map.
   evidence lives in the audit registry and migration contract metadata.
 - `marketing/`: app-derived website media manifests and screenshot sync checks.
 - `platform/`: Apple/platform configuration helpers.
+- `store/`: deterministic App Store and Google Play asset generators.
 - `ui_capture/`: route inventory, capture coverage, and deterministic screen capture tooling.
 - `remote_ops_manifest.json`: consolidated index for Firebase, App Check, data,
   CI/CD, and App Store/TestFlight operational surfaces.
@@ -369,6 +370,7 @@ node tool/run.mjs check web:react-component-governance
 node tool/run.mjs check web:react-query-state
 node tool/run.mjs check web:shared-ui-adoption
 node tool/run.mjs check web:react-controller-test-targets
+node tool/run.mjs check web:admin-pending-operations
 node tool/run.mjs check web:react-dependency-graph
 npm run web:ui:test
 npm run web:ui:typecheck
@@ -390,6 +392,12 @@ accessible table/field/button contracts, and package CI path coverage.
 hook classified in `tool/web/react_controller_test_targets.json`. Promoted
 targets need a named importing behavior suite; planned targets remain visible
 without turning aggregate coverage percentages into a brittle merge gate.
+
+`web:admin-pending-operations` derives write and submitted-query controllers
+from frozen Admin feature-contract cases. It requires each controller to
+acquire and release the shared exclusive lease, rejects pending cases with
+enabled actions, and verifies the workspace, navigation, link, unload, and
+focused regression-test boundary remains installed.
 
 Registry-ready Storybook stories also have deterministic desktop and mobile
 image baselines under `design/visual_baselines/<surface>/<platform>/`. Build
@@ -487,6 +495,75 @@ node tool/run.mjs check --category agent
 When using parallel agents, keep subagent work in disposable Git worktrees and
 record the parent-reviewed result with
 `tool/agent/record_delegation_outcome.mjs`.
+
+## Feature Contract Compiler
+
+`design/features/feature_coverage.json` is the exhaustive migration ledger for
+registered feature surfaces. It derives its inventory from the Flutter screen
+registry, marketing route registry, and route-kind entries in the admin
+component registry. Every authority item must be contracted, grouped under one
+primary feature projection, planned against a stable migration debt id, or
+explicitly excluded. The checker also rejects orphaned source contracts and a
+`contracted` decision whose source contract does not bind the claimed surface.
+
+```sh
+node tool/design/check_feature_coverage.mjs --check
+node tool/design/check_feature_coverage.mjs --summary
+```
+
+`planned` proves that a surface is visible to the migration; it does not claim
+that its state/action/evidence contract exists yet. Grouping is reserved for a
+secondary route projection of the same feature, such as a dynamic lookup or a
+live controller wrapper. Static legal/support and platform fallback routes may
+be excluded when their existing route, metadata, and preview contracts are the
+correct authority and there is no stateful product-action workflow to model.
+
+`design/features/*.feature.json` holds reviewed feature orchestration sources.
+One semantic feature may contain Flutter, marketing React, and admin React
+surface projections. Each projection binds exactly one authoritative screen or
+route, its native component registry, one or more typed action owners, and its
+capture/preview/test evidence instead of duplicating those authorities. The
+compiler expands every action case into enabled, disabled, and not-allowed
+classifications and writes one deterministic cross-surface artifact under
+`design/features/generated/`.
+
+Each surface must state its action scope. Event Detail covers the Flutter
+booking dock; Explore combines Flutter empty-result recovery with marketing-web
+URL filtering/search analytics; Host Event Manage covers primary Flutter
+edit/cancel/delete lifecycle rows; the consumer social reference batch adds
+Catches Hub, Catches Event, Matches List, Member Chat, Self Profile, and Public
+Profile. Organizer Detail adds a three-surface reference for consumer Flutter,
+host Flutter, and the canonical marketing organizer listing. Generated action
+counts must not be read as coverage of excluded route or section actions.
+Actions name their owning Dart or TypeScript symbol and may
+end in local surface states, route destinations, or named side effects.
+Read-only surfaces use empty action/action-owner arrays instead of inventing
+synthetic behavior. Missing required evidence must use an explicit stable-debt
+exception, and the compiler rejects that exception once the referenced evidence
+exists.
+
+State-heavy surfaces may use the compact matrix form. `stateIds` still must
+equal the authority's full state inventory, while `scenarioDefaults` owns the
+common dimension/action case and `scenarioOverrides` records only divergent
+states. The compiler expands this form into ordinary generated scenarios and
+fails missing or unknown state ids and overrides, so the shorter source format
+does not weaken drift detection.
+
+For React routes, `bindings.previewEvidence` maps an authority state to an
+explicitly selected registry preview when route-review and Storybook state
+names differ. The compiler verifies the component belongs to that route and
+that its story source is declared. Website static-output tests under
+`website/scripts/*.test.mjs` are valid evidence for indexing, canonical, and
+sitemap behavior that has no meaningful visual preview.
+
+```sh
+node tool/design/build_feature_contracts.mjs
+node tool/design/build_feature_contracts.mjs --check
+node tool/design/build_feature_contracts.mjs --summary
+```
+
+The `--check` command is blocking in the design parity gate. Generated feature
+contracts are review artifacts and must not be edited by hand.
 
 ## Design Tokens
 

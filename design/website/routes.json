@@ -1,7 +1,7 @@
 {
   "$schema": "./website.routes.schema.json",
-  "version": 9,
-  "updated": "2026-07-22",
+  "version": 10,
+  "updated": "2026-07-23",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -76,10 +76,10 @@
         "priority": "p0",
         "status": "ready",
         "viewports": ["desktop", "mobile"],
-        "states": ["default", "filtered", "empty-results", "saved-organizers"],
+        "states": ["default", "filtered", "empty-results"],
         "stateCoverage": {
           "storybook": ["default"],
-          "manual": ["filtered", "empty-results", "saved-organizers"]
+          "manual": ["filtered", "empty-results"]
         }
       }
     },

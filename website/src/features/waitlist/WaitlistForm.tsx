@@ -24,7 +24,11 @@ export function WaitlistForm({variant}: {variant: FormVariant}) {
   } = useWaitlistFormController(variant);
 
   return (
-    <WaitlistFormShell onFocus={handleFormStart} onSubmit={handleSubmit}>
+    <WaitlistFormShell
+      onFocus={handleFormStart}
+      onSubmit={handleSubmit}
+      pending={isSubmitting}
+    >
       <TextField id={`${variant}-waitlist-full-name`} label={websiteCopy["waitlistform_0515"]} name="fullName" autoComplete="name" required />
       <TextField id={`${variant}-waitlist-email`} label={websiteCopy["waitlistform_0514"]} name="email" type="email" autoComplete="email" required />
       <SelectField

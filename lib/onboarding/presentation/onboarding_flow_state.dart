@@ -23,12 +23,14 @@ class OnboardingFlowState {
     required this.step,
     required this.previousStep,
     required this.topBar,
+    required this.operationPending,
   });
 
   final OnboardingEntryMode entryMode;
   final OnboardingStep step;
   final OnboardingStep? previousStep;
   final OnboardingTopBarState? topBar;
+  final bool operationPending;
 
   bool get showsWelcome => step == OnboardingStep.welcome;
 
@@ -51,12 +53,13 @@ class OnboardingFlowState {
       entryMode: entryMode,
       step: data.step,
       previousStep: previousStep,
+      operationPending: data.operationPending,
       topBar: data.step.showsProgress
           ? OnboardingTopBarState.from(
               step: data.step,
               l10n: l10n,
               entryMode: entryMode,
-              canGoBack: previousStep != null,
+              canGoBack: previousStep != null && !data.operationPending,
             )
           : null,
     );

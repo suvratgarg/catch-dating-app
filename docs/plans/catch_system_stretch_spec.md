@@ -1,3 +1,11 @@
+---
+doc_id: catch_system_stretch_spec
+version: 1.0.0
+updated: 2026-07-23
+owner: catch_design_system
+status: retirement_ready
+---
+
 # Catch System Stretch Spec — Field 10/10 Goals + Adjacent Canonical Surfaces (for Codex)
 
 Status: implementation complete; both owner gates approved and closed · 2026-07-19

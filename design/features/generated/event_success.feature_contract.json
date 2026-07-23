@@ -1,0 +1,2385 @@
+{
+  "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
+  "version": 2,
+  "generatedFrom": "design/features/event_success.feature.json",
+  "generatedFor": "2026-07-23",
+  "sourceDigest": "sha256:d9c7168e8a49c512d4c19184a7c4243de43ecd57e9b322564ab0b3372202877a",
+  "resolvedDigest": "sha256:eebd5e28bf21868bf0241faebd111b138d248a2bb0187507bed09dbc19161ec9",
+  "feature": {
+    "id": "feature.event_success",
+    "name": "Event Success",
+    "owner": "event_success",
+    "status": "pilot",
+    "description": "Orchestrates the attendee Event Success Companion from route gating and arrival through live guidance, assignments, reveal, host-help requests, private feedback, opt-outs, and transition-triggered auto-launch."
+  },
+  "coverage": {
+    "surfaces": 1,
+    "states": 26,
+    "scenarios": 26,
+    "actionCases": 35,
+    "actions": 12,
+    "captures": 45,
+    "previews": 2,
+    "testFiles": 2,
+    "evidenceExceptions": 11
+  },
+  "surfaces": [
+    {
+      "id": "consumer_flutter",
+      "runtime": "flutter",
+      "authority": {
+        "registry": "flutter_screens",
+        "id": "screen.event_success.companion"
+      },
+      "actionScope": {
+        "included": "Companion data recovery, self-check-in and First Hello arrival actions, compatibility answers, assignment preferences, cue copy, host-help requests, and private event feedback.",
+        "excluded": [
+          "Host setup, live-step control, assignment generation and overrides, reveal control, effect scheduling, and route auto-launch policy retain their host or launcher owners; the registered auto-launch state is evidence-only rather than a user action."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "widgetbook/lib/event_success/event_success_companion_use_cases.dart"
+        ],
+        "actionOwners": [
+          {
+            "id": "companion_route",
+            "language": "dart",
+            "file": "lib/event_success/presentation/event_success_companion_screen.dart",
+            "symbol": "EventSuccessCompanionRouteScreen"
+          },
+          {
+            "id": "event_success_controller",
+            "language": "dart",
+            "file": "lib/event_success/presentation/event_success_controller.dart",
+            "symbol": "EventSuccessController"
+          },
+          {
+            "id": "booking_controller",
+            "language": "dart",
+            "file": "lib/events/presentation/event_booking_controller.dart",
+            "symbol": "EventBookingController"
+          },
+          {
+            "id": "conversation_cue",
+            "language": "dart",
+            "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+            "symbol": "StageCueLine"
+          }
+        ],
+        "componentContracts": [
+          "catch.button",
+          "catch.error_state",
+          "catch.field",
+          "catch.icon_button",
+          "catch.privacy_badge",
+          "catch.skeleton",
+          "catch.surface",
+          "catch.toggle",
+          "catch.top_bar"
+        ],
+        "dataContracts": [
+          "contracts/callables/complete_event_success_first_hello_mission_payload.schema.json",
+          "contracts/callables/self_check_in_attendance_payload.schema.json",
+          "contracts/callables/start_event_success_first_hello_mission_payload.schema.json",
+          "contracts/callables/submit_event_success_wingman_request_payload.schema.json",
+          "contracts/firestore/event_participations.schema.json",
+          "contracts/firestore/event_success_arrival_missions.schema.json",
+          "contracts/firestore/event_success_assignments.schema.json",
+          "contracts/firestore/event_success_compatibility_responses.schema.json",
+          "contracts/firestore/event_success_feedback.schema.json",
+          "contracts/firestore/event_success_plans.schema.json",
+          "contracts/firestore/event_success_preferences.schema.json",
+          "contracts/firestore/event_success_wingman_requests.schema.json",
+          "contracts/firestore/events.schema.json",
+          "contracts/firestore/public_profiles.schema.json",
+          "contracts/firestore/users.schema.json"
+        ]
+      },
+      "coverage": {
+        "states": 26,
+        "scenarios": 26,
+        "actionCases": 35,
+        "actions": 12,
+        "captures": 45,
+        "previews": 2,
+        "testFiles": 2,
+        "evidenceExceptions": 11
+      },
+      "dimensions": {
+        "load": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "loading",
+            "message",
+            "error",
+            "offline"
+          ]
+        },
+        "moment": {
+          "default": "live",
+          "values": [
+            "live",
+            "pre_arrival",
+            "arrival",
+            "first_hello",
+            "questionnaire",
+            "assignment",
+            "reveal",
+            "wingman",
+            "post_event"
+          ]
+        },
+        "mutation": {
+          "default": "idle",
+          "values": [
+            "idle",
+            "pending",
+            "known_gap"
+          ]
+        },
+        "launch": {
+          "default": "route",
+          "values": [
+            "route",
+            "transition_auto_launch"
+          ]
+        },
+        "accessibility": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "text_scale_2",
+            "reduced_motion"
+          ]
+        },
+        "theme": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "light_dark"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "retry_companion_data",
+          "owner": "companion_route",
+          "codeValue": "companionRouteRetryCallback",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId",
+            "retryIntent",
+            "failureStateVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "route_loading",
+                "default_live_guide"
+              ]
+            }
+          ],
+          "description": "Invalidates only the provider selected by the companion route's typed retry intent.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "self_check_in",
+          "owner": "booking_controller",
+          "codeValue": "selfCheckIn",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId",
+            "participationVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "self_check_in",
+                "default_live_guide"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "event.participation_self_checked_in"
+            }
+          ],
+          "description": "Confirms attendance once through location verification, after either direct check-in or a matching host QR scan.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "start_first_hello",
+          "owner": "event_success_controller",
+          "codeValue": "startFirstHelloMission",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId",
+            "missionVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "first_hello_assigned"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "event_success.first_hello_started"
+            }
+          ],
+          "description": "Creates the viewer's location-verified First Hello mission once for the current event.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "complete_first_hello",
+          "owner": "event_success_controller",
+          "codeValue": "completeFirstHelloMission",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId",
+            "missionId",
+            "answerId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default_live_guide"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "event_success.first_hello_completed"
+            }
+          ],
+          "description": "Completes the assigned First Hello mission once with the selected answer and verified location.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "skip_first_hello",
+          "owner": "booking_controller",
+          "codeValue": "selfCheckIn",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId",
+            "missionVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default_live_guide"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "event.participation_self_checked_in"
+            }
+          ],
+          "description": "Skips First Hello by completing the shared self-check-in path for the current event.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "save_compatibility_answers",
+          "owner": "event_success_controller",
+          "codeValue": "saveCompatibilityResponse",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId",
+            "questionnaireVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "compatibility_questionnaire",
+                "default_live_guide"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "event_success.compatibility_response_saved"
+            }
+          ],
+          "description": "Normalizes and persists one compatibility-questionnaire response for the current event and viewer.",
+          "implementationStatus": "known_gap",
+          "debtId": "FEATURE-ACTION-WIRING-001",
+          "implementationNotes": "EventSuccessController.saveCompatibilityResponse and the provider-free callback exist, but EventSuccessCompanionRouteScreen does not pass onSaveCompatibilityAnswers into EventSuccessCompanionScreen; production taps currently fall through to the no-op default."
+        },
+        {
+          "id": "set_micro_pods_included",
+          "owner": "event_success_controller",
+          "codeValue": "setMicroPodsOptOut",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId",
+            "preferenceVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "micro_pod_assignment",
+                "opt_out_assignments"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "event_success.micro_pod_preference_updated"
+            }
+          ],
+          "description": "Persists whether the viewer is included in micro-pod assignments for this event.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "set_guided_rotations_included",
+          "owner": "event_success_controller",
+          "codeValue": "setGuidedRotationsOptOut",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId",
+            "preferenceVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "rotation_schedule",
+                "live_reveal_countdown",
+                "live_reveal_unlocked",
+                "opt_out_assignments"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "event_success.guided_rotation_preference_updated"
+            }
+          ],
+          "description": "Persists whether the viewer is included in guided rotations for this event.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "save_wingman_request",
+          "owner": "event_success_controller",
+          "codeValue": "saveWingmanRequest",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId",
+            "targetUid",
+            "requestVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "wingman_request"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "event_success.wingman_request_saved"
+            }
+          ],
+          "description": "Creates or replaces the viewer's private host-help request for one checked-in attendee.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "withdraw_wingman_request",
+          "owner": "event_success_controller",
+          "codeValue": "withdrawWingmanRequest",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId",
+            "requestVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "wingman_request"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "event_success.wingman_request_withdrawn"
+            }
+          ],
+          "description": "Withdraws the viewer's active private host-help request for the event.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "submit_feedback",
+          "owner": "event_success_controller",
+          "codeValue": "submitFeedback",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId",
+            "feedbackVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "post_event_afterglow_feedback"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "event_success.private_feedback_saved"
+            }
+          ],
+          "description": "Creates or updates the viewer's private post-event feedback once for the current feedback version.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "copy_conversation_cue",
+          "owner": "conversation_cue",
+          "codeValue": "_copyCue",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId",
+            "cueId",
+            "copyAttemptId"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "event_success.conversation_cue_copied"
+            }
+          ],
+          "description": "Copies one live or post-event conversation cue to the clipboard and confirms the copy in branded feedback.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [
+        {
+          "stateIds": [
+            "event_not_found",
+            "sign_in_required",
+            "no_booking",
+            "data_load_error",
+            "self_check_in",
+            "offline",
+            "text_scale_2",
+            "reduced_motion",
+            "light_dark"
+          ],
+          "evidence": [
+            "tests"
+          ],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "These registered companion states have deterministic captures and Widgetbook evidence but no focused state-level automated test recorded by the screen authority yet."
+        },
+        {
+          "stateIds": [
+            "auto_launch"
+          ],
+          "evidence": [
+            "captures",
+            "previews"
+          ],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "Auto-launch is transition policy verified by the companion-launcher test rather than a stable standalone render state, so no deterministic capture or Widgetbook preview is registered."
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "route_loading",
+          "stateId": "route_loading",
+          "kind": "loading",
+          "status": "captured",
+          "dimensions": {
+            "load": "loading",
+            "moment": "live",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_route_loading",
+              "event_success_companion_profile_loading",
+              "event_success_companion_plan_loading"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionRouteScreen/Route states"
+            ],
+            "tests": [
+              "test/event_success/event_success_live_screens_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "loading",
+                "moment": "live",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "event_not_found",
+          "stateId": "event_not_found",
+          "kind": "empty",
+          "status": "captured",
+          "dimensions": {
+            "load": "message",
+            "moment": "live",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_event_not_found"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionRouteScreen/Route states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "message",
+                "moment": "live",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "sign_in_required",
+          "stateId": "sign_in_required",
+          "kind": "permission",
+          "status": "captured",
+          "dimensions": {
+            "load": "message",
+            "moment": "live",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_sign_in_required"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionRouteScreen/Route states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "message",
+                "moment": "live",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "no_booking",
+          "stateId": "no_booking",
+          "kind": "permission",
+          "status": "captured",
+          "dimensions": {
+            "load": "message",
+            "moment": "live",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_no_booking"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionRouteScreen/Route states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "message",
+                "moment": "live",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "plan_missing",
+          "stateId": "plan_missing",
+          "kind": "empty",
+          "status": "captured",
+          "dimensions": {
+            "load": "message",
+            "moment": "live",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_plan_missing"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionRouteScreen/Route states"
+            ],
+            "tests": [
+              "test/event_success/event_success_live_screens_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "message",
+                "moment": "live",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "data_load_error",
+          "stateId": "data_load_error",
+          "kind": "error",
+          "status": "captured",
+          "dimensions": {
+            "load": "error",
+            "moment": "live",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_event_load_error",
+              "event_success_companion_data_error",
+              "event_success_companion_participation_error",
+              "event_success_companion_plan_error"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionRouteScreen/Route states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "recovery",
+              "dimensions": {
+                "load": "error",
+                "moment": "live",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "retry_companion_data"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "default_live_guide",
+          "stateId": "default_live_guide",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "moment": "live",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionScreen/Screen states"
+            ],
+            "tests": [
+              "test/event_success/event_success_live_screens_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "ready",
+                "moment": "live",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "pre_arrival_planning",
+          "stateId": "pre_arrival_planning",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "moment": "pre_arrival",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_pre_arrival_planning"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionScreen/Screen states"
+            ],
+            "tests": [
+              "test/event_success/event_success_live_screens_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "ready",
+                "moment": "pre_arrival",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "self_check_in",
+          "stateId": "self_check_in",
+          "kind": "mutation",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "moment": "arrival",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_self_check_in",
+              "event_success_companion_self_check_in_pending"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionScreen/Screen states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "idle",
+              "dimensions": {
+                "load": "ready",
+                "moment": "arrival",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "self_check_in"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            },
+            {
+              "id": "pending",
+              "dimensions": {
+                "load": "ready",
+                "moment": "arrival",
+                "mutation": "pending",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "self_check_in"
+                ],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "first_hello_start",
+          "stateId": "first_hello_start",
+          "kind": "mutation",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "moment": "first_hello",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_first_hello_start",
+              "event_success_companion_first_hello_start_pending"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionScreen/Screen states"
+            ],
+            "tests": [
+              "test/event_success/event_success_live_screens_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "idle",
+              "dimensions": {
+                "load": "ready",
+                "moment": "first_hello",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "start_first_hello",
+                  "skip_first_hello"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "complete_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            },
+            {
+              "id": "pending",
+              "dimensions": {
+                "load": "ready",
+                "moment": "first_hello",
+                "mutation": "pending",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "start_first_hello",
+                  "skip_first_hello"
+                ],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "complete_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "first_hello_assigned",
+          "stateId": "first_hello_assigned",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "moment": "first_hello",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_first_hello_assigned",
+              "event_success_companion_first_hello_complete_pending"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionScreen/Screen states"
+            ],
+            "tests": [
+              "test/event_success/event_success_live_screens_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "idle",
+              "dimensions": {
+                "load": "ready",
+                "moment": "first_hello",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "complete_first_hello",
+                  "skip_first_hello"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            },
+            {
+              "id": "pending",
+              "dimensions": {
+                "load": "ready",
+                "moment": "first_hello",
+                "mutation": "pending",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "complete_first_hello",
+                  "skip_first_hello"
+                ],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "compatibility_questionnaire",
+          "stateId": "compatibility_questionnaire",
+          "kind": "mutation",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "moment": "questionnaire",
+            "mutation": "known_gap",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_compatibility_questionnaire",
+              "event_success_companion_compatibility_pending",
+              "event_success_companion_compatibility_saved"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionScreen/Screen states"
+            ],
+            "tests": [
+              "test/event_success/event_success_live_screens_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "route_wiring_gap",
+              "dimensions": {
+                "load": "ready",
+                "moment": "questionnaire",
+                "mutation": "known_gap",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "save_compatibility_answers"
+                ],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "live_step_context",
+          "stateId": "live_step_context",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "moment": "live",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_live_step_context"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionScreen/Screen states"
+            ],
+            "tests": [
+              "test/event_success/event_success_live_screens_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "ready",
+                "moment": "live",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "conversation_cues",
+          "stateId": "conversation_cues",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "moment": "live",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_social_prompt",
+              "event_success_companion_conversation_cues"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionScreen/Screen states"
+            ],
+            "tests": [
+              "test/event_success/event_success_live_screens_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "copy",
+              "dimensions": {
+                "load": "ready",
+                "moment": "live",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "copy_conversation_cue"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "micro_pod_assignment",
+          "stateId": "micro_pod_assignment",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "moment": "assignment",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_micro_pod_assignment",
+              "event_success_companion_micro_pod_loading_peers",
+              "event_success_companion_table_group_rotations"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionScreen/Screen states"
+            ],
+            "tests": [
+              "test/event_success/event_success_live_screens_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "included",
+              "dimensions": {
+                "load": "ready",
+                "moment": "assignment",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "set_micro_pods_included"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            },
+            {
+              "id": "pending",
+              "dimensions": {
+                "load": "ready",
+                "moment": "assignment",
+                "mutation": "pending",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "set_micro_pods_included"
+                ],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "rotation_schedule",
+          "stateId": "rotation_schedule",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "moment": "assignment",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_rotation_schedule",
+              "event_success_companion_rotation_loading_peers"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionScreen/Screen states"
+            ],
+            "tests": [
+              "test/event_success/event_success_live_screens_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "included",
+              "dimensions": {
+                "load": "ready",
+                "moment": "assignment",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "set_guided_rotations_included"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            },
+            {
+              "id": "pending",
+              "dimensions": {
+                "load": "ready",
+                "moment": "assignment",
+                "mutation": "pending",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "set_guided_rotations_included"
+                ],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "live_reveal_countdown",
+          "stateId": "live_reveal_countdown",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "moment": "reveal",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_live_reveal_countdown"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionScreen/Screen states"
+            ],
+            "tests": [
+              "test/event_success/event_success_live_screens_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "rotation_preference",
+              "dimensions": {
+                "load": "ready",
+                "moment": "reveal",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "set_guided_rotations_included"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "live_reveal_unlocked",
+          "stateId": "live_reveal_unlocked",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "moment": "reveal",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_live_reveal_unlocked"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionScreen/Screen states"
+            ],
+            "tests": [
+              "test/event_success/event_success_live_screens_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "rotation_preference",
+              "dimensions": {
+                "load": "ready",
+                "moment": "reveal",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "set_guided_rotations_included"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "wingman_request",
+          "stateId": "wingman_request",
+          "kind": "mutation",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "moment": "wingman",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_wingman_request",
+              "event_success_companion_wingman_pending",
+              "event_success_companion_wingman_submitted"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionScreen/Screen states"
+            ],
+            "tests": [
+              "test/event_success/event_success_live_screens_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "idle",
+              "dimensions": {
+                "load": "ready",
+                "moment": "wingman",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "save_wingman_request",
+                  "withdraw_wingman_request"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            },
+            {
+              "id": "pending",
+              "dimensions": {
+                "load": "ready",
+                "moment": "wingman",
+                "mutation": "pending",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "save_wingman_request",
+                  "withdraw_wingman_request"
+                ],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "post_event_afterglow_feedback",
+          "stateId": "post_event_afterglow_feedback",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "moment": "post_event",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_afterglow_feedback",
+              "event_success_companion_feedback_pending"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionScreen/Screen states"
+            ],
+            "tests": [
+              "test/event_success/event_success_live_screens_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "idle",
+              "dimensions": {
+                "load": "ready",
+                "moment": "post_event",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request"
+                ]
+              }
+            },
+            {
+              "id": "pending",
+              "dimensions": {
+                "load": "ready",
+                "moment": "post_event",
+                "mutation": "pending",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "copy_conversation_cue"
+                ],
+                "disabled": [
+                  "submit_feedback"
+                ],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "opt_out_assignments",
+          "stateId": "opt_out_assignments",
+          "kind": "mutation",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "moment": "assignment",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_micro_pod_opted_out",
+              "event_success_companion_micro_pod_opt_out_pending",
+              "event_success_companion_rotation_opt_out_pending",
+              "event_success_companion_rotation_opted_out"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionScreen/Screen states"
+            ],
+            "tests": [
+              "test/event_success/event_success_live_screens_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "micro_pods",
+              "dimensions": {
+                "load": "ready",
+                "moment": "assignment",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "set_micro_pods_included"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            },
+            {
+              "id": "guided_rotations",
+              "dimensions": {
+                "load": "ready",
+                "moment": "assignment",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "set_guided_rotations_included"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            },
+            {
+              "id": "pending",
+              "dimensions": {
+                "load": "ready",
+                "moment": "assignment",
+                "mutation": "pending",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included"
+                ],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "auto_launch",
+          "stateId": "auto_launch",
+          "kind": "permission",
+          "status": "tested",
+          "dimensions": {
+            "load": "ready",
+            "moment": "live",
+            "mutation": "idle",
+            "launch": "transition_auto_launch",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/event_success/event_success_companion_launcher_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "ready",
+                "moment": "live",
+                "mutation": "idle",
+                "launch": "transition_auto_launch",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "offline",
+          "stateId": "offline",
+          "kind": "offline",
+          "status": "captured",
+          "dimensions": {
+            "load": "offline",
+            "moment": "live",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_offline"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionRouteScreen/Route states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "recovery",
+              "dimensions": {
+                "load": "offline",
+                "moment": "live",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "retry_companion_data"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "text_scale_2",
+          "stateId": "text_scale_2",
+          "kind": "accessibility",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "moment": "live",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "text_scale_2",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_text_scale_2"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionScreen/Screen states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "ready",
+                "moment": "live",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "text_scale_2",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "reduced_motion",
+          "stateId": "reduced_motion",
+          "kind": "accessibility",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "moment": "live",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "reduced_motion",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_reduced_motion"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionScreen/Screen states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "ready",
+                "moment": "live",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "reduced_motion",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "light_dark",
+          "stateId": "light_dark",
+          "kind": "theme",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "moment": "live",
+            "mutation": "idle",
+            "launch": "route",
+            "accessibility": "standard",
+            "theme": "light_dark"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_success_companion_light_dark"
+            ],
+            "previewIds": [
+              "EventSuccessCompanionScreen/Screen states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "ready",
+                "moment": "live",
+                "mutation": "idle",
+                "launch": "route",
+                "accessibility": "standard",
+                "theme": "light_dark"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_companion_data",
+                  "self_check_in",
+                  "start_first_hello",
+                  "complete_first_hello",
+                  "skip_first_hello",
+                  "save_compatibility_answers",
+                  "set_micro_pods_included",
+                  "set_guided_rotations_included",
+                  "save_wingman_request",
+                  "withdraw_wingman_request",
+                  "submit_feedback",
+                  "copy_conversation_cue"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "screen.event_success.companion",
+          "owner": "event_success",
+          "routes": [
+            {
+              "id": "eventSuccessCompanionScreen",
+              "path": "/organizers/:clubId/events/:eventId/companion",
+              "role": "primary"
+            }
+          ]
+        },
+        "components": [
+          {
+            "id": "catch.button",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchButton",
+              "file": "lib/core/widgets/catch_button.dart",
+              "constructors": [
+                "CatchButton"
+              ]
+            }
+          },
+          {
+            "id": "catch.error_state",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchErrorState",
+              "file": "lib/core/widgets/catch_error_state.dart",
+              "constructors": [
+                "CatchErrorState",
+                "CatchErrorState.fromError"
+              ]
+            }
+          },
+          {
+            "id": "catch.field",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchField",
+              "file": "lib/core/widgets/catch_field.dart",
+              "constructors": [
+                "CatchField.read",
+                "CatchField.content",
+                "CatchField.nav",
+                "CatchField.action",
+                "CatchField.toggle",
+                "CatchField.input",
+                "CatchField.inputActions",
+                "CatchField.control",
+                "CatchField.choices",
+                "CatchField.optionCards",
+                "CatchField.stepper",
+                "CatchField.add",
+                "CatchField.select"
+              ]
+            }
+          },
+          {
+            "id": "catch.icon_button",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchIconButton",
+              "file": "lib/core/widgets/catch_icon_button.dart",
+              "constructors": [
+                "CatchIconButton",
+                "CatchIconButton.icon",
+                "CatchIconButton.counted"
+              ]
+            }
+          },
+          {
+            "id": "catch.privacy_badge",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchPrivacyBadge",
+              "file": "lib/core/widgets/catch_privacy_badge.dart",
+              "constructors": [
+                "CatchPrivacyBadge"
+              ]
+            }
+          },
+          {
+            "id": "catch.skeleton",
+            "kind": "pattern",
+            "dart": {
+              "symbol": "CatchSkeleton",
+              "file": "lib/core/widgets/catch_skeleton.dart",
+              "constructors": [
+                "CatchSkeleton.card",
+                "CatchSkeleton.box",
+                "CatchSkeleton.text",
+                "CatchSkeleton.textBlock",
+                "CatchSkeleton.circle",
+                "CatchSkeleton.custom"
+              ]
+            }
+          },
+          {
+            "id": "catch.surface",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchSurface",
+              "file": "lib/core/widgets/catch_surface.dart",
+              "constructors": [
+                "CatchSurface",
+                "CatchSurface.card",
+                "CatchSurface.tinted",
+                "CatchSurface.message"
+              ]
+            }
+          },
+          {
+            "id": "catch.toggle",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchToggle",
+              "file": "lib/core/widgets/catch_toggle.dart",
+              "constructors": [
+                "CatchToggle"
+              ]
+            }
+          },
+          {
+            "id": "catch.top_bar",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchTopBar",
+              "file": "lib/core/widgets/catch_top_bar.dart",
+              "constructors": [
+                "CatchTopBar"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "EventSuccessCompanionRouteScreen/Route states",
+          "EventSuccessCompanionScreen/Screen states"
+        ]
+      }
+    }
+  ]
+}

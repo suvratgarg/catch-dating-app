@@ -167,6 +167,11 @@
           "docAnchor": "docs/agent_operating_model.md#done-criteria-for-this-harness"
         },
         {
+          "tool": "design:feature-coverage",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/design_parity/README.md#feature-contract-compiler"
+        },
+        {
           "tool": "git:audit-merge-drops",
           "stage": "scanner-gate",
           "docAnchor": "docs/agent_operating_model.md#git-preservation-and-reconciliation-contract"
@@ -1445,6 +1450,7 @@
         "lib/**/presentation/**",
         "lib/**/data/**",
         "functions/src/**",
+        "design/features/**",
         "docs/**"
       ],
       "instruction": "Every user-visible action must declare its scope key and cardinality: not allowed, singleton, unbounded, or domain-bounded. Singleton actions must render their resulting state instead of duplicate CTAs and be enforced server-side. Unbounded actions must have a UI that supports zero, one, and many items. Domain bounds must be real product constraints, not UI shortcuts.",
@@ -1459,8 +1465,50 @@
       ],
       "enforcement": [
         {
+          "tool": "design:feature-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/design_parity/README.md#feature-contract-compiler"
+        },
+        {
           "stage": "manual",
           "docAnchor": "docs/audit_registry/rules.json"
+        }
+      ]
+    },
+    "PENDING-SNAPSHOT-001": {
+      "title": "Protect the submitted request snapshot while an operation is pending",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.5.5"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "website/src/features/**",
+        "admin/src/features/**",
+        "design/features/**",
+        "design/screens/catch.screens.json",
+        "test/**"
+      ],
+      "instruction": "Every pending user operation must declare one integrity policy. Frozen snapshots disable request-defining inputs, conflicting actions, mutation-reset callbacks, and unsafe route exits until settlement. Versioned snapshots require immutable generations plus stale-result rejection or cancellation and tests. Independently keyed concurrency requires distinct typed scope keys and separate pending/error surfaces. A loading button alone is not sufficient; controllers must also deduplicate duplicate dispatches or use an equivalent idempotency boundary.",
+      "sunset_when": [
+        "Never; pending request integrity remains a permanent cross-runtime contract"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "design:feature-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/design_parity/README.md#feature-contract-compiler"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/app_architecture.md#exhibit-arch-pending-snapshot-001-pending-request-snapshot-integrity"
         }
       ]
     },
@@ -3140,6 +3188,6 @@
       ]
     }
   },
-  "version": "2.8.1",
-  "updated": "2026-07-21"
+  "version": "2.8.4",
+  "updated": "2026-07-23"
 }

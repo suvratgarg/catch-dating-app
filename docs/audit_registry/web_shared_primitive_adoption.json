@@ -1,14 +1,13 @@
 {
   "schemaVersion": 1,
-  "version": 15,
-  "updated": "2026-07-13",
+  "version": 16,
+  "updated": "2026-07-23",
   "owner": "web_platform",
   "goal": "Classify every reusable primitive family shared by the marketing and admin React surfaces, extract only compatible semantic cores into @catch/web-ui, and keep usability, performance, organization, and coverage follow-ups explicit until they are completed or owner-blocked.",
   "sourceDocs": [
     "docs/web_surface_architecture.md",
     "docs/marketing_website_architecture.md",
-    "docs/design_language.md",
-    "docs/plans/web_platform_hardening_spec.md"
+    "docs/design_language.md"
   ],
   "referenceImplementation": {
     "id": "WEB-SHARED-TOGGLE-001",

@@ -59,7 +59,7 @@ export function HostPreviewFaqList({
 
 export const HostApplicationShell = forwardRef<
   HTMLFormElement,
-  FormHTMLAttributes<HTMLFormElement> & {reveal?: boolean}
+  FormHTMLAttributes<HTMLFormElement> & {pending?: boolean; reveal?: boolean}
 >(function HostApplicationShell({
   children,
   className,

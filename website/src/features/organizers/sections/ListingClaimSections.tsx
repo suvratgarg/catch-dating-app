@@ -126,13 +126,14 @@ function ClaimListingPanel({
         action={
           user ? (
             <Button
+              disabled={isSubmitting}
               variant="ghost"
               onClick={() => void handleSignOut()}
               type="button"
             >{websiteCopy["listingclaimsections_0380"]}</Button>
           ) : (
             <Button
-              disabled={!authReady || isSigningIn}
+              disabled={!authReady || isSigningIn || isSubmitting}
               onClick={() => void handleSignIn()}
               type="button"
             >
@@ -148,7 +149,7 @@ function ClaimListingPanel({
             "Checking sign-in status."}
       </AuthStatusRow>
 
-      <ClaimRequestForm onSubmit={handleSubmit}>
+      <ClaimRequestForm onSubmit={handleSubmit} pending={isSubmitting}>
         <TextField
           id={`claim-${listing.id}-requester-name`}
           label={websiteCopy["listingclaimsections_0384"]}

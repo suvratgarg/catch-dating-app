@@ -116,9 +116,10 @@ class HostClubCreateFieldDisplayState {
 
   factory HostClubCreateFieldDisplayState.resolve({
     required String? selectedCityName,
+    bool detailsEnabled = true,
   }) {
     return HostClubCreateFieldDisplayState(
-      detailsEnabled: true,
+      detailsEnabled: detailsEnabled,
       selectedCity: cityOptionByName(selectedCityName),
       rawCityName: selectedCityName,
       currencyCode: currencyCodeForCityName(selectedCityName),
@@ -284,6 +285,7 @@ class HostClubCreateState {
   bool get canSaveDraft => footer.canSaveDraft;
   String get lastStepLabel => footer.lastStepLabel;
   bool get isLoading => footer.isLoading;
+  bool get requestControlsEnabled => !isLoading;
 
   factory HostClubCreateState.resolve({
     required int currentStep,
@@ -307,7 +309,7 @@ class HostClubCreateState {
         ? 0
         : currentStep.clamp(0, totalSteps - 1).toInt();
     final isLastStep = totalSteps == 0 || clampedStep == totalSteps - 1;
-    final isLoading = submitPending || saveDraftPending;
+    final isLoading = submitPending || saveDraftPending || draftLoadPending;
     final footer = HostClubCreateFooterState(
       isLastStep: isLastStep,
       isLoading: isLoading,
@@ -317,7 +319,9 @@ class HostClubCreateState {
       primaryIntent: isLastStep
           ? HostClubCreatePrimaryIntent.submit
           : HostClubCreatePrimaryIntent.nextStep,
-      saveDraftIntent: HostClubCreateSaveDraftIntent.saveDraft,
+      saveDraftIntent: isLoading
+          ? null
+          : HostClubCreateSaveDraftIntent.saveDraft,
     );
     return HostClubCreateState(
       currentStep: clampedStep,
@@ -325,12 +329,13 @@ class HostClubCreateState {
       title: totalSteps == 0 ? '' : formTitleForStep(activeSteps, clampedStep),
       footer: footer,
       media: HostClubCreateMediaState.resolve(
-        enabled: !submitPending,
+        enabled: !isLoading,
         clubPhotoPreviews: clubPhotoPreviews,
         profileImage: profileImage,
       ),
       fields: HostClubCreateFieldDisplayState.resolve(
         selectedCityName: selectedCity,
+        detailsEnabled: !isLoading,
       ),
       draftRestore: HostClubCreateDraftRestoreState.resolve(
         enabled: draftRestoreEnabled,

@@ -37,6 +37,7 @@ import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
+import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
@@ -176,6 +177,7 @@ import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dar
 import 'package:catch_dating_app/reviews/presentation/reviews_history_state.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
+import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
@@ -6454,6 +6456,7 @@ Map<String, PublicProfile> _eventRecapRosterProfiles({
 List<Object> _eventRecapProviderOverrides({
   AsyncValue<EventRecapViewModel?>? recapValue,
   Map<String, PublicProfile>? rosterProfiles,
+  AsyncValue<Map<String, PublicProfile>>? rosterProfilesValue,
 }) {
   final resolvedRecapValue =
       recapValue ?? AsyncData<EventRecapViewModel?>(_eventRecapViewModel());
@@ -6467,8 +6470,11 @@ List<Object> _eventRecapProviderOverrides({
     eventRecapViewModelProvider(
       _eventRecapEvent.id,
     ).overrideWith((ref) => resolvedRecapValue),
-    publicProfilesByIdsProvider(PublicProfilesQuery(attendeeIds)).overrideWith(
-      (ref) async => rosterProfiles ?? _eventRecapRosterProfiles(),
+    publicProfilesByIdsProvider(
+      PublicProfilesQuery(attendeeIds),
+    ).overrideWithValue(
+      rosterProfilesValue ??
+          AsyncData(rosterProfiles ?? _eventRecapRosterProfiles()),
     ),
   ];
 }
@@ -6694,6 +6700,22 @@ List<Object> _settingsAccountProviderOverrides({
       profileQuery,
     ).overrideWith((ref) async => publicProfiles),
   ];
+}
+
+Future<bool> _capturePendingExternalLauncher(Uri uri, {Object? mode}) =>
+    Completer<bool>().future;
+
+Future<bool> _captureFailedExternalLauncher(Uri uri, {Object? mode}) async =>
+    false;
+
+Future<void> _driveEventLocationDirections(WidgetTester tester) async {
+  await tester.tap(find.text('Get directions'));
+  await tester.pump();
+}
+
+Future<void> _driveSettingsHostApp(WidgetTester tester) async {
+  await tester.tap(find.byKey(SettingsKeys.hostAppRow));
+  await tester.pump();
 }
 
 enum _SettingsMutationCaptureMode {
@@ -9966,6 +9988,39 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
+    id: 'event_location_map_directions_pending',
+    routeIds: const <String>['eventLocationMapScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: [
+      ..._eventDetailCaptureProviderOverrides(),
+      externalUrlLauncherProvider.overrideWithValue(
+        _capturePendingExternalLauncher,
+      ),
+    ],
+    drive: _driveEventLocationDirections,
+    builder: (context) => EventLocationMapRouteScreen(
+      eventId: _eventDetailEvent.id,
+      enableNetworkTiles: false,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_location_map_directions_failure',
+    routeIds: const <String>['eventLocationMapScreen'],
+    device: CaptureDevice.reviewPhone,
+    includeOverlays: true,
+    providerOverrides: [
+      ..._eventDetailCaptureProviderOverrides(),
+      externalUrlLauncherProvider.overrideWithValue(
+        _captureFailedExternalLauncher,
+      ),
+    ],
+    drive: _driveEventLocationDirections,
+    builder: (context) => EventLocationMapRouteScreen(
+      eventId: _eventDetailEvent.id,
+      enableNetworkTiles: false,
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'event_location_map_text_scale_2',
     routeIds: const <String>['eventLocationMapScreen'],
     device: CaptureDevice.reviewPhone,
@@ -12284,6 +12339,20 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => const ActivityScreen(),
   ),
   ScreenCaptureEntry(
+    id: 'notifications_uid_error',
+    routeIds: const <String>['notificationsScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: [
+      uidProvider.overrideWithValue(
+        AsyncError<String?>(
+          StateError('Capture notification identity failed'),
+          StackTrace.empty,
+        ),
+      ),
+    ],
+    builder: (context) => const ActivityScreen(),
+  ),
+  ScreenCaptureEntry(
     id: 'notifications_signed_out',
     routeIds: const <String>['notificationsScreen'],
     device: CaptureDevice.reviewPhone,
@@ -12414,6 +12483,27 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
           _eventRecapProfiles.last.uid,
           _eventRecapProfiles[_eventRecapProfiles.length - 2].uid,
         },
+      ),
+    ),
+    builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_recap_profile_lookup_loading',
+    routeIds: const <String>['eventRecapScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _eventRecapProviderOverrides(
+      rosterProfilesValue: const AsyncLoading<Map<String, PublicProfile>>(),
+    ),
+    builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_recap_profile_lookup_error',
+    routeIds: const <String>['eventRecapScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _eventRecapProviderOverrides(
+      rosterProfilesValue: AsyncError<Map<String, PublicProfile>>(
+        StateError('Capture recap profile lookup failed'),
+        StackTrace.empty,
       ),
     ),
     builder: (context) => EventRecapScreen(eventId: _eventRecapEvent.id),
@@ -14140,6 +14230,33 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => const SettingsScreen(),
   ),
   ScreenCaptureEntry(
+    id: 'settings_external_link_pending',
+    routeIds: const <String>['settingsScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: [
+      ..._settingsAccountProviderOverrides(),
+      externalUrlLauncherProvider.overrideWithValue(
+        _capturePendingExternalLauncher,
+      ),
+    ],
+    drive: _driveSettingsHostApp,
+    builder: (context) => const SettingsScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'settings_external_link_failure',
+    routeIds: const <String>['settingsScreen'],
+    device: CaptureDevice.reviewTall,
+    includeOverlays: true,
+    providerOverrides: [
+      ..._settingsAccountProviderOverrides(),
+      externalUrlLauncherProvider.overrideWithValue(
+        _captureFailedExternalLauncher,
+      ),
+    ],
+    drive: _driveSettingsHostApp,
+    builder: (context) => const SettingsScreen(),
+  ),
+  ScreenCaptureEntry(
     id: 'settings_preference_pending',
     routeIds: const <String>['settingsScreen'],
     device: CaptureDevice.reviewTall,
@@ -14377,6 +14494,27 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.reviewPhone,
     providerOverrides: _paymentHistoryProviderOverrides(
       events: AsyncData(_paymentHistoryEvents.take(3).toList()),
+    ),
+    builder: (context) => const PaymentHistoryScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'payment_history_event_title_loading',
+    routeIds: const <String>['paymentHistoryScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _paymentHistoryProviderOverrides(
+      events: const AsyncLoading<List<Event>>(),
+    ),
+    builder: (context) => const PaymentHistoryScreen(),
+  ),
+  ScreenCaptureEntry(
+    id: 'payment_history_event_title_error',
+    routeIds: const <String>['paymentHistoryScreen'],
+    device: CaptureDevice.reviewPhone,
+    providerOverrides: _paymentHistoryProviderOverrides(
+      events: AsyncError<List<Event>>(
+        StateError('Capture payment event-title lookup failed'),
+        StackTrace.empty,
+      ),
     ),
     builder: (context) => const PaymentHistoryScreen(),
   ),

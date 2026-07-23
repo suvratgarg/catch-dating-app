@@ -131,9 +131,10 @@ class HostEventEditScreenState {
     Object? saveError,
   }) {
     final canEdit = eventCanEdit(event);
+    final requestControlsEnabled = canEdit && !savePending;
     final scheduleLocked = eventScheduleLocked(event, now);
     return HostEventEditScreenState(
-      canEdit: canEdit,
+      canEdit: requestControlsEnabled,
       scheduleLocked: scheduleLocked,
       policyLocked: eventPolicyLocked(event, now),
       footer: EditHostedEventFooterState(

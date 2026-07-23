@@ -19,6 +19,10 @@ import {
 } from "lucide-react";
 
 import {AdminIconButton} from "./actions";
+import {
+  blockPendingAnchorClick,
+  useAdminOperationPending,
+} from "../../pendingOperation";
 
 import {
   classNames,
@@ -219,9 +223,23 @@ export function AdminWorkspace({
 }: HTMLAttributes<HTMLElement> & {
   children: ReactNode;
 }) {
+  const operationPending = useAdminOperationPending();
   return (
-    <main {...props} className={classNames("workspace", className)}>
-      {children}
+    <main
+      {...props}
+      aria-busy={operationPending || undefined}
+      className={classNames("workspace", className)}
+      onClickCapture={(event) => {
+        blockPendingAnchorClick(event, operationPending);
+        props.onClickCapture?.(event);
+      }}
+    >
+      <fieldset
+        className="admin-pending-operation-boundary"
+        disabled={operationPending}
+      >
+        {children}
+      </fieldset>
     </main>
   );
 }

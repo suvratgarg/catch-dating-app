@@ -17,10 +17,12 @@ class EventLocationMapScreen extends StatelessWidget {
     super.key,
     required this.state,
     required this.onGetDirections,
+    this.directionsPending = false,
   });
 
   final EventLocationMapState state;
-  final VoidCallback onGetDirections;
+  final VoidCallback? onGetDirections;
+  final bool directionsPending;
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +118,8 @@ class EventLocationMapScreen extends StatelessWidget {
                       size: CatchIcon.md,
                     ),
                     fullWidth: true,
-                    onPressed: onGetDirections,
+                    isLoading: directionsPending,
+                    onPressed: directionsPending ? null : onGetDirections,
                   ),
                 ],
               ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/shared/write_review_controller.dart';
@@ -50,6 +52,49 @@ void main() {
     expect(repository.updatedReview?.id, 'review-1');
     expect(repository.updatedReview?.rating, 5);
     expect(repository.updatedReview?.comment, 'Updated');
+  });
+
+  test('submit deduplicates an active review write snapshot', () async {
+    final pendingWrite = Completer<void>();
+    final repository = _FakeReviewsRepository()..writeCompleter = pendingWrite;
+    final container = _reviewsContainer(repository);
+    addTearDown(container.dispose);
+    final controller = container.read(writeReviewControllerProvider.notifier);
+
+    final first = controller.submit(
+      clubId: 'club-1',
+      eventId: 'event-1',
+      reviewerUserId: 'runner-1',
+      reviewerName: 'Runner One',
+      rating: 4,
+      comment: 'Frozen comment',
+    );
+    final duplicate = controller.submit(
+      clubId: 'club-1',
+      eventId: 'event-1',
+      reviewerUserId: 'runner-1',
+      reviewerName: 'Runner One',
+      rating: 1,
+      comment: 'Must not replace the request',
+    );
+
+    expect(identical(first, duplicate), isTrue);
+    expect(repository.addCallCount, 1);
+    pendingWrite.complete();
+    await Future.wait([first, duplicate]);
+    expect(repository.addedReview?.rating, 4);
+    expect(repository.addedReview?.comment, 'Frozen comment');
+
+    repository.writeCompleter = null;
+    await controller.submit(
+      clubId: 'club-1',
+      eventId: 'event-1',
+      reviewerUserId: 'runner-1',
+      reviewerName: 'Runner One',
+      rating: 5,
+      comment: 'Next write',
+    );
+    expect(repository.addCallCount, 2);
   });
 
   test('submit rejects invalid ratings', () async {
@@ -111,6 +156,8 @@ ProviderContainer _reviewsContainer(_FakeReviewsRepository repository) {
 }
 
 class _FakeReviewsRepository extends Fake implements ReviewsRepository {
+  Completer<void>? writeCompleter;
+  int addCallCount = 0;
   Review? addedReview;
   Review? updatedReview;
   String? deletedReviewId;
@@ -119,6 +166,9 @@ class _FakeReviewsRepository extends Fake implements ReviewsRepository {
 
   @override
   Future<void> addReview(Review review) async {
+    addCallCount += 1;
+    final pendingWrite = writeCompleter;
+    if (pendingWrite != null) await pendingWrite.future;
     addedReview = review;
   }
 

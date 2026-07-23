@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$OnboardingData implements DiagnosticableTreeMixin {
 
- OnboardingStep get step; bool get phoneVerified; OnboardingProfileDraft get profileDraft;
+ OnboardingStep get step; bool get phoneVerified; OnboardingProfileDraft get profileDraft; bool get operationPending;
 /// Create a copy of OnboardingData
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,21 +26,21 @@ $OnboardingDataCopyWith<OnboardingData> get copyWith => _$OnboardingDataCopyWith
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'OnboardingData'))
-    ..add(DiagnosticsProperty('step', step))..add(DiagnosticsProperty('phoneVerified', phoneVerified))..add(DiagnosticsProperty('profileDraft', profileDraft));
+    ..add(DiagnosticsProperty('step', step))..add(DiagnosticsProperty('phoneVerified', phoneVerified))..add(DiagnosticsProperty('profileDraft', profileDraft))..add(DiagnosticsProperty('operationPending', operationPending));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnboardingData&&(identical(other.step, step) || other.step == step)&&(identical(other.phoneVerified, phoneVerified) || other.phoneVerified == phoneVerified)&&(identical(other.profileDraft, profileDraft) || other.profileDraft == profileDraft));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnboardingData&&(identical(other.step, step) || other.step == step)&&(identical(other.phoneVerified, phoneVerified) || other.phoneVerified == phoneVerified)&&(identical(other.profileDraft, profileDraft) || other.profileDraft == profileDraft)&&(identical(other.operationPending, operationPending) || other.operationPending == operationPending));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,step,phoneVerified,profileDraft);
+int get hashCode => Object.hash(runtimeType,step,phoneVerified,profileDraft,operationPending);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'OnboardingData(step: $step, phoneVerified: $phoneVerified, profileDraft: $profileDraft)';
+  return 'OnboardingData(step: $step, phoneVerified: $phoneVerified, profileDraft: $profileDraft, operationPending: $operationPending)';
 }
 
 
@@ -51,7 +51,7 @@ abstract mixin class $OnboardingDataCopyWith<$Res>  {
   factory $OnboardingDataCopyWith(OnboardingData value, $Res Function(OnboardingData) _then) = _$OnboardingDataCopyWithImpl;
 @useResult
 $Res call({
- OnboardingStep step, bool phoneVerified, OnboardingProfileDraft profileDraft
+ OnboardingStep step, bool phoneVerified, OnboardingProfileDraft profileDraft, bool operationPending
 });
 
 
@@ -68,12 +68,13 @@ class _$OnboardingDataCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingData
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? step = null,Object? phoneVerified = null,Object? profileDraft = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? step = null,Object? phoneVerified = null,Object? profileDraft = null,Object? operationPending = null,}) {
   return _then(_self.copyWith(
 step: null == step ? _self.step : step // ignore: cast_nullable_to_non_nullable
 as OnboardingStep,phoneVerified: null == phoneVerified ? _self.phoneVerified : phoneVerified // ignore: cast_nullable_to_non_nullable
 as bool,profileDraft: null == profileDraft ? _self.profileDraft : profileDraft // ignore: cast_nullable_to_non_nullable
-as OnboardingProfileDraft,
+as OnboardingProfileDraft,operationPending: null == operationPending ? _self.operationPending : operationPending // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 /// Create a copy of OnboardingData
@@ -167,10 +168,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( OnboardingStep step,  bool phoneVerified,  OnboardingProfileDraft profileDraft)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( OnboardingStep step,  bool phoneVerified,  OnboardingProfileDraft profileDraft,  bool operationPending)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OnboardingData() when $default != null:
-return $default(_that.step,_that.phoneVerified,_that.profileDraft);case _:
+return $default(_that.step,_that.phoneVerified,_that.profileDraft,_that.operationPending);case _:
   return orElse();
 
 }
@@ -188,10 +189,10 @@ return $default(_that.step,_that.phoneVerified,_that.profileDraft);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( OnboardingStep step,  bool phoneVerified,  OnboardingProfileDraft profileDraft)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( OnboardingStep step,  bool phoneVerified,  OnboardingProfileDraft profileDraft,  bool operationPending)  $default,) {final _that = this;
 switch (_that) {
 case _OnboardingData():
-return $default(_that.step,_that.phoneVerified,_that.profileDraft);case _:
+return $default(_that.step,_that.phoneVerified,_that.profileDraft,_that.operationPending);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +209,10 @@ return $default(_that.step,_that.phoneVerified,_that.profileDraft);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( OnboardingStep step,  bool phoneVerified,  OnboardingProfileDraft profileDraft)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( OnboardingStep step,  bool phoneVerified,  OnboardingProfileDraft profileDraft,  bool operationPending)?  $default,) {final _that = this;
 switch (_that) {
 case _OnboardingData() when $default != null:
-return $default(_that.step,_that.phoneVerified,_that.profileDraft);case _:
+return $default(_that.step,_that.phoneVerified,_that.profileDraft,_that.operationPending);case _:
   return null;
 
 }
@@ -223,12 +224,13 @@ return $default(_that.step,_that.phoneVerified,_that.profileDraft);case _:
 
 
 class _OnboardingData extends OnboardingData with DiagnosticableTreeMixin {
-  const _OnboardingData({this.step = OnboardingStep.welcome, this.phoneVerified = false, this.profileDraft = const OnboardingProfileDraft()}): super._();
+  const _OnboardingData({this.step = OnboardingStep.welcome, this.phoneVerified = false, this.profileDraft = const OnboardingProfileDraft(), this.operationPending = false}): super._();
   
 
 @override@JsonKey() final  OnboardingStep step;
 @override@JsonKey() final  bool phoneVerified;
 @override@JsonKey() final  OnboardingProfileDraft profileDraft;
+@override@JsonKey() final  bool operationPending;
 
 /// Create a copy of OnboardingData
 /// with the given fields replaced by the non-null parameter values.
@@ -241,21 +243,21 @@ _$OnboardingDataCopyWith<_OnboardingData> get copyWith => __$OnboardingDataCopyW
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'OnboardingData'))
-    ..add(DiagnosticsProperty('step', step))..add(DiagnosticsProperty('phoneVerified', phoneVerified))..add(DiagnosticsProperty('profileDraft', profileDraft));
+    ..add(DiagnosticsProperty('step', step))..add(DiagnosticsProperty('phoneVerified', phoneVerified))..add(DiagnosticsProperty('profileDraft', profileDraft))..add(DiagnosticsProperty('operationPending', operationPending));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnboardingData&&(identical(other.step, step) || other.step == step)&&(identical(other.phoneVerified, phoneVerified) || other.phoneVerified == phoneVerified)&&(identical(other.profileDraft, profileDraft) || other.profileDraft == profileDraft));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnboardingData&&(identical(other.step, step) || other.step == step)&&(identical(other.phoneVerified, phoneVerified) || other.phoneVerified == phoneVerified)&&(identical(other.profileDraft, profileDraft) || other.profileDraft == profileDraft)&&(identical(other.operationPending, operationPending) || other.operationPending == operationPending));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,step,phoneVerified,profileDraft);
+int get hashCode => Object.hash(runtimeType,step,phoneVerified,profileDraft,operationPending);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'OnboardingData(step: $step, phoneVerified: $phoneVerified, profileDraft: $profileDraft)';
+  return 'OnboardingData(step: $step, phoneVerified: $phoneVerified, profileDraft: $profileDraft, operationPending: $operationPending)';
 }
 
 
@@ -266,7 +268,7 @@ abstract mixin class _$OnboardingDataCopyWith<$Res> implements $OnboardingDataCo
   factory _$OnboardingDataCopyWith(_OnboardingData value, $Res Function(_OnboardingData) _then) = __$OnboardingDataCopyWithImpl;
 @override @useResult
 $Res call({
- OnboardingStep step, bool phoneVerified, OnboardingProfileDraft profileDraft
+ OnboardingStep step, bool phoneVerified, OnboardingProfileDraft profileDraft, bool operationPending
 });
 
 
@@ -283,12 +285,13 @@ class __$OnboardingDataCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingData
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? step = null,Object? phoneVerified = null,Object? profileDraft = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? step = null,Object? phoneVerified = null,Object? profileDraft = null,Object? operationPending = null,}) {
   return _then(_OnboardingData(
 step: null == step ? _self.step : step // ignore: cast_nullable_to_non_nullable
 as OnboardingStep,phoneVerified: null == phoneVerified ? _self.phoneVerified : phoneVerified // ignore: cast_nullable_to_non_nullable
 as bool,profileDraft: null == profileDraft ? _self.profileDraft : profileDraft // ignore: cast_nullable_to_non_nullable
-as OnboardingProfileDraft,
+as OnboardingProfileDraft,operationPending: null == operationPending ? _self.operationPending : operationPending // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

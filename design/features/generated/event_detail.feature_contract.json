@@ -1,0 +1,2229 @@
+{
+  "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
+  "version": 2,
+  "generatedFrom": "design/features/event_detail.feature.json",
+  "generatedFor": "2026-07-23",
+  "sourceDigest": "sha256:10a1349ecf13f46122903b98422e05eb8f1a7601415a5a37c862db16260b1e82",
+  "resolvedDigest": "sha256:854afb836e6218a755058261a74027f7ca6055b275c6c84fa96decda740b72a1",
+  "feature": {
+    "id": "feature.event_detail",
+    "name": "Event Detail",
+    "owner": "events",
+    "status": "pilot",
+    "description": "Orchestrates Event Detail and its exact-location projection across state, booking, navigation, directions, and evidence contracts without duplicating the owning screen, component, data, or Widgetbook registries."
+  },
+  "coverage": {
+    "surfaces": 2,
+    "states": 26,
+    "scenarios": 26,
+    "actionCases": 37,
+    "actions": 10,
+    "captures": 33,
+    "previews": 8,
+    "testFiles": 4,
+    "evidenceExceptions": 8
+  },
+  "surfaces": [
+    {
+      "id": "consumer_flutter",
+      "runtime": "flutter",
+      "authority": {
+        "registry": "flutter_screens",
+        "id": "screen.event.detail"
+      },
+      "actionScope": {
+        "included": "Booking-dock actions represented by EventDetailBookingDockAction plus opening the exact-location child projection.",
+        "excluded": [
+          "Navigation chrome, sharing, saving, calendar, companion, organizer, messaging, authentication, and profile-completion actions remain owned and verified by their existing route and widget contracts.",
+          "Directions and exact-location child-route recovery belong to the Event Location Map projection below."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "widgetbook/lib/events/event_detail_use_cases.dart",
+          "widgetbook/lib/primitives/core_catalog_use_cases.dart"
+        ],
+        "actionOwners": [
+          {
+            "id": "booking_dock",
+            "language": "dart",
+            "file": "lib/events/presentation/event_detail_screen_state.dart",
+            "symbol": "EventDetailBookingDockAction"
+          },
+          {
+            "id": "event_detail_route",
+            "language": "dart",
+            "file": "lib/events/presentation/event_detail_screen.dart",
+            "symbol": "EventDetailScreen"
+          }
+        ],
+        "componentContracts": [
+          "catch.async_value",
+          "catch.error_state",
+          "catch.event_detail_sections"
+        ],
+        "dataContracts": [
+          "contracts/callables/event_booking_payload.schema.json",
+          "contracts/client_writes/create_saved_event.schema.json",
+          "contracts/client_writes/delete_saved_event.schema.json",
+          "contracts/firestore/event_participations.schema.json",
+          "contracts/firestore/event_waitlist_offers.schema.json",
+          "contracts/firestore/events.schema.json",
+          "contracts/firestore/saved_events.schema.json"
+        ]
+      },
+      "coverage": {
+        "states": 15,
+        "scenarios": 15,
+        "actionCases": 24,
+        "actions": 7,
+        "captures": 24,
+        "previews": 6,
+        "testFiles": 3,
+        "evidenceExceptions": 0
+      },
+      "dimensions": {
+        "load": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "loading",
+            "not_found",
+            "error",
+            "offline"
+          ]
+        },
+        "viewer": {
+          "default": "member",
+          "values": [
+            "guest",
+            "member",
+            "host"
+          ]
+        },
+        "presentation": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "ticket",
+            "spotlight_dark"
+          ]
+        },
+        "participation": {
+          "default": "eligible",
+          "values": [
+            "eligible",
+            "signed_up",
+            "waitlisted",
+            "waitlist_offer",
+            "full",
+            "attended",
+            "past",
+            "cancelled"
+          ]
+        },
+        "mutation": {
+          "default": "idle",
+          "values": [
+            "idle",
+            "book_pending",
+            "cancel_pending",
+            "book_failed",
+            "cancel_failed",
+            "book_succeeded",
+            "cancel_succeeded"
+          ]
+        },
+        "accessibility": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "text_scale_2",
+            "reduced_motion"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "book",
+          "owner": "booking_dock",
+          "codeValue": "book",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "booking_signed_up"
+              ]
+            }
+          ],
+          "description": "Creates at most one active booking relationship for the viewer and event.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "cancel_booking",
+          "owner": "booking_dock",
+          "codeValue": "cancelBooking",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "member_default"
+              ]
+            }
+          ],
+          "description": "Cancels the viewer's single active booking for the event.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "join_waitlist",
+          "owner": "booking_dock",
+          "codeValue": "joinWaitlist",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "waitlist_sold_out_cancelled_past"
+              ]
+            }
+          ],
+          "description": "Creates at most one active waitlist relationship for the viewer and event.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "leave_waitlist",
+          "owner": "booking_dock",
+          "codeValue": "leaveWaitlist",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "member_default"
+              ]
+            }
+          ],
+          "description": "Removes the viewer's single active waitlist relationship for the event.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "accept_waitlist_offer",
+          "owner": "booking_dock",
+          "codeValue": "acceptWaitlistOffer",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId",
+            "waitlistOfferId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "booking_signed_up"
+              ]
+            }
+          ],
+          "description": "Accepts one active waitlist offer and transitions it to a booking.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "decline_waitlist_offer",
+          "owner": "booking_dock",
+          "codeValue": "declineWaitlistOffer",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId",
+            "waitlistOfferId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "waitlist_sold_out_cancelled_past"
+              ]
+            }
+          ],
+          "description": "Declines one active waitlist offer without creating another offer action.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_location_map",
+          "owner": "event_detail_route",
+          "codeValue": "eventLocationMapScreen",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "eventId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.event.location_map"
+              }
+            }
+          ],
+          "description": "Opens the same event's exact-location map from the always-rendered Where section.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [],
+      "scenarios": [
+        {
+          "id": "loading",
+          "stateId": "loading",
+          "kind": "loading",
+          "status": "captured",
+          "dimensions": {
+            "load": "loading",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_detail_loading"
+            ],
+            "previewIds": [
+              "EventDetailScreen/Screen states"
+            ],
+            "tests": [
+              "test/events/event_detail_widgets_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "loading",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "eligible",
+                "mutation": "idle",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "book",
+                  "cancel_booking",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer",
+                  "open_location_map"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "not_found",
+          "stateId": "not_found",
+          "kind": "empty",
+          "status": "captured",
+          "dimensions": {
+            "load": "not_found",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_detail_not_found"
+            ],
+            "previewIds": [
+              "EventDetailScreen/Screen states"
+            ],
+            "tests": [
+              "test/events/event_detail_widgets_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "not_found",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "eligible",
+                "mutation": "idle",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "book",
+                  "cancel_booking",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer",
+                  "open_location_map"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "fatal_error",
+          "stateId": "fatal_error",
+          "kind": "error",
+          "status": "captured",
+          "dimensions": {
+            "load": "error",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_detail_error"
+            ],
+            "previewIds": [
+              "EventDetailScreen/Screen states"
+            ],
+            "tests": [
+              "test/events/event_detail_widgets_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "error",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "eligible",
+                "mutation": "idle",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "book",
+                  "cancel_booking",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer",
+                  "open_location_map"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "member_default",
+          "stateId": "member_default",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_detail_member"
+            ],
+            "previewIds": [
+              "EventDetailBody/Prompt states",
+              "EventDetailScreen/Screen states"
+            ],
+            "tests": [
+              "test/events/event_detail_widgets_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "eligible",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "eligible",
+                "mutation": "idle",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "book",
+                  "open_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "cancel_booking",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "member_ticket",
+          "stateId": "member_ticket",
+          "kind": "theme",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "ticket",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_detail_member_ticket"
+            ],
+            "previewIds": [
+              "EventDetailHeroAppBar/Catalog states",
+              "EventDetailTicketStubBand/Catalog states",
+              "EventDetailScreen/Screen states"
+            ],
+            "tests": [
+              "test/events/event_detail_widgets_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "eligible",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "ticket",
+                "participation": "eligible",
+                "mutation": "idle",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "book",
+                  "open_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "cancel_booking",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "member_spotlight_dark",
+          "stateId": "member_spotlight_dark",
+          "kind": "theme",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "spotlight_dark",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_detail_member_spotlight"
+            ],
+            "previewIds": [
+              "EventDetailHeroAppBar/Catalog states",
+              "EventDetailScreen/Screen states"
+            ],
+            "tests": [
+              "test/events/event_detail_widgets_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "eligible",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "spotlight_dark",
+                "participation": "eligible",
+                "mutation": "idle",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "book",
+                  "open_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "cancel_booking",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "guest",
+          "stateId": "guest",
+          "kind": "permission",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "guest",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_detail_guest"
+            ],
+            "previewIds": [
+              "EventDetailSocialSection/Social states",
+              "EventBookingDock/BookingDock states",
+              "EventDetailScreen/Screen states"
+            ],
+            "tests": [
+              "test/events/event_detail_widgets_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "location_available",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "guest",
+                "presentation": "standard",
+                "participation": "eligible",
+                "mutation": "idle",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "open_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "book",
+                  "cancel_booking",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "host_app",
+          "stateId": "host_app",
+          "kind": "permission",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "host",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_detail_host_app"
+            ],
+            "previewIds": [
+              "EventDetailScreen/Screen states"
+            ],
+            "tests": [
+              "test/events/event_detail_controller_test.dart",
+              "test/events/event_detail_widgets_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "location_available",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "host",
+                "presentation": "standard",
+                "participation": "eligible",
+                "mutation": "idle",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "open_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "book",
+                  "cancel_booking",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "booking_signed_up",
+          "stateId": "booking_signed_up",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "signed_up",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_detail_booking_signed_up"
+            ],
+            "previewIds": [
+              "EventBookingDock/BookingDock states",
+              "EventDetailBody/Prompt states"
+            ],
+            "tests": [
+              "test/events/event_detail_screen_state_test.dart",
+              "test/events/event_detail_widgets_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "signed_up",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "signed_up",
+                "mutation": "idle",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "cancel_booking",
+                  "open_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "book",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "booking_pending",
+          "stateId": "booking_pending",
+          "kind": "mutation",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_detail_booking_pending",
+              "event_detail_cancel_pending"
+            ],
+            "previewIds": [
+              "EventBookingDock/BookingDock states"
+            ],
+            "tests": [
+              "test/events/event_detail_screen_state_test.dart",
+              "test/events/event_detail_widgets_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "book_pending",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "eligible",
+                "mutation": "book_pending",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "open_location_map"
+                ],
+                "disabled": [
+                  "book"
+                ],
+                "notAllowed": [
+                  "cancel_booking",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            },
+            {
+              "id": "cancel_pending",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "signed_up",
+                "mutation": "cancel_pending",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "open_location_map"
+                ],
+                "disabled": [
+                  "cancel_booking"
+                ],
+                "notAllowed": [
+                  "book",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "booking_failed",
+          "stateId": "booking_failed",
+          "kind": "mutation",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_detail_booking_failure",
+              "event_detail_cancel_failure",
+              "event_detail_booking_success_snackbar",
+              "event_detail_cancel_success_snackbar"
+            ],
+            "previewIds": [
+              "EventBookingDock/BookingDock states"
+            ],
+            "tests": [
+              "test/events/event_detail_screen_state_test.dart",
+              "test/events/event_detail_widgets_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "book_failed",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "eligible",
+                "mutation": "book_failed",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "book",
+                  "open_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "cancel_booking",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            },
+            {
+              "id": "cancel_failed",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "signed_up",
+                "mutation": "cancel_failed",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "cancel_booking",
+                  "open_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "book",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            },
+            {
+              "id": "book_succeeded",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "signed_up",
+                "mutation": "book_succeeded",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "cancel_booking",
+                  "open_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "book",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            },
+            {
+              "id": "cancel_succeeded",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "eligible",
+                "mutation": "cancel_succeeded",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "book",
+                  "open_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "cancel_booking",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "waitlist_sold_out_cancelled_past",
+          "stateId": "waitlist_sold_out_cancelled_past",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_detail_booking_waitlist",
+              "event_detail_booking_waitlist_offer",
+              "event_detail_booking_full",
+              "event_detail_booking_attended",
+              "event_detail_booking_past",
+              "event_detail_booking_cancelled"
+            ],
+            "previewIds": [
+              "EventBookingDock/BookingDock states"
+            ],
+            "tests": [
+              "test/events/event_detail_screen_state_test.dart",
+              "test/events/event_detail_widgets_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "waitlisted",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "waitlisted",
+                "mutation": "idle",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "leave_waitlist",
+                  "open_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "book",
+                  "cancel_booking",
+                  "join_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            },
+            {
+              "id": "waitlist_offer",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "waitlist_offer",
+                "mutation": "idle",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer",
+                  "open_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "book",
+                  "cancel_booking",
+                  "join_waitlist",
+                  "leave_waitlist"
+                ]
+              }
+            },
+            {
+              "id": "full",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "full",
+                "mutation": "idle",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "join_waitlist",
+                  "open_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "book",
+                  "cancel_booking",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            },
+            {
+              "id": "attended",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "attended",
+                "mutation": "idle",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "open_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "book",
+                  "cancel_booking",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            },
+            {
+              "id": "past",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "past",
+                "mutation": "idle",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "open_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "book",
+                  "cancel_booking",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            },
+            {
+              "id": "cancelled",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "cancelled",
+                "mutation": "idle",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "open_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "book",
+                  "cancel_booking",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "offline",
+          "stateId": "offline",
+          "kind": "offline",
+          "status": "captured",
+          "dimensions": {
+            "load": "offline",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_detail_offline"
+            ],
+            "previewIds": [
+              "EventDetailScreen/Screen states"
+            ],
+            "tests": [
+              "test/events/event_detail_widgets_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "offline",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "eligible",
+                "mutation": "idle",
+                "accessibility": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "book",
+                  "cancel_booking",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer",
+                  "open_location_map"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "text_scale_2",
+          "stateId": "text_scale_2",
+          "kind": "accessibility",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "text_scale_2"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_detail_text_scale_2"
+            ],
+            "previewIds": [
+              "EventDetailScreen/Screen states"
+            ],
+            "tests": [
+              "test/events/event_detail_widgets_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "eligible",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "eligible",
+                "mutation": "idle",
+                "accessibility": "text_scale_2"
+              },
+              "actions": {
+                "enabled": [
+                  "book",
+                  "open_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "cancel_booking",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "reduced_motion",
+          "stateId": "reduced_motion",
+          "kind": "accessibility",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "viewer": "member",
+            "presentation": "standard",
+            "participation": "eligible",
+            "mutation": "idle",
+            "accessibility": "reduced_motion"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_detail_reduced_motion"
+            ],
+            "previewIds": [
+              "EventDetailScreen/Screen states"
+            ],
+            "tests": [
+              "test/events/event_detail_widgets_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "eligible",
+              "dimensions": {
+                "load": "ready",
+                "viewer": "member",
+                "presentation": "standard",
+                "participation": "eligible",
+                "mutation": "idle",
+                "accessibility": "reduced_motion"
+              },
+              "actions": {
+                "enabled": [
+                  "book",
+                  "open_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "cancel_booking",
+                  "join_waitlist",
+                  "leave_waitlist",
+                  "accept_waitlist_offer",
+                  "decline_waitlist_offer"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "screen.event.detail",
+          "owner": "events",
+          "routes": [
+            {
+              "id": "eventDetailScreen",
+              "path": "/organizers/:clubId/events/:eventId",
+              "role": "primary"
+            },
+            {
+              "id": "calendarEventDetailScreen",
+              "path": "/calendar/organizers/:clubId/events/:eventId",
+              "role": "alias"
+            },
+            {
+              "id": "savedEventDetailScreen",
+              "path": "/saved-events/organizers/:clubId/events/:eventId",
+              "role": "alias"
+            },
+            {
+              "id": "dashboardEventDetailScreen",
+              "path": "/dashboard/organizers/:clubId/events/:eventId",
+              "role": "alias"
+            },
+            {
+              "id": "hostAppEventDetailScreen",
+              "path": "/host/organizers/:clubId/events/:eventId",
+              "role": "host"
+            }
+          ]
+        },
+        "components": [
+          {
+            "id": "catch.async_value",
+            "kind": "pattern",
+            "dart": {
+              "symbol": "CatchAsyncValueView",
+              "file": "lib/core/widgets/catch_async_value_view.dart",
+              "constructors": [
+                "CatchAsyncValueView"
+              ]
+            }
+          },
+          {
+            "id": "catch.error_state",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchErrorState",
+              "file": "lib/core/widgets/catch_error_state.dart",
+              "constructors": [
+                "CatchErrorState",
+                "CatchErrorState.fromError"
+              ]
+            }
+          },
+          {
+            "id": "catch.event_detail_sections",
+            "kind": "screen-contract",
+            "dart": {
+              "symbol": "EventDetailBody",
+              "file": "lib/events/presentation/widgets/event_detail_body.dart",
+              "constructors": [
+                "EventDetailBody"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "EventBookingDock/BookingDock states",
+          "EventDetailBody/Prompt states",
+          "EventDetailHeroAppBar/Catalog states",
+          "EventDetailScreen/Screen states",
+          "EventDetailSocialSection/Social states",
+          "EventDetailTicketStubBand/Catalog states"
+        ]
+      }
+    },
+    {
+      "id": "location_map_flutter",
+      "runtime": "flutter",
+      "authority": {
+        "registry": "flutter_screens",
+        "id": "screen.event.location_map"
+      },
+      "actionScope": {
+        "included": "Closing the exact-location projection, retrying its Event Detail read model, and launching walking directions for the event's canonical starting point.",
+        "excluded": [
+          "Map camera movement, network-tile loading, and marker rendering are presentation behavior rather than user decisions.",
+          "This read-only route does not search for, move, or persist event locations; LocationPickerScreen remains owned by host create/edit workflows."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "widgetbook/lib/utility/p3_utility_use_cases.dart"
+        ],
+        "actionOwners": [
+          {
+            "id": "location_map_route",
+            "language": "dart",
+            "file": "lib/events/presentation/event_location_map_screen.dart",
+            "symbol": "EventLocationMapRouteScreen"
+          },
+          {
+            "id": "map_overlay",
+            "language": "dart",
+            "file": "lib/events/presentation/widgets/map_overlay_controls.dart",
+            "symbol": "MapOverlayControls"
+          },
+          {
+            "id": "external_links",
+            "language": "dart",
+            "file": "lib/core/external_links.dart",
+            "symbol": "ExternalLinkController"
+          }
+        ],
+        "componentContracts": [
+          "catch.button",
+          "catch.error_state",
+          "catch.map_preview",
+          "catch.surface"
+        ],
+        "dataContracts": [
+          "contracts/firestore/events.schema.json"
+        ]
+      },
+      "coverage": {
+        "states": 11,
+        "scenarios": 11,
+        "actionCases": 13,
+        "actions": 3,
+        "captures": 9,
+        "previews": 2,
+        "testFiles": 1,
+        "evidenceExceptions": 8
+      },
+      "dimensions": {
+        "load": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "loading",
+            "error",
+            "not_found"
+          ]
+        },
+        "location": {
+          "default": "exact",
+          "values": [
+            "exact",
+            "unavailable"
+          ]
+        },
+        "map_mode": {
+          "default": "network",
+          "values": [
+            "network",
+            "deterministic",
+            "masking_unresolved"
+          ]
+        },
+        "directions": {
+          "default": "idle",
+          "values": [
+            "idle",
+            "pending",
+            "failure"
+          ]
+        },
+        "accessibility": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "text_scale_2",
+            "reduced_motion"
+          ]
+        },
+        "theme": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "light_dark"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "close_location_map",
+          "owner": "map_overlay",
+          "codeValue": "maybePop",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "routeInstanceId"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "navigation.route_popped"
+            }
+          ],
+          "description": "Closes the exact-location projection through its floating back control.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "retry_event_location",
+          "owner": "location_map_route",
+          "codeValue": "invalidate",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "eventId",
+            "eventLoadGeneration"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "route_loading",
+                "route_error",
+                "event_not_found",
+                "pinned_location"
+              ]
+            }
+          ],
+          "description": "Invalidates the shared Event Detail read model after an event-location load failure.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "get_directions",
+          "owner": "external_links",
+          "codeValue": "openExternal",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "routeInstanceId",
+            "eventId",
+            "directionsUri"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "directions_action"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "external_links.open_walking_directions"
+            }
+          ],
+          "description": "Requests the platform's external maps application with walking directions to the exact starting coordinate, disables duplicate launches while pending, and restores the action with visible feedback after false or thrown failures.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [
+        {
+          "stateIds": [
+            "route_error",
+            "event_not_found",
+            "network_tiles_disabled_capture",
+            "text_scale_2",
+            "reduced_motion",
+            "light_dark"
+          ],
+          "evidence": [
+            "tests"
+          ],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "These Event Location Map states have deterministic capture and Widgetbook evidence but no focused state-level test recorded by the screen authority."
+        },
+        {
+          "stateIds": [
+            "map_masking"
+          ],
+          "evidence": [
+            "captures",
+            "tests"
+          ],
+          "debtId": "DP-EVENT-MAP-003",
+          "reason": "Map masking remains planned until a canonical standalone full-screen map reference defines dynamic-region masks."
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "route_loading",
+          "stateId": "route_loading",
+          "kind": "loading",
+          "status": "captured",
+          "dimensions": {
+            "load": "loading",
+            "location": "exact",
+            "map_mode": "network",
+            "directions": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_location_map_loading"
+            ],
+            "previewIds": [
+              "EventLocationMapRouteScreen/Route states"
+            ],
+            "tests": [
+              "test/events/events_widgets_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "loading",
+              "dimensions": {
+                "load": "loading",
+                "location": "exact",
+                "map_mode": "network",
+                "directions": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "close_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_event_location",
+                  "get_directions"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "route_error",
+          "stateId": "route_error",
+          "kind": "error",
+          "status": "captured",
+          "dimensions": {
+            "load": "error",
+            "location": "exact",
+            "map_mode": "network",
+            "directions": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_location_map_error"
+            ],
+            "previewIds": [
+              "EventLocationMapRouteScreen/Route states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "retry",
+              "dimensions": {
+                "load": "error",
+                "location": "exact",
+                "map_mode": "network",
+                "directions": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "close_location_map",
+                  "retry_event_location"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "get_directions"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "event_not_found",
+          "stateId": "event_not_found",
+          "kind": "empty",
+          "status": "captured",
+          "dimensions": {
+            "load": "not_found",
+            "location": "exact",
+            "map_mode": "network",
+            "directions": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_location_map_not_found"
+            ],
+            "previewIds": [
+              "EventLocationMapRouteScreen/Route states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "missing",
+              "dimensions": {
+                "load": "not_found",
+                "location": "exact",
+                "map_mode": "network",
+                "directions": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "close_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_event_location",
+                  "get_directions"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "no_exact_coordinate",
+          "stateId": "no_exact_coordinate",
+          "kind": "empty",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "location": "unavailable",
+            "map_mode": "network",
+            "directions": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_location_map_no_coordinate"
+            ],
+            "previewIds": [
+              "EventLocationMapScreen/Map states"
+            ],
+            "tests": [
+              "test/events/events_widgets_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "unavailable",
+              "dimensions": {
+                "load": "ready",
+                "location": "unavailable",
+                "map_mode": "network",
+                "directions": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "close_location_map"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_event_location",
+                  "get_directions"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "pinned_location",
+          "stateId": "pinned_location",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "location": "exact",
+            "map_mode": "network",
+            "directions": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_location_map"
+            ],
+            "previewIds": [
+              "EventLocationMapRouteScreen/Route states",
+              "EventLocationMapScreen/Map states"
+            ],
+            "tests": [
+              "test/events/events_widgets_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "exact_location",
+              "dimensions": {
+                "load": "ready",
+                "location": "exact",
+                "map_mode": "network",
+                "directions": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "close_location_map",
+                  "get_directions"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_event_location"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "directions_action",
+          "stateId": "directions_action",
+          "kind": "mutation",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "location": "exact",
+            "map_mode": "network",
+            "directions": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_location_map_directions_pending",
+              "event_location_map_directions_failure"
+            ],
+            "previewIds": [
+              "EventLocationMapScreen/Map states"
+            ],
+            "tests": [
+              "test/events/events_widgets_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "idle",
+              "dimensions": {
+                "load": "ready",
+                "location": "exact",
+                "map_mode": "network",
+                "directions": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "close_location_map",
+                  "get_directions"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_event_location"
+                ]
+              }
+            },
+            {
+              "id": "pending",
+              "dimensions": {
+                "load": "ready",
+                "location": "exact",
+                "map_mode": "network",
+                "directions": "pending",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "close_location_map"
+                ],
+                "disabled": [
+                  "get_directions"
+                ],
+                "notAllowed": [
+                  "retry_event_location"
+                ]
+              }
+            },
+            {
+              "id": "failure",
+              "dimensions": {
+                "load": "ready",
+                "location": "exact",
+                "map_mode": "network",
+                "directions": "failure",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "close_location_map",
+                  "get_directions"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_event_location"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "network_tiles_disabled_capture",
+          "stateId": "network_tiles_disabled_capture",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "location": "exact",
+            "map_mode": "deterministic",
+            "directions": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_location_map"
+            ],
+            "previewIds": [
+              "EventLocationMapScreen/Map states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "exact_location",
+              "dimensions": {
+                "load": "ready",
+                "location": "exact",
+                "map_mode": "deterministic",
+                "directions": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "close_location_map",
+                  "get_directions"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_event_location"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "map_masking",
+          "stateId": "map_masking",
+          "kind": "populated",
+          "status": "planned",
+          "dimensions": {
+            "load": "ready",
+            "location": "exact",
+            "map_mode": "masking_unresolved",
+            "directions": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "EventLocationMapScreen/Map states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "exact_location",
+              "dimensions": {
+                "load": "ready",
+                "location": "exact",
+                "map_mode": "masking_unresolved",
+                "directions": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "close_location_map",
+                  "get_directions"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_event_location"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "text_scale_2",
+          "stateId": "text_scale_2",
+          "kind": "accessibility",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "location": "exact",
+            "map_mode": "network",
+            "directions": "idle",
+            "accessibility": "text_scale_2",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_location_map_text_scale_2"
+            ],
+            "previewIds": [
+              "EventLocationMapRouteScreen/Route states",
+              "EventLocationMapScreen/Map states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "exact_location",
+              "dimensions": {
+                "load": "ready",
+                "location": "exact",
+                "map_mode": "network",
+                "directions": "idle",
+                "accessibility": "text_scale_2",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "close_location_map",
+                  "get_directions"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_event_location"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "reduced_motion",
+          "stateId": "reduced_motion",
+          "kind": "accessibility",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "location": "exact",
+            "map_mode": "network",
+            "directions": "idle",
+            "accessibility": "reduced_motion",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_location_map_reduced_motion"
+            ],
+            "previewIds": [
+              "EventLocationMapRouteScreen/Route states",
+              "EventLocationMapScreen/Map states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "exact_location",
+              "dimensions": {
+                "load": "ready",
+                "location": "exact",
+                "map_mode": "network",
+                "directions": "idle",
+                "accessibility": "reduced_motion",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "close_location_map",
+                  "get_directions"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_event_location"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "light_dark",
+          "stateId": "light_dark",
+          "kind": "theme",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "location": "exact",
+            "map_mode": "network",
+            "directions": "idle",
+            "accessibility": "standard",
+            "theme": "light_dark"
+          },
+          "evidence": {
+            "captureIds": [
+              "event_location_map"
+            ],
+            "previewIds": [
+              "EventLocationMapRouteScreen/Route states",
+              "EventLocationMapScreen/Map states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "exact_location",
+              "dimensions": {
+                "load": "ready",
+                "location": "exact",
+                "map_mode": "network",
+                "directions": "idle",
+                "accessibility": "standard",
+                "theme": "light_dark"
+              },
+              "actions": {
+                "enabled": [
+                  "close_location_map",
+                  "get_directions"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_event_location"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "screen.event.location_map",
+          "owner": "events",
+          "routes": [
+            {
+              "id": "eventLocationMapScreen",
+              "path": "/events/:eventId/location",
+              "role": "primary"
+            }
+          ]
+        },
+        "components": [
+          {
+            "id": "catch.button",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchButton",
+              "file": "lib/core/widgets/catch_button.dart",
+              "constructors": [
+                "CatchButton"
+              ]
+            }
+          },
+          {
+            "id": "catch.error_state",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchErrorState",
+              "file": "lib/core/widgets/catch_error_state.dart",
+              "constructors": [
+                "CatchErrorState",
+                "CatchErrorState.fromError"
+              ]
+            }
+          },
+          {
+            "id": "catch.map_preview",
+            "kind": "composite",
+            "dart": {
+              "symbol": "CatchMapPreview",
+              "file": "lib/locations/shared/catch_map_preview.dart",
+              "constructors": [
+                "CatchMapPreview"
+              ]
+            }
+          },
+          {
+            "id": "catch.surface",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchSurface",
+              "file": "lib/core/widgets/catch_surface.dart",
+              "constructors": [
+                "CatchSurface",
+                "CatchSurface.card",
+                "CatchSurface.tinted",
+                "CatchSurface.message"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "EventLocationMapRouteScreen/Route states",
+          "EventLocationMapScreen/Map states"
+        ]
+      }
+    }
+  ]
+}

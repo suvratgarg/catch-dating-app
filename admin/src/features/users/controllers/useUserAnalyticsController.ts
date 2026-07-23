@@ -1,5 +1,5 @@
 import {useQuery, useQueryClient} from "@tanstack/react-query";
-import {useCallback, useEffect, useMemo, useState} from "react";
+import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import type {
   UserAnalyticsGranularity,
   UserAnalyticsQueryPayload,
@@ -7,6 +7,7 @@ import type {
   UserAnalyticsResponse,
 } from "../../../shared/types/adminTypes";
 import {adminQueryKeys} from "../../../shared/query/queryKeys";
+import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {
   isUserAnalyticsSampleMode,
   loadUserAnalyticsReport,
@@ -74,6 +75,7 @@ export function useUserAnalyticsController({
   onNotice: (message: string | null) => void;
 }): UserAnalyticsController {
   const queryClient = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const initialUserId = handoffUserId ??
     (isUserAnalyticsSampleMode() ? "user-1" : "");
   const [userId, setUserId] = useState(
@@ -89,6 +91,7 @@ export function useUserAnalyticsController({
     useState<UserAnalyticsQueryPayload | null>(null);
   const [lastHandoffRequestId, setLastHandoffRequestId] =
     useState<number | null>(null);
+  const sampleAutoLoadStarted = useRef(false);
 
   const payload = useMemo(
     () => buildUserAnalyticsPayload({
@@ -153,6 +156,8 @@ export function useUserAnalyticsController({
       onError("Start date must be on or before end date.");
       return false;
     }
+    const operation = beginOperation();
+    if (!operation) return false;
     const queryKey = adminQueryKeys.users.analytics(
       userAnalyticsPayloadKey(nextPayload)
     );
@@ -169,9 +174,13 @@ export function useUserAnalyticsController({
     } catch (error) {
       onError(messageFromError(error, "Unable to load user analytics."));
       return false;
+    } finally {
+      endOperation(operation);
     }
   }, [
+    beginOperation,
     endDate,
+    endOperation,
     granularity,
     onError,
     onNotice,
@@ -206,6 +215,8 @@ export function useUserAnalyticsController({
 
   useEffect(() => {
     if (!isUserAnalyticsSampleMode() || !userId) return;
+    if (sampleAutoLoadStarted.current) return;
+    sampleAutoLoadStarted.current = true;
     void load();
   }, [load, userId]);
 

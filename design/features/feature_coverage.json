@@ -1,0 +1,495 @@
+{
+  "$schema": "./feature_coverage.schema.json",
+  "version": 1,
+  "updated": "2026-07-23",
+  "owner": "product_design_parity",
+  "sourceOfTruth": "Exhaustive migration ledger for feature orchestration contracts across registered Flutter screens, marketing routes, and admin route components. A planned entry names its intended shared feature identity; grouped entries are secondary route projections, not independent features.",
+  "authorities": [
+    {
+      "id": "flutter_screens",
+      "runtime": "flutter",
+      "registry": "design/screens/catch.screens.json",
+      "collection": "screens",
+      "idField": "id"
+    },
+    {
+      "id": "marketing_routes",
+      "runtime": "react_marketing",
+      "registry": "design/website/routes.json",
+      "collection": "routes",
+      "idField": "id"
+    },
+    {
+      "id": "admin_routes",
+      "runtime": "react_admin",
+      "registry": "design/admin/components.json",
+      "collection": "components",
+      "idField": "id",
+      "filter": {
+        "field": "kind",
+        "value": "route"
+      }
+    }
+  ],
+  "decisions": [
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.event.detail",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Reference contract for Event Detail state, evidence, and booking-dock action orchestration.",
+      "featureContract": "feature.event_detail"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.club.detail",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Shared Organizer Detail contract covers the consumer profile, membership dock, schedule, host contact, loading, error, offline, and accessibility states.",
+      "featureContract": "feature.organizer_detail"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.explore.discovery",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Reference contract for discovery and map states plus empty-result recovery actions.",
+      "featureContract": "feature.explore"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.dashboard.home",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Dashboard Home contract covers route recovery, empty discovery, event focus, self-check-in, Catch and review entry, header navigation, registered enrichments, and accessibility states.",
+      "featureContract": "feature.dashboard_home"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.event_success.companion",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Event Success contract covers route gates, attendee moments, arrival actions, assignments, reveal, wingman, feedback, opt-outs, auto-launch evidence, and an explicit known questionnaire wiring gap.",
+      "featureContract": "feature.event_success"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.catches.hub",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Catches hub contract covers all registered states, active-window navigation, recap entry, and empty recovery.",
+      "featureContract": "feature.catches_hub"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.catches.event",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled event-scoped Catches contract covers queue, eligibility, pass/reaction mutation, and deck navigation states.",
+      "featureContract": "feature.catches_event"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.matches.list",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled consumer Matches list contract covers threads, search, empty states, duplicate collapse, unread state, and chat entry.",
+      "featureContract": "feature.matches_list"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.matches.chat",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled member-chat contract covers messages, images, event context, profile/share/safety actions, Suvbot, and availability states.",
+      "featureContract": "feature.member_chat"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.profile.self",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled self-profile contract covers loading, editing, photo operations, mutation feedback, preview, and settings entry.",
+      "featureContract": "feature.profile_self"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.profile.public",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled public-profile contract covers viewer context, fallback loading, unavailable/offline states, and report/block safety actions.",
+      "featureContract": "feature.profile_public"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.home",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Host Home contract covers authentication recovery, organizer switching, Today and Events projections, event lifecycle filtering, nested recovery, and typed create, repeat, manage, and task navigation.",
+      "featureContract": "feature.host_home"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.clubs",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Host Organizers contract covers organizer selection, Edit, Insights, Preview, settings spokes, profile and media writes, defaults, payouts, team management, host identity, hosted-organizer navigation, and sign out.",
+      "featureContract": "feature.host_organizers"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.club.detail",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Shared Organizer Detail contract covers the host-shell public preview, dock suppression, access variants, hosted schedule routing, and route-level side effects.",
+      "featureContract": "feature.organizer_detail"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.event.create",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Host Event Create contract covers route authorization, wizard choices and validation, media/location selection, drafts, submission, offline recovery, and success navigation.",
+      "featureContract": "feature.host_event_create"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.event.manage",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Reference contract for Host Event Manage route/workspace states and primary lifecycle actions.",
+      "featureContract": "feature.host_event_manage"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.inbox",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Host Inbox contract covers event/general scopes, booked/prospective audiences, search, conversation routing, roster-derived broadcasts, and recovery.",
+      "featureContract": "feature.host_inbox"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.chat",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Shared chat-thread contract extends the same ChatScreen implementation with host-inquiry identity, disabled profile/share policy, retries, messaging, safety, and lifecycle states.",
+      "featureContract": "feature.member_chat"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.start.welcome",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Member Onboarding extends the same WelcomePage implementation as a logged-out Start projection, preserving its reel, CTA, reduced-motion, text-scale, and fixed-dark states without inventing a duplicate feature.",
+      "featureContract": "feature.member_onboarding"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.auth.phone_entry",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Phone Authentication contract covers shared phone/country input, code delivery, OTP verification, cooldown resend, change-number recovery, mutation states, and accessibility evidence.",
+      "featureContract": "feature.phone_auth"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.onboarding.flow",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Member Onboarding contract covers three entry modes, booking identity, social profile, run preferences, draft resume, photo/prompt decisions, mutations, and the orphaned Instagram state.",
+      "featureContract": "feature.member_onboarding"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.calendar.home",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Event Planning Calendar projection covers merged joined/saved agenda states, date navigation, secondary organizer-name lookup, recovery, and Event Detail handoff.",
+      "featureContract": "feature.event_planning"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.saved_events.list",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Event Planning binds Saved Events as a filtered projection of the same planned-event agenda and Event Detail handoff, while retaining its standalone route, back action, and saved-only evidence.",
+      "featureContract": "feature.event_planning"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.filters.preferences",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Matching Preferences contract covers profile loading/recovery, age and gender draft decisions, reset/apply lifecycle, exit behavior, accessibility, missing-profile blank state, and pending snapshot drift.",
+      "featureContract": "feature.matching_preferences"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.event.recap",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Event Recap contract covers route recovery, checked-in roster states, remembered-attendee selection, catch-window copy, and the selected-id handoff into Catches Event Deck.",
+      "featureContract": "feature.event_recap"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.club.create",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Host Organizer Create contract covers wizard navigation, media and default choices, local draft recovery, validation, submission, and route-dismissal lifecycle.",
+      "featureContract": "feature.host_organizer_create"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.host.event.edit",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "The Host Event Manage contract includes the owner-edit projection, route recovery, editable and locked fields, its LocationPickerScreen modal result, validation, update mutation, and success return without misbinding the picker to Event Location Map.",
+      "featureContract": "feature.host_event_manage"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.event.location_map",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Event Detail binds its read-only exact-location map as a child projection with route recovery, unavailable-coordinate behavior, deterministic map evidence, back navigation, and external walking directions.",
+      "featureContract": "feature.event_detail"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.notifications.list",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Notifications contract covers access and activity provider waves, grouping/read-state evidence, mark-all-read lifecycle, and dynamic chat/event/organizer route handoff.",
+      "featureContract": "feature.notifications"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.reviews.history",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Reviews contract covers profile/review recovery, event-context projection, editable review selection, and the shared rating/update/delete sheet lifecycle.",
+      "featureContract": "feature.reviews"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.settings.account",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Account Settings contract covers profile/blocked-account recovery, history and external navigation, seven preference decisions, unblock, deletion, sign-out, concurrency, accessibility, and theme states.",
+      "featureContract": "feature.account_settings"
+    },
+    {
+      "authority": "flutter_screens",
+      "authorityId": "screen.payments.history",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Payments contract covers identity/payment recovery, payment status variants, receipt inspection, event-title enrichment fallback, and failed-booking support guidance.",
+      "featureContract": "feature.payments"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "home",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Marketing Home contract covers organizer/event discovery handoffs, Host routing, configured and unavailable store CTAs, and member waitlist submission.",
+      "featureContract": "feature.marketing_home"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "host",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Host Acquisition contract covers the interactive product narrative, operating previews, founding-host application, and post-submission handoffs.",
+      "featureContract": "feature.host_acquisition"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "organizer_search",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Public-web organizer discovery projection is compiled into the shared Explore feature contract with route-state, action-owner, preview, and test evidence.",
+      "featureContract": "feature.explore"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "claim",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Organizer Claim contract covers organizer selection, claimant proof, verification, auth, typed submission, and authority-derived route states.",
+      "featureContract": "feature.organizer_claim"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "claim_lookup",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled dynamic lookup projection of Organizer Claim preserves its own exact known, missing, pending, and unavailable authority states.",
+      "featureContract": "feature.organizer_claim"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "privacy",
+      "status": "excluded",
+      "priority": "P4",
+      "reason": "Published static legal content has route, metadata, and Storybook contracts but no stateful product action orchestration to duplicate here."
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "terms",
+      "status": "excluded",
+      "priority": "P4",
+      "reason": "Published static legal content has route, metadata, and Storybook contracts but no stateful product action orchestration to duplicate here."
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "help",
+      "status": "excluded",
+      "priority": "P4",
+      "reason": "Published static support content has route, metadata, and Storybook contracts but no stateful product action orchestration to duplicate here."
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "not_found",
+      "status": "excluded",
+      "priority": "P4",
+      "reason": "Platform fallback surface is already governed by the route and static-output contracts rather than a product feature workflow."
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "organizer_listing_canonical",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Shared Organizer Detail contract covers canonical listing indexing, public API availability, external event supply, claim capability, save/share, and public review actions.",
+      "featureContract": "feature.organizer_detail"
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "organizer_listing_legacy",
+      "status": "grouped",
+      "priority": "P1",
+      "reason": "Legacy canonical/noindex projection of the organizer detail feature.",
+      "primaryAuthorityId": "organizer_listing_canonical"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_access_review",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Access Review contract covers capped queue selection, direct evidence recovery, and audited approve or deny outcomes.",
+      "featureContract": "feature.admin_access_review"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_admin_action_executions",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Read-only operational receipt monitoring is governed by the operations platform, admin route/component registry, callable contract, and deterministic Storybook state; it exposes no product or business mutation workflow."
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_admin_role_management",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Compiled Role Management contract covers exact-uid lookup, bounded assignments, high-risk confirmation, and before/after save receipts.",
+      "featureContract": "feature.admin_role_management"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_data_quality",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Compiled Data Quality contract covers multi-source health, exact signal detail, source-specific retry, and owning-workflow handoff.",
+      "featureContract": "feature.admin_data_quality"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_event_publishing",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Event Publishing contract covers canonical editing, import readiness, external evidence review, and gated read-only publication.",
+      "featureContract": "feature.admin_event_publishing"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_finance_ops",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Compiled Finance Operations contract covers read-only issue derivation, exact detail, partial sources, and reconciliation guidance.",
+      "featureContract": "feature.admin_finance_ops"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_growth_kpi",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Compiled Growth KPI contract covers source-labelled signal detail, ranged analytics, and independent source recovery.",
+      "featureContract": "feature.admin_growth_kpi"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_intake_workspace",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Supply Intake contract covers Event review, Organizer projection handoff, and read-only Automation run paging.",
+      "featureContract": "feature.admin_intake"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_organizer_intake",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Organizer Intake projection preserves its independent default, workflow-readiness, and publication-packet state inventory.",
+      "featureContract": "feature.admin_intake"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_marketing_ops",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Marketing Operations contract covers bridge recovery, studio navigation, draft creation, compliance, and review receipts.",
+      "featureContract": "feature.admin_marketing_ops"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_organizer_publishing",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Organizer Publishing contract covers canonical editing, publish checklist, index publication, and claim decisions.",
+      "featureContract": "feature.admin_organizer_publishing"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_overview",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Overview contract covers source-owned metrics, role-checked queue routing, and scoped Host Analytics.",
+      "featureContract": "feature.admin_overview"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_overview_live_controller",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled live-controller projection preserves the query and lazy-boundary authority states without duplicating the visual product goal.",
+      "featureContract": "feature.admin_overview"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_safety_triage",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Safety Triage contract covers capped queue scope, encoded detail routing, assignment, decisions, and honest analytics.",
+      "featureContract": "feature.admin_safety_triage"
+    },
+    {
+      "authority": "admin_routes",
+      "authorityId": "route_user_analytics",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Compiled User Analytics contract covers exact-uid aggregate reporting, validated scope, partial/empty states, and retry.",
+      "featureContract": "feature.admin_user_analytics"
+    }
+  ]
+}

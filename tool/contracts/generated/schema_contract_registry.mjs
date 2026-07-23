@@ -35453,6 +35453,2407 @@ export const resetMatchUnreadCountClientWriteSchema = {
   "x-owner": "active match participant direct unread reset"
 };
 
+export const adminGetOverviewCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_overview_payload.schema.json",
+  "title": "Admin Get Overview Callable Payload",
+  "type": "object",
+  "additionalProperties": false
+};
+
+export const adminGetOverviewCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_overview_response.schema.json",
+  "title": "Admin Get Overview Callable Response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "generatedAt",
+    "timezone",
+    "metrics",
+    "queues",
+    "dataQuality"
+  ],
+  "properties": {
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "timezone": {
+      "const": "UTC"
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "value"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "value": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        }
+      }
+    },
+    "queues": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "safetyReports",
+        "moderationFlags",
+        "eventSafetyReports",
+        "accessApplications",
+        "clubClaimRequests",
+        "clubIndexReviews",
+        "paymentIssues"
+      ],
+      "properties": {
+        "safetyReports": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "title",
+              "detail",
+              "status",
+              "createdAt",
+              "targetPath"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "detail": {
+                "type": "string",
+                "maxLength": 1000
+              },
+              "status": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "createdAt": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "targetPath": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 260
+              }
+            }
+          }
+        },
+        "moderationFlags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "title",
+              "detail",
+              "status",
+              "createdAt",
+              "targetPath"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "detail": {
+                "type": "string",
+                "maxLength": 1000
+              },
+              "status": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "createdAt": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "targetPath": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 260
+              }
+            }
+          }
+        },
+        "eventSafetyReports": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "title",
+              "detail",
+              "status",
+              "createdAt",
+              "targetPath"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "detail": {
+                "type": "string",
+                "maxLength": 1000
+              },
+              "status": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "createdAt": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "targetPath": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 260
+              }
+            }
+          }
+        },
+        "accessApplications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "title",
+              "detail",
+              "status",
+              "createdAt",
+              "targetPath"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "detail": {
+                "type": "string",
+                "maxLength": 1000
+              },
+              "status": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "createdAt": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "targetPath": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 260
+              }
+            }
+          }
+        },
+        "clubClaimRequests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "title",
+              "detail",
+              "status",
+              "createdAt",
+              "targetPath"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "detail": {
+                "type": "string",
+                "maxLength": 1000
+              },
+              "status": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "createdAt": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "targetPath": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 260
+              }
+            }
+          }
+        },
+        "clubIndexReviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "title",
+              "detail",
+              "status",
+              "createdAt",
+              "targetPath"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "detail": {
+                "type": "string",
+                "maxLength": 1000
+              },
+              "status": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "createdAt": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "targetPath": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 260
+              }
+            }
+          }
+        },
+        "paymentIssues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "title",
+              "detail",
+              "status",
+              "createdAt",
+              "targetPath"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "detail": {
+                "type": "string",
+                "maxLength": 1000
+              },
+              "status": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "createdAt": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "targetPath": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 260
+              }
+            }
+          }
+        }
+      }
+    },
+    "dataQuality": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "state",
+          "detail",
+          "owner",
+          "runbook",
+          "nextAction"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "warning",
+              "blocked"
+            ]
+          },
+          "detail": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "runbook": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 260
+          },
+          "nextAction": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "value"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        }
+      }
+    },
+    "queue": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "detail",
+          "status",
+          "createdAt",
+          "targetPath"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "detail": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "status": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "targetPath": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 260
+          }
+        }
+      }
+    },
+    "queueItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "detail",
+        "status",
+        "createdAt",
+        "targetPath"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "detail": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "createdAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "targetPath": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 260
+        }
+      }
+    },
+    "dataQuality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "state",
+        "detail",
+        "owner",
+        "runbook",
+        "nextAction"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "ok",
+            "warning",
+            "blocked"
+          ]
+        },
+        "detail": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "runbook": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 260
+        },
+        "nextAction": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      }
+    }
+  }
+};
+
+export const adminDecideAccessApplicationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_decide_access_application_payload.schema.json",
+  "title": "Admin Decide Access Application Callable Payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "applicationUid",
+    "decision",
+    "note"
+  ],
+  "properties": {
+    "applicationUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approve",
+        "deny"
+      ]
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "cohortId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const adminDecideAccessApplicationCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_decide_access_application_response.schema.json",
+  "title": "Admin Decide Access Application Callable Response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "applicationUid",
+    "decision",
+    "status"
+  ],
+  "properties": {
+    "applicationUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approve",
+        "deny"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "approvedForProfile",
+        "notSelectedYet"
+      ]
+    }
+  }
+};
+
+export const adminSetAdminUserRolesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_set_admin_user_roles_payload.schema.json",
+  "title": "Admin Set Admin User Roles Callable Payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "targetUid",
+    "roles",
+    "note"
+  ],
+  "properties": {
+    "targetUid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{3,128}$"
+    },
+    "roles": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "admin",
+          "adminOwner",
+          "safetyReviewer",
+          "support",
+          "finance",
+          "analyticsViewer"
+        ]
+      }
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  },
+  "definitions": {
+    "adminRole": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support",
+        "finance",
+        "analyticsViewer"
+      ]
+    }
+  }
+};
+
+export const adminSetAdminUserRolesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_set_admin_user_roles_response.schema.json",
+  "title": "Admin Set Admin User Roles Callable Response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "user",
+    "beforeRoles",
+    "afterRoles"
+  ],
+  "properties": {
+    "user": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetUid",
+        "email",
+        "displayName",
+        "disabled",
+        "roles",
+        "assignmentPath"
+      ],
+      "properties": {
+        "targetUid": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "email": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "displayName": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "roles": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "adminOwner",
+              "safetyReviewer",
+              "support",
+              "finance",
+              "analyticsViewer"
+            ]
+          }
+        },
+        "assignmentPath": {
+          "type": "string",
+          "pattern": "^adminRoleAssignments/[^/]+$"
+        }
+      }
+    },
+    "beforeRoles": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "admin",
+          "adminOwner",
+          "safetyReviewer",
+          "support",
+          "finance",
+          "analyticsViewer"
+        ]
+      }
+    },
+    "afterRoles": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "admin",
+          "adminOwner",
+          "safetyReviewer",
+          "support",
+          "finance",
+          "analyticsViewer"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "adminRole": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support",
+        "finance",
+        "analyticsViewer"
+      ]
+    },
+    "roles": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "admin",
+          "adminOwner",
+          "safetyReviewer",
+          "support",
+          "finance",
+          "analyticsViewer"
+        ]
+      }
+    },
+    "nullableText": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "user": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetUid",
+        "email",
+        "displayName",
+        "disabled",
+        "roles",
+        "assignmentPath"
+      ],
+      "properties": {
+        "targetUid": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "email": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "displayName": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "roles": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "adminOwner",
+              "safetyReviewer",
+              "support",
+              "finance",
+              "analyticsViewer"
+            ]
+          }
+        },
+        "assignmentPath": {
+          "type": "string",
+          "pattern": "^adminRoleAssignments/[^/]+$"
+        }
+      }
+    }
+  }
+};
+
+export const adminDecideSafetyTriageItemCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_decide_safety_triage_item_payload.schema.json",
+  "title": "Admin Decide Safety Triage Item Callable Payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "targetPath",
+    "decision",
+    "note"
+  ],
+  "properties": {
+    "targetPath": {
+      "type": "string",
+      "maxLength": 260,
+      "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "review",
+        "dismiss"
+      ]
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  },
+  "definitions": {
+    "targetPath": {
+      "type": "string",
+      "maxLength": 260,
+      "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+    }
+  }
+};
+
+export const adminDecideSafetyTriageItemCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_decide_safety_triage_item_response.schema.json",
+  "title": "Admin Decide Safety Triage Item Callable Response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "targetPath",
+    "decision",
+    "status"
+  ],
+  "properties": {
+    "targetPath": {
+      "type": "string",
+      "maxLength": 260,
+      "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "review",
+        "dismiss"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "reviewed",
+        "dismissed"
+      ]
+    }
+  }
+};
+
+export const adminAssignSafetyTriageItemCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_assign_safety_triage_item_payload.schema.json",
+  "title": "Admin Assign Safety Triage Item Callable Payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "targetPath",
+    "assigneeUid",
+    "note"
+  ],
+  "properties": {
+    "targetPath": {
+      "type": "string",
+      "maxLength": 260,
+      "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+    },
+    "assigneeUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  }
+};
+
+export const adminAssignSafetyTriageItemCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_assign_safety_triage_item_response.schema.json",
+  "title": "Admin Assign Safety Triage Item Callable Response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "targetPath",
+    "assignment"
+  ],
+  "properties": {
+    "targetPath": {
+      "type": "string",
+      "maxLength": 260,
+      "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+    },
+    "assignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ownerTeam",
+        "assigneeUid",
+        "queue",
+        "severity"
+      ],
+      "properties": {
+        "ownerTeam": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "assigneeUid": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{3,128}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "queue": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "high",
+            "medium",
+            "watch"
+          ]
+        }
+      }
+    }
+  }
+};
+
+export const adminCreateMarketingContentDraftCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_create_marketing_content_draft_payload.schema.json",
+  "title": "Admin Create Marketing Content Draft Callable Payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draftType"
+  ],
+  "properties": {
+    "draftType": {
+      "type": "string",
+      "enum": [
+        "event_highlights",
+        "feature_explainer"
+      ]
+    },
+    "cityId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-z0-9-]{2,60}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "weekStart": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceRecommendationSetId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "title": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const adminCreateMarketingContentDraftCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_create_marketing_content_draft_response.schema.json",
+  "title": "Admin Create Marketing Content Draft Callable Response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draft",
+    "bridge",
+    "dashboardPath"
+  ],
+  "properties": {
+    "draft": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": true
+    },
+    "bridge": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": true
+    },
+    "dashboardPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 260
+    }
+  }
+};
+
+export const adminRecordMarketingReviewDecisionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_record_marketing_review_decision_payload.schema.json",
+  "title": "Admin Record Marketing Review Decision Callable Payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "targetType",
+    "targetId",
+    "decision",
+    "note"
+  ],
+  "properties": {
+    "targetType": {
+      "type": "string",
+      "enum": [
+        "source_profile",
+        "query_template",
+        "run_plan",
+        "source_result",
+        "event_candidate",
+        "recommendation_item",
+        "recommendation_set",
+        "content_draft"
+      ]
+    },
+    "targetId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approve",
+        "needs_changes",
+        "hold",
+        "reject",
+        "export_ready"
+      ]
+    },
+    "runId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "edits": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sourceReviewed": {
+          "type": "boolean"
+        },
+        "dateReviewed": {
+          "type": "boolean"
+        },
+        "venueReviewed": {
+          "type": "boolean"
+        },
+        "copyReviewed": {
+          "type": "boolean"
+        },
+        "rightsReviewed": {
+          "type": "boolean"
+        },
+        "noCatchHostingImplied": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sourceReviewed": {
+          "type": "boolean"
+        },
+        "dateReviewed": {
+          "type": "boolean"
+        },
+        "venueReviewed": {
+          "type": "boolean"
+        },
+        "copyReviewed": {
+          "type": "boolean"
+        },
+        "rightsReviewed": {
+          "type": "boolean"
+        },
+        "noCatchHostingImplied": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+};
+
+export const adminRecordMarketingReviewDecisionCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_record_marketing_review_decision_response.schema.json",
+  "title": "Admin Record Marketing Review Decision Callable Response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "decisionId",
+    "targetType",
+    "targetId",
+    "decision",
+    "decisionStatus",
+    "decisionPath"
+  ],
+  "properties": {
+    "decisionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 150
+    },
+    "targetType": {
+      "type": "string",
+      "enum": [
+        "source_profile",
+        "query_template",
+        "run_plan",
+        "source_result",
+        "event_candidate",
+        "recommendation_item",
+        "recommendation_set",
+        "content_draft"
+      ]
+    },
+    "targetId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approve",
+        "needs_changes",
+        "hold",
+        "reject",
+        "export_ready"
+      ]
+    },
+    "decisionStatus": {
+      "type": "string",
+      "enum": [
+        "approved",
+        "needs_changes",
+        "held",
+        "rejected",
+        "export_ready"
+      ]
+    },
+    "decisionPath": {
+      "type": "string",
+      "pattern": "^marketingReviewDecisions/[^/]+$",
+      "maxLength": 260
+    }
+  }
+};
+
+export const joinWaitlistHTTPRequestSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/http/join_waitlist_request.schema.json",
+  "title": "Join Waitlist HTTP Request",
+  "description": "Version 1 request body for member waitlist and optional Host operating-application submissions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "fullName",
+    "email",
+    "city",
+    "role"
+  ],
+  "properties": {
+    "fullName": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 100
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "maxLength": 320
+    },
+    "city": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 80
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "member",
+        "runner",
+        "host",
+        "both"
+      ]
+    },
+    "instagram": {
+      "type": "string",
+      "maxLength": 240
+    },
+    "website": {
+      "type": "string",
+      "maxLength": 512
+    },
+    "hostApplication": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "organizationName": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "organizationType": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "operatingCity": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "communityLink": {
+          "type": "string",
+          "maxLength": 512
+        },
+        "formats": {
+          "type": "array",
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "maxLength": 80
+          }
+        },
+        "eventCadence": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "nextEventName": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "nextEventDate": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "eventLocation": {
+          "type": "string",
+          "maxLength": 180
+        },
+        "expectedCapacity": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "priceRange": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "admissionModel": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "waitlistPlan": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "paymentReadiness": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "eventSuccessModules": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "maxLength": 120
+          }
+        },
+        "hostGoals": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "operatingNotes": {
+          "type": "string",
+          "maxLength": 1000
+        }
+      }
+    },
+    "attribution": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "firstTouch",
+            "lastTouch"
+          ],
+          "properties": {
+            "firstTouch": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "capturedAt",
+                "landingPath",
+                "landingUrl",
+                "referrer",
+                "values"
+              ],
+              "properties": {
+                "capturedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 80
+                },
+                "landingPath": {
+                  "type": "string",
+                  "maxLength": 512
+                },
+                "landingUrl": {
+                  "type": "string",
+                  "maxLength": 1024
+                },
+                "referrer": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "maxLength": 1024
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "values": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "utm_source": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "utm_medium": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "utm_campaign": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "utm_content": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "utm_term": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "gclid": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "gbraid": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "wbraid": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "fbclid": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "ttclid": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "msclkid": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "li_fat_id": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "rdt_cid": {
+                      "type": "string",
+                      "maxLength": 240
+                    }
+                  }
+                }
+              }
+            },
+            "lastTouch": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "capturedAt",
+                "landingPath",
+                "landingUrl",
+                "referrer",
+                "values"
+              ],
+              "properties": {
+                "capturedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 80
+                },
+                "landingPath": {
+                  "type": "string",
+                  "maxLength": 512
+                },
+                "landingUrl": {
+                  "type": "string",
+                  "maxLength": 1024
+                },
+                "referrer": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "maxLength": 1024
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "values": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "utm_source": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "utm_medium": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "utm_campaign": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "utm_content": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "utm_term": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "gclid": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "gbraid": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "wbraid": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "fbclid": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "ttclid": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "msclkid": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "li_fat_id": {
+                      "type": "string",
+                      "maxLength": 240
+                    },
+                    "rdt_cid": {
+                      "type": "string",
+                      "maxLength": 240
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "analytics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "consent",
+        "eventId",
+        "formVariant",
+        "pagePath",
+        "pageTitle",
+        "submittedAt"
+      ],
+      "properties": {
+        "consent": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "choice",
+                "analytics",
+                "marketing",
+                "updatedAt"
+              ],
+              "properties": {
+                "choice": {
+                  "type": "string",
+                  "enum": [
+                    "accepted",
+                    "essential"
+                  ]
+                },
+                "analytics": {
+                  "type": "boolean"
+                },
+                "marketing": {
+                  "type": "boolean"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 80
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "formVariant": {
+          "type": "string",
+          "enum": [
+            "member",
+            "host"
+          ]
+        },
+        "pagePath": {
+          "type": "string",
+          "maxLength": 512
+        },
+        "pageTitle": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 80
+        }
+      }
+    }
+  },
+  "definitions": {
+    "hostApplication": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "organizationName": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "organizationType": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "operatingCity": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "communityLink": {
+          "type": "string",
+          "maxLength": 512
+        },
+        "formats": {
+          "type": "array",
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "maxLength": 80
+          }
+        },
+        "eventCadence": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "nextEventName": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "nextEventDate": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "eventLocation": {
+          "type": "string",
+          "maxLength": 180
+        },
+        "expectedCapacity": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "priceRange": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "admissionModel": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "waitlistPlan": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "paymentReadiness": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "eventSuccessModules": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "maxLength": 120
+          }
+        },
+        "hostGoals": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "operatingNotes": {
+          "type": "string",
+          "maxLength": 1000
+        }
+      }
+    },
+    "attribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "firstTouch",
+        "lastTouch"
+      ],
+      "properties": {
+        "firstTouch": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "capturedAt",
+            "landingPath",
+            "landingUrl",
+            "referrer",
+            "values"
+          ],
+          "properties": {
+            "capturedAt": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 80
+            },
+            "landingPath": {
+              "type": "string",
+              "maxLength": 512
+            },
+            "landingUrl": {
+              "type": "string",
+              "maxLength": 1024
+            },
+            "referrer": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 1024
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "utm_source": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "utm_medium": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "utm_campaign": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "utm_content": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "utm_term": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "gclid": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "gbraid": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "wbraid": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "fbclid": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "ttclid": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "msclkid": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "li_fat_id": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "rdt_cid": {
+                  "type": "string",
+                  "maxLength": 240
+                }
+              }
+            }
+          }
+        },
+        "lastTouch": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "capturedAt",
+            "landingPath",
+            "landingUrl",
+            "referrer",
+            "values"
+          ],
+          "properties": {
+            "capturedAt": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 80
+            },
+            "landingPath": {
+              "type": "string",
+              "maxLength": 512
+            },
+            "landingUrl": {
+              "type": "string",
+              "maxLength": 1024
+            },
+            "referrer": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 1024
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "utm_source": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "utm_medium": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "utm_campaign": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "utm_content": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "utm_term": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "gclid": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "gbraid": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "wbraid": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "fbclid": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "ttclid": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "msclkid": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "li_fat_id": {
+                  "type": "string",
+                  "maxLength": 240
+                },
+                "rdt_cid": {
+                  "type": "string",
+                  "maxLength": 240
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "attributionTouch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capturedAt",
+        "landingPath",
+        "landingUrl",
+        "referrer",
+        "values"
+      ],
+      "properties": {
+        "capturedAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 80
+        },
+        "landingPath": {
+          "type": "string",
+          "maxLength": 512
+        },
+        "landingUrl": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "referrer": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "values": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "utm_source": {
+              "type": "string",
+              "maxLength": 240
+            },
+            "utm_medium": {
+              "type": "string",
+              "maxLength": 240
+            },
+            "utm_campaign": {
+              "type": "string",
+              "maxLength": 240
+            },
+            "utm_content": {
+              "type": "string",
+              "maxLength": 240
+            },
+            "utm_term": {
+              "type": "string",
+              "maxLength": 240
+            },
+            "gclid": {
+              "type": "string",
+              "maxLength": 240
+            },
+            "gbraid": {
+              "type": "string",
+              "maxLength": 240
+            },
+            "wbraid": {
+              "type": "string",
+              "maxLength": 240
+            },
+            "fbclid": {
+              "type": "string",
+              "maxLength": 240
+            },
+            "ttclid": {
+              "type": "string",
+              "maxLength": 240
+            },
+            "msclkid": {
+              "type": "string",
+              "maxLength": 240
+            },
+            "li_fat_id": {
+              "type": "string",
+              "maxLength": 240
+            },
+            "rdt_cid": {
+              "type": "string",
+              "maxLength": 240
+            }
+          }
+        }
+      }
+    },
+    "analytics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "consent",
+        "eventId",
+        "formVariant",
+        "pagePath",
+        "pageTitle",
+        "submittedAt"
+      ],
+      "properties": {
+        "consent": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "choice",
+                "analytics",
+                "marketing",
+                "updatedAt"
+              ],
+              "properties": {
+                "choice": {
+                  "type": "string",
+                  "enum": [
+                    "accepted",
+                    "essential"
+                  ]
+                },
+                "analytics": {
+                  "type": "boolean"
+                },
+                "marketing": {
+                  "type": "boolean"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 80
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "formVariant": {
+          "type": "string",
+          "enum": [
+            "member",
+            "host"
+          ]
+        },
+        "pagePath": {
+          "type": "string",
+          "maxLength": 512
+        },
+        "pageTitle": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 80
+        }
+      }
+    },
+    "consent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "choice",
+        "analytics",
+        "marketing",
+        "updatedAt"
+      ],
+      "properties": {
+        "choice": {
+          "type": "string",
+          "enum": [
+            "accepted",
+            "essential"
+          ]
+        },
+        "analytics": {
+          "type": "boolean"
+        },
+        "marketing": {
+          "type": "boolean"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 80
+        }
+      }
+    }
+  }
+};
+
+export const joinWaitlistHTTPResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/http/join_waitlist_response.schema.json",
+  "title": "Join Waitlist HTTP Response",
+  "description": "Version 1 JSON response returned by the member waitlist and Host operating-application endpoint.",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ok",
+        "alreadyJoined"
+      ],
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "alreadyJoined": {
+          "type": "boolean"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "error"
+      ],
+      "properties": {
+        "error": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        }
+      }
+    }
+  ]
+};
+
 export const profilePromptCatalog = {
   "schemaVersion": 1,
   "kind": "profilePrompts",
