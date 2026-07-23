@@ -22,6 +22,7 @@ class ProfileDirectTextEntryField extends ConsumerStatefulWidget {
     required this.currentValue,
     required this.currentFieldValue,
     required this.fieldName,
+    required this.contract,
     required this.patchForValue,
     this.emptyValueText,
     this.inputHint,
@@ -44,6 +45,7 @@ class ProfileDirectTextEntryField extends ConsumerStatefulWidget {
   final String currentValue;
   final Object? currentFieldValue;
   final String fieldName;
+  final CatchContractFieldConstraints contract;
   final TextInputType? keyboardType;
   final TextCapitalization textCapitalization;
   final Iterable<String>? autofillHints;
@@ -174,6 +176,7 @@ class _ProfileDirectTextEntryFieldState
     return CatchField.input(
       icon: widget.icon,
       title: widget.label,
+      contract: widget.contract,
       emptyValueText: widget.emptyValueText,
       inputHint: widget.inputHint,
       leadingUnit: widget.leadingUnit,
@@ -205,6 +208,7 @@ class ProfileInlineTextValue extends StatelessWidget {
     required this.controller,
     required this.isEditing,
     required this.enabled,
+    required this.contract,
     this.placeholder,
     this.isAddAffordance = false,
     this.keyboardType,
@@ -224,6 +228,7 @@ class ProfileInlineTextValue extends StatelessWidget {
   final TextEditingController controller;
   final bool isEditing;
   final bool enabled;
+  final CatchContractFieldConstraints contract;
   final bool isAddAffordance;
   final TextInputType? keyboardType;
   final TextCapitalization textCapitalization;
@@ -268,6 +273,7 @@ class ProfileInlineTextValue extends StatelessWidget {
 
     return CatchField.input(
       title: label,
+      contract: contract,
       placeholder: placeholder ?? displayValue,
       controller: controller,
       keyboardType: keyboardType,

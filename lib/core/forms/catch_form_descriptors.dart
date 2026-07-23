@@ -2,13 +2,12 @@ import 'dart:async';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/labelled.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
+import 'package:catch_dating_app/core/schema_contracts/catch_contract_field_policy.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_field_accordion.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -115,47 +114,24 @@ final class CatchFormTextRow<P> extends CatchFormRowDescriptor<P> {
   final String Function(String value)? normalizeInput;
   final P Function(Object? value) patchForValue;
 
-  int? get effectiveMaxLength => maxLength ?? contract?.maxLength;
+  int? get effectiveMaxLength =>
+      CatchContractFieldPolicy.effectiveMaxLength(contract, maxLength);
 
-  List<TextInputFormatter>? get effectiveInputFormatters {
-    final limit = effectiveMaxLength;
-    if (limit == null) return inputFormatters;
-    return <TextInputFormatter>[
-      ...?inputFormatters,
-      LengthLimitingTextInputFormatter(limit),
-    ];
-  }
+  List<TextInputFormatter>? get effectiveInputFormatters =>
+      CatchContractFieldPolicy.effectiveInputFormatters(
+        contract,
+        inputFormatters,
+        explicitMaxLength: maxLength,
+      );
 
-  String? validate(BuildContext context, String value) {
-    final explicitError = validator?.call(value);
-    if (explicitError != null) return explicitError;
-    final contract = this.contract;
-    if (contract == null) return null;
-    if (contract.required && value.isEmpty) {
-      return context.l10n.coreCatchFormValidationRequired(field: label);
-    }
-    final minLength = contract.minLength;
-    if (value.isNotEmpty && minLength != null && value.length < minLength) {
-      return context.l10n.coreCatchFormValidationMinLength(
-        field: label,
-        minLength: minLength,
+  String? validate(BuildContext context, String value) =>
+      CatchContractFieldPolicy.validateText(
+        context,
+        label: label,
+        value: value,
+        contract: contract,
+        explicitValidator: validator,
       );
-    }
-    final maxLength = effectiveMaxLength;
-    if (maxLength != null && value.length > maxLength) {
-      return context.l10n.coreCatchFormValidationMaxLength(
-        field: label,
-        maxLength: maxLength,
-      );
-    }
-    final pattern = contract.pattern;
-    if (value.isNotEmpty &&
-        pattern != null &&
-        !RegExp(pattern).hasMatch(value)) {
-      return context.l10n.coreCatchFormValidationPattern(field: label);
-    }
-    return null;
-  }
 
   @override
   Widget buildRow(
@@ -191,6 +167,7 @@ final class CatchFormSingleChoiceRow<P, T extends Labelled>
     this.emptyValueText,
     this.helperText,
     this.itemAccent,
+    this.contractValue,
     this.allowEmptySelection = true,
     this.showOptionalLabel = false,
     this.contract,
@@ -202,6 +179,7 @@ final class CatchFormSingleChoiceRow<P, T extends Labelled>
   final String? emptyValueText;
   final String? helperText;
   final Color? Function(T item)? itemAccent;
+  final String Function(T value)? contractValue;
   final bool allowEmptySelection;
   final bool showOptionalLabel;
   final CatchContractFieldConstraints? contract;
@@ -216,6 +194,10 @@ final class CatchFormSingleChoiceRow<P, T extends Labelled>
     CatchFormRowScope<P> scope,
     CatchFormErrorText errorText,
   ) {
+    assert(
+      contract?.enumValues == null || contractValue != null,
+      'Schema-enumerated single-choice rows require contractValue.',
+    );
     return CatchFormSingleChoiceRowEditor<P, T>(
       key: ValueKey('catch-form-single-choice-$id'),
       descriptor: this,
@@ -238,6 +220,7 @@ final class CatchFormMultiChoiceRow<P, T extends Labelled>
     this.emptyValueText,
     this.helperText,
     this.itemAccent,
+    this.contractValue,
     this.isAddAffordanceWhenEmpty = true,
     this.allowEmptySelection = true,
     this.showOptionalLabel = false,
@@ -250,6 +233,7 @@ final class CatchFormMultiChoiceRow<P, T extends Labelled>
   final String? emptyValueText;
   final String? helperText;
   final Color? Function(T item)? itemAccent;
+  final String Function(T value)? contractValue;
   final bool isAddAffordanceWhenEmpty;
   final bool allowEmptySelection;
   final bool showOptionalLabel;
@@ -265,6 +249,10 @@ final class CatchFormMultiChoiceRow<P, T extends Labelled>
     CatchFormRowScope<P> scope,
     CatchFormErrorText errorText,
   ) {
+    assert(
+      contract?.itemEnumValues == null || contractValue != null,
+      'Schema-enumerated multi-choice rows require contractValue.',
+    );
     return CatchFormMultiChoiceRowEditor<P, T>(
       key: ValueKey('catch-form-multi-choice-$id'),
       descriptor: this,
@@ -811,6 +799,8 @@ class _CatchFormSingleChoiceRowEditorState<P, T extends Labelled>
       status: _saveState.status,
       error: error == null ? null : widget.errorText(context, error),
       values: descriptor.values,
+      contract: descriptor.contract,
+      contractValue: descriptor.contractValue,
       itemLabel: (value) => value.label,
       selected: {?_selected},
       allowEmptySelection: descriptor.allowEmptySelection,
@@ -937,6 +927,8 @@ class _CatchFormMultiChoiceRowEditorState<P, T extends Labelled>
       status: _saveState.status,
       error: error == null ? null : widget.errorText(context, error),
       values: descriptor.values,
+      contract: descriptor.contract,
+      contractValue: descriptor.contractValue,
       itemLabel: (value) => value.label,
       selected: _selected,
       multi: true,
@@ -1029,6 +1021,7 @@ class _CatchFormRangeRowEditorState<P>
     return CatchField.control(
       icon: descriptor.icon,
       title: descriptor.label,
+      contract: descriptor.contract,
       body: widget.scope.isExpanded
           ? '${descriptor.labelText(_range.start)} - ${descriptor.labelText(_range.end)}'
           : descriptor.value,
@@ -1037,6 +1030,8 @@ class _CatchFormRangeRowEditorState<P>
       isLoading: _saveState.saving,
       error: error == null ? null : widget.errorText(context, error),
       control: CatchRangeSlider(
+        minimumContract: descriptor.contract,
+        maximumContract: descriptor.contract,
         min: descriptor.sliderMin,
         max: descriptor.sliderMax,
         divisions: descriptor.divisions,

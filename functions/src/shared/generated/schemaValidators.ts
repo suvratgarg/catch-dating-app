@@ -4,6 +4,7 @@
 
 import Ajv, {ValidateFunction} from "ajv";
 import addFormats from "ajv-formats";
+import {MobileFormState} from "./mobileFormState";
 import {OperationRun} from "./operationRunContract";
 import {OperationWorkItem} from "./operationWorkItemContract";
 import {ProfilePromptAnswer} from "./profilePromptAnswer";
@@ -13,6 +14,7 @@ import {UploadedPhoto} from "./uploadedPhoto";
 import {ActivityPreferences} from "./activityPreferences";
 import {ConfigCitiesDocument} from "./configCitiesDocument";
 import {OnboardingDraftDocument} from "./onboardingDraftDocument";
+import {AccessApplicationDocument} from "./accessApplicationDocument";
 import {UserProfileDocument} from "./userProfileDocument";
 import {PublicProfileDocument} from "./publicProfileDocument";
 import {HostProfileDocument} from "./hostProfileDocument";
@@ -190,6 +192,7 @@ import {DeleteSavedEventClientWrite} from "./deleteSavedEventClientWrite";
 import {MarkNotificationReadClientWrite} from "./markNotificationReadClientWrite";
 import {ResetMatchUnreadCountClientWrite} from "./resetMatchUnreadCountClientWrite";
 import {
+  mobileFormStateSchema,
   operationRunSchema,
   operationWorkItemSchema,
   profilePromptAnswerSchema,
@@ -199,6 +202,7 @@ import {
   activityPreferencesSchema,
   configCitiesDocumentSchema,
   onboardingDraftDocumentSchema,
+  accessApplicationDocumentSchema,
   userProfileDocumentSchema,
   publicProfileDocumentSchema,
   hostProfileDocumentSchema,
@@ -380,6 +384,10 @@ import {
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateMobileFormState:
+  ValidateFunction<MobileFormState> =
+    ajv.compile(mobileFormStateSchema) as
+      ValidateFunction<MobileFormState>;
 export const validateOperationRun:
   ValidateFunction<OperationRun> =
     ajv.compile(operationRunSchema) as
@@ -416,6 +424,10 @@ export const validateOnboardingDraftDocument:
   ValidateFunction<OnboardingDraftDocument> =
     ajv.compile(onboardingDraftDocumentSchema) as
       ValidateFunction<OnboardingDraftDocument>;
+export const validateAccessApplicationDocument:
+  ValidateFunction<AccessApplicationDocument> =
+    ajv.compile(accessApplicationDocumentSchema) as
+      ValidateFunction<AccessApplicationDocument>;
 export const validateUserProfileDocument:
   ValidateFunction<UserProfileDocument> =
     ajv.compile(userProfileDocumentSchema) as

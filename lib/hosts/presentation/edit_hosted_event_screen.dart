@@ -446,6 +446,8 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                           title: context
                               .l10n
                               .hostsEditHostedEventScreenLabelDuration,
+                          contract: CatchContractConstraints
+                              .mobileFormStateEventDurationMinutes,
                           body: EventFormatters.durationMinutes(
                             scheduleFields.durationMinutes,
                           ),
@@ -478,6 +480,8 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                         title: context
                             .l10n
                             .hostsEditHostedEventScreenTitleLocationName,
+                        contract: CatchContractConstraints
+                            .updateEventCallablePayloadFieldsMeetingPoint,
                         controller: _meetingPointController,
                         enabled: screenState.canEdit,
                         inputHint: context
@@ -523,6 +527,8 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                         title: context
                             .l10n
                             .hostsEditHostedEventScreenTitleExtraDirections,
+                        contract: CatchContractConstraints
+                            .updateEventCallablePayloadFieldsLocationDetails,
                         isOptional: true,
                         controller: _locationDetailsController,
                         enabled: screenState.canEdit,
@@ -547,6 +553,8 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                           title: context
                               .l10n
                               .hostsEditHostedEventScreenTitleDistanceKm,
+                          contract: CatchContractConstraints
+                              .updateEventCallablePayloadFieldsDistanceKm,
                           controller: _distanceController,
                           enabled: screenState.canEdit,
                           inputHint: '10',
@@ -585,6 +593,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                         CatchField.choices<PaceLevel>(
                           title:
                               context.l10n.hostsEventDetailsStepLabelPaceLevel,
+                          contract: CatchContractConstraints
+                              .updateEventCallablePayloadFieldsPace,
+                          contractValue: (value) => value.name,
                           body: detailsFields.selectedPace.label,
                           values: PaceLevel.values,
                           itemLabel: (pace) => pace.label,
@@ -609,6 +620,8 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                         title: context
                             .l10n
                             .hostsEditHostedEventScreenTitleDescription,
+                        contract: CatchContractConstraints
+                            .updateEventCallablePayloadFieldsDescription,
                         isOptional: true,
                         controller: _descriptionController,
                         enabled: screenState.canEdit,
@@ -1011,6 +1024,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
         CatchField.input(
           key: CreateEventFormKeys.capacity,
           title: context.l10n.hostsEditHostedEventScreenTitleMaxAttendees,
+          contract: CatchContractConstraints
+              .updateEventCallablePayloadFieldsCapacityLimit,
           controller: capacityController,
           inputHint: '20',
           icon: CatchIcons.peopleOutline,
@@ -1025,6 +1040,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
               .hostsEditHostedEventScreenTitleBasePriceCurrencycode(
                 currencyCode: state.currencyCode,
               ),
+          contract: CatchContractConstraints
+              .updateEventCallablePayloadFieldsPriceInPaise,
           controller: priceController,
           inputHint: '0',
           icon: CatchIcons.paymentsOutlined,
@@ -1043,6 +1060,14 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
         ),
         CatchField.optionCards<EventAdmissionPreset>(
           title: context.l10n.hostsEditHostedEventScreenLabelAdmissionFormat,
+          contract: CatchContractConstraints
+              .updateEventCallablePayloadFieldsEventPolicyAdmissionFormat,
+          contractValue: (preset) => switch (preset) {
+            EventAdmissionPreset.openCapacity => 'open',
+            EventAdmissionPreset.inviteOnly => 'inviteOnly',
+            EventAdmissionPreset.requestToJoin => 'manualApproval',
+            EventAdmissionPreset.balancedSingles => 'balancedRatio',
+          },
           values: EventAdmissionPreset.values,
           itemTitle: (preset) => preset.title(context.l10n),
           itemDescription: (preset) => preset.description(context.l10n),
@@ -1054,6 +1079,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           CatchField.input(
             key: CreateEventFormKeys.inviteCode,
             title: context.l10n.hostsEditHostedEventScreenTitleInviteCode,
+            contract: CatchContractConstraints
+                .updateEventCallablePayloadFieldsPrivateAccessInviteCode,
             controller: inviteCodeController,
             inputHint:
                 context.l10n.hostsEditHostedEventScreenPlaceholderCatchDelhi,
@@ -1077,6 +1104,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           CatchField.toggle(
             key: CreateEventFormKeys.cohortCapsToggle,
             title: context.l10n.hostsEditHostedEventScreenTitleCohortCaps,
+            contract:
+                CatchContractConstraints.mobileFormStateEventCohortCapsEnabled,
             body: context
                 .l10n
                 .hostsEditHostedEventScreenBodyOptionallyCapStraightMen,
@@ -1092,6 +1121,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   title: context
                       .l10n
                       .hostsEditHostedEventScreenTitleMaxStraightMen,
+                  contract: CatchContractConstraints
+                      .updateEventCallablePayloadFieldsConstraintsMaxMen,
                   isOptional: true,
                   controller: maxMenController,
                   icon: CatchIcons.maleOutlined,
@@ -1106,6 +1137,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   title: context
                       .l10n
                       .hostsEditHostedEventScreenTitleMaxStraightWomen,
+                  contract: CatchContractConstraints
+                      .updateEventCallablePayloadFieldsConstraintsMaxWomen,
                   isOptional: true,
                   controller: maxWomenController,
                   icon: CatchIcons.femaleOutlined,
@@ -1130,6 +1163,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           CatchField.toggle(
             key: CreateEventFormKeys.dynamicPricingToggle,
             title: context.l10n.hostsEditHostedEventScreenTitleDemandPricing,
+            contract: CatchContractConstraints
+                .mobileFormStateEventDynamicPricingEnabled,
             body:
                 context.l10n.hostsEditHostedEventScreenBodyIncreasePriceForThe,
             value: state.dynamicPricingEnabled,
@@ -1144,6 +1179,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                       .hostsEditHostedEventScreenTitleStepCurrencycode(
                         currencyCode: state.currencyCode,
                       ),
+                  contract: CatchContractConstraints
+                      .updateEventCallablePayloadFieldsEventPolicyPricingDemandPricingRulesItemsStepAdjustmentInPaise,
                   controller: dynamicPricingStepController,
                   inputHint: '250',
                   icon: CatchIcons.trendingUpRounded,
@@ -1159,6 +1196,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                       .hostsEditHostedEventScreenTitleMaxCurrencycode(
                         currencyCode: state.currencyCode,
                       ),
+                  contract: CatchContractConstraints
+                      .updateEventCallablePayloadFieldsEventPolicyPricingDemandPricingRulesItemsMaxAdjustmentInPaise,
                   controller: dynamicPricingMaxController,
                   inputHint: '1500',
                   icon: CatchIcons.priceChangeOutlined,
@@ -1175,9 +1214,16 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           key: CreateEventFormKeys.minAge,
           minAgeController: minAgeController,
           maxAgeController: maxAgeController,
+          minimumContract: CatchContractConstraints
+              .updateEventCallablePayloadFieldsConstraintsMinAge,
+          maximumContract: CatchContractConstraints
+              .updateEventCallablePayloadFieldsConstraintsMaxAge,
         ),
         CatchField.optionCards<EventCancellationPolicyId>(
           title: context.l10n.hostsEditHostedEventScreenLabelCancellationPolicy,
+          contract: CatchContractConstraints
+              .updateEventCallablePayloadFieldsEventPolicyCancellationPolicyId,
+          contractValue: (value) => value.name,
           values: EventCancellationPolicyId.values,
           itemTitle: (policyId) => policyFor(policyId).title,
           itemDescription: (policyId) => policyFor(policyId).attendeeSummary,

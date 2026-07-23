@@ -78,6 +78,8 @@ class WhenStep extends StatelessWidget {
               ),
               CatchField.stepper(
                 title: context.l10n.hostsWhenStepLabelDuration,
+                contract: CatchContractConstraints
+                    .mobileFormStateEventDurationMinutes,
                 body: formatDuration(durationMinutes),
                 value: durationMinutes,
                 min: CatchBusinessRules.eventMinDurationMinutes,

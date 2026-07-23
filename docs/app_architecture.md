@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.5.4
-updated: 2026-07-22
+version: 1.5.5
+updated: 2026-07-23
 owner: recursive_audit_loop
 status: active
 ---
@@ -2554,6 +2554,8 @@ Reference files:
 - `test/core/forms/catch_form_descriptors_test.dart`
 - `test/core/forms/contract_alignment_test.dart`
 - `test/profile/self_profile_edit_tab_state_test.dart`
+- `docs/audit_registry/flutter_form_contract_inventory.json`
+- `tool/contracts/generate_flutter_form_contract_inventory.mjs`
 
 Use this pattern when multiple form surfaces need the same row mapping,
 single-expanded-field behavior, and per-field patch save loop. Feature state
@@ -2563,10 +2565,18 @@ wiring, pending/error presentation, and one `Future<bool> Function(P)` save
 delegate. Product-specific controls use `CatchFormCustomRow<P>` and the
 provided scope instead of adding feature policy to core.
 
-The consumer Profile About You section remains the reference prototype. Host
-Club Identity and Contact are the first promoted adopter: both sections use
-typed `UpdateClubPatch` descriptors, schema-derived field constraints, and one
-save delegate. Running/Lifestyle and onboarding remain tracker candidates.
+The consumer Profile About You section remains the descriptor reference
+prototype. Host Club Identity and Contact are the first promoted descriptor
+adopter: both sections use typed `UpdateClubPatch` descriptors and one save
+delegate. Running/Lifestyle retain their existing self-profile descriptors, and
+onboarding retains its step-specific composition.
+
+Schema-derived configuration is broader than descriptor adoption. Every
+editable canonical control and descriptor instance in both installable apps
+binds a generated field contract, including text fields, choices, option
+groups/cards, chips, toggles, steppers, and range sliders. The generated Flutter
+form-contract inventory is the exhaustive boundary; descriptor migration may
+continue incrementally without reopening contract drift.
 
 ```dart
 CatchFormRowList<UpdateUserProfilePatch>(

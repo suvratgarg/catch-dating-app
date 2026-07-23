@@ -1260,6 +1260,8 @@ Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
               children: [
                 CatchField.input(
                   title: context.l10n.hostsHostEventManageScreenTitleLabel,
+                  contract: CatchContractConstraints
+                      .createEventInviteLinkCallablePayloadLabel,
                   controller: labelController,
                   placeholder: context
                       .l10n
@@ -1270,6 +1272,8 @@ Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
                 gapH12,
                 CatchField.input(
                   title: context.l10n.hostsHostEventManageScreenTitleSource,
+                  contract: CatchContractConstraints
+                      .createEventInviteLinkCallablePayloadSource,
                   isOptional: true,
                   controller: sourceController,
                   placeholder: context

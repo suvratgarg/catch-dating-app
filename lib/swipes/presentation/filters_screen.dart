@@ -216,6 +216,10 @@ class FiltersContent extends StatelessWidget {
                     ),
                     CatchRangeSlider(
                       key: SwipeKeys.ageRangeSlider,
+                      minimumContract: CatchContractConstraints
+                          .updateUserProfilePatchMinAgePreference,
+                      maximumContract: CatchContractConstraints
+                          .updateUserProfilePatchMaxAgePreference,
                       min: minimumProfileAge.toDouble(),
                       max: preferredMatchAgeOpenEndedDisplayAge.toDouble(),
                       divisions:
@@ -236,6 +240,9 @@ class FiltersContent extends StatelessWidget {
                     for (final gender in Gender.values)
                       CatchChip.selectable(
                         key: SwipeKeys.genderFilterChip(gender.name),
+                        contract: CatchContractConstraints
+                            .updateUserProfilePatchInterestedInGenders,
+                        contractValue: gender.name,
                         label: gender.label,
                         selected: interestedIn.contains(gender),
                         onChanged: (_) => onGenderToggled(gender),

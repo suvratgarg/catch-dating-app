@@ -96,6 +96,9 @@ class _EventSuccessHostSetupFlowState extends State<EventSuccessHostSetupFlow> {
             children: [
               for (final playbook in widget.playbooks)
                 CatchChip.selectable(
+                  contract: CatchContractConstraints
+                      .eventSuccessPlanDocumentPlaybookId,
+                  contractValue: playbook.id,
                   label: playbook.activityType.label,
                   selected: playbook.id == _draft.playbook.id,
                   onChanged: (_) {

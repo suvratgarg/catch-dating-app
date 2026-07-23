@@ -451,6 +451,8 @@ class _HostTeamAddHostSheetState extends State<HostTeamAddHostSheet> {
         children: [
           CatchField.input(
             title: context.l10n.hostsHostTeamManagementSectionTitlePhoneNumber,
+            contract:
+                CatchContractConstraints.addClubHostCallablePayloadPhoneNumber,
             controller: _controller,
             prefixIcon: Icon(CatchIcons.phoneOutlined),
             keyboardType: TextInputType.phone,

@@ -150,6 +150,8 @@ class _ChatInputBarState extends State<ChatInputBar> {
                         onTap: hardDisabled ? null : _focusNode.requestFocus,
                         child: CatchField.input(
                           title: context.l10n.chatsChatInputBarTitleMessage,
+                          contract: CatchContractConstraints
+                              .createChatMessageClientWriteDataText,
                           showLabel: false,
                           controller: widget.controller,
                           focusNode: _focusNode,

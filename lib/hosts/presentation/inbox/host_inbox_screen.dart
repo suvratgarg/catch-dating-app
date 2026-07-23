@@ -420,6 +420,9 @@ class HostInboxAudienceRail extends StatelessWidget {
       child: Padding(
         padding: CatchInsets.pageHorizontal,
         child: CatchOptionGroup<HostInboxAudienceSegment>(
+          contract:
+              CatchContractConstraints.mobileFormStateHostInboxAudienceSegment,
+          contractValue: (segment) => segment.name,
           selected: workspace.selectedSegment,
           options: [
             CatchOption(

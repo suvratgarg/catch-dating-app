@@ -547,12 +547,13 @@ class _ReviewResponseSheetState extends ConsumerState<ReviewResponseSheet> {
           CatchField.input(
             key: ReviewKeys.ownerResponseField,
             title: context.l10n.reviewsReviewsSectionTitleResponse,
+            contract: CatchContractConstraints
+                .setReviewResponseCallablePayloadMessage,
             controller: _messageController,
             maxLines: 4,
             placeholder:
                 context.l10n.reviewsReviewsSectionPlaceholderThankTheAttendeeOr,
             textCapitalization: TextCapitalization.sentences,
-            inputFormatters: [LengthLimitingTextInputFormatter(1000)],
             onChanged: (_) => setState(() {}),
           ),
           if (mutation.hasError) ...[

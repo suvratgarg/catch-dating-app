@@ -44,6 +44,9 @@ class _UserAnalyticsPanelState extends ConsumerState<UserAnalyticsPanel> {
         children: [
           CatchField.select<UserAnalyticsRangePreset>(
             title: UserAnalyticsCopy.rangeTitle(context.l10n),
+            contract: CatchContractConstraints
+                .userAnalyticsQueryCallablePayloadRangePreset,
+            contractValue: (value) => value.wireValue,
             values: UserAnalyticsRangePreset.values
                 .where((preset) => preset != UserAnalyticsRangePreset.custom)
                 .toList(growable: false),

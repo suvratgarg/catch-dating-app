@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.4.2
-updated: 2026-07-22
+version: 1.4.3
+updated: 2026-07-23
 owner: recursive_audit_loop
 status: active
 ---
@@ -245,17 +245,41 @@ decoders).
 
 The schema generator also emits
 `lib/core/schema_contracts/generated/field_constraints.g.dart`. It projects
-UI-relevant `minLength`, `maxLength`, `pattern`, enum, and numeric bounds from
-patch and Firestore document schemas into typed
-`CatchContractFieldConstraints` constants. `CatchForm*Row` descriptors bind
-those constants through `contract:`; call sites may narrow a bound explicitly,
-but may not relax the contract.
+UI-relevant requiredness, value and item types, string length, format, pattern,
+enum values, collection bounds, uniqueness, numeric bounds, and `multipleOf`
+steps from every registered schema into typed
+`CatchContractFieldConstraints` constants. The projection includes persisted
+documents, callable payloads, and `contracts/forms/mobile_form_state.schema.json`
+for editable presentation values that are deterministically transformed before
+they are stored.
 
-`test/core/forms/contract_alignment_test.dart` walks the consumer-profile and
-host-club descriptor factories and contains a seeded over-limit probe, so the
-gate proves both missing bindings and contradictory limits are detectable. Run
-it through `node tool/run.mjs check contracts:form-alignment`; contract CI also
-keeps the generated projection deterministic via the schema generator's
+`CatchContractFieldPolicy` applies those constants at runtime. Text controls
+derive validators, counters, and length formatters; choices filter values
+through an explicit typed-to-wire serializer; steppers and range sliders derive
+bounds and steps. Explicit UI values may narrow a contract for product policy
+but cannot relax it. Composite controls bind each independently stored endpoint.
+
+Every editable canonical control and descriptor instance under production
+`lib/` is covered by
+`docs/audit_registry/flutter_form_contract_inventory.json`. The source scanner
+recognizes `CatchField`, `CatchChipField`, selectable chips, option groups/cards,
+range sliders, toggles, `CatchForm*Row`, and the retained self-profile
+descriptors. It fails when a control lacks its generated contract, a typed
+choice lacks its serializer, a range lacks either endpoint, or an exemption is
+not explicit. The current two exemptions are disclosure-only Host analytics
+controls, not editable form values.
+
+Run the exhaustive gate with:
+
+```sh
+node tool/run.mjs check contracts:flutter-form-inventory
+```
+
+`test/core/forms/contract_alignment_test.dart` additionally walks the
+consumer-profile and host-club descriptor factories and contains a seeded
+over-limit probe, so contradictory limits remain detectable. Run it through
+`node tool/run.mjs check contracts:form-alignment`. Contract CI runs both gates
+and keeps the generated schema projection deterministic with the generator's
 `--check` mode.
 
 ## Relationship Documents

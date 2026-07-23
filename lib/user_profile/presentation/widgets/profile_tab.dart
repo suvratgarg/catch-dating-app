@@ -337,6 +337,8 @@ class ProfileFieldRow extends StatelessWidget {
             values: descriptor.values,
             value: descriptor.value,
             fieldName: descriptor.fieldName,
+            contract: descriptor.contract,
+            contractValue: descriptor.contractValue,
             patchForValue: descriptor.patchForValue,
             emptyValueText: descriptor.emptyValueText,
             allowEmptySelection: descriptor.allowEmptySelection,
@@ -352,6 +354,8 @@ class ProfileFieldRow extends StatelessWidget {
         values: descriptor.values,
         selected: descriptor.selected,
         fieldName: descriptor.fieldName,
+        contract: descriptor.contract,
+        contractValue: descriptor.contractValue,
         emptyValueText: descriptor.emptyValueText,
         patchForValues: descriptor.patchForValues,
         patchForLatestProfile: descriptor.patchForLatestProfile,
@@ -380,6 +384,8 @@ class ProfileFieldRow extends StatelessWidget {
         patchForLatestProfile: descriptor.patchForLatestProfile,
         saveEndValue: descriptor.saveEndValue,
         savedCurrentMax: descriptor.savedCurrentMax,
+        minimumContract: descriptor.contract,
+        maximumContract: descriptor.maximumContract,
         onSaved: onSaved,
         onCancel: onCancel,
       ),
@@ -395,6 +401,8 @@ class ProfileSingleEnumEntry<T extends Labelled> extends StatelessWidget {
     required this.values,
     required this.fieldName,
     required this.patchForValue,
+    required this.contract,
+    required this.contractValue,
     required this.isExpanded,
     required this.onTap,
     required this.onSaved,
@@ -411,6 +419,8 @@ class ProfileSingleEnumEntry<T extends Labelled> extends StatelessWidget {
   final T? value;
   final String fieldName;
   final UpdateUserProfilePatch Function(T? value) patchForValue;
+  final CatchContractFieldConstraints contract;
+  final String Function(T value) contractValue;
   final String? emptyValueText;
   final bool allowEmptySelection;
   final bool showOptionalLabel;
@@ -431,6 +441,8 @@ class ProfileSingleEnumEntry<T extends Labelled> extends StatelessWidget {
       allowEmptySelection: allowEmptySelection,
       showOptionalLabel: showOptionalLabel,
       fieldName: fieldName,
+      contract: contract,
+      contractValue: contractValue,
       patchForValue: patchForValue,
       isExpanded: isExpanded,
       isAddAffordance: value == null,
@@ -450,6 +462,8 @@ class ProfileMultiEnumEntry<T extends Labelled> extends StatelessWidget {
     required this.selected,
     required this.fieldName,
     required this.patchForValues,
+    required this.contract,
+    required this.contractValue,
     required this.isExpanded,
     required this.onTap,
     required this.onSaved,
@@ -468,6 +482,8 @@ class ProfileMultiEnumEntry<T extends Labelled> extends StatelessWidget {
   final String fieldName;
   final String? emptyValueText;
   final UpdateUserProfilePatch Function(List<T> values) patchForValues;
+  final CatchContractFieldConstraints contract;
+  final String Function(T value) contractValue;
   final UpdateUserProfilePatch Function(UserProfile user, List<T> values)?
   patchForLatestProfile;
   final bool isExpanded;
@@ -489,6 +505,8 @@ class ProfileMultiEnumEntry<T extends Labelled> extends StatelessWidget {
       currentValues: selected,
       emptyValueText: emptyValueText,
       fieldName: fieldName,
+      contract: contract,
+      contractValue: contractValue,
       patchForValues: patchForValues,
       patchForLatestProfile: patchForLatestProfile,
       isExpanded: isExpanded,

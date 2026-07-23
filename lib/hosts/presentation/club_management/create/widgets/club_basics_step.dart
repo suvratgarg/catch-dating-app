@@ -85,6 +85,9 @@ class ClubBasicsStep extends StatelessWidget {
               children: [
                 CatchField.choices<OrganizerType>(
                   title: context.l10n.hostsOrganizerTypeLabel,
+                  contract: CatchContractConstraints
+                      .createClubCallablePayloadOrganizerType,
+                  contractValue: (value) => value.name,
                   body: _organizerTypeLabel(context, selectedOrganizerType),
                   icon: CatchIcons.groups3Outlined,
                   values: OrganizerType.values,
@@ -101,6 +104,8 @@ class ClubBasicsStep extends StatelessWidget {
                 ),
                 CatchField.input(
                   title: context.l10n.hostsClubBasicsStepTitleClubName,
+                  contract:
+                      CatchContractConstraints.createClubCallablePayloadName,
                   controller: nameController,
                   icon: CatchIcons.groupOutlined,
                   enabled: detailsEnabled,
@@ -127,6 +132,9 @@ class ClubBasicsStep extends StatelessWidget {
                       : null,
                   builder: (field) => CatchField.choices<CityOption>(
                     title: context.l10n.hostsClubBasicsStepTitleCity,
+                    contract: CatchContractConstraints
+                        .createClubCallablePayloadLocation,
+                    contractValue: (city) => city.effectiveMarketId,
                     body: selectedCity?.label,
                     icon: CatchIcons.locationCityOutlined,
                     values: defaultCityOptions
@@ -152,6 +160,8 @@ class ClubBasicsStep extends StatelessWidget {
                 ),
                 CatchField.input(
                   title: context.l10n.hostsClubBasicsStepTitleAreaNeighbourhood,
+                  contract:
+                      CatchContractConstraints.createClubCallablePayloadArea,
                   controller: areaController,
                   icon: CatchIcons.locationOnOutlined,
                   enabled: detailsEnabled,

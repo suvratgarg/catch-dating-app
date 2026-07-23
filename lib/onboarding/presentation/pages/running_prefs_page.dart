@@ -188,6 +188,8 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                   title: context
                       .l10n
                       .onboardingRunningPrefsPageTextTypicalPacePerKm,
+                  contract: CatchContractConstraints
+                      .updateUserProfilePatchActivityPreferencesRunningPaceMinSecsPerKm,
                   body: context.l10n.onboardingRunningPrefsPageBodyPaceRange(
                     minPace: state.minPaceLabel,
                     maxPace: state.maxPaceLabel,
@@ -226,6 +228,10 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                       ),
                       gapH12,
                       CatchRangeSlider(
+                        minimumContract: CatchContractConstraints
+                            .updateUserProfilePatchActivityPreferencesRunningPaceMinSecsPerKm,
+                        maximumContract: CatchContractConstraints
+                            .updateUserProfilePatchActivityPreferencesRunningPaceMaxSecsPerKm,
                         values: state.paceRange,
                         min: 240,
                         max: 540,
@@ -260,6 +266,9 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                   title: context
                       .l10n
                       .onboardingRunningPrefsPageLabelFavouriteDistances,
+                  contract: CatchContractConstraints
+                      .updateUserProfilePatchActivityPreferencesRunningPreferredDistances,
+                  contractValue: (value) => value.name,
                   body: _orderedSelectionLabels(
                     PreferredDistance.values,
                     state.distances,
@@ -276,6 +285,9 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                 CatchField.choices<RunReason>(
                   key: OnboardingFormKeys.runningReasons,
                   title: state.reasonLabel,
+                  contract: CatchContractConstraints
+                      .updateUserProfilePatchActivityPreferencesRunningRunningReasons,
+                  contractValue: (value) => value.name,
                   body: _orderedSelectionLabels(
                     RunReason.values,
                     state.reasons,
@@ -292,6 +304,9 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                 CatchField.choices<PreferredRunTime>(
                   key: OnboardingFormKeys.runningTimes,
                   title: state.runTimesLabel,
+                  contract: CatchContractConstraints
+                      .updateUserProfilePatchActivityPreferencesRunningPreferredRunTimes,
+                  contractValue: (value) => value.name,
                   body: _orderedSelectionLabels(
                     PreferredRunTime.values,
                     state.runTimes,

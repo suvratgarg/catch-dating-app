@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/forms/mobile_form_state.schema.json",
+  "title": "MobileFormState",
+  "description": "Schema-owned values used by installable-app forms when the editable presentation value is derived into one or more backend payload fields rather than written verbatim.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "eventDurationMinutes": {
+      "type": "integer",
+      "minimum": 30,
+      "maximum": 240,
+      "multipleOf": 15,
+      "description": "Create/edit event duration. Save adapters derive endTimeMillis from this value and startTimeMillis."
+    },
+    "eventCohortCapsEnabled": {
+      "type": "boolean",
+      "description": "Whether the event form reveals and emits cohort capacity limits."
+    },
+    "eventDynamicPricingEnabled": {
+      "type": "boolean",
+      "description": "Whether the event form reveals and emits demand-pricing rules."
+    },
+    "eventSuccessLiveCardIncluded": {
+      "type": "boolean",
+      "description": "Whether a host includes an optional live event-success card."
+    },
+    "eventSuccessManualQaScenario": {
+      "type": "string",
+      "enum": ["socialRun", "racketPairs", "quizTeams", "singlesMixer"]
+    },
+    "exploreActivityTag": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "exploreArea": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "exploreDistanceFilter": {
+      "type": "string",
+      "enum": ["any", "oneKm", "threeKm", "fiveKm", "tenKm"]
+    },
+    "exploreHighRatedOnly": {
+      "type": "boolean"
+    },
+    "exploreJoinedOnly": {
+      "type": "boolean"
+    },
+    "hostBroadcastTemplate": {
+      "type": "string",
+      "enum": ["reminder", "meetingPoint", "change"]
+    },
+    "hostEventsLifecycleFilter": {
+      "type": "string",
+      "enum": ["upcoming", "live", "past"]
+    },
+    "hostInboxAudienceSegment": {
+      "type": "string",
+      "enum": ["booked", "prospective"]
+    },
+    "hostRosterFilter": {
+      "type": "string",
+      "enum": [
+        "all",
+        "booked",
+        "waitlist",
+        "slots",
+        "requests",
+        "due",
+        "checkedIn",
+        "attended",
+        "noShow"
+      ]
+    },
+    "onboardingDateOfBirthText": {
+      "type": "string",
+      "minLength": 11,
+      "maxLength": 11,
+      "pattern": "^\\d{2} [A-Z][a-z]{2} \\d{4}$",
+      "description": "Read-only date text rendered by the onboarding date picker before it is saved as a timestamp."
+    },
+    "suvbotTesterPhoneNumber": {
+      "type": "string",
+      "minLength": 6,
+      "maxLength": 32,
+      "description": "Phone identifier used by the local Suvbot tester action."
+    }
+  }
+}

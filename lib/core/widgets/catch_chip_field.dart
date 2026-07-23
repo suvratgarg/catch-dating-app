@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/core/labelled.dart';
+import 'package:catch_dating_app/core/schema_contracts/catch_contract_field_policy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -6,6 +8,9 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:flutter/material.dart';
+
+export 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart'
+    show CatchContractConstraints, CatchContractFieldConstraints;
 
 /// A chip selector that works for both single-select and multi-select use cases.
 ///
@@ -20,6 +25,8 @@ class CatchChipField<T extends Labelled> extends StatelessWidget {
     required this.selected,
     required this.multiSelect,
     required this.onChanged,
+    this.contract,
+    this.contractValue,
     this.enabled = true,
     this.isOptional = false,
     this.showLabel = true,
@@ -30,6 +37,8 @@ class CatchChipField<T extends Labelled> extends StatelessWidget {
 
   final String label;
   final List<T> values;
+  final CatchContractFieldConstraints? contract;
+  final String Function(T value)? contractValue;
 
   /// The currently selected items — parent-owned, passed down each build.
   final Set<T> selected;
@@ -49,9 +58,20 @@ class CatchChipField<T extends Labelled> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final supportedValues = CatchContractFieldPolicy.supportedChoiceValues(
+      contract,
+      values,
+      contractValue,
+      multi: multiSelect,
+    );
+    final supportedSelection = selected.intersection(supportedValues.toSet());
+    assert(
+      supportedSelection.length == selected.length,
+      'CatchChipField selected values must be allowed by the schema contract.',
+    );
 
     return FormField<Set<T>>(
-      initialValue: selected,
+      initialValue: supportedSelection,
       validator: validator,
       builder: (field) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,8 +87,8 @@ class CatchChipField<T extends Labelled> extends StatelessWidget {
           Wrap(
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
-            children: values.map((v) {
-              final isSelected = selected.contains(v);
+            children: supportedValues.map((v) {
+              final isSelected = supportedSelection.contains(v);
               return CatchChip.selectable(
                 key: chipKeyBuilder?.call(v),
                 label: v.label,
@@ -78,7 +98,7 @@ class CatchChipField<T extends Labelled> extends StatelessWidget {
                     : null,
                 enabled: enabled,
                 onChanged: (_) {
-                  final next = Set<T>.from(selected);
+                  final next = Set<T>.from(supportedSelection);
                   if (!multiSelect) {
                     next.clear();
                     final canClear = isOptional && allowEmptySingleSelection;

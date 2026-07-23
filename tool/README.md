@@ -20,6 +20,7 @@ node tool/run.mjs list --category data
 node tool/run.mjs check --manifest-only
 node tool/run.mjs check audit:backend-errors
 npm run audit:backend-errors:check
+node tool/run.mjs check contracts:flutter-form-inventory
 node tool/run.mjs check --category demo
 node tool/run.mjs impacted --paths contracts/firestore/users.schema.json --json
 node tool/run.mjs impacted --check

@@ -127,11 +127,13 @@ sealed class SelfProfileFieldRowDescriptor {
     required this.id,
     required this.icon,
     required this.label,
+    required this.contract,
   });
 
   final String id;
   final IconData icon;
   final String label;
+  final CatchContractFieldConstraints contract;
 
   R map<R>({
     required SelfProfileSingleChoiceFieldRowMapper<R> singleChoice,
@@ -149,7 +151,9 @@ class SelfProfileSingleChoiceFieldRowDescriptor<T extends Labelled>
     required this.values,
     required this.value,
     required this.fieldName,
+    required this.contractValue,
     required this.patchForValue,
+    required super.contract,
     this.emptyValueText,
     this.allowEmptySelection = true,
     this.showOptionalLabel = false,
@@ -158,6 +162,7 @@ class SelfProfileSingleChoiceFieldRowDescriptor<T extends Labelled>
   final List<T> values;
   final T? value;
   final String fieldName;
+  final String Function(T value) contractValue;
   final UpdateUserProfilePatch Function(T? value) patchForValue;
   final String? emptyValueText;
   final bool allowEmptySelection;
@@ -182,7 +187,9 @@ class SelfProfileMultiChoiceFieldRowDescriptor<T extends Labelled>
     required this.values,
     required this.selected,
     required this.fieldName,
+    required this.contractValue,
     required this.patchForValues,
+    required super.contract,
     this.emptyValueText,
     this.patchForLatestProfile,
     this.isAddAffordanceWhenEmpty = true,
@@ -193,6 +200,7 @@ class SelfProfileMultiChoiceFieldRowDescriptor<T extends Labelled>
   final List<T> values;
   final List<T> selected;
   final String fieldName;
+  final String Function(T value) contractValue;
   final String? emptyValueText;
   final UpdateUserProfilePatch Function(List<T> values) patchForValues;
   final UpdateUserProfilePatch Function(UserProfile user, List<T> values)?
@@ -224,6 +232,8 @@ class SelfProfileRangeFieldRowDescriptor extends SelfProfileFieldRowDescriptor {
     required this.divisions,
     required this.labelText,
     required this.patchForRange,
+    required super.contract,
+    required this.maximumContract,
     this.patchForLatestProfile,
     this.saveEndValue,
     this.savedCurrentMax,
@@ -239,6 +249,7 @@ class SelfProfileRangeFieldRowDescriptor extends SelfProfileFieldRowDescriptor {
   final int Function(int)? saveEndValue;
   final int? savedCurrentMax;
   final UpdateUserProfilePatch Function(int min, int max) patchForRange;
+  final CatchContractFieldConstraints maximumContract;
   final UpdateUserProfilePatch Function(UserProfile user, int min, int max)?
   patchForLatestProfile;
 
@@ -379,6 +390,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
           .toList(growable: false),
       value: cityOptionByName(user.city),
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyCity,
+      contractValue: (value) => value.effectiveMarketId,
       patchForValue: patchFactory.city,
       contract: CatchContractConstraints.updateUserProfilePatchCity,
     ),
@@ -416,6 +428,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
       values: EducationLevel.values,
       value: user.education,
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyEducation,
+      contractValue: (value) => value.name,
       patchForValue: patchFactory.education,
       contract: CatchContractConstraints.updateUserProfilePatchEducation,
     ),
@@ -426,6 +439,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
       values: Religion.values,
       value: user.religion,
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyReligion,
+      contractValue: (value) => value.name,
       patchForValue: patchFactory.religion,
       contract: CatchContractConstraints.updateUserProfilePatchReligion,
       showOptionalLabel: true,
@@ -437,6 +451,8 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
       values: Language.values,
       selected: user.languages,
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyLanguages,
+      contractValue: (value) => value.name,
+      contract: CatchContractConstraints.updateUserProfilePatchLanguages,
       patchForValues: patchFactory.languages,
     ),
     CatchFormSingleChoiceRow<UpdateUserProfilePatch, RelationshipGoal>(
@@ -447,6 +463,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
       value: user.relationshipGoal,
       fieldName:
           l10n.userProfileSelfProfileEditTabStateVisiblecopyRelationshipgoal,
+      contractValue: (value) => value.name,
       patchForValue: patchFactory.relationshipGoal,
       contract: CatchContractConstraints.updateUserProfilePatchRelationshipGoal,
     ),
@@ -475,6 +492,10 @@ List<SelfProfileFieldRowDescriptor> _runningRows({
           ),
       patchForRange: (min, max) => patchFactory.paceRange(user, min, max),
       patchForLatestProfile: patchFactory.paceRange,
+      contract: CatchContractConstraints
+          .updateUserProfilePatchActivityPreferencesRunningPaceMinSecsPerKm,
+      maximumContract: CatchContractConstraints
+          .updateUserProfilePatchActivityPreferencesRunningPaceMaxSecsPerKm,
     ),
     SelfProfileMultiChoiceFieldRowDescriptor<PreferredDistance>(
       id: 'preferredDistances',
@@ -484,6 +505,9 @@ List<SelfProfileFieldRowDescriptor> _runningRows({
       selected: user.preferredDistances,
       fieldName:
           l10n.userProfileSelfProfileEditTabStateVisiblecopyPreferreddistances,
+      contractValue: (value) => value.name,
+      contract: CatchContractConstraints
+          .updateUserProfilePatchActivityPreferencesRunningPreferredDistances,
       patchForValues: (values) => patchFactory.preferredDistances(user, values),
       patchForLatestProfile: patchFactory.preferredDistances,
     ),
@@ -495,6 +519,9 @@ List<SelfProfileFieldRowDescriptor> _runningRows({
       selected: user.runningReasons,
       fieldName:
           l10n.userProfileSelfProfileEditTabStateVisiblecopyRunningreasons,
+      contractValue: (value) => value.name,
+      contract: CatchContractConstraints
+          .updateUserProfilePatchActivityPreferencesRunningRunningReasons,
       patchForValues: (values) => patchFactory.runningReasons(user, values),
       patchForLatestProfile: patchFactory.runningReasons,
     ),
@@ -506,6 +533,9 @@ List<SelfProfileFieldRowDescriptor> _runningRows({
       selected: user.preferredRunTimes,
       fieldName:
           l10n.userProfileSelfProfileEditTabStateVisiblecopyPreferredruntimes,
+      contractValue: (value) => value.name,
+      contract: CatchContractConstraints
+          .updateUserProfilePatchActivityPreferencesRunningPreferredRunTimes,
       patchForValues: (values) => patchFactory.preferredRunTimes(user, values),
       patchForLatestProfile: patchFactory.preferredRunTimes,
     ),
@@ -525,6 +555,8 @@ List<SelfProfileFieldRowDescriptor> _lifestyleRows({
       values: DrinkingHabit.values,
       value: user.drinking,
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyDrinking,
+      contractValue: (value) => value.name,
+      contract: CatchContractConstraints.updateUserProfilePatchDrinking,
       patchForValue: patchFactory.drinking,
     ),
     SelfProfileSingleChoiceFieldRowDescriptor<SmokingHabit>(
@@ -534,6 +566,8 @@ List<SelfProfileFieldRowDescriptor> _lifestyleRows({
       values: SmokingHabit.values,
       value: user.smoking,
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopySmoking,
+      contractValue: (value) => value.name,
+      contract: CatchContractConstraints.updateUserProfilePatchSmoking,
       patchForValue: patchFactory.smoking,
     ),
     SelfProfileSingleChoiceFieldRowDescriptor<WorkoutFrequency>(
@@ -543,6 +577,8 @@ List<SelfProfileFieldRowDescriptor> _lifestyleRows({
       values: WorkoutFrequency.values,
       value: user.workout,
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyWorkout,
+      contractValue: (value) => value.name,
+      contract: CatchContractConstraints.updateUserProfilePatchWorkout,
       patchForValue: patchFactory.workout,
     ),
     SelfProfileSingleChoiceFieldRowDescriptor<DietaryPreference>(
@@ -552,6 +588,8 @@ List<SelfProfileFieldRowDescriptor> _lifestyleRows({
       values: DietaryPreference.values,
       value: user.diet,
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyDiet,
+      contractValue: (value) => value.name,
+      contract: CatchContractConstraints.updateUserProfilePatchDiet,
       patchForValue: patchFactory.diet,
     ),
     SelfProfileSingleChoiceFieldRowDescriptor<ChildrenStatus>(
@@ -561,6 +599,8 @@ List<SelfProfileFieldRowDescriptor> _lifestyleRows({
       values: ChildrenStatus.values,
       value: user.children,
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyChildren,
+      contractValue: (value) => value.name,
+      contract: CatchContractConstraints.updateUserProfilePatchChildren,
       patchForValue: patchFactory.children,
     ),
   ];

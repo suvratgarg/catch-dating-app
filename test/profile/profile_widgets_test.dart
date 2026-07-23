@@ -1386,6 +1386,8 @@ void main() {
           builder: (context, setState) => ProfileMultiEnumEntry<Language>(
             icon: CatchIcons.languageOutlined,
             label: 'Languages',
+            contract: CatchContractConstraints.updateUserProfilePatchLanguages,
+            contractValue: (value) => value.name,
             values: Language.values,
             selected: const [Language.english, Language.hindi],
             fieldName: 'languages',
@@ -1430,6 +1432,9 @@ void main() {
             return ProfileMultiEnumEntry<Language>(
               icon: CatchIcons.languageOutlined,
               label: 'Languages',
+              contract:
+                  CatchContractConstraints.updateUserProfilePatchLanguages,
+              contractValue: (value) => value.name,
               values: Language.values,
               selected: List<Language>.of(selected),
               fieldName: 'languages',
@@ -2169,6 +2174,8 @@ void main() {
         ProfileSingleEnumEntry<EducationLevel>(
           icon: CatchIcons.schoolOutlined,
           label: 'Education',
+          contract: CatchContractConstraints.updateUserProfilePatchEducation,
+          contractValue: (value) => value.name,
           values: EducationLevel.values,
           value: EducationLevel.masters,
           fieldName: 'education',
@@ -2198,6 +2205,8 @@ void main() {
         ProfileMultiEnumEntry<Language>(
           icon: CatchIcons.languageOutlined,
           label: 'Languages',
+          contract: CatchContractConstraints.updateUserProfilePatchLanguages,
+          contractValue: (value) => value.name,
           values: Language.values,
           selected: const [Language.english, Language.hindi],
           fieldName: 'languages',

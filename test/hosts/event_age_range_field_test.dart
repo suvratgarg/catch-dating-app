@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_age_range_field.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,10 @@ void main() {
           body: EventAgeRangeField(
             minAgeController: minController,
             maxAgeController: maxController,
+            minimumContract: CatchContractConstraints
+                .createEventCallablePayloadConstraintsMinAge,
+            maximumContract: CatchContractConstraints
+                .createEventCallablePayloadConstraintsMaxAge,
             initiallyOpen: true,
             onChangeEnd: (minAge, maxAge) =>
                 committed = (minAge: minAge, maxAge: maxAge),
@@ -67,6 +72,10 @@ void main() {
           body: EventAgeRangeField(
             minAgeController: minController,
             maxAgeController: maxController,
+            minimumContract: CatchContractConstraints
+                .createEventCallablePayloadConstraintsMinAge,
+            maximumContract: CatchContractConstraints
+                .createEventCallablePayloadConstraintsMaxAge,
           ),
         ),
       ),

@@ -256,6 +256,9 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
         if (widget.activityKind case final activityKind?)
           CatchField.choices<ActivityKind>(
             title: context.l10n.hostsClubHostDefaultsStepTextDefaultActivity,
+            contract: CatchContractConstraints
+                .createClubCallablePayloadHostDefaultsPrimaryActivityKind,
+            contractValue: (value) => value.name,
             helperText:
                 context.l10n.hostsClubHostDefaultsStepTextNewEventsStartFrom,
             values: ActivityKind.eventCreationDefaults,
@@ -271,6 +274,9 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
         if (!widget.advancedOnly)
           CatchField.optionCards<EventAdmissionDefaultPreset>(
             title: context.l10n.hostsClubHostDefaultsStepLabelAdmissionFormat,
+            contract:
+                CatchContractConstraints.mobileFormStateEventCohortCapsEnabled,
+            contractValue: (value) => value.name,
             values: visibleAdmissionPresets,
             itemTitle: (preset) => preset.label(context.l10n),
             itemDescription: (preset) => preset.description(context.l10n),
@@ -291,6 +297,8 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
         if (selectedAdmissionPreset == EventAdmissionDefaultPreset.openCapacity)
           CatchField.toggle(
             title: context.l10n.hostsClubHostDefaultsStepTitleCohortCaps,
+            contract: CatchContractConstraints
+                .createClubCallablePayloadHostDefaultsEventPolicyAdmissionPreset,
             body: context
                 .l10n
                 .hostsClubHostDefaultsStepBodyOptionallyPrefillStraightMen,
@@ -313,6 +321,8 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                       title: context
                           .l10n
                           .hostsClubHostDefaultsStepTitleMaxStraightMen,
+                      contract: CatchContractConstraints
+                          .createClubCallablePayloadHostDefaultsEventPolicyMaxMen,
                       controller: _maxMenController,
                       open: _openNumericField == 'maxMen',
                       onOpenChanged: (open) =>
@@ -346,6 +356,8 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                       title: context
                           .l10n
                           .hostsClubHostDefaultsStepTitleMaxStraightWomen,
+                      contract: CatchContractConstraints
+                          .createClubCallablePayloadHostDefaultsEventPolicyMaxWomen,
                       controller: _maxWomenController,
                       open: _openNumericField == 'maxWomen',
                       onOpenChanged: (open) =>
@@ -381,6 +393,8 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
             EventAdmissionDefaultPreset.balancedSingles) ...[
           CatchField.toggle(
             title: context.l10n.hostsClubHostDefaultsStepTitleDemandPricing,
+            contract: CatchContractConstraints
+                .createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingEnabled,
             body: context
                 .l10n
                 .hostsClubHostDefaultsStepBodyPrefillDynamicPricingControls,
@@ -405,6 +419,8 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                     Expanded(
                       child: CatchField.inputActions(
                         title: context.l10n.hostsClubHostDefaultsStepTitleStep,
+                        contract: CatchContractConstraints
+                            .createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingStepInPaise,
                         controller: _pricingStepController,
                         open: _openNumericField == 'pricingStep',
                         onOpenChanged: (open) =>
@@ -445,6 +461,8 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                     Expanded(
                       child: CatchField.inputActions(
                         title: context.l10n.hostsClubHostDefaultsStepTitleMax,
+                        contract: CatchContractConstraints
+                            .createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingMaxInPaise,
                         controller: _pricingMaxController,
                         open: _openNumericField == 'pricingMax',
                         onOpenChanged: (open) =>
@@ -489,6 +507,10 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
           EventAgeRangeField(
             minAgeController: _minAgeController,
             maxAgeController: _maxAgeController,
+            minimumContract: CatchContractConstraints
+                .createClubCallablePayloadHostDefaultsEventPolicyMinAge,
+            maximumContract: CatchContractConstraints
+                .createClubCallablePayloadHostDefaultsEventPolicyMaxAge,
             onChangeEnd: (minAge, maxAge) => _emit(
               (current) => current.copyWith(minAge: minAge, maxAge: maxAge),
             ),
@@ -496,6 +518,9 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
           CatchField.optionCards<EventCancellationPolicyId>(
             title:
                 context.l10n.hostsClubHostDefaultsStepLabelCancellationPolicy,
+            contract: CatchContractConstraints
+                .createClubCallablePayloadHostDefaultsEventPolicyCancellationPolicyId,
+            contractValue: (value) => value.name,
             values: EventCancellationPolicyId.values,
             itemTitle: (policyId) => policyFor(policyId).title,
             itemDescription: (policyId) => policyFor(policyId).attendeeSummary,

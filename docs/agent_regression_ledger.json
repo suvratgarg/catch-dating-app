@@ -1,5 +1,5 @@
 {
-  "version": 62,
+  "version": 63,
   "updated": "2026-07-23",
   "owner": "agent_operating_model",
   "entries": [
@@ -2598,6 +2598,37 @@
         "docs/release_operations.md"
       ],
       "notes": "The materialized files exist only in the deployment runner checkout. Committed generated projections stay receipt-free so pull-request drift validation remains deterministic and does not claim live production readiness."
+    },
+    {
+      "id": "REG-FLUTTER-FORM-CONTRACT-DRIFT-001",
+      "title": "Flutter forms drift from schema-owned constraints behind generic adapters",
+      "status": "active",
+      "applies_to": [
+        "contracts/**/*.schema.json",
+        "lib/core/forms/**",
+        "lib/core/schema_contracts/**",
+        "lib/core/widgets/catch_field*.dart",
+        "lib/core/widgets/catch_chip*.dart",
+        "lib/core/widgets/catch_option_*.dart",
+        "lib/core/widgets/catch_range_slider.dart",
+        "lib/core/widgets/catch_toggle.dart",
+        "lib/**/presentation/**",
+        "tool/contracts/generate_schema_contracts.mjs",
+        "tool/contracts/generate_flutter_form_contract_inventory.mjs",
+        "docs/audit_registry/flutter_form_contract_inventory.json"
+      ],
+      "symptom": "An editable Consumer or Catch Host control repeats a literal limit, accepts an enum value the wire contract rejects, omits one range endpoint, or passes a nullable descriptor contract through a generically bound adapter while the coverage report still appears green.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/contracts/generate_flutter_form_contract_inventory.test.mjs && node tool/contracts/generate_flutter_form_contract_inventory.mjs --check && flutter test --concurrency=1 test/core/forms/contract_alignment_test.dart test/core/widgets/catch_field/input_test.dart test/core/widgets/catch_field/control_test.dart",
+        "guardEvidence": "known-bad scanner fixtures reject missing direct and descriptor bindings, the generated inventory requires typed serializers and both range endpoints, and widget tests prove text, choice, and numeric configuration is derived at runtime"
+      },
+      "owner_docs": [
+        "docs/data_contracts.md",
+        "docs/app_architecture.md",
+        "docs/audit_registry/rules.json"
+      ],
+      "notes": "Presentation-only composite state belongs in contracts/forms rather than pretending to be a stored payload field. Explicit UI limits may narrow a backend contract but never relax it."
     }
   ]
 }

@@ -192,6 +192,8 @@ class _ProfileReactionCommentSheetState
           gapH14,
           CatchField.input(
             title: context.l10n.swipesProfileReactionControlsTitleComment,
+            contract: CatchContractConstraints
+                .createProfileDecisionClientWriteDataComment,
             showLabel: false,
             controller: _controller,
             placeholder: context

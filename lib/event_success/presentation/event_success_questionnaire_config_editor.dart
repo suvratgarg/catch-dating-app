@@ -61,6 +61,9 @@ class _EventSuccessQuestionnaireConfigEditorState
           title: context
               .l10n
               .eventSuccessEventSuccessQuestionnaireConfigEditorTextQuestionSet,
+          contract: CatchContractConstraints
+              .eventSuccessPlanDocumentQuestionnaireConfigTemplateId,
+          contractValue: (value) => value,
           helperText: context.l10n
               .eventSuccessEventSuccessQuestionnaireConfigEditorLabelLengthQuestions(
                 length: previewPack.questions.length,
@@ -204,7 +207,8 @@ class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
           title: context
               .l10n
               .eventSuccessEventSuccessQuestionnaireConfigEditorTitleCustomQuestionSetName,
-          inputFormatters: [LengthLimitingTextInputFormatter(80)],
+          contract: CatchContractConstraints
+              .eventSuccessPlanDocumentQuestionnaireConfigCustomTitle,
           onCommit: (title) =>
               widget.onChanged(widget.value.copyWith(customTitle: title)),
         ),
@@ -266,7 +270,8 @@ class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
             .eventSuccessEventSuccessQuestionnaireConfigEditorTextQuestionValue1(
               value1: questionIndex + 1,
             ),
-        inputFormatters: [LengthLimitingTextInputFormatter(140)],
+        contract: CatchContractConstraints
+            .eventSuccessPlanDocumentQuestionnaireConfigCustomQuestionsItemsPrompt,
         maxLines: 3,
         onCommit: (prompt) =>
             _updateQuestion(questionIndex, question.copyWith(prompt: prompt)),
@@ -285,7 +290,8 @@ class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
               .eventSuccessEventSuccessQuestionnaireConfigEditorTitleOptionValue1(
                 value1: optionIndex + 1,
               ),
-          inputFormatters: [LengthLimitingTextInputFormatter(60)],
+          contract: CatchContractConstraints
+              .eventSuccessPlanDocumentQuestionnaireConfigCustomQuestionsItemsOptionsItemsLabel,
           onCommit: (label) {
             final nextOptions = [...question.options];
             nextOptions[optionIndex] = option.copyWith(label: label);
@@ -324,6 +330,7 @@ class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
   CatchField _inputField({
     required String key,
     required String title,
+    required CatchContractFieldConstraints contract,
     required ValueChanged<String> onCommit,
     List<TextInputFormatter>? inputFormatters,
     int maxLines = 1,
@@ -332,6 +339,7 @@ class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
     return CatchField.inputActions(
       key: ValueKey('custom-questionnaire-$key'),
       title: title,
+      contract: contract,
       controller: controller,
       open: _accordion.isExpanded(key),
       onOpenChanged: (open) => _setOpen(key, open),

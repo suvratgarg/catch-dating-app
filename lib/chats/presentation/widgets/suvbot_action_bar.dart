@@ -470,6 +470,8 @@ class _MatchTesterSheetState extends State<MatchTesterSheet> {
           const SizedBox(height: CatchSpacing.s3),
           CatchField.input(
             title: context.l10n.chatsSuvbotActionBarTitlePhoneNumber,
+            contract:
+                CatchContractConstraints.mobileFormStateSuvbotTesterPhoneNumber,
             controller: _controller,
             keyboardType: TextInputType.phone,
             autofocus: true,

@@ -20,7 +20,13 @@ extension _CatchFieldEdit on _CatchFieldState {
     return FormField<String>(
       key: _fieldKey,
       initialValue: _controller.text,
-      validator: widget.validator,
+      validator: (value) => CatchContractFieldPolicy.validateText(
+        context,
+        label: widget.title ?? '',
+        value: value ?? '',
+        contract: widget.contract,
+        explicitValidator: widget.validator,
+      ),
       enabled: widget.enabled,
       builder: (state) {
         final t = CatchTokens.of(context);
@@ -229,7 +235,11 @@ extension _CatchFieldEdit on _CatchFieldState {
       keyboardType: widget.keyboardType,
       textInputAction: widget.textInputAction ?? TextInputAction.done,
       textCapitalization: widget.textCapitalization,
-      inputFormatters: widget.inputFormatters,
+      inputFormatters: CatchContractFieldPolicy.effectiveInputFormatters(
+        widget.contract,
+        widget.inputFormatters,
+        explicitMaxLength: widget._editConfig?.maxLength,
+      ),
       autofillHints: widget.autofillHints,
       obscureText: widget.obscureText,
       maxLines: widget.obscureText || inlineAddHint ? 1 : widget.maxLines,

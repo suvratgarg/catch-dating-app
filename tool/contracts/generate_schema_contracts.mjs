@@ -16,6 +16,11 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
   {
+    name: "MobileFormState",
+    source: "forms/mobile_form_state.schema.json",
+    typeOutput: "functions/src/shared/generated/mobileFormState.ts",
+  },
+  {
     name: "OperationRun",
     source: "operations/run.schema.json",
     typeOutput: "functions/src/shared/generated/operationRunContract.ts",
@@ -59,6 +64,12 @@ const schemaSpecs = [
     name: "OnboardingDraftDocument",
     source: "firestore/onboarding_drafts.schema.json",
     typeOutput: "functions/src/shared/generated/onboardingDraftDocument.ts",
+  },
+  {
+    name: "AccessApplicationDocument",
+    source: "firestore/access_applications.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/accessApplicationDocument.ts",
   },
   {
     name: "UserProfileDocument",
@@ -2161,7 +2172,7 @@ function renderDartFieldConstraints({schemaSpecs, schemaMap}) {
   const constraints = [];
   for (const spec of schemaSpecs) {
     const schema = schemaMap.get(spec.name);
-    if (!schema || !isFieldConstraintSchema(spec, schema)) continue;
+    if (!schema) continue;
 
     const patchConfig = schema["x-callable-shape"] === "patch" ?
       dartPatchClassConfig(spec.name) :
@@ -2178,17 +2189,33 @@ function renderDartFieldConstraints({schemaSpecs, schemaMap}) {
   }
 
   constraints.sort((a, b) => a.path.localeCompare(b.path));
+  disambiguateFieldConstraintNames(constraints);
   const declarations = constraints.map((entry) => {
     const args = [
       `path: ${dartString(entry.path)}`,
       entry.maxLength == null ? null : `maxLength: ${entry.maxLength}`,
       entry.minLength == null ? null : `minLength: ${entry.minLength}`,
       entry.required ? "required: true" : null,
+      entry.valueTypes == null ? null :
+        `valueTypes: <String>[${entry.valueTypes.map(dartString).join(", ")}]`,
+      entry.format == null ? null : `format: ${dartString(entry.format)}`,
       entry.pattern == null ? null : `pattern: ${dartString(entry.pattern)}`,
       entry.enumValues == null ? null :
         `enumValues: <String>[${entry.enumValues.map(dartString).join(", ")}]`,
+      entry.itemValueTypes == null ? null :
+        `itemValueTypes: <String>[${
+          entry.itemValueTypes.map(dartString).join(", ")
+        }]`,
+      entry.itemEnumValues == null ? null :
+        `itemEnumValues: <String>[${
+          entry.itemEnumValues.map(dartString).join(", ")
+        }]`,
+      entry.minItems == null ? null : `minItems: ${entry.minItems}`,
+      entry.maxItems == null ? null : `maxItems: ${entry.maxItems}`,
+      entry.uniqueItems ? "uniqueItems: true" : null,
       entry.minimum == null ? null : `minimum: ${entry.minimum}`,
       entry.maximum == null ? null : `maximum: ${entry.maximum}`,
+      entry.multipleOf == null ? null : `multipleOf: ${entry.multipleOf}`,
     ].filter(Boolean);
     return `  static const ${entry.constName} = CatchContractFieldConstraints(\n` +
       `${args.map((arg) => `    ${arg},`).join("\n")}\n` +
@@ -2199,27 +2226,43 @@ function renderDartFieldConstraints({schemaSpecs, schemaMap}) {
   ).join("\n");
 
   return `${dartGeneratedHeader()}
-/// UI-relevant constraints projected from patch and Firestore document schemas.
+/// UI-relevant constraints projected from every generated JSON Schema.
 class CatchContractFieldConstraints {
   const CatchContractFieldConstraints({
     required this.path,
     this.maxLength,
     this.minLength,
     this.required = false,
+    this.valueTypes,
+    this.format,
     this.pattern,
     this.enumValues,
+    this.itemValueTypes,
+    this.itemEnumValues,
+    this.minItems,
+    this.maxItems,
+    this.uniqueItems = false,
     this.minimum,
     this.maximum,
+    this.multipleOf,
   });
 
   final String path;
   final int? maxLength;
   final int? minLength;
   final bool required;
+  final List<String>? valueTypes;
+  final String? format;
   final String? pattern;
   final List<String>? enumValues;
+  final List<String>? itemValueTypes;
+  final List<String>? itemEnumValues;
+  final int? minItems;
+  final int? maxItems;
+  final bool uniqueItems;
   final num? minimum;
   final num? maximum;
+  final num? multipleOf;
 }
 
 abstract final class CatchContractConstraints {
@@ -2232,9 +2275,34 @@ ${allEntries}
 `;
 }
 
-function isFieldConstraintSchema(spec, schema) {
-  return spec.source.startsWith("firestore/") ||
-    schema["x-callable-shape"] === "patch";
+function disambiguateFieldConstraintNames(constraints) {
+  const entriesByName = new Map();
+  for (const entry of constraints) {
+    const entries = entriesByName.get(entry.constName) ?? [];
+    entries.push(entry);
+    entriesByName.set(entry.constName, entries);
+  }
+
+  const usedNames = new Set(
+    constraints
+      .filter((entry) => entriesByName.get(entry.constName)?.length === 1)
+      .map((entry) => entry.constName),
+  );
+  for (const entries of entriesByName.values()) {
+    if (entries.length === 1) continue;
+    for (const entry of entries) {
+      const pathSuffix = entry.segments.map(pascalCase).join("Property");
+      const candidate = `${entry.constName}At${pathSuffix}`;
+      let uniqueName = candidate;
+      let suffix = 2;
+      while (usedNames.has(uniqueName)) {
+        uniqueName = `${candidate}${suffix}`;
+        suffix += 1;
+      }
+      entry.constName = uniqueName;
+      usedNames.add(uniqueName);
+    }
+  }
 }
 
 function collectFieldConstraints({schema, rootName, segments, constraints}) {
@@ -2260,13 +2328,36 @@ function collectFieldConstraints({schema, rootName, segments, constraints}) {
       fieldSchema,
       requiredFields.has(fieldName)
     );
-    if (!projected) continue;
-    const path = `${rootName}.${nextSegments.join(".")}`;
-    constraints.push({
-      ...projected,
-      path,
-      constName: `${rootName}${nextSegments.map(pascalCase).join("")}`,
-    });
+    if (projected) {
+      const path = `${rootName}.${nextSegments.join(".")}`;
+      constraints.push({
+        ...projected,
+        path,
+        segments: nextSegments,
+        constName: `${rootName}${nextSegments.map(pascalCase).join("")}`,
+      });
+    }
+
+    const itemObject = constraintObjectSchema(fieldSchema?.items);
+    if (itemObject?.properties) {
+      collectFieldConstraints({
+        schema: itemObject,
+        rootName,
+        segments: [...nextSegments, "items"],
+        constraints,
+      });
+    } else if (fieldSchema?.items && typeof fieldSchema.items === "object") {
+      const itemConstraint = projectFieldConstraint(fieldSchema.items, true);
+      if (itemConstraint) {
+        const itemSegments = [...nextSegments, "items"];
+        constraints.push({
+          ...itemConstraint,
+          path: `${rootName}.${itemSegments.join(".")}`,
+          segments: itemSegments,
+          constName: `${rootName}${itemSegments.map(pascalCase).join("")}`,
+        });
+      }
+    }
   }
 }
 
@@ -2296,10 +2387,25 @@ function projectFieldConstraint(schema, parentRequired) {
     branches.flatMap((branch) => Array.isArray(branch.enum) ? branch.enum : [])
       .filter((value) => typeof value === "string")
   )];
-  const types = branches.flatMap((branch) => Array.isArray(branch.type) ?
+  const types = [...new Set(branches.flatMap((branch) => Array.isArray(branch.type) ?
     branch.type :
     [branch.type]
-  );
+  ).filter((value) => typeof value === "string"))];
+  const valueTypes = types.filter((type) => type !== "null");
+  const formats = [...new Set(values("format")
+    .filter((value) => typeof value === "string"))];
+  const itemBranches = branches.flatMap((branch) => {
+    const items = branch.items;
+    if (!items || Array.isArray(items) || typeof items !== "object") return [];
+    return [items, ...(items.anyOf ?? []), ...(items.oneOf ?? [])]
+      .filter((item) => item && typeof item === "object");
+  });
+  const itemValueTypes = [...new Set(itemBranches.flatMap((item) =>
+    Array.isArray(item.type) ? item.type : [item.type]
+  ).filter((value) => typeof value === "string" && value !== "null"))];
+  const itemEnumValues = [...new Set(itemBranches.flatMap((item) =>
+    Array.isArray(item.enum) ? item.enum : []
+  ).filter((value) => typeof value === "string"))];
   const allowsNull = types.includes("null") ||
     branches.some((branch) => branch.const === null);
   const allowsEmpty = branches.some((branch) => branch.const === "") ||
@@ -2312,10 +2418,18 @@ function projectFieldConstraint(schema, parentRequired) {
     maxLength,
     minLength,
     required,
+    valueTypes: valueTypes.length > 0 ? valueTypes : null,
+    format: formats.length === 1 ? formats[0] : null,
     pattern: patterns.length === 1 ? patterns[0] : null,
     enumValues: enumValues.length > 0 ? enumValues : null,
+    itemValueTypes: itemValueTypes.length > 0 ? itemValueTypes : null,
+    itemEnumValues: itemEnumValues.length > 0 ? itemEnumValues : null,
+    minItems: numberValue("minItems", Math.min),
+    maxItems: numberValue("maxItems", Math.max),
+    uniqueItems: values("uniqueItems").includes(true),
     minimum: numberValue("minimum", Math.min),
     maximum: numberValue("maximum", Math.max),
+    multipleOf: numberValue("multipleOf", Math.min),
   };
   return Object.values(result).some((value) => value != null && value !== false) ?
     result :

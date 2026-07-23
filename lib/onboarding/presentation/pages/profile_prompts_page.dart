@@ -211,6 +211,8 @@ class PromptField extends StatelessWidget {
           key: ValueKey('onboarding-prompt-question-$index'),
           icon: CatchIcons.formatQuoteRounded,
           title: context.l10n.onboardingProfilePromptsPageTitleProfilePrompt,
+          contract: CatchContractConstraints.profilePromptAnswerPromptId,
+          contractValue: (value) => value,
           body: definition.title,
           values: availablePromptIds,
           itemLabel: (promptId) => profilePromptDefinition(promptId).title,
@@ -223,6 +225,7 @@ class PromptField extends StatelessWidget {
         CatchField.input(
           key: ValueKey('onboarding-prompt-answer-$index'),
           title: context.l10n.onboardingProfilePromptsPageTitleAnswer,
+          contract: CatchContractConstraints.profilePromptAnswerAnswer,
           controller: controller,
           inputHint: definition.placeholder,
           helperText: context.l10n

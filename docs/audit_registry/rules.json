@@ -519,13 +519,21 @@
       "applies_to": [
         "contracts/**/*.schema.json",
         "tool/contracts/generate_schema_contracts.mjs",
+        "tool/contracts/generate_flutter_form_contract_inventory.mjs",
+        "docs/audit_registry/flutter_form_contract_inventory.json",
         "lib/core/schema_contracts/generated/field_constraints.g.dart",
+        "lib/core/schema_contracts/catch_contract_field_policy.dart",
         "lib/core/forms/**",
-        "lib/user_profile/presentation/**",
-        "lib/hosts/presentation/**",
-        "test/core/forms/contract_alignment_test.dart"
+        "lib/core/widgets/catch_field*.dart",
+        "lib/core/widgets/catch_chip*.dart",
+        "lib/core/widgets/catch_option_*.dart",
+        "lib/core/widgets/catch_range_slider.dart",
+        "lib/core/widgets/catch_toggle.dart",
+        "lib/**/presentation/**",
+        "test/core/forms/contract_alignment_test.dart",
+        "tool/contracts/generate_flutter_form_contract_inventory.test.mjs"
       ],
-      "instruction": "Editable consumer and host form rows that map to schema-owned fields must bind the generated CatchContractFieldConstraints entry instead of repeating length, required, pattern, enum, or numeric constraints as literals.",
+      "instruction": "Every editable canonical control and form-descriptor instance in the Consumer and Catch Host apps must bind generated CatchContractFieldConstraints instead of repeating length, required, pattern, collection, enum, format, or numeric constraints. Typed choices must declare their wire-value serializer, range controls must bind both endpoints, and genuinely non-editable disclosures must carry an explicit audited exemption.",
       "sunset_when": [
         "All schema-backed form factories are generated directly from schema-owned form metadata"
       ],
@@ -537,6 +545,11 @@
       "enforcement": [
         {
           "tool": "contracts:form-alignment",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/data_contracts.md#field-constraint-projection"
+        },
+        {
+          "tool": "contracts:flutter-form-inventory",
           "stage": "scanner-gate",
           "docAnchor": "docs/data_contracts.md#field-constraint-projection"
         }

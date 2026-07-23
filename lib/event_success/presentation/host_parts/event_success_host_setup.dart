@@ -292,6 +292,8 @@ class TargetAttendeeControl extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchField.stepper(
       title: context.l10n.eventSuccessEventSuccessHostSetupTextTargetAttendees,
+      contract:
+          CatchContractConstraints.eventSuccessPlanDocumentTargetAttendeeCount,
       body: context.l10n
           .eventSuccessEventSuccessHostSetupTextRecommendedRangeRecommendedminRecommendedmax(
             recommendedMin: recommendedMin,
