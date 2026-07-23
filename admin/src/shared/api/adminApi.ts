@@ -29,6 +29,8 @@ import type {
 import {
   AdminAssignSafetyTriageItemPayload,
   AdminAssignSafetyTriageItemResponse,
+  AdminListActionExecutionsPayload,
+  AdminListActionExecutionsResponse,
   AdminCreateMarketingContentDraftPayload,
   AdminCreateMarketingContentDraftResponse,
   AdminGetAdminUserRolesPayload,
@@ -105,6 +107,67 @@ import {
 } from "../types/adminTypes";
 
 const sampleGeneratedAt = "2026-06-25T08:30:00.000Z";
+const sampleActionExecutions: AdminListActionExecutionsResponse = {
+  schemaVersion: 1,
+  generatedAt: sampleGeneratedAt,
+  rows: [
+    {
+      schemaVersion: 1,
+      executionId: "44ee2154-f136-4ff0-b903-7284732bb197",
+      actionId: "events.list",
+      callable: "adminListEventDetails",
+      actorUid: "agent-release-audit",
+      actorRoles: ["admin"],
+      status: "succeeded",
+      requestHash: "a".repeat(64),
+      responseHash: "b".repeat(64),
+      target: null,
+      errorCode: null,
+      errorMessage: null,
+      cliVersion: "1.0.0",
+      startedAt: "2026-06-25T08:29:42.000Z",
+      finishedAt: "2026-06-25T08:29:43.000Z",
+      updatedAt: "2026-06-25T08:29:43.000Z",
+    },
+    {
+      schemaVersion: 1,
+      executionId: "4e480261-b750-4519-89f5-e8c75976aad8",
+      actionId: "organizers.update",
+      callable: "adminUpdateOrganizerDetails",
+      actorUid: "agent-organizer-review",
+      actorRoles: ["support"],
+      status: "started",
+      requestHash: "c".repeat(64),
+      responseHash: null,
+      target: "afterfly",
+      errorCode: null,
+      errorMessage: null,
+      cliVersion: "1.0.0",
+      startedAt: "2026-06-25T08:27:10.000Z",
+      finishedAt: null,
+      updatedAt: "2026-06-25T08:27:10.000Z",
+    },
+    {
+      schemaVersion: 1,
+      executionId: "d84258b1-a59e-4a03-9001-ab1cfd94f189",
+      actionId: "access.decide",
+      callable: "adminDecideAccessApplication",
+      actorUid: "agent-access-review",
+      actorRoles: ["support"],
+      status: "failed",
+      requestHash: "d".repeat(64),
+      responseHash: null,
+      target: "sample-applicant",
+      errorCode: "failed-precondition",
+      errorMessage: "Application state changed after the review was prepared.",
+      cliVersion: "1.0.0",
+      startedAt: "2026-06-25T08:20:00.000Z",
+      finishedAt: "2026-06-25T08:20:01.000Z",
+      updatedAt: "2026-06-25T08:20:01.000Z",
+    },
+  ],
+  nextCursor: null,
+};
 
 function shouldValidateAdminCallableResponses() {
   return import.meta.env.DEV ||
@@ -816,6 +879,25 @@ export async function listIntakeOperations(
     AdminListIntakeOperationsPayload,
     AdminListIntakeOperationsResponse
   >(functions, "adminListIntakeOperations");
+  const result = await callable(payload);
+  return result.data;
+}
+
+export async function listActionExecutions(
+  payload: AdminListActionExecutionsPayload = {}
+): Promise<AdminListActionExecutionsResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 140));
+    return {
+      ...sampleActionExecutions,
+      rows: sampleActionExecutions.rows.slice(0, payload.limit ?? 50),
+    };
+  }
+
+  const callable = httpsCallable<
+    AdminListActionExecutionsPayload,
+    AdminListActionExecutionsResponse
+  >(functions, "adminListActionExecutions");
   const result = await callable(payload);
   return result.data;
 }

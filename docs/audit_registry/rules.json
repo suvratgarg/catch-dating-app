@@ -2950,18 +2950,20 @@
       },
       "applies_to": [
         "operations/**",
+        "contracts/admin/**",
         "contracts/operations/**",
         "functions/src/operations/**",
         "functions/scripts/operations/**",
         "functions/src/admin/**",
         "admin/src/features/intake/operations/**",
+        "admin/src/features/operations/**",
         "tool/host_discovery/**",
         "tool/marketing/event_guide/**",
         "tool/organizer_intake/**",
         "tool/tools_manifest.json",
         "tool/remote_ops_manifest.json"
       ],
-      "instruction": "Resumable runs, work items, leases, budgets, decisions, receipts, and learning state belong in operations/. Legacy tool folders remain compatibility producers. Every workflow manifest stays bound to its executable commands, ordered states, sources, capabilities, and capacity. Shadow mode fails closed. The admin projection crosses into Firestore only through the dry-run-first trusted importer, and publication requires separately authorized execution.",
+      "instruction": "Resumable runs, work items, leases, budgets, decisions, receipts, and learning state belong in operations/. Legacy tool folders remain compatibility producers. Every workflow manifest stays bound to its executable commands, ordered states, sources, capabilities, and capacity. Ordinary admin actions share one catalog across GUI and CLI; strict schemas, role-gated callables, dry-run mutation defaults, confirmations, and hash-only receipts must not drift. Shadow mode fails closed. The admin projection crosses into Firestore only through the dry-run-first trusted importer, and publication requires separately authorized execution.",
       "sunset_when": [
         "A stronger package-boundary mechanism enforces equivalent placement and authority rules"
       ],
@@ -2986,6 +2988,21 @@
           "tool": "operations:workflow-manifest",
           "stage": "scanner-ratchet",
           "docAnchor": "docs/operations_platform.md#adding-another-workflow"
+        },
+        {
+          "tool": "operations:admin-action-catalog",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/operations_platform.md#admin-action-command-surface"
+        },
+        {
+          "tool": "admin:action-catalog-generate",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/operations_platform.md#admin-action-command-surface"
+        },
+        {
+          "tool": "operations:admin-cli",
+          "stage": "manual",
+          "docAnchor": "docs/operations_platform.md#admin-action-command-surface"
         },
         {
           "tool": "operations:import-admin-projection",

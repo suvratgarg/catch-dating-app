@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 1,
+  "tool": "audit-merge-drops",
+  "refs": {
+    "base": "b65ee7742098d51fbe18fbb0dcf49d34612b87e0",
+    "ours": "529630920934ac6252214e8d4447c405227a7937",
+    "theirs": "aaf71291c1a684fd2d3bb30f10d7bb91662777e3",
+    "merged": "2f6ac7e414d0092427beb2c38926a873c5adaef5"
+  },
+  "summary": {
+    "changedPaths": 229,
+    "discarded-ours": 0,
+    "discarded-theirs": 0,
+    "both-diverged": 37,
+    "resolved-equivalent": 0,
+    "retained-ours": 117,
+    "retained-theirs": 75,
+    "discardedPaths": 0,
+    "unreceiptedDiscardedPaths": 0,
+    "invalidReceipts": 0
+  },
+  "bothDivergedReview": [
+    {
+      "path": "design/visual_baselines/admin/darwin/admin-dashboard-routes--access-review-route-story.mobile.png",
+      "resolution": "Refreshed after the merged responsive toolbar fix removed the oversized mobile search control; the 520-capture visual gate passed."
+    },
+    {
+      "path": "design/visual_baselines/admin/darwin/admin-dashboard-routes--access-review-workspace-story.mobile.png",
+      "resolution": "Refreshed after the merged responsive toolbar fix removed the oversized mobile search control; the 520-capture visual gate passed."
+    },
+    {
+      "path": "design/visual_baselines/admin/darwin/admin-dashboard-routes--admin-action-executions-workspace-story.desktop.png",
+      "resolution": "Added the missing workspace capture for the new bounded execution-receipt register; it matches the reviewed route rendering and the visual gate passed."
+    },
+    {
+      "path": "design/visual_baselines/admin/darwin/admin-dashboard-routes--admin-action-executions-workspace-story.mobile.png",
+      "resolution": "Added the missing workspace capture for the new bounded execution-receipt register; it matches the reviewed route rendering and the visual gate passed."
+    },
+    {
+      "path": "design/visual_baselines/admin/darwin/admin-dashboard-routes--event-publishing-route-story.mobile.png",
+      "resolution": "Refreshed after the merged responsive toolbar fix removed the oversized mobile search control; the 520-capture visual gate passed."
+    },
+    {
+      "path": "design/visual_baselines/admin/darwin/admin-dashboard-routes--event-publishing-workspace-story.mobile.png",
+      "resolution": "Refreshed after the merged responsive toolbar fix removed the oversized mobile search control; the 520-capture visual gate passed."
+    },
+    {
+      "path": "design/visual_baselines/admin/darwin/admin-dashboard-routes--organizer-publishing-route-story.mobile.png",
+      "resolution": "Refreshed after the merged responsive toolbar fix removed the oversized mobile search control; the 520-capture visual gate passed."
+    },
+    {
+      "path": "design/visual_baselines/admin/darwin/admin-dashboard-routes--organizer-publishing-workspace-story.mobile.png",
+      "resolution": "Refreshed after the merged responsive toolbar fix removed the oversized mobile search control; the 520-capture visual gate passed."
+    },
+    {
+      "path": "design/visual_baselines/admin/darwin/admin-dashboard-routes--overview-route-story.desktop.png",
+      "resolution": "Regenerated through the governed Darwin capture tool with the complete merged Storybook tree; the fresh visual comparison passed."
+    },
+    {
+      "path": "design/visual_baselines/admin/darwin/admin-dashboard-routes--overview-route-story.mobile.png",
+      "resolution": "Regenerated through the governed Darwin capture tool with the complete merged Storybook tree; the fresh visual comparison passed."
+    },
+    {
+      "path": "design/visual_baselines/admin/darwin/admin-dashboard-routes--safety-triage-route-story.desktop.png",
+      "resolution": "Regenerated through the governed Darwin capture tool with the complete merged Storybook tree; the fresh visual comparison passed."
+    },
+    {
+      "path": "design/visual_baselines/admin/darwin/admin-dashboard-routes--safety-triage-route-story.mobile.png",
+      "resolution": "Refreshed after the merged responsive toolbar fix removed the oversized mobile search control; the 520-capture visual gate passed."
+    },
+    {
+      "path": "design/visual_baselines/admin/darwin/admin-dashboard-shared-primitives--admin-sign-in-actions-story.desktop.png",
+      "resolution": "Regenerated from current main's dual-provider sign-in story, which the admin CLI branch preserves; the visual and accessibility gates passed."
+    },
+    {
+      "path": "design/visual_baselines/admin/darwin/admin-dashboard-shared-primitives--admin-sign-in-actions-story.mobile.png",
+      "resolution": "Regenerated from current main's dual-provider sign-in story, which the admin CLI branch preserves; the visual and accessibility gates passed."
+    },
+    {
+      "path": "design/visual_baselines/admin/darwin/admin-dashboard-shared-primitives--admin-sign-in-screen-story.desktop.png",
+      "resolution": "Replaced the stale Google-only snapshot with current main's dual-provider sign-in rendering; the visual and accessibility gates passed."
+    },
+    {
+      "path": "design/visual_baselines/admin/darwin/admin-dashboard-shared-primitives--admin-sign-in-screen-story.mobile.png",
+      "resolution": "Replaced the stale Google-only snapshot with current main's dual-provider sign-in rendering; the visual and accessibility gates passed."
+    },
+    {
+      "path": "design/visual_baselines/admin/darwin/admin-dashboard-shared-primitives--admin-toolbar-story.mobile.png",
+      "resolution": "Refreshed after the merged responsive toolbar fix removed the oversized mobile search control; the 520-capture visual gate passed."
+    },
+    {
+      "path": "docs/agent_regression_ledger.json",
+      "resolution": "Preserved current-main regression guards and added the admin action catalog parity guard; enforcement integrity passed."
+    },
+    {
+      "path": "docs/audit_registry/doc_versions.json",
+      "resolution": "Selected the merged owner-document versions, including data_contracts 1.5.0; the doc-version monotonicity gate passed."
+    },
+    {
+      "path": "docs/audit_registry/files.jsonl",
+      "resolution": "Regenerated from the complete merged tree with the audit registry refresh."
+    },
+    {
+      "path": "docs/audit_registry/passes.jsonl",
+      "resolution": "Preserved all current-main form-contract passes and the source branch's admin-action-cli parity pass."
+    },
+    {
+      "path": "docs/audit_registry/rules.json",
+      "resolution": "Combined the current-main contract rules with the admin action catalog enforcement binding; enforcement integrity passed."
+    },
+    {
+      "path": "docs/audit_registry/test_inventory.json",
+      "resolution": "Regenerated from the combined test tree with the test-inventory generator."
+    },
+    {
+      "path": "docs/data_contracts.md",
+      "resolution": "Combined current-main contract guidance with the admin action execution and callable payload contracts and advanced the governed version to 1.5.0; the full data-contract gate passed."
+    },
+    {
+      "path": "docs/generated/react_dependency_graph/README.md",
+      "resolution": "Regenerated from the complete merged React tree; the dependency-graph and React architecture checks passed."
+    },
+    {
+      "path": "docs/generated/react_dependency_graph/react_dependency_graph.json",
+      "resolution": "Regenerated from the complete merged React tree; 301 modules and 1139 edges were verified current."
+    },
+    {
+      "path": "docs/generated/react_dependency_graph/react_dependency_graph.mmd",
+      "resolution": "Regenerated from the complete merged React tree; the dependency-graph gate passed."
+    },
+    {
+      "path": "functions/src/shared/generated/schemaRegistry.ts",
+      "resolution": "Regenerated from the combined current-main and admin CLI schemas; the Functions build, focused tests, and full data-contract gate passed."
+    },
+    {
+      "path": "functions/src/shared/generated/schemaValidators.ts",
+      "resolution": "Regenerated from the combined current-main and admin CLI schemas; the Functions build, focused tests, and full data-contract gate passed."
+    },
+    {
+      "path": "lib/core/schema_contracts/generated/INDEX.md",
+      "resolution": "Regenerated from the combined schema tree; the schema freshness and focused Flutter contract gates passed."
+    },
+    {
+      "path": "lib/core/schema_contracts/generated/field_constraints.g.dart",
+      "resolution": "Regenerated from the combined schema tree; the schema freshness and focused Flutter contract gates passed."
+    },
+    {
+      "path": "lib/core/schema_contracts/generated/schemas/schema_constants.g.dart",
+      "resolution": "Regenerated from the combined schema tree; the schema freshness and focused Flutter contract gates passed."
+    },
+    {
+      "path": "lib/core/schema_contracts/generated/schemas/schema_registry.g.dart",
+      "resolution": "Regenerated from the combined schema tree; the schema freshness and focused Flutter contract gates passed."
+    },
+    {
+      "path": "tool/contracts/generate_schema_contracts.mjs",
+      "resolution": "Combined current-main form-contract generation with the branch's callable schema support; 473 generated schema outputs were verified current."
+    },
+    {
+      "path": "tool/contracts/generated/schema_contract_registry.mjs",
+      "resolution": "Regenerated from the combined contract tree; schema validation and the full data-contract gate passed."
+    },
+    {
+      "path": "tool/contracts/generated/schema_contract_validators.mjs",
+      "resolution": "Regenerated from the combined contract tree; schema validation and the full data-contract gate passed."
+    },
+    {
+      "path": "tool/tools_manifest.json",
+      "resolution": "Preserved current-main tools and registered the admin action catalog generator and tests; the manifest-only and enforcement-integrity gates passed."
+    }
+  ]
+}

@@ -765,6 +765,19 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const adminListActionExecutionsCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'adminListActionExecutionsCallablePayload.cursor',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListActionExecutionsCallablePayloadLimit = CatchContractFieldConstraints(
+    path: 'adminListActionExecutionsCallablePayload.limit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 100,
+  );
+
   static const adminListClubDetailsCallablePayloadAppVisibility = CatchContractFieldConstraints(
     path: 'adminListClubDetailsCallablePayload.appVisibility',
     valueTypes: <String>['string'],
@@ -1073,6 +1086,74 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^externalEvents/[A-Za-z0-9_-]{1,180}\$',
+  );
+
+  static const adminRecordActionExecutionCallablePayloadActionId = CatchContractFieldConstraints(
+    path: 'adminRecordActionExecutionCallablePayload.actionId',
+    maxLength: 120,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)+\$',
+  );
+
+  static const adminRecordActionExecutionCallablePayloadCallable = CatchContractFieldConstraints(
+    path: 'adminRecordActionExecutionCallablePayload.callable',
+    maxLength: 120,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^admin[A-Z][A-Za-z0-9]+\$',
+  );
+
+  static const adminRecordActionExecutionCallablePayloadCliVersion = CatchContractFieldConstraints(
+    path: 'adminRecordActionExecutionCallablePayload.cliVersion',
+    maxLength: 40,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminRecordActionExecutionCallablePayloadErrorCode = CatchContractFieldConstraints(
+    path: 'adminRecordActionExecutionCallablePayload.errorCode',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminRecordActionExecutionCallablePayloadErrorMessage = CatchContractFieldConstraints(
+    path: 'adminRecordActionExecutionCallablePayload.errorMessage',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminRecordActionExecutionCallablePayloadExecutionId = CatchContractFieldConstraints(
+    path: 'adminRecordActionExecutionCallablePayload.executionId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\$',
+  );
+
+  static const adminRecordActionExecutionCallablePayloadRequestHash = CatchContractFieldConstraints(
+    path: 'adminRecordActionExecutionCallablePayload.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminRecordActionExecutionCallablePayloadResponseHash = CatchContractFieldConstraints(
+    path: 'adminRecordActionExecutionCallablePayload.responseHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminRecordActionExecutionCallablePayloadStatus = CatchContractFieldConstraints(
+    path: 'adminRecordActionExecutionCallablePayload.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['started', 'succeeded', 'failed', 'indeterminate'],
+  );
+
+  static const adminRecordActionExecutionCallablePayloadTarget = CatchContractFieldConstraints(
+    path: 'adminRecordActionExecutionCallablePayload.target',
+    maxLength: 500,
+    valueTypes: <String>['string'],
   );
 
   static const adminRecordEventIntakeReviewDecisionCallablePayloadChecklistCopyReviewed = CatchContractFieldConstraints(
@@ -24627,6 +24708,8 @@ abstract final class CatchContractConstraints {
     'adminGetClubDetailsCallablePayload.clubId': adminGetClubDetailsCallablePayloadClubId,
     'adminGetEventDetailsCallablePayload.eventId': adminGetEventDetailsCallablePayloadEventId,
     'adminGetOrganizerDetailsCallablePayload.organizerId': adminGetOrganizerDetailsCallablePayloadOrganizerId,
+    'adminListActionExecutionsCallablePayload.cursor': adminListActionExecutionsCallablePayloadCursor,
+    'adminListActionExecutionsCallablePayload.limit': adminListActionExecutionsCallablePayloadLimit,
     'adminListClubDetailsCallablePayload.appVisibility': adminListClubDetailsCallablePayloadAppVisibility,
     'adminListClubDetailsCallablePayload.citySlug': adminListClubDetailsCallablePayloadCitySlug,
     'adminListClubDetailsCallablePayload.citySlugs': adminListClubDetailsCallablePayloadCitySlugs,
@@ -24673,6 +24756,16 @@ abstract final class CatchContractConstraints {
     'adminPublishExternalEventCallablePayload.reviewNote': adminPublishExternalEventCallablePayloadReviewNote,
     'adminPublishExternalEventCallablePayload.sourceActionId': adminPublishExternalEventCallablePayloadSourceActionId,
     'adminPublishExternalEventCallablePayload.targetPath': adminPublishExternalEventCallablePayloadTargetPath,
+    'adminRecordActionExecutionCallablePayload.actionId': adminRecordActionExecutionCallablePayloadActionId,
+    'adminRecordActionExecutionCallablePayload.callable': adminRecordActionExecutionCallablePayloadCallable,
+    'adminRecordActionExecutionCallablePayload.cliVersion': adminRecordActionExecutionCallablePayloadCliVersion,
+    'adminRecordActionExecutionCallablePayload.errorCode': adminRecordActionExecutionCallablePayloadErrorCode,
+    'adminRecordActionExecutionCallablePayload.errorMessage': adminRecordActionExecutionCallablePayloadErrorMessage,
+    'adminRecordActionExecutionCallablePayload.executionId': adminRecordActionExecutionCallablePayloadExecutionId,
+    'adminRecordActionExecutionCallablePayload.requestHash': adminRecordActionExecutionCallablePayloadRequestHash,
+    'adminRecordActionExecutionCallablePayload.responseHash': adminRecordActionExecutionCallablePayloadResponseHash,
+    'adminRecordActionExecutionCallablePayload.status': adminRecordActionExecutionCallablePayloadStatus,
+    'adminRecordActionExecutionCallablePayload.target': adminRecordActionExecutionCallablePayloadTarget,
     'adminRecordEventIntakeReviewDecisionCallablePayload.checklist.copyReviewed': adminRecordEventIntakeReviewDecisionCallablePayloadChecklistCopyReviewed,
     'adminRecordEventIntakeReviewDecisionCallablePayload.checklist.dateReviewed': adminRecordEventIntakeReviewDecisionCallablePayloadChecklistDateReviewed,
     'adminRecordEventIntakeReviewDecisionCallablePayload.checklist.noCatchHostingImplied': adminRecordEventIntakeReviewDecisionCallablePayloadChecklistNoCatchHostingImplied,

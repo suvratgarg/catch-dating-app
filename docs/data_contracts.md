@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.4.3
+version: 1.5.0
 updated: 2026-07-23
 owner: recursive_audit_loop
 status: active
@@ -421,6 +421,15 @@ Local completed runs hash-bind their full work-item inventory. Reconciliation
 creates a new lineage-bound run and new work-item ids rather than mutating the
 source snapshot, preserving immutable importer semantics across expiry and
 staleness sweeps.
+
+`adminActionExecutions/{executionId}` is the separate remote monitor record for
+one admin CLI invocation. It stores action/callable identity, actor roles,
+target label, request/response hashes, timestamps, and a bounded terminal
+error—not the request or response body. A role-gated callable creates the
+`started` receipt before the business callable runs and advances it to exactly
+one immutable `succeeded`, `failed`, or transport-ambiguous `indeterminate`
+outcome. Browser clients can inspect the bounded projection only through
+`adminListActionExecutions`; direct Firestore reads and writes remain denied.
 
 Runs must budget between 1 and 10,000 work items. Imported run metadata carries
 authoritative total, active, terminal, stage, and human-review aggregates; the

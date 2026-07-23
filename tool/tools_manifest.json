@@ -4439,6 +4439,73 @@
       ]
     },
     {
+      "id": "operations:admin-cli",
+      "category": "operations",
+      "path": "operations/src/admin-cli/main.mjs",
+      "command": "node operations/src/admin-cli/main.mjs",
+      "safety": "remote-read-write-apply-guarded",
+      "status": "active",
+      "role": "operator",
+      "rules": [
+        "OPERATIONS-PLATFORM-001"
+      ],
+      "description": "Invokes catalogued admin callables with strict requests, dry-run mutation defaults, exact action/target confirmations, App Check, and local plus remote hash-only receipts.",
+      "checks": [
+        "node --check operations/src/admin-cli/main.mjs",
+        "node operations/src/admin-cli/main.mjs loop --all",
+        "node --test operations/test/admin-cli.test.mjs"
+      ]
+    },
+    {
+      "id": "operations:admin-action-catalog",
+      "category": "operations",
+      "path": "operations/scripts/check-admin-action-catalog.mjs",
+      "command": "node operations/scripts/check-admin-action-catalog.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "role": "ratchet",
+      "rules": [
+        "OPERATIONS-PLATFORM-001"
+      ],
+      "description": "Keeps every admin API callable aligned with one strict catalog action, Functions export, workflow membership, role set, schema-valid example, and explicit mutation confirmation policy.",
+      "checks": [
+        "node --check operations/scripts/check-admin-action-catalog.mjs",
+        "node --test operations/test/admin-action-catalog.test.mjs",
+        "node operations/scripts/check-admin-action-catalog.mjs"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "operations/test/admin-action-catalog.test.mjs",
+        "contains": [
+          "catalog checker rejects GUI callable and workflow membership drift",
+          "catalog checker rejects mutations without explicit confirmation"
+        ]
+      }
+    },
+    {
+      "id": "admin:action-catalog-generate",
+      "category": "operations",
+      "path": "tool/admin/generate_admin_action_catalog.mjs",
+      "command": "node tool/admin/generate_admin_action_catalog.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "role": "generator",
+      "rules": [
+        "OPERATIONS-PLATFORM-001"
+      ],
+      "description": "Generates the typed admin-browser and Functions action-catalog views from contracts/admin/admin_action_catalog.json.",
+      "checks": [
+        "node --check tool/admin/generate_admin_action_catalog.mjs",
+        "node tool/admin/generate_admin_action_catalog.mjs --check",
+        "node tool/admin/generate_admin_action_catalog.mjs --self-test",
+        "node --test tool/admin/generate_admin_action_catalog.test.mjs"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/admin/generate_admin_action_catalog.mjs --self-test"
+      }
+    },
+    {
       "id": "operations:import-admin-projection",
       "category": "operations",
       "path": "functions/scripts/operations/import-shadow-projection.cjs",

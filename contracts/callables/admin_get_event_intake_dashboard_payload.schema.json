@@ -1,0 +1,7 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_event_intake_dashboard_payload.schema.json",
+  "title": "AdminGetEventIntakeDashboardCallablePayload",
+  "type": "object",
+  "additionalProperties": false
+}

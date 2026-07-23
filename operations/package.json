@@ -8,6 +8,7 @@
     "node": ">=20.11"
   },
   "bin": {
+    "catch-admin": "./src/admin-cli/main.mjs",
     "catch-operations": "./src/cli/main.mjs"
   },
   "dependencies": {
@@ -16,9 +17,11 @@
   },
   "scripts": {
     "boundaries": "node scripts/check-boundaries.mjs",
-    "check": "npm run test && npm run boundaries && npm run manifests && npm run smoke",
+    "admin:check": "node scripts/check-admin-action-catalog.mjs",
+    "admin:loop": "node src/admin-cli/main.mjs loop --all --pretty",
+    "check": "npm run test && npm run boundaries && npm run manifests && npm run admin:check && npm run smoke",
     "manifests": "node scripts/check-workflow-manifest.mjs",
-    "smoke": "node src/cli/main.mjs help",
+    "smoke": "node src/cli/main.mjs help && node src/admin-cli/main.mjs help",
     "test": "node --test test/*.test.mjs"
   }
 }

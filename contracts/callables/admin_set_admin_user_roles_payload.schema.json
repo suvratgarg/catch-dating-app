@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_set_admin_user_roles_payload.schema.json",
+  "title": "AdminSetAdminUserRolesCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["targetUid", "roles", "note"],
+  "properties": {
+    "targetUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "roles": {
+      "type": "array",
+      "maxItems": 6,
+      "uniqueItems": true,
+      "items": {"type": "string", "enum": ["admin", "adminOwner", "safetyReviewer", "support", "finance", "analyticsViewer"]}
+    },
+    "note": {"type": "string", "minLength": 1, "maxLength": 1000}
+  }
+}
