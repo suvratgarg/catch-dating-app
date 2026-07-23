@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "discardedFiles": [
+    {
+      "path": "admin/scripts/generateCallableValidators.mjs",
+      "category": "discarded-ours",
+      "reason": "Selected the source branch's generic callable-response schema discovery. It retains main's host analytics, user analytics, action-execution, and intake-operation coverage while automatically covering all response schemas; generation reports 36 callables and 11 strict responses, and the 133-test admin suite passes."
+    },
+    {
+      "path": "contracts/callables/admin_assign_safety_triage_item_payload.schema.json",
+      "category": "discarded-ours",
+      "reason": "Selected the source branch's expanded strict payload contract over main's earlier minimal form; generated validators are current and the admin validator tests and Functions build pass."
+    },
+    {
+      "path": "contracts/callables/admin_create_marketing_content_draft_payload.schema.json",
+      "category": "discarded-ours",
+      "reason": "Selected the source branch's expanded strict payload contract over main's earlier minimal form; generated validators are current and the admin validator tests and Functions build pass."
+    },
+    {
+      "path": "contracts/callables/admin_decide_access_application_payload.schema.json",
+      "category": "discarded-ours",
+      "reason": "Selected the source branch's expanded strict payload contract over main's earlier minimal form; generated validators are current and the admin validator tests and Functions build pass."
+    },
+    {
+      "path": "contracts/callables/admin_decide_safety_triage_item_payload.schema.json",
+      "category": "discarded-ours",
+      "reason": "Selected the source branch's expanded strict payload contract over main's earlier minimal form; generated validators are current and the admin validator tests and Functions build pass."
+    },
+    {
+      "path": "contracts/callables/admin_get_overview_payload.schema.json",
+      "category": "discarded-ours",
+      "reason": "Selected the source branch's canonical human-readable schema title; the payload remains the same closed empty object and all generated outputs are current."
+    },
+    {
+      "path": "contracts/callables/admin_record_marketing_review_decision_payload.schema.json",
+      "category": "discarded-ours",
+      "reason": "Selected the source branch's expanded strict payload contract over main's earlier minimal form; generated validators are current and the admin validator tests and Functions build pass."
+    },
+    {
+      "path": "contracts/callables/admin_set_admin_user_roles_payload.schema.json",
+      "category": "discarded-ours",
+      "reason": "Selected the source branch's expanded strict payload contract over main's earlier minimal form; generated validators are current and the admin validator tests and Functions build pass."
+    }
+  ]
+}
