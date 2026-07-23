@@ -695,6 +695,32 @@ void main() {
       ]);
     });
 
+    testWidgets('notifications identity failure is not shown as signed out', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            uidProvider.overrideWithValue(
+              AsyncError<String?>(
+                StateError('identity failed'),
+                StackTrace.empty,
+              ),
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const ActivityScreen(),
+          ),
+        ),
+      );
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('Sign in problem'), findsOneWidget);
+      expect(find.text('Try again'), findsOneWidget);
+      expect(find.text('No activity yet'), findsNothing);
+    });
+
     testWidgets('notification row navigation failures show branded feedback', (
       tester,
     ) async {

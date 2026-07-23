@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.38
+version: 0.1.39
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -233,12 +233,15 @@ its authority merely because both involve maps. Host Event Edit actually opens
 longer claims an Event Location Map transition. This preserves typed route edges
 without making one authority describe a different production screen.
 
-Dependency fallback is not automatically a valid data state. Event Recap,
-Reviews History, and Payment History currently render the same fallback when a
-secondary record is genuinely absent, still loading, or failed to load.
-Notifications similarly renders an identity-provider error as if the member
-were signed out. A feature contract should expose each collapse as debt instead
-of calling every unresolved dependency a successful empty or fallback state.
+Dependency fallback is not automatically a valid data state. Event Recap now
+separates attendee-profile loading, failure, and resolved absence; Payment
+History does the same for event-title enrichment; Notifications keeps identity
+failure distinct from resolved sign-out; and Matching Preferences replaces its
+resolved null-profile blank body with branded recovery. Reviews History remains
+the open secondary-enrichment adopter. A feature contract should expose every
+collapse as debt instead of calling an unresolved dependency a successful empty
+or fallback state, then retain separate states after the implementation closes
+that debt.
 The same rule applies to external effects: requesting directions or opening an
 external settings link is implemented, but ignored false/error results and
 unrestricted repeated taps remain part of the action contract until production

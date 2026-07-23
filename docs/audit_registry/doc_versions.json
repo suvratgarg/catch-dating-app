@@ -36,7 +36,7 @@
   },
   "architecture_pattern_adoption": {
     "path": "docs/audit_registry/architecture_pattern_adoption.json",
-    "version": "1.5.56",
+    "version": "1.5.57",
     "updated": "2026-07-23",
     "status": "active",
     "read_policy": "Use for architecture reference implementation exhibits, prototype files, adopter status, variants, exceptions, screen-boundary candidates, provider-free state-adapter registration, and back-propagation obligations before repeated migration work."
@@ -57,7 +57,7 @@
   },
   "audit_doc_versions": {
     "path": "docs/audit_registry/doc_versions.json",
-    "version": "4.7.12",
+    "version": "4.7.13",
     "updated": "2026-07-23",
     "status": "active",
     "read_policy": "Use for durable doc version metadata, read policies, AI-first workflow guide routing, architecture pattern-tracker routing, exhibit-freshness routing, manifest role metadata, allowedFindings receipt checks, React class-name boundaries, React surface and component-family governance including the retired website legacy site barrel/import boundary, website page shells, admin directory/detail screen shells, admin workbench layouts, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin overview analytics shells, capture-card shells, empty-state variants, badge/status rows, website identity display shells, website process status panels, product-module grids, event-action cards, PublicSearchBar ownership, public event-card shells, UI label spans, claim-flow route/root/auth-row shells, Host Page route shells, Host Application flow shells, Host feature section shells, featured organizer card shells, and app-download CTA group/shells, agent delegation protocol doc freshness, composition-audit routing, and design parity/catalog version bumps including Host Manage Event Success, private-access, and invite-link edge coverage. Admin component registry scanner obligations. Admin Storybook preview coverage obligations."
@@ -120,7 +120,7 @@
   },
   "app_architecture": {
     "path": "docs/app_architecture.md",
-    "version": "1.5.9",
+    "version": "1.5.10",
     "updated": "2026-07-23",
     "status": "active",
     "read_policy": "Read first for Flutter app code organization, dependency-direction seams including annotated feature-root barrel exports, provider-free *_state.dart naming, Firebase/domain boundaries, mutation-cardinality grain, pending request snapshot integrity, app-role boundaries, feature/layer/screen/controller/repository/widget ownership, async state boundaries, error-surface taxonomy, UI layout/scroll/sizing, realtime stream lifecycle keepAlive markers, routing/navigation constants, reference implementation exhibits, exhibit-freshness markers, and architecture enforcement policy.",
@@ -170,14 +170,14 @@
   },
   "design_parity_tracker": {
     "path": "docs/design_parity/README.md",
-    "version": "0.1.38",
+    "version": "0.1.39",
     "updated": "2026-07-23",
     "status": "active",
     "read_policy": "Use before design-parity passes to pick feature scope, state coverage, screen contracts, preview/capture requirements, visual-diff gaps, component-contract gaps, and drift-prevention follow-ups."
   },
   "design_parity_comprehensive_todo": {
     "path": "docs/design_parity/comprehensive_todo.md",
-    "version": "0.2.317",
+    "version": "0.2.318",
     "updated": "2026-07-23",
     "status": "active",
     "read_policy": "Use as the canonical and only human-readable execution checklist for remaining design-parity work; detailed state and evidence live in JSON ledgers and pass receipts. Host Event Manage participant mutation-display, report-summary, profile-lookup, Event Success provider-wave ownership, private-access/invite-link offline coverage, private-access missing-code coverage, invite-link disabled/long-label coverage, Event Success plan/scorecard offline coverage, Event Success live-rich substates, check-in QR, conversation cues, revealed round, and host-edited override coverage are reflected here."
@@ -518,7 +518,7 @@
     "status": "retirement_ready",
     "read_policy": "Historical completed design-system stretch work order only. Current field, top-bar, async, layout, motion, schema, and component rules live in active owner docs, contracts, and gates."
   },
-  "version": "4.7.12",
+  "version": "4.7.13",
   "admin_components": {
     "path": "design/admin/components.json",
     "version": "34",

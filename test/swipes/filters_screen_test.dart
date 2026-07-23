@@ -81,6 +81,37 @@ void main() {
     expect(find.byKey(SwipeKeys.ageRangeSlider), findsNothing);
   });
 
+  testWidgets('shows a retryable profile state instead of a blank body', (
+    tester,
+  ) async {
+    var watchCount = 0;
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          watchUserProfileProvider.overrideWith((ref) {
+            watchCount += 1;
+            return Stream.value(null);
+          }),
+        ],
+        child: MaterialApp(theme: AppTheme.light, home: const FiltersScreen()),
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Profile not available'), findsOneWidget);
+    expect(
+      find.text('Finish onboarding or sign in again to load your profile.'),
+      findsOneWidget,
+    );
+    expect(find.text('Try again'), findsOneWidget);
+    expect(find.byKey(SwipeKeys.ageRangeSlider), findsNothing);
+
+    await tester.tap(find.text('Try again'));
+    await pumpFeatureUi(tester);
+    expect(watchCount, greaterThanOrEqualTo(2));
+  });
+
   testWidgets('saves filters through the controller mutation and pops', (
     tester,
   ) async {

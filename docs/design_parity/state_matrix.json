@@ -9690,6 +9690,26 @@
               ]
             },
             {
+              "id": "profile_lookup_loading",
+              "kind": "loading",
+              "status": "tested",
+              "tests": [
+                "test/swipes/event_recap_screen_state_test.dart",
+                "test/swipes/event_recap_screen_test.dart"
+              ],
+              "notes": "A resolved recap preserves the hero and deck action while the batched attendee-profile lookup renders VibeGridSkeleton instead of Guest rows."
+            },
+            {
+              "id": "profile_lookup_error",
+              "kind": "error",
+              "status": "tested",
+              "tests": [
+                "test/swipes/event_recap_screen_state_test.dart",
+                "test/swipes/event_recap_screen_test.dart"
+              ],
+              "notes": "A failed attendee-profile lookup keeps the recap visible and exposes branded inline retry for the exact batched query."
+            },
+            {
               "id": "profile_lookup_fallback",
               "kind": "populated",
               "status": "captured",
@@ -9699,7 +9719,7 @@
               "tests": [
                 "test/swipes/event_recap_screen_state_test.dart"
               ],
-              "notes": "Missing public-profile entries map to Guest fallback attendee rows while present profiles supply tile names and photos.",
+              "notes": "After profile lookup resolves, genuinely missing public-profile entries map to Guest fallback attendee rows while present profiles supply tile names and photos.",
               "previewIds": [
                 "EventRecapScreen/Event recap route states"
               ]
@@ -10063,13 +10083,22 @@
               ]
             },
             {
+              "id": "uid_error",
+              "kind": "error",
+              "status": "tested",
+              "tests": [
+                "test/dashboard/dashboard_screen_test.dart"
+              ],
+              "notes": "uidProvider failure renders a branded auth error with retry and never masquerades as No activity yet."
+            },
+            {
               "id": "signed_out",
               "kind": "permission",
               "status": "captured",
               "captureIds": [
                 "notifications_signed_out"
               ],
-              "notes": "Null uid or uid provider error renders ActivitySignedOutState with No activity yet copy.",
+              "notes": "A successfully resolved null uid alone renders ActivitySignedOutState with No activity yet copy.",
               "previewIds": [
                 "ActivityScreen/Screen states"
               ]
@@ -11019,13 +11048,31 @@
               ]
             },
             {
-              "id": "event_title_loading_missing",
+              "id": "event_title_loading",
               "kind": "loading",
+              "status": "tested",
+              "tests": [
+                "test/payments/payment_history_screen_test.dart"
+              ],
+              "notes": "Resolved payments retain explicit event-title enrichment loading and render row-shaped skeletons instead of a false missing-event label."
+            },
+            {
+              "id": "event_title_error",
+              "kind": "error",
+              "status": "tested",
+              "tests": [
+                "test/payments/payment_history_screen_test.dart"
+              ],
+              "notes": "Event-title lookup failure renders an event-specific branded retry state for the exact payment event-id set."
+            },
+            {
+              "id": "event_title_missing",
+              "kind": "empty",
               "status": "captured",
               "tests": [
                 "test/payments/payment_history_screen_test.dart"
               ],
-              "notes": "payment_history_missing_event_title captures the batched event-title lookup fallback to Event booking when a referenced event is unavailable.",
+              "notes": "payment_history_missing_event_title now captures the honest Event unavailable label only after event enrichment resolves without the referenced record.",
               "previewIds": [
                 "PaymentHistoryScreen/Screen states"
               ],
@@ -11041,7 +11088,7 @@
                 "payment_history_uid_offline",
                 "payment_history_payments_offline"
               ],
-              "notes": "Payment History uses shared obviousOfflineException/appErrorDescriptor copy for uid and payment stream retry surfaces; event-title lookup keeps the existing fallback row behavior.",
+              "notes": "Payment History uses shared obviousOfflineException/appErrorDescriptor copy for uid, payment, and event-title retry surfaces; offline enrichment no longer looks like a missing event.",
               "previewIds": [
                 "PaymentHistoryScreen/Screen states"
               ]

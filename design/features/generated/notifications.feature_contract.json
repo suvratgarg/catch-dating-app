@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/notifications.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:d080adb86f20e53b3417cf09c996de53811fa5068b14a1cee8fc3550cfed9b39",
-  "resolvedDigest": "sha256:ca0bdfd54e1459b0346cdd83c73efc09a98ea0a82fd37fb64490d505f17673c9",
+  "sourceDigest": "sha256:cce25f250c7569ee338f7b4783dba865c4e3cbdd45663ca1c38ff52ee1af919a",
+  "resolvedDigest": "sha256:c1dc315c2a574118f6d2125986e2e7104026341021e3f238c53756ce64c5909b",
   "feature": {
     "id": "feature.notifications",
     "name": "Notifications",
@@ -14,14 +14,14 @@
   },
   "coverage": {
     "surfaces": 1,
-    "states": 13,
-    "scenarios": 13,
-    "actionCases": 16,
-    "actions": 3,
+    "states": 14,
+    "scenarios": 14,
+    "actionCases": 17,
+    "actions": 4,
     "captures": 11,
     "previews": 3,
     "testFiles": 1,
-    "evidenceExceptions": 10
+    "evidenceExceptions": 12
   },
   "surfaces": [
     {
@@ -32,10 +32,9 @@
         "id": "screen.notifications.list"
       },
       "actionScope": {
-        "included": "Retrying the activity stream, marking visible unread notifications as read, and opening a notification's derived chat, Event Detail, or Organizer Detail target.",
+        "included": "Retrying identity or activity loads, marking visible unread notifications as read, and opening a notification's derived chat, Event Detail, or Organizer Detail target.",
         "excluded": [
           "Time labels, visibility filtering, day grouping, and dynamic route derivation are read-model behavior rather than user actions.",
-          "Identity-provider errors currently render the same signed-out empty state as a real null uid and expose no retry action; that collapse remains explicit debt under DP-NOTIFICATIONS-004.",
           "Shell navigation and non-navigable notification rows do not create synthetic feature actions."
         ]
       },
@@ -76,21 +75,22 @@
         ]
       },
       "coverage": {
-        "states": 13,
-        "scenarios": 13,
-        "actionCases": 16,
-        "actions": 3,
+        "states": 14,
+        "scenarios": 14,
+        "actionCases": 17,
+        "actions": 4,
         "captures": 11,
         "previews": 3,
         "testFiles": 1,
-        "evidenceExceptions": 10
+        "evidenceExceptions": 12
       },
       "dimensions": {
         "access": {
           "default": "signed_in",
           "values": [
             "loading",
-            "signed_out_or_error",
+            "error",
+            "signed_out",
             "signed_in"
           ]
         },
@@ -146,6 +146,32 @@
         }
       },
       "actions": [
+        {
+          "id": "retry_identity",
+          "owner": "activity_screen",
+          "codeValue": "uidProvider",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "routeInstanceId",
+            "identityLoadGeneration"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "uid_loading",
+                "uid_error",
+                "signed_out",
+                "activity_loading",
+                "activity_error",
+                "empty_activity",
+                "notifications_activity"
+              ]
+            }
+          ],
+          "description": "Invalidates the viewer identity provider after Activity access fails without presenting the failure as a signed-out empty state.",
+          "implementationStatus": "implemented"
+        },
         {
           "id": "retry_activity",
           "owner": "activity_screen",
@@ -235,6 +261,17 @@
       "evidenceExceptions": [
         {
           "stateIds": [
+            "uid_error"
+          ],
+          "evidence": [
+            "captures",
+            "previews"
+          ],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "The newly truthful identity-error state has focused screen coverage; deterministic preview and capture entries are completed in the evidence-closure phase."
+        },
+        {
+          "stateIds": [
             "uid_loading",
             "signed_out",
             "activity_loading",
@@ -248,7 +285,7 @@
             "tests"
           ],
           "debtId": "FEATURE-CONTRACT-MIGRATION-001",
-          "reason": "These Notifications states have deterministic capture and Widgetbook evidence but no focused state-level test recorded by the screen authority."
+          "reason": "These Notifications states have deterministic capture and Widgetbook evidence but no focused state-level test recorded by the screen authority; uid_error now has focused screen coverage."
         },
         {
           "stateIds": [
@@ -302,6 +339,54 @@
                 "enabled": [],
                 "disabled": [],
                 "notAllowed": [
+                  "retry_identity",
+                  "retry_activity",
+                  "mark_all_read",
+                  "open_notification_target"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "uid_error",
+          "stateId": "uid_error",
+          "kind": "error",
+          "status": "tested",
+          "dimensions": {
+            "access": "error",
+            "data": "error",
+            "rows": "mixed",
+            "mutation": "idle",
+            "navigation": "idle",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/dashboard/dashboard_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "retry",
+              "dimensions": {
+                "access": "error",
+                "data": "error",
+                "rows": "mixed",
+                "mutation": "idle",
+                "navigation": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "retry_identity"
+                ],
+                "disabled": [],
+                "notAllowed": [
                   "retry_activity",
                   "mark_all_read",
                   "open_notification_target"
@@ -316,7 +401,7 @@
           "kind": "permission",
           "status": "captured",
           "dimensions": {
-            "access": "signed_out_or_error",
+            "access": "signed_out",
             "data": "empty",
             "rows": "mixed",
             "mutation": "idle",
@@ -335,9 +420,9 @@
           },
           "actionCases": [
             {
-              "id": "null_uid_or_hidden_error",
+              "id": "null_uid",
               "dimensions": {
-                "access": "signed_out_or_error",
+                "access": "signed_out",
                 "data": "empty",
                 "rows": "mixed",
                 "mutation": "idle",
@@ -349,6 +434,7 @@
                 "enabled": [],
                 "disabled": [],
                 "notAllowed": [
+                  "retry_identity",
                   "retry_activity",
                   "mark_all_read",
                   "open_notification_target"
@@ -397,6 +483,7 @@
                 "enabled": [],
                 "disabled": [],
                 "notAllowed": [
+                  "retry_identity",
                   "retry_activity",
                   "mark_all_read",
                   "open_notification_target"
@@ -447,6 +534,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "retry_identity",
                   "mark_all_read",
                   "open_notification_target"
                 ]
@@ -493,6 +581,7 @@
                 "enabled": [],
                 "disabled": [],
                 "notAllowed": [
+                  "retry_identity",
                   "retry_activity",
                   "mark_all_read",
                   "open_notification_target"
@@ -546,6 +635,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "retry_identity",
                   "retry_activity"
                 ]
               }
@@ -595,6 +685,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "retry_identity",
                   "retry_activity"
                 ]
               }
@@ -616,6 +707,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "retry_identity",
                   "retry_activity",
                   "mark_all_read"
                 ]
@@ -636,6 +728,7 @@
                 "enabled": [],
                 "disabled": [],
                 "notAllowed": [
+                  "retry_identity",
                   "retry_activity",
                   "mark_all_read",
                   "open_notification_target"
@@ -690,6 +783,7 @@
                   "mark_all_read"
                 ],
                 "notAllowed": [
+                  "retry_identity",
                   "retry_activity"
                 ]
               }
@@ -712,6 +806,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "retry_identity",
                   "retry_activity"
                 ]
               }
@@ -759,6 +854,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "retry_identity",
                   "retry_activity",
                   "mark_all_read"
                 ]
@@ -809,6 +905,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "retry_identity",
                   "retry_activity",
                   "mark_all_read"
                 ]
@@ -860,6 +957,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "retry_identity",
                   "retry_activity"
                 ]
               }
@@ -910,6 +1008,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "retry_identity",
                   "retry_activity"
                 ]
               }
@@ -960,6 +1059,7 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
+                  "retry_identity",
                   "retry_activity"
                 ]
               }

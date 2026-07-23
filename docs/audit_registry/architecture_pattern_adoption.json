@@ -1,5 +1,5 @@
 {
-  "version": "1.5.56",
+  "version": "1.5.57",
   "updated": "2026-07-23",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
@@ -536,6 +536,27 @@
           "lastReviewedPass": "2026-07-21-error-chrome-consistency"
         },
         {
+          "path": "lib/swipes/presentation/event_recap_screen_state.dart",
+          "role": "provider-free Event Recap adapter preserving primary recap loading/error/missing plus batched attendee-profile loading, error, resolved absence, rows, selection, and handoff state",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-truthful-secondary-async-states"
+        },
+        {
+          "path": "lib/swipes/presentation/filters_screen_state.dart",
+          "role": "provider-free Matching Preferences adapter for saved and draft values, dirty/reset/apply availability, pending state, and frozen save request construction",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-truthful-secondary-async-states"
+        },
+        {
+          "path": "lib/payments/presentation/payment_history_state.dart",
+          "role": "provider-free Payment History adapter preserving payment rows plus event-title loading, failure, resolved title, and genuinely missing-event state",
+          "providerFree": true,
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-truthful-secondary-async-states"
+        },
+        {
           "path": "test/core/catch_async_state_test.dart",
           "role": "refresh-time AsyncValue precedence coverage for the shared route-edge adapter",
           "status": "aligned",
@@ -949,7 +970,7 @@
         {
           "id": "ARCH-UI-STATE-001-DASHBOARD-PRESENTATION-NOTIFICATIONS-LIST-STATE",
           "path": "lib/dashboard/presentation/notifications_list_state.dart",
-          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass.",
+          "reason": "NotificationsListState now preserves identity error separately from resolved sign-out, but notificationRoute still imports app routing. Move route-path derivation behind a typed route intent before marking this adapter provider-free.",
           "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
           "addedPass": "2026-07-03-audit-generalization-scanners"
         },
@@ -1017,13 +1038,6 @@
           "addedPass": "2026-07-03-audit-generalization-scanners"
         },
         {
-          "id": "ARCH-UI-STATE-001-PAYMENTS-PRESENTATION-PAYMENT-HISTORY-STATE",
-          "path": "lib/payments/presentation/payment_history_state.dart",
-          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass.",
-          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
-          "addedPass": "2026-07-03-audit-generalization-scanners"
-        },
-        {
           "id": "ARCH-UI-STATE-001-PUBLIC-PROFILE-PRESENTATION-PUBLIC-PROFILE-SCREEN-STATE",
           "path": "lib/public_profile/presentation/public_profile_screen_state.dart",
           "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass.",
@@ -1052,20 +1066,6 @@
           "addedPass": "2026-07-03-audit-generalization-scanners"
         },
         {
-          "id": "ARCH-UI-STATE-001-SWIPES-PRESENTATION-EVENT-RECAP-SCREEN-STATE",
-          "path": "lib/swipes/presentation/event_recap_screen_state.dart",
-          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass.",
-          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
-          "addedPass": "2026-07-03-audit-generalization-scanners"
-        },
-        {
-          "id": "ARCH-UI-STATE-001-SWIPES-PRESENTATION-FILTERS-SCREEN-STATE",
-          "path": "lib/swipes/presentation/filters_screen_state.dart",
-          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass.",
-          "detectedBy": "tool/architecture/check_dependency_direction.mjs#untrackedStateAdapter",
-          "addedPass": "2026-07-03-audit-generalization-scanners"
-        },
-        {
           "id": "ARCH-UI-STATE-001-SWIPES-PRESENTATION-WIDGETS-SWIPE-EMPTY-STATE",
           "path": "lib/swipes/presentation/widgets/swipe_empty_state.dart",
           "reason": "File name matches *_state.dart but lives under widgets; register it for explicit review, then either confirm provider-free display-state ownership or rename if it is only a render widget.",
@@ -1086,6 +1086,9 @@
         "flutter test test/profile/self_profile_screen_state_test.dart test/profile/self_profile_edit_tab_state_test.dart",
         "flutter test test/profile/profile_widgets_test.dart --plain-name 'text edit failure keeps the inline editor open with an error'",
         "flutter test test/chats/chat_screen_test.dart test/chats/chat_inbox_screen_test.dart",
+        "flutter test test/swipes/filters_screen_test.dart test/swipes/event_recap_screen_state_test.dart test/swipes/event_recap_screen_test.dart",
+        "flutter test test/dashboard/dashboard_screen_test.dart --plain-name 'notifications identity failure is not shown as signed out'",
+        "flutter test test/payments/payment_history_screen_test.dart",
         "flutter analyze --no-fatal-infos",
         "node tool/architecture/check_adopted_architecture_boundaries.mjs",
         "node tool/agent/check_agent_readiness.mjs"

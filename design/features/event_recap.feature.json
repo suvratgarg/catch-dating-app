@@ -16,10 +16,9 @@
         "id": "screen.event.recap"
       },
       "actionScope": {
-        "included": "Closing or retrying Event Recap, toggling remembered attendees, and opening the event-scoped Catches deck with the current selection.",
+        "included": "Closing or retrying Event Recap, retrying attendee-profile enrichment, toggling remembered attendees, and opening the event-scoped Catches deck with the current selection.",
         "excluded": [
           "Event, attendance-roster, catch-window, and public-profile derivation are read-model behavior rather than user actions.",
-          "Profile lookup loading and failures currently collapse into Guest rows without a separate retry action; that ambiguity remains explicit debt under DS-EVENT-RECAP-005.",
           "Pass and reaction mutations after the handoff retain Catches Event Deck ownership."
         ]
       },
@@ -55,7 +54,7 @@
         },
         "roster": {
           "default": "populated",
-          "values": ["populated", "empty", "partial_or_unresolved"]
+          "values": ["populated", "empty", "loading", "error", "partial"]
         },
         "selection": {
           "default": "none",
@@ -98,6 +97,17 @@
           "description": "Invalidates the event, participation, identity, and composed recap providers as one recovery decision."
         },
         {
+          "id": "retry_roster_profiles",
+          "owner": "recap_screen",
+          "codeValue": "_retryRosterProfiles",
+          "cardinality": "singleton",
+          "scopeKeys": ["eventId", "attendeeIdSet", "profileLoadGeneration"],
+          "outcomes": [
+            {"kind": "surface_state", "stateIds": ["profile_lookup_loading", "profile_lookup_error", "populated_attendees", "profile_lookup_fallback"]}
+          ],
+          "description": "Invalidates the batched public-profile lookup while preserving the resolved recap and its event-scoped deck handoff."
+        },
+        {
           "id": "toggle_vibe_selection",
           "owner": "recap_screen",
           "codeValue": "_toggleVibe",
@@ -132,6 +142,8 @@
         "event_not_found",
         "populated_attendees",
         "empty_roster",
+        "profile_lookup_loading",
+        "profile_lookup_error",
         "profile_lookup_fallback",
         "vibe_selection",
         "open_catches_deck",
@@ -175,7 +187,16 @@
           "actionCases": [{"id": "no_other_attendees", "enabledActions": ["close_recap", "open_catches_deck"]}]
         },
         "profile_lookup_fallback": {
-          "dimensions": {"roster": "partial_or_unresolved"}
+          "dimensions": {"roster": "partial"},
+          "actionCases": [{"id": "genuinely_missing_profiles", "enabledActions": ["close_recap", "toggle_vibe_selection", "open_catches_deck"]}]
+        },
+        "profile_lookup_loading": {
+          "dimensions": {"roster": "loading"},
+          "actionCases": [{"id": "batched_lookup_loading", "enabledActions": ["close_recap", "open_catches_deck"]}]
+        },
+        "profile_lookup_error": {
+          "dimensions": {"roster": "error"},
+          "actionCases": [{"id": "retry_profiles", "enabledActions": ["close_recap", "retry_roster_profiles", "open_catches_deck"]}]
         },
         "vibe_selection": {
           "dimensions": {"selection": "selected"}
@@ -202,6 +223,12 @@
           "evidence": ["tests"],
           "debtId": "FEATURE-CONTRACT-MIGRATION-001",
           "reason": "These Event Recap accessibility states have deterministic capture and Widgetbook evidence but no focused state-level test recorded by the screen authority."
+        },
+        {
+          "stateIds": ["profile_lookup_loading", "profile_lookup_error"],
+          "evidence": ["captures", "previews"],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "The newly truthful profile-enrichment loading and failure states have focused screen and state tests; deterministic preview and capture entries are completed in the evidence-closure phase."
         },
         {
           "stateIds": ["open_catches_deck"],

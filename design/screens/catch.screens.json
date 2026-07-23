@@ -18897,7 +18897,7 @@
         {
           "id": "filters_missing_profile",
           "status": "captured",
-          "notes": "Resolved null profile branch, currently a blank body pending product copy decision."
+          "notes": "Resolved null profile branch with branded profile-unavailable copy and a profile-provider retry action."
         },
         {
           "id": "filters_dirty_edit",
@@ -18969,11 +18969,14 @@
           "id": "profile_missing",
           "kind": "permission",
           "status": "captured",
-          "source": "A null profile currently renders an empty SizedBox after data resolves.",
+          "source": "A resolved null profile renders a branded Profile not available CatchEmptyState with onboarding/sign-in guidance and profile-provider retry.",
           "captureIds": [
             "filters_missing_profile"
           ],
-          "nextAction": "Product should still decide whether missing profile should render branded access/recovery copy instead of an empty body.",
+          "tests": [
+            "test/swipes/filters_screen_test.dart"
+          ],
+          "nextAction": "Keep the missing-profile recovery copy and retry proof current if onboarding access policy changes.",
           "previewIds": [
             "FiltersScreen/Route states"
           ]
@@ -19260,8 +19263,8 @@
         },
         {
           "id": "DS-FILTERS-005",
-          "status": "open",
-          "nextAction": "A resolved null profile currently renders a blank body beneath the Filters top bar with no explanation or recovery action. Replace the empty SizedBox with a branded access/recovery state and focused route test."
+          "status": "closed",
+          "nextAction": "Closed. A resolved null profile now renders branded Profile not available guidance with profile-provider retry instead of a blank body, and the focused route test proves both visible copy and retry invalidation."
         }
       ]
     },
@@ -19487,17 +19490,39 @@
           ]
         },
         {
+          "id": "profile_lookup_loading",
+          "kind": "loading",
+          "status": "tested",
+          "source": "When the recap is resolved but publicProfilesByIdsProvider is still loading, EventRecapReadyBody preserves the hero and deck action while VibeGridSkeleton replaces unresolved attendee rows.",
+          "tests": [
+            "test/swipes/event_recap_screen_state_test.dart",
+            "test/swipes/event_recap_screen_test.dart"
+          ],
+          "nextAction": "Add deterministic Widgetbook and capture evidence in the feature-contract evidence-closure pass."
+        },
+        {
+          "id": "profile_lookup_error",
+          "kind": "error",
+          "status": "tested",
+          "source": "A failed batched public-profile lookup renders CatchInlineErrorState with AppErrorContext.profile and retries the exact attendee-id query without discarding the resolved recap.",
+          "tests": [
+            "test/swipes/event_recap_screen_state_test.dart",
+            "test/swipes/event_recap_screen_test.dart"
+          ],
+          "nextAction": "Add deterministic Widgetbook and capture evidence in the feature-contract evidence-closure pass."
+        },
+        {
           "id": "profile_lookup_fallback",
           "kind": "populated",
           "status": "captured",
-          "source": "Missing public-profile entries render Guest fallback tiles while profile photos use CatchNetworkImage when available. The route currently maps profile lookup loading and errors to the same empty map, so those unresolved states are visually indistinguishable from genuinely missing profiles.",
+          "source": "After the batched lookup resolves, genuinely missing public-profile entries alone render Guest fallback tiles while resolved profile photos use CatchNetworkImage.",
           "captureIds": [
             "event_recap_partial_profiles"
           ],
           "tests": [
             "test/swipes/event_recap_screen_state_test.dart"
           ],
-          "nextAction": "Separate profile lookup loading, failure, and genuinely missing profiles; preserve already resolved rows and provide bounded retry instead of silently presenting every unresolved attendee as Guest.",
+          "nextAction": "Keep the Guest fallback limited to resolved absence; loading and failure retain their separate skeleton and retry states.",
           "previewIds": [
             "EventRecapScreen/Event recap route states"
           ]
@@ -19628,6 +19653,8 @@
             "states": [
               "populated_attendees",
               "empty_roster",
+              "profile_lookup_loading",
+              "profile_lookup_error",
               "profile_lookup_fallback",
               "vibe_selection"
             ],
@@ -19705,8 +19732,8 @@
         },
         {
           "id": "DS-EVENT-RECAP-005",
-          "status": "open",
-          "nextAction": "EventRecapScreen currently maps publicProfilesByIdsProvider loading and errors to an empty profile map, making every unresolved attendee look like a real Guest fallback with no progress, failure, or retry affordance. Introduce an explicit batched-profile lookup state and focused loading/error/recovery tests."
+          "status": "closed",
+          "nextAction": "Closed. EventRecapScreenState preserves batched profile loading, failure, and resolved absence separately; the route shows a grid skeleton while loading, branded inline retry on failure, and Guest only for a genuinely absent resolved profile, with focused state and recovery tests."
         }
       ]
     },
@@ -21622,14 +21649,24 @@
           ]
         },
         {
+          "id": "uid_error",
+          "kind": "error",
+          "status": "tested",
+          "source": "uidProvider failure renders CatchErrorState with AppErrorContext.auth and an identity retry instead of ActivitySignedOutState.",
+          "tests": [
+            "test/dashboard/dashboard_screen_test.dart"
+          ],
+          "nextAction": "Add deterministic ActivityScreen Widgetbook and capture evidence in the feature-contract evidence-closure pass."
+        },
+        {
           "id": "signed_out",
           "kind": "permission",
           "status": "captured",
-          "source": "Null uid or uid provider error renders ActivitySignedOutState with No activity yet copy, so an identity-provider failure is currently indistinguishable from a real signed-out session.",
+          "source": "A successfully resolved null uid alone renders ActivitySignedOutState; uidProvider failures use the separate uid_error state.",
           "captureIds": [
             "notifications_signed_out"
           ],
-          "nextAction": "Preserve identity-provider failure as a branded error with actionable retry under DP-NOTIFICATIONS-004; separately confirm whether a real signed-out session should redirect through the shell.",
+          "nextAction": "Separately confirm whether a real signed-out session should redirect through the shell.",
           "previewIds": [
             "ActivityScreen/Screen states"
           ]
@@ -21932,8 +21969,8 @@
         },
         {
           "id": "DP-NOTIFICATIONS-004",
-          "status": "open",
-          "nextAction": "uidProvider failures collapse into ActivitySignedOutState and expose no retry, making an identity outage look like a signed-out or empty account. Preserve the provider error as a branded retry state and add focused error-versus-null-uid proof."
+          "status": "closed",
+          "nextAction": "Closed. Activity preserves uidProvider failure as a branded auth error with retry, keeps resolved null uid as the distinct signed-out state, and has focused screen proof that identity failure never renders No activity yet."
         }
       ]
     },
@@ -23462,14 +23499,34 @@
           ]
         },
         {
-          "id": "event_title_loading_missing",
+          "id": "event_title_loading",
           "kind": "loading",
-          "status": "captured",
-          "source": "PaymentHistoryViewModel reads only watchEventsByIdsProvider.asData and maps event-title enrichment loading, failure, and genuinely missing records to the same Event booking fallback.",
+          "status": "tested",
+          "source": "When payments are resolved but watchEventsByIdsProvider is loading, PaymentHistoryViewModel preserves an explicit enrichment-loading status and PaymentHistoryList renders row-shaped skeletons instead of a false missing title.",
           "tests": [
             "test/payments/payment_history_screen_test.dart"
           ],
-          "nextAction": "Define explicit enrichment loading/failure recovery or a deliberate cached fallback under DP-PAYMENT-HISTORY-006, then compare resolved and genuinely missing-title rows against exported references.",
+          "nextAction": "Add deterministic Widgetbook and capture evidence in the feature-contract evidence-closure pass."
+        },
+        {
+          "id": "event_title_error",
+          "kind": "error",
+          "status": "tested",
+          "source": "Event-title lookup failure is preserved in PaymentHistoryViewModel and renders an event-specific CatchErrorState with exact-query retry.",
+          "tests": [
+            "test/payments/payment_history_screen_test.dart"
+          ],
+          "nextAction": "Add deterministic Widgetbook and capture evidence in the feature-contract evidence-closure pass."
+        },
+        {
+          "id": "event_title_missing",
+          "kind": "empty",
+          "status": "captured",
+          "source": "After event-title enrichment resolves, a genuinely absent event uses the honest Event unavailable row label while retaining receipt access.",
+          "tests": [
+            "test/payments/payment_history_screen_test.dart"
+          ],
+          "nextAction": "Compare the resolved-absence label against exported references once Payment History references exist.",
           "previewIds": [
             "PaymentHistoryScreen/Screen states"
           ],
@@ -23481,7 +23538,7 @@
           "id": "offline",
           "kind": "offline",
           "status": "captured",
-          "source": "Payment History uses shared obviousOfflineException/appErrorDescriptor copy for uid and payment stream retry surfaces; event-title lookup keeps the existing fallback row behavior.",
+          "source": "Payment History uses shared obviousOfflineException/appErrorDescriptor copy for uid, payment, and event-title retry surfaces; offline title enrichment no longer impersonates a missing event.",
           "captureIds": [
             "payment_history_uid_offline",
             "payment_history_payments_offline"
@@ -23680,8 +23737,8 @@
         },
         {
           "id": "DP-PAYMENT-HISTORY-006",
-          "status": "open",
-          "nextAction": "Event-title enrichment loading, failure, and genuinely missing records collapse into Event booking because PaymentHistoryViewModel reads only provider asData. Define explicit enrichment recovery or document and test a deliberate cached fallback policy."
+          "status": "closed",
+          "nextAction": "Closed. PaymentHistoryViewModel now distinguishes event-title loading, failure, resolved titles, and genuinely missing events; the UI shows skeletons, an event-specific retry state, or Event unavailable respectively, with focused widget proof."
         }
       ]
     }

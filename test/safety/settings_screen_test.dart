@@ -187,10 +187,9 @@ void main() {
     );
     await tester.pump();
 
-    expect(
-      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).leadingType,
-      CatchTopBarLeading.none,
-    );
+    final pendingTopBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
+    expect(pendingTopBar.leadingType, CatchTopBarLeading.back);
+    expect((pendingTopBar.leading! as CatchIconAction).onPressed, isNull);
     expect(
       tester
           .widget<CatchField>(find.byKey(SettingsKeys.weeklyDigestSwitch))

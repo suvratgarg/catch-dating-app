@@ -25,10 +25,15 @@ final class EventRecapMissingEvent extends EventRecapScreenState {
   const EventRecapMissingEvent();
 }
 
+enum EventRecapProfileLookupStatus { loading, error, ready }
+
 final class EventRecapReady extends EventRecapScreenState {
   const EventRecapReady({
     required this.hero,
     required this.attendeeRows,
+    required this.attendeeIds,
+    required this.profileLookupStatus,
+    required this.profileLookupError,
     required this.selectedVibeIds,
     required this.openDeckIntent,
     required this.openDeckActionEnabled,
@@ -36,11 +41,14 @@ final class EventRecapReady extends EventRecapScreenState {
 
   final EventRecapHeroState hero;
   final List<EventRecapAttendeeRow> attendeeRows;
+  final List<String> attendeeIds;
+  final EventRecapProfileLookupStatus profileLookupStatus;
+  final Object? profileLookupError;
   final Set<String> selectedVibeIds;
   final EventRecapOpenDeckIntent openDeckIntent;
   final bool openDeckActionEnabled;
 
-  bool get hasAttendees => attendeeRows.isNotEmpty;
+  bool get hasAttendees => attendeeIds.isNotEmpty;
 }
 
 class EventRecapHeroState {
@@ -154,7 +162,7 @@ class EventRecapOpenDeckIntent {
 EventRecapScreenState buildEventRecapScreenState({
   required String eventId,
   required CatchAsyncState<EventRecapViewModel?> viewModel,
-  required Map<String, PublicProfile> rosterProfiles,
+  required CatchAsyncState<Map<String, PublicProfile>> rosterProfiles,
   required Set<String> selectedVibeIds,
   required AppLocalizations l10n,
   DateTime? now,
@@ -177,7 +185,7 @@ EventRecapScreenState buildEventRecapScreenState({
 
 EventRecapScreenState _eventRecapDataState({
   required EventRecapViewModel? viewModel,
-  required Map<String, PublicProfile> rosterProfiles,
+  required CatchAsyncState<Map<String, PublicProfile>> rosterProfiles,
   required Set<String> selectedVibeIds,
   required DateTime now,
   required AppLocalizations l10n,
@@ -185,15 +193,24 @@ EventRecapScreenState _eventRecapDataState({
   if (viewModel == null) return const EventRecapMissingEvent();
 
   final selected = Set<String>.unmodifiable(selectedVibeIds);
-  final attendeeRows = [
-    for (final attendeeId in viewModel.attendeeIds)
-      EventRecapAttendeeRow.from(
-        attendeeId: attendeeId,
-        profile: rosterProfiles[attendeeId],
-        selected: selected.contains(attendeeId),
-        l10n: l10n,
-      ),
-  ];
+  final resolvedProfiles =
+      rosterProfiles.value ?? const <String, PublicProfile>{};
+  final attendeeRows = rosterProfiles.status == CatchAsyncStatus.data
+      ? [
+          for (final attendeeId in viewModel.attendeeIds)
+            EventRecapAttendeeRow.from(
+              attendeeId: attendeeId,
+              profile: resolvedProfiles[attendeeId],
+              selected: selected.contains(attendeeId),
+              l10n: l10n,
+            ),
+        ]
+      : const <EventRecapAttendeeRow>[];
+  final profileLookupStatus = switch (rosterProfiles.status) {
+    CatchAsyncStatus.loading => EventRecapProfileLookupStatus.loading,
+    CatchAsyncStatus.error => EventRecapProfileLookupStatus.error,
+    CatchAsyncStatus.data => EventRecapProfileLookupStatus.ready,
+  };
 
   return EventRecapReady(
     hero: EventRecapHeroState.fromEvent(
@@ -203,6 +220,9 @@ EventRecapScreenState _eventRecapDataState({
       l10n: l10n,
     ),
     attendeeRows: List.unmodifiable(attendeeRows),
+    attendeeIds: List.unmodifiable(viewModel.attendeeIds),
+    profileLookupStatus: profileLookupStatus,
+    profileLookupError: rosterProfiles.error,
     selectedVibeIds: selected,
     openDeckIntent: EventRecapOpenDeckIntent(
       eventId: viewModel.event.id,

@@ -202,9 +202,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         child: CatchRouteScaffold(
           topBarBuilder: (context, scrolledUnder) => CatchTopBar(
             title: context.l10n.safetySettingsScreenTitleSettings,
-            leadingType: operationPending
-                ? CatchTopBarLeading.none
-                : CatchTopBarLeading.back,
+            leadingType: CatchTopBarLeading.back,
+            leading: operationPending
+                ? CatchIconAction(
+                    icon: CatchIcons.arrowBackIosNewRounded,
+                    tooltip: MaterialLocalizations.of(
+                      context,
+                    ).backButtonTooltip,
+                    onPressed: null,
+                  )
+                : null,
             divider: scrolledUnder,
           ),
           body: CatchScreenBody(

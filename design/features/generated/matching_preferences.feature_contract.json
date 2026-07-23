@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/matching_preferences.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:22880f9937c1c17b189935ff1d8a41b6e987c3820cf77d0c96ff754864df6792",
-  "resolvedDigest": "sha256:2f7df3083486cc2c0bb2453d6d97d2a1a6b92caa7c1487ccc94a7b5e26cca8f6",
+  "sourceDigest": "sha256:dad9312a088ed392bdf912be323907c24ca86d0ab76c2b54ccb73dacb66b9b15",
+  "resolvedDigest": "sha256:19a521cb87d446d5945e02b820bf5e1954d4b7c639989392d0b144d07b7b8a69",
   "feature": {
     "id": "feature.matching_preferences",
     "name": "Matching Preferences",
@@ -21,7 +21,7 @@
     "captures": 11,
     "previews": 2,
     "testFiles": 2,
-    "evidenceExceptions": 8
+    "evidenceExceptions": 7
   },
   "surfaces": [
     {
@@ -84,7 +84,7 @@
         "captures": 11,
         "previews": 2,
         "testFiles": 2,
-        "evidenceExceptions": 8
+        "evidenceExceptions": 7
       },
       "dimensions": {
         "data": {
@@ -261,7 +261,6 @@
         {
           "stateIds": [
             "profile_error",
-            "profile_missing",
             "reset_preferences",
             "save_error",
             "text_scale_2",
@@ -271,7 +270,7 @@
             "tests"
           ],
           "debtId": "FEATURE-CONTRACT-MIGRATION-001",
-          "reason": "These Matching Preferences states have deterministic capture and Widgetbook evidence but no focused state-level test recorded by the screen authority."
+          "reason": "These Matching Preferences states have deterministic capture and Widgetbook evidence but no focused state-level test recorded by the screen authority; profile_missing now has focused route coverage for its recovery action."
         },
         {
           "stateIds": [
@@ -396,11 +395,13 @@
             "previewIds": [
               "FiltersScreen/Route states"
             ],
-            "tests": []
+            "tests": [
+              "test/swipes/filters_screen_test.dart"
+            ]
           },
           "actionCases": [
             {
-              "id": "blank_body",
+              "id": "profile_unavailable",
               "dimensions": {
                 "data": "missing",
                 "draft": "saved",
@@ -409,11 +410,11 @@
               },
               "actions": {
                 "enabled": [
-                  "close_preferences"
+                  "close_preferences",
+                  "retry_profile"
                 ],
                 "disabled": [],
                 "notAllowed": [
-                  "retry_profile",
                   "adjust_age_range",
                   "toggle_interested_gender",
                   "reset_preferences",

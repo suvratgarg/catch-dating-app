@@ -13,11 +13,10 @@
       "runtime": "flutter",
       "authority": {"registry": "flutter_screens", "id": "screen.payments.history"},
       "actionScope": {
-        "included": "Closing Payment History, retrying identity or payment loads, opening a receipt sheet, and requesting the current failed-booking support guidance.",
+        "included": "Closing Payment History, retrying identity, payment, or event-title loads, opening a receipt sheet, and requesting the current failed-booking support guidance.",
         "excluded": [
           "Payment ordering, status presentation, currency/date formatting, and event-title joining are read-model behavior rather than user actions.",
-          "The Get help action currently closes the receipt and shows guidance but opens no contact channel under DP-PAYMENT-HISTORY-005.",
-          "Event-title loading, failure, and genuine absence currently collapse into the same Event booking fallback under DP-PAYMENT-HISTORY-006."
+          "The Get help action currently closes the receipt and shows guidance but opens no contact channel under DP-PAYMENT-HISTORY-005."
         ]
       },
       "bindings": {
@@ -61,7 +60,7 @@
         "payments": {"default": "ready", "values": ["loading", "error", "empty", "ready"]},
         "status": {"default": "mixed", "values": ["mixed", "paid", "pending", "failed", "refunded", "refund_attention"]},
         "receipt": {"default": "closed", "values": ["closed", "open", "failed_signup"]},
-        "event_title": {"default": "resolved", "values": ["resolved", "missing_or_unresolved"]},
+        "event_title": {"default": "resolved", "values": ["resolved", "loading", "error", "missing"]},
         "connectivity": {"default": "online", "values": ["online", "offline"]},
         "accessibility": {"default": "standard", "values": ["standard", "text_scale_2", "reduced_motion"]},
         "theme": {"default": "standard", "values": ["standard", "light_dark"]}
@@ -95,6 +94,17 @@
           "description": "Invalidates the current member's payment stream after a load failure."
         },
         {
+          "id": "retry_event_titles",
+          "owner": "history_screen",
+          "codeValue": "watchEventsByIdsProvider",
+          "cardinality": "singleton",
+          "scopeKeys": ["viewerUid", "paymentEventIdSet", "eventTitleLoadGeneration"],
+          "outcomes": [
+            {"kind": "surface_state", "stateIds": ["event_title_loading", "event_title_error", "event_title_missing", "populated_payments"]}
+          ],
+          "description": "Retries the batched event-title enrichment without treating a network or backend failure as a missing event."
+        },
+        {
           "id": "open_receipt",
           "owner": "receipt_tile",
           "codeValue": "_showDetailSheet",
@@ -124,7 +134,9 @@
         "status_variants",
         "detail_sheet",
         "failed_signup_help",
-        "event_title_loading_missing",
+        "event_title_loading",
+        "event_title_error",
+        "event_title_missing",
         "offline",
         "text_scale_2",
         "reduced_motion",
@@ -176,15 +188,24 @@
           "dimensions": {"receipt": "failed_signup"},
           "actionCases": [{"id": "guidance", "enabledActions": ["show_support_guidance"]}]
         },
-        "event_title_loading_missing": {
-          "dimensions": {"event_title": "missing_or_unresolved"}
+        "event_title_loading": {
+          "dimensions": {"event_title": "loading"},
+          "actionCases": [{"id": "loading", "enabledActions": ["close_payment_history"]}]
+        },
+        "event_title_error": {
+          "dimensions": {"event_title": "error"},
+          "actionCases": [{"id": "retry", "enabledActions": ["close_payment_history", "retry_event_titles"]}]
+        },
+        "event_title_missing": {
+          "dimensions": {"event_title": "missing"},
+          "actionCases": [{"id": "resolved_absence", "enabledActions": ["close_payment_history", "open_receipt"]}]
         },
         "offline": {
           "dimensions": {"connectivity": "offline"},
           "actionCases": [
             {"id": "identity_offline", "dimensions": {"identity": "error"}, "enabledActions": ["close_payment_history", "retry_identity"]},
             {"id": "payments_offline", "dimensions": {"payments": "error"}, "enabledActions": ["close_payment_history", "retry_payments"]},
-            {"id": "event_title_offline_fallback", "dimensions": {"event_title": "missing_or_unresolved"}, "enabledActions": ["close_payment_history", "open_receipt"]}
+            {"id": "event_title_offline_error", "dimensions": {"event_title": "error"}, "enabledActions": ["close_payment_history", "retry_event_titles"]}
           ]
         },
         "text_scale_2": {"dimensions": {"accessibility": "text_scale_2"}},
@@ -198,6 +219,12 @@
           "evidence": ["tests"],
           "debtId": "FEATURE-CONTRACT-MIGRATION-001",
           "reason": "These Payment History states have deterministic capture and Widgetbook evidence but no focused state-level test recorded by the authority."
+        },
+        {
+          "stateIds": ["event_title_loading", "event_title_error"],
+          "evidence": ["captures", "previews"],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "Event-title loading and error now have focused screen tests; deterministic preview and capture entries are completed in the evidence-closure phase."
         },
         {
           "stateIds": ["status_variants"],

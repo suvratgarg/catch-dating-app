@@ -138,7 +138,7 @@
         },
         "profile_missing": {
           "dimensions": {"data": "missing"},
-          "actionCases": [{"id": "blank_body", "enabledActions": ["close_preferences"]}]
+          "actionCases": [{"id": "profile_unavailable", "enabledActions": ["close_preferences", "retry_profile"]}]
         },
         "default_preferences": {
           "actionCases": [{"id": "saved_values", "enabledActions": ["close_preferences", "adjust_age_range", "toggle_interested_gender", "reset_preferences", "apply_preferences"]}]
@@ -180,10 +180,10 @@
       "requiredEvidence": {"captures": true, "previews": true, "tests": true},
       "evidenceExceptions": [
         {
-          "stateIds": ["profile_error", "profile_missing", "reset_preferences", "save_error", "text_scale_2", "reduced_motion"],
+          "stateIds": ["profile_error", "reset_preferences", "save_error", "text_scale_2", "reduced_motion"],
           "evidence": ["tests"],
           "debtId": "FEATURE-CONTRACT-MIGRATION-001",
-          "reason": "These Matching Preferences states have deterministic capture and Widgetbook evidence but no focused state-level test recorded by the screen authority."
+          "reason": "These Matching Preferences states have deterministic capture and Widgetbook evidence but no focused state-level test recorded by the screen authority; profile_missing now has focused route coverage for its recovery action."
         },
         {
           "stateIds": ["save_success_exit"],

@@ -14,8 +14,12 @@ NotificationsListState buildNotificationsListState({
     return const NotificationsAccessLoading();
   }
 
+  if (uid.hasError && !uid.hasValue) {
+    return NotificationsAccessError(error: uid.error!);
+  }
+
   final userId = uid.asData?.value;
-  if (uid.hasError || userId == null) {
+  if (userId == null) {
     return const NotificationsSignedOut();
   }
 

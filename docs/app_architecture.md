@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.5.9
+version: 1.5.10
 updated: 2026-07-23
 owner: recursive_audit_loop
 status: active
@@ -831,6 +831,15 @@ Use a feature-owned typed UI state when a screen has richer behavior, such as:
 The typed state should still expose explicit loading/error/data semantics. Do
 not hide `AsyncError` by calling `requireValue` or by converting failures into
 empty states.
+
+When one screen composes a secondary async dependency, loading, failure,
+resolved absence, and resolved partial data remain separate product truths.
+Translate the dependency to a typed state before applying fallbacks; never use
+`async.asData?.value ?? emptyValue` when that would make an unresolved or failed
+lookup look like a successful empty result. Optional enrichment may keep the
+primary content alive with a section skeleton or inline retry, while
+comprehension-critical enrichment may gate its section, but only a successfully
+resolved missing record may use missing-resource copy or a domain fallback.
 
 ## Error Handling Contract
 

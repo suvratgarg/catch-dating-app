@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/payments.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:c89985b0a979e783b05116cb919a2de90518a352494ff30b0c0ec32058125152",
-  "resolvedDigest": "sha256:b8b81e6dc8014f5e62fadd0f6ea9f082ff5fd9a0ea970117058346891c023283",
+  "sourceDigest": "sha256:56314fefe442dabbba101e90f48ce96de26d97397e6b3a881e37d946adb199d6",
+  "resolvedDigest": "sha256:28b7ac41c25ca776f5a28021738633d27ef980f4f4743cce03e01a71ff040d9f",
   "feature": {
     "id": "feature.payments",
     "name": "Payments",
@@ -14,14 +14,14 @@
   },
   "coverage": {
     "surfaces": 1,
-    "states": 15,
-    "scenarios": 15,
-    "actionCases": 21,
-    "actions": 5,
+    "states": 17,
+    "scenarios": 17,
+    "actionCases": 23,
+    "actions": 6,
     "captures": 15,
     "previews": 2,
     "testFiles": 1,
-    "evidenceExceptions": 11
+    "evidenceExceptions": 15
   },
   "surfaces": [
     {
@@ -32,11 +32,10 @@
         "id": "screen.payments.history"
       },
       "actionScope": {
-        "included": "Closing Payment History, retrying identity or payment loads, opening a receipt sheet, and requesting the current failed-booking support guidance.",
+        "included": "Closing Payment History, retrying identity, payment, or event-title loads, opening a receipt sheet, and requesting the current failed-booking support guidance.",
         "excluded": [
           "Payment ordering, status presentation, currency/date formatting, and event-title joining are read-model behavior rather than user actions.",
-          "The Get help action currently closes the receipt and shows guidance but opens no contact channel under DP-PAYMENT-HISTORY-005.",
-          "Event-title loading, failure, and genuine absence currently collapse into the same Event booking fallback under DP-PAYMENT-HISTORY-006."
+          "The Get help action currently closes the receipt and shows guidance but opens no contact channel under DP-PAYMENT-HISTORY-005."
         ]
       },
       "bindings": {
@@ -78,14 +77,14 @@
         ]
       },
       "coverage": {
-        "states": 15,
-        "scenarios": 15,
-        "actionCases": 21,
-        "actions": 5,
+        "states": 17,
+        "scenarios": 17,
+        "actionCases": 23,
+        "actions": 6,
         "captures": 15,
         "previews": 2,
         "testFiles": 1,
-        "evidenceExceptions": 11
+        "evidenceExceptions": 15
       },
       "dimensions": {
         "identity": {
@@ -129,7 +128,9 @@
           "default": "resolved",
           "values": [
             "resolved",
-            "missing_or_unresolved"
+            "loading",
+            "error",
+            "missing"
           ]
         },
         "connectivity": {
@@ -221,6 +222,30 @@
           "implementationStatus": "implemented"
         },
         {
+          "id": "retry_event_titles",
+          "owner": "history_screen",
+          "codeValue": "watchEventsByIdsProvider",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "paymentEventIdSet",
+            "eventTitleLoadGeneration"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "event_title_loading",
+                "event_title_error",
+                "event_title_missing",
+                "populated_payments"
+              ]
+            }
+          ],
+          "description": "Retries the batched event-title enrichment without treating a network or backend failure as a missing event.",
+          "implementationStatus": "implemented"
+        },
+        {
           "id": "open_receipt",
           "owner": "receipt_tile",
           "codeValue": "_showDetailSheet",
@@ -282,6 +307,18 @@
         },
         {
           "stateIds": [
+            "event_title_loading",
+            "event_title_error"
+          ],
+          "evidence": [
+            "captures",
+            "previews"
+          ],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "Event-title loading and error now have focused screen tests; deterministic preview and capture entries are completed in the evidence-closure phase."
+        },
+        {
+          "stateIds": [
             "status_variants"
           ],
           "evidence": [
@@ -337,6 +374,7 @@
                 "notAllowed": [
                   "retry_identity",
                   "retry_payments",
+                  "retry_event_titles",
                   "open_receipt",
                   "show_support_guidance"
                 ]
@@ -389,6 +427,7 @@
                 "disabled": [],
                 "notAllowed": [
                   "retry_payments",
+                  "retry_event_titles",
                   "open_receipt",
                   "show_support_guidance"
                 ]
@@ -441,6 +480,7 @@
                 "notAllowed": [
                   "retry_identity",
                   "retry_payments",
+                  "retry_event_titles",
                   "open_receipt",
                   "show_support_guidance"
                 ]
@@ -493,6 +533,7 @@
                 "notAllowed": [
                   "retry_identity",
                   "retry_payments",
+                  "retry_event_titles",
                   "open_receipt",
                   "show_support_guidance"
                 ]
@@ -545,6 +586,7 @@
                 "disabled": [],
                 "notAllowed": [
                   "retry_identity",
+                  "retry_event_titles",
                   "open_receipt",
                   "show_support_guidance"
                 ]
@@ -597,6 +639,7 @@
                 "notAllowed": [
                   "retry_identity",
                   "retry_payments",
+                  "retry_event_titles",
                   "open_receipt",
                   "show_support_guidance"
                 ]
@@ -652,6 +695,7 @@
                 "notAllowed": [
                   "retry_identity",
                   "retry_payments",
+                  "retry_event_titles",
                   "show_support_guidance"
                 ]
               }
@@ -704,6 +748,7 @@
                 "notAllowed": [
                   "retry_identity",
                   "retry_payments",
+                  "retry_event_titles",
                   "show_support_guidance"
                 ]
               }
@@ -729,6 +774,7 @@
                 "notAllowed": [
                   "retry_identity",
                   "retry_payments",
+                  "retry_event_titles",
                   "show_support_guidance"
                 ]
               }
@@ -754,6 +800,7 @@
                 "notAllowed": [
                   "retry_identity",
                   "retry_payments",
+                  "retry_event_titles",
                   "show_support_guidance"
                 ]
               }
@@ -779,6 +826,7 @@
                 "notAllowed": [
                   "retry_identity",
                   "retry_payments",
+                  "retry_event_titles",
                   "show_support_guidance"
                 ]
               }
@@ -804,6 +852,7 @@
                 "notAllowed": [
                   "retry_identity",
                   "retry_payments",
+                  "retry_event_titles",
                   "show_support_guidance"
                 ]
               }
@@ -858,6 +907,7 @@
                   "close_payment_history",
                   "retry_identity",
                   "retry_payments",
+                  "retry_event_titles",
                   "open_receipt",
                   "show_support_guidance"
                 ]
@@ -915,6 +965,7 @@
                   "close_payment_history",
                   "retry_identity",
                   "retry_payments",
+                  "retry_event_titles",
                   "open_receipt"
                 ]
               }
@@ -922,16 +973,118 @@
           ]
         },
         {
-          "id": "event_title_loading_missing",
-          "stateId": "event_title_loading_missing",
+          "id": "event_title_loading",
+          "stateId": "event_title_loading",
           "kind": "loading",
+          "status": "tested",
+          "dimensions": {
+            "identity": "ready",
+            "payments": "ready",
+            "status": "mixed",
+            "receipt": "closed",
+            "event_title": "loading",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/payments/payment_history_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "loading",
+              "dimensions": {
+                "identity": "ready",
+                "payments": "ready",
+                "status": "mixed",
+                "receipt": "closed",
+                "event_title": "loading",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "close_payment_history"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_identity",
+                  "retry_payments",
+                  "retry_event_titles",
+                  "open_receipt",
+                  "show_support_guidance"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "event_title_error",
+          "stateId": "event_title_error",
+          "kind": "error",
+          "status": "tested",
+          "dimensions": {
+            "identity": "ready",
+            "payments": "ready",
+            "status": "mixed",
+            "receipt": "closed",
+            "event_title": "error",
+            "connectivity": "online",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "test/payments/payment_history_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "retry",
+              "dimensions": {
+                "identity": "ready",
+                "payments": "ready",
+                "status": "mixed",
+                "receipt": "closed",
+                "event_title": "error",
+                "connectivity": "online",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "close_payment_history",
+                  "retry_event_titles"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_identity",
+                  "retry_payments",
+                  "open_receipt",
+                  "show_support_guidance"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "event_title_missing",
+          "stateId": "event_title_missing",
+          "kind": "empty",
           "status": "captured",
           "dimensions": {
             "identity": "ready",
             "payments": "ready",
             "status": "mixed",
             "receipt": "closed",
-            "event_title": "missing_or_unresolved",
+            "event_title": "missing",
             "connectivity": "online",
             "accessibility": "standard",
             "theme": "standard"
@@ -949,13 +1102,13 @@
           },
           "actionCases": [
             {
-              "id": "history",
+              "id": "resolved_absence",
               "dimensions": {
                 "identity": "ready",
                 "payments": "ready",
                 "status": "mixed",
                 "receipt": "closed",
-                "event_title": "missing_or_unresolved",
+                "event_title": "missing",
                 "connectivity": "online",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -969,6 +1122,7 @@
                 "notAllowed": [
                   "retry_identity",
                   "retry_payments",
+                  "retry_event_titles",
                   "show_support_guidance"
                 ]
               }
@@ -1021,6 +1175,7 @@
                 "disabled": [],
                 "notAllowed": [
                   "retry_payments",
+                  "retry_event_titles",
                   "open_receipt",
                   "show_support_guidance"
                 ]
@@ -1046,19 +1201,20 @@
                 "disabled": [],
                 "notAllowed": [
                   "retry_identity",
+                  "retry_event_titles",
                   "open_receipt",
                   "show_support_guidance"
                 ]
               }
             },
             {
-              "id": "event_title_offline_fallback",
+              "id": "event_title_offline_error",
               "dimensions": {
                 "identity": "ready",
                 "payments": "ready",
                 "status": "mixed",
                 "receipt": "closed",
-                "event_title": "missing_or_unresolved",
+                "event_title": "error",
                 "connectivity": "offline",
                 "accessibility": "standard",
                 "theme": "standard"
@@ -1066,12 +1222,13 @@
               "actions": {
                 "enabled": [
                   "close_payment_history",
-                  "open_receipt"
+                  "retry_event_titles"
                 ],
                 "disabled": [],
                 "notAllowed": [
                   "retry_identity",
                   "retry_payments",
+                  "open_receipt",
                   "show_support_guidance"
                 ]
               }
@@ -1124,6 +1281,7 @@
                 "notAllowed": [
                   "retry_identity",
                   "retry_payments",
+                  "retry_event_titles",
                   "show_support_guidance"
                 ]
               }
@@ -1176,6 +1334,7 @@
                 "notAllowed": [
                   "retry_identity",
                   "retry_payments",
+                  "retry_event_titles",
                   "show_support_guidance"
                 ]
               }
@@ -1228,6 +1387,7 @@
                 "notAllowed": [
                   "retry_identity",
                   "retry_payments",
+                  "retry_event_titles",
                   "show_support_guidance"
                 ]
               }

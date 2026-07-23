@@ -1901,6 +1901,7 @@ class _RecapReadyBodyPreview extends StatelessWidget {
       body: EventRecapReadyBody(
         state: ready,
         onToggleVibe: _ignoreString,
+        onRetryRosterProfiles: _ignoreStrings,
         onOpenCatchesDeck: _ignoreRecapOpenDeck,
       ),
     );
@@ -1919,7 +1920,9 @@ EventRecapReady _recapReadyState(
     viewModel: CatchAsyncState.data(
       _recapViewModel(event: event, attendeeIds: attendeeIds),
     ),
-    rosterProfiles: rosterProfiles ?? _recapRosterProfiles(),
+    rosterProfiles: CatchAsyncState.data(
+      rosterProfiles ?? _recapRosterProfiles(),
+    ),
     selectedVibeIds: selectedVibeIds,
     l10n: context.l10n,
     now: CatchesSurfaceFixtures.now,
@@ -1927,6 +1930,8 @@ EventRecapReady _recapReadyState(
 
   return screenState as EventRecapReady;
 }
+
+void _ignoreStrings(Iterable<String> _) {}
 
 const _missingRecapProfileUid = 'design-catches-missing-profile';
 

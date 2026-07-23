@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.317
+version: 0.2.318
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -60,20 +60,22 @@ ledgers as the source of truth when counts differ:
   Event Planning binds Calendar and Saved Events as two projections of one
   agenda goal, compiling 19 states and 12 actions without inventing list-level
   save mutations. Matching Preferences adds 11 states and six actions with a
-  frozen save snapshot while retaining its blank null-profile body as debt.
-  Event Recap adds ten exact states and four close/recovery/selection/handoff
-  actions. Event Detail now binds the 11-state read-only exact-location map as
+  frozen save snapshot and a truthful missing-profile recovery state.
+  Event Recap adds 12 exact states and five close/recovery/profile-recovery/
+  selection/handoff actions, separating attendee-profile loading, failure, and
+  resolved absence. Event Detail now binds the 11-state read-only exact-location map as
   a second projection, with route recovery, back, and directions actions. This
   pass also removes Host Event Edit's false route binding: its production flow
   opens `LocationPickerScreen`, not Event Location Map.
   Notifications, Reviews, Payments, and Account Settings complete Flutter
-  migration with 59 exact states and 28 actions. Their contracts distinguish
+  migration with 62 exact states and 30 actions. Their contracts distinguish
   identity failure from sign-out, unresolved enrichment from genuine absence,
   support guidance from a real support handoff, and safe whole-surface
-  concurrency from isolated loading buttons. Reviews and Account Settings now
-  freeze their complete pending surfaces; the remaining missing behavior is
-  retained as five stable product gaps rather than normalized into false
-  success states.
+  concurrency from isolated loading buttons. Notifications now keeps identity
+  failure distinct from resolved sign-out, Payment History separates event-title
+  loading/error/missing states, and Reviews plus Account Settings freeze their
+  complete pending surfaces. Remaining behavior gaps stay explicit rather than
+  normalized into false success states.
   Marketing Home, Host Acquisition, and Organizer Claim add 16 exact route
   states and 45 surface actions. The dynamic Claim lookup is compiled as a
   second projection because its four authority states are independently useful;
@@ -94,7 +96,7 @@ ledgers as the source of truth when counts differ:
 - Screen priority spread: 18 P1, 9 P2, and 5 P3 contracted screens.
 - Contracted screen states: 597.
 - Contracted screen sections: 227.
-- Screen registry migration gaps: 27 open, 24 blocked, and 101 closed. One of
+- Screen registry migration gaps: 18 open, 24 blocked, and 110 closed. One of
   the 27 non-blocked gaps is currently marked in progress. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
@@ -746,8 +748,8 @@ from those ledgers rather than hand-editing counts.
 | P1 | `screen.profile.self` | 16 | 8 | 1 | Blocked: current handoff is two-tab/stale edit layout | `DS-PROFILE-SELF-002` blocked | SelfProfileScreenState, SelfProfileEditTabState, SelfProfilePhotoActionController, and SelfProfileInlineEditPatchFactory now own the route, row descriptor, photo intent, patch seams, and settings navigation proof. Fresh references and Aanya fixture alignment still compare above threshold because the handoff lacks the production Insights tab and current photo/editor rows; resume when canonical design source catches up or product chooses the older two-tab/edit layout. |
 | P2 | `screen.auth.phone_entry` | 8 | 4 | 1 | Blocked: phone handoff layout is stale | `DS-AUTH-001` blocked | `feature.phone_auth` compiles all eight phone/OTP states and six actions, distinguishing opening the country picker from selecting a dial code and preserving cooldown, verify, resend, change-number, mutation, and accessibility behavior. `DS-AUTH-004` is closed under `REG-PENDING-SNAPSHOT-001`: send pending freezes phone/country controls, duplicate controller dispatches share one request, reset invalidates stale callbacks, and focused controller/widget tests prove the snapshot boundary. OTP compares within threshold; phone entry remains blocked only on the stale canonical handoff. |
 | P2 | `screen.calendar.home` | 10 | 5 | 0 | Blocked: no standalone Calendar Home source; only `CalendarPrimitive.html`/`DateRangePicker` | `DS-CALENDAR-004` blocked | `feature.event_planning` compiles Calendar as the merged joined-and-saved projection with all ten states and seven recovery, date/header, Today, and Event Detail actions. It preserves identity/event-stream versus secondary organizer-name failure cases and exact evidence debt. Widgetbook and captures remain complete; canonical reference export is still blocked. |
-| P2 | `screen.event.recap` | 10 | 5 | 2 | Blocked: no standalone Event Recap source | `DS-EVENT-RECAP-004` blocked, `DS-EVENT-RECAP-005` | `feature.event_recap` compiles all ten states and four close, route-recovery, attendee-selection, and Catches-handoff actions. It also exposes that profile lookup loading and errors currently collapse into the same Guest-row fallback as genuinely missing profiles, with no progress, failure, or retry state; separate those cases under `DS-EVENT-RECAP-005`. Existing Widgetbook/capture coverage remains registered while canonical reference export is blocked. |
-| P2 | `screen.filters.preferences` | 11 | 5 | 1 | None | `DS-FILTERS-005` | `feature.matching_preferences` compiles all 11 states and six close, recovery, age, gender, reset, and apply actions. `DS-FILTERS-004` is closed under `REG-PENDING-SNAPSHOT-001`: save pending freezes route exit, Reset, age, gender, and Apply while the controller deduplicates repeated saves, with focused state and route proof. A resolved null profile still renders a blank body with no explanation or recovery action; replace it under `DS-FILTERS-005`. Existing Widgetbook, captures, and default reference stay registered. |
+| P2 | `screen.event.recap` | 12 | 5 | 2 | Blocked: no standalone Event Recap source | `DS-EVENT-RECAP-004` blocked | `feature.event_recap` compiles all 12 states and five close, route-recovery, profile-recovery, attendee-selection, and Catches-handoff actions. `DS-EVENT-RECAP-005` is closed: profile lookup loading keeps the resolved recap with a grid skeleton, failure shows inline retry for the exact batched query, and Guest is reserved for genuinely missing resolved profiles. Deterministic loading/error preview and capture evidence is scheduled in the evidence-closure phase; canonical reference export remains blocked. |
+| P2 | `screen.filters.preferences` | 11 | 5 | 0 | None | None | `feature.matching_preferences` compiles all 11 states and six close, recovery, age, gender, reset, and apply actions. `DS-FILTERS-004` is closed under `REG-PENDING-SNAPSHOT-001`, and `DS-FILTERS-005` is closed by branded missing-profile guidance plus retry and focused route proof. Existing Widgetbook, captures, and default reference stay registered. |
 | P2 | `screen.host.club.create` | 17 | 6 | 1 | Additional state-specific references needed beyond basics_default | `DS-HOST-CLUB-CREATE-004` blocked | `feature.host_organizer_create` compiles all 17 states and 12 meaningful actions across wizard movement, media, organizer type/city, reusable defaults, local draft recovery, submission, and caller-pop lifecycle. Pending submit, draft save, and initial restore now freeze route exit, step movement, media, fields/defaults, and footer actions; controller and widget proof closes `DS-HOST-CLUB-CREATE-005`. Remaining exceptions are reference or unrelated evidence debt. |
 | P2 | `screen.host.club.edit` | 17 | 6 | 1 | None | None | Route captures now cover owner edit, validation, media replacement, submit pending/error, offline fetch failure, co-host mode, forbidden identity, accessibility, and theme states. Shared Host Club Create/Edit adapter state now owns field/media display values, validation, submit request data, route callback intents, and submit-success close policy; owner-edit pixel comparison is within threshold. |
 | P2 | `screen.host.event.edit` | 21 | 6 | 1 | None | None | `feature.host_event_manage` binds owner edit as a second lifecycle projection, compiling all 21 edit states and 11 actions across route recovery, schedule/location/pace/policy decisions, the actual `LocationPickerScreen` fullscreen modal, validation, update, and caller-pop lifecycle. Save pending now freezes route dismissal and the complete form, while controller deduplication and focused widget proof close `DS-HOST-EVENT-EDIT-005`. |
@@ -755,10 +757,10 @@ from those ledgers rather than hand-editing counts.
 | P2 | `screen.saved_events.list` | 9 | 4 | 0 | Blocked: no standalone Saved Events source | `DS-SAVED-EVENTS-004` blocked | Event Planning binds Saved Events as the saved-only projection of Calendar's agenda goal, compiling all nine states and five back/recovery/Event Detail actions. The contract intentionally declares no list-level save/unsave action even though a saved-event repository exists, because those mutations remain on Event Detail. Widgetbook and captures remain complete; canonical reference export is still blocked. |
 | P2 | `screen.start.welcome` | 6 | 3 | 1 | State-specific references are optional until strict comparison requires them | `DS-START-001` blocked | Member Onboarding binds Start Welcome as a second projection of the same `WelcomePage` implementation and reuses its skip, phone-auth, and guest-Explore action identities. All six reel, landed, CTA, reduced-motion, text-scale, and fixed-dark states compile against their own Start authority evidence instead of creating a duplicate feature. Additional state-specific references remain blocked/reference-only unless strict visual comparison requires them. |
 | P3 | `screen.event.location_map` | 11 | 4 | 0 | Blocked: no standalone full-screen map source; map primitives only | `DP-EVENT-MAP-003` blocked, `DP-EVENT-MAP-004` blocked, `DP-EVENT-MAP-005` | Event Detail now binds Event Location Map as its read-only exact-location projection, compiling all 11 states and three back/recovery/directions actions. The directions Future is currently discarded, so false/error results have no feedback and repeated taps stay live while launch is pending; define and test that policy under `DP-EVENT-MAP-005`. Exported map masks and pixel comparison remain blocked on a canonical route source. |
-| P3 | `screen.notifications.list` | 13 | 4 | 1 | None | `DP-NOTIFICATIONS-004` | `feature.notifications` compiles all 13 states and three retry/read/navigation actions. `uidProvider` errors currently collapse into the same signed-out empty state as a null uid with no retry; preserve failure as an actionable error under `DP-NOTIFICATIONS-004`. The compiler now validates the real top-level route helper and both declared Widgetbook sources. |
-| P3 | `screen.payments.history` | 15 | 4 | 0 | Blocked: no standalone Payment History source; Booking moments only | `DP-PAYMENT-HISTORY-002` blocked, `DP-PAYMENT-HISTORY-004` blocked, `DP-PAYMENT-HISTORY-005`, `DP-PAYMENT-HISTORY-006` | `feature.payments` compiles all 15 states and five recovery/receipt/support actions. The Get help CTA currently provides snackbar guidance without opening a support channel, while event-title loading/failure/missing all collapse to Event booking; resolve those semantics under the two open gaps. Canonical reference export remains blocked. |
-| P3 | `screen.reviews.history` | 12 | 4 | 0 | Blocked: no standalone Reviews History source; `ReviewRow` primitive only | `DP-REVIEWS-HISTORY-004` blocked, `DP-REVIEWS-HISTORY-005`, `DP-REVIEWS-HISTORY-006` | `feature.reviews` compiles all 12 states and seven recovery/edit/rating/save/delete actions. Event enrichment loading/failure/missing currently shares one fallback, and review fields remain live after a mutation snapshot is captured; define enrichment recovery and draft-freezing/versioning before closing the open gaps. Reference export remains blocked. |
-| P3 | `screen.settings.account` | 19 | 6 | 1 | None | `DP-SETTINGS-ACCOUNT-004`, `DP-SETTINGS-ACCOUNT-005` | `feature.account_settings` compiles all 19 states and 13 navigation, preference, safety, external, deletion, and sign-out actions. Independent mutation guards allow destructive and route actions to overlap, while external-link Futures are ignored; define whole-surface exclusivity and explicit external-effect outcomes before visual polish. |
+| P3 | `screen.notifications.list` | 14 | 4 | 0 | None | None | `feature.notifications` compiles all 14 states and four identity-retry/activity-retry/read/navigation actions. `DP-NOTIFICATIONS-004` is closed: uidProvider failure now renders a branded auth retry state, while resolved null uid alone owns the signed-out empty state. Deterministic uid-error preview and capture evidence is scheduled in the evidence-closure phase. |
+| P3 | `screen.payments.history` | 17 | 4 | 0 | Blocked: no standalone Payment History source; Booking moments only | `DP-PAYMENT-HISTORY-002` blocked, `DP-PAYMENT-HISTORY-004` blocked, `DP-PAYMENT-HISTORY-005` | `feature.payments` compiles all 17 states and six recovery/receipt/support actions. `DP-PAYMENT-HISTORY-006` is closed: event-title loading renders skeletons, failure exposes event-specific retry, and resolved absence says Event unavailable instead of Event booking. The remaining Get help outcome is tracked under `DP-PAYMENT-HISTORY-005`; canonical reference export remains blocked. |
+| P3 | `screen.reviews.history` | 12 | 4 | 0 | Blocked: no standalone Reviews History source; `ReviewRow` primitive only | `DP-REVIEWS-HISTORY-004` blocked, `DP-REVIEWS-HISTORY-005` | `feature.reviews` compiles all 12 states and seven recovery/edit/rating/save/delete actions. Review mutation fields now freeze with their captured request under `REG-PENDING-SNAPSHOT-001`; event enrichment loading/failure/missing still shares one fallback under `DP-REVIEWS-HISTORY-005`. Reference export remains blocked. |
+| P3 | `screen.settings.account` | 19 | 6 | 1 | None | `DP-SETTINGS-ACCOUNT-005` | `feature.account_settings` compiles all 19 states and 13 navigation, preference, safety, external, deletion, and sign-out actions. `DP-SETTINGS-ACCOUNT-004` is closed by whole-surface pending exclusivity across route, recovery, external, preference, unblock, delete, and sign-out actions. External-link Futures still need explicit false/error/pending outcomes under `DP-SETTINGS-ACCOUNT-005`. |
 
 ### Currently Blocked Or User-Input Dependent
 

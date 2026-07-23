@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
@@ -141,7 +142,25 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
               onRetry: () => ref.invalidate(watchUserProfileProvider),
             ),
             data: (user) {
-              if (user == null) return const SizedBox.shrink();
+              if (user == null) {
+                return CatchStateViewport(
+                  accountForBottomOverlay: false,
+                  child: CatchEmptyState(
+                    icon: CatchIcons.personOffOutlined,
+                    title: context
+                        .l10n
+                        .userProfileProfileScreenTitleProfileNotAvailable,
+                    message: context
+                        .l10n
+                        .userProfileProfileScreenMessageFinishOnboardingOrSign,
+                    action: CatchButton(
+                      label: context.l10n.sharedActionTryAgain,
+                      onPressed: () => ref.invalidate(watchUserProfileProvider),
+                      icon: Icon(CatchIcons.refreshRounded),
+                    ),
+                  ),
+                );
+              }
               final state =
                   _stateFor(user: user, saving: saving) ?? preferencesState!;
 
