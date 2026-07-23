@@ -1,5 +1,5 @@
 {
-  "version": 85,
+  "version": 86,
   "updated": "2026-07-23",
   "owner": "agent_operating_model",
   "entries": [
@@ -1053,6 +1053,30 @@
         "admin/README.md"
       ],
       "notes": "The local Hosting env gate proves only that explicit project-aligned values exist. Console/API evidence plus a live browser/network smoke is required to prove remote Auth and App Check usability."
+    },
+    {
+      "id": "REG-WEB-006",
+      "title": "Admin refactor drops a configured production sign-in provider",
+      "status": "active",
+      "applies_to": [
+        "admin/src/app/App.tsx",
+        "admin/src/app/App.test.tsx",
+        "admin/src/shared/api/firebase.ts",
+        "admin/src/shared/api/firebase.test.ts",
+        "admin/src/stories/AdminPrimitives.stories.tsx",
+        "design/admin/components.json"
+      ],
+      "symptom": "The production admin sign-in screen exposes only Google or only phone authentication even though both Firebase providers are configured and supported.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin run test -- src/app/App.test.tsx src/shared/api/firebase.test.ts"
+      },
+      "owner_docs": [
+        "docs/release_operations.md",
+        "docs/admin_dashboard_user_stories_and_component_catalogue.md",
+        "admin/README.md"
+      ],
+      "notes": "The local tests prove rendered provider availability, phone normalization and OTP progression, invisible reCAPTCHA wiring, Google popup wiring, and verifier cleanup. REG-WEB-005 separately owns live Firebase console, authorized-domain, provider, and App Check proof."
     },
     {
       "id": "REG-CLAIM-001",

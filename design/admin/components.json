@@ -1,7 +1,7 @@
 {
   "$schema": "./admin.components.schema.json",
-  "version": 34,
-  "updated": "2026-07-19",
+  "version": 35,
+  "updated": "2026-07-23",
   "owner": "admin_dashboard",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -4315,7 +4315,9 @@
         "story": "admin/src/stories/AdminPrimitives.stories.tsx",
         "exportName": "AdminSignInScreenStory",
         "states": [
-          "default"
+          "default",
+          "phone-entry",
+          "phone-otp"
         ]
       },
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
