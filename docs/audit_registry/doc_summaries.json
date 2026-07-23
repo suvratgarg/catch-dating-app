@@ -1,6 +1,6 @@
 {
-  "version": "4.5.150",
-  "updated": "2026-07-18",
+  "version": "4.5.151",
+  "updated": "2026-07-23",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -94,7 +94,7 @@
       ]
     },
     "docs/app_architecture.md": {
-      "purpose": "Canonical Flutter app architecture spec for dependency-direction seams, generated Riverpod provider topology and reviewed relationship candidates, Firebase/domain boundaries, mutation-cardinality grain, app-role boundaries, feature/layer/screen/controller/repository/widget ownership, exhaustive screen-chrome role contracts, async state boundaries, error-surface taxonomy, UI layout/scroll/sizing, routing/navigation constants, realtime stream lifecycle, reference implementation exhibits, exhibit-freshness markers, and enforcement policy.",
+      "purpose": "Canonical Flutter app architecture spec for dependency-direction seams, generated Riverpod provider topology and reviewed relationship candidates, Firebase/domain boundaries, mutation-cardinality grain, app-role boundaries, feature/layer/screen/controller/repository/widget ownership, exhaustive screen-chrome role contracts, async state boundaries, error-surface taxonomy, logging test seams, test coverage/spec maintainability, UI layout/scroll/sizing, routing/navigation constants, realtime stream lifecycle, reference implementation exhibits, exhibit-freshness markers, and enforcement policy.",
       "read_when": [
         "Changing code organization under lib/",
         "Starting or continuing an architecture migration rollout",
@@ -107,6 +107,7 @@
         "Changing async loading/error/mutation state boundaries",
         "Changing shared screen padding, tab body insets, sliver body gaps, scroll ownership, or sizing constraints",
         "Changing exceptions, error mappers, operation context, logging, analytics, or user-facing error rendering",
+        "Changing Flutter coverage reporting, expected-error test logging, or test-spec maintainability enforcement",
         "Changing keepAlive, autoDispose, or retained-tab stream ownership",
         "Adding architecture lints, scanners, or overrides",
         "Changing route literal scanners, frontend error scanner ratchets, or rule enforcement metadata for Flutter app architecture",
@@ -386,7 +387,7 @@
       ]
     },
     "docs/release_operations.md": {
-      "purpose": "Consolidated CI, release, deploy, environment, app-shell integration, smoke-test, store-readiness, host TestFlight, and release-evidence runbook.",
+      "purpose": "Consolidated CI, release, deploy, environment, Flutter coverage evidence, app-shell headless/native integration, smoke-test, store-readiness, host TestFlight, and release-evidence runbook.",
       "read_when": [
         "Changing GitHub Actions release gates",
         "Deploying Firebase/Functions/rules/storage changes",

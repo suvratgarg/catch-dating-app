@@ -1,5 +1,5 @@
 {
-  "version": 64,
+  "version": 65,
   "updated": "2026-07-23",
   "owner": "agent_operating_model",
   "entries": [
@@ -2290,7 +2290,7 @@
       "symptom": "Native macOS foregrounding stalls the suite, repeated app containers retain router or localization state, mounted timers make event-queue drains never finish, or consumer tests continue asserting host-only and retired Dashboard actions.",
       "guard": {
         "type": "command",
-        "command": "bash tool/test_app_shell_integration.sh && flutter test --concurrency=1 test/core/catch_primitives_test.dart --plain-name 'CatchTabBar keeps four animated destinations within 390px'",
+        "command": "bash tool/test_app_shell_integration.sh --self-test && bash tool/test_app_shell_integration.sh && flutter test --concurrency=1 test/core/catch_primitives_test.dart --plain-name 'CatchTabBar keeps four animated destinations within 390px'",
         "guardEvidence": "headless wrappers run all current routed consumer journeys with fresh router/provider lifecycles and bounded clocks; the four-destination shell cannot overflow its 390px viewport"
       },
       "owner_docs": [
@@ -2298,7 +2298,7 @@
         "docs/release_operations.md",
         "TESTS.md"
       ],
-      "notes": "Native execution remains available by passing a device id. Host-only creation and attendance are owned by host surface/controller tests, while recommendations are owned by Explore."
+      "notes": "CI runs the bounded smoke suite through the hosted native macOS binding after the complete headless pass. Full native execution remains explicit with a device id and all scope. Host-only creation and attendance are owned by host surface/controller tests, while recommendations are owned by Explore."
     },
     {
       "id": "REG-ROUTE-INVENTORY-ROUTER-OWNERSHIP-001",
@@ -2647,6 +2647,33 @@
         "docs/release_operations.md"
       ],
       "notes": "The materialized files exist only in the deployment runner checkout. Committed generated projections stay receipt-free so pull-request drift validation remains deterministic and does not claim live production readiness."
+    },
+    {
+      "id": "REG-FLUTTER-TEST-EVIDENCE-DRIFT-001",
+      "title": "Flutter test confidence is overstated by stale inventory, invisible coverage, or growing monolithic specs",
+      "status": "active",
+      "applies_to": [
+        "test/**",
+        "integration_test/**",
+        "tool/test/**",
+        "tool/test_inventory.mjs",
+        "tool/agent/check_agent_readiness.mjs",
+        "docs/audit_registry/test_inventory.json",
+        ".github/workflows/flutter-ci.yml",
+        "TESTS.md"
+      ],
+      "symptom": "A green suite can still hide newly untracked tests, lose feature-level coverage evidence, or let already monolithic Flutter specs grow until failures are difficult to localize.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/test/flutter_coverage_report.test.mjs tool/test/check_flutter_test_size.test.mjs tool/test_inventory.test.mjs tool/agent/check_agent_readiness.test.mjs && node tool/test/check_flutter_test_size.mjs --check && node tool/test_inventory.mjs --check && node tool/agent/check_agent_readiness.mjs",
+        "guardEvidence": "known-bad LCOV, oversized-spec, and stale-inventory fixtures fail closed; the exact legacy size baseline cannot grow; readiness independently proves the generated test inventory matches the current Git-backed surface"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/agent_operating_model.md",
+        "TESTS.md"
+      ],
+      "notes": "Coverage remains visibility-only rather than a global percentage gate. The dashboard full-home-shell group is the reference physical decomposition, and all remaining oversized specs are exact decrease-only debt."
     }
   ]
 }

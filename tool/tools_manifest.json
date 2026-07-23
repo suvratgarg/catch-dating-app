@@ -159,9 +159,10 @@
       "command": "node tool/agent/check_agent_readiness.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Validates the Catch agent harness, project-local skills, regression ledger, tool registration, and metrics parseability.",
+      "description": "Validates the Catch agent harness, project-local skills, regression ledger, tool registration, canonical test-inventory freshness, and metrics parseability.",
       "checks": [
         "node --check tool/agent/check_agent_readiness.mjs",
+        "node --test tool/agent/check_agent_readiness.test.mjs",
         "node tool/agent/check_agent_readiness.mjs"
       ],
       "role": "gate",
@@ -1230,11 +1231,53 @@
       "command": "bash tool/test_app_shell_integration.sh",
       "safety": "local-build-test",
       "status": "active",
-      "description": "Runs the split deterministic app-shell integration suites on a local Flutter desktop device.",
+      "description": "Runs all deterministic headless app-shell suites or a bounded native smoke/all scope on an explicitly selected Flutter device.",
       "checks": [
-        "bash -n tool/test_app_shell_integration.sh"
+        "bash -n tool/test_app_shell_integration.sh",
+        "bash tool/test_app_shell_integration.sh --self-test"
       ],
       "role": "finder"
+    },
+    {
+      "id": "test:flutter-coverage-report",
+      "category": "test",
+      "path": "tool/test/flutter_coverage_report.mjs",
+      "command": "node tool/test/flutter_coverage_report.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Turns Flutter LCOV into a visibility-only handwritten-code and feature-level report without imposing an aggregate percentage threshold.",
+      "checks": [
+        "node --check tool/test/flutter_coverage_report.mjs",
+        "node --test tool/test/flutter_coverage_report.test.mjs"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "test:flutter-test-size",
+      "category": "test",
+      "path": "tool/test/check_flutter_test_size.mjs",
+      "command": "node tool/test/check_flutter_test_size.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Keeps new and split Flutter test specs within 1,200 lines while ratcheting every reviewed oversized legacy spec against an exact baseline.",
+      "checks": [
+        "node --check tool/test/check_flutter_test_size.mjs",
+        "node --test tool/test/check_flutter_test_size.test.mjs",
+        "node tool/test/check_flutter_test_size.mjs --check"
+      ],
+      "role": "ratchet",
+      "rules": [
+        "FLUTTER-TEST-MAINTAINABILITY-001"
+      ],
+      "baseline": "tool/test/flutter_test_size_baseline.json",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/test/check_flutter_test_size.test.mjs",
+        "contains": [
+          "known-bad new oversized Flutter test spec fails closed",
+          "ratchet rejects growth and asks reductions to refresh the baseline"
+        ]
+      }
     },
     {
       "id": "contracts:generate-business-rules",
