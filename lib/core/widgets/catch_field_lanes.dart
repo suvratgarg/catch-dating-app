@@ -269,6 +269,7 @@ class CatchFieldTrailing extends StatelessWidget {
     Key? key,
     required bool value,
     required ValueChanged<bool>? onChanged,
+    CatchContractFieldConstraints? contract,
     String? semanticLabel,
     CatchFieldStatus status = CatchFieldStatus.idle,
     double topPadding = CatchSpacing.micro2,
@@ -281,6 +282,7 @@ class CatchFieldTrailing extends StatelessWidget {
         CatchFieldStatusIndicator(status: status, includeTrailingGap: true),
         CatchFieldToggle(
           value: value,
+          contract: contract,
           semanticLabel: semanticLabel,
           onChanged: onChanged,
         ),
@@ -947,11 +949,13 @@ class CatchFieldToggle extends StatelessWidget {
     super.key,
     required this.value,
     required this.onChanged,
+    this.contract,
     this.semanticLabel,
   });
 
   final bool value;
   final ValueChanged<bool>? onChanged;
+  final CatchContractFieldConstraints? contract;
   final String? semanticLabel;
 
   @override
@@ -959,6 +963,7 @@ class CatchFieldToggle extends StatelessWidget {
     return CatchToggle.field(
       value: value,
       onChanged: onChanged,
+      contract: contract,
       semanticLabel: semanticLabel,
     );
   }

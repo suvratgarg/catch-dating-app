@@ -1,6 +1,11 @@
+import 'package:catch_dating_app/core/schema_contracts/catch_contract_field_policy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
+
+export 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart'
+    show CatchContractConstraints, CatchContractFieldConstraints;
 
 /// Canonical Catch range slider.
 ///
@@ -11,9 +16,12 @@ class CatchRangeSlider extends StatelessWidget {
     super.key,
     required this.values,
     required this.onChanged,
+    this.minimumContract,
+    this.maximumContract,
+    this.contractExemption,
     this.onChangeEnd,
-    this.min = 0,
-    this.max = 100,
+    this.min,
+    this.max,
     this.divisions,
     this.minLabel,
     this.maxLabel,
@@ -23,8 +31,11 @@ class CatchRangeSlider extends StatelessWidget {
   final RangeValues values;
   final ValueChanged<RangeValues>? onChanged;
   final ValueChanged<RangeValues>? onChangeEnd;
-  final double min;
-  final double max;
+  final CatchContractFieldConstraints? minimumContract;
+  final CatchContractFieldConstraints? maximumContract;
+  final String? contractExemption;
+  final double? min;
+  final double? max;
   final int? divisions;
   final String? minLabel;
   final String? maxLabel;
@@ -33,6 +44,29 @@ class CatchRangeSlider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final effectiveMin =
+        CatchContractFieldPolicy.effectiveMinimum(
+          minimumContract,
+          min,
+        )?.toDouble() ??
+        0;
+    final effectiveMax =
+        CatchContractFieldPolicy.effectiveMaximum(
+          maximumContract,
+          max,
+        )?.toDouble() ??
+        100;
+    final contractStep =
+        minimumContract?.multipleOf ?? maximumContract?.multipleOf;
+    final effectiveDivisions =
+        divisions ??
+        (contractStep == null
+            ? null
+            : ((effectiveMax - effectiveMin) / contractStep).round());
+    assert(
+      values.start >= effectiveMin && values.end <= effectiveMax,
+      'CatchRangeSlider values must stay inside contract-derived bounds.',
+    );
     final slider = SliderTheme(
       data: SliderTheme.of(context).copyWith(
         // Design-system RangeSlider: 4px line2 track, ink active fill, a 24px
@@ -54,9 +88,9 @@ class CatchRangeSlider extends StatelessWidget {
         disabledInactiveTickMarkColor: Colors.transparent,
       ),
       child: RangeSlider(
-        min: min,
-        max: max,
-        divisions: divisions,
+        min: effectiveMin,
+        max: effectiveMax,
+        divisions: effectiveDivisions,
         values: values,
         semanticFormatterCallback: semanticFormatterCallback,
         onChanged: onChanged,

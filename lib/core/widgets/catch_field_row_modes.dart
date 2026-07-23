@@ -343,6 +343,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
       return CatchFieldTrailing.toggle(
         value: widget.toggled,
         onChanged: _isSaving ? null : widget.onToggle,
+        contract: widget.contract,
         semanticLabel: _title,
         status: _effectiveStatus,
         topPadding: 0,

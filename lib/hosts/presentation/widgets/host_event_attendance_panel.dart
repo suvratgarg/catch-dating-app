@@ -714,6 +714,9 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
                 CatchField.control(
                   title:
                       context.l10n.hostsHostEventAttendancePanelTitleCheckInQr,
+                  contractExemption:
+                      'Disclosure-only QR presentation; no editable value is '
+                      'submitted or persisted.',
                   body: context.l10n.hostsHostEventAttendancePanelBodyCheckInQr,
                   icon: CatchIcons.qrCode2Rounded,
                   control: HostEventCheckInQrPanel(event: viewModel.event),
@@ -1114,6 +1117,7 @@ class HostRosterSearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchSearchField(
       key: ValueKey('hostRosterSearch-$label'),
+      contract: CatchContractConstraints.mobileFormStateHostRosterSearchQuery,
       value: value,
       placeholder: label,
       semanticLabel: label,
@@ -1166,6 +1170,9 @@ class HostRosterFilterHeader extends StatelessWidget {
           if (canFilter) ...[
             gapH12,
             CatchOptionGroup<HostRosterFilter>(
+              contract:
+                  CatchContractConstraints.mobileFormStateHostRosterFilter,
+              contractValue: (filter) => filter.name,
               options: [
                 for (final spec in filters)
                   CatchOption(value: spec.filter, label: spec.label),

@@ -39,9 +39,9 @@ design-sync manifest. Do not edit it by hand. The machine-readable companion is
 |---|---:|
 | Derived contracted collision groups | 32 |
 | Production collision groups | 32 |
-| Structural similarity clusters | 41 |
-| Clusters with exact normalized-member-set decisions | 40/41 |
-| Unresolved collision families | 1 |
+| Structural similarity clusters | 43 |
+| Clusters with exact normalized-member-set decisions | 41/43 |
+| Unresolved collision families | 2 |
 | Ranked pairs covered by a ledger decision | 144/200 |
 | Unresolved ranked pairs | 56 |
 | Ledger decisions indexed | 315 |
@@ -105,7 +105,7 @@ publish snapshot, plan tier, and generated mappings satisfy the prerequisites.
 
 | Requirement | Status | Authoritative evidence |
 |---|---|---|
-| 1. Reconcile the existing decision ledger | pending | 40/41 exact normalized-member-set cluster decisions |
+| 1. Reconcile the existing decision ledger | pending | 41/43 exact normalized-member-set cluster decisions |
 | 2. Prove all four vertical-slice outcomes | proven | Generated per-family deltas plus role-derived Widgetbook evidence cover member, separation, composition/recipe, and decompression cases |
 | 3. Resolve owner-gated semantic decisions | proven | 0 unresolved semantic owner question(s) |
 | 4. Verify accepted changes and stamp receipts | proven | Focused checks and audit receipt widget-concept-owner-decisions-2026-07-19 are recorded |

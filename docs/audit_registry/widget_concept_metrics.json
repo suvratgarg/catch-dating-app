@@ -20,13 +20,13 @@
     "membersPerConcept": 1.87,
     "unclassifiedContractEntries": 0,
     "unclassifiedProductionEntries": 0,
-    "unresolvedCollisionFamilies": 1,
+    "unresolvedCollisionFamilies": 2,
     "ownerReviewQueueSize": 3
   },
   "ledgerCoverage": {
-    "normalizedMemberSetCoveredClusters": 40,
-    "totalClusters": 41,
-    "unresolvedClusters": 1,
+    "normalizedMemberSetCoveredClusters": 41,
+    "totalClusters": 43,
+    "unresolvedClusters": 2,
     "rankedPairsCovered": 144,
     "totalRankedPairs": 200,
     "unresolvedRankedPairs": 56,
@@ -275,7 +275,7 @@
     {
       "requirement": "1. Reconcile the existing decision ledger",
       "status": "pending",
-      "evidence": "40/41 exact normalized-member-set cluster decisions"
+      "evidence": "41/43 exact normalized-member-set cluster decisions"
     },
     {
       "requirement": "2. Prove all four vertical-slice outcomes",

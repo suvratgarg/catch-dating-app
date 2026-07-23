@@ -22,9 +22,9 @@
     "scannedSourceModules": 296,
     "dependencyLeafNodes": 23,
     "moduleNodes": 319,
-    "moduleEdges": 1123,
-    "runtimeModuleEdges": 901,
-    "typeOnlyModuleEdges": 222,
+    "moduleEdges": 1125,
+    "runtimeModuleEdges": 902,
+    "typeOnlyModuleEdges": 223,
     "dynamicImportEdges": 27,
     "reExportEdges": 64,
     "featureGroups": 31,
@@ -14668,11 +14668,20 @@
     },
     {
       "source": "website/src/features/organizers/OrganizerSearchPage.tsx",
+      "target": "website/src/features/organizers/types.ts",
+      "specifier": "./types",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 9,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/OrganizerSearchPage.tsx",
       "target": "website/src/features/organizers/useOrganizerDirectoryController.ts",
       "specifier": "./useOrganizerDirectoryController",
       "kind": "import",
       "typeOnly": false,
-      "line": 9,
+      "line": 10,
       "column": 1
     },
     {
@@ -15928,11 +15937,20 @@
     },
     {
       "source": "website/src/features/organizers/useOrganizerDirectoryController.test.tsx",
+      "target": "website/src/features/organizers/data.ts",
+      "specifier": "./data",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 12,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/useOrganizerDirectoryController.test.tsx",
       "target": "website/src/features/organizers/useOrganizerDirectoryController.ts",
       "specifier": "./useOrganizerDirectoryController",
       "kind": "import",
       "typeOnly": false,
-      "line": 12,
+      "line": 13,
       "column": 1
     },
     {

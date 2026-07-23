@@ -62,6 +62,8 @@ class WhereStep extends StatelessWidget {
               CatchField.input(
                 key: CreateEventFormKeys.meetingPoint,
                 title: context.l10n.hostsWhereStepTitleLocationName,
+                contract: CatchContractConstraints
+                    .createEventCallablePayloadMeetingPoint,
                 controller: meetingPointController,
                 inputHint:
                     context.l10n.hostsWhereStepPlaceholderEGBandstandPromenade,
@@ -82,6 +84,8 @@ class WhereStep extends StatelessWidget {
               CatchField.input(
                 key: CreateEventFormKeys.locationDetails,
                 title: context.l10n.hostsWhereStepTitleExtraDirections,
+                contract: CatchContractConstraints
+                    .createEventCallablePayloadLocationDetails,
                 isOptional: true,
                 controller: locationDetailsController,
                 inputHint: context.l10n.hostsWhereStepPlaceholderEGMeetOutside,

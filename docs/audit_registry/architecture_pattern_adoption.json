@@ -1,6 +1,6 @@
 {
-  "version": "1.5.49",
-  "updated": "2026-07-22",
+  "version": "1.5.50",
+  "updated": "2026-07-23",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
   "patterns": [
@@ -1623,7 +1623,13 @@
           "path": "test/core/forms/contract_alignment_test.dart",
           "role": "consumer and Host descriptor-to-schema alignment gate with a seeded drift fixture",
           "status": "aligned",
-          "lastReviewedPass": "catch-system-stretch-20260718"
+          "lastReviewedPass": "2026-07-23-flutter-form-contract-rollout"
+        },
+        {
+          "path": "docs/audit_registry/flutter_form_contract_inventory.json",
+          "role": "generated exhaustive inventory proving every editable canonical control and descriptor instance in Consumer and Catch Host is contract-bound or explicitly exempt",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-flutter-form-contract-rollout"
         }
       ],
       "candidateQueue": [
@@ -1648,7 +1654,7 @@
         "node tool/architecture/check_app_architecture_exhibits.mjs",
         "node tool/agent/check_agent_readiness.mjs"
       ],
-      "notes": "Only the consumer Profile About You section is promoted. CatchFormCustomRow keeps the profile height stepper feature-owned while routing accordion and save behavior through CatchFormRowScope."
+      "notes": "Only the consumer Profile About You section is the descriptor reference, while Host Club Identity and Contact are promoted adopters. CatchFormCustomRow keeps the profile height stepper feature-owned while routing accordion and save behavior through CatchFormRowScope. Descriptor adoption remains incremental, but generated form constraints now cover every canonical editable control and descriptor instance in both installable apps."
     },
     {
       "id": "ARCH-DATA-CURSOR-001",

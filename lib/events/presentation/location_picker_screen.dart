@@ -444,6 +444,8 @@ class PlaceSearchPanel extends StatelessWidget {
           child: CatchField.input(
             title:
                 context.l10n.eventsLocationPickerScreenTitleSearchForAMeeting,
+            contract:
+                CatchContractConstraints.placesAutocompleteCallablePayloadInput,
             showLabel: false,
             controller: controller,
             onChanged: onChanged,

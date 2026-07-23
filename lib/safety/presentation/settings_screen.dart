@@ -309,6 +309,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     children: [
                       CatchField.toggle(
                         key: SettingsKeys.newCatchesSwitch,
+                        contract: CatchContractConstraints
+                            .updateUserProfilePatchPrefsNewCatches,
                         title: context
                             .l10n
                             .safetySettingsScreenTitlePushNotifications,
@@ -323,6 +325,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                       CatchField.toggle(
                         key: SettingsKeys.messagesSwitch,
+                        contract: CatchContractConstraints
+                            .updateUserProfilePatchPrefsMessages,
                         title: context.l10n.safetySettingsScreenTitleMessages,
                         icon: CatchIcons.chatBubbleOutlineRounded,
                         value: state.preferences.messages,
@@ -335,6 +339,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                       CatchField.toggle(
                         key: SettingsKeys.eventRemindersSwitch,
+                        contract: CatchContractConstraints
+                            .updateUserProfilePatchPrefsEventReminders,
                         title: context
                             .l10n
                             .safetySettingsScreenTitleEventReminders,
@@ -349,6 +355,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                       CatchField.toggle(
                         key: SettingsKeys.eventStatusUpdatesSwitch,
+                        contract: CatchContractConstraints
+                            .updateUserProfilePatchPrefsRunStatusUpdates,
                         title: context
                             .l10n
                             .safetySettingsScreenTitleEventChangesAndCancellations,
@@ -364,6 +372,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                       CatchField.toggle(
                         key: SettingsKeys.clubUpdatesSwitch,
+                        contract: CatchContractConstraints
+                            .updateUserProfilePatchPrefsClubUpdates,
                         title: context
                             .l10n
                             .safetySettingsScreenTitleClubAnnouncements,
@@ -378,6 +388,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                       CatchField.toggle(
                         key: SettingsKeys.weeklyDigestSwitch,
+                        contract: CatchContractConstraints
+                            .updateUserProfilePatchPrefsWeeklyDigest,
                         title:
                             context.l10n.safetySettingsScreenTitleEmailUpdates,
                         icon: CatchIcons.markEmailReadOutlined,
@@ -416,6 +428,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                       CatchField.toggle(
                         key: SettingsKeys.showOnMapSwitch,
+                        contract: CatchContractConstraints
+                            .updateUserProfilePatchPrefsShowOnMap,
                         title:
                             context.l10n.safetySettingsScreenTitleShowMeOnMap,
                         icon: CatchIcons.mapOutlined,

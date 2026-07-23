@@ -12,6 +12,7 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| MobileFormState | `forms/mobile_form_state.schema.json` | `functions/src/shared/generated/mobileFormState.ts` |
 | OperationRun | `operations/run.schema.json` | `functions/src/shared/generated/operationRunContract.ts` |
 | OperationWorkItem | `operations/work_item.schema.json` | `functions/src/shared/generated/operationWorkItemContract.ts` |
 | ProfilePromptAnswer | `embedded/profile_prompt_answer.schema.json` | `functions/src/shared/generated/profilePromptAnswer.ts` |
@@ -21,6 +22,7 @@ Do not edit it by hand.
 | ActivityPreferences | `embedded/activity_preferences.schema.json` | `functions/src/shared/generated/activityPreferences.ts` |
 | ConfigCitiesDocument | `firestore/config_cities.schema.json` | `functions/src/shared/generated/configCitiesDocument.ts` |
 | OnboardingDraftDocument | `firestore/onboarding_drafts.schema.json` | `functions/src/shared/generated/onboardingDraftDocument.ts` |
+| AccessApplicationDocument | `firestore/access_applications.schema.json` | `functions/src/shared/generated/accessApplicationDocument.ts` |
 | UserProfileDocument | `firestore/users.schema.json` | `functions/src/shared/generated/userProfileDocument.ts` |
 | PublicProfileDocument | `firestore/public_profiles.schema.json` | `functions/src/shared/generated/publicProfileDocument.ts` |
 | HostProfileDocument | `firestore/host_profiles.schema.json` | `functions/src/shared/generated/hostProfileDocument.ts` |
@@ -202,6 +204,7 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaMobileFormStateSchema` | MobileFormState | `forms/mobile_form_state.schema.json` | `lib/core/schema_contracts/generated/schemas/mobile_form_state.g.dart` |
 | `schemaOperationRunSchema` | OperationRun | `operations/run.schema.json` | `lib/core/schema_contracts/generated/schemas/operation_run.g.dart` |
 | `schemaOperationWorkItemSchema` | OperationWorkItem | `operations/work_item.schema.json` | `lib/core/schema_contracts/generated/schemas/operation_work_item.g.dart` |
 | `schemaProfilePromptAnswerSchema` | ProfilePromptAnswer | `embedded/profile_prompt_answer.schema.json` | `lib/core/schema_contracts/generated/schemas/profile_prompt_answer.g.dart` |
@@ -211,6 +214,7 @@ Do not edit it by hand.
 | `schemaActivityPreferencesSchema` | ActivityPreferences | `embedded/activity_preferences.schema.json` | `lib/core/schema_contracts/generated/schemas/activity_preferences.g.dart` |
 | `schemaConfigCitiesDocumentSchema` | ConfigCitiesDocument | `firestore/config_cities.schema.json` | `lib/core/schema_contracts/generated/schemas/config_cities_document.g.dart` |
 | `schemaOnboardingDraftDocumentSchema` | OnboardingDraftDocument | `firestore/onboarding_drafts.schema.json` | `lib/core/schema_contracts/generated/schemas/onboarding_draft_document.g.dart` |
+| `schemaAccessApplicationDocumentSchema` | AccessApplicationDocument | `firestore/access_applications.schema.json` | `lib/core/schema_contracts/generated/schemas/access_application_document.g.dart` |
 | `schemaUserProfileDocumentSchema` | UserProfileDocument | `firestore/users.schema.json` | `lib/core/schema_contracts/generated/schemas/user_profile_document.g.dart` |
 | `schemaPublicProfileDocumentSchema` | PublicProfileDocument | `firestore/public_profiles.schema.json` | `lib/core/schema_contracts/generated/schemas/public_profile_document.g.dart` |
 | `schemaHostProfileDocumentSchema` | HostProfileDocument | `firestore/host_profiles.schema.json` | `lib/core/schema_contracts/generated/schemas/host_profile_document.g.dart` |

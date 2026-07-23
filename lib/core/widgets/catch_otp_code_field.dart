@@ -1,8 +1,13 @@
+import 'package:catch_dating_app/core/schema_contracts/catch_contract_field_policy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
+
+export 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart'
+    show CatchContractConstraints, CatchContractFieldConstraints;
 
 /// Static handoff `CodeInput` primitive.
 ///
@@ -177,21 +182,25 @@ class CatchOtpCodeField extends StatelessWidget {
     required this.controller,
     required this.onChanged,
     required this.onSubmitted,
+    this.contract,
+    this.contractExemption,
     this.inputKey,
-    this.length = 6,
+    this.length,
     this.active,
     this.caret = true,
     this.height = CatchLayout.otpDigitHeight,
     this.gap = CatchLayout.otpDigitGap,
     this.autofocus = false,
     this.semanticsLabel = 'One-time code',
-  }) : assert(length > 0);
+  }) : assert(length == null || length > 0);
 
   final TextEditingController controller;
   final ValueChanged<String> onChanged;
   final ValueChanged<String> onSubmitted;
+  final CatchContractFieldConstraints? contract;
+  final String? contractExemption;
   final Key? inputKey;
-  final int length;
+  final int? length;
   final int? active;
   final bool caret;
   final double height;
@@ -201,6 +210,18 @@ class CatchOtpCodeField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final contractLength = contract?.maxLength;
+    assert(
+      contract == null || contract!.valueTypes?.contains('string') != false,
+      'CatchOtpCodeField requires a string contract.',
+    );
+    assert(
+      contract?.minLength == null ||
+          contractLength == null ||
+          contract!.minLength == contractLength,
+      'CatchOtpCodeField requires an exact-length contract.',
+    );
+    final effectiveLength = contractLength ?? length ?? 6;
     return Semantics(
       label: semanticsLabel,
       textField: true,
@@ -208,7 +229,7 @@ class CatchOtpCodeField extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           CatchCodeInputRow(
-            length: length,
+            length: effectiveLength,
             value: controller.text,
             active: active,
             caret: caret,
@@ -227,10 +248,12 @@ class CatchOtpCodeField extends StatelessWidget {
                 keyboardType: TextInputType.number,
                 textInputAction: TextInputAction.done,
                 autofillHints: const [AutofillHints.oneTimeCode],
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(length),
-                ],
+                inputFormatters:
+                    CatchContractFieldPolicy.effectiveInputFormatters(
+                      contract,
+                      [FilteringTextInputFormatter.digitsOnly],
+                      explicitMaxLength: effectiveLength,
+                    ),
                 decoration: const InputDecoration(
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.zero,

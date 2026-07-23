@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-22",
+  "updated": "2026-07-23",
   "tools": [
     {
       "id": "tool:runner",
@@ -1207,6 +1207,33 @@
         "path": "test/core/forms/contract_alignment_test.dart",
         "contains": [
           "seeded overlong UI limit proves the alignment gate is non-vacuous"
+        ]
+      }
+    },
+    {
+      "id": "contracts:flutter-form-inventory",
+      "category": "contracts",
+      "path": "tool/contracts/generate_flutter_form_contract_inventory.mjs",
+      "command": "node tool/contracts/generate_flutter_form_contract_inventory.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Inventories every editable canonical Flutter form control and descriptor instance in both installable apps, rejecting missing generated contracts, serializers, endpoint bindings, or explicit exemptions.",
+      "checks": [
+        "node --check tool/contracts/generate_flutter_form_contract_inventory.mjs",
+        "node --test tool/contracts/generate_flutter_form_contract_inventory.test.mjs",
+        "node tool/contracts/generate_flutter_form_contract_inventory.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "FORM-CONTRACT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/contracts/generate_flutter_form_contract_inventory.test.mjs",
+        "contains": [
+          "known-bad missing binding is detected",
+          "range sliders require both generated endpoint bindings",
+          "inventory includes bound and unbound product callsites"
         ]
       }
     },

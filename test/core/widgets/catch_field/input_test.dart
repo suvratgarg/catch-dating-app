@@ -14,6 +14,70 @@ import '../../../test_pump_helpers.dart';
 import 'test_support.dart';
 
 void main() {
+  testWidgets(
+    'CatchField input derives length and validation from its contract',
+    (tester) async {
+      const contract = CatchContractFieldConstraints(
+        path: 'fixture.code',
+        minLength: 2,
+        maxLength: 3,
+        required: true,
+        pattern: '^[A-Z]+\$',
+      );
+      final controller = TextEditingController();
+      final formKey = GlobalKey<FormState>();
+      addTearDown(controller.dispose);
+
+      await tester.pumpWidget(
+        _wrap(
+          Form(
+            key: formKey,
+            child: CatchField.input(
+              title: 'Code',
+              contract: contract,
+              controller: controller,
+            ),
+          ),
+        ),
+      );
+
+      await tester.enterText(find.byType(TextField), 'ABCD');
+      expect(controller.text, 'ABC');
+      expect(formKey.currentState!.validate(), isTrue);
+
+      controller.text = 'a';
+      expect(formKey.currentState!.validate(), isFalse);
+    },
+  );
+
+  testWidgets('CatchField choices expose only contract-supported values', (
+    tester,
+  ) async {
+    const contract = CatchContractFieldConstraints(
+      path: 'fixture.activity',
+      enumValues: ['run', 'walk'],
+    );
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchField.choices<String>(
+          title: 'Activity',
+          contract: contract,
+          contractValue: (value) => value,
+          values: const ['run', 'walk', 'swim'],
+          itemLabel: (value) => value,
+          selected: const {'run'},
+          initiallyOpen: true,
+          onSelectionChanged: (_) {},
+        ),
+      ),
+    );
+
+    expect(find.text('run'), findsWidgets);
+    expect(find.text('walk'), findsOneWidget);
+    expect(find.text('swim'), findsNothing);
+  });
+
   testWidgets('CatchField input preserves an explicit unbounded maxLines', (
     tester,
   ) async {

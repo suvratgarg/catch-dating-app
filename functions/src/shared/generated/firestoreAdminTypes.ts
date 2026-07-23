@@ -511,6 +511,62 @@ export interface OnboardingDraftDocument {
 }
 
 /**
+ * Owner-submitted launch access application stored at accessApplications/{uid}; review and cohort fields are admin-owned.
+ */
+export interface AccessApplicationDocument {
+  applicationVersion: number;
+  status:
+    | "pending"
+    | "waitlisted"
+    | "invited"
+    | "approvedForProfile"
+    | "activeMember"
+    | "paused"
+    | "notSelectedYet";
+  city: string;
+  role: "member" | "host" | "both";
+  /**
+   * @minItems 1
+   * @maxItems 7
+   */
+  eventTypes: (
+    | "runClub"
+    | "walkingSocial"
+    | "coffee"
+    | "boardGames"
+    | "fitnessClass"
+    | "food"
+    | "culture"
+  )[];
+  /**
+   * @minItems 1
+   * @maxItems 6
+   */
+  availabilityWindows: (
+    | "weekdayMornings"
+    | "weekdayEvenings"
+    | "saturdayMornings"
+    | "saturdayEvenings"
+    | "sundayMornings"
+    | "sundayEvenings"
+  )[];
+  wantsToHost: boolean;
+  inviteCode?: string | null;
+  instagramHandle?: string | null;
+  referralSource?: string | null;
+  whyCatch?: string | null;
+  cohortId?: string | null;
+  hostUserId?: string | null;
+  reviewerUid?: string | null;
+  reviewNote?: string | null;
+  submissionCount: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  submittedAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  reviewedAt?: FirebaseFirestore.Timestamp | null;
+}
+
+/**
  * Canonical private profile document stored at users/{uid}. The uid is the document id and is not stored in document data.
  */
 export interface UserProfileDocument {

@@ -477,6 +477,7 @@ class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
         CatchField.inputActions(
           key: const ValueKey('host-team-profile-display-name'),
           title: context.l10n.hostsHostClubTeamScreenTitleDisplayName,
+          contract: CatchContractConstraints.hostProfileDocumentDisplayName,
           controller: widget.displayNameController,
           open: _accordion.isExpanded(_displayNameField),
           onOpenChanged: (open) => _setOpen(_displayNameField, open),
@@ -502,6 +503,7 @@ class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
         CatchField.inputActions(
           key: const ValueKey('host-team-profile-role-title'),
           title: context.l10n.hostsHostClubTeamScreenTitleRoleTitle,
+          contract: CatchContractConstraints.hostProfileDocumentRoleTitle,
           controller: widget.roleTitleController,
           open: _accordion.isExpanded(_roleTitleField),
           onOpenChanged: (open) => _setOpen(_roleTitleField, open),
@@ -526,6 +528,7 @@ class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
         CatchField.inputActions(
           key: const ValueKey('host-team-profile-bio'),
           title: context.l10n.hostsHostClubTeamScreenTitleAboutYouAsA,
+          contract: CatchContractConstraints.hostProfileDocumentBio,
           controller: widget.bioController,
           open: _accordion.isExpanded(_bioField),
           onOpenChanged: (open) => _setOpen(_bioField, open),

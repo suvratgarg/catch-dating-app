@@ -24,6 +24,7 @@ class ProfileInlineHeightEditor extends ConsumerStatefulWidget {
     required this.onSaved,
     required this.onCancel,
     required this.patchForValue,
+    this.contract = CatchContractConstraints.updateUserProfilePatchHeight,
     this.savePatch,
     this.isAddAffordance = false,
   });
@@ -37,6 +38,7 @@ class ProfileInlineHeightEditor extends ConsumerStatefulWidget {
   final InlineSaveCallback onSaved;
   final VoidCallback onCancel;
   final UpdateUserProfilePatch Function(int value) patchForValue;
+  final CatchContractFieldConstraints contract;
   final Future<bool> Function(UpdateUserProfilePatch patch)? savePatch;
   final bool isAddAffordance;
 
@@ -116,6 +118,7 @@ class _ProfileInlineHeightEditorState
     return CatchField.stepper(
       icon: widget.icon,
       title: widget.label,
+      contract: widget.contract,
       body: body,
       addable: widget.isAddAffordance,
       tone: widget.isAddAffordance

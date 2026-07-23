@@ -193,6 +193,8 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
           CatchField.input(
             key: ReviewKeys.commentField,
             title: context.l10n.reviewsWriteReviewSheetTitleReview,
+            contract: CatchContractConstraints
+                .createEventReviewCallablePayloadComment,
             isOptional: true,
             controller: _commentController,
             maxLines: 3,
@@ -200,9 +202,6 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
                 .l10n
                 .reviewsWriteReviewSheetPlaceholderShareYourExperience,
             textCapitalization: TextCapitalization.sentences,
-            // Mirror the backend review-comment maxLength so the user can't type
-            // past the limit and hit a server rejection on submit.
-            inputFormatters: [LengthLimitingTextInputFormatter(1000)],
           ),
           if (mutation.hasError) ...[
             gapH12,

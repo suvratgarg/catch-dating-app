@@ -629,6 +629,9 @@ class ManualQaControls extends StatelessWidget {
             children: [
               for (final value in _ManualQaScenario.values)
                 CatchChip.selectable(
+                  contract: CatchContractConstraints
+                      .mobileFormStateEventSuccessManualQaScenario,
+                  contractValue: value.name,
                   label: value.label,
                   selected: scenario == value,
                   onChanged: (_) => onScenarioChanged(value),
@@ -936,6 +939,8 @@ class AttendeeQaControls extends StatelessWidget {
               title: context
                   .l10n
                   .eventSuccessEventSuccessManualQaScreenTitleMicroPodsOptOut,
+              contract: CatchContractConstraints
+                  .eventSuccessPreferenceDocumentMicroPodsOptedOut,
               value: microPodsOptedOut,
               onChanged: onMicroPodsOptOutChanged,
             ),
@@ -944,6 +949,8 @@ class AttendeeQaControls extends StatelessWidget {
               title: context
                   .l10n
                   .eventSuccessEventSuccessManualQaScreenTitleRotationsOptOut,
+              contract: CatchContractConstraints
+                  .eventSuccessPreferenceDocumentGuidedRotationsOptedOut,
               value: guidedRotationsOptedOut,
               onChanged: onGuidedRotationsOptOutChanged,
             ),

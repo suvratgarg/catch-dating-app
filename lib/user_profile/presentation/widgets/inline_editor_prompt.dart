@@ -364,6 +364,8 @@ class _ProfileInlinePromptEntryEditorState
           title: context.l10n.userProfileInlineEditorPromptLabelPromptNumber(
             number: widget.promptIndex + 1,
           ),
+          contract: CatchContractConstraints.profilePromptAnswerPromptId,
+          contractValue: (value) => value,
           body: selectedDefinition.title,
           values: widget.availablePromptIds,
           itemLabel: (promptId) => profilePromptDefinition(promptId).title,
@@ -393,6 +395,7 @@ class _ProfileInlinePromptEntryEditorState
         CatchField.input(
           key: ValueKey('profile-prompt-answer-${widget.promptIndex}'),
           title: context.l10n.userProfileInlineEditorPromptLabelAnswer,
+          contract: CatchContractConstraints.profilePromptAnswerAnswer,
           controller: _controller,
           inputHint: selectedDefinition.placeholder,
           keyboardType: TextInputType.multiline,

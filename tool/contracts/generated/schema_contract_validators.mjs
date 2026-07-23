@@ -3,6 +3,7 @@
 
 import {createRequire} from "node:module";
 import {
+  mobileFormStateSchema,
   operationRunSchema,
   operationWorkItemSchema,
   profilePromptAnswerSchema,
@@ -12,6 +13,7 @@ import {
   activityPreferencesSchema,
   configCitiesDocumentSchema,
   onboardingDraftDocumentSchema,
+  accessApplicationDocumentSchema,
   userProfileDocumentSchema,
   publicProfileDocumentSchema,
   hostProfileDocumentSchema,
@@ -212,6 +214,7 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateMobileFormState = ajv.compile(mobileFormStateSchema);
 export const validateOperationRun = ajv.compile(operationRunSchema);
 export const validateOperationWorkItem = ajv.compile(operationWorkItemSchema);
 export const validateProfilePromptAnswer = ajv.compile(profilePromptAnswerSchema);
@@ -221,6 +224,7 @@ export const validateUploadedPhoto = ajv.compile(uploadedPhotoSchema);
 export const validateActivityPreferences = ajv.compile(activityPreferencesSchema);
 export const validateConfigCitiesDocument = ajv.compile(configCitiesDocumentSchema);
 export const validateOnboardingDraftDocument = ajv.compile(onboardingDraftDocumentSchema);
+export const validateAccessApplicationDocument = ajv.compile(accessApplicationDocumentSchema);
 export const validateUserProfileDocument = ajv.compile(userProfileDocumentSchema);
 export const validatePublicProfileDocument = ajv.compile(publicProfileDocumentSchema);
 export const validateHostProfileDocument = ajv.compile(hostProfileDocumentSchema);

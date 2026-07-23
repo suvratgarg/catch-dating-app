@@ -398,6 +398,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         value: selectedOrganizerType,
         allowEmptySelection: false,
         contract: CatchContractConstraints.updateClubPatchOrganizerType,
+        contractValue: (option) => option.value.name,
         patchForValue: (value) => UpdateClubPatch(organizerType: value!.value),
       ),
       CatchFormTextRow<UpdateClubPatch>(
@@ -420,6 +421,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         value: cityOptions.firstWhere((city) => city.value == club.location),
         allowEmptySelection: false,
         contract: CatchContractConstraints.updateClubPatchLocation,
+        contractValue: (option) => option.value,
         patchForValue: (value) => UpdateClubPatch(location: value!.value),
       ),
       CatchFormTextRow<UpdateClubPatch>(

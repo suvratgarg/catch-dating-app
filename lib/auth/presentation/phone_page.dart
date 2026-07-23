@@ -113,6 +113,8 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                 child: CatchField.input(
                   key: AuthFormKeys.phoneField,
                   title: l10n.authPhoneFieldLabel,
+                  contract: CatchContractConstraints
+                      .onboardingDraftDocumentPhoneNumber,
                   showLabel: false,
                   controller: _phoneController,
                   autofocus: viewState.shouldAutofocus,

@@ -16,6 +16,7 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -5171,6 +5172,10 @@ class _EventAgeRangeFieldFrameState extends State<_EventAgeRangeFieldFrame> {
     return EventAgeRangeField(
       minAgeController: _minAgeController,
       maxAgeController: _maxAgeController,
+      minimumContract:
+          CatchContractConstraints.createEventCallablePayloadConstraintsMinAge,
+      maximumContract:
+          CatchContractConstraints.createEventCallablePayloadConstraintsMaxAge,
       initiallyOpen: true,
       enabled: widget.enabled,
     );

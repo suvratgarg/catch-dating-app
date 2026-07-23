@@ -103,6 +103,8 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
             title: context
                 .l10n
                 .eventSuccessEventSuccessCompanionFeedbackTitleIWantCatchTo,
+            contract: CatchContractConstraints
+                .eventSuccessFeedbackDocumentSafetyConcern,
             titleMaxLines: 2,
             value: _safetyConcern,
             onChanged: (value) => setState(() => _safetyConcern = value),
@@ -113,9 +115,10 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
               title: context
                   .l10n
                   .eventSuccessEventSuccessCompanionFeedbackTitlePrivateNoteToCatch,
+              contract: CatchContractConstraints
+                  .eventSuccessFeedbackDocumentPrivateNote,
               controller: _noteController,
               maxLines: 3,
-              inputFormatters: [LengthLimitingTextInputFormatter(500)],
             ),
           ),
           gapH12,

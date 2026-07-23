@@ -1,0 +1,1938 @@
+{
+  "schemaVersion": 2,
+  "generatedBy": "tool/contracts/generate_flutter_form_contract_inventory.mjs",
+  "summary": {
+    "editableCallsites": 190,
+    "boundCallsites": 188,
+    "exemptCallsites": 2,
+    "unboundCallsites": 0,
+    "bySymbol": {
+      "chipField": 3,
+      "choices": 22,
+      "control": 5,
+      "directToggle": 1,
+      "formCustomRow": 1,
+      "formMultiChoiceRow": 1,
+      "formSingleChoiceRow": 6,
+      "formTextRow": 11,
+      "input": 57,
+      "inputActions": 10,
+      "optionCard": 1,
+      "optionCards": 10,
+      "optionGroup": 5,
+      "otpCodeField": 1,
+      "rangeSlider": 4,
+      "searchField": 1,
+      "select": 5,
+      "selectableChip": 8,
+      "selfProfileMultiChoiceDescriptor": 3,
+      "selfProfileRangeDescriptor": 1,
+      "selfProfileSingleChoiceDescriptor": 5,
+      "stepper": 7,
+      "toggle": 19,
+      "topBarSearch": 3
+    }
+  },
+  "callsites": [
+    {
+      "file": "lib/auth/presentation/otp_page.dart",
+      "line": 162,
+      "symbol": "otpCodeField",
+      "contract": "CatchContractConstraints.mobileFormStateAuthOtpCode",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/auth/presentation/phone_page.dart",
+      "line": 113,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .onboardingDraftDocumentPhoneNumber",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
+      "line": 74,
+      "symbol": "topBarSearch",
+      "contract": "CatchContractConstraints.mobileFormStateChatsInboxSearchQuery",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/chats/presentation/widgets/chat_input_bar.dart",
+      "line": 151,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .createChatMessageClientWriteDataText",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
+      "line": 471,
+      "symbol": "input",
+      "contract": "CatchContractConstraints.mobileFormStateSuvbotTesterPhoneNumber",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart",
+      "line": 102,
+      "symbol": "toggle",
+      "contract": "CatchContractConstraints .eventSuccessFeedbackDocumentSafetyConcern",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart",
+      "line": 114,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .eventSuccessFeedbackDocumentPrivateNote",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+      "line": 559,
+      "symbol": "directToggle",
+      "contract": "CatchContractConstraints .mobileFormStateEventSuccessLiveCardIncluded",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/companion_parts/event_success_companion_wingman.dart",
+      "line": 122,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .eventSuccessWingmanRequestDocumentNote",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_defaults_panel.dart",
+      "line": 66,
+      "symbol": "toggle",
+      "contract": "CatchContractConstraints .createClubCallablePayloadHostDefaultsEventSuccessEnabled",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_feature_blocks.dart",
+      "line": 98,
+      "symbol": "selectableChip",
+      "contract": "CatchContractConstraints .eventSuccessPlanDocumentPlaybookId",
+      "contractValue": "playbook.id",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
+      "line": 631,
+      "symbol": "selectableChip",
+      "contract": "CatchContractConstraints .mobileFormStateEventSuccessManualQaScenario",
+      "contractValue": "value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
+      "line": 938,
+      "symbol": "toggle",
+      "contract": "CatchContractConstraints .eventSuccessPreferenceDocumentMicroPodsOptedOut",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
+      "line": 948,
+      "symbol": "toggle",
+      "contract": "CatchContractConstraints .eventSuccessPreferenceDocumentGuidedRotationsOptedOut",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
+      "line": 60,
+      "symbol": "optionCards",
+      "contract": "CatchContractConstraints .eventSuccessPlanDocumentQuestionnaireConfigTemplateId",
+      "contractValue": "(value) => value",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_questionnaire_config_editor.dart",
+      "line": 339,
+      "symbol": "inputActions",
+      "contract": "contract",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_setup_body.dart",
+      "line": 125,
+      "symbol": "inputActions",
+      "contract": "CatchContractConstraints.eventSuccessPlanDocumentHostGoal",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_setup_body.dart",
+      "line": 149,
+      "symbol": "inputActions",
+      "contract": "CatchContractConstraints .eventSuccessPlanDocumentAttendeePrompt",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_setup_body.dart",
+      "line": 296,
+      "symbol": "optionCards",
+      "contract": "CatchContractConstraints .mobileFormStateEventSuccessQuestionnaireMode",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_setup_body.dart",
+      "line": 334,
+      "symbol": "toggle",
+      "contract": "CatchContractConstraints .mobileFormStateEventSuccessModuleSelected",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_setup_body.dart",
+      "line": 360,
+      "symbol": "choices",
+      "contract": "CatchContractConstraints .eventSuccessPlanDocumentStructureConfigRotationIntervalMinutes",
+      "contractValue": "(value) => value?.toString() ?? ''",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_setup_body.dart",
+      "line": 393,
+      "symbol": "choices",
+      "contract": "CatchContractConstraints .eventSuccessPlanDocumentStructureConfigRevealCountdownSeconds",
+      "contractValue": "(value) => value.toString()",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_structure_config_editor.dart",
+      "line": 42,
+      "symbol": "optionCards",
+      "contract": "CatchContractConstraints .eventSuccessPlanDocumentStructureConfigUnitKind",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_structure_config_editor.dart",
+      "line": 57,
+      "symbol": "stepper",
+      "contract": "CatchContractConstraints .eventSuccessPlanDocumentStructureConfigUnitSize",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_structure_config_editor.dart",
+      "line": 85,
+      "symbol": "optionCards",
+      "contract": "CatchContractConstraints .eventSuccessPlanDocumentStructureConfigUnitCount",
+      "contractValue": "(value) => value.toString()",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_structure_config_editor.dart",
+      "line": 114,
+      "symbol": "stepper",
+      "contract": "CatchContractConstraints .eventSuccessPlanDocumentStructureConfigUnitCount",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_structure_config_editor.dart",
+      "line": 142,
+      "symbol": "choices",
+      "contract": "CatchContractConstraints .eventSuccessPlanDocumentStructureConfigBalanceActivityAttributes",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_structure_config_editor.dart",
+      "line": 168,
+      "symbol": "choices",
+      "contract": "CatchContractConstraints .eventSuccessPlanDocumentStructureConfigClusterActivityAttributes",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_structure_config_editor.dart",
+      "line": 196,
+      "symbol": "choices",
+      "contract": "CatchContractConstraints .eventSuccessPlanDocumentStructureConfigRotationRepeatStrategy",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/event_success_structure_config_editor.dart",
+      "line": 213,
+      "symbol": "stepper",
+      "contract": "CatchContractConstraints .eventSuccessPlanDocumentStructureConfigMaxPairMeetings",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/host_parts/event_success_host_overrides.dart",
+      "line": 511,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .overrideEventSuccessGroupsCallablePayloadRoundsItemsGroupsItemsLabel",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/host_parts/event_success_host_overrides.dart",
+      "line": 591,
+      "symbol": "select",
+      "contract": "CatchContractConstraints .overrideEventSuccessGroupsCallablePayloadRoundsItemsGroupsItemsParticipantUidsItems",
+      "contractValue": "(value) => value",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/host_parts/event_success_host_overrides.dart",
+      "line": 1126,
+      "symbol": "select",
+      "contract": "CatchContractConstraints .overrideEventSuccessRotationsCallablePayloadRoundsItemsPairingsItemsUidA",
+      "contractValue": "(value) => value",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/host_parts/event_success_host_overrides.dart",
+      "line": 1148,
+      "symbol": "select",
+      "contract": "CatchContractConstraints .overrideEventSuccessRotationsCallablePayloadRoundsItemsPairingsItemsUidB",
+      "contractValue": "(value) => value",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/event_success/presentation/host_parts/event_success_host_setup.dart",
+      "line": 293,
+      "symbol": "stepper",
+      "contract": "CatchContractConstraints.eventSuccessPlanDocumentTargetAttendeeCount",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/events/presentation/location_picker_screen.dart",
+      "line": 444,
+      "symbol": "input",
+      "contract": "CatchContractConstraints.placesAutocompleteCallablePayloadInput",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
+      "line": 275,
+      "symbol": "selectableChip",
+      "contract": "CatchContractConstraints .mobileFormStateExploreDistanceFilter",
+      "contractValue": "option.value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
+      "line": 298,
+      "symbol": "selectableChip",
+      "contract": "CatchContractConstraints .mobileFormStateExploreJoinedOnly",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
+      "line": 308,
+      "symbol": "selectableChip",
+      "contract": "CatchContractConstraints .mobileFormStateExploreHighRatedOnly",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
+      "line": 329,
+      "symbol": "selectableChip",
+      "contract": "CatchContractConstraints .mobileFormStateExploreActivityTag",
+      "contractValue": "kind.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_filter_rail.dart",
+      "line": 355,
+      "symbol": "selectableChip",
+      "contract": "CatchContractConstraints.mobileFormStateExploreArea",
+      "contractValue": "area",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_header.dart",
+      "line": 65,
+      "symbol": "topBarSearch",
+      "contract": "CatchContractConstraints.exploreSearchCallablePayloadQuery",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_header.dart",
+      "line": 212,
+      "symbol": "topBarSearch",
+      "contract": "CatchContractConstraints.exploreSearchCallablePayloadQuery",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/club_management/create/widgets/club_basics_step.dart",
+      "line": 86,
+      "symbol": "choices",
+      "contract": "CatchContractConstraints .createClubCallablePayloadOrganizerType",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/club_management/create/widgets/club_basics_step.dart",
+      "line": 105,
+      "symbol": "input",
+      "contract": "CatchContractConstraints.createClubCallablePayloadName",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/club_management/create/widgets/club_basics_step.dart",
+      "line": 133,
+      "symbol": "choices",
+      "contract": "CatchContractConstraints .createClubCallablePayloadLocation",
+      "contractValue": "(city) => city.effectiveMarketId",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/club_management/create/widgets/club_basics_step.dart",
+      "line": 161,
+      "symbol": "input",
+      "contract": "CatchContractConstraints.createClubCallablePayloadArea",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/club_management/create/widgets/club_details_step.dart",
+      "line": 37,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .createClubCallablePayloadDescription",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
+      "line": 257,
+      "symbol": "choices",
+      "contract": "CatchContractConstraints .createClubCallablePayloadHostDefaultsPrimaryActivityKind",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
+      "line": 275,
+      "symbol": "optionCards",
+      "contract": "CatchContractConstraints .createClubCallablePayloadHostDefaultsEventPolicyAdmissionPreset",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
+      "line": 298,
+      "symbol": "toggle",
+      "contract": "CatchContractConstraints.mobileFormStateEventCohortCapsEnabled",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
+      "line": 320,
+      "symbol": "inputActions",
+      "contract": "CatchContractConstraints .createClubCallablePayloadHostDefaultsEventPolicyMaxMen",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
+      "line": 355,
+      "symbol": "inputActions",
+      "contract": "CatchContractConstraints .createClubCallablePayloadHostDefaultsEventPolicyMaxWomen",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
+      "line": 394,
+      "symbol": "toggle",
+      "contract": "CatchContractConstraints .createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingEnabled",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
+      "line": 420,
+      "symbol": "inputActions",
+      "contract": "CatchContractConstraints .createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingStepInPaise",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
+      "line": 462,
+      "symbol": "inputActions",
+      "contract": "CatchContractConstraints .createClubCallablePayloadHostDefaultsEventPolicyDynamicPricingMaxInPaise",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
+      "line": 518,
+      "symbol": "optionCards",
+      "contract": "CatchContractConstraints .createClubCallablePayloadHostDefaultsEventPolicyCancellationPolicyId",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/club_management/create/widgets/create_club_contact_fields.dart",
+      "line": 35,
+      "symbol": "input",
+      "contract": "CatchContractConstraints.createClubCallablePayloadInstagramHandle",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/club_management/create/widgets/create_club_contact_fields.dart",
+      "line": 47,
+      "symbol": "input",
+      "contract": "CatchContractConstraints.createClubCallablePayloadPhoneNumber",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/club_management/create/widgets/create_club_contact_fields.dart",
+      "line": 62,
+      "symbol": "input",
+      "contract": "CatchContractConstraints.createClubCallablePayloadEmail",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "line": 445,
+      "symbol": "stepper",
+      "contract": "CatchContractConstraints .mobileFormStateEventDurationMinutes",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "line": 478,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsMeetingPoint",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "line": 525,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsLocationDetails",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "line": 551,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsDistanceKm",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "line": 593,
+      "symbol": "choices",
+      "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsPace",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "line": 618,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsDescription",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "line": 1024,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsCapacityLimit",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "line": 1037,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsPriceInPaise",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "line": 1061,
+      "symbol": "optionCards",
+      "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsEventPolicyAdmissionFormat",
+      "contractValue": "(preset) => switch (preset) { EventAdmissionPreset.openCapacity => 'open', EventAdmissionPreset.inviteOnly => 'inviteOnly', EventAdmissionPreset.requestToJoin => 'manualApproval', EventAdmissionPreset.balancedSingles => 'balancedRatio', }",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "line": 1079,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsPrivateAccessInviteCode",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "line": 1104,
+      "symbol": "toggle",
+      "contract": "CatchContractConstraints.mobileFormStateEventCohortCapsEnabled",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "line": 1119,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsConstraintsMaxMen",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "line": 1135,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsConstraintsMaxWomen",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "line": 1163,
+      "symbol": "toggle",
+      "contract": "CatchContractConstraints .mobileFormStateEventDynamicPricingEnabled",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "line": 1176,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsEventPolicyPricingDemandPricingRulesItemsStepAdjustmentInPaise",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "line": 1193,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsEventPolicyPricingDemandPricingRulesItemsMaxAdjustmentInPaise",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "line": 1222,
+      "symbol": "optionCards",
+      "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsEventPolicyCancellationPolicyId",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/event_age_range_field.dart",
+      "line": 157,
+      "symbol": "control",
+      "contract": "widget.minimumContract",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/event_age_range_field.dart",
+      "line": 167,
+      "symbol": "rangeSlider",
+      "contract": null,
+      "contractValue": null,
+      "minimumContract": "widget.minimumContract",
+      "maximumContract": "widget.maximumContract",
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
+      "line": 113,
+      "symbol": "choices",
+      "contract": "CatchContractConstraints .createEventCallablePayloadEventFormatActivityKind",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
+      "line": 135,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .createEventCallablePayloadEventFormatCustomActivityLabel",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
+      "line": 167,
+      "symbol": "choices",
+      "contract": "CatchContractConstraints .createEventCallablePayloadEventFormatInteractionModel",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
+      "line": 193,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .createEventCallablePayloadDistanceKm",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
+      "line": 239,
+      "symbol": "choices",
+      "contract": "CatchContractConstraints .createEventCallablePayloadPace",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
+      "line": 267,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .createEventCallablePayloadDescription",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
+      "line": 83,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .createEventCallablePayloadCapacityLimit",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
+      "line": 107,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .createEventCallablePayloadPriceInPaise",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
+      "line": 145,
+      "symbol": "optionCards",
+      "contract": "CatchContractConstraints .createEventCallablePayloadEventPolicyAdmissionFormat",
+      "contractValue": "(preset) => switch (preset) { EventAdmissionPreset.openCapacity => 'open', EventAdmissionPreset.inviteOnly => 'inviteOnly', EventAdmissionPreset.requestToJoin => 'manualApproval', EventAdmissionPreset.balancedSingles => 'balancedRatio', }",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
+      "line": 165,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .createEventCallablePayloadPrivateAccessInviteCode",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
+      "line": 191,
+      "symbol": "toggle",
+      "contract": "CatchContractConstraints .mobileFormStateEventCohortCapsEnabled",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
+      "line": 206,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .createEventCallablePayloadConstraintsMaxMen",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
+      "line": 231,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .createEventCallablePayloadConstraintsMaxWomen",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
+      "line": 270,
+      "symbol": "toggle",
+      "contract": "CatchContractConstraints .mobileFormStateEventDynamicPricingEnabled",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
+      "line": 285,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .createEventCallablePayloadEventPolicyPricingDemandPricingRulesItemsStepAdjustmentInPaise",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
+      "line": 308,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .createEventCallablePayloadEventPolicyPricingDemandPricingRulesItemsMaxAdjustmentInPaise",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/event_policy_step.dart",
+      "line": 343,
+      "symbol": "optionCards",
+      "contract": "CatchContractConstraints .createEventCallablePayloadEventPolicyCancellationPolicyId",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/when_step.dart",
+      "line": 79,
+      "symbol": "stepper",
+      "contract": "CatchContractConstraints .mobileFormStateEventDurationMinutes",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/where_step.dart",
+      "line": 62,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .createEventCallablePayloadMeetingPoint",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/event_management/widgets/where_step.dart",
+      "line": 84,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .createEventCallablePayloadLocationDetails",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/host_event_manage_screen.dart",
+      "line": 1261,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .createEventInviteLinkCallablePayloadLabel",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/host_event_manage_screen.dart",
+      "line": 1273,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .createEventInviteLinkCallablePayloadSource",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "line": 345,
+      "symbol": "optionGroup",
+      "contract": "CatchContractConstraints .hostAnalyticsQueryCallablePayloadRangePreset",
+      "contractValue": "(preset) => switch (preset) { HostClubInsightsRangePreset.thirtyDays => '30d', HostClubInsightsRangePreset.ninetyDays => '90d', HostClubInsightsRangePreset.twelveMonths => '12m', }",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "line": 390,
+      "symbol": "control",
+      "contract": null,
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": "'Disclosure-only analytics layout; no editable value is ' 'submitted or persisted.'"
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+      "line": 393,
+      "symbol": "formSingleChoiceRow",
+      "contract": "CatchContractConstraints.updateClubPatchOrganizerType",
+      "contractValue": "(option) => option.value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+      "line": 404,
+      "symbol": "formTextRow",
+      "contract": "CatchContractConstraints.updateClubPatchName",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+      "line": 416,
+      "symbol": "formSingleChoiceRow",
+      "contract": "CatchContractConstraints.updateClubPatchLocation",
+      "contractValue": "(option) => option.value",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+      "line": 427,
+      "symbol": "formTextRow",
+      "contract": "CatchContractConstraints.updateClubPatchArea",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+      "line": 439,
+      "symbol": "formTextRow",
+      "contract": "CatchContractConstraints.updateClubPatchDescription",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+      "line": 485,
+      "symbol": "formTextRow",
+      "contract": "CatchContractConstraints.updateClubPatchInstagramHandle",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+      "line": 499,
+      "symbol": "formTextRow",
+      "contract": "CatchContractConstraints.updateClubPatchPhoneNumber",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+      "line": 513,
+      "symbol": "formTextRow",
+      "contract": "CatchContractConstraints.updateClubPatchEmail",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+      "line": 477,
+      "symbol": "inputActions",
+      "contract": "CatchContractConstraints.hostProfileDocumentDisplayName",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+      "line": 503,
+      "symbol": "inputActions",
+      "contract": "CatchContractConstraints.hostProfileDocumentRoleTitle",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+      "line": 528,
+      "symbol": "inputActions",
+      "contract": "CatchContractConstraints.hostProfileDocumentBio",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
+      "line": 135,
+      "symbol": "optionGroup",
+      "contract": "CatchContractConstraints .mobileFormStateHostEventsLifecycleFilter",
+      "contractValue": "(filter) => filter.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart",
+      "line": 152,
+      "symbol": "optionGroup",
+      "contract": "CatchContractConstraints .sendEventBroadcastCallablePayloadAudience",
+      "contractValue": "(audience) => audience.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart",
+      "line": 192,
+      "symbol": "optionCard",
+      "contract": "CatchContractConstraints .mobileFormStateHostBroadcastTemplate",
+      "contractValue": "template.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart",
+      "line": 206,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .sendEventBroadcastCallablePayloadBody",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+      "line": 422,
+      "symbol": "optionGroup",
+      "contract": "CatchContractConstraints.mobileFormStateHostInboxAudienceSegment",
+      "contractValue": "(segment) => segment.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_club_tools.dart",
+      "line": 281,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .createClubPostCallablePayloadText",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
+      "line": 714,
+      "symbol": "control",
+      "contract": null,
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": "'Disclosure-only QR presentation; no editable value is ' 'submitted or persisted.'"
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
+      "line": 1118,
+      "symbol": "searchField",
+      "contract": "CatchContractConstraints.mobileFormStateHostRosterSearchQuery",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
+      "line": 1172,
+      "symbol": "optionGroup",
+      "contract": "CatchContractConstraints.mobileFormStateHostRosterFilter",
+      "contractValue": "(filter) => filter.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_team_management_section.dart",
+      "line": 452,
+      "symbol": "input",
+      "contract": "CatchContractConstraints.addClubHostCallablePayloadPhoneNumber",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
+      "line": 248,
+      "symbol": "choices",
+      "contract": "CatchContractConstraints.photoPromptAnswerPromptId",
+      "contractValue": "(choice) => choice.id ?? ''",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
+      "line": 292,
+      "symbol": "select",
+      "contract": "CatchContractConstraints.accessApplicationDocumentCity",
+      "contractValue": "(city) => city.effectiveMarketId",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
+      "line": 315,
+      "symbol": "chipField",
+      "contract": "CatchContractConstraints.accessApplicationDocumentRole",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
+      "line": 332,
+      "symbol": "chipField",
+      "contract": "CatchContractConstraints.accessApplicationDocumentEventTypes",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
+      "line": 353,
+      "symbol": "chipField",
+      "contract": "CatchContractConstraints .accessApplicationDocumentAvailabilityWindows",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
+      "line": 374,
+      "symbol": "toggle",
+      "contract": "CatchContractConstraints.accessApplicationDocumentWantsToHost",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
+      "line": 392,
+      "symbol": "input",
+      "contract": "CatchContractConstraints.accessApplicationDocumentInviteCode",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
+      "line": 410,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .accessApplicationDocumentInstagramHandle",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
+      "line": 428,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .accessApplicationDocumentReferralSource",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/launch_access/presentation/launch_access_application_screen.dart",
+      "line": 445,
+      "symbol": "input",
+      "contract": "CatchContractConstraints.accessApplicationDocumentWhyCatch",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/gender_interest_page.dart",
+      "line": 133,
+      "symbol": "choices",
+      "contract": "CatchContractConstraints .onboardingDraftDocumentGender",
+      "contractValue": "(gender) => gender.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/gender_interest_page.dart",
+      "line": 154,
+      "symbol": "choices",
+      "contract": "CatchContractConstraints .onboardingDraftDocumentInterestedInGenders",
+      "contractValue": "(gender) => gender.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/instagram_page.dart",
+      "line": 109,
+      "symbol": "input",
+      "contract": "CatchContractConstraints.updateUserProfilePatchInstagramHandle",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/name_dob_page.dart",
+      "line": 159,
+      "symbol": "input",
+      "contract": "CatchContractConstraints.onboardingDraftDocumentFirstName",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/name_dob_page.dart",
+      "line": 174,
+      "symbol": "input",
+      "contract": "CatchContractConstraints.onboardingDraftDocumentLastName",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/name_dob_page.dart",
+      "line": 188,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .mobileFormStateOnboardingDateOfBirthText",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/name_dob_page.dart",
+      "line": 202,
+      "symbol": "input",
+      "contract": "CatchContractConstraints.onboardingDraftDocumentPhoneNumber",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
+      "line": 210,
+      "symbol": "choices",
+      "contract": "CatchContractConstraints.profilePromptAnswerPromptId",
+      "contractValue": "(value) => value",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
+      "line": 225,
+      "symbol": "input",
+      "contract": "CatchContractConstraints.profilePromptAnswerAnswer",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
+      "line": 186,
+      "symbol": "control",
+      "contract": "CatchContractConstraints .updateUserProfilePatchActivityPreferencesRunningPaceMinSecsPerKm",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
+      "line": 230,
+      "symbol": "rangeSlider",
+      "contract": null,
+      "contractValue": null,
+      "minimumContract": "CatchContractConstraints .updateUserProfilePatchActivityPreferencesRunningPaceMinSecsPerKm",
+      "maximumContract": "CatchContractConstraints .updateUserProfilePatchActivityPreferencesRunningPaceMaxSecsPerKm",
+      "contractExemption": null
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
+      "line": 264,
+      "symbol": "choices",
+      "contract": "CatchContractConstraints .updateUserProfilePatchActivityPreferencesRunningPreferredDistances",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
+      "line": 285,
+      "symbol": "choices",
+      "contract": "CatchContractConstraints .updateUserProfilePatchActivityPreferencesRunningRunningReasons",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
+      "line": 304,
+      "symbol": "choices",
+      "contract": "CatchContractConstraints .updateUserProfilePatchActivityPreferencesRunningPreferredRunTimes",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/reviews/shared/reviews_section.dart",
+      "line": 546,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .setReviewResponseCallablePayloadMessage",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/reviews/shared/write_review_sheet.dart",
+      "line": 193,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .createEventReviewCallablePayloadComment",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/safety/presentation/settings_screen.dart",
+      "line": 310,
+      "symbol": "toggle",
+      "contract": "CatchContractConstraints .updateUserProfilePatchPrefsNewCatches",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/safety/presentation/settings_screen.dart",
+      "line": 326,
+      "symbol": "toggle",
+      "contract": "CatchContractConstraints .updateUserProfilePatchPrefsMessages",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/safety/presentation/settings_screen.dart",
+      "line": 340,
+      "symbol": "toggle",
+      "contract": "CatchContractConstraints .updateUserProfilePatchPrefsEventReminders",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/safety/presentation/settings_screen.dart",
+      "line": 356,
+      "symbol": "toggle",
+      "contract": "CatchContractConstraints .updateUserProfilePatchPrefsRunStatusUpdates",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/safety/presentation/settings_screen.dart",
+      "line": 373,
+      "symbol": "toggle",
+      "contract": "CatchContractConstraints .updateUserProfilePatchPrefsClubUpdates",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/safety/presentation/settings_screen.dart",
+      "line": 389,
+      "symbol": "toggle",
+      "contract": "CatchContractConstraints .updateUserProfilePatchPrefsWeeklyDigest",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/safety/presentation/settings_screen.dart",
+      "line": 429,
+      "symbol": "toggle",
+      "contract": "CatchContractConstraints .updateUserProfilePatchPrefsShowOnMap",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/swipes/presentation/filters_screen.dart",
+      "line": 217,
+      "symbol": "rangeSlider",
+      "contract": null,
+      "contractValue": null,
+      "minimumContract": "CatchContractConstraints .updateUserProfilePatchMinAgePreference",
+      "maximumContract": "CatchContractConstraints .updateUserProfilePatchMaxAgePreference",
+      "contractExemption": null
+    },
+    {
+      "file": "lib/swipes/presentation/filters_screen.dart",
+      "line": 241,
+      "symbol": "selectableChip",
+      "contract": "CatchContractConstraints .updateUserProfilePatchInterestedInGenders",
+      "contractValue": "gender.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/swipes/shared/profile_surface/profile_reaction_controls.dart",
+      "line": 193,
+      "symbol": "input",
+      "contract": "CatchContractConstraints .createProfileDecisionClientWriteDataComment",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_analytics/shared/user_analytics_panel.dart",
+      "line": 45,
+      "symbol": "select",
+      "contract": "CatchContractConstraints .userAnalyticsQueryCallablePayloadRangePreset",
+      "contractValue": "(value) => value.wireValue",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+      "line": 273,
+      "symbol": "formTextRow",
+      "contract": "CatchContractConstraints.updateUserProfilePatchDisplayName",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+      "line": 315,
+      "symbol": "formTextRow",
+      "contract": "CatchContractConstraints.updateUserProfilePatchEmail",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+      "line": 328,
+      "symbol": "formTextRow",
+      "contract": "CatchContractConstraints.updateUserProfilePatchInstagramHandle",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+      "line": 348,
+      "symbol": "formCustomRow",
+      "contract": "CatchContractConstraints.updateUserProfilePatchHeight",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+      "line": 384,
+      "symbol": "formSingleChoiceRow",
+      "contract": "CatchContractConstraints.updateUserProfilePatchCity",
+      "contractValue": "(value) => value.effectiveMarketId",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+      "line": 397,
+      "symbol": "formTextRow",
+      "contract": "CatchContractConstraints.updateUserProfilePatchOccupation",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+      "line": 410,
+      "symbol": "formTextRow",
+      "contract": "CatchContractConstraints.updateUserProfilePatchCompany",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+      "line": 424,
+      "symbol": "formSingleChoiceRow",
+      "contract": "CatchContractConstraints.updateUserProfilePatchEducation",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+      "line": 435,
+      "symbol": "formSingleChoiceRow",
+      "contract": "CatchContractConstraints.updateUserProfilePatchReligion",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+      "line": 447,
+      "symbol": "formMultiChoiceRow",
+      "contract": "CatchContractConstraints.updateUserProfilePatchLanguages",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+      "line": 458,
+      "symbol": "formSingleChoiceRow",
+      "contract": "CatchContractConstraints.updateUserProfilePatchRelationshipGoal",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+      "line": 479,
+      "symbol": "selfProfileRangeDescriptor",
+      "contract": "CatchContractConstraints .updateUserProfilePatchActivityPreferencesRunningPaceMinSecsPerKm",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": "CatchContractConstraints .updateUserProfilePatchActivityPreferencesRunningPaceMaxSecsPerKm",
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+      "line": 500,
+      "symbol": "selfProfileMultiChoiceDescriptor",
+      "contract": "CatchContractConstraints .updateUserProfilePatchActivityPreferencesRunningPreferredDistances",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+      "line": 514,
+      "symbol": "selfProfileMultiChoiceDescriptor",
+      "contract": "CatchContractConstraints .updateUserProfilePatchActivityPreferencesRunningRunningReasons",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+      "line": 528,
+      "symbol": "selfProfileMultiChoiceDescriptor",
+      "contract": "CatchContractConstraints .updateUserProfilePatchActivityPreferencesRunningPreferredRunTimes",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+      "line": 551,
+      "symbol": "selfProfileSingleChoiceDescriptor",
+      "contract": "CatchContractConstraints.updateUserProfilePatchDrinking",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+      "line": 562,
+      "symbol": "selfProfileSingleChoiceDescriptor",
+      "contract": "CatchContractConstraints.updateUserProfilePatchSmoking",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+      "line": 573,
+      "symbol": "selfProfileSingleChoiceDescriptor",
+      "contract": "CatchContractConstraints.updateUserProfilePatchWorkout",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+      "line": 584,
+      "symbol": "selfProfileSingleChoiceDescriptor",
+      "contract": "CatchContractConstraints.updateUserProfilePatchDiet",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
+      "line": 595,
+      "symbol": "selfProfileSingleChoiceDescriptor",
+      "contract": "CatchContractConstraints.updateUserProfilePatchChildren",
+      "contractValue": "(value) => value.name",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/inline_editor_choice.dart",
+      "line": 119,
+      "symbol": "choices",
+      "contract": "widget.contract",
+      "contractValue": "widget.contractValue",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/inline_editor_choice.dart",
+      "line": 280,
+      "symbol": "choices",
+      "contract": "widget.contract",
+      "contractValue": "widget.contractValue",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/inline_editor_height.dart",
+      "line": 118,
+      "symbol": "stepper",
+      "contract": "widget.contract",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/inline_editor_prompt.dart",
+      "line": 361,
+      "symbol": "choices",
+      "contract": "CatchContractConstraints.profilePromptAnswerPromptId",
+      "contractValue": "(value) => value",
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/inline_editor_prompt.dart",
+      "line": 395,
+      "symbol": "input",
+      "contract": "CatchContractConstraints.profilePromptAnswerAnswer",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/inline_editor_range.dart",
+      "line": 145,
+      "symbol": "control",
+      "contract": "widget.minimumContract",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/inline_editor_range.dart",
+      "line": 158,
+      "symbol": "rangeSlider",
+      "contract": null,
+      "contractValue": null,
+      "minimumContract": "widget.minimumContract",
+      "maximumContract": "widget.maximumContract",
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/inline_editor_text.dart",
+      "line": 176,
+      "symbol": "input",
+      "contract": "widget.contract",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/user_profile/presentation/widgets/inline_editor_text.dart",
+      "line": 274,
+      "symbol": "input",
+      "contract": "contract",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    }
+  ]
+}

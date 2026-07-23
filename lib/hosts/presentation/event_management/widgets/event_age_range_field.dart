@@ -17,6 +17,8 @@ class EventAgeRangeField extends StatefulWidget {
     super.key,
     required this.minAgeController,
     required this.maxAgeController,
+    required this.minimumContract,
+    required this.maximumContract,
     this.onChangeEnd,
     this.enabled = true,
     this.initiallyOpen = false,
@@ -27,6 +29,8 @@ class EventAgeRangeField extends StatefulWidget {
 
   final TextEditingController minAgeController;
   final TextEditingController maxAgeController;
+  final CatchContractFieldConstraints minimumContract;
+  final CatchContractFieldConstraints maximumContract;
   final EventAgeRangeChanged? onChangeEnd;
   final bool enabled;
   final bool initiallyOpen;
@@ -136,12 +140,23 @@ class _EventAgeRangeFieldState extends State<EventAgeRangeField> {
 
   @override
   Widget build(BuildContext context) {
+    assert(
+      widget.minimumContract.minimum == null ||
+          EventAgeRangeField.minimumAge >= widget.minimumContract.minimum!,
+      'The visible adult minimum cannot undercut the stored age contract.',
+    );
+    assert(
+      widget.maximumContract.maximum == null ||
+          EventAgeRangeField.maximumAge <= widget.maximumContract.maximum!,
+      'The visible age maximum cannot exceed the stored age contract.',
+    );
     final minLabel = _values.start.round().toString();
     final maxLabel = _values.end.round() == EventAgeRangeField.maximumAge
         ? '${EventAgeRangeField.maximumAge}+'
         : _values.end.round().toString();
     return CatchField.control(
       title: context.l10n.hostsHostClubProfileTitleAgeRange,
+      contract: widget.minimumContract,
       body: context.l10n.hostsHostClubProfileVisiblecopyMinageMaxage(
         minAge: minLabel,
         maxAge: maxLabel,
@@ -151,6 +166,8 @@ class _EventAgeRangeFieldState extends State<EventAgeRangeField> {
       icon: CatchIcons.cakeOutlined,
       control: CatchRangeSlider(
         key: const ValueKey('event-age-range-slider'),
+        minimumContract: widget.minimumContract,
+        maximumContract: widget.maximumContract,
         values: _values,
         min: EventAgeRangeField.minimumAge.toDouble(),
         max: EventAgeRangeField.maximumAge.toDouble(),

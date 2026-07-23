@@ -133,6 +133,9 @@ class OnboardingGenderInterestStep extends StatelessWidget {
                     builder: (field) => CatchField.choices<Gender>(
                       key: OnboardingFormKeys.gender,
                       title: context.l10n.onboardingGenderInterestPageLabelIAmA,
+                      contract: CatchContractConstraints
+                          .onboardingDraftDocumentGender,
+                      contractValue: (gender) => gender.name,
                       body: _orderedGenderLabels(state.selectedGender),
                       values: Gender.values,
                       itemLabel: (gender) => gender.label,
@@ -152,6 +155,9 @@ class OnboardingGenderInterestStep extends StatelessWidget {
                       key: OnboardingFormKeys.interestedIn,
                       title:
                           context.l10n.onboardingGenderInterestPageLabelShowMe,
+                      contract: CatchContractConstraints
+                          .onboardingDraftDocumentInterestedInGenders,
+                      contractValue: (gender) => gender.name,
                       body: _orderedGenderLabels(state.interestedIn),
                       values: Gender.values,
                       itemLabel: (gender) => gender.label,

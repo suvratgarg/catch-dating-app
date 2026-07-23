@@ -4,6 +4,7 @@
 
 // Barrel for generated Dart JSON Schema constants.
 
+export 'access_application_document.g.dart';
 export 'activity_notification_document.g.dart';
 export 'activity_preferences.g.dart';
 export 'add_club_host_callable_payload.g.dart';
@@ -112,6 +113,7 @@ export 'mark_event_attendance_callable_payload.g.dart';
 export 'mark_event_attendance_callable_response.g.dart';
 export 'mark_notification_read_client_write.g.dart';
 export 'match_document.g.dart';
+export 'mobile_form_state.g.dart';
 export 'moderation_flag_document.g.dart';
 export 'onboarding_draft_document.g.dart';
 export 'operation_run.g.dart';

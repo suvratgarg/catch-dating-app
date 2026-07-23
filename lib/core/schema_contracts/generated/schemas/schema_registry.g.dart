@@ -17,6 +17,11 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'MobileFormState',
+    source: 'forms/mobile_form_state.schema.json',
+    schema: schemaMobileFormStateSchema,
+  ),
+  SchemaContractDefinition(
     name: 'OperationRun',
     source: 'operations/run.schema.json',
     schema: schemaOperationRunSchema,
@@ -60,6 +65,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     name: 'OnboardingDraftDocument',
     source: 'firestore/onboarding_drafts.schema.json',
     schema: schemaOnboardingDraftDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AccessApplicationDocument',
+    source: 'firestore/access_applications.schema.json',
+    schema: schemaAccessApplicationDocumentSchema,
   ),
   SchemaContractDefinition(
     name: 'UserProfileDocument',
@@ -944,6 +954,7 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'MobileFormState': schemaMobileFormStateSchema,
   'OperationRun': schemaOperationRunSchema,
   'OperationWorkItem': schemaOperationWorkItemSchema,
   'ProfilePromptAnswer': schemaProfilePromptAnswerSchema,
@@ -953,6 +964,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'ActivityPreferences': schemaActivityPreferencesSchema,
   'ConfigCitiesDocument': schemaConfigCitiesDocumentSchema,
   'OnboardingDraftDocument': schemaOnboardingDraftDocumentSchema,
+  'AccessApplicationDocument': schemaAccessApplicationDocumentSchema,
   'UserProfileDocument': schemaUserProfileDocumentSchema,
   'PublicProfileDocument': schemaPublicProfileDocumentSchema,
   'HostProfileDocument': schemaHostProfileDocumentSchema,
@@ -1132,6 +1144,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'forms/mobile_form_state.schema.json': schemaMobileFormStateSchema,
   'operations/run.schema.json': schemaOperationRunSchema,
   'operations/work_item.schema.json': schemaOperationWorkItemSchema,
   'embedded/profile_prompt_answer.schema.json': schemaProfilePromptAnswerSchema,
@@ -1141,6 +1154,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'embedded/activity_preferences.schema.json': schemaActivityPreferencesSchema,
   'firestore/config_cities.schema.json': schemaConfigCitiesDocumentSchema,
   'firestore/onboarding_drafts.schema.json': schemaOnboardingDraftDocumentSchema,
+  'firestore/access_applications.schema.json': schemaAccessApplicationDocumentSchema,
   'firestore/users.schema.json': schemaUserProfileDocumentSchema,
   'firestore/public_profiles.schema.json': schemaPublicProfileDocumentSchema,
   'firestore/host_profiles.schema.json': schemaHostProfileDocumentSchema,
