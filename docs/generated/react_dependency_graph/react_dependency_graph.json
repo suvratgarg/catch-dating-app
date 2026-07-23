@@ -8138,7 +8138,7 @@
       "specifier": "../shared/api/dataMode",
       "kind": "import",
       "typeOnly": false,
-      "line": 67,
+      "line": 66,
       "column": 1
     },
     {
@@ -8147,7 +8147,7 @@
       "specifier": "../shared/types/adminTypes",
       "kind": "import",
       "typeOnly": false,
-      "line": 68,
+      "line": 67,
       "column": 1
     },
     {
@@ -8156,7 +8156,7 @@
       "specifier": "../shared/feedback/AdminFeedbackContext",
       "kind": "import",
       "typeOnly": false,
-      "line": 73,
+      "line": 72,
       "column": 1
     },
     {
@@ -8165,7 +8165,7 @@
       "specifier": "../features/overview/ui/OverviewScreen",
       "kind": "import",
       "typeOnly": true,
-      "line": 74,
+      "line": 73,
       "column": 1
     },
     {
@@ -8174,7 +8174,7 @@
       "specifier": "../features/marketing/ui/MarketingOpsScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 94,
+      "line": 93,
       "column": 3
     },
     {
@@ -8183,7 +8183,7 @@
       "specifier": "../features/intake/ui/IntakeWorkspaceScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 100,
+      "line": 99,
       "column": 3
     },
     {
@@ -8192,7 +8192,7 @@
       "specifier": "../features/safety/ui/SafetyTriageScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 107,
+      "line": 106,
       "column": 3
     },
     {
@@ -8201,7 +8201,7 @@
       "specifier": "../features/access/ui/AccessReviewScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 112,
+      "line": 111,
       "column": 3
     },
     {
@@ -8210,7 +8210,7 @@
       "specifier": "../features/growth/ui/GrowthKpiScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 117,
+      "line": 116,
       "column": 3
     },
     {
@@ -8219,7 +8219,7 @@
       "specifier": "../features/finance/ui/FinanceOpsScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 122,
+      "line": 121,
       "column": 3
     },
     {
@@ -8228,7 +8228,7 @@
       "specifier": "../features/organizers/ui/OrganizerPublishingScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 127,
+      "line": 126,
       "column": 3
     },
     {
@@ -8237,7 +8237,7 @@
       "specifier": "../features/events/ui/EventPublishingScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 134,
+      "line": 133,
       "column": 3
     },
     {
@@ -8246,7 +8246,7 @@
       "specifier": "../features/users/ui/UserAnalyticsScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 139,
+      "line": 138,
       "column": 3
     },
     {
@@ -8255,7 +8255,7 @@
       "specifier": "../features/overview/ui/OverviewRouteScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 144,
+      "line": 143,
       "column": 3
     },
     {
@@ -8264,7 +8264,7 @@
       "specifier": "../features/data-quality/ui/DataQualityScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 149,
+      "line": 148,
       "column": 3
     },
     {
@@ -8273,7 +8273,7 @@
       "specifier": "../features/admin-roles/ui/AdminRoleManagementScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 154,
+      "line": 153,
       "column": 3
     },
     {
@@ -11666,7 +11666,7 @@
       "specifier": "./firebase",
       "kind": "import",
       "typeOnly": false,
-      "line": 33,
+      "line": 27,
       "column": 1
     },
     {
@@ -11675,7 +11675,7 @@
       "specifier": "./firebaseCore",
       "kind": "import",
       "typeOnly": false,
-      "line": 10,
+      "line": 8,
       "column": 1
     },
     {
@@ -11684,7 +11684,7 @@
       "specifier": "./firebaseCore",
       "kind": "export",
       "typeOnly": false,
-      "line": 11,
+      "line": 9,
       "column": 1
     },
     {

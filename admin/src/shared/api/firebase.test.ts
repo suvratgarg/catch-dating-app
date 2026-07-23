@@ -3,25 +3,19 @@ import {beforeEach, describe, expect, it, vi} from "vitest";
 const mocks = vi.hoisted(() => ({
   confirmation: {confirm: vi.fn()},
   getAuth: vi.fn(() => ({name: "admin-auth"})),
-  googleProviderSetCustomParameters: vi.fn(),
   recaptchaClear: vi.fn(),
   recaptchaVerifier: vi.fn(),
   signInWithPhoneNumber: vi.fn(),
-  signInWithPopup: vi.fn(),
   signOut: vi.fn(),
 }));
 
 vi.mock("firebase/auth", () => ({
   getAuth: mocks.getAuth,
-  GoogleAuthProvider: function GoogleAuthProvider() {
-    return {setCustomParameters: mocks.googleProviderSetCustomParameters};
-  },
   RecaptchaVerifier: function RecaptchaVerifier(...args: unknown[]) {
     mocks.recaptchaVerifier(...args);
     return {clear: mocks.recaptchaClear};
   },
   signInWithPhoneNumber: mocks.signInWithPhoneNumber,
-  signInWithPopup: mocks.signInWithPopup,
   signOut: mocks.signOut,
 }));
 
@@ -35,7 +29,6 @@ import {
   confirmPhoneSignInCode,
   requestPhoneSignInCode,
   resetPhoneSignIn,
-  signInWithGoogle,
   signOutAdmin,
 } from "./firebase";
 
@@ -43,11 +36,9 @@ describe("admin Firebase authentication", () => {
   beforeEach(() => {
     resetPhoneSignIn();
     mocks.confirmation.confirm.mockReset();
-    mocks.googleProviderSetCustomParameters.mockReset();
     mocks.recaptchaClear.mockReset();
     mocks.recaptchaVerifier.mockReset();
     mocks.signInWithPhoneNumber.mockReset();
-    mocks.signInWithPopup.mockReset();
     mocks.signOut.mockReset();
   });
 
@@ -71,15 +62,6 @@ describe("admin Firebase authentication", () => {
 
     expect(mocks.confirmation.confirm).toHaveBeenCalledWith("123456");
     expect(mocks.recaptchaClear).toHaveBeenCalledOnce();
-  });
-
-  it("keeps Google popup sign-in available", async () => {
-    await signInWithGoogle();
-
-    expect(mocks.googleProviderSetCustomParameters).toHaveBeenCalledWith({
-      prompt: "select_account",
-    });
-    expect(mocks.signInWithPopup).toHaveBeenCalledWith(auth, expect.anything());
   });
 
   it("clears the verifier when requesting an SMS code fails", async () => {

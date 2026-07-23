@@ -1,5 +1,5 @@
 {
-  "version": 62,
+  "version": 63,
   "updated": "2026-07-23",
   "owner": "agent_operating_model",
   "entries": [
@@ -1044,10 +1044,10 @@
         "tool/env/check_web_hosting_env.mjs",
         "tool/remote_ops_manifest.json"
       ],
-      "symptom": "The production admin sign-in screen loads, but phone or Google sign-in fails because the custom domain is unauthorized, the required Auth provider is disabled, or the deployed reCAPTCHA site key has no matching server-side Firebase App Check configuration.",
+      "symptom": "The production admin sign-in screen loads, but phone OTP fails because the custom domain is unauthorized, the Phone Auth provider is disabled, or the deployed reCAPTCHA site key has no matching server-side Firebase App Check configuration.",
       "guard": {
         "type": "manual",
-        "command": "After production admin Auth, Hosting-domain, GitHub Environment App Check-key, or Firebase console changes, record live evidence that admin.catchdates.com and catchdates-admin.web.app are authorized Auth domains, Phone and Google providers are enabled, the deployed Firebase web app has a reCAPTCHA v3 server secret configured, and the live page completes App Check token exchange before sign-in."
+        "command": "After production admin Auth, Hosting-domain, GitHub Environment App Check-key, or Firebase console changes, record live evidence that admin.catchdates.com and catchdates-admin.web.app are authorized Auth domains, the Phone provider is enabled, the Google provider is disabled, the deployed Firebase web app has a reCAPTCHA v3 server secret configured, and the live page completes App Check token exchange before sign-in."
       },
       "owner_docs": [
         "docs/release_operations.md",
@@ -1057,7 +1057,7 @@
     },
     {
       "id": "REG-WEB-006",
-      "title": "Admin refactor drops a configured production sign-in provider",
+      "title": "Admin auth drifts from the phone-only production contract",
       "status": "active",
       "applies_to": [
         "admin/src/app/App.tsx",
@@ -1067,7 +1067,7 @@
         "admin/src/stories/AdminPrimitives.stories.tsx",
         "design/admin/components.json"
       ],
-      "symptom": "The production admin sign-in screen exposes only Google or only phone authentication even though both Firebase providers are configured and supported.",
+      "symptom": "The production admin sign-in screen removes phone OTP or reintroduces Google authentication even though only phone OTP is supported.",
       "guard": {
         "type": "command",
         "command": "npm --workspace catch-admin run test -- src/app/App.test.tsx src/shared/api/firebase.test.ts"
@@ -1077,7 +1077,7 @@
         "docs/admin_dashboard_user_stories_and_component_catalogue.md",
         "admin/README.md"
       ],
-      "notes": "The local tests prove rendered provider availability, phone normalization and OTP progression, invisible reCAPTCHA wiring, Google popup wiring, and verifier cleanup. REG-WEB-005 separately owns live Firebase console, authorized-domain, provider, and App Check proof."
+      "notes": "The local tests prove rendered phone availability, absence of a Google action, phone normalization and OTP progression, invisible reCAPTCHA wiring, and verifier cleanup. REG-WEB-005 separately owns live Firebase console, authorized-domain, provider, and App Check proof."
     },
     {
       "id": "REG-CLAIM-001",
