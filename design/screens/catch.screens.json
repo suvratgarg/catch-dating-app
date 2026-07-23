@@ -17155,8 +17155,8 @@
             },
             {
               "id": "DS-AUTH-004",
-              "status": "open",
-              "nextAction": "REG-FEATURE-CONTRACT-DRIFT-001: while sendOtpMutation is pending, phone and country controls remain interactive and their change callbacks can reset the mutation guard before the original Firebase verification request completes, permitting a second request. Freeze request-defining inputs until settlement or version/cancel stale attempts, then add a focused duplicate-request test."
+              "status": "closed",
+              "nextAction": "Closed under REG-PENDING-SNAPSHOT-001. Phone and country controls now freeze while sendOtpMutation is pending, input callbacks cannot reset the in-flight guard, duplicate controller dispatches return the same Future, and flow reset invalidates stale Firebase callbacks. Focused controller, presentation-state, and widget tests prove the submitted snapshot stays coherent."
             }
       ]
     },

@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.5.4
+version: 1.5.5
 updated: 2026-07-22
 owner: recursive_audit_loop
 status: active
@@ -35,7 +35,7 @@ This spec consolidates and normalizes guidance from:
   widget catalog, and private-helper remediation.
 - `docs/audit_registry/rules.json`: active enforceable rules such as
   `ASYNC-UI-001`, `CONTROLLER-BOUNDARY-001`, `PROVIDER-SEAM-001`,
-  `ERROR-UI-001`, `MUTATION-ERROR-SURFACE-001`,
+  `ERROR-UI-001`, `MUTATION-ERROR-SURFACE-001`, `PENDING-SNAPSHOT-001`,
   `EXTERNAL-SIDE-EFFECT-001`, `UI-LINT-001`, and
   `WIDGET-CATALOG-001`.
 
@@ -1182,6 +1182,68 @@ rendered multiple times on one surface must key mutation state per target with
 equality, not concatenated strings. Use
 `lib/hosts/presentation/host_event_booking_controller.dart` as the reference
 implementation.
+
+### Exhibit ARCH-PENDING-SNAPSHOT-001: Pending Request Snapshot Integrity
+
+<!-- exhibit-freshness: ARCH-PENDING-SNAPSHOT-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+
+Reference files:
+
+- `lib/auth/presentation/auth_controller.dart`
+- `lib/auth/presentation/auth_presentation_state.dart`
+- `lib/auth/presentation/phone_page.dart`
+- `test/auth/presentation/auth_controller_test.dart`
+- `test/auth/presentation/auth_screen_test.dart`
+
+An in-flight request owns the exact input snapshot that was submitted. A
+loading button is feedback, not request integrity. Every control that can
+change, dismiss, invalidate, or overlap that snapshot must follow one explicit
+policy until the request settles:
+
+| Policy | Product behavior | Required proof |
+|---|---|---|
+| Frozen snapshot | Disable request-defining fields, conflicting actions, mutation-reset callbacks, and unsafe route exits. This is the default for one form submission or route-level action. | Widget or integration coverage proves the controls cannot change the request and a duplicate trigger does not start a second operation. |
+| Versioned snapshot | Keep editing available, but attach an immutable generation/version to the submitted request and ignore or cancel stale results. The UI must explain whether edits are queued or belong to a later submit. | Controller tests prove stale success and failure cannot overwrite the current draft or advance the current flow. |
+| Independently keyed concurrency | Permit parallel work only when each operation has a distinct typed scope key and its own pending/error surface. | Tests prove one key cannot disable, overwrite, clear, or surface failure for a sibling key. |
+
+Do not let an input callback call `Mutation.reset` while its operation is
+pending. A controller-level in-flight future or idempotency key must
+deduplicate duplicate dispatches as defense in depth; disabling the widget
+alone is insufficient because keyboard submission, delayed callbacks, and
+programmatic callers can bypass it. Flow reset or cancellation must invalidate
+the current generation so late external callbacks become no-ops.
+
+Phone Authentication is the reference frozen-snapshot implementation. The
+phone field and country selector derive their enabled state from the send
+mutation, while the controller returns the same future for duplicate sends and
+checks a flow generation before accepting Firebase callbacks:
+
+```dart
+Future<void> sendOtp(String phoneNumber, String countryCode) {
+  final existingRequest = _sendOtpInFlight;
+  if (existingRequest != null) return existingRequest;
+
+  late final Future<void> trackedRequest;
+  trackedRequest = _sendOtp(phoneNumber, countryCode).whenComplete(() {
+    if (identical(_sendOtpInFlight, trackedRequest)) {
+      _sendOtpInFlight = null;
+    }
+  });
+  _sendOtpInFlight = trackedRequest;
+  return trackedRequest;
+}
+
+void setCountryCode(String code) {
+  if (_sendOtpInFlight != null) return;
+  state = state.copyWith(countryCode: code);
+  sendOtpMutation.reset(ref);
+}
+```
+
+Every adopting feature must declare the chosen policy in its feature contract.
+If the implementation is not yet safe, the pending-state action matrix must
+describe the unsafe controls honestly and retain stable debt instead of
+claiming a frozen form.
 
 ### Action Controller
 

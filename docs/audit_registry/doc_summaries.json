@@ -1,5 +1,5 @@
 {
-  "version": "4.5.164",
+  "version": "4.5.165",
   "updated": "2026-07-23",
   "owner": "recursive_audit_loop",
   "summaries": {
@@ -104,7 +104,7 @@
       ]
     },
     "docs/app_architecture.md": {
-      "purpose": "Canonical Flutter app architecture spec for dependency-direction seams, generated Riverpod provider topology and reviewed relationship candidates, Firebase/domain boundaries, mutation-cardinality grain, app-role boundaries, feature/layer/screen/controller/repository/widget ownership, exhaustive screen-chrome role contracts, async state boundaries, error-surface taxonomy, UI layout/scroll/sizing, routing/navigation constants, realtime stream lifecycle, reference implementation exhibits, exhibit-freshness markers, and enforcement policy.",
+      "purpose": "Canonical Flutter app architecture spec for dependency-direction seams, generated Riverpod provider topology and reviewed relationship candidates, Firebase/domain boundaries, mutation-cardinality grain, pending request snapshot integrity, app-role boundaries, feature/layer/screen/controller/repository/widget ownership, exhaustive screen-chrome role contracts, async state boundaries, error-surface taxonomy, UI layout/scroll/sizing, routing/navigation constants, realtime stream lifecycle, reference implementation exhibits, exhibit-freshness markers, and enforcement policy.",
       "read_when": [
         "Changing code organization under lib/",
         "Starting or continuing an architecture migration rollout",
@@ -115,6 +115,7 @@
         "Moving behavior between widgets, controllers, repositories, services, or domain classes",
         "Deciding screen vs body/widget ownership",
         "Changing async loading/error/mutation state boundaries",
+        "Choosing frozen, versioned, or independently keyed behavior for pending operations",
         "Changing shared screen padding, tab body insets, sliver body gaps, scroll ownership, or sizing constraints",
         "Changing exceptions, error mappers, operation context, logging, analytics, or user-facing error rendering",
         "Changing keepAlive, autoDispose, or retained-tab stream ownership",

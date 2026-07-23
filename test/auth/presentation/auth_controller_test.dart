@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui' show Locale;
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../onboarding/onboarding_test_helpers.dart';
+import '../../test_pump_helpers.dart';
 
 void main() {
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
@@ -107,6 +109,83 @@ void main() {
         expect(repository.forceResendingToken, isNull);
       },
     );
+
+    test(
+      'deduplicates an active request and freezes request-defining state',
+      () async {
+        final requestGate = Completer<void>();
+        final repository = FakeAuthRepository()
+          ..onVerifyPhoneNumber =
+              ({
+                required verificationCompleted,
+                required verificationFailed,
+                required codeSent,
+                required codeAutoRetrievalTimeout,
+              }) async {
+                await requestGate.future;
+                codeSent('verification-id', 11);
+              };
+        final container = _authControllerContainer(repository);
+        addTearDown(repository.dispose);
+        addTearDown(container.dispose);
+        final notifier = container.read(authControllerProvider.notifier);
+
+        final firstRequest = notifier.sendOtp('9999999999', '+91');
+        await flushTestEventQueue();
+
+        notifier.setCountryCode('+1');
+        notifier.clearSendOtpErrorIfIdle();
+        final duplicateRequest = notifier.sendOtp('8888888888', '+1');
+
+        expect(identical(firstRequest, duplicateRequest), true);
+        expect(repository.verifyPhoneNumberCallCount, 1);
+        expect(
+          container.read(authControllerProvider),
+          const AuthScreenState(phoneNumber: '9999999999'),
+        );
+
+        requestGate.complete();
+        await Future.wait([firstRequest, duplicateRequest]);
+
+        expect(repository.verifyPhoneNumberCallCount, 1);
+        expect(
+          container.read(authControllerProvider),
+          const AuthScreenState(
+            step: AuthStep.otp,
+            verificationId: 'verification-id',
+            phoneNumber: '9999999999',
+          ),
+        );
+      },
+    );
+
+    test('reset ignores callbacks from an abandoned OTP request', () async {
+      final requestGate = Completer<void>();
+      final repository = FakeAuthRepository()
+        ..onVerifyPhoneNumber =
+            ({
+              required verificationCompleted,
+              required verificationFailed,
+              required codeSent,
+              required codeAutoRetrievalTimeout,
+            }) async {
+              await requestGate.future;
+              codeSent('stale-verification-id', 11);
+            };
+      final container = _authControllerContainer(repository);
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+      final notifier = container.read(authControllerProvider.notifier);
+
+      final request = notifier.sendOtp('9999999999', '+91');
+      await flushTestEventQueue();
+      notifier.reset();
+      requestGate.complete();
+      await request;
+
+      expect(repository.verifyPhoneNumberCallCount, 1);
+      expect(container.read(authControllerProvider), const AuthScreenState());
+    });
 
     test(
       'rejects invalid phone numbers before calling Firebase Auth',

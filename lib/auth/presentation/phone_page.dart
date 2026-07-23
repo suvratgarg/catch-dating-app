@@ -48,9 +48,8 @@ class _PhonePageState extends ConsumerState<PhonePage> {
   }
 
   void _submit() {
+    if (ref.read(AuthController.sendOtpMutation).isPending) return;
     if (_formKey.currentState!.validate()) {
-      if (ref.read(AuthController.sendOtpMutation).isPending) return;
-
       final countryCode = ref.read(authControllerProvider).countryCode;
       unawaited(
         AuthController.sendOtpMutation
@@ -101,11 +100,11 @@ class _PhonePageState extends ConsumerState<PhonePage> {
             children: [
               CountryCodeSelector(
                 countryCode: viewState.countryCode,
+                enabled: viewState.requestControlsEnabled,
                 onChanged: (code) {
                   ref
                       .read(authControllerProvider.notifier)
                       .setCountryCode(code);
-                  AuthController.sendOtpMutation.reset(ref);
                 },
               ),
               gapW8,
@@ -116,11 +115,14 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                   showLabel: false,
                   controller: _phoneController,
                   autofocus: viewState.shouldAutofocus,
+                  enabled: viewState.requestControlsEnabled,
                   keyboardType: TextInputType.phone,
                   textInputAction: TextInputAction.done,
                   autofillHints: const [AutofillHints.telephoneNumberNational],
                   onSubmitted: (_) => _submit(),
-                  onChanged: (_) => AuthController.sendOtpMutation.reset(ref),
+                  onChanged: (_) => ref
+                      .read(authControllerProvider.notifier)
+                      .clearSendOtpErrorIfIdle(),
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
                     LengthLimitingTextInputFormatter(AuthInput.maxPhoneDigits),
@@ -155,10 +157,12 @@ class CountryCodeSelector extends StatelessWidget {
     super.key,
     required this.countryCode,
     required this.onChanged,
+    this.enabled = true,
   });
 
   final String countryCode;
   final ValueChanged<String> onChanged;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -169,8 +173,10 @@ class CountryCodeSelector extends StatelessWidget {
       width: CatchLayout.countryCodeSelectorWidth,
       height: CatchField.mdControlHeight,
       child: CatchControlShell(
+        enabled: enabled,
         padding: EdgeInsets.zero,
         child: CountryCodePicker(
+          enabled: enabled,
           initialSelection: countryIsoForDialCode(countryCode),
           onChanged: (code) {
             final dialCode = code.dialCode;

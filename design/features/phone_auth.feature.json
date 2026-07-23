@@ -139,10 +139,9 @@
         "send_code_mutation": {
           "actionCases": [
             {
-              "id": "pending_inputs_still_active",
+              "id": "frozen_request_snapshot",
               "dimensions": {"mutation": "pending"},
-              "enabledActions": ["open_country_selector"],
-              "disabledActions": ["send_code"]
+              "disabledActions": ["open_country_selector", "send_code"]
             },
             {
               "id": "error",

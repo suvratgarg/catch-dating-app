@@ -1,5 +1,5 @@
 {
-  "version": "1.5.50",
+  "version": "1.5.51",
   "updated": "2026-07-23",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
@@ -1722,6 +1722,119 @@
         "node tool/agent/check_agent_readiness.mjs"
       ],
       "notes": "The Explore query pair is the reference accumulated feed. Realtime first-page history adopters remain bounded; documented operational-set exceptions are capped but intentionally do not expose archive pagination."
+    },
+    {
+      "id": "ARCH-PENDING-SNAPSHOT-001",
+      "name": "Pending request snapshot integrity",
+      "status": "reference",
+      "architectureExhibit": "docs/app_architecture.md#exhibit-arch-pending-snapshot-001-pending-request-snapshot-integrity",
+      "prototypeFiles": [
+        "lib/auth/presentation/auth_controller.dart",
+        "lib/auth/presentation/auth_presentation_state.dart",
+        "lib/auth/presentation/phone_page.dart",
+        "test/auth/presentation/auth_controller_test.dart",
+        "test/auth/presentation/auth_presentation_state_test.dart",
+        "test/auth/presentation/auth_screen_test.dart"
+      ],
+      "adopters": [
+        {
+          "path": "lib/auth/presentation/auth_controller.dart",
+          "role": "reference controller deduplicating one Firebase verification request, freezing request-defining country state, and rejecting stale callbacks after flow reset",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "lib/auth/presentation/phone_page.dart",
+          "role": "reference frozen-snapshot form disabling phone and country controls while the submitted request is pending",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "test/auth/presentation/auth_controller_test.dart",
+          "role": "controller proof for duplicate-request deduplication, immutable submitted values, and stale callback rejection",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "test/auth/presentation/auth_screen_test.dart",
+          "role": "widget proof that request-defining phone and country controls stay disabled and cannot launch a second request",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        }
+      ],
+      "variantPatterns": [
+        {
+          "id": "ARCH-PENDING-SNAPSHOT-001-VERSIONED",
+          "name": "Versioned editable snapshot",
+          "rule": "Keep edits live only with an immutable request generation and stale-result rejection or cancellation plus explicit queued-or-next-submit UI."
+        },
+        {
+          "id": "ARCH-PENDING-SNAPSHOT-001-INDEPENDENT-KEYED",
+          "name": "Independently keyed concurrency",
+          "rule": "Allow simultaneous operations only when typed scope keys and separate pending/error surfaces prevent sibling interference."
+        }
+      ],
+      "candidateQueue": [
+        {
+          "id": "DS-ONBOARDING-006",
+          "path": "lib/onboarding/presentation",
+          "reason": "Save and complete operations leave navigation or request-defining choices active after payload capture.",
+          "addedPass": "2026-07-23-feature-contract-debt-audit"
+        },
+        {
+          "id": "DS-FILTERS-004",
+          "path": "lib/swipes/presentation/filters_screen.dart",
+          "reason": "Apply leaves close, age, and gender decisions live after the persisted request is captured.",
+          "addedPass": "2026-07-23-feature-contract-debt-audit"
+        },
+        {
+          "id": "DS-HOST-CLUB-CREATE-005",
+          "path": "lib/hosts/presentation/club_management/create",
+          "reason": "Pending submit and save operations do not consistently freeze header navigation or form decisions.",
+          "addedPass": "2026-07-23-feature-contract-debt-audit"
+        },
+        {
+          "id": "DS-HOST-EVENT-EDIT-005",
+          "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+          "reason": "Save pending leaves form choices live after request capture.",
+          "addedPass": "2026-07-23-feature-contract-debt-audit"
+        },
+        {
+          "id": "DP-REVIEWS-HISTORY-006",
+          "path": "lib/reviews/presentation",
+          "reason": "Review submission needs a declared pending snapshot policy and duplicate-operation proof.",
+          "addedPass": "2026-07-23-feature-contract-debt-audit"
+        },
+        {
+          "id": "DP-SETTINGS-ACCOUNT-004",
+          "path": "lib/safety/presentation",
+          "reason": "Independent account mutation domains need explicit typed scope and cross-domain concurrency policy.",
+          "addedPass": "2026-07-23-feature-contract-debt-audit"
+        },
+        {
+          "id": "WEB-FORM-SUBMISSION-SNAPSHOT-001",
+          "path": "website/src/features",
+          "reason": "Waitlist, host application, and organizer claim forms need frozen or versioned request snapshots.",
+          "addedPass": "2026-07-23-feature-contract-debt-audit"
+        },
+        {
+          "id": "ADMIN-MUTATION-SNAPSHOT-001",
+          "path": "admin/src/features",
+          "reason": "Admin workspaces need explicit frozen versus independently keyed pending-operation policy.",
+          "addedPass": "2026-07-23-feature-contract-debt-audit"
+        }
+      ],
+      "exceptions": [],
+      "requiredBackPropagation": "When pending ownership, request-defining inputs, reset behavior, cancellation, deduplication, route exits, scope keys, or stale-result handling change, update the Phone Authentication reference, every promoted adopter, feature-contract action matrices, screen debt, regression guard, and focused interaction tests in the same pass.",
+      "requiredChecks": [
+        "flutter test --concurrency=1 test/auth/presentation/auth_controller_test.dart test/auth/presentation/auth_presentation_state_test.dart test/auth/presentation/auth_screen_test.dart",
+        "node tool/design/build_feature_contracts.mjs --check",
+        "node tool/design/check_screen_contracts.mjs --check",
+        "node tool/architecture/check_app_architecture_exhibits.mjs",
+        "dart analyze",
+        "node tool/agent/check_agent_readiness.mjs"
+      ],
+      "notes": "Frozen snapshot is the default for one submitted form or route action. Versioned editing and independently keyed concurrency are explicit variants, not implicit exceptions. Phone Authentication is the promoted reference; remaining Flutter, marketing, and Admin candidates stay open until production behavior and focused tests align."
     },
     {
       "id": "ARCH-ROUTER-LIFECYCLE-001",

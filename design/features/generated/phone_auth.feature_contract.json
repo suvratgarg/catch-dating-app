@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/phone_auth.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:61192720c2696ae5e94522a19612c9d98f8944e1496251749540fde7048fff01",
+  "sourceDigest": "sha256:390b851e8fd1b42f62e168b0ae4dfd7dd525429f81ec3b91b6fa4619581993a1",
   "resolvedDigest": "sha256:8bba4c729b2e84708fca05ad1374fd92056fcd2112b813405ee04da69ff17638",
   "feature": {
     "id": "feature.phone_auth",
@@ -427,7 +427,7 @@
           },
           "actionCases": [
             {
-              "id": "pending_inputs_still_active",
+              "id": "frozen_request_snapshot",
               "dimensions": {
                 "step": "phone",
                 "mutation": "pending",
@@ -435,10 +435,9 @@
                 "accessibility": "standard"
               },
               "actions": {
-                "enabled": [
-                  "open_country_selector"
-                ],
+                "enabled": [],
                 "disabled": [
+                  "open_country_selector",
                   "send_code"
                 ],
                 "notAllowed": [

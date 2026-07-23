@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.32
+version: 0.1.33
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -256,10 +256,13 @@ behavior. Host Organizer Create and Host Event Edit currently leave some
 navigation or form decisions active after a mutation snapshot is submitted.
 Their pending scenarios and screen gaps record that concurrency honestly; do
 not model the form as frozen until production state and focused tests prove it.
-Phone Authentication adds a sharper failure mode: request-defining inputs can
-reset the mutation guard while the request is still running. Treat every control
-that can mutate, dismiss, or invalidate an in-flight snapshot as part of the
-pending action matrix, even when the primary button itself is disabled.
+Phone Authentication is now the frozen-snapshot reference: phone and country
+controls disable while the request is pending, duplicate controller dispatches
+share one future, and flow reset invalidates stale Firebase callbacks. Treat
+every control that can mutate, dismiss, or invalidate an in-flight snapshot as
+part of the pending action matrix, even when the primary button itself is
+disabled. Versioned editing and independently keyed concurrency remain explicit
+tested variants under `ARCH-PENDING-SNAPSHOT-001`, not implicit exceptions.
 Matching Preferences demonstrates the same rule across local drafts: close,
 age, and gender controls remain live after the persisted request is captured,
 so the generated pending matrix must preserve those unsafe actions until the
