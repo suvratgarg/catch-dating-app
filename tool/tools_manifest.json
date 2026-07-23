@@ -827,7 +827,7 @@
       ],
       "role": "gate",
       "rules": [
-        "REG-PENDING-SNAPSHOT-001"
+        "PENDING-SNAPSHOT-001"
       ],
       "vacuityProof": {
         "type": "self-test",
@@ -3603,7 +3603,8 @@
       ],
       "role": "gate",
       "rules": [
-        "ACTION-CARDINALITY-001"
+        "ACTION-CARDINALITY-001",
+        "PENDING-SNAPSHOT-001"
       ],
       "vacuityProof": {
         "type": "test",
