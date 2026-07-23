@@ -1067,10 +1067,12 @@
         "states": [
           "catch-native",
           "external-source",
-          "event-reviews"
+          "event-reviews",
+          "desktop-ticket-rail",
+          "mobile-single-column"
         ]
       },
-      "notes": "Generated read-only event route. Catch events hand booking to the app; external events hand registration to the official source. The route never renders web booking, checkout, or sign-in controls."
+      "notes": "Generated read-only event route with a responsive ticket and organizer/action rail that becomes an app-aligned single-column stack on mobile. Catch events hand booking to the app; external events hand registration to the official source. The route never renders web booking, checkout, or sign-in controls."
     },
     {
       "id": "shared_event_detail_shells",
@@ -1093,10 +1095,13 @@
           "catch-native",
           "external-source",
           "fact-grid",
-          "provenance"
+          "provenance",
+          "event-media",
+          "organizer-panel",
+          "review-preview"
         ]
       },
-      "notes": "Shared event-detail hero, action panel, section, fact-grid, review-section, and provenance shells. Event state and organizer policy stay feature-owned."
+      "notes": "Shared event-detail ticket, media, organizer rail, action panel, compact review preview, section, fact-grid, review-section, and provenance shells. Event state and organizer policy stay feature-owned."
     },
     {
       "id": "event_detail_hero_section",
@@ -1117,10 +1122,13 @@
         "exportName": "EventDetailHero",
         "states": [
           "catch-native",
-          "external-source"
+          "external-source",
+          "desktop-ticket-rail",
+          "mobile-single-column",
+          "review-preview"
         ]
       },
-      "notes": "Event identity, organizer provenance, schedule, location, price, and source-aware primary action."
+      "notes": "Responsive event identity ticket, organizer provenance rail, app-aligned compact facts, capability-aware event-review preview, and source-aware primary action."
     },
     {
       "id": "event_detail_facts_section",
