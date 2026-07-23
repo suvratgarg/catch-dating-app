@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 86,
-  "updated": "2026-07-22",
+  "version": 87,
+  "updated": "2026-07-24",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -22,7 +22,8 @@
       "not_found",
       "organizer_search",
       "organizer_listing_canonical",
-      "organizer_listing_legacy"
+      "organizer_listing_legacy",
+      "event_detail_canonical"
     ],
     "storyKinds": [
       "route",
@@ -45,7 +46,8 @@
         "not_found",
         "organizer_search",
         "organizer_listing_canonical",
-        "organizer_listing_legacy"
+        "organizer_listing_legacy",
+        "event_detail_canonical"
       ],
       "owner": "shared/site",
       "source": "website/src/shared/site/PageShell.tsx",
@@ -473,6 +475,7 @@
         "host",
         "claim",
         "claim_lookup",
+        "event_detail_canonical",
         "organizer_search",
         "organizer_listing_canonical",
         "organizer_listing_legacy"
@@ -498,6 +501,7 @@
       "id": "shared_app_download_shell",
       "kind": "supporting-component",
       "routeIds": [
+        "event_detail_canonical",
         "home",
         "organizer_listing_canonical",
         "organizer_listing_legacy"
@@ -690,6 +694,7 @@
       "id": "shared_listing_review_shell",
       "kind": "supporting-component",
       "routeIds": [
+        "event_detail_canonical",
         "organizer_listing_canonical",
         "organizer_listing_legacy"
       ],
@@ -1042,6 +1047,154 @@
       "notes": "Generated organizer listing route story uses a checked hostListings fixture and the website Query provider because reviews and claim panels are query-backed."
     },
     {
+      "id": "route_event_detail",
+      "kind": "route",
+      "routeIds": [
+        "event_detail_canonical"
+      ],
+      "owner": "features/events",
+      "source": "website/src/features/events/EventDetailPage.tsx",
+      "exportName": "EventDetailPage",
+      "css": [
+        "website/src/styles/site-shell.css",
+        "website/src/styles/event-detail.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/MarketingRoutes.stories.tsx",
+        "exportName": "EventDetailCatch",
+        "states": [
+          "catch-native",
+          "external-source",
+          "event-reviews"
+        ]
+      },
+      "notes": "Generated read-only event route. Catch events hand booking to the app; external events hand registration to the official source. The route never renders web booking, checkout, or sign-in controls."
+    },
+    {
+      "id": "shared_event_detail_shells",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_detail_canonical"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives/eventDetail.tsx",
+      "exportName": "EventDetailHeroLayout",
+      "css": [
+        "website/src/styles/event-detail.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/EventDetailSections.stories.tsx",
+        "exportName": "EventDetailShells",
+        "states": [
+          "catch-native",
+          "external-source",
+          "fact-grid",
+          "provenance"
+        ]
+      },
+      "notes": "Shared event-detail hero, action panel, section, fact-grid, review-section, and provenance shells. Event state and organizer policy stay feature-owned."
+    },
+    {
+      "id": "event_detail_hero_section",
+      "kind": "section",
+      "routeIds": [
+        "event_detail_canonical"
+      ],
+      "owner": "features/events/sections",
+      "source": "website/src/features/events/sections/EventDetailSections.tsx",
+      "exportName": "EventDetailHeroSection",
+      "css": [
+        "website/src/styles/event-detail.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/EventDetailSections.stories.tsx",
+        "exportName": "EventDetailHero",
+        "states": [
+          "catch-native",
+          "external-source"
+        ]
+      },
+      "notes": "Event identity, organizer provenance, schedule, location, price, and source-aware primary action."
+    },
+    {
+      "id": "event_detail_facts_section",
+      "kind": "section",
+      "routeIds": [
+        "event_detail_canonical"
+      ],
+      "owner": "features/events/sections",
+      "source": "website/src/features/events/sections/EventDetailSections.tsx",
+      "exportName": "EventDetailFactsSection",
+      "css": [
+        "website/src/styles/event-detail.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/EventDetailSections.stories.tsx",
+        "exportName": "EventDetailFacts",
+        "states": [
+          "complete",
+          "missing-optional-details"
+        ]
+      },
+      "notes": "Read-only detail grid for timing, timezone, location disclosure, price, registration status, requirements, accessibility, and source freshness."
+    },
+    {
+      "id": "event_detail_reviews_section",
+      "kind": "section",
+      "routeIds": [
+        "event_detail_canonical"
+      ],
+      "owner": "features/events/sections",
+      "source": "website/src/features/events/sections/EventDetailSections.tsx",
+      "exportName": "EventDetailReviewsSection",
+      "css": [
+        "website/src/styles/event-detail.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/EventDetailSections.stories.tsx",
+        "exportName": "EventDetailReviews",
+        "states": [
+          "verified-event-reviews",
+          "empty"
+        ]
+      },
+      "notes": "Renders only published review records whose eventId matches the event route; organizer-level reviews remain on the organizer profile."
+    },
+    {
+      "id": "event_detail_provenance_section",
+      "kind": "section",
+      "routeIds": [
+        "event_detail_canonical"
+      ],
+      "owner": "features/events/sections",
+      "source": "website/src/features/events/sections/EventDetailSections.tsx",
+      "exportName": "EventDetailProvenanceSection",
+      "css": [
+        "website/src/styles/event-detail.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/EventDetailSections.stories.tsx",
+        "exportName": "EventDetailProvenance",
+        "states": [
+          "catch-native",
+          "external-source"
+        ]
+      },
+      "notes": "Separates organizer verification from Catch-native versus source-attributed event supply and surfaces source freshness."
+    },
+    {
       "id": "listing_sections_assembly",
       "kind": "supporting-component",
       "routeIds": [
@@ -1390,6 +1543,7 @@
       "id": "shared_ui_label_shell",
       "kind": "supporting-component",
       "routeIds": [
+        "event_detail_canonical",
         "home",
         "host",
         "claim",
@@ -1528,6 +1682,7 @@
       "id": "shared_empty_state",
       "kind": "supporting-component",
       "routeIds": [
+        "event_detail_canonical",
         "home",
         "claim",
         "organizer_search",
@@ -1750,6 +1905,7 @@
       "id": "shared_section_header",
       "kind": "supporting-component",
       "routeIds": [
+        "event_detail_canonical",
         "home",
         "host",
         "organizer_search",
@@ -1779,6 +1935,7 @@
       "id": "shared_action_group",
       "kind": "supporting-component",
       "routeIds": [
+        "event_detail_canonical",
         "home",
         "host",
         "claim",
@@ -2588,6 +2745,7 @@
         "host",
         "claim",
         "claim_lookup",
+        "event_detail_canonical",
         "not_found",
         "organizer_search",
         "organizer_listing_canonical",
@@ -2641,6 +2799,7 @@
       "id": "organizer_status_badge_adapter",
       "kind": "supporting-component",
       "routeIds": [
+        "event_detail_canonical",
         "home",
         "claim",
         "claim_lookup",

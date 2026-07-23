@@ -1,9 +1,11 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {MemoryRouter} from "react-router";
+import {useRevealAnimations} from "../app/usePageLifecycle";
 import {ClaimPage} from "../features/claims/ClaimPage";
 import {emptyClaimRouteState} from "../features/claims/claimRouting";
 import {HomePage} from "../features/home/HomePage";
 import {HostPage} from "../features/host/HostPage";
+import {EventDetailPage} from "../features/events/EventDetailPage";
 import {NotFoundPage} from "../features/notFound/NotFoundPage";
 import {LegalPage} from "../features/legal/LegalPage";
 import {publishedLegalContent} from "../content/legal";
@@ -14,6 +16,11 @@ import type {HostListing} from "../features/organizers/types";
 import {WebsiteQueryProvider} from "../shared/query/queryClient";
 import {PageShell} from "../shared/site";
 import {captures} from "./fixtures/marketingCaptures";
+import {
+  catchEventDetailFixture,
+  externalEventDetailFixture,
+} from "./fixtures/eventDetails";
+import type {EventDetailRecord} from "../features/events/eventDetailModel";
 
 const generatedOrganizerListing = requireListing("afterfly");
 
@@ -276,6 +283,42 @@ export const OrganizerListing: Story = {
     </WebsiteQueryProvider>
   ),
 };
+
+export const EventDetailCatch: Story = {
+  name: "/events/:eventId/ · Catch",
+  parameters: {
+    catchRoute: {
+      id: "event_detail_canonical",
+      path: catchEventDetailFixture.path,
+      reviewStates: [
+        "catch-native",
+        "external-source",
+        "event-reviews",
+        "missing-event",
+      ],
+      stateCoverage: {
+        storybook: ["catch-native", "external-source", "event-reviews"],
+        manual: ["missing-event"],
+      },
+    },
+    catchComponent: {
+      id: "route_event_detail",
+      routeIds: ["event_detail_canonical"],
+      states: ["catch-native", "external-source", "event-reviews"],
+    },
+  },
+  render: () => <EventDetailRouteStory event={catchEventDetailFixture} />,
+};
+
+export const EventDetailExternal: Story = {
+  name: "/events/:eventId/ · external",
+  render: () => <EventDetailRouteStory event={externalEventDetailFixture} />,
+};
+
+function EventDetailRouteStory({event}: {event: EventDetailRecord}) {
+  useRevealAnimations("event_detail", event.eventId);
+  return <EventDetailPage event={event} />;
+}
 
 function requireListing(id: string): HostListing {
   const listing = hostListings.find((item) => item.id === id);

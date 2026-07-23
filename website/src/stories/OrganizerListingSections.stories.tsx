@@ -28,6 +28,7 @@ const publicReviewListing: HostListing = {
   reviews: [
     {
       id: "public-review-story",
+      eventId: null,
       reviewerName: "Aarav P.",
       rating: 5,
       comment:

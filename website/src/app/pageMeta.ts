@@ -1,4 +1,5 @@
 import type {HostListing} from "../features/organizers/types";
+import type {EventDetailRecord} from "../features/events/eventDetailModel";
 import metaContent from "../content/meta.json";
 import {interpolateContent} from "../content/interpolate";
 import {validatedWebsiteMeta} from "../content/metaContract";
@@ -8,6 +9,7 @@ export type PageKey =
   | "host"
   | "organizers"
   | "listing"
+  | "event_detail"
   | "claim"
   | "privacy"
   | "terms"
@@ -24,7 +26,7 @@ export interface PageMeta {
 
 const websiteMeta = validatedWebsiteMeta(metaContent);
 
-export const pageMeta: Record<Exclude<PageKey, "listing">, PageMeta> =
+export const pageMeta: Record<Exclude<PageKey, "listing" | "event_detail">, PageMeta> =
   websiteMeta.routes;
 
 export function pageMetaForListing(
@@ -43,7 +45,31 @@ export function pageMetaForListing(
   };
 }
 
-export function getPageKey(pathname: string = window.location.pathname): Exclude<PageKey, "listing"> {
+export function pageMetaForEvent(event: EventDetailRecord): PageMeta {
+  const description = event.summary || event.listing.description;
+  return {
+    title: interpolateContent(websiteMeta.event.titleTemplate, {
+      title: event.title,
+      city: event.listing.city,
+    }),
+    description,
+    canonicalPath: event.path,
+    twitterDescription: event.supply === "external"
+      ? interpolateContent(websiteMeta.event.externalTwitterTemplate, {
+        title: event.title,
+        source: event.sourceLabel,
+      })
+      : interpolateContent(websiteMeta.event.catchTwitterTemplate, {
+        title: event.title,
+        organizer: event.listing.name,
+      }),
+    robots: event.listing.indexing,
+  };
+}
+
+export function getPageKey(
+  pathname: string = window.location.pathname
+): Exclude<PageKey, "listing" | "event_detail"> {
   if (pathname.startsWith("/claim")) return "claim";
   if (pathname.startsWith("/privacy")) return "privacy";
   if (pathname.startsWith("/terms")) return "terms";
@@ -57,6 +83,7 @@ export function getPageKey(pathname: string = window.location.pathname): Exclude
 export function pageClassFor(page: PageKey) {
   if (page === "host") return "host-page";
   if (page === "listing") return "listing-page";
+  if (page === "event_detail") return "event-detail-page";
   if (page === "organizers") return "organizers-page";
   if (page === "claim") return "claim-page";
   if (page === "privacy" || page === "terms" || page === "help") return "legal-page";

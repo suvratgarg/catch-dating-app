@@ -282,8 +282,11 @@ function publicExternalEventProjectionFromAction(action) {
       availability: event.discovery.availability,
       startTime,
       endTime,
+      timezone: validTimezone(event.timezone) ? event.timezone : "UTC",
       date: eventDateLabelForTimezone(startTime, endTime, event.timezone),
       location: event.meetingPoint,
+      locationDetails:
+        event.locationDetails ?? event.meetingLocation?.notes ?? "",
       summary: event.description,
       priceLabel: event.price.displayText ?? "External ticketing",
       sourceLabel,
@@ -889,6 +892,7 @@ function publicReviewsForListing(reviews, organizerId) {
       }
       return {
         id: String(entry?.path ?? review.id ?? "").split("/").pop() || null,
+        eventId: typeof review.eventId === "string" ? review.eventId : null,
         reviewerName: review.reviewerName ?? "Catch member",
         rating: review.rating,
         comment: review.comment ?? "",
@@ -957,8 +961,10 @@ function salesDemoEvents(demo) {
       timeline: start > now ? "upcoming" : "past",
       startTime: event.startTime,
       endTime: event.endTime,
+      timezone: "America/New_York",
       date: eventDateLabel(start, end),
       location: event.meetingPoint,
+      locationDetails: event.locationDetails ?? "",
       summary: event.description,
       capacityLimit: event.capacityLimit,
       bookedCount: event.bookedCount,
@@ -972,9 +978,12 @@ function salesDemoEvents(demo) {
 
 function salesDemoReviews(demo) {
   const baseDate = new Date(demo.referenceNow);
+  const reviewedEventId =
+    demo.events?.find((event) => event.role === "hostPostEventReport")?.id ?? null;
   return [
     {
       id: `${demo.club.id}-verified-review-1`,
+      eventId: reviewedEventId,
       reviewerName: "Maya S.",
       rating: 5,
       comment:
@@ -987,6 +996,7 @@ function salesDemoReviews(demo) {
     },
     {
       id: `${demo.club.id}-verified-review-2`,
+      eventId: reviewedEventId,
       reviewerName: "Daniel K.",
       rating: 5,
       comment:
@@ -999,6 +1009,7 @@ function salesDemoReviews(demo) {
     },
     {
       id: `${demo.club.id}-verified-review-3`,
+      eventId: reviewedEventId,
       reviewerName: "Anonymous attendee",
       rating: 4,
       comment:

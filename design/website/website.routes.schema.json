@@ -80,7 +80,7 @@
           },
           "pageKey": {
             "type": "string",
-            "enum": ["home", "host", "organizers", "listing", "claim", "privacy", "terms", "help", "not_found"]
+            "enum": ["home", "host", "organizers", "listing", "event_detail", "claim", "privacy", "terms", "help", "not_found"]
           },
           "source": {"type": "string"},
           "metaKey": {"type": "string"},
@@ -92,11 +92,11 @@
           "httpStatus": {"type": "integer", "enum": [200, 404]},
           "indexing": {
             "type": "string",
-            "enum": ["index", "noindex-follow", "listing-controlled"]
+            "enum": ["index", "noindex-follow", "listing-controlled", "event-controlled"]
           },
           "sitemap": {
             "type": "string",
-            "enum": ["included", "excluded", "listing-controlled"]
+            "enum": ["included", "excluded", "listing-controlled", "event-controlled"]
           },
           "notes": {"type": "string"},
           "review": {

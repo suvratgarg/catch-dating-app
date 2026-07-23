@@ -154,6 +154,17 @@ function withExternalEventActionTracking(
   return {
     ...card,
     actions: card.actions.map((action) => {
+      if (action.trackingLabel === "external_event_open_details") {
+        return {
+          ...action,
+          onClick: () => trackOrganizerAnalytics(
+            listing,
+            "eventView",
+            "external_event_card",
+            eventId
+          ),
+        };
+      }
       if (action.trackingLabel !== "external_event_source") return action;
       return {
         ...action,

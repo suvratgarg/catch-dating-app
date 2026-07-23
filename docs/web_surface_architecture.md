@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.8.3
-updated: 2026-07-22
+version: 0.8.4
+updated: 2026-07-24
 owner: web_platform
 status: active
 ---
@@ -97,8 +97,9 @@ row against production decision helpers, and
 `website/src/features/organizers/publicSurfaceBehavior.test.ts` executes every
 website row against the generated-listing policy and the same claim/review
 presentation adapters consumed by the rendered sections. The current contract
-contains 115 configurations across 14 surfaces. Adding a configuration without
-both implementation and proof fails strict mode.
+contains 118 configurations across 15 surfaces, including source-aware
+read-only website event detail. Adding a configuration without both
+implementation and proof fails strict mode.
 
 ## Current Stack
 

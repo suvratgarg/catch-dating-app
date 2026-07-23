@@ -33228,6 +33228,10 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
             "type": "string",
             "minLength": 1
           },
+          "timezone": {
+            "type": "string",
+            "minLength": 1
+          },
           "date": {
             "type": "string",
             "minLength": 1
@@ -33236,7 +33240,16 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
             "type": "string",
             "minLength": 1
           },
+          "locationDetails": {
+            "type": "string"
+          },
           "summary": {
+            "type": "string"
+          },
+          "requirements": {
+            "type": "string"
+          },
+          "accessibility": {
             "type": "string"
           },
           "capacityLimit": {
@@ -33323,6 +33336,10 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
               "null"
             ]
           },
+          "timezone": {
+            "type": "string",
+            "minLength": 1
+          },
           "date": {
             "type": "string",
             "minLength": 1
@@ -33331,7 +33348,16 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
             "type": "string",
             "minLength": 1
           },
+          "locationDetails": {
+            "type": "string"
+          },
           "summary": {
+            "type": "string"
+          },
+          "requirements": {
+            "type": "string"
+          },
+          "accessibility": {
             "type": "string"
           },
           "priceLabel": {
@@ -33457,6 +33483,7 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
         "additionalProperties": false,
         "required": [
           "id",
+          "eventId",
           "reviewerName",
           "rating",
           "comment",
@@ -33468,6 +33495,12 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
         ],
         "properties": {
           "id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "eventId": {
             "type": [
               "string",
               "null"
@@ -34047,6 +34080,10 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
           "type": "string",
           "minLength": 1
         },
+        "timezone": {
+          "type": "string",
+          "minLength": 1
+        },
         "date": {
           "type": "string",
           "minLength": 1
@@ -34055,7 +34092,16 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
           "type": "string",
           "minLength": 1
         },
+        "locationDetails": {
+          "type": "string"
+        },
         "summary": {
+          "type": "string"
+        },
+        "requirements": {
+          "type": "string"
+        },
+        "accessibility": {
           "type": "string"
         },
         "capacityLimit": {
@@ -34139,6 +34185,10 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
             "null"
           ]
         },
+        "timezone": {
+          "type": "string",
+          "minLength": 1
+        },
         "date": {
           "type": "string",
           "minLength": 1
@@ -34147,7 +34197,16 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
           "type": "string",
           "minLength": 1
         },
+        "locationDetails": {
+          "type": "string"
+        },
         "summary": {
+          "type": "string"
+        },
+        "requirements": {
+          "type": "string"
+        },
+        "accessibility": {
           "type": "string"
         },
         "priceLabel": {
@@ -34260,6 +34319,7 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
       "additionalProperties": false,
       "required": [
         "id",
+        "eventId",
         "reviewerName",
         "rating",
         "comment",
@@ -34271,6 +34331,12 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
       ],
       "properties": {
         "id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "eventId": {
           "type": [
             "string",
             "null"

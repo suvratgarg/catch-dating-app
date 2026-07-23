@@ -301,6 +301,10 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
             'type': 'string',
             'minLength': 1,
           },
+          'timezone': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+          },
           'date': <String, Object?>{
             'type': 'string',
             'minLength': 1,
@@ -309,7 +313,16 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
             'type': 'string',
             'minLength': 1,
           },
+          'locationDetails': <String, Object?>{
+            'type': 'string',
+          },
           'summary': <String, Object?>{
+            'type': 'string',
+          },
+          'requirements': <String, Object?>{
+            'type': 'string',
+          },
+          'accessibility': <String, Object?>{
             'type': 'string',
           },
           'capacityLimit': <String, Object?>{
@@ -396,6 +409,10 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
               'null',
             ],
           },
+          'timezone': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+          },
           'date': <String, Object?>{
             'type': 'string',
             'minLength': 1,
@@ -404,7 +421,16 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
             'type': 'string',
             'minLength': 1,
           },
+          'locationDetails': <String, Object?>{
+            'type': 'string',
+          },
           'summary': <String, Object?>{
+            'type': 'string',
+          },
+          'requirements': <String, Object?>{
+            'type': 'string',
+          },
+          'accessibility': <String, Object?>{
             'type': 'string',
           },
           'priceLabel': <String, Object?>{
@@ -530,6 +556,7 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
         'additionalProperties': false,
         'required': <Object?>[
           'id',
+          'eventId',
           'reviewerName',
           'rating',
           'comment',
@@ -541,6 +568,12 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
         ],
         'properties': <String, Object?>{
           'id': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+          },
+          'eventId': <String, Object?>{
             'type': <Object?>[
               'string',
               'null',
@@ -1120,6 +1153,10 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
           'type': 'string',
           'minLength': 1,
         },
+        'timezone': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+        },
         'date': <String, Object?>{
           'type': 'string',
           'minLength': 1,
@@ -1128,7 +1165,16 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
           'type': 'string',
           'minLength': 1,
         },
+        'locationDetails': <String, Object?>{
+          'type': 'string',
+        },
         'summary': <String, Object?>{
+          'type': 'string',
+        },
+        'requirements': <String, Object?>{
+          'type': 'string',
+        },
+        'accessibility': <String, Object?>{
           'type': 'string',
         },
         'capacityLimit': <String, Object?>{
@@ -1212,6 +1258,10 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
             'null',
           ],
         },
+        'timezone': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+        },
         'date': <String, Object?>{
           'type': 'string',
           'minLength': 1,
@@ -1220,7 +1270,16 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
           'type': 'string',
           'minLength': 1,
         },
+        'locationDetails': <String, Object?>{
+          'type': 'string',
+        },
         'summary': <String, Object?>{
+          'type': 'string',
+        },
+        'requirements': <String, Object?>{
+          'type': 'string',
+        },
+        'accessibility': <String, Object?>{
           'type': 'string',
         },
         'priceLabel': <String, Object?>{
@@ -1333,6 +1392,7 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
       'additionalProperties': false,
       'required': <Object?>[
         'id',
+        'eventId',
         'reviewerName',
         'rating',
         'comment',
@@ -1344,6 +1404,12 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
       ],
       'properties': <String, Object?>{
         'id': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+        },
+        'eventId': <String, Object?>{
           'type': <Object?>[
             'string',
             'null',
