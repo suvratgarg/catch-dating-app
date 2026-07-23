@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.5.5
+version: 1.5.6
 updated: 2026-07-22
 owner: recursive_audit_loop
 status: active
@@ -1239,6 +1239,14 @@ void setCountryCode(String code) {
   sendOtpMutation.reset(ref);
 }
 ```
+
+Member Onboarding and Matching Preferences are promoted frozen-snapshot
+adopters. Onboarding freezes backward navigation and the active step's
+request-defining controls across identity, prompts, and running preferences;
+its controller deduplicates both profile-save and completion operations.
+Matching Preferences freezes route dismissal, reset, age, gender, and apply
+controls while its controller deduplicates the save. Their focused tests prove
+the route, presentation state, and controller layers together.
 
 Every adopting feature must declare the chosen policy in its feature contract.
 If the implementation is not yet safe, the pending-state action matrix must

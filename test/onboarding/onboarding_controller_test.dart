@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
 import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
@@ -11,6 +15,7 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
+import '../test_pump_helpers.dart';
 import 'onboarding_test_helpers.dart';
 
 void main() {
@@ -251,6 +256,76 @@ void main() {
   });
 
   group('OnboardingController.saveProfile', () {
+    test(
+      'deduplicates an active save and freezes controller-owned draft state',
+      () async {
+        final repository = FakeAuthRepository()
+          ..currentUserValue = TestUser(
+            uid: 'runner-1',
+            phoneNumber: '+919876543210',
+          );
+        final userProfileRepository = _GatedSetUserProfileRepository();
+        final draftRepository = FakeOnboardingDraftRepository();
+        final container = createOnboardingTestContainer(
+          overrides: [
+            authRepositoryProvider.overrideWithValue(repository),
+            userProfileRepositoryProvider.overrideWith(
+              (ref) => userProfileRepository,
+            ),
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
+            onboardingDraftRepositoryProvider.overrideWithValue(
+              draftRepository,
+            ),
+          ],
+        );
+        addTearDown(repository.dispose);
+        addTearDown(container.dispose);
+        await primeOnboardingAsyncProviders(container);
+
+        final notifier = container.read(onboardingControllerProvider.notifier);
+        await notifier.initStep();
+        notifier
+          ..setNameDob(
+            firstName: 'Asha',
+            lastName: 'Runner',
+            dateOfBirth: DateTime(1997, 4, 15),
+            phoneNumber: '9876543210',
+            countryCode: '+91',
+          )
+          ..setGenderInterest(
+            gender: Gender.woman,
+            interestedInGenders: const [Gender.man],
+          )
+          ..goToStep(OnboardingStep.genderInterest);
+
+        final firstRequest = notifier.saveProfile();
+        await flushTestEventQueue();
+        notifier
+          ..setGenderInterest(
+            gender: Gender.man,
+            interestedInGenders: const [Gender.woman],
+          )
+          ..goToStep(OnboardingStep.nameDob);
+        final duplicateRequest = notifier.saveProfile();
+
+        expect(identical(firstRequest, duplicateRequest), isTrue);
+        expect(userProfileRepository.setCallCount, 1);
+        expect(
+          container.read(onboardingControllerProvider).gender,
+          Gender.woman,
+        );
+        expect(
+          container.read(onboardingControllerProvider).step,
+          OnboardingStep.genderInterest,
+        );
+
+        userProfileRepository.gate.complete();
+        await Future.wait([firstRequest, duplicateRequest]);
+        expect(userProfileRepository.setCallCount, 1);
+      },
+    );
+
     test('throws when the user is no longer signed in', () async {
       final repository = FakeAuthRepository();
       final userProfileRepository = FakeOnboardingUserProfileRepository();
@@ -451,6 +526,61 @@ void main() {
   });
 
   group('OnboardingController.completeRunPreferences', () {
+    test('deduplicates an active completion request', () async {
+      final repository = FakeAuthRepository();
+      final userProfileRepository = _GatedUpdateUserProfileRepository(
+        currentUser: buildUser().copyWith(profileComplete: false),
+      );
+      final draftRepository = FakeOnboardingDraftRepository();
+      final container = createOnboardingTestContainer(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(repository),
+          userProfileRepositoryProvider.overrideWith(
+            (ref) => userProfileRepository,
+          ),
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          watchUserProfileProvider.overrideWith(
+            (ref) => Stream.value(buildUser().copyWith(profileComplete: false)),
+          ),
+          onboardingDraftRepositoryProvider.overrideWithValue(draftRepository),
+        ],
+      );
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+      await primeOnboardingAsyncProviders(container);
+      final notifier = container.read(onboardingControllerProvider.notifier)
+        ..goToStep(OnboardingStep.runningPrefs);
+
+      final firstRequest = notifier.completeRunPreferences(
+        paceMinSecsPerKm: 305,
+        paceMaxSecsPerKm: 355,
+        preferredDistances: const [PreferredDistance.tenK],
+        runningReasons: const [RunReason.community],
+        preferredRunTimes: const [PreferredRunTime.morning],
+      );
+      await flushTestEventQueue();
+      notifier.goToStep(OnboardingStep.welcome);
+      final duplicateRequest = notifier.completeRunPreferences(
+        paceMinSecsPerKm: 400,
+        paceMaxSecsPerKm: 500,
+        preferredDistances: const [],
+        runningReasons: const [],
+        preferredRunTimes: const [],
+      );
+
+      expect(identical(firstRequest, duplicateRequest), isTrue);
+      expect(userProfileRepository.updateCallCount, 1);
+      expect(
+        container.read(onboardingControllerProvider).step,
+        OnboardingStep.runningPrefs,
+      );
+
+      userProfileRepository.gate.complete();
+      await Future.wait([firstRequest, duplicateRequest]);
+      expect(userProfileRepository.updateCallCount, 1);
+      expect(userProfileRepository.lastSavedUser?.paceMinSecsPerKm, 305);
+    });
+
     test('throws when the latest profile is unavailable', () async {
       final repository = FakeAuthRepository();
       final userProfileRepository = FakeOnboardingUserProfileRepository();
@@ -597,5 +727,37 @@ class _FailingSetUserProfileRepository
   @override
   Future<void> setUserProfile({required UserProfile userProfile}) async {
     throw StateError('write failed');
+  }
+}
+
+class _GatedSetUserProfileRepository
+    extends FakeOnboardingUserProfileRepository {
+  final gate = Completer<void>();
+  int setCallCount = 0;
+
+  @override
+  Future<void> setUserProfile({required UserProfile userProfile}) async {
+    setCallCount += 1;
+    await gate.future;
+    await super.setUserProfile(userProfile: userProfile);
+  }
+}
+
+class _GatedUpdateUserProfileRepository
+    extends FakeOnboardingUserProfileRepository {
+  _GatedUpdateUserProfileRepository({required super.currentUser});
+
+  final gate = Completer<void>();
+  int updateCallCount = 0;
+
+  @override
+  Future<void> updateUserProfile({
+    required String uid,
+    required UpdateUserProfilePatch patch,
+    String action = 'update profile',
+  }) async {
+    updateCallCount += 1;
+    await gate.future;
+    await super.updateUserProfile(uid: uid, patch: patch, action: action);
   }
 }

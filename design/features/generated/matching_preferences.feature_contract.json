@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/matching_preferences.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:0746615fde90a180c014f865b881ac6ad2d300b49a637940c196391ffc82fb00",
+  "sourceDigest": "sha256:22880f9937c1c17b189935ff1d8a41b6e987c3820cf77d0c96ff754864df6792",
   "resolvedDigest": "sha256:2f7df3083486cc2c0bb2453d6d97d2a1a6b92caa7c1487ccc94a7b5e26cca8f6",
   "feature": {
     "id": "feature.matching_preferences",
@@ -588,7 +588,7 @@
           },
           "actionCases": [
             {
-              "id": "request_snapshot_with_live_inputs",
+              "id": "frozen_request_snapshot",
               "dimensions": {
                 "data": "ready",
                 "draft": "saved",
@@ -596,12 +596,11 @@
                 "accessibility": "standard"
               },
               "actions": {
-                "enabled": [
+                "enabled": [],
+                "disabled": [
                   "close_preferences",
                   "adjust_age_range",
-                  "toggle_interested_gender"
-                ],
-                "disabled": [
+                  "toggle_interested_gender",
                   "reset_preferences",
                   "apply_preferences"
                 ],

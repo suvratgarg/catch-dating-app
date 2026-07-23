@@ -114,47 +114,50 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
 
     return CatchMutationErrorListener(
       mutation: FiltersController.saveFiltersMutation,
-      child: Scaffold(
-        backgroundColor: t.bg,
-        appBar: CatchTopBar(
-          title: context.l10n.swipesFiltersScreenTitleFilters,
-          leading: CatchIconAction(
-            icon: CatchIcons.closeRounded,
-            tooltip: context.l10n.swipesFiltersScreenTooltipCloseFilters,
-            onPressed: () => context.pop(),
-          ),
-          actions: [
-            CatchTopBarTextAction(
-              key: SwipeKeys.resetFiltersButton,
-              label: context.l10n.swipesFiltersScreenLabelReset,
-              onPressed: onReset,
+      child: PopScope(
+        canPop: !saving,
+        child: Scaffold(
+          backgroundColor: t.bg,
+          appBar: CatchTopBar(
+            title: context.l10n.swipesFiltersScreenTitleFilters,
+            leading: CatchIconAction(
+              icon: CatchIcons.closeRounded,
+              tooltip: context.l10n.swipesFiltersScreenTooltipCloseFilters,
+              onPressed: saving ? null : () => context.pop(),
             ),
-          ],
-        ),
-        body: profileAsync.when(
-          loading: () => const FiltersContentSkeleton(),
-          error: (error, _) => CatchErrorState.fromError(
-            error,
-            context: AppErrorContext.profile,
-            onRetry: () => ref.invalidate(watchUserProfileProvider),
+            actions: [
+              CatchTopBarTextAction(
+                key: SwipeKeys.resetFiltersButton,
+                label: context.l10n.swipesFiltersScreenLabelReset,
+                onPressed: onReset,
+              ),
+            ],
           ),
-          data: (user) {
-            if (user == null) return const SizedBox.shrink();
-            final state =
-                _stateFor(user: user, saving: saving) ?? preferencesState!;
+          body: profileAsync.when(
+            loading: () => const FiltersContentSkeleton(),
+            error: (error, _) => CatchErrorState.fromError(
+              error,
+              context: AppErrorContext.profile,
+              onRetry: () => ref.invalidate(watchUserProfileProvider),
+            ),
+            data: (user) {
+              if (user == null) return const SizedBox.shrink();
+              final state =
+                  _stateFor(user: user, saving: saving) ?? preferencesState!;
 
-            return FiltersContent.fromState(
-              state: state.content,
-              onAgeRangeChanged: (values) =>
-                  setState(() => _draftAgeRange = values),
-              onGenderToggled: (gender) => setState(() {
-                final next = {...state.content.interestedIn};
-                if (!next.add(gender)) next.remove(gender);
-                _draftInterestedIn = next;
-              }),
-              onApply: state.applyEnabled ? () => _save(state) : null,
-            );
-          },
+              return FiltersContent.fromState(
+                state: state.content,
+                onAgeRangeChanged: (values) =>
+                    setState(() => _draftAgeRange = values),
+                onGenderToggled: (gender) => setState(() {
+                  final next = {...state.content.interestedIn};
+                  if (!next.add(gender)) next.remove(gender);
+                  _draftInterestedIn = next;
+                }),
+                onApply: state.applyEnabled ? () => _save(state) : null,
+              );
+            },
+          ),
         ),
       ),
     );
@@ -222,7 +225,7 @@ class FiltersContent extends StatelessWidget {
                           preferredMatchAgeOpenEndedDisplayAge -
                           minimumProfileAge,
                       values: ageRange,
-                      onChanged: onAgeRangeChanged,
+                      onChanged: saving ? null : onAgeRangeChanged,
                     ),
                   ],
                 ),
@@ -239,6 +242,7 @@ class FiltersContent extends StatelessWidget {
                         label: gender.label,
                         selected: interestedIn.contains(gender),
                         onChanged: (_) => onGenderToggled(gender),
+                        enabled: !saving,
                       ),
                   ],
                 ),
@@ -281,11 +285,11 @@ class FiltersContentSkeleton extends StatelessWidget {
             children: [
               FiltersSection(
                 title: context.l10n.swipesFiltersScreenTitleAge,
-                child: AgeFilterSkeleton(),
+                child: const AgeFilterSkeleton(),
               ),
               FiltersSection(
                 title: context.l10n.swipesFiltersScreenTitleInterestedIn,
-                child: CatchSkeletonChips(),
+                child: const CatchSkeletonChips(),
               ),
             ],
           ),

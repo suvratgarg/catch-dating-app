@@ -155,9 +155,8 @@
           "dimensions": {"mutation": "pending"},
           "actionCases": [
             {
-              "id": "request_snapshot_with_live_inputs",
-              "enabledActions": ["close_preferences", "adjust_age_range", "toggle_interested_gender"],
-              "disabledActions": ["reset_preferences", "apply_preferences"]
+              "id": "frozen_request_snapshot",
+              "disabledActions": ["close_preferences", "adjust_age_range", "toggle_interested_gender", "reset_preferences", "apply_preferences"]
             }
           ]
         },

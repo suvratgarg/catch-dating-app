@@ -632,6 +632,52 @@ void main() {
       expect(continueCount, 1);
     });
 
+    testWidgets('pending save freezes both choices and continue', (
+      tester,
+    ) async {
+      final state = OnboardingGenderInterestState.fromDraft(
+        gender: Gender.woman,
+        interestedIn: const [Gender.man],
+        l10n: _l10n,
+        isSaving: true,
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: OnboardingGenderInterestStep(
+              formKey: GlobalKey<FormState>(),
+              state: state,
+              callbacks: OnboardingGenderInterestCallbacks(
+                onGenderChanged: (_) {},
+                onInterestedInChanged: (_) {},
+                onContinue: () {},
+              ),
+            ),
+          ),
+        ),
+      );
+      await pumpOnboardingUi(tester);
+
+      expect(
+        tester
+            .widget<CatchField>(find.byKey(OnboardingFormKeys.gender))
+            .enabled,
+        isFalse,
+      );
+      expect(
+        tester
+            .widget<CatchField>(find.byKey(OnboardingFormKeys.interestedIn))
+            .enabled,
+        isFalse,
+      );
+      expect(
+        tester.widget<CatchButton>(find.byType(CatchButton)).onPressed,
+        isNull,
+      );
+    });
+
     testWidgets('validates required selections before continuing', (
       tester,
     ) async {
@@ -1120,6 +1166,66 @@ void main() {
       expect(promptChange, isNull);
     });
 
+    testWidgets('pending completion freezes prompt questions and answers', (
+      tester,
+    ) async {
+      final controllers = OnboardingProfilePromptsTextControllers(
+        answers: [
+          for (var index = 0; index < maxProfilePromptAnswers; index += 1)
+            TextEditingController(text: 'Answer ${index + 1}'),
+        ],
+      );
+      for (final controller in controllers.answers) {
+        addTearDown(controller.dispose);
+      }
+      final state = OnboardingProfilePromptsState.fromSelections(
+        selectedPromptIds: defaultProfilePromptIds,
+        answerTexts: [
+          for (var index = 0; index < maxProfilePromptAnswers; index += 1)
+            'Answer ${index + 1}',
+        ],
+        isCompleting: true,
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: OnboardingProfilePromptsStep(
+              state: state,
+              controllers: controllers,
+              callbacks: OnboardingProfilePromptsCallbacks(
+                onPromptChanged: (_, _) {},
+                onContinue: () {},
+              ),
+            ),
+          ),
+        ),
+      );
+      await pumpOnboardingUi(tester);
+
+      expect(
+        tester
+            .widget<CatchField>(
+              find.byKey(const ValueKey('onboarding-prompt-question-0')),
+            )
+            .enabled,
+        isFalse,
+      );
+      expect(
+        tester
+            .widget<CatchField>(
+              find.byKey(const ValueKey('onboarding-prompt-answer-0')),
+            )
+            .enabled,
+        isFalse,
+      );
+      expect(
+        tester.widget<CatchButton>(find.byType(CatchButton)).onPressed,
+        isNull,
+      );
+    });
+
     testWidgets('explains prompts as part of catches completion', (
       tester,
     ) async {
@@ -1340,6 +1446,54 @@ void main() {
         PreferredRunTime.morning,
         PreferredRunTime.evening,
       });
+    });
+
+    testWidgets('pending completion freezes every run-preference control', (
+      tester,
+    ) async {
+      final state = OnboardingRunningPrefsState.fromDraft(
+        paceRange: const RangeValues(300, 420),
+        distances: const [PreferredDistance.fiveK],
+        reasons: const [RunReason.community],
+        runTimes: const [PreferredRunTime.morning],
+        l10n: _l10n,
+        isCompleting: true,
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: OnboardingRunningPrefsStep(
+              state: state,
+              callbacks: OnboardingRunningPrefsCallbacks(
+                onPaceChanged: (_) {},
+                onDistancesChanged: (_) {},
+                onReasonsChanged: (_) {},
+                onRunTimesChanged: (_) {},
+                onContinue: () {},
+              ),
+            ),
+          ),
+        ),
+      );
+      await pumpOnboardingUi(tester);
+
+      expect(
+        tester.widget<RangeSlider>(find.byType(RangeSlider)).onChanged,
+        isNull,
+      );
+      for (final key in [
+        OnboardingFormKeys.runningDistances,
+        OnboardingFormKeys.runningReasons,
+        OnboardingFormKeys.runningTimes,
+      ]) {
+        expect(tester.widget<CatchField>(find.byKey(key)).enabled, isFalse);
+      }
+      expect(
+        tester.widget<CatchButton>(find.byType(CatchButton)).onPressed,
+        isNull,
+      );
     });
 
     testWidgets('explains run preferences as event-specific booking data', (

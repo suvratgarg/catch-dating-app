@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.33
+version: 0.1.34
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -263,10 +263,11 @@ every control that can mutate, dismiss, or invalidate an in-flight snapshot as
 part of the pending action matrix, even when the primary button itself is
 disabled. Versioned editing and independently keyed concurrency remain explicit
 tested variants under `ARCH-PENDING-SNAPSHOT-001`, not implicit exceptions.
-Matching Preferences demonstrates the same rule across local drafts: close,
-age, and gender controls remain live after the persisted request is captured,
-so the generated pending matrix must preserve those unsafe actions until the
-screen freezes or versions them.
+Member Onboarding and Matching Preferences are now the first promoted
+adopters. Onboarding freezes step-back plus identity, prompt, and running
+preference controls; Matching Preferences freezes route exit, reset, age,
+gender, and apply. Both add controller-level deduplication and focused route,
+state, and widget proof.
 Account Settings extends the rule across independent mutation domains:
 preference, unblock, delete, and sign-out guards currently disable only their
 own controls, so destructive and route actions can overlap. Contract the whole

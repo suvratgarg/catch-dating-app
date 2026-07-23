@@ -17955,8 +17955,8 @@
             },
             {
               "id": "DS-ONBOARDING-006",
-              "status": "open",
-              "nextAction": "REG-FEATURE-CONTRACT-DRIFT-001: saveProfileMutation and completeMutation disable only their primary CTA while step-back, selections, prompt choices/answers, and running-preference controls remain interactive after the submitted payload is captured. Freeze the active step or version queued edits, then add interaction tests proving visible values cannot diverge from the submitted snapshot."
+              "status": "closed",
+              "nextAction": "Closed under REG-PENDING-SNAPSHOT-001. Save and completion mutations now freeze step-back navigation, gender and interest choices, prompt questions and answers, and every running-preference control. Controller-owned saves and completions deduplicate concurrent dispatches, input callbacks cannot reset an in-flight mutation, and focused state, controller, and widget tests prove the submitted snapshot remains coherent."
             }
       ]
     },
@@ -19255,8 +19255,8 @@
         },
         {
           "id": "DS-FILTERS-004",
-          "status": "open",
-          "nextAction": "REG-FEATURE-CONTRACT-DRIFT-001: saveFiltersMutation captures a request and disables only Reset/Apply; close, age-range, and gender controls remain active while the write is pending. Freeze or version request-defining edits and route dismissal, then add focused interaction proof that visible values cannot diverge from the persisted snapshot."
+          "status": "closed",
+          "nextAction": "Closed under REG-PENDING-SNAPSHOT-001. Filter save now freezes route dismissal, close, Reset, age range, gender choices, and Apply while the controller deduplicates repeated saves. Focused controller, presentation-state, and route tests prove the visible draft cannot diverge from the persisted request."
         },
         {
           "id": "DS-FILTERS-005",

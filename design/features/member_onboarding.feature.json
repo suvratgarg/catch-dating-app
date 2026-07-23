@@ -466,10 +466,9 @@
           "dimensions": {"step": "gender_interest"},
           "actionCases": [
             {
-              "id": "pending_choices_still_active",
+              "id": "frozen_identity_snapshot",
               "dimensions": {"mutation": "pending"},
-              "enabledActions": ["previous_onboarding_step", "select_gender", "select_interested_genders"],
-              "disabledActions": ["save_booking_identity"]
+              "disabledActions": ["previous_onboarding_step", "select_gender", "select_interested_genders", "save_booking_identity"]
             },
             {
               "id": "error",
@@ -481,10 +480,9 @@
         "complete_mutation": {
           "actionCases": [
             {
-              "id": "prompts_pending_inputs_still_active",
+              "id": "frozen_prompts_snapshot",
               "dimensions": {"entry": "profile_completion", "step": "prompts", "mutation": "pending"},
-              "enabledActions": ["previous_onboarding_step", "select_profile_prompt"],
-              "disabledActions": ["complete_social_profile"]
+              "disabledActions": ["previous_onboarding_step", "select_profile_prompt", "complete_social_profile"]
             },
             {
               "id": "prompts_error",
@@ -492,10 +490,9 @@
               "enabledActions": ["previous_onboarding_step", "select_profile_prompt", "complete_social_profile"]
             },
             {
-              "id": "running_pending_inputs_still_active",
+              "id": "frozen_run_preferences_snapshot",
               "dimensions": {"entry": "run_preferences", "step": "running_prefs", "mutation": "pending"},
-              "enabledActions": ["adjust_running_pace", "select_preferred_distances", "select_running_reasons", "select_preferred_run_times"],
-              "disabledActions": ["complete_run_preferences"]
+              "disabledActions": ["adjust_running_pace", "select_preferred_distances", "select_running_reasons", "select_preferred_run_times", "complete_run_preferences"]
             },
             {
               "id": "running_error",

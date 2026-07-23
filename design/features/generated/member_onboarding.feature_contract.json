@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/member_onboarding.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:4903ef728cc6d3e58ca9abfa6c8d8f6720af3f79f1a0134a9d8a0bfeb24e9955",
+  "sourceDigest": "sha256:6ac75dbeefe9632bac57a55502c1787d27578d3401ed5de7b5f1a88a6b577a56",
   "resolvedDigest": "sha256:53b68fefa8cdae533e59007c2b3008d0b7e9d2e69600a109e8ac33551c849168",
   "feature": {
     "id": "feature.member_onboarding",
@@ -1849,7 +1849,7 @@
           },
           "actionCases": [
             {
-              "id": "pending_choices_still_active",
+              "id": "frozen_identity_snapshot",
               "dimensions": {
                 "entry": "standard",
                 "step": "gender_interest",
@@ -1861,12 +1861,11 @@
                 "accessibility": "standard"
               },
               "actions": {
-                "enabled": [
+                "enabled": [],
+                "disabled": [
                   "previous_onboarding_step",
                   "select_gender",
-                  "select_interested_genders"
-                ],
-                "disabled": [
+                  "select_interested_genders",
                   "save_booking_identity"
                 ],
                 "notAllowed": [
@@ -1966,7 +1965,7 @@
           },
           "actionCases": [
             {
-              "id": "prompts_pending_inputs_still_active",
+              "id": "frozen_prompts_snapshot",
               "dimensions": {
                 "entry": "profile_completion",
                 "step": "prompts",
@@ -1978,11 +1977,10 @@
                 "accessibility": "standard"
               },
               "actions": {
-                "enabled": [
-                  "previous_onboarding_step",
-                  "select_profile_prompt"
-                ],
+                "enabled": [],
                 "disabled": [
+                  "previous_onboarding_step",
+                  "select_profile_prompt",
                   "complete_social_profile"
                 ],
                 "notAllowed": [
@@ -2051,7 +2049,7 @@
               }
             },
             {
-              "id": "running_pending_inputs_still_active",
+              "id": "frozen_run_preferences_snapshot",
               "dimensions": {
                 "entry": "run_preferences",
                 "step": "running_prefs",
@@ -2063,13 +2061,12 @@
                 "accessibility": "standard"
               },
               "actions": {
-                "enabled": [
+                "enabled": [],
+                "disabled": [
                   "adjust_running_pace",
                   "select_preferred_distances",
                   "select_running_reasons",
-                  "select_preferred_run_times"
-                ],
-                "disabled": [
+                  "select_preferred_run_times",
                   "complete_run_preferences"
                 ],
                 "notAllowed": [

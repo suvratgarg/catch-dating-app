@@ -40,6 +40,10 @@ class OnboardingGenderInterestState {
 
   bool get hasSaveError => saveErrorMessage != null;
 
+  bool get requestControlsEnabled => !isSaving;
+
+  bool get canSubmit => requestControlsEnabled;
+
   String? validateGender(Set<Gender>? value) =>
       gender == null ? genderValidationMessage : null;
 
