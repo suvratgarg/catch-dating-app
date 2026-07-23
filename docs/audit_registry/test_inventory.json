@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 574,
+  "total": 576,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -546,7 +546,7 @@
       ]
     },
     "web": {
-      "count": 63,
+      "count": 65,
       "files": [
         "admin/src/app/App.test.tsx",
         "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
@@ -596,6 +596,8 @@
         "website/src/features/claims/claimRouting.test.ts",
         "website/src/features/claims/useClaimFlowController.test.tsx",
         "website/src/features/claims/useClaimRequestMutation.test.tsx",
+        "website/src/features/events/eventDetailModel.test.ts",
+        "website/src/features/events/sections/EventDetailSections.test.tsx",
         "website/src/features/host/application/applicationModel.test.ts",
         "website/src/features/host/application/useHostApplicationController.test.tsx",
         "website/src/features/marketing/tracking.test.ts",

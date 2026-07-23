@@ -1,5 +1,5 @@
 {
-  "version": 89,
+  "version": 90,
   "updated": "2026-07-24",
   "owner": "agent_operating_model",
   "entries": [
@@ -2829,6 +2829,31 @@
         "TESTS.md"
       ],
       "notes": "Coverage remains visibility-only rather than a global percentage gate. The dashboard full-home-shell group is the reference physical decomposition, and all remaining oversized specs are exact decrease-only debt."
+    },
+    {
+      "id": "REG-WEB-EVENT-DETAIL-BOUNDARY-001",
+      "title": "Marketing event detail conflates organizer trust, event supply, reviews, or registration authority",
+      "status": "active",
+      "applies_to": [
+        "design/public_surface_behavior.json",
+        "design/website/routes.json",
+        "contracts/public/website_host_listing_projection.schema.json",
+        "website/src/features/events/**",
+        "website/src/features/organizers/publicDiscovery.ts",
+        "website/scripts/postbuild.mjs"
+      ],
+      "symptom": "A crawled event looks Catch-verified, an organizer badge is reused as event provenance, organizer reviews leak onto an event, duplicate event ids resolve ambiguously, or the unsigned marketing website presents a booking, checkout, or sign-in flow.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix website run test:unit -- --run src/features/events src/features/organizers/publicSurfaceBehavior.test.ts && npm --prefix website run check:postbuild-contract && node tool/run.mjs check design:public-surface-behavior",
+        "guardEvidence": "event-model and section tests prove unique-id fail-closed routing, exact eventId review filtering, and source-aware actions; postbuild and public-surface contracts prove static output preserves the same no-booking and provenance boundaries"
+      },
+      "owner_docs": [
+        "docs/marketing_website_architecture.md",
+        "docs/web_surface_architecture.md",
+        "design/public_surface_behavior.json"
+      ],
+      "notes": "Catch-native events hand registration to the app. External events hand registration to their official source. Claim eligibility belongs to the organizer policy and is shown independently from event supply."
     }
   ]
 }

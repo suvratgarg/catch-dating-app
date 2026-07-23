@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.4.176
-updated: 2026-07-23
+version: 0.4.177
+updated: 2026-07-24
 owner: marketing_website
 status: active
 ---
@@ -25,7 +25,7 @@ The website is already split out of the old monolithic shell:
 - `website/src/content/meta.json`, validated by
   `website/src/content/meta.schema.json` and
   the browser-safe `website/src/content/metaContract.ts`, owns static page
-  metadata and the static labels used for generated organizer HTML.
+  metadata and the static labels used for generated organizer and event HTML.
   `website/src/app/pageMeta.ts` runtime-validates on client module load;
   `tool/marketing/website_meta_contract.mjs` adds filesystem reading for Node
   postbuild. Ajv parity tests run valid and invalid fixtures through both the
@@ -33,9 +33,11 @@ The website is already split out of the old monolithic shell:
   or copy of the strings.
 - `website/scripts/postbuild.mjs` emits route-specific static HTML after Vite.
   Generated organizer routes include semantic profile content, Organization and
-  breadcrumb JSON-LD, canonical/robots metadata, and `lastVerifiedAt` sitemap
-  dates before React executes. `checkOrganizerBuildOutputs.mjs` fails builds
-  that regress those crawlable outputs.
+  breadcrumb JSON-LD. Generated event routes include read-only event details,
+  source-aware registration handoff, event-scoped reviews, Event and breadcrumb
+  JSON-LD, canonical/robots metadata, and organizer-derived freshness before
+  React executes. `checkOrganizerBuildOutputs.mjs` fails builds that regress
+  those crawlable outputs.
 - Postbuild emits root `404.html`; the marketing Hosting target intentionally
   has no catch-all SPA rewrite, so unknown direct URLs reach Firebase's custom
   404 response with status 404. The route contract declares that status, the
@@ -353,6 +355,10 @@ The website is already split out of the old monolithic shell:
   state drives the visible disabled boundary; a synchronous controller ref
   prevents a duplicate before React can publish that state.
 - Feature folders exist under `website/src/features/**`.
+- `website/src/features/events/**` owns the generated event-detail route,
+  event projection normalization, and event-scoped review filtering. It
+  composes organizer authority, review presentation, and app-download adapters
+  without introducing website booking, checkout, or sign-in state.
 
 The next refactor should focus on page and style decomposition, not another
 top-level framework rewrite. The largest current files are page or style
@@ -756,8 +762,13 @@ website/src/
   named cross-feature controllers only when the product flow requires it.
 - `features/claims/**` may depend on organizer listing models because the claim
   flow selects an organizer.
+- `features/events/**` may depend on organizer listing policy and models,
+  review presentation, and marketing app-download adapters because event
+  details inherit organizer authority while keeping registration source-aware.
 - `features/organizers/**` may depend on claim and review controllers for the
-  listing page until those panels move behind local adapter components.
+  listing page, and on the event projection for event-card deep links and the
+  executable public-surface behavior harness, until those panels move behind
+  local adapter components.
 - `shared/**` must not import from `features/**` or route-specific `content/**`.
 - `generated/**` should be read through a typed feature-owned adapter.
 

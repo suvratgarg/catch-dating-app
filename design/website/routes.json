@@ -1,7 +1,7 @@
 {
   "$schema": "./website.routes.schema.json",
-  "version": 10,
-  "updated": "2026-07-23",
+  "version": 11,
+  "updated": "2026-07-24",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -248,6 +248,28 @@
         "stateCoverage": {
           "storybook": [],
           "manual": ["legacy-noindex", "canonical-preserved"]
+        }
+      }
+    },
+    {
+      "id": "event_detail_canonical",
+      "kind": "generatedFamily",
+      "pathPattern": "/events/:eventId/",
+      "pageKey": "event_detail",
+      "source": "website/src/features/events/EventDetailPage.tsx",
+      "metaFactory": "pageMetaForEvent",
+      "staticOutput": "generated-postbuild",
+      "indexing": "event-controlled",
+      "sitemap": "event-controlled",
+      "notes": "Generated read-only Event Detail routes derived from publicly readable organizer projections. Catch-native events hand off booking to the Catch app and external events hand off registration to the official source; the marketing website never adds booking, checkout, or sign-in controls. Static output includes semantic Event JSON-LD, organizer provenance, source freshness, and only event-scoped reviews whose eventId matches the route.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": ["desktop", "mobile"],
+        "states": ["catch-native", "external-source", "event-reviews", "missing-event"],
+        "stateCoverage": {
+          "storybook": ["catch-native", "external-source", "event-reviews"],
+          "manual": ["missing-event"]
         }
       }
     }

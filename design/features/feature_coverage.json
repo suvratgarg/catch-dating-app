@@ -298,6 +298,14 @@
     },
     {
       "authority": "marketing_routes",
+      "authorityId": "event_detail_canonical",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Shared Event Detail contract covers Catch-app and official-source registration handoffs, canonical organizer and claim routing, event-scoped reviews, provenance, and missing-event behavior.",
+      "featureContract": "feature.event_detail"
+    },
+    {
+      "authority": "marketing_routes",
       "authorityId": "host",
       "status": "contracted",
       "priority": "P1",

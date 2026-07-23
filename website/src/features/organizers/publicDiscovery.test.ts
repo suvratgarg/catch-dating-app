@@ -40,7 +40,7 @@ describe("public discovery models", () => {
     expect(events.length).toBeGreaterThan(0);
     expect(events[0]).toMatchObject({
       hostName: expect.any(String),
-      href: expect.stringMatching(/^\/organizers\/.+#event-/u),
+      href: "/events/future-event/",
       activityToken: expect.any(String),
     });
   });
@@ -83,8 +83,12 @@ describe("public discovery models", () => {
     } as HostListing;
     const card = eventActionCardForListing(reviewReadableListing, event);
 
-    expect(card.actions).toHaveLength(1);
+    expect(card.actions).toHaveLength(2);
     expect(card.actions[0]).toMatchObject({
+      href: "/events/past-event/",
+      trackingLabel: "listing_event_open_details",
+    });
+    expect(card.actions[1]).toMatchObject({
       href: "#reviews",
       label: organizerListingCopy.eventActions.readOrganizerReviews,
       trackingLabel: "listing_organizer_reviews",
@@ -121,9 +125,14 @@ describe("public discovery models", () => {
     } as HostListing;
     const enabledCard = externalEventActionCardForListing(claimableListing, event);
 
-    expect(disabledCard.actions).toHaveLength(1);
-    expect(disabledCard.actions[0].trackingLabel).toBe("external_event_source");
+    expect(disabledCard.actions).toHaveLength(2);
+    expect(disabledCard.actions[0]).toMatchObject({
+      href: "/events/external-event/",
+      trackingLabel: "external_event_open_details",
+    });
+    expect(disabledCard.actions[1].trackingLabel).toBe("external_event_source");
     expect(enabledCard.actions.map((action) => action.trackingLabel)).toEqual([
+      "external_event_open_details",
       "external_event_source",
       "external_event_claim",
     ]);

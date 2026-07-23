@@ -1,12 +1,12 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-07-23",
+  "updated": "2026-07-24",
   "id": "feature.event_detail",
   "name": "Event Detail",
   "owner": "events",
   "status": "pilot",
-  "description": "Orchestrates Event Detail and its exact-location projection across state, booking, navigation, directions, and evidence contracts without duplicating the owning screen, component, data, or Widgetbook registries.",
+  "description": "Orchestrates Event Detail across the consumer app, public marketing projection, and exact-location route with explicit state, booking, registration handoff, navigation, directions, and evidence contracts.",
   "surfaces": [
     {
       "id": "consumer_flutter",
@@ -417,6 +417,251 @@
         "previews": true,
         "tests": true
       }
+    },
+    {
+      "id": "marketing_web",
+      "runtime": "react_marketing",
+      "authority": {
+        "registry": "marketing_routes",
+        "id": "event_detail_canonical"
+      },
+      "actionScope": {
+        "included": "Read-only public Event Detail handoffs to the Catch app, an official external registration source, the canonical organizer page, or the organizer claim flow.",
+        "excluded": [
+          "The marketing projection never books, joins a waitlist, checks out, authenticates, or writes an event review.",
+          "Static path generation, canonical metadata, Event JSON-LD, sitemap inclusion, and missing-event fallback remain owned by the route and postbuild contracts."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "website/src/stories/MarketingRoutes.stories.tsx",
+          "website/src/stories/EventDetailSections.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "event_detail_hero",
+            "language": "typescript",
+            "file": "website/src/features/events/sections/EventDetailSections.tsx",
+            "symbol": "EventDetailHeroSection"
+          }
+        ],
+        "componentContracts": [
+          "route_event_detail",
+          "shared_event_detail_shells",
+          "event_detail_hero_section",
+          "event_detail_facts_section",
+          "event_detail_reviews_section",
+          "event_detail_provenance_section"
+        ],
+        "dataContracts": [
+          "contracts/public/website_host_listing_projection.schema.json"
+        ],
+        "previewEvidence": {
+          "catch-native": [
+            "route_event_detail/EventDetailCatch",
+            "event_detail_hero_section/EventDetailHero"
+          ],
+          "external-source": [
+            "route_event_detail/EventDetailCatch",
+            "event_detail_hero_section/EventDetailHero"
+          ],
+          "event-reviews": [
+            "route_event_detail/EventDetailCatch",
+            "event_detail_reviews_section/EventDetailReviews"
+          ]
+        },
+        "testEvidence": {
+          "catch-native": [
+            "website/src/features/events/eventDetailModel.test.ts",
+            "website/src/features/events/sections/EventDetailSections.test.tsx",
+            "website/scripts/postbuild.test.mjs"
+          ],
+          "external-source": [
+            "website/src/features/events/eventDetailModel.test.ts",
+            "website/src/features/events/sections/EventDetailSections.test.tsx",
+            "website/scripts/postbuild.test.mjs"
+          ],
+          "event-reviews": [
+            "website/src/features/events/eventDetailModel.test.ts",
+            "website/src/features/events/sections/EventDetailSections.test.tsx"
+          ],
+          "missing-event": [
+            "website/src/features/events/eventDetailModel.test.ts",
+            "website/scripts/postbuild.test.mjs"
+          ]
+        }
+      },
+      "dimensions": {
+        "availability": {
+          "default": "ready",
+          "values": ["ready", "missing"]
+        },
+        "supply": {
+          "default": "catch_native",
+          "values": ["catch_native", "external"]
+        },
+        "registration": {
+          "default": "open",
+          "values": ["open", "full", "closed"]
+        },
+        "reviews": {
+          "default": "empty",
+          "values": ["empty", "present"]
+        },
+        "claim": {
+          "default": "hidden",
+          "values": ["hidden", "available"]
+        }
+      },
+      "actions": [
+        {
+          "id": "open_catch_registration_handoff",
+          "owner": "event_detail_hero",
+          "codeValue": "appDownloadCtas",
+          "cardinality": "unbounded",
+          "scopeKeys": ["routeInstanceId", "eventId", "storeTarget"],
+          "outcomes": [
+            {"kind": "side_effect", "id": "event.web_catch_registration_handoff"}
+          ],
+          "description": "Hands an eligible Catch-native event to the configured app-store destination without claiming the website performed a booking."
+        },
+        {
+          "id": "open_official_registration_source",
+          "owner": "event_detail_hero",
+          "codeValue": "sourceHref",
+          "cardinality": "unbounded",
+          "scopeKeys": ["routeInstanceId", "eventId", "sourceHref"],
+          "outcomes": [
+            {"kind": "side_effect", "id": "event.web_official_source_opened"}
+          ],
+          "description": "Opens the supplied official source for an external event in a separate browser context."
+        },
+        {
+          "id": "open_event_organizer",
+          "owner": "event_detail_hero",
+          "codeValue": "listingPath",
+          "cardinality": "unbounded",
+          "scopeKeys": ["routeInstanceId", "eventId", "listingId"],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "organizer_listing_canonical"
+              }
+            }
+          ],
+          "description": "Navigates to the canonical public organizer projection that supplied the event."
+        },
+        {
+          "id": "open_event_organizer_claim",
+          "owner": "event_detail_hero",
+          "codeValue": "claimHrefForListing",
+          "cardinality": "singleton",
+          "scopeKeys": ["routeInstanceId", "listingId", "claimCapabilityVersion"],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "claim"
+              }
+            }
+          ],
+          "description": "Exposes the organizer claim flow only when the canonical listing policy declares an enabled claim capability."
+        }
+      ],
+      "stateIds": [
+        "catch-native",
+        "external-source",
+        "event-reviews",
+        "missing-event"
+      ],
+      "scenarioDefaults": {
+        "dimensions": {},
+        "actionCases": [
+          {
+            "id": "catch_registration_open",
+            "enabledActions": [
+              "open_catch_registration_handoff",
+              "open_event_organizer"
+            ]
+          }
+        ]
+      },
+      "scenarioOverrides": {
+        "catch-native": {
+          "actionCases": [
+            {
+              "id": "registration_open",
+              "enabledActions": [
+                "open_catch_registration_handoff",
+                "open_event_organizer"
+              ]
+            },
+            {
+              "id": "claim_available",
+              "dimensions": {"claim": "available"},
+              "enabledActions": [
+                "open_catch_registration_handoff",
+                "open_event_organizer",
+                "open_event_organizer_claim"
+              ]
+            },
+            {
+              "id": "registration_closed",
+              "dimensions": {"registration": "closed"},
+              "enabledActions": ["open_event_organizer"]
+            }
+          ]
+        },
+        "external-source": {
+          "dimensions": {"supply": "external"},
+          "actionCases": [
+            {
+              "id": "registration_open",
+              "enabledActions": [
+                "open_official_registration_source",
+                "open_event_organizer"
+              ]
+            },
+            {
+              "id": "claim_available",
+              "dimensions": {"claim": "available"},
+              "enabledActions": [
+                "open_official_registration_source",
+                "open_event_organizer",
+                "open_event_organizer_claim"
+              ]
+            },
+            {
+              "id": "registration_closed",
+              "dimensions": {"registration": "closed"},
+              "enabledActions": ["open_event_organizer"]
+            }
+          ]
+        },
+        "event-reviews": {
+          "dimensions": {"reviews": "present"}
+        },
+        "missing-event": {
+          "dimensions": {"availability": "missing"},
+          "actionCases": [{"id": "missing"}]
+        }
+      },
+      "requiredEvidence": {
+        "captures": false,
+        "previews": true,
+        "tests": true
+      },
+      "evidenceExceptions": [
+        {
+          "stateIds": ["missing-event"],
+          "evidence": ["previews"],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "Missing Event Detail paths fall through to the canonical not-found route and are proved by route-model and postbuild tests rather than a duplicate Event Detail story."
+        }
+      ]
     },
     {
       "id": "location_map_flutter",

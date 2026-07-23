@@ -2,26 +2,26 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/event_detail.feature.json",
-  "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:10a1349ecf13f46122903b98422e05eb8f1a7601415a5a37c862db16260b1e82",
-  "resolvedDigest": "sha256:854afb836e6218a755058261a74027f7ca6055b275c6c84fa96decda740b72a1",
+  "generatedFor": "2026-07-24",
+  "sourceDigest": "sha256:02b67ce10a852696111604db53ab443c86ec59717c3b9d7730ee92abe733bbe8",
+  "resolvedDigest": "sha256:513a0b192643d481ebff23ce9159c530e2047c66ea95afaea1e27b8330b38ddb",
   "feature": {
     "id": "feature.event_detail",
     "name": "Event Detail",
     "owner": "events",
     "status": "pilot",
-    "description": "Orchestrates Event Detail and its exact-location projection across state, booking, navigation, directions, and evidence contracts without duplicating the owning screen, component, data, or Widgetbook registries."
+    "description": "Orchestrates Event Detail across the consumer app, public marketing projection, and exact-location route with explicit state, booking, registration handoff, navigation, directions, and evidence contracts."
   },
   "coverage": {
-    "surfaces": 2,
-    "states": 26,
-    "scenarios": 26,
-    "actionCases": 37,
-    "actions": 10,
+    "surfaces": 3,
+    "states": 30,
+    "scenarios": 30,
+    "actionCases": 45,
+    "actions": 14,
     "captures": 33,
-    "previews": 8,
-    "testFiles": 4,
-    "evidenceExceptions": 8
+    "previews": 13,
+    "testFiles": 7,
+    "evidenceExceptions": 9
   },
   "surfaces": [
     {
@@ -1390,6 +1390,609 @@
           "EventDetailScreen/Screen states",
           "EventDetailSocialSection/Social states",
           "EventDetailTicketStubBand/Catalog states"
+        ]
+      }
+    },
+    {
+      "id": "marketing_web",
+      "runtime": "react_marketing",
+      "authority": {
+        "registry": "marketing_routes",
+        "id": "event_detail_canonical"
+      },
+      "actionScope": {
+        "included": "Read-only public Event Detail handoffs to the Catch app, an official external registration source, the canonical organizer page, or the organizer claim flow.",
+        "excluded": [
+          "The marketing projection never books, joins a waitlist, checks out, authenticates, or writes an event review.",
+          "Static path generation, canonical metadata, Event JSON-LD, sitemap inclusion, and missing-event fallback remain owned by the route and postbuild contracts."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "website/src/stories/MarketingRoutes.stories.tsx",
+          "website/src/stories/EventDetailSections.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "event_detail_hero",
+            "language": "typescript",
+            "file": "website/src/features/events/sections/EventDetailSections.tsx",
+            "symbol": "EventDetailHeroSection"
+          }
+        ],
+        "componentContracts": [
+          "route_event_detail",
+          "shared_event_detail_shells",
+          "event_detail_hero_section",
+          "event_detail_facts_section",
+          "event_detail_reviews_section",
+          "event_detail_provenance_section"
+        ],
+        "dataContracts": [
+          "contracts/public/website_host_listing_projection.schema.json"
+        ],
+        "previewEvidence": {
+          "catch-native": [
+            "route_event_detail/EventDetailCatch",
+            "event_detail_hero_section/EventDetailHero"
+          ],
+          "external-source": [
+            "route_event_detail/EventDetailCatch",
+            "event_detail_hero_section/EventDetailHero"
+          ],
+          "event-reviews": [
+            "route_event_detail/EventDetailCatch",
+            "event_detail_reviews_section/EventDetailReviews"
+          ]
+        },
+        "testEvidence": {
+          "catch-native": [
+            "website/src/features/events/eventDetailModel.test.ts",
+            "website/src/features/events/sections/EventDetailSections.test.tsx",
+            "website/scripts/postbuild.test.mjs"
+          ],
+          "external-source": [
+            "website/src/features/events/eventDetailModel.test.ts",
+            "website/src/features/events/sections/EventDetailSections.test.tsx",
+            "website/scripts/postbuild.test.mjs"
+          ],
+          "event-reviews": [
+            "website/src/features/events/eventDetailModel.test.ts",
+            "website/src/features/events/sections/EventDetailSections.test.tsx"
+          ],
+          "missing-event": [
+            "website/src/features/events/eventDetailModel.test.ts",
+            "website/scripts/postbuild.test.mjs"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 4,
+        "scenarios": 4,
+        "actionCases": 8,
+        "actions": 4,
+        "captures": 0,
+        "previews": 5,
+        "testFiles": 3,
+        "evidenceExceptions": 1
+      },
+      "dimensions": {
+        "availability": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "missing"
+          ]
+        },
+        "supply": {
+          "default": "catch_native",
+          "values": [
+            "catch_native",
+            "external"
+          ]
+        },
+        "registration": {
+          "default": "open",
+          "values": [
+            "open",
+            "full",
+            "closed"
+          ]
+        },
+        "reviews": {
+          "default": "empty",
+          "values": [
+            "empty",
+            "present"
+          ]
+        },
+        "claim": {
+          "default": "hidden",
+          "values": [
+            "hidden",
+            "available"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "open_catch_registration_handoff",
+          "owner": "event_detail_hero",
+          "codeValue": "appDownloadCtas",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "eventId",
+            "storeTarget"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "event.web_catch_registration_handoff"
+            }
+          ],
+          "description": "Hands an eligible Catch-native event to the configured app-store destination without claiming the website performed a booking.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_official_registration_source",
+          "owner": "event_detail_hero",
+          "codeValue": "sourceHref",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "eventId",
+            "sourceHref"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "event.web_official_source_opened"
+            }
+          ],
+          "description": "Opens the supplied official source for an external event in a separate browser context.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_event_organizer",
+          "owner": "event_detail_hero",
+          "codeValue": "listingPath",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "eventId",
+            "listingId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "organizer_listing_canonical"
+              }
+            }
+          ],
+          "description": "Navigates to the canonical public organizer projection that supplied the event.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_event_organizer_claim",
+          "owner": "event_detail_hero",
+          "codeValue": "claimHrefForListing",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "routeInstanceId",
+            "listingId",
+            "claimCapabilityVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "claim"
+              }
+            }
+          ],
+          "description": "Exposes the organizer claim flow only when the canonical listing policy declares an enabled claim capability.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [
+        {
+          "stateIds": [
+            "missing-event"
+          ],
+          "evidence": [
+            "previews"
+          ],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "Missing Event Detail paths fall through to the canonical not-found route and are proved by route-model and postbuild tests rather than a duplicate Event Detail story."
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "catch-native",
+          "stateId": "catch-native",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "availability": "ready",
+            "supply": "catch_native",
+            "registration": "open",
+            "reviews": "empty",
+            "claim": "hidden"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "event_detail_hero_section/EventDetailHero",
+              "event_detail_provenance_section/EventDetailProvenance",
+              "route_event_detail/EventDetailCatch",
+              "shared_event_detail_shells/EventDetailShells"
+            ],
+            "tests": [
+              "website/src/features/events/eventDetailModel.test.ts",
+              "website/src/features/events/sections/EventDetailSections.test.tsx",
+              "website/scripts/postbuild.test.mjs"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "registration_open",
+              "dimensions": {
+                "availability": "ready",
+                "supply": "catch_native",
+                "registration": "open",
+                "reviews": "empty",
+                "claim": "hidden"
+              },
+              "actions": {
+                "enabled": [
+                  "open_catch_registration_handoff",
+                  "open_event_organizer"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_official_registration_source",
+                  "open_event_organizer_claim"
+                ]
+              }
+            },
+            {
+              "id": "claim_available",
+              "dimensions": {
+                "availability": "ready",
+                "supply": "catch_native",
+                "registration": "open",
+                "reviews": "empty",
+                "claim": "available"
+              },
+              "actions": {
+                "enabled": [
+                  "open_catch_registration_handoff",
+                  "open_event_organizer",
+                  "open_event_organizer_claim"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_official_registration_source"
+                ]
+              }
+            },
+            {
+              "id": "registration_closed",
+              "dimensions": {
+                "availability": "ready",
+                "supply": "catch_native",
+                "registration": "closed",
+                "reviews": "empty",
+                "claim": "hidden"
+              },
+              "actions": {
+                "enabled": [
+                  "open_event_organizer"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_catch_registration_handoff",
+                  "open_official_registration_source",
+                  "open_event_organizer_claim"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "external-source",
+          "stateId": "external-source",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "availability": "ready",
+            "supply": "external",
+            "registration": "open",
+            "reviews": "empty",
+            "claim": "hidden"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "event_detail_hero_section/EventDetailHero",
+              "event_detail_provenance_section/EventDetailProvenance",
+              "route_event_detail/EventDetailCatch",
+              "shared_event_detail_shells/EventDetailShells"
+            ],
+            "tests": [
+              "website/src/features/events/eventDetailModel.test.ts",
+              "website/src/features/events/sections/EventDetailSections.test.tsx",
+              "website/scripts/postbuild.test.mjs"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "registration_open",
+              "dimensions": {
+                "availability": "ready",
+                "supply": "external",
+                "registration": "open",
+                "reviews": "empty",
+                "claim": "hidden"
+              },
+              "actions": {
+                "enabled": [
+                  "open_official_registration_source",
+                  "open_event_organizer"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_catch_registration_handoff",
+                  "open_event_organizer_claim"
+                ]
+              }
+            },
+            {
+              "id": "claim_available",
+              "dimensions": {
+                "availability": "ready",
+                "supply": "external",
+                "registration": "open",
+                "reviews": "empty",
+                "claim": "available"
+              },
+              "actions": {
+                "enabled": [
+                  "open_official_registration_source",
+                  "open_event_organizer",
+                  "open_event_organizer_claim"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_catch_registration_handoff"
+                ]
+              }
+            },
+            {
+              "id": "registration_closed",
+              "dimensions": {
+                "availability": "ready",
+                "supply": "external",
+                "registration": "closed",
+                "reviews": "empty",
+                "claim": "hidden"
+              },
+              "actions": {
+                "enabled": [
+                  "open_event_organizer"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_catch_registration_handoff",
+                  "open_official_registration_source",
+                  "open_event_organizer_claim"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "event-reviews",
+          "stateId": "event-reviews",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "availability": "ready",
+            "supply": "catch_native",
+            "registration": "open",
+            "reviews": "present",
+            "claim": "hidden"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "event_detail_reviews_section/EventDetailReviews",
+              "route_event_detail/EventDetailCatch"
+            ],
+            "tests": [
+              "website/src/features/events/eventDetailModel.test.ts",
+              "website/src/features/events/sections/EventDetailSections.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "catch_registration_open",
+              "dimensions": {
+                "availability": "ready",
+                "supply": "catch_native",
+                "registration": "open",
+                "reviews": "present",
+                "claim": "hidden"
+              },
+              "actions": {
+                "enabled": [
+                  "open_catch_registration_handoff",
+                  "open_event_organizer"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_official_registration_source",
+                  "open_event_organizer_claim"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "missing-event",
+          "stateId": "missing-event",
+          "kind": "route_state",
+          "status": "manual",
+          "dimensions": {
+            "availability": "missing",
+            "supply": "catch_native",
+            "registration": "open",
+            "reviews": "empty",
+            "claim": "hidden"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [],
+            "tests": [
+              "website/src/features/events/eventDetailModel.test.ts",
+              "website/scripts/postbuild.test.mjs"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "missing",
+              "dimensions": {
+                "availability": "missing",
+                "supply": "catch_native",
+                "registration": "open",
+                "reviews": "empty",
+                "claim": "hidden"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "open_catch_registration_handoff",
+                  "open_official_registration_source",
+                  "open_event_organizer",
+                  "open_event_organizer_claim"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "event_detail_canonical",
+          "kind": "generatedFamily",
+          "pathPattern": "/events/:eventId/"
+        },
+        "components": [
+          {
+            "id": "route_event_detail",
+            "kind": "route",
+            "source": "website/src/features/events/EventDetailPage.tsx",
+            "exportName": "EventDetailPage",
+            "storybook": {
+              "status": "ready",
+              "story": "website/src/stories/MarketingRoutes.stories.tsx",
+              "exportName": "EventDetailCatch",
+              "states": [
+                "catch-native",
+                "external-source",
+                "event-reviews"
+              ]
+            }
+          },
+          {
+            "id": "shared_event_detail_shells",
+            "kind": "supporting-component",
+            "source": "website/src/shared/ui/primitives/eventDetail.tsx",
+            "exportName": "EventDetailHeroLayout",
+            "storybook": {
+              "status": "ready",
+              "story": "website/src/stories/EventDetailSections.stories.tsx",
+              "exportName": "EventDetailShells",
+              "states": [
+                "catch-native",
+                "external-source",
+                "fact-grid",
+                "provenance"
+              ]
+            }
+          },
+          {
+            "id": "event_detail_hero_section",
+            "kind": "section",
+            "source": "website/src/features/events/sections/EventDetailSections.tsx",
+            "exportName": "EventDetailHeroSection",
+            "storybook": {
+              "status": "ready",
+              "story": "website/src/stories/EventDetailSections.stories.tsx",
+              "exportName": "EventDetailHero",
+              "states": [
+                "catch-native",
+                "external-source"
+              ]
+            }
+          },
+          {
+            "id": "event_detail_facts_section",
+            "kind": "section",
+            "source": "website/src/features/events/sections/EventDetailSections.tsx",
+            "exportName": "EventDetailFactsSection",
+            "storybook": {
+              "status": "ready",
+              "story": "website/src/stories/EventDetailSections.stories.tsx",
+              "exportName": "EventDetailFacts",
+              "states": [
+                "complete",
+                "missing-optional-details"
+              ]
+            }
+          },
+          {
+            "id": "event_detail_reviews_section",
+            "kind": "section",
+            "source": "website/src/features/events/sections/EventDetailSections.tsx",
+            "exportName": "EventDetailReviewsSection",
+            "storybook": {
+              "status": "ready",
+              "story": "website/src/stories/EventDetailSections.stories.tsx",
+              "exportName": "EventDetailReviews",
+              "states": [
+                "verified-event-reviews",
+                "empty"
+              ]
+            }
+          },
+          {
+            "id": "event_detail_provenance_section",
+            "kind": "section",
+            "source": "website/src/features/events/sections/EventDetailSections.tsx",
+            "exportName": "EventDetailProvenanceSection",
+            "storybook": {
+              "status": "ready",
+              "story": "website/src/stories/EventDetailSections.stories.tsx",
+              "exportName": "EventDetailProvenance",
+              "states": [
+                "catch-native",
+                "external-source"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "event_detail_hero_section/EventDetailHero",
+          "event_detail_provenance_section/EventDetailProvenance",
+          "event_detail_reviews_section/EventDetailReviews",
+          "route_event_detail/EventDetailCatch",
+          "shared_event_detail_shells/EventDetailShells"
         ]
       }
     },

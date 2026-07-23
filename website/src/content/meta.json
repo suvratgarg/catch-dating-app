@@ -65,5 +65,22 @@
       "homeBreadcrumb": "Catch",
       "organizersBreadcrumb": "Organizers"
     }
+  },
+  "event": {
+    "titleTemplate": "{title} | {city} | Catch",
+    "catchTwitterTemplate": "{title} by {organizer}. Booking stays in the Catch app.",
+    "externalTwitterTemplate": "{title} from {source}. Registration stays on the official source.",
+    "staticLabels": {
+      "eventEyebrow": "Event details",
+      "hostedByPrefix": "Hosted by",
+      "scheduleHeading": "Schedule and location",
+      "locationLabel": "Location",
+      "priceLabel": "Price",
+      "sourceLabel": "Source",
+      "reviewsHeading": "Event reviews",
+      "lastReviewedPrefix": "Listing sources last reviewed",
+      "homeBreadcrumb": "Catch",
+      "organizersBreadcrumb": "Organizers"
+    }
   }
 }
