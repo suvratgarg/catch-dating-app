@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/organizer_claim.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:e075f6802ceb7fc34316396019f485b0c666f3442eb5b28d0182b209859342dd",
-  "resolvedDigest": "sha256:1c5bbb4978004433d160d8858aebd6ea33228ab0b68f02109dfc4642aeffd64f",
+  "resolvedDigest": "sha256:37abfa1d39d7668d534bb12e07f2c94be7062a15c18f2dd6312f646b47bc6140",
   "feature": {
     "id": "feature.organizer_claim",
     "name": "Organizer Claim",
@@ -987,6 +987,7 @@
             "source": "website/src/features/claims/ClaimPage.tsx",
             "exportName": "ClaimPage",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/MarketingRoutes.stories.tsx",
               "exportName": "Claim",
               "states": [
@@ -1004,6 +1005,7 @@
             "source": "website/src/features/claims/sections/ClaimPageSections.tsx",
             "exportName": "ClaimHeroSection",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/ClaimSections.stories.tsx",
               "exportName": "ClaimHero",
               "states": [
@@ -1018,6 +1020,7 @@
             "source": "website/src/features/claims/sections/ClaimPageSections.tsx",
             "exportName": "ClaimUrlStateSection",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/ClaimSections.stories.tsx",
               "exportName": "ClaimUrlState",
               "states": [
@@ -1033,6 +1036,7 @@
             "source": "website/src/features/claims/sections/ClaimPageSections.tsx",
             "exportName": "ClaimWorkspaceSection",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/ClaimSections.stories.tsx",
               "exportName": "ClaimWorkspace",
               "states": [
@@ -1049,6 +1053,7 @@
             "source": "website/src/shared/ui/primitives/feedback.tsx",
             "exportName": "ProcessStatusPanel",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/FeedbackPrimitives.stories.tsx",
               "exportName": "ProcessStatusPanelStory",
               "states": [
@@ -1920,6 +1925,7 @@
             "source": "website/src/features/claims/ClaimPage.tsx",
             "exportName": "ClaimPage",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/MarketingRoutes.stories.tsx",
               "exportName": "Claim",
               "states": [
@@ -1937,6 +1943,7 @@
             "source": "website/src/features/claims/sections/ClaimPageSections.tsx",
             "exportName": "ClaimHeroSection",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/ClaimSections.stories.tsx",
               "exportName": "ClaimHero",
               "states": [
@@ -1951,6 +1958,7 @@
             "source": "website/src/features/claims/sections/ClaimPageSections.tsx",
             "exportName": "ClaimUrlStateSection",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/ClaimSections.stories.tsx",
               "exportName": "ClaimUrlState",
               "states": [
@@ -1966,6 +1974,7 @@
             "source": "website/src/features/claims/sections/ClaimPageSections.tsx",
             "exportName": "ClaimWorkspaceSection",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/ClaimSections.stories.tsx",
               "exportName": "ClaimWorkspace",
               "states": [
@@ -1982,6 +1991,7 @@
             "source": "website/src/shared/ui/primitives/feedback.tsx",
             "exportName": "ProcessStatusPanel",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/FeedbackPrimitives.stories.tsx",
               "exportName": "ProcessStatusPanelStory",
               "states": [

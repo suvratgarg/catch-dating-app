@@ -1,5 +1,5 @@
 {
-  "version": "2.7.167",
+  "version": "2.7.168",
   "updated": "2026-07-23",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, uid-loading conflation follow-up, React component-governance follow-up including class-name boundary enforcement and exported website feature component registry coverage, admin feature export boundary, the retired website legacy site barrel/import boundary, UI label spans, empty-state variants, page shells, claim-flow route/root/auth-row shells, website Host Page route, Host Application flow, Host feature section, waitlist form shells, marketing section, marketing info-card, marketing loop-list, marketing consent banner, featured organizer card, app-download CTA group, organizer listing, organizer listing hero, organizer listing event section including event-action cards, organizer search section, organizer search result shells, PublicSearchBar ownership, public event-card shells, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin loading icon shells, admin toolbar shells/modifiers, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin marketing layout shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision/footer shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin roadmap lists, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
@@ -363,6 +363,57 @@
         "design/features/host_acquisition.feature.json"
       ],
       "source": "2026-07-23-marketing-feature-contracts"
+    },
+    {
+      "id": "ADMIN-MUTATION-SNAPSHOT-001",
+      "title": "Define one pending-mutation snapshot policy for Admin workspaces",
+      "status": "active",
+      "owner": "agent",
+      "area": "admin,mutations,feature-contracts,concurrency",
+      "priority": "high",
+      "summary": "Access Review, Role Management, Event Publishing, Marketing Operations, Organizer Publishing, Safety Triage, User Analytics, and Organizer Intake capture mutation or query payloads while other request-defining controls, peer mutations, selection, confirmation, or navigation remain live. The compiled Admin feature contracts preserve that observed availability instead of falsely modeling each workspace as one frozen transaction.",
+      "acceptance": [
+        "choose and document a shared freeze, version, or independently-keyed concurrency policy for Admin mutation and submitted-query snapshots",
+        "apply the policy to every Admin contract that currently exposes request-defining or conflicting actions while an operation is pending",
+        "add focused tests proving visible state cannot silently diverge from the submitted payload and conflicting mutations cannot overlap"
+      ],
+      "paths": [
+        "admin/src/features/access",
+        "admin/src/features/adminRoles",
+        "admin/src/features/events",
+        "admin/src/features/intake",
+        "admin/src/features/marketing",
+        "admin/src/features/organizers",
+        "admin/src/features/safety",
+        "admin/src/features/users",
+        "design/features/admin_*.feature.json"
+      ],
+      "source": "2026-07-23-admin-feature-contracts"
+    },
+    {
+      "id": "ADMIN-CALLABLE-STRICTNESS-001",
+      "title": "Promote critical Admin callables from structural to strict schemas",
+      "status": "active",
+      "owner": "agent",
+      "area": "admin,functions,contracts,callables,feature-contracts",
+      "priority": "high",
+      "summary": "Every Admin callable is protected by a generated top-level object validator, but many critical request or response boundaries still have only structural validation. Feature contracts now bind each callable to its exact generated strictness, so structural coverage remains honest instead of being mistaken for a field-level deterministic API contract.",
+      "acceptance": [
+        "add dedicated request and response JSON schemas for the highest-risk structural-only Admin callables, prioritizing access, roles, safety, marketing, overview, and mutation responses",
+        "generate or validate Admin and Functions types from the same schemas and keep valid, invalid, and compatibility fixtures beside the boundary",
+        "update the Admin feature-contract runtime bindings as each direction becomes strict and keep the compiler rejection for underclaiming or overclaiming validation strength",
+        "run the callable-validator, data-contract, focused Admin, and feature-contract gates"
+      ],
+      "paths": [
+        "admin/src/shared/api/adminApi.ts",
+        "admin/src/generated/validators/adminCallableValidators.ts",
+        "admin/scripts/generateCallableValidators.mjs",
+        "contracts/callables",
+        "contracts/callable_responses",
+        "functions/src",
+        "design/features/admin_*.feature.json"
+      ],
+      "source": "2026-07-23-admin-feature-contracts"
     }
   ],
   "next_up": [

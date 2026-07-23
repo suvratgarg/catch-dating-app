@@ -375,126 +375,114 @@
     {
       "authority": "admin_routes",
       "authorityId": "route_access_review",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Admin launch-access review and decision workflow.",
-      "targetFeature": "feature.admin_access_review",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Access Review contract covers capped queue selection, direct evidence recovery, and audited approve or deny outcomes.",
+      "featureContract": "feature.admin_access_review"
     },
     {
       "authority": "admin_routes",
       "authorityId": "route_admin_role_management",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P2",
-      "reason": "Admin role lookup, assignment, and audit workflow.",
-      "targetFeature": "feature.admin_role_management",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Role Management contract covers exact-uid lookup, bounded assignments, high-risk confirmation, and before/after save receipts.",
+      "featureContract": "feature.admin_role_management"
     },
     {
       "authority": "admin_routes",
       "authorityId": "route_data_quality",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P2",
-      "reason": "Admin data-quality signal review workflow.",
-      "targetFeature": "feature.admin_data_quality",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Data Quality contract covers multi-source health, exact signal detail, source-specific retry, and owning-workflow handoff.",
+      "featureContract": "feature.admin_data_quality"
     },
     {
       "authority": "admin_routes",
       "authorityId": "route_event_publishing",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Canonical and external event review, readiness, import, and publishing workflow.",
-      "targetFeature": "feature.admin_event_publishing",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Event Publishing contract covers canonical editing, import readiness, external evidence review, and gated read-only publication.",
+      "featureContract": "feature.admin_event_publishing"
     },
     {
       "authority": "admin_routes",
       "authorityId": "route_finance_ops",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P2",
-      "reason": "Finance issue review and reconciliation workflow.",
-      "targetFeature": "feature.admin_finance_ops",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Finance Operations contract covers read-only issue derivation, exact detail, partial sources, and reconciliation guidance.",
+      "featureContract": "feature.admin_finance_ops"
     },
     {
       "authority": "admin_routes",
       "authorityId": "route_growth_kpi",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P2",
-      "reason": "Growth KPI signal and trend inspection workflow.",
-      "targetFeature": "feature.admin_growth_kpi",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Growth KPI contract covers source-labelled signal detail, ranged analytics, and independent source recovery.",
+      "featureContract": "feature.admin_growth_kpi"
     },
     {
       "authority": "admin_routes",
       "authorityId": "route_intake_workspace",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Event, organizer, and automation intake workspace.",
-      "targetFeature": "feature.admin_intake",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Supply Intake contract covers Event review, Organizer projection handoff, and read-only Automation run paging.",
+      "featureContract": "feature.admin_intake"
     },
     {
       "authority": "admin_routes",
       "authorityId": "route_organizer_intake",
-      "status": "grouped",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Organizer-specific route projection within the canonical Intake workspace.",
-      "primaryAuthorityId": "route_intake_workspace"
+      "reason": "Compiled Organizer Intake projection preserves its independent default, workflow-readiness, and publication-packet state inventory.",
+      "featureContract": "feature.admin_intake"
     },
     {
       "authority": "admin_routes",
       "authorityId": "route_marketing_ops",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Marketing planning, drafting, review, preview, and export workflow.",
-      "targetFeature": "feature.admin_marketing_ops",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Marketing Operations contract covers bridge recovery, studio navigation, draft creation, compliance, and review receipts.",
+      "featureContract": "feature.admin_marketing_ops"
     },
     {
       "authority": "admin_routes",
       "authorityId": "route_organizer_publishing",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Organizer directory, claim, route-readiness, and publishing workflow.",
-      "targetFeature": "feature.admin_organizer_publishing",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Organizer Publishing contract covers canonical editing, publish checklist, index publication, and claim decisions.",
+      "featureContract": "feature.admin_organizer_publishing"
     },
     {
       "authority": "admin_routes",
       "authorityId": "route_overview",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Admin metrics, queue routing, and analytics overview.",
-      "targetFeature": "feature.admin_overview",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Overview contract covers source-owned metrics, role-checked queue routing, and scoped Host Analytics.",
+      "featureContract": "feature.admin_overview"
     },
     {
       "authority": "admin_routes",
       "authorityId": "route_overview_live_controller",
-      "status": "grouped",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Live controller wrapper for the canonical prop-driven Overview route contract.",
-      "primaryAuthorityId": "route_overview"
+      "reason": "Compiled live-controller projection preserves the query and lazy-boundary authority states without duplicating the visual product goal.",
+      "featureContract": "feature.admin_overview"
     },
     {
       "authority": "admin_routes",
       "authorityId": "route_safety_triage",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Safety case triage, detail, assignment, and decision workflow.",
-      "targetFeature": "feature.admin_safety_triage",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled Safety Triage contract covers capped queue scope, encoded detail routing, assignment, decisions, and honest analytics.",
+      "featureContract": "feature.admin_safety_triage"
     },
     {
       "authority": "admin_routes",
       "authorityId": "route_user_analytics",
-      "status": "planned",
+      "status": "contracted",
       "priority": "P2",
-      "reason": "Aggregate member analytics and reporting workflow.",
-      "targetFeature": "feature.admin_user_analytics",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "reason": "Compiled User Analytics contract covers exact-uid aggregate reporting, validated scope, partial/empty states, and retry.",
+      "featureContract": "feature.admin_user_analytics"
     }
   ]
 }

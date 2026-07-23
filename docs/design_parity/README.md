@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.29
+version: 0.1.30
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -166,7 +166,7 @@ first checked example: it contains both `screen.explore.discovery` and the
 marketing `organizer_search` route, while their components, action owners,
 states, and evidence remain runtime-specific.
 
-Event Detail with its exact-location projection, Explore, Dashboard Home,
+All 32 registered Flutter screens are now covered. Event Detail with its exact-location projection, Explore, Dashboard Home,
 Event Success, Host Home, Host Organizers, Host Organizer Create, Host Event
 Create, Host Event Manage with its owner-edit projection, Host Inbox, Catches
 Hub, Catches Event, Matches List, Chat Thread, Self Profile, Public Profile,
@@ -180,6 +180,16 @@ three-surface reference:
 consumer Flutter, host Flutter, and the canonical marketing listing share one
 semantic feature identity while retaining separate actions and state
 inventories.
+
+All 14 registered Admin route authorities are also compiled across 12 feature
+identities: Access Review, Role Management, Data Quality, Event Publishing,
+Finance Operations, Growth KPI, Intake, Marketing Operations, Organizer
+Publishing, Overview, Safety Triage, and User Analytics. Intake and Overview
+each retain two projections because their secondary route components expose
+independent state and actions; they are not flattened into grouped coverage.
+Admin route previews are resolved from `design/admin/components.json` just as
+marketing route previews are resolved from the website registry.
+
 Actions name one of the surface's declared Dart or TypeScript owners, so a
 larger feature may compose multiple action domains without pretending one enum
 or controller owns everything. Action outcomes are typed as local surface
@@ -312,7 +322,9 @@ React route review states do not always use the same vocabulary as Storybook
 component states. `bindings.previewEvidence` may map an authority state to a
 selected registry preview such as `component_id/StoryExport`; the compiler
 checks that the component belongs to the route, the story source is declared,
-and the preview is part of the selected component registry. This makes the
+and the preview is part of the selected marketing or Admin component registry.
+Admin route wrappers whose registry preview is explicitly `not-required` may
+bind controller tests instead of inventing a visual state. This makes the
 relationship explicit without renaming either authority. Static-output tests
 under `website/scripts/*.test.mjs` may provide test evidence for indexing and
 canonical metadata states that cannot be meaningfully shown in Storybook.
@@ -323,6 +335,9 @@ canonical `/claim/` workspace and its dynamic lookup route because the latter
 has its own exact known, missing, pending, and unavailable state inventory.
 The legacy organizer-listing family stays grouped because its only differences
 are canonical/noindex static-output policy already proved by route tests.
+Admin Intake and Overview do not qualify for grouping: Organizer Intake has
+three independently reviewable states, and the live Overview wrapper has its
+own query lifecycle and actions, so both compile as explicit projections.
 
 A feature orchestration contract cannot replace a missing network schema.
 Marketing Home and Host Acquisition can prove controller ownership, action
@@ -331,6 +346,17 @@ still has separately declared website and Functions types. Keep their
 `dataContracts` empty and name `WEB-LEAD-API-CONTRACT-001` until one checked
 request/response schema spans that boundary; do not cite nearby Firestore or
 analytics schemas as false proof.
+
+An Admin callable binding must also state validation strength rather than
+treating every generated validator as equivalent. `bindings.runtimeContracts`
+names the callable and declares request and response validation separately as
+`strict_schema` or `structural_object`. The compiler compares those values with
+`admin/src/generated/validators/adminCallableValidators.ts` and rejects both
+overclaiming and stale underclaiming. Structural validation is real boundary
+protection, but it is not a field-level request/response schema;
+`ADMIN-CALLABLE-STRICTNESS-001` owns that migration. The separate
+`ADMIN-MUTATION-SNAPSHOT-001` debt covers Admin controls and peer mutations
+that remain live after a request or query snapshot has been captured.
 
 Required evidence stays strict. A real missing capture, preview, or test may be
 admitted only through an explicit evidence exception tied to a stable open debt
@@ -347,7 +373,8 @@ The compiler fails duplicate surfaces or authority bindings, runtime/authority
 mismatches, duplicate or missing authority-state mappings, unknown action owner,
 action, outcome, route, or dimension values, enabled known-gap actions,
 undeclared Dart/TypeScript symbols, missing component/data paths, missing
-capture/preview/test evidence, unused evidence exceptions, stale output, and
+capture/preview/test evidence, Admin callable or validation-strength drift,
+unused evidence exceptions, stale output, and
 orphaned generated artifacts. Natural-language
 briefs may inform a contract draft, but only the reviewed JSON source is
 executable. Flutter widgets, controllers, business algorithms, security rules,

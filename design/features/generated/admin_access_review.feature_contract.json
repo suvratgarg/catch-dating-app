@@ -1,0 +1,411 @@
+{
+  "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
+  "version": 2,
+  "generatedFrom": "design/features/admin_access_review.feature.json",
+  "generatedFor": "2026-07-23",
+  "sourceDigest": "sha256:7c50f1ff275256cfdb09702a3e72055416616dbfcc4c7dee822e1362bc5e13ae",
+  "resolvedDigest": "sha256:8a9db14aeb287082e1f5a800eaa0a9f67089f113db8d24747dd7e2f97242abe1",
+  "feature": {
+    "id": "feature.admin_access_review",
+    "name": "Admin Access Review",
+    "owner": "admin_console",
+    "status": "pilot",
+    "description": "Orchestrates bounded launch-access queue review, direct applicant evidence reads, audited approval or denial, and recovery from unavailable detail."
+  },
+  "coverage": {
+    "surfaces": 1,
+    "states": 1,
+    "scenarios": 1,
+    "actionCases": 6,
+    "actions": 5,
+    "captures": 0,
+    "previews": 1,
+    "testFiles": 1,
+    "evidenceExceptions": 0
+  },
+  "surfaces": [
+    {
+      "id": "admin_web",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_access_review"
+      },
+      "actionScope": {
+        "included": "Selecting an application, returning to the queue, refreshing list or detail evidence, and recording the audited access decision.",
+        "excluded": [
+          "Queue search and note/cohort field edits remain local query or form data.",
+          "Approval records eligibility for profile creation; it does not invite or notify the applicant.",
+          "Decision inputs and route exit remain live after the mutation captures its payload; ADMIN-MUTATION-SNAPSHOT-001 tracks the shared pending policy."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "admin/src/stories/AdminRoutes.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "controller",
+            "language": "typescript",
+            "file": "admin/src/features/access/controllers/useAccessReviewController.ts",
+            "symbol": "useAccessReviewController"
+          },
+          {
+            "id": "screen",
+            "language": "typescript",
+            "file": "admin/src/features/access/ui/AccessReviewScreen.tsx",
+            "symbol": "AccessReviewWorkspace"
+          }
+        ],
+        "componentContracts": [
+          "route_access_review"
+        ],
+        "dataContracts": [],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetOverview",
+            "requestValidation": "structural_object",
+            "responseValidation": "structural_object"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetAccessApplicationDetails",
+            "requestValidation": "structural_object",
+            "responseValidation": "structural_object"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminDecideAccessApplication",
+            "requestValidation": "structural_object",
+            "responseValidation": "structural_object"
+          }
+        ],
+        "testEvidence": {
+          "capped-directory": [
+            "admin/src/features/access/controllers/useAccessReviewController.test.tsx"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 1,
+        "scenarios": 1,
+        "actionCases": 6,
+        "actions": 5,
+        "captures": 0,
+        "previews": 1,
+        "testFiles": 1,
+        "evidenceExceptions": 0
+      },
+      "dimensions": {
+        "view": {
+          "default": "directory",
+          "values": [
+            "directory",
+            "detail",
+            "unavailable"
+          ]
+        },
+        "source": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "loading",
+            "failed"
+          ]
+        },
+        "mutation": {
+          "default": "idle",
+          "values": [
+            "idle",
+            "pending",
+            "failed",
+            "success"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "select_access_application",
+          "owner": "controller",
+          "codeValue": "select",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "applicationUid"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "capped-directory"
+              ]
+            }
+          ],
+          "description": "Opens one returned queue item using its validated application uid.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "back_to_access_queue",
+          "owner": "screen",
+          "codeValue": "onBackToList",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "applicationUid"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "capped-directory"
+              ]
+            }
+          ],
+          "description": "Returns from applicant detail to the bounded access queue.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "refresh_access_queue",
+          "owner": "controller",
+          "codeValue": "refresh",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "queueSnapshotVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "capped-directory"
+              ]
+            }
+          ],
+          "description": "Refetches the access queue and its independently reported pending total.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "refresh_access_detail",
+          "owner": "controller",
+          "codeValue": "refreshDetail",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "applicationUid"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "capped-directory"
+              ]
+            }
+          ],
+          "description": "Retries the direct applicant evidence read without substituting another application.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "decide_access_application",
+          "owner": "controller",
+          "codeValue": "decide",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "reviewerUid",
+            "applicationUid",
+            "decisionVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "capped-directory"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "admin.access_decision_recorded"
+            }
+          ],
+          "description": "Records one approve-for-profile or not-selected-yet decision with review evidence.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [],
+      "scenarios": [
+        {
+          "id": "capped_directory",
+          "stateId": "capped-directory",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "view": "directory",
+            "source": "ready",
+            "mutation": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_access_review/AccessReviewRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/access/controllers/useAccessReviewController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "directory_ready",
+              "dimensions": {
+                "view": "directory",
+                "source": "ready",
+                "mutation": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "select_access_application",
+                  "refresh_access_queue"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "back_to_access_queue",
+                  "refresh_access_detail",
+                  "decide_access_application"
+                ]
+              }
+            },
+            {
+              "id": "directory_loading",
+              "dimensions": {
+                "view": "directory",
+                "source": "loading",
+                "mutation": "idle"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "select_access_application",
+                  "refresh_access_queue"
+                ],
+                "notAllowed": [
+                  "back_to_access_queue",
+                  "refresh_access_detail",
+                  "decide_access_application"
+                ]
+              }
+            },
+            {
+              "id": "detail_ready",
+              "dimensions": {
+                "view": "detail",
+                "source": "ready",
+                "mutation": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "back_to_access_queue",
+                  "refresh_access_detail",
+                  "decide_access_application"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "select_access_application",
+                  "refresh_access_queue"
+                ]
+              }
+            },
+            {
+              "id": "detail_unavailable",
+              "dimensions": {
+                "view": "unavailable",
+                "source": "failed",
+                "mutation": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "back_to_access_queue",
+                  "refresh_access_detail"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "select_access_application",
+                  "refresh_access_queue",
+                  "decide_access_application"
+                ]
+              }
+            },
+            {
+              "id": "decision_pending_live_form",
+              "dimensions": {
+                "view": "detail",
+                "source": "ready",
+                "mutation": "pending"
+              },
+              "actions": {
+                "enabled": [
+                  "back_to_access_queue"
+                ],
+                "disabled": [
+                  "refresh_access_detail",
+                  "decide_access_application"
+                ],
+                "notAllowed": [
+                  "select_access_application",
+                  "refresh_access_queue"
+                ]
+              }
+            },
+            {
+              "id": "decision_failed",
+              "dimensions": {
+                "view": "detail",
+                "source": "ready",
+                "mutation": "failed"
+              },
+              "actions": {
+                "enabled": [
+                  "back_to_access_queue",
+                  "refresh_access_detail",
+                  "decide_access_application"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "select_access_application",
+                  "refresh_access_queue"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "route_access_review",
+          "source": "admin/src/features/access/ui/AccessReviewScreen.tsx",
+          "exportName": "AccessReviewScreen"
+        },
+        "components": [
+          {
+            "id": "route_access_review",
+            "kind": "route",
+            "source": "admin/src/features/access/ui/AccessReviewScreen.tsx",
+            "exportName": "AccessReviewScreen",
+            "storybook": {
+              "status": "ready",
+              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "exportName": "AccessReviewRouteStory",
+              "states": [
+                "capped-directory"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "route_access_review/AccessReviewRouteStory"
+        ]
+      }
+    }
+  ]
+}

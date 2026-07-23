@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_acquisition.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:23cdeea677d63454e64196b349ce12bd499b2b97722fe58333c187008f9d2e9a",
-  "resolvedDigest": "sha256:52b20125c77d8dd7714c8b879980543b5abdeb7d47fb7dd45a4b76a170de655e",
+  "resolvedDigest": "sha256:8c11c9320fc2ce21f17743456cc5b2900ff4e6dab368d237b2f9e5d36898d1cc",
   "feature": {
     "id": "feature.host_acquisition",
     "name": "Host Acquisition",
@@ -747,6 +747,7 @@
             "source": "website/src/features/host/HostPage.tsx",
             "exportName": "HostPage",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/MarketingRoutes.stories.tsx",
               "exportName": "Host",
               "states": [
@@ -763,6 +764,7 @@
             "source": "website/src/features/host/application/HostApplicationFlow.tsx",
             "exportName": "HostApplicationFlow",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/HostSections.stories.tsx",
               "exportName": "HostApplicationFlowInitial",
               "states": [
@@ -777,6 +779,7 @@
             "source": "website/src/features/host/sections/CreateEventWalkthrough.tsx",
             "exportName": "CreateEventWalkthrough",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/HostSections.stories.tsx",
               "exportName": "CreateEventWalkthroughSection",
               "states": [
@@ -792,6 +795,7 @@
             "source": "website/src/features/host/sections/PlaybookShowcase.tsx",
             "exportName": "PlaybookShowcase",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/HostSections.stories.tsx",
               "exportName": "PlaybookShowcaseSection",
               "states": [
@@ -810,6 +814,7 @@
             "source": "website/src/features/host/sections/HostComparisonSection.tsx",
             "exportName": "HostComparisonSection",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/HostSections.stories.tsx",
               "exportName": "HostComparisonSectionStory",
               "states": [

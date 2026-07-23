@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/organizer_detail.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:6131ab690ee227a9626bb3aa9c5cce744b79baecad1c677fbc2059db0e7cb31d",
-  "resolvedDigest": "sha256:169f35906d863b3a5fc969704f544a7f761e8d22bf59fc70ff97daa1f8fea7f7",
+  "resolvedDigest": "sha256:a7c1f084cf0528bd79aab4ad802629fc7bc13c83a08eba3e7b484e074f8af8a7",
   "feature": {
     "id": "feature.organizer_detail",
     "name": "Organizer Detail",
@@ -3056,6 +3056,7 @@
             "source": "website/src/features/organizers/HostListingPage.tsx",
             "exportName": "HostListingPage",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/MarketingRoutes.stories.tsx",
               "exportName": "OrganizerListing",
               "states": [
@@ -3071,6 +3072,7 @@
             "source": "website/src/features/organizers/sections/ListingHeroSection.tsx",
             "exportName": "ListingHeroSection",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/OrganizerListingSections.stories.tsx",
               "exportName": "ListingHero",
               "states": [
@@ -3084,6 +3086,7 @@
             "source": "website/src/features/organizers/sections/ListingEventsSections.tsx",
             "exportName": "ListingExternalEventsSection",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/OrganizerListingSections.stories.tsx",
               "exportName": "ListingExternalEvents",
               "states": [
@@ -3097,6 +3100,7 @@
             "source": "website/src/features/organizers/sections/ListingReviewsSection.tsx",
             "exportName": "ListingReviewsSection",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/OrganizerListingSections.stories.tsx",
               "exportName": "ListingReviews",
               "states": [
@@ -3112,6 +3116,7 @@
             "source": "website/src/features/organizers/sections/ListingClaimSections.tsx",
             "exportName": "ListingMissingEvidenceSection",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/OrganizerListingSections.stories.tsx",
               "exportName": "ListingMissingEvidence",
               "states": [

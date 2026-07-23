@@ -267,6 +267,13 @@
             "pattern": "^contracts/.+\\.json$"
           }
         },
+        "runtimeContracts": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/runtimeContract"
+          }
+        },
         "testEvidence": {
           "type": "object",
           "propertyNames": {
@@ -296,6 +303,41 @@
               "pattern": "^[a-z][a-z0-9_.-]+/[A-Za-z][A-Za-z0-9_]*$"
             }
           }
+        }
+      }
+    },
+    "runtimeContract": {
+      "type": "object",
+      "required": [
+        "kind",
+        "registry",
+        "callable",
+        "requestValidation",
+        "responseValidation"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "admin_callable"
+        },
+        "registry": {
+          "const": "admin/src/generated/validators/adminCallableValidators.ts"
+        },
+        "callable": {
+          "type": "string",
+          "pattern": "^admin[A-Z][A-Za-z0-9]+$"
+        },
+        "requestValidation": {
+          "enum": [
+            "strict_schema",
+            "structural_object"
+          ]
+        },
+        "responseValidation": {
+          "enum": [
+            "strict_schema",
+            "structural_object"
+          ]
         }
       }
     },

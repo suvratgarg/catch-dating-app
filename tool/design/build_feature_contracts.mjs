@@ -645,10 +645,10 @@ function resolveAuthority({surface, label, authorityRegistries, errors}) {
     id: authorityId,
     registry: registryId,
     raw: routeComponent,
-    states: (routeComponent.storybook?.states ?? []).map((stateId) => ({
+    states: (componentPreview(routeComponent)?.states ?? []).map((stateId) => ({
       id: stateId,
       kind: "route_state",
-      status: routeComponent.storybook?.status ?? "registered",
+      status: componentPreview(routeComponent)?.status ?? "registered",
       captureIds: [],
       previewIds: [],
       tests: [],
@@ -686,6 +686,7 @@ function validateBindings({
   for (const filePath of [
     ...(surface.bindings.previewSources ?? []),
     ...(surface.bindings.dataContracts ?? []),
+    ...(surface.bindings.runtimeContracts ?? []).map((binding) => binding.registry),
     ...Object.values(surface.bindings.testEvidence ?? {}).flat(),
   ]) {
     if (!pathExists(filePath)) errors.push(`${label}.bindings: missing path ${filePath}.`);
@@ -708,6 +709,7 @@ function validateBindings({
     components: selectedComponents,
     errors,
   });
+  validateRuntimeContracts({surface, label, pathExists, readPath, errors});
   return selectedComponents;
 }
 
@@ -715,11 +717,14 @@ function validateExplicitPreviewEvidence({surface, label, authority, components,
   const previewSourceSet = new Set(surface.bindings.previewSources ?? []);
   const registeredPreviews = new Map();
   for (const component of components) {
-    if (!(component.routeIds ?? []).includes(authority.id) || component.storybook == null) {
+    const preview = componentPreview(component);
+    if (!componentAppliesToRoute(component, authority.id) ||
+        preview == null || preview.status === "not-required" ||
+        !preview.story || !preview.exportName) {
       continue;
     }
     registeredPreviews.set(
-      `${component.id}/${component.storybook.exportName}`,
+      `${component.id}/${preview.exportName}`,
       component,
     );
   }
@@ -733,10 +738,58 @@ function validateExplicitPreviewEvidence({surface, label, authority, components,
           `${label}.bindings.previewEvidence.${stateId}: ` +
           `${previewId} is not a selected preview for ${authority.id}.`,
         );
-      } else if (!previewSourceSet.has(component.storybook.story)) {
+      } else if (!previewSourceSet.has(componentPreview(component).story)) {
         errors.push(
           `${label}.bindings.previewEvidence.${stateId}: preview source ` +
-          `${component.storybook.story} is not declared in bindings.previewSources.`,
+          `${componentPreview(component).story} is not declared in bindings.previewSources.`,
+        );
+      }
+    }
+  }
+}
+
+function validateRuntimeContracts({surface, label, pathExists, readPath, errors}) {
+  const contracts = surface.bindings.runtimeContracts ?? [];
+  if (contracts.length === 0) return;
+  if (surface.runtime !== "react_admin") {
+    errors.push(`${label}.bindings.runtimeContracts: admin callable evidence requires react_admin.`);
+    return;
+  }
+  const registries = new Map();
+  for (const binding of contracts) {
+    if (!pathExists(binding.registry)) continue;
+    if (!registries.has(binding.registry)) {
+      const source = safeRead(binding.registry, readPath, errors);
+      registries.set(
+        binding.registry,
+        source == null ? null : parseAdminCallableValidationCoverage(source),
+      );
+    }
+    const coverage = registries.get(binding.registry);
+    if (coverage == null) {
+      errors.push(
+        `${label}.bindings.runtimeContracts: cannot parse validation coverage from ` +
+        `${binding.registry}.`,
+      );
+      continue;
+    }
+    if (!coverage.callables.has(binding.callable)) {
+      errors.push(
+        `${label}.bindings.runtimeContracts: unknown admin callable ${binding.callable}.`,
+      );
+      continue;
+    }
+    for (const [field, strictSet] of [
+      ["requestValidation", coverage.strictRequests],
+      ["responseValidation", coverage.strictResponses],
+    ]) {
+      const expected = strictSet.has(binding.callable)
+        ? "strict_schema"
+        : "structural_object";
+      if (binding[field] !== expected) {
+        errors.push(
+          `${label}.bindings.runtimeContracts.${binding.callable}.${field}: ` +
+          `expected ${expected}, got ${binding[field]}.`,
         );
       }
     }
@@ -811,16 +864,18 @@ function resolveStateEvidence({
   const previewSourceSet = new Set(surface.bindings.previewSources ?? []);
   const previewIds = [...(surface.bindings.previewEvidence?.[state.id] ?? [])];
   for (const component of components) {
-    if (!(component.routeIds ?? []).includes(authority.id)) continue;
-    if (!(component.storybook?.states ?? []).includes(state.id)) continue;
-    if (!previewSourceSet.has(component.storybook.story)) {
+    const preview = componentPreview(component);
+    if (!componentAppliesToRoute(component, authority.id)) continue;
+    if (!(preview?.states ?? []).includes(state.id)) continue;
+    if (preview.status === "not-required" || !preview.story || !preview.exportName) continue;
+    if (!previewSourceSet.has(preview.story)) {
       errors.push(
-        `${label}: preview source ${component.storybook.story} for ${component.id} ` +
+        `${label}: preview source ${preview.story} for ${component.id} ` +
         "is not declared in bindings.previewSources.",
       );
       continue;
     }
-    previewIds.push(`${component.id}/${component.storybook.exportName}`);
+    previewIds.push(`${component.id}/${preview.exportName}`);
   }
   return {
     captureIds: [],
@@ -988,18 +1043,52 @@ function aggregateCoverage(surfaces) {
 }
 
 function componentProjection(component) {
+  const preview = componentPreview(component);
   return Object.fromEntries(Object.entries({
     id: component.id,
     kind: component.kind,
     source: component.source,
     exportName: component.exportName,
     dart: component.dart,
-    storybook: component.storybook == null ? undefined : {
-      story: component.storybook.story,
-      exportName: component.storybook.exportName,
-      states: component.storybook.states,
+    storybook: preview == null ? undefined : {
+      status: preview.status,
+      story: preview.story,
+      exportName: preview.exportName,
+      states: preview.states,
     },
   }).filter(([, value]) => value !== undefined));
+}
+
+function componentPreview(component) {
+  return component.storybook ?? component.preview ?? null;
+}
+
+function componentAppliesToRoute(component, authorityId) {
+  return component.id === authorityId || (component.routeIds ?? []).includes(authorityId);
+}
+
+function parseAdminCallableValidationCoverage(source) {
+  const readArray = (property) => {
+    const match = source.match(new RegExp(
+      `"${property}"\\s*:\\s*(\\[[\\s\\S]*?\\])`,
+      "u",
+    ));
+    if (match == null) return null;
+    try {
+      const value = JSON.parse(match[1]);
+      return Array.isArray(value) && value.every((item) => typeof item === "string")
+        ? new Set(value)
+        : null;
+    } catch {
+      return null;
+    }
+  };
+  const callables = readArray("names");
+  const strictRequests = readArray("strictRequests");
+  const strictResponses = readArray("strictResponses");
+  return callables != null && strictRequests != null && strictResponses != null
+    ? {callables, strictRequests, strictResponses}
+    : null;
 }
 
 function evidenceExceptionKey(stateId, evidenceKind) {

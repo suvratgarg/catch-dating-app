@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.8.6
+version: 0.8.7
 updated: 2026-07-23
 owner: web_platform
 status: active
@@ -50,6 +50,14 @@ Organizer Detail because it adds static canonical/noindex behavior, not another
 interactive workflow. Static legal/support and 404 routes remain explicit
 exclusions rather than synthetic zero-action product features.
 
+The Admin migration compiles all 14 registered route authorities across 12
+feature identities. Access Review, Role Management, Data Quality, Event
+Publishing, Finance Operations, Growth KPI, Marketing Operations, Organizer
+Publishing, Safety Triage, and User Analytics each use one route projection.
+Intake and Overview each use two because Organizer Intake and the live Overview
+controller wrapper own independently reviewable states and actions. No Admin
+authority remains planned or grouped.
+
 Cross-surface orchestration does not make an unversioned HTTP boundary
 deterministic. The two `/api/join-waitlist` callers and the Function currently
 declare separate TypeScript shapes; `WEB-LEAD-API-CONTRACT-001` owns a future
@@ -57,6 +65,12 @@ shared schema and generated/validated types. Pending request snapshots are a
 separate concern: `WEB-FORM-SUBMISSION-SNAPSHOT-001` covers form controls,
 steps, auth, and route exits that remain live after waitlist, Host application,
 or Claim submission captures its payload.
+
+Admin contracts apply the same honesty to operator workflows.
+`ADMIN-MUTATION-SNAPSHOT-001` owns request-defining controls, route exits, and
+peer operations that remain live after an Admin mutation or submitted-query
+snapshot is captured. The contract records current availability; it does not
+pretend a workspace is frozen merely because one submit button is pending.
 
 Run `node tool/design/check_feature_coverage.mjs --check` after adding or
 removing any registered product surface. A planned decision is migration debt,
@@ -401,6 +415,16 @@ committed typed registry under `admin/src/generated/validators/`. Callables
 without a dedicated JSON contract receive an explicit top-level object
 validator and remain listed separately from strict schema coverage; they must
 not disappear from the registry or be described as strictly validated.
+
+Each Admin feature surface binds its callable dependencies through
+`bindings.runtimeContracts`. Request and response directions are declared
+independently as `strict_schema` or `structural_object`, and the feature
+compiler compares those declarations with the generated registry. This rejects
+both overclaiming a structural validator as field-level proof and retaining a
+stale structural declaration after a strict schema lands.
+`ADMIN-CALLABLE-STRICTNESS-001` tracks promotion of the remaining high-risk
+structural-only directions, especially access, role, safety, marketing,
+overview, and mutation responses.
 
 Run `node tool/run.mjs check web:admin-callable-validators`. Admin
 `pretypecheck` runs the same drift check, so a callable or schema change cannot

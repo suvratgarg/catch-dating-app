@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/explore.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:fc7e03679c24ed00454e746d1549b297cdfe2a69cd61de87659f7e5c8b2d3ac6",
-  "resolvedDigest": "sha256:c419b47c1671e6d0b9ff20dac0ad7eb3b7002995a0346137349658688b291c20",
+  "resolvedDigest": "sha256:0b3387fd4ed2f39de65b08d9c537aead35e621bf0e8b14183d08cd20d46ded78",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",
@@ -1785,6 +1785,7 @@
             "source": "website/src/features/organizers/OrganizerSearchPage.tsx",
             "exportName": "OrganizerSearchPage",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/MarketingRoutes.stories.tsx",
               "exportName": "OrganizerSearch",
               "states": [
@@ -1800,6 +1801,7 @@
             "source": "website/src/features/organizers/sections/OrganizerSearchSections.tsx",
             "exportName": "OrganizerSearchHeroSection",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/OrganizerSearchSections.stories.tsx",
               "exportName": "OrganizerSearchHero",
               "states": [
@@ -1814,6 +1816,7 @@
             "source": "website/src/features/organizers/sections/OrganizerSearchSections.tsx",
             "exportName": "OrganizerResultsSection",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/OrganizerSearchSections.stories.tsx",
               "exportName": "OrganizerResults",
               "states": [

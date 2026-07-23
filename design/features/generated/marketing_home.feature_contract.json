@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/marketing_home.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:e54ff806c6c758866e0e9fc5e382ef1593c4a5e3b7d5b260015496df2288c86d",
-  "resolvedDigest": "sha256:bf4d9821219026840a9528ca7f91cc0a2b2ca62817f00eb0f486c6dfc1faf9aa",
+  "resolvedDigest": "sha256:c248e9e125c29d9be8947690dc53656fd53ffc61740973eb977ce3095924a31a",
   "feature": {
     "id": "feature.marketing_home",
     "name": "Marketing Home",
@@ -583,6 +583,7 @@
             "source": "website/src/features/home/HomePage.tsx",
             "exportName": "HomePage",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/MarketingRoutes.stories.tsx",
               "exportName": "Home",
               "states": [
@@ -598,6 +599,7 @@
             "source": "website/src/features/home/sections/HomePageSections.tsx",
             "exportName": "HomeDiscoverySection",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/HomeSections.stories.tsx",
               "exportName": "HomeDiscoverySectionStory",
               "states": [
@@ -613,6 +615,7 @@
             "source": "website/src/features/home/sections/HomePageSections.tsx",
             "exportName": "HomeWaitlistSection",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/HomeSections.stories.tsx",
               "exportName": "HomeWaitlistSectionStory",
               "states": [
@@ -626,6 +629,7 @@
             "source": "website/src/shared/ui/primitives/actions.tsx",
             "exportName": "AppDownloadCtaGroup",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/MarketingPrimitives.stories.tsx",
               "exportName": "AppDownloadCtaGroupStory",
               "states": [
@@ -641,6 +645,7 @@
             "source": "website/src/features/waitlist/WaitlistForm.tsx",
             "exportName": "WaitlistForm",
             "storybook": {
+              "status": "ready",
               "story": "website/src/stories/WaitlistForm.stories.tsx",
               "exportName": "MemberWaitlistForm",
               "states": [

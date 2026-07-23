@@ -16,6 +16,11 @@ const flutterTestPath = "test/events/event_detail_widgets_test.dart";
 const webOwnerPath = "website/src/features/organizers/useExampleController.ts";
 const webStoryPath = "website/src/stories/Example.stories.tsx";
 const webTestPath = "website/src/features/organizers/useExampleController.test.tsx";
+const adminOwnerPath = "admin/src/features/example/useAdminExampleController.ts";
+const adminStoryPath = "admin/src/stories/AdminRoutes.stories.tsx";
+const adminTestPath = "admin/src/features/example/useAdminExampleController.test.tsx";
+const adminRuntimeRegistryPath =
+  "admin/src/generated/validators/adminCallableValidators.ts";
 const featureSchema = JSON.parse(fs.readFileSync(
   new URL("../../design/features/feature_contract.schema.json", import.meta.url),
   "utf8",
@@ -82,7 +87,7 @@ function fixture() {
           },
         ],
       },
-      admin_routes: {components: []},
+      admin_routes: {components: [adminRouteComponent()]},
     },
     componentRegistries: {
       flutter: {
@@ -116,7 +121,7 @@ function fixture() {
           },
         ],
       },
-      react_admin: {components: []},
+      react_admin: {components: [adminRouteComponent()]},
     },
     pathExists: () => true,
     readPath: (filePath) => {
@@ -125,7 +130,33 @@ function fixture() {
       if (filePath === webOwnerPath) {
         return "export function useExampleController() { function updateFilters() {} }";
       }
+      if (filePath === adminOwnerPath) {
+        return "export function useAdminExampleController() { function refresh() {} }";
+      }
+      if (filePath === adminRuntimeRegistryPath) {
+        return `const model = {
+          "names": ["adminExample"],
+          "strictRequests": ["adminExample"],
+          "strictResponses": []
+        } as const;`;
+      }
       return "";
+    },
+  };
+}
+
+function adminRouteComponent() {
+  return {
+    id: "route_admin_example",
+    kind: "route",
+    owner: "features/example",
+    source: "admin/src/features/example/AdminExampleScreen.tsx",
+    exportName: "AdminExampleScreen",
+    preview: {
+      status: "ready",
+      story: adminStoryPath,
+      exportName: "AdminExampleRouteStory",
+      states: ["ready"],
     },
   };
 }
@@ -236,6 +267,64 @@ function marketingSurface() {
         stateId: "filtered",
         dimensions: {filters: "active"},
         actionCases: [{id: "active", enabledActions: ["update_filters"]}],
+      },
+    ],
+    requiredEvidence: {captures: false, previews: true, tests: true},
+  };
+}
+
+function adminSurface() {
+  return {
+    id: "admin_web",
+    runtime: "react_admin",
+    authority: {registry: "admin_routes", id: "route_admin_example"},
+    actionScope: {
+      included: "Refreshing the registered admin workspace.",
+      excluded: ["Local input edits remain form data."],
+    },
+    bindings: {
+      previewSources: [adminStoryPath],
+      actionOwners: [
+        {
+          id: "controller",
+          language: "typescript",
+          file: adminOwnerPath,
+          symbol: "useAdminExampleController",
+        },
+      ],
+      componentContracts: ["route_admin_example"],
+      dataContracts: [],
+      runtimeContracts: [
+        {
+          kind: "admin_callable",
+          registry: adminRuntimeRegistryPath,
+          callable: "adminExample",
+          requestValidation: "strict_schema",
+          responseValidation: "structural_object",
+        },
+      ],
+      testEvidence: {ready: [adminTestPath]},
+    },
+    dimensions: {
+      source: {default: "ready", values: ["ready", "refreshing"]},
+    },
+    actions: [
+      {
+        id: "refresh",
+        owner: "controller",
+        codeValue: "refresh",
+        cardinality: "singleton",
+        scopeKeys: ["adminSessionId", "workspaceVersion"],
+        outcomes: [{kind: "surface_state", stateIds: ["ready"]}],
+        description: "Refreshes the registered admin source.",
+      },
+    ],
+    scenarios: [
+      {
+        id: "ready",
+        stateId: "ready",
+        dimensions: {},
+        actionCases: [{id: "ready", enabledActions: ["refresh"]}],
       },
     ],
     requiredEvidence: {captures: false, previews: true, tests: true},
@@ -400,6 +489,46 @@ test("compiles multiple runtime projections into one shared feature identity", (
     ["route_example/ExampleRoute", "section_example/ExampleFiltered"],
   );
   assert.equal(artifact.surfaces[1].runtime, "react_marketing");
+});
+
+test("compiles admin preview registries and exact callable-validation strength", () => {
+  const data = fixture();
+  data.source.surfaces = [adminSurface()];
+
+  assert.equal(validateFeatureSchema(data.source), true, JSON.stringify(
+    validateFeatureSchema.errors,
+  ));
+  const artifact = compileFeatureContract({
+    ...data,
+    sourcePath: "design/features/example.feature.json",
+  });
+
+  assert.deepEqual(
+    artifact.surfaces[0].resolved.previews,
+    ["route_admin_example/AdminExampleRouteStory"],
+  );
+  assert.equal(
+    artifact.surfaces[0].bindings.runtimeContracts[0].responseValidation,
+    "structural_object",
+  );
+});
+
+test("rejects stale or overstated admin callable-validation strength", () => {
+  const data = fixture();
+  const surface = adminSurface();
+  surface.bindings.runtimeContracts[0].requestValidation = "structural_object";
+  surface.bindings.runtimeContracts[0].responseValidation = "strict_schema";
+  data.source.surfaces = [surface];
+
+  assert.throws(
+    () => compileFeatureContract({...data, sourcePath: "fixture.json"}),
+    (error) => {
+      assert.ok(error instanceof FeatureContractError);
+      assert.match(error.message, /requestValidation: expected strict_schema/u);
+      assert.match(error.message, /responseValidation: expected structural_object/u);
+      return true;
+    },
+  );
 });
 
 test("maps route review states to explicitly registered React previews", () => {

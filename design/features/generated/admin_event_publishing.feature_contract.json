@@ -1,0 +1,713 @@
+{
+  "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
+  "version": 2,
+  "generatedFrom": "design/features/admin_event_publishing.feature.json",
+  "generatedFor": "2026-07-23",
+  "sourceDigest": "sha256:2db5c5ef4073734536bb00f4c259434041728d1d63ec1aaa2fdd61faddd5ebc1",
+  "resolvedDigest": "sha256:4578ae10c4c3c70c251b89d20196781b74d6505b2ccda1b70db9a824602f55cd",
+  "feature": {
+    "id": "feature.admin_event_publishing",
+    "name": "Admin Event Publishing",
+    "owner": "admin_console",
+    "status": "pilot",
+    "description": "Orchestrates canonical event directory and editor work, supply-readiness review, external-event inspection, and explicitly gated external publication."
+  },
+  "coverage": {
+    "surfaces": 1,
+    "states": 1,
+    "scenarios": 1,
+    "actionCases": 9,
+    "actions": 12,
+    "captures": 0,
+    "previews": 1,
+    "testFiles": 1,
+    "evidenceExceptions": 0
+  },
+  "surfaces": [
+    {
+      "id": "admin_web",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_event_publishing"
+      },
+      "actionScope": {
+        "included": "Switching event workspaces, selecting canonical or external evidence, returning to lists, refreshing each source, saving canonical edits, selecting readiness actions, and publishing reviewed external supply.",
+        "excluded": [
+          "Search, filter, editor field, checklist, and review-note changes remain query or form data.",
+          "External publication creates read-only supply and does not silently enable Catch booking.",
+          "Editor, checklist, workspace, and route controls remain live while save or publication is pending; ADMIN-MUTATION-SNAPSHOT-001 tracks the shared pending policy."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "admin/src/stories/AdminRoutes.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "controller",
+            "language": "typescript",
+            "file": "admin/src/features/events/controllers/useEventPublishingController.ts",
+            "symbol": "useEventPublishingController"
+          },
+          {
+            "id": "screen",
+            "language": "typescript",
+            "file": "admin/src/features/events/ui/EventPublishingScreen.tsx",
+            "symbol": "EventPublishingWorkspace"
+          }
+        ],
+        "componentContracts": [
+          "route_event_publishing"
+        ],
+        "dataContracts": [
+          "contracts/callables/admin_list_event_details_payload.schema.json",
+          "contracts/callables/admin_get_event_details_payload.schema.json",
+          "contracts/callables/admin_update_event_details_payload.schema.json",
+          "contracts/callables/admin_list_external_event_details_payload.schema.json",
+          "contracts/callables/admin_publish_external_event_payload.schema.json",
+          "contracts/firestore/events.schema.json",
+          "contracts/firestore/external_events.schema.json"
+        ],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminListEventDetails",
+            "requestValidation": "strict_schema",
+            "responseValidation": "structural_object"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetEventDetails",
+            "requestValidation": "strict_schema",
+            "responseValidation": "structural_object"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminUpdateEventDetails",
+            "requestValidation": "strict_schema",
+            "responseValidation": "structural_object"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminListExternalEventDetails",
+            "requestValidation": "strict_schema",
+            "responseValidation": "structural_object"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetEventSupplyReadiness",
+            "requestValidation": "structural_object",
+            "responseValidation": "structural_object"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminPublishExternalEvent",
+            "requestValidation": "strict_schema",
+            "responseValidation": "structural_object"
+          }
+        ],
+        "testEvidence": {
+          "canonical-directory": [
+            "admin/src/features/events/controllers/useEventPublishingController.test.tsx"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 1,
+        "scenarios": 1,
+        "actionCases": 9,
+        "actions": 12,
+        "captures": 0,
+        "previews": 1,
+        "testFiles": 1,
+        "evidenceExceptions": 0
+      },
+      "dimensions": {
+        "workspace": {
+          "default": "directory",
+          "values": [
+            "directory",
+            "canonical_detail",
+            "readiness",
+            "external_list",
+            "external_detail"
+          ]
+        },
+        "source": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "loading",
+            "failed",
+            "unavailable"
+          ]
+        },
+        "mutation": {
+          "default": "idle",
+          "values": [
+            "idle",
+            "pending",
+            "failed",
+            "success"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "select_event_workspace",
+          "owner": "screen",
+          "codeValue": "onWorkspaceChange",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "workspaceId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            }
+          ],
+          "description": "Switches among canonical directory, supply readiness, and external inventory.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "select_canonical_event",
+          "owner": "controller",
+          "codeValue": "selectEvent",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "eventId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            }
+          ],
+          "description": "Opens one exact canonical event for detail and governed editing.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "back_to_event_list",
+          "owner": "controller",
+          "codeValue": "backToList",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "workspaceId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            }
+          ],
+          "description": "Returns from the selected event, readiness action, or external item to its owning list.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "refresh_canonical_events",
+          "owner": "controller",
+          "codeValue": "refreshList",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "canonicalSnapshotVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            }
+          ],
+          "description": "Refetches the canonical event directory.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "save_canonical_event",
+          "owner": "controller",
+          "codeValue": "save",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "reviewerUid",
+            "eventId",
+            "editorDraftVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "admin.event_details_saved"
+            }
+          ],
+          "description": "Validates and persists the canonical event diff.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_event_readiness",
+          "owner": "controller",
+          "codeValue": "openReadiness",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "readinessVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            }
+          ],
+          "description": "Opens the external-import readiness workspace.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "select_readiness_action",
+          "owner": "controller",
+          "codeValue": "selectReadinessAction",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "sourceActionId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            }
+          ],
+          "description": "Selects one exact import-readiness action and its blockers.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "refresh_event_readiness",
+          "owner": "controller",
+          "codeValue": "refreshSupplyReadiness",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "readinessVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            }
+          ],
+          "description": "Refetches the immutable import and execution readiness plans.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_external_event_supply",
+          "owner": "controller",
+          "codeValue": "openExternalSupply",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "externalSnapshotVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            }
+          ],
+          "description": "Opens the external-event inventory workspace.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "select_external_event",
+          "owner": "controller",
+          "codeValue": "selectExternalEvent",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "externalEventId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            }
+          ],
+          "description": "Opens one source-backed external event and its import review.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "refresh_external_events",
+          "owner": "controller",
+          "codeValue": "refreshExternalList",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "externalSnapshotVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            }
+          ],
+          "description": "Refetches the external-event inventory.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "publish_external_event",
+          "owner": "controller",
+          "codeValue": "publishExternalEvent",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "reviewerUid",
+            "sourceActionId",
+            "reviewVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "admin.external_event_published"
+            }
+          ],
+          "description": "Publishes one checklist-reviewed external event as read-only public supply.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [],
+      "scenarios": [
+        {
+          "id": "canonical_directory",
+          "stateId": "canonical-directory",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "workspace": "directory",
+            "source": "ready",
+            "mutation": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_event_publishing/EventPublishingRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/events/controllers/useEventPublishingController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "canonical_directory",
+              "dimensions": {
+                "workspace": "directory",
+                "source": "ready",
+                "mutation": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "select_event_workspace",
+                  "select_canonical_event",
+                  "refresh_canonical_events",
+                  "open_event_readiness",
+                  "open_external_event_supply"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "back_to_event_list",
+                  "save_canonical_event",
+                  "select_readiness_action",
+                  "refresh_event_readiness",
+                  "select_external_event",
+                  "refresh_external_events",
+                  "publish_external_event"
+                ]
+              }
+            },
+            {
+              "id": "canonical_loading",
+              "dimensions": {
+                "workspace": "directory",
+                "source": "loading",
+                "mutation": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "select_event_workspace"
+                ],
+                "disabled": [
+                  "select_canonical_event",
+                  "refresh_canonical_events"
+                ],
+                "notAllowed": [
+                  "back_to_event_list",
+                  "save_canonical_event",
+                  "open_event_readiness",
+                  "select_readiness_action",
+                  "refresh_event_readiness",
+                  "open_external_event_supply",
+                  "select_external_event",
+                  "refresh_external_events",
+                  "publish_external_event"
+                ]
+              }
+            },
+            {
+              "id": "canonical_detail",
+              "dimensions": {
+                "workspace": "canonical_detail",
+                "source": "ready",
+                "mutation": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "select_event_workspace",
+                  "back_to_event_list",
+                  "save_canonical_event"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "select_canonical_event",
+                  "refresh_canonical_events",
+                  "open_event_readiness",
+                  "select_readiness_action",
+                  "refresh_event_readiness",
+                  "open_external_event_supply",
+                  "select_external_event",
+                  "refresh_external_events",
+                  "publish_external_event"
+                ]
+              }
+            },
+            {
+              "id": "canonical_save_pending_live_editor",
+              "dimensions": {
+                "workspace": "canonical_detail",
+                "source": "ready",
+                "mutation": "pending"
+              },
+              "actions": {
+                "enabled": [
+                  "select_event_workspace",
+                  "back_to_event_list"
+                ],
+                "disabled": [
+                  "save_canonical_event"
+                ],
+                "notAllowed": [
+                  "select_canonical_event",
+                  "refresh_canonical_events",
+                  "open_event_readiness",
+                  "select_readiness_action",
+                  "refresh_event_readiness",
+                  "open_external_event_supply",
+                  "select_external_event",
+                  "refresh_external_events",
+                  "publish_external_event"
+                ]
+              }
+            },
+            {
+              "id": "readiness",
+              "dimensions": {
+                "workspace": "readiness",
+                "source": "ready",
+                "mutation": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "select_event_workspace",
+                  "back_to_event_list",
+                  "select_readiness_action",
+                  "refresh_event_readiness",
+                  "open_external_event_supply"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "select_canonical_event",
+                  "refresh_canonical_events",
+                  "save_canonical_event",
+                  "open_event_readiness",
+                  "select_external_event",
+                  "refresh_external_events",
+                  "publish_external_event"
+                ]
+              }
+            },
+            {
+              "id": "external_list",
+              "dimensions": {
+                "workspace": "external_list",
+                "source": "ready",
+                "mutation": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "select_event_workspace",
+                  "back_to_event_list",
+                  "select_external_event",
+                  "refresh_external_events",
+                  "open_event_readiness"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "select_canonical_event",
+                  "refresh_canonical_events",
+                  "save_canonical_event",
+                  "select_readiness_action",
+                  "refresh_event_readiness",
+                  "open_external_event_supply",
+                  "publish_external_event"
+                ]
+              }
+            },
+            {
+              "id": "external_detail",
+              "dimensions": {
+                "workspace": "external_detail",
+                "source": "ready",
+                "mutation": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "select_event_workspace",
+                  "back_to_event_list",
+                  "refresh_external_events",
+                  "publish_external_event"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "select_canonical_event",
+                  "refresh_canonical_events",
+                  "save_canonical_event",
+                  "open_event_readiness",
+                  "select_readiness_action",
+                  "refresh_event_readiness",
+                  "open_external_event_supply",
+                  "select_external_event"
+                ]
+              }
+            },
+            {
+              "id": "external_publish_pending_live_review",
+              "dimensions": {
+                "workspace": "external_detail",
+                "source": "ready",
+                "mutation": "pending"
+              },
+              "actions": {
+                "enabled": [
+                  "select_event_workspace",
+                  "back_to_event_list"
+                ],
+                "disabled": [
+                  "publish_external_event"
+                ],
+                "notAllowed": [
+                  "select_canonical_event",
+                  "refresh_canonical_events",
+                  "save_canonical_event",
+                  "open_event_readiness",
+                  "select_readiness_action",
+                  "refresh_event_readiness",
+                  "open_external_event_supply",
+                  "select_external_event",
+                  "refresh_external_events"
+                ]
+              }
+            },
+            {
+              "id": "source_failed",
+              "dimensions": {
+                "workspace": "directory",
+                "source": "failed",
+                "mutation": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "select_event_workspace",
+                  "refresh_canonical_events",
+                  "refresh_event_readiness",
+                  "refresh_external_events"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "select_canonical_event",
+                  "back_to_event_list",
+                  "save_canonical_event",
+                  "open_event_readiness",
+                  "select_readiness_action",
+                  "open_external_event_supply",
+                  "select_external_event",
+                  "publish_external_event"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "route_event_publishing",
+          "source": "admin/src/features/events/ui/EventPublishingScreen.tsx",
+          "exportName": "EventPublishingScreen"
+        },
+        "components": [
+          {
+            "id": "route_event_publishing",
+            "kind": "route",
+            "source": "admin/src/features/events/ui/EventPublishingScreen.tsx",
+            "exportName": "EventPublishingScreen",
+            "storybook": {
+              "status": "ready",
+              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "exportName": "EventPublishingRouteStory",
+              "states": [
+                "canonical-directory"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "route_event_publishing/EventPublishingRouteStory"
+        ]
+      }
+    }
+  ]
+}
