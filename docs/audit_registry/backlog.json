@@ -1,5 +1,5 @@
 {
-  "version": "2.7.169",
+  "version": "2.7.170",
   "updated": "2026-07-23",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, uid-loading conflation follow-up, React component-governance follow-up including class-name boundary enforcement and exported website feature component registry coverage, admin feature export boundary, the retired website legacy site barrel/import boundary, UI label spans, empty-state variants, page shells, claim-flow route/root/auth-row shells, website Host Page route, Host Application flow, Host feature section, waitlist form shells, marketing section, marketing info-card, marketing loop-list, marketing consent banner, featured organizer card, app-download CTA group, organizer listing, organizer listing hero, organizer listing event section including event-action cards, organizer search section, organizer search result shells, PublicSearchBar ownership, public event-card shells, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin loading icon shells, admin toolbar shells/modifiers, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin marketing layout shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision/footer shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin roadmap lists, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
@@ -314,30 +314,6 @@
         "docs/demo_data_seeding.md"
       ],
       "source": "deep_semantic_audit_2026-06"
-    },
-    {
-      "id": "WEB-FORM-SUBMISSION-SNAPSHOT-001",
-      "title": "Define one pending-submission snapshot policy for marketing forms",
-      "status": "active",
-      "owner": "agent",
-      "area": "website,forms,mutations,feature-contracts",
-      "priority": "high",
-      "summary": "Member waitlist, Host application, and Organizer Claim capture a request payload before awaiting their mutation but leave request-defining fields, steps, verification choices, back navigation, or claim sign-out active. The visible draft or auth state can therefore diverge from the in-flight request. The compiled feature contracts preserve this current action availability instead of falsely modeling a frozen transaction.",
-      "acceptance": [
-        "choose and document one shared freeze-or-version policy for request-defining form state",
-        "apply the policy to member waitlist, Host application, and Organizer Claim including back, step, auth, and route-exit controls",
-        "add focused pending-state tests proving duplicate requests and visible-versus-submitted snapshot drift cannot occur"
-      ],
-      "paths": [
-        "website/src/features/waitlist/useWaitlistFormController.ts",
-        "website/src/features/host/application/useHostApplicationController.ts",
-        "website/src/features/claims/useClaimFlowController.ts",
-        "website/src/features/claims/sections/ClaimPageSections.tsx",
-        "design/features/marketing_home.feature.json",
-        "design/features/host_acquisition.feature.json",
-        "design/features/organizer_claim.feature.json"
-      ],
-      "source": "2026-07-23-marketing-feature-contracts"
     },
     {
       "id": "WEB-LEAD-API-CONTRACT-001",

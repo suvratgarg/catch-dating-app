@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/organizer_claim.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:e075f6802ceb7fc34316396019f485b0c666f3442eb5b28d0182b209859342dd",
+  "sourceDigest": "sha256:4f8f1240a95621b7fef096bf62bbad8e9a7ebf97b7701c362770798f01cb3599",
   "resolvedDigest": "sha256:37abfa1d39d7668d534bb12e07f2c94be7062a15c18f2dd6312f646b47bc6140",
   "feature": {
     "id": "feature.organizer_claim",
@@ -35,8 +35,7 @@
         "included": "Selecting an eligible organizer, moving through role and verification stages, choosing verification, claim authentication, submitting the typed organizer claim, and following state-specific recovery routes.",
         "excluded": [
           "Search query, claimant contact, proof URL, and message edits remain validated form data rather than separate feature actions.",
-          "Claim URL state is derived from canonical organizer authority and cannot be forged by query parameters.",
-          "Verification, message, back navigation, and sign-out remain live after the claim payload is captured; WEB-FORM-SUBMISSION-SNAPSHOT-001 tracks the shared pending policy."
+          "Claim URL state is derived from canonical organizer authority and cannot be forged by query parameters."
         ]
       },
       "bindings": {
@@ -232,7 +231,7 @@
               ]
             }
           ],
-          "description": "Returns to role or listing selection, including while a submitted payload remains pending.",
+          "description": "Returns to role or listing selection while no claim submission is pending.",
           "implementationStatus": "implemented"
         },
         {
@@ -294,7 +293,7 @@
               ]
             }
           ],
-          "description": "Signs the current website claim user out; the control currently remains live during claim submission.",
+          "description": "Signs the current website claim user out while no claim submission is pending.",
           "implementationStatus": "implemented"
         },
         {
@@ -668,7 +667,7 @@
               }
             },
             {
-              "id": "submission_pending_live_draft",
+              "id": "submission_pending_frozen_snapshot",
               "dimensions": {
                 "route_state": "workspace",
                 "step": "verify",
@@ -677,19 +676,18 @@
                 "mutation": "pending"
               },
               "actions": {
-                "enabled": [
+                "enabled": [],
+                "disabled": [
                   "back_claim_step",
                   "select_verification_method",
-                  "sign_out_claim_user"
-                ],
-                "disabled": [
+                  "sign_in_for_claim",
+                  "sign_out_claim_user",
                   "submit_organizer_claim"
                 ],
                 "notAllowed": [
                   "select_claim_listing",
                   "go_to_claim_role",
                   "go_to_claim_verification",
-                  "sign_in_for_claim",
                   "open_claim_listing",
                   "open_host_from_claim",
                   "restart_claim",
@@ -1079,8 +1077,7 @@
         "included": "The same Claim controller actions projected from a dynamic organizer id, slug, canonical path, or legacy path lookup.",
         "excluded": [
           "Route lookup parsing and authority-derived terminal state selection are read-model behavior rather than user actions.",
-          "Search query, claimant contact, proof URL, and message edits remain validated form data rather than separate feature actions.",
-          "Verification, message, back navigation, and sign-out remain live after the claim payload is captured; WEB-FORM-SUBMISSION-SNAPSHOT-001 tracks the shared pending policy."
+          "Search query, claimant contact, proof URL, and message edits remain validated form data rather than separate feature actions."
         ]
       },
       "bindings": {
@@ -1270,7 +1267,7 @@
               ]
             }
           ],
-          "description": "Returns to role or listing selection, including while a submitted payload remains pending.",
+          "description": "Returns to role or listing selection while no claim submission is pending.",
           "implementationStatus": "implemented"
         },
         {
@@ -1332,7 +1329,7 @@
               ]
             }
           ],
-          "description": "Signs the current website claim user out; the control currently remains live during claim submission.",
+          "description": "Signs the current website claim user out while no claim submission is pending.",
           "implementationStatus": "implemented"
         },
         {
@@ -1669,7 +1666,7 @@
               }
             },
             {
-              "id": "submission_pending_live_draft",
+              "id": "submission_pending_frozen_snapshot",
               "dimensions": {
                 "route_state": "known_listing",
                 "step": "verify",
@@ -1677,19 +1674,18 @@
                 "mutation": "pending"
               },
               "actions": {
-                "enabled": [
+                "enabled": [],
+                "disabled": [
                   "back_claim_step",
                   "select_verification_method",
-                  "sign_out_claim_user"
-                ],
-                "disabled": [
+                  "sign_in_for_claim",
+                  "sign_out_claim_user",
                   "submit_organizer_claim"
                 ],
                 "notAllowed": [
                   "select_claim_listing",
                   "go_to_claim_role",
                   "go_to_claim_verification",
-                  "sign_in_for_claim",
                   "open_claim_listing",
                   "open_host_from_claim",
                   "restart_claim",

@@ -17,8 +17,7 @@
         "excluded": [
           "Site-header anchors, consent choices, static FAQ/trust content, and capture rendering retain shared shell or presentation ownership.",
           "Host application text and select field edits remain form data governed by the application model rather than separate feature actions.",
-          "The /api/join-waitlist host-application payload and response have no shared schema; WEB-LEAD-API-CONTRACT-001 tracks the missing data-contract boundary.",
-          "Application steps and request-defining draft controls remain live after the submit payload is captured; WEB-FORM-SUBMISSION-SNAPSHOT-001 tracks the shared pending policy."
+          "The /api/join-waitlist host-application payload and response have no shared schema; WEB-LEAD-API-CONTRACT-001 tracks the missing data-contract boundary."
         ]
       },
       "bindings": {
@@ -141,7 +140,7 @@
           "cardinality": "unbounded",
           "scopeKeys": ["formInstanceId", "stepId"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["host-application"]}],
-          "description": "Moves to a selected application step; the current StepRail permits any selected step, including during submission."
+          "description": "Moves to a selected application step while no application submission is pending."
         },
         {
           "id": "continue_application",
@@ -159,7 +158,7 @@
           "cardinality": "unbounded",
           "scopeKeys": ["formInstanceId", "stepId"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["host-application"]}],
-          "description": "Returns to the previous application stage, including while submission remains pending."
+          "description": "Returns to the previous application stage while no application submission is pending."
         },
         {
           "id": "toggle_application_choice",
@@ -235,10 +234,9 @@
               "enabledActions": ["go_to_application_step", "back_application", "toggle_application_choice", "submit_host_application"]
             },
             {
-              "id": "submission_pending_live_draft",
+              "id": "submission_pending_frozen_snapshot",
               "dimensions": {"application_step": "review", "application_mutation": "pending"},
-              "enabledActions": ["go_to_application_step", "back_application", "toggle_application_choice"],
-              "disabledActions": ["submit_host_application"]
+              "disabledActions": ["go_to_application_step", "continue_application", "back_application", "toggle_application_choice", "submit_host_application"]
             },
             {
               "id": "submission_failed",

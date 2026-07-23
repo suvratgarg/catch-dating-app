@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.36
+version: 0.1.37
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -264,7 +264,8 @@ part of the pending action matrix, even when the primary button itself is
 disabled. Versioned editing and independently keyed concurrency remain explicit
 tested variants under `ARCH-PENDING-SNAPSHOT-001`, not implicit exceptions.
 Member Onboarding, Matching Preferences, Host Organizer Create, Host Event
-Edit, Reviews, and Account Settings are promoted adopters. Onboarding freezes
+Edit, Reviews, Account Settings, and Marketing forms are promoted adopters.
+Onboarding freezes
 step-back plus identity, prompt, and running-preference controls; Matching
 Preferences freezes route exit, reset, age, gender, and apply; Host Organizer
 Create freezes route, steps, media, fields, defaults, and footer actions; Host
@@ -273,6 +274,10 @@ comment, both writes, and sheet dismissal. Account Settings freezes every
 route, recovery, external, preference, unblock, delete, and sign-out action
 while any mutation is pending. Their controller/state/widget proof prevents
 duplicate or overlapping writes from drifting away from the visible snapshot.
+Marketing waitlist, Host application, and Claim flows freeze their complete
+form, step, auth, sibling-form, shared-link, and browser-exit boundary; focused
+controller and UI tests prove one request and one visible snapshot until
+settlement.
 
 When two registered surfaces use the same production implementation and differ
 only by viewer policy, prefer separate projections in one feature contract.

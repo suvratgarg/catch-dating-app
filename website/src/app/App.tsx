@@ -22,6 +22,7 @@ import {
   getHostListingRouteForPath,
 } from "../features/organizers/routing";
 import {PageShell} from "../shared/site";
+import {PendingRequestProvider} from "../shared/pendingRequest";
 import {RouteLoadingState} from "../shared/ui/primitives";
 
 const ClaimPage = lazy(async () => ({
@@ -49,7 +50,9 @@ const LegalPage = lazy(async () => ({
 function App() {
   return (
     <BrowserRouter>
-      <MarketingRouteShell />
+      <PendingRequestProvider>
+        <MarketingRouteShell />
+      </PendingRequestProvider>
     </BrowserRouter>
   );
 }

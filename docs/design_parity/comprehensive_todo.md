@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.315
+version: 0.2.316
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -78,9 +78,9 @@ ledgers as the source of truth when counts differ:
   states and 45 surface actions. The dynamic Claim lookup is compiled as a
   second projection because its four authority states are independently useful;
   Home and Host expose that `/api/join-waitlist` lacks a shared network schema,
-  while all three form workflows preserve request-snapshot concurrency debt
-  under `WEB-LEAD-API-CONTRACT-001` and
-  `WEB-FORM-SUBMISSION-SNAPSHOT-001`.
+  while all three form workflows now freeze request-defining controls, steps,
+  auth, sibling forms, and route exits under `ARCH-PENDING-SNAPSHOT-001`.
+  `WEB-LEAD-API-CONTRACT-001` remains the separate network-schema debt.
   Twelve Admin feature identities now compile all 14 Admin route authorities.
   Intake and Overview each use two projections because Organizer Intake and
   the live Overview controller wrapper own independently useful states and

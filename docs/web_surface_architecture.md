@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.8.7
+version: 0.8.8
 updated: 2026-07-23
 owner: web_platform
 status: active
@@ -62,9 +62,10 @@ Cross-surface orchestration does not make an unversioned HTTP boundary
 deterministic. The two `/api/join-waitlist` callers and the Function currently
 declare separate TypeScript shapes; `WEB-LEAD-API-CONTRACT-001` owns a future
 shared schema and generated/validated types. Pending request snapshots are a
-separate concern: `WEB-FORM-SUBMISSION-SNAPSHOT-001` covers form controls,
-steps, auth, and route exits that remain live after waitlist, Host application,
-or Claim submission captures its payload.
+separate, closed concern for Marketing: waitlist, Host application, and Claim
+use the frozen-snapshot policy from `ARCH-PENDING-SNAPSHOT-001`, including
+request-defining controls, steps, auth, sibling forms, shared route links, and
+browser exit.
 
 Admin contracts apply the same honesty to operator workflows.
 `ADMIN-MUTATION-SNAPSHOT-001` owns request-defining controls, route exits, and

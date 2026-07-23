@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.4.174
+version: 0.4.175
 updated: 2026-07-23
 owner: marketing_website
 status: active
@@ -67,13 +67,17 @@ The website is already split out of the old monolithic shell:
   Terms, Help, and 404 stay explicitly excluded as static/fallback surfaces;
   the legacy organizer-listing route stays grouped because its difference is
   static canonical/noindex policy rather than an independent workflow.
-- The contract pass exposes two shared boundaries rather than hiding them.
-  `WEB-FORM-SUBMISSION-SNAPSHOT-001` owns the freeze-or-version policy for
-  waitlist, Host application, and Claim controls that remain live after a
-  request payload is captured. `WEB-LEAD-API-CONTRACT-001` owns the missing
-  shared request/response schema for `/api/join-waitlist`; until it closes,
-  Marketing Home and Host Acquisition deliberately have no false data-contract
-  reference for their remote lead mutation.
+- Marketing mutations use the frozen-snapshot variant of
+  `ARCH-PENDING-SNAPSHOT-001`. Waitlist, Host application, canonical Claim,
+  and listing Claim register one active request, disable their complete native
+  form boundary, guard controller entry points against same-tick duplicates,
+  and temporarily block sibling forms, shared route links, and browser exit.
+  This keeps the visible draft, auth session, step, and submitted payload
+  identical until the request settles.
+- `WEB-LEAD-API-CONTRACT-001` owns the remaining missing shared
+  request/response schema for `/api/join-waitlist`; until it closes, Marketing
+  Home and Host Acquisition deliberately have no false data-contract reference
+  for their remote lead mutation.
 - `website/src/generated/hostListings.json` is production-only and excludes
   `dataOrigin: "catchDemo"` plus organizer-intake and seed records that do not
   resolve to a `live` city in the active market pack. Multi-market organizer
@@ -343,8 +347,10 @@ The website is already split out of the old monolithic shell:
   external row, and edited event form state remain local to the controller.
   Listing public reviews are the first website reference migration for remote
   reads, mutations, cache updates, and invalidation. Claim request submission,
-  waitlist submission, and host application submission now follow the same
-  website mutation convention.
+  waitlist submission, and host application submission follow the same website
+  mutation convention and frozen-snapshot pending boundary. TanStack mutation
+  state drives the visible disabled boundary; a synchronous controller ref
+  prevents a duplicate before React can publish that state.
 - Feature folders exist under `website/src/features/**`.
 
 The next refactor should focus on page and style decomposition, not another

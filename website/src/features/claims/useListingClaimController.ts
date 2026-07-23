@@ -1,9 +1,10 @@
 import {websiteCopy} from "@content/generated";
 import {organizerListingCopy} from "@content/organizer";
-import {type FormEvent, useState} from "react";
+import {type FormEvent, useRef, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
 import {claimFirebaseConfigured} from "../../firebaseConfig";
 import type {FormStatus} from "../../shared/forms/types";
+import {usePendingRequestRegistration} from "../../shared/pendingRequest";
 import {organizerPolicyForListing} from "../organizers/organizerPolicy";
 import {listingClaimPresentationFor} from "../organizers/listingPresentation";
 import type {HostListing} from "../organizers/types";
@@ -32,10 +33,12 @@ export function useListingClaimController(listing: HostListing) {
   });
 
   const claimRequestMutation = useClaimRequestMutation(listing.id);
+  const submissionInFlight = useRef<Promise<unknown> | null>(null);
+  usePendingRequestRegistration(claimRequestMutation.isPending);
   const {
     authReady,
-    handleSignIn,
-    handleSignOut,
+    handleSignIn: handleAuthSignIn,
+    handleSignOut: handleAuthSignOut,
     isSigningIn,
     user,
   } = useClaimAuthController({
@@ -44,8 +47,19 @@ export function useListingClaimController(listing: HostListing) {
     setStatus,
   });
 
+  async function handleSignIn() {
+    if (submissionInFlight.current) return;
+    await handleAuthSignIn();
+  }
+
+  async function handleSignOut() {
+    if (submissionInFlight.current) return;
+    await handleAuthSignOut();
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submissionInFlight.current) return;
     if (!publicApiEnabled) {
       setStatus({
         message: policy.claimRequestReason,
@@ -97,16 +111,18 @@ export function useListingClaimController(listing: HostListing) {
       proof_count: proofUrls.length,
     });
 
+    const request = claimRequestMutation.mutateAsync({
+      organizerId: listing.id,
+      requesterName,
+      requesterRole,
+      businessEmail,
+      businessPhone,
+      proofUrls,
+      message,
+    });
+    submissionInFlight.current = request;
     try {
-      await claimRequestMutation.mutateAsync({
-        organizerId: listing.id,
-        requesterName,
-        requesterRole,
-        businessEmail,
-        businessPhone,
-        proofUrls,
-        message,
-      });
+      await request;
       form.reset();
       setStatus({
         message: websiteCopy["uselistingclaimcontroller_0106"],
@@ -128,6 +144,10 @@ export function useListingClaimController(listing: HostListing) {
       trackMarketingEvent("listing_claim_submit_error", {
         club_id: listing.id,
       });
+    } finally {
+      if (submissionInFlight.current === request) {
+        submissionInFlight.current = null;
+      }
     }
   }
 

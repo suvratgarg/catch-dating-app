@@ -55,6 +55,7 @@ export function HostApplicationFlow() {
     <HostApplicationShell
       onFocus={handleFormStart}
       onSubmit={handleSubmit}
+      pending={isSubmitting}
     >
       <StepRail
         currentIndex={currentStepIndex}

@@ -35,6 +35,7 @@ function form(values: Record<string, string>) {
 
 describe("useWaitlistFormController", () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     createMarketingEventId.mockReturnValue("waitlist_event-1");
     waitlistAnalyticsPayload.mockReturnValue({attribution: null, analytics: {eventId: "waitlist_event-1"}});
   });
@@ -82,5 +83,51 @@ describe("useWaitlistFormController", () => {
     expect(trackMarketingEvent).toHaveBeenCalledWith("waitlist_submitted", expect.objectContaining({
       event_id: "waitlist_event-1",
     }));
+  });
+
+  it("keeps one immutable request active and ignores duplicate submits", async () => {
+    let resolveFetch!: (value: {
+      ok: boolean;
+      json: () => Promise<{alreadyJoined: boolean}>;
+    }) => void;
+    const fetchMock = vi.fn().mockReturnValue(new Promise((resolve) => {
+      resolveFetch = resolve;
+    }));
+    vi.stubGlobal("fetch", fetchMock);
+    const {result} = renderHook(
+      () => useWaitlistFormController("member"),
+      {wrapper: wrapper()}
+    );
+    const element = form({
+      fullName: "Member Name",
+      email: "member@example.com",
+      city: "Delhi",
+      role: "member",
+      instagram: "",
+      website: "",
+    });
+    const event = {preventDefault: vi.fn(), currentTarget: element} as never;
+    let firstSubmit!: Promise<void>;
+
+    act(() => {
+      firstSubmit = result.current.handleSubmit(event);
+    });
+    await waitFor(() => expect(result.current.isSubmitting).toBe(true));
+
+    act(() => {
+      result.current.handleCityChange("Other");
+      void result.current.handleSubmit(event);
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(result.current.showCustomCity).toBe(false);
+    expect(trackMarketingEvent).toHaveBeenCalledTimes(1);
+
+    resolveFetch({
+      ok: true,
+      json: async () => ({alreadyJoined: false}),
+    });
+    await act(async () => firstSubmit);
+    expect(result.current.status.tone).toBe("is-success");
   });
 });

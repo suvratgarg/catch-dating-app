@@ -16,8 +16,7 @@
         "included": "Selecting an eligible organizer, moving through role and verification stages, choosing verification, claim authentication, submitting the typed organizer claim, and following state-specific recovery routes.",
         "excluded": [
           "Search query, claimant contact, proof URL, and message edits remain validated form data rather than separate feature actions.",
-          "Claim URL state is derived from canonical organizer authority and cannot be forged by query parameters.",
-          "Verification, message, back navigation, and sign-out remain live after the claim payload is captured; WEB-FORM-SUBMISSION-SNAPSHOT-001 tracks the shared pending policy."
+          "Claim URL state is derived from canonical organizer authority and cannot be forged by query parameters."
         ]
       },
       "bindings": {
@@ -115,7 +114,7 @@
           "cardinality": "unbounded",
           "scopeKeys": ["flowInstanceId", "stepId"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["default"]}],
-          "description": "Returns to role or listing selection, including while a submitted payload remains pending."
+          "description": "Returns to role or listing selection while no claim submission is pending."
         },
         {
           "id": "select_verification_method",
@@ -142,7 +141,7 @@
           "cardinality": "singleton",
           "scopeKeys": ["browserProfileId", "authSessionVersion"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["default"]}],
-          "description": "Signs the current website claim user out; the control currently remains live during claim submission."
+          "description": "Signs the current website claim user out while no claim submission is pending."
         },
         {
           "id": "submit_organizer_claim",
@@ -207,7 +206,7 @@
             {"id": "signed_out", "dimensions": {"listing": "selected", "step": "verify", "auth": "signed_out"}, "enabledActions": ["back_claim_step", "select_verification_method", "sign_in_for_claim"]},
             {"id": "signing_in", "dimensions": {"listing": "selected", "step": "verify", "auth": "signing_in"}, "enabledActions": ["back_claim_step", "select_verification_method"], "disabledActions": ["sign_in_for_claim"]},
             {"id": "ready_to_submit", "dimensions": {"listing": "selected", "step": "verify", "auth": "signed_in"}, "enabledActions": ["back_claim_step", "select_verification_method", "sign_out_claim_user", "submit_organizer_claim"]},
-            {"id": "submission_pending_live_draft", "dimensions": {"listing": "selected", "step": "verify", "auth": "signed_in", "mutation": "pending"}, "enabledActions": ["back_claim_step", "select_verification_method", "sign_out_claim_user"], "disabledActions": ["submit_organizer_claim"]},
+            {"id": "submission_pending_frozen_snapshot", "dimensions": {"listing": "selected", "step": "verify", "auth": "signed_in", "mutation": "pending"}, "disabledActions": ["back_claim_step", "select_verification_method", "sign_in_for_claim", "sign_out_claim_user", "submit_organizer_claim"]},
             {"id": "submission_failed", "dimensions": {"listing": "selected", "step": "verify", "auth": "signed_in", "mutation": "failed"}, "enabledActions": ["back_claim_step", "select_verification_method", "sign_out_claim_user", "submit_organizer_claim"]},
             {"id": "submitted", "dimensions": {"listing": "selected", "step": "submitted", "mutation": "success"}, "enabledActions": ["open_claim_listing", "open_host_from_claim"]}
           ]
@@ -247,8 +246,7 @@
         "included": "The same Claim controller actions projected from a dynamic organizer id, slug, canonical path, or legacy path lookup.",
         "excluded": [
           "Route lookup parsing and authority-derived terminal state selection are read-model behavior rather than user actions.",
-          "Search query, claimant contact, proof URL, and message edits remain validated form data rather than separate feature actions.",
-          "Verification, message, back navigation, and sign-out remain live after the claim payload is captured; WEB-FORM-SUBMISSION-SNAPSHOT-001 tracks the shared pending policy."
+          "Search query, claimant contact, proof URL, and message edits remain validated form data rather than separate feature actions."
         ]
       },
       "bindings": {
@@ -349,7 +347,7 @@
           "cardinality": "unbounded",
           "scopeKeys": ["flowInstanceId", "stepId"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["known-listing"]}],
-          "description": "Returns to role or listing selection, including while a submitted payload remains pending."
+          "description": "Returns to role or listing selection while no claim submission is pending."
         },
         {
           "id": "select_verification_method",
@@ -376,7 +374,7 @@
           "cardinality": "singleton",
           "scopeKeys": ["browserProfileId", "authSessionVersion"],
           "outcomes": [{"kind": "surface_state", "stateIds": ["known-listing"]}],
-          "description": "Signs the current website claim user out; the control currently remains live during claim submission."
+          "description": "Signs the current website claim user out while no claim submission is pending."
         },
         {
           "id": "submit_organizer_claim",
@@ -440,7 +438,7 @@
             {"id": "signed_out", "dimensions": {"step": "verify", "auth": "signed_out"}, "enabledActions": ["back_claim_step", "select_verification_method", "sign_in_for_claim"]},
             {"id": "signing_in", "dimensions": {"step": "verify", "auth": "signing_in"}, "enabledActions": ["back_claim_step", "select_verification_method"], "disabledActions": ["sign_in_for_claim"]},
             {"id": "ready_to_submit", "dimensions": {"step": "verify", "auth": "signed_in"}, "enabledActions": ["back_claim_step", "select_verification_method", "sign_out_claim_user", "submit_organizer_claim"]},
-            {"id": "submission_pending_live_draft", "dimensions": {"step": "verify", "auth": "signed_in", "mutation": "pending"}, "enabledActions": ["back_claim_step", "select_verification_method", "sign_out_claim_user"], "disabledActions": ["submit_organizer_claim"]},
+            {"id": "submission_pending_frozen_snapshot", "dimensions": {"step": "verify", "auth": "signed_in", "mutation": "pending"}, "disabledActions": ["back_claim_step", "select_verification_method", "sign_in_for_claim", "sign_out_claim_user", "submit_organizer_claim"]},
             {"id": "submission_failed", "dimensions": {"step": "verify", "auth": "signed_in", "mutation": "failed"}, "enabledActions": ["back_claim_step", "select_verification_method", "sign_out_claim_user", "submit_organizer_claim"]},
             {"id": "submitted", "dimensions": {"step": "submitted", "mutation": "success"}, "enabledActions": ["open_claim_listing", "open_host_from_claim"]}
           ]

@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_acquisition.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:23cdeea677d63454e64196b349ce12bd499b2b97722fe58333c187008f9d2e9a",
+  "sourceDigest": "sha256:d8f4a82f46227ae2806b538ca93a7be55e9e678873589c95685e599403794aae",
   "resolvedDigest": "sha256:8c11c9320fc2ce21f17743456cc5b2900ff4e6dab368d237b2f9e5d36898d1cc",
   "feature": {
     "id": "feature.host_acquisition",
@@ -36,8 +36,7 @@
         "excluded": [
           "Site-header anchors, consent choices, static FAQ/trust content, and capture rendering retain shared shell or presentation ownership.",
           "Host application text and select field edits remain form data governed by the application model rather than separate feature actions.",
-          "The /api/join-waitlist host-application payload and response have no shared schema; WEB-LEAD-API-CONTRACT-001 tracks the missing data-contract boundary.",
-          "Application steps and request-defining draft controls remain live after the submit payload is captured; WEB-FORM-SUBMISSION-SNAPSHOT-001 tracks the shared pending policy."
+          "The /api/join-waitlist host-application payload and response have no shared schema; WEB-LEAD-API-CONTRACT-001 tracks the missing data-contract boundary."
         ]
       },
       "bindings": {
@@ -271,7 +270,7 @@
               ]
             }
           ],
-          "description": "Moves to a selected application step; the current StepRail permits any selected step, including during submission.",
+          "description": "Moves to a selected application step while no application submission is pending.",
           "implementationStatus": "implemented"
         },
         {
@@ -312,7 +311,7 @@
               ]
             }
           ],
-          "description": "Returns to the previous application stage, including while submission remains pending.",
+          "description": "Returns to the previous application stage while no application submission is pending.",
           "implementationStatus": "implemented"
         },
         {
@@ -598,7 +597,7 @@
               }
             },
             {
-              "id": "submission_pending_live_draft",
+              "id": "submission_pending_frozen_snapshot",
               "dimensions": {
                 "presentation": "application",
                 "application_step": "review",
@@ -606,12 +605,12 @@
                 "preview": "idle"
               },
               "actions": {
-                "enabled": [
-                  "go_to_application_step",
-                  "back_application",
-                  "toggle_application_choice"
-                ],
+                "enabled": [],
                 "disabled": [
+                  "go_to_application_step",
+                  "continue_application",
+                  "back_application",
+                  "toggle_application_choice",
                   "submit_host_application"
                 ],
                 "notAllowed": [
@@ -620,7 +619,6 @@
                   "select_playbook_stage",
                   "expand_playbook_module",
                   "toggle_host_comparison",
-                  "continue_application",
                   "open_organizer_search_after_submit",
                   "open_claim_after_submit"
                 ]

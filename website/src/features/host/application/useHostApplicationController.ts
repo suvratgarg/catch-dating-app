@@ -1,6 +1,6 @@
 import {websiteCopy} from "@content/generated";
 import {useMutation} from "@tanstack/react-query";
-import {type FormEvent, useState} from "react";
+import {type FormEvent, useRef, useState} from "react";
 import {
   createMarketingEventId,
   trackMarketingEvent,
@@ -8,6 +8,7 @@ import {
   waitlistAnalyticsPayload,
 } from "../../../analytics";
 import type {FormStatus} from "../../../shared/forms/types";
+import {usePendingRequestRegistration} from "../../../shared/pendingRequest";
 import {websiteQueryKeys} from "../../../shared/query/queryKeys";
 import {
   hostApplicationIsComplete,
@@ -62,6 +63,9 @@ export function useHostApplicationController() {
     mutationKey: websiteQueryKeys.hostApplications.submit(),
     mutationFn: submitHostApplication,
   });
+  const submissionInFlight =
+    useRef<Promise<HostApplicationSubmitResponse> | null>(null);
+  usePendingRequestRegistration(submitMutation.isPending);
 
   const currentStepIndex = hostApplicationSteps.findIndex((item) => item.id === step);
   const resolvedCity = draft.city === "Other" ? draft.customCity.trim() : draft.city;
@@ -71,10 +75,12 @@ export function useHostApplicationController() {
     key: K,
     value: HostApplicationDraft[K]
   ) {
+    if (submissionInFlight.current) return;
     setDraft((current) => ({...current, [key]: value}));
   }
 
   function toggleDraftList(key: "formats" | "eventSuccessModules", value: string) {
+    if (submissionInFlight.current) return;
     setDraft((current) => {
       const values = current[key];
       const next = values.includes(value)
@@ -85,6 +91,7 @@ export function useHostApplicationController() {
   }
 
   function handleFormStart() {
+    if (submissionInFlight.current) return;
     if (hasStarted) return;
     setHasStarted(true);
     trackMarketingEvent("host_operating_application_started", {
@@ -93,10 +100,12 @@ export function useHostApplicationController() {
   }
 
   function goToStep(nextStep: HostApplicationStep) {
+    if (submissionInFlight.current) return;
     setStep(nextStep);
   }
 
   function goNext() {
+    if (submissionInFlight.current) return;
     if (!canContinue) {
       setStatus({
         message: hostApplicationStepError(step),
@@ -112,12 +121,14 @@ export function useHostApplicationController() {
   }
 
   function goBack() {
+    if (submissionInFlight.current) return;
     const previous = hostApplicationSteps[currentStepIndex - 1];
     if (previous) setStep(previous.id);
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submissionInFlight.current) return;
     if (!hostApplicationIsComplete(draft)) {
       setStatus({
         message: websiteCopy["usehostapplicationcontroller_0266"],
@@ -165,8 +176,10 @@ export function useHostApplicationController() {
       module_count: draft.eventSuccessModules.length,
     });
 
+    const request = submitMutation.mutateAsync(body);
+    submissionInFlight.current = request;
     try {
-      const data = await submitMutation.mutateAsync(body);
+      const data = await request;
       setSubmitted(true);
       setStatus({
         message: data.alreadyJoined
@@ -198,6 +211,10 @@ export function useHostApplicationController() {
       trackMarketingEvent("host_operating_application_submit_error", {
         event_id: eventId,
       });
+    } finally {
+      if (submissionInFlight.current === request) {
+        submissionInFlight.current = null;
+      }
     }
   }
 

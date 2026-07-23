@@ -1,6 +1,6 @@
 import {websiteCopy} from "@content/generated";
 import {useMutation} from "@tanstack/react-query";
-import {type FormEvent, useMemo, useState} from "react";
+import {type FormEvent, useMemo, useRef, useState} from "react";
 import {
   createMarketingEventId,
   trackMarketingEvent,
@@ -8,6 +8,7 @@ import {
   waitlistAnalyticsPayload,
 } from "../../analytics";
 import type {FormStatus, FormVariant} from "../../shared/forms/types";
+import {usePendingRequestRegistration} from "../../shared/pendingRequest";
 import {websiteQueryKeys} from "../../shared/query/queryKeys";
 
 type JoinWaitlistBody = WaitlistAnalyticsPayload & {
@@ -32,6 +33,8 @@ export function useWaitlistFormController(variant: FormVariant) {
     mutationKey: websiteQueryKeys.waitlist.submit(variant),
     mutationFn: submitJoinWaitlist,
   });
+  const submissionInFlight = useRef<Promise<JoinWaitlistResponse> | null>(null);
+  usePendingRequestRegistration(submitMutation.isPending);
 
   const roleOptions = useMemo(
     () =>
@@ -50,6 +53,7 @@ export function useWaitlistFormController(variant: FormVariant) {
   );
 
   function handleCityChange(city: string) {
+    if (submissionInFlight.current) return;
     setShowCustomCity(city === "Other");
     if (!city) return;
     trackMarketingEvent("city_selected", {
@@ -59,6 +63,7 @@ export function useWaitlistFormController(variant: FormVariant) {
   }
 
   function handleRoleChange(role: string) {
+    if (submissionInFlight.current) return;
     if (!role) return;
     trackMarketingEvent("role_selected", {
       form_variant: variant,
@@ -67,6 +72,7 @@ export function useWaitlistFormController(variant: FormVariant) {
   }
 
   function handleFormStart() {
+    if (submissionInFlight.current) return;
     if (hasStarted) return;
     setHasStarted(true);
     trackMarketingEvent(
@@ -77,6 +83,7 @@ export function useWaitlistFormController(variant: FormVariant) {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submissionInFlight.current) return;
     const form = event.currentTarget;
     const payload = new FormData(form);
     const cityValue =
@@ -112,8 +119,10 @@ export function useWaitlistFormController(variant: FormVariant) {
       {city: body.city, event_id: eventId, form_variant: variant, role: body.role}
     );
 
+    const request = submitMutation.mutateAsync(body);
+    submissionInFlight.current = request;
     try {
-      const data = await submitMutation.mutateAsync(body);
+      const data = await request;
       form.reset();
       setShowCustomCity(false);
       setHasStarted(false);
@@ -151,6 +160,10 @@ export function useWaitlistFormController(variant: FormVariant) {
         event_id: eventId,
         form_variant: variant,
       });
+    } finally {
+      if (submissionInFlight.current === request) {
+        submissionInFlight.current = null;
+      }
     }
   }
 
