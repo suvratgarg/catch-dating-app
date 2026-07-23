@@ -19,16 +19,16 @@
     "nonLiteralDynamicImports": "report"
   },
   "summary": {
-    "scannedSourceModules": 301,
+    "scannedSourceModules": 335,
     "dependencyLeafNodes": 23,
-    "moduleNodes": 324,
-    "moduleEdges": 1139,
-    "runtimeModuleEdges": 911,
-    "typeOnlyModuleEdges": 228,
-    "dynamicImportEdges": 28,
-    "reExportEdges": 64,
-    "featureGroups": 32,
-    "featureDependencies": 92,
+    "moduleNodes": 358,
+    "moduleEdges": 1236,
+    "runtimeModuleEdges": 983,
+    "typeOnlyModuleEdges": 253,
+    "dynamicImportEdges": 29,
+    "reExportEdges": 65,
+    "featureGroups": 33,
+    "featureDependencies": 100,
     "crossSurfaceDependencies": 5,
     "externalPackages": 14,
     "unresolvedImports": 0,
@@ -280,8 +280,8 @@
       "surface": "admin",
       "scope": "shared",
       "feature": null,
-      "modules": 55,
-      "tests": 12,
+      "modules": 71,
+      "tests": 13,
       "stories": 0
     },
     {
@@ -339,6 +339,15 @@
       "stories": 0
     },
     {
+      "id": "website:feature:events",
+      "surface": "website",
+      "scope": "feature",
+      "feature": "events",
+      "modules": 5,
+      "tests": 2,
+      "stories": 0
+    },
+    {
       "id": "website:feature:home",
       "surface": "website",
       "scope": "feature",
@@ -370,8 +379,8 @@
       "surface": "website",
       "scope": "feature",
       "feature": "marketing",
-      "modules": 4,
-      "tests": 1,
+      "modules": 5,
+      "tests": 2,
       "stories": 0
     },
     {
@@ -415,8 +424,8 @@
       "surface": "website",
       "scope": "shared",
       "feature": null,
-      "modules": 48,
-      "tests": 1,
+      "modules": 58,
+      "tests": 3,
       "stories": 0
     },
     {
@@ -424,9 +433,9 @@
       "surface": "website",
       "scope": "support",
       "feature": null,
-      "modules": 16,
+      "modules": 18,
       "tests": 0,
-      "stories": 16
+      "stories": 18
     },
     {
       "id": "website:support",
@@ -736,8 +745,8 @@
       "targetSurface": "admin",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 7,
-      "runtimeEdges": 7,
+      "edges": 8,
+      "runtimeEdges": 8,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "reExports": 0,
@@ -749,6 +758,7 @@
         "admin/src/shared/api/dataMode.ts",
         "admin/src/shared/api/firebase.ts",
         "admin/src/shared/feedback/AdminFeedbackContext.tsx",
+        "admin/src/shared/pendingOperation.tsx",
         "admin/src/shared/query/queryClient.tsx",
         "admin/src/shared/types/adminTypes.ts",
         "admin/src/shared/ui/AdminPrimitives/index.ts",
@@ -765,8 +775,8 @@
       "targetSurface": "admin",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 7,
-      "runtimeEdges": 4,
+      "edges": 8,
+      "runtimeEdges": 5,
       "typeOnlyEdges": 3,
       "dynamicImports": 0,
       "reExports": 0,
@@ -779,6 +789,7 @@
       "targetModules": [
         "admin/src/shared/api/adminApi.ts",
         "admin/src/shared/api/sampleData.ts",
+        "admin/src/shared/pendingOperation.tsx",
         "admin/src/shared/query/queryKeys.ts",
         "admin/src/shared/types/adminTypes.ts",
         "admin/src/shared/ui/AdminPrimitives/index.ts"
@@ -794,8 +805,8 @@
       "targetSurface": "admin",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 9,
-      "runtimeEdges": 6,
+      "edges": 10,
+      "runtimeEdges": 7,
       "typeOnlyEdges": 3,
       "dynamicImports": 0,
       "reExports": 0,
@@ -808,6 +819,7 @@
       ],
       "targetModules": [
         "admin/src/shared/api/adminApi.ts",
+        "admin/src/shared/pendingOperation.tsx",
         "admin/src/shared/query/queryKeys.ts",
         "admin/src/shared/test/queryHarness.tsx",
         "admin/src/shared/types/adminTypes.ts",
@@ -858,8 +870,8 @@
       "targetSurface": "admin",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 28,
-      "runtimeEdges": 19,
+      "edges": 29,
+      "runtimeEdges": 20,
       "typeOnlyEdges": 9,
       "dynamicImports": 0,
       "reExports": 0,
@@ -879,6 +891,7 @@
         "admin/src/shared/api/sampleData.ts",
         "admin/src/shared/config/launchMarkets.ts",
         "admin/src/shared/feedback/AdminFeedbackContext.tsx",
+        "admin/src/shared/pendingOperation.tsx",
         "admin/src/shared/query/queryKeys.ts",
         "admin/src/shared/types/adminTypes.ts",
         "admin/src/shared/ui/AdminPrimitives/index.ts"
@@ -952,8 +965,8 @@
       "targetSurface": "admin",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 51,
-      "runtimeEdges": 35,
+      "edges": 53,
+      "runtimeEdges": 37,
       "typeOnlyEdges": 16,
       "dynamicImports": 0,
       "reExports": 4,
@@ -991,6 +1004,7 @@
         "admin/src/shared/operations/operationSelectors.ts",
         "admin/src/shared/operations/operationsTypes.ts",
         "admin/src/shared/operations/sampleIntakeOperations.ts",
+        "admin/src/shared/pendingOperation.tsx",
         "admin/src/shared/query/queryKeys.ts",
         "admin/src/shared/query/usePendingMutationRecord.ts",
         "admin/src/shared/test/queryHarness.tsx",
@@ -1008,8 +1022,8 @@
       "targetSurface": "admin",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 22,
-      "runtimeEdges": 19,
+      "edges": 23,
+      "runtimeEdges": 20,
       "typeOnlyEdges": 3,
       "dynamicImports": 0,
       "reExports": 1,
@@ -1028,6 +1042,7 @@
         "admin/src/generated/marketingOpsBridge.json",
         "admin/src/shared/api/adminApi.ts",
         "admin/src/shared/controllers/marketingReviewDecisionHelpers.ts",
+        "admin/src/shared/pendingOperation.tsx",
         "admin/src/shared/query/queryKeys.ts",
         "admin/src/shared/query/usePendingMutationRecord.ts",
         "admin/src/shared/test/queryHarness.tsx",
@@ -1074,8 +1089,8 @@
       "targetSurface": "admin",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 19,
-      "runtimeEdges": 11,
+      "edges": 21,
+      "runtimeEdges": 13,
       "typeOnlyEdges": 8,
       "dynamicImports": 0,
       "reExports": 0,
@@ -1094,6 +1109,7 @@
         "admin/src/shared/api/adminApi.ts",
         "admin/src/shared/config/launchMarkets.ts",
         "admin/src/shared/feedback/AdminFeedbackContext.tsx",
+        "admin/src/shared/pendingOperation.tsx",
         "admin/src/shared/query/queryKeys.ts",
         "admin/src/shared/test/queryHarness.tsx",
         "admin/src/shared/types/adminTypes.ts",
@@ -1142,8 +1158,8 @@
       "targetSurface": "admin",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 9,
-      "runtimeEdges": 5,
+      "edges": 10,
+      "runtimeEdges": 6,
       "typeOnlyEdges": 4,
       "dynamicImports": 0,
       "reExports": 0,
@@ -1157,6 +1173,7 @@
       "targetModules": [
         "admin/src/shared/api/adminApi.ts",
         "admin/src/shared/api/sampleData.ts",
+        "admin/src/shared/pendingOperation.tsx",
         "admin/src/shared/query/queryKeys.ts",
         "admin/src/shared/types/adminTypes.ts",
         "admin/src/shared/ui/AdminPrimitives/index.ts",
@@ -1173,8 +1190,8 @@
       "targetSurface": "admin",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 8,
-      "runtimeEdges": 5,
+      "edges": 9,
+      "runtimeEdges": 6,
       "typeOnlyEdges": 3,
       "dynamicImports": 0,
       "reExports": 0,
@@ -1187,6 +1204,7 @@
       "targetModules": [
         "admin/src/shared/api/adminApi.ts",
         "admin/src/shared/api/dataMode.ts",
+        "admin/src/shared/pendingOperation.tsx",
         "admin/src/shared/query/queryKeys.ts",
         "admin/src/shared/test/queryHarness.tsx",
         "admin/src/shared/types/adminTypes.ts",
@@ -1638,6 +1656,30 @@
       ]
     },
     {
+      "id": "website:app->website:feature:events",
+      "source": "website:app",
+      "target": "website:feature:events",
+      "sourceSurface": "website",
+      "sourceScope": "app",
+      "sourceFeature": null,
+      "targetSurface": "website",
+      "targetScope": "feature",
+      "targetFeature": "events",
+      "edges": 3,
+      "runtimeEdges": 2,
+      "typeOnlyEdges": 1,
+      "dynamicImports": 1,
+      "reExports": 0,
+      "sourceModules": [
+        "website/src/app/App.tsx",
+        "website/src/app/pageMeta.ts"
+      ],
+      "targetModules": [
+        "website/src/features/events/EventDetailPage.tsx",
+        "website/src/features/events/eventDetailModel.ts"
+      ]
+    },
+    {
       "id": "website:app->website:feature:home",
       "source": "website:app",
       "target": "website:feature:home",
@@ -1783,8 +1825,8 @@
       "targetSurface": "website",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 9,
-      "runtimeEdges": 8,
+      "edges": 10,
+      "runtimeEdges": 9,
       "typeOnlyEdges": 1,
       "dynamicImports": 0,
       "reExports": 0,
@@ -1799,6 +1841,7 @@
         "website/src/content/legal.ts",
         "website/src/content/meta.json",
         "website/src/content/metaContract.ts",
+        "website/src/shared/pendingRequest.tsx",
         "website/src/shared/query/queryClient.tsx",
         "website/src/shared/site/index.ts",
         "website/src/shared/ui/primitives/index.ts",
@@ -1863,9 +1906,9 @@
       "targetSurface": "website",
       "targetScope": "feature",
       "targetFeature": "organizers",
-      "edges": 20,
+      "edges": 21,
       "runtimeEdges": 13,
-      "typeOnlyEdges": 7,
+      "typeOnlyEdges": 8,
       "dynamicImports": 0,
       "reExports": 0,
       "sourceModules": [
@@ -1898,8 +1941,8 @@
       "targetSurface": "website",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 18,
-      "runtimeEdges": 15,
+      "edges": 20,
+      "runtimeEdges": 17,
       "typeOnlyEdges": 3,
       "dynamicImports": 0,
       "reExports": 0,
@@ -1920,6 +1963,7 @@
         "website/src/content/site.ts",
         "website/src/content/templates.ts",
         "website/src/shared/forms/types.ts",
+        "website/src/shared/pendingRequest.tsx",
         "website/src/shared/query/queryKeys.ts",
         "website/src/shared/site/index.ts",
         "website/src/shared/ui/primitives/index.ts"
@@ -1948,6 +1992,108 @@
       ],
       "targetModules": [
         "website/src/analytics.ts"
+      ]
+    },
+    {
+      "id": "website:feature:events->website:feature:marketing",
+      "source": "website:feature:events",
+      "target": "website:feature:marketing",
+      "sourceSurface": "website",
+      "sourceScope": "feature",
+      "sourceFeature": "events",
+      "targetSurface": "website",
+      "targetScope": "feature",
+      "targetFeature": "marketing",
+      "edges": 1,
+      "runtimeEdges": 1,
+      "typeOnlyEdges": 0,
+      "dynamicImports": 0,
+      "reExports": 0,
+      "sourceModules": [
+        "website/src/features/events/EventDetailPage.tsx"
+      ],
+      "targetModules": [
+        "website/src/features/marketing/useAppDownloadCtas.ts"
+      ]
+    },
+    {
+      "id": "website:feature:events->website:feature:organizers",
+      "source": "website:feature:events",
+      "target": "website:feature:organizers",
+      "sourceSurface": "website",
+      "sourceScope": "feature",
+      "sourceFeature": "events",
+      "targetSurface": "website",
+      "targetScope": "feature",
+      "targetFeature": "organizers",
+      "edges": 11,
+      "runtimeEdges": 8,
+      "typeOnlyEdges": 3,
+      "dynamicImports": 0,
+      "reExports": 0,
+      "sourceModules": [
+        "website/src/features/events/eventDetailModel.test.ts",
+        "website/src/features/events/eventDetailModel.ts",
+        "website/src/features/events/sections/EventDetailSections.test.tsx",
+        "website/src/features/events/sections/EventDetailSections.tsx"
+      ],
+      "targetModules": [
+        "website/src/features/organizers/OrganizerIdentity.tsx",
+        "website/src/features/organizers/data.ts",
+        "website/src/features/organizers/organizerPolicy.ts",
+        "website/src/features/organizers/publicDiscovery.ts",
+        "website/src/features/organizers/routing.ts",
+        "website/src/features/organizers/types.ts"
+      ]
+    },
+    {
+      "id": "website:feature:events->website:feature:reviews",
+      "source": "website:feature:events",
+      "target": "website:feature:reviews",
+      "sourceSurface": "website",
+      "sourceScope": "feature",
+      "sourceFeature": "events",
+      "targetSurface": "website",
+      "targetScope": "feature",
+      "targetFeature": "reviews",
+      "edges": 1,
+      "runtimeEdges": 1,
+      "typeOnlyEdges": 0,
+      "dynamicImports": 0,
+      "reExports": 0,
+      "sourceModules": [
+        "website/src/features/events/sections/EventDetailSections.tsx"
+      ],
+      "targetModules": [
+        "website/src/features/reviews/reviewModel.ts"
+      ]
+    },
+    {
+      "id": "website:feature:events->website:shared",
+      "source": "website:feature:events",
+      "target": "website:shared",
+      "sourceSurface": "website",
+      "sourceScope": "feature",
+      "sourceFeature": "events",
+      "targetSurface": "website",
+      "targetScope": "shared",
+      "targetFeature": null,
+      "edges": 9,
+      "runtimeEdges": 8,
+      "typeOnlyEdges": 1,
+      "dynamicImports": 0,
+      "reExports": 0,
+      "sourceModules": [
+        "website/src/features/events/EventDetailPage.tsx",
+        "website/src/features/events/eventDetailModel.test.ts",
+        "website/src/features/events/sections/EventDetailSections.tsx"
+      ],
+      "targetModules": [
+        "website/src/content/events.ts",
+        "website/src/content/interpolate.ts",
+        "website/src/content/site.ts",
+        "website/src/shared/site/index.ts",
+        "website/src/shared/ui/primitives/index.ts"
       ]
     },
     {
@@ -2079,8 +2225,8 @@
       "targetSurface": "website",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 33,
-      "runtimeEdges": 32,
+      "edges": 35,
+      "runtimeEdges": 34,
       "typeOnlyEdges": 1,
       "dynamicImports": 0,
       "reExports": 0,
@@ -2103,7 +2249,9 @@
         "website/src/content/markets/index.ts",
         "website/src/content/site.ts",
         "website/src/content/templates.ts",
+        "website/src/shared/api/joinWaitlistContract.ts",
         "website/src/shared/forms/types.ts",
+        "website/src/shared/pendingRequest.tsx",
         "website/src/shared/query/queryKeys.ts",
         "website/src/shared/site/index.ts",
         "website/src/shared/ui/primitives/index.ts"
@@ -2168,13 +2316,14 @@
       "targetSurface": "website",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 4,
-      "runtimeEdges": 3,
+      "edges": 5,
+      "runtimeEdges": 4,
       "typeOnlyEdges": 1,
       "dynamicImports": 0,
       "reExports": 0,
       "sourceModules": [
         "website/src/features/marketing/MarketingConsentBanner.tsx",
+        "website/src/features/marketing/useAppDownloadCtas.test.tsx",
         "website/src/features/marketing/useAppDownloadCtas.ts"
       ],
       "targetModules": [
@@ -2302,6 +2451,29 @@
       ]
     },
     {
+      "id": "website:feature:organizers->website:feature:events",
+      "source": "website:feature:organizers",
+      "target": "website:feature:events",
+      "sourceSurface": "website",
+      "sourceScope": "feature",
+      "sourceFeature": "organizers",
+      "targetSurface": "website",
+      "targetScope": "feature",
+      "targetFeature": "events",
+      "edges": 2,
+      "runtimeEdges": 2,
+      "typeOnlyEdges": 0,
+      "dynamicImports": 0,
+      "reExports": 0,
+      "sourceModules": [
+        "website/src/features/organizers/publicDiscovery.ts",
+        "website/src/features/organizers/publicSurfaceBehavior.test.ts"
+      ],
+      "targetModules": [
+        "website/src/features/events/eventDetailModel.ts"
+      ]
+    },
+    {
       "id": "website:feature:organizers->website:feature:marketing",
       "source": "website:feature:organizers",
       "target": "website:feature:marketing",
@@ -2360,8 +2532,8 @@
       "targetSurface": "website",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 48,
-      "runtimeEdges": 45,
+      "edges": 50,
+      "runtimeEdges": 47,
       "typeOnlyEdges": 3,
       "dynamicImports": 0,
       "reExports": 0,
@@ -2376,6 +2548,7 @@
         "website/src/features/organizers/publicDiscovery.test.ts",
         "website/src/features/organizers/publicDiscovery.ts",
         "website/src/features/organizers/publicDiscoveryData.ts",
+        "website/src/features/organizers/publicSurfaceBehavior.test.ts",
         "website/src/features/organizers/sections/ListingClaimSections.tsx",
         "website/src/features/organizers/sections/ListingEventsSections.tsx",
         "website/src/features/organizers/sections/ListingFactsSection.tsx",
@@ -2388,6 +2561,7 @@
         "website/src/features/organizers/useHostListingPageController.ts"
       ],
       "targetModules": [
+        "website/src/content/events.ts",
         "website/src/content/generated.ts",
         "website/src/content/marketing.ts",
         "website/src/content/markets/index.ts",
@@ -2534,8 +2708,8 @@
       "targetSurface": "website",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 7,
-      "runtimeEdges": 5,
+      "edges": 9,
+      "runtimeEdges": 7,
       "typeOnlyEdges": 2,
       "dynamicImports": 0,
       "reExports": 0,
@@ -2546,7 +2720,9 @@
       "targetModules": [
         "website/src/content/generated.ts",
         "website/src/content/markets/index.ts",
+        "website/src/shared/api/joinWaitlistContract.ts",
         "website/src/shared/forms/types.ts",
+        "website/src/shared/pendingRequest.tsx",
         "website/src/shared/query/queryKeys.ts",
         "website/src/shared/ui/primitives/index.ts"
       ]
@@ -2624,6 +2800,29 @@
       ]
     },
     {
+      "id": "website:story->website:app",
+      "source": "website:story",
+      "target": "website:app",
+      "sourceSurface": "website",
+      "sourceScope": "support",
+      "sourceFeature": null,
+      "targetSurface": "website",
+      "targetScope": "app",
+      "targetFeature": null,
+      "edges": 2,
+      "runtimeEdges": 2,
+      "typeOnlyEdges": 0,
+      "dynamicImports": 0,
+      "reExports": 0,
+      "sourceModules": [
+        "website/src/stories/EventDetailSections.stories.tsx",
+        "website/src/stories/MarketingRoutes.stories.tsx"
+      ],
+      "targetModules": [
+        "website/src/app/usePageLifecycle.ts"
+      ]
+    },
+    {
       "id": "website:story->website:feature:claims",
       "source": "website:story",
       "target": "website:feature:claims",
@@ -2651,6 +2850,32 @@
         "website/src/features/claims/sections/ClaimPageSections.tsx",
         "website/src/features/claims/useClaimFlowController.ts",
         "website/src/features/claims/useListingClaimController.ts"
+      ]
+    },
+    {
+      "id": "website:story->website:feature:events",
+      "source": "website:story",
+      "target": "website:feature:events",
+      "sourceSurface": "website",
+      "sourceScope": "support",
+      "sourceFeature": null,
+      "targetSurface": "website",
+      "targetScope": "feature",
+      "targetFeature": "events",
+      "edges": 4,
+      "runtimeEdges": 3,
+      "typeOnlyEdges": 1,
+      "dynamicImports": 0,
+      "reExports": 0,
+      "sourceModules": [
+        "website/src/stories/EventDetailSections.stories.tsx",
+        "website/src/stories/MarketingRoutes.stories.tsx",
+        "website/src/stories/fixtures/eventDetails.ts"
+      ],
+      "targetModules": [
+        "website/src/features/events/EventDetailPage.tsx",
+        "website/src/features/events/eventDetailModel.ts",
+        "website/src/features/events/sections/EventDetailSections.tsx"
       ]
     },
     {
@@ -2740,16 +2965,18 @@
       "targetSurface": "website",
       "targetScope": "feature",
       "targetFeature": "marketing",
-      "edges": 1,
-      "runtimeEdges": 1,
+      "edges": 2,
+      "runtimeEdges": 2,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "reExports": 0,
       "sourceModules": [
-        "website/src/stories/AdapterPrimitives.stories.tsx"
+        "website/src/stories/AdapterPrimitives.stories.tsx",
+        "website/src/stories/EventDetailSections.stories.tsx"
       ],
       "targetModules": [
-        "website/src/features/marketing/MarketingConsentBanner.tsx"
+        "website/src/features/marketing/MarketingConsentBanner.tsx",
+        "website/src/features/marketing/useAppDownloadCtas.ts"
       ]
     },
     {
@@ -2784,9 +3011,9 @@
       "targetSurface": "website",
       "targetScope": "feature",
       "targetFeature": "organizers",
-      "edges": 27,
+      "edges": 28,
       "runtimeEdges": 20,
-      "typeOnlyEdges": 7,
+      "typeOnlyEdges": 8,
       "dynamicImports": 0,
       "reExports": 0,
       "sourceModules": [
@@ -2796,6 +3023,7 @@
         "website/src/stories/OrganizerListingSections.stories.tsx",
         "website/src/stories/OrganizerSearchSections.stories.tsx",
         "website/src/stories/RouteShellPrimitives.stories.tsx",
+        "website/src/stories/fixtures/eventDetails.ts",
         "website/src/stories/fixtures/hostListings.ts"
       ],
       "targetModules": [
@@ -2926,8 +3154,8 @@
       "sourceLayer": "app",
       "targetSurface": "admin",
       "targetLayer": "shared",
-      "edges": 6,
-      "runtimeEdges": 6,
+      "edges": 7,
+      "runtimeEdges": 7,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "reExports": 0,
@@ -2939,6 +3167,7 @@
         "admin/src/shared/api/dataMode.ts",
         "admin/src/shared/api/firebase.ts",
         "admin/src/shared/feedback/AdminFeedbackContext.tsx",
+        "admin/src/shared/pendingOperation.tsx",
         "admin/src/shared/query/queryClient.tsx",
         "admin/src/shared/types/adminTypes.ts",
         "admin/src/shared/ui/AdminPrimitives/index.ts"
@@ -2998,8 +3227,8 @@
       "sourceLayer": "feature",
       "targetSurface": "admin",
       "targetLayer": "shared",
-      "edges": 189,
-      "runtimeEdges": 125,
+      "edges": 199,
+      "runtimeEdges": 135,
       "typeOnlyEdges": 64,
       "dynamicImports": 0,
       "reExports": 5,
@@ -3107,12 +3336,33 @@
         "admin/src/shared/operations/operationSelectors.ts",
         "admin/src/shared/operations/operationsTypes.ts",
         "admin/src/shared/operations/sampleIntakeOperations.ts",
+        "admin/src/shared/pendingOperation.tsx",
         "admin/src/shared/query/queryKeys.ts",
         "admin/src/shared/query/usePendingMutationRecord.ts",
         "admin/src/shared/test/queryHarness.tsx",
         "admin/src/shared/types/adminTypes.ts",
         "admin/src/shared/ui/AdminPrimitives/index.ts",
         "admin/src/shared/ui/adminPresentation.ts"
+      ]
+    },
+    {
+      "id": "admin:generated->admin:shared",
+      "source": "admin:generated",
+      "target": "admin:shared",
+      "sourceSurface": "admin",
+      "sourceLayer": "generated",
+      "targetSurface": "admin",
+      "targetLayer": "shared",
+      "edges": 1,
+      "runtimeEdges": 1,
+      "typeOnlyEdges": 0,
+      "dynamicImports": 0,
+      "reExports": 0,
+      "sourceModules": [
+        "admin/src/generated/validators/adminCallableValidators.test.ts"
+      ],
+      "targetModules": [
+        "admin/src/shared/api/sampleData.ts"
       ]
     },
     {
@@ -3123,16 +3373,29 @@
       "sourceLayer": "shared",
       "targetSurface": "admin",
       "targetLayer": "generated",
-      "edges": 6,
+      "edges": 18,
       "runtimeEdges": 6,
-      "typeOnlyEdges": 0,
+      "typeOnlyEdges": 12,
       "dynamicImports": 0,
       "reExports": 0,
       "sourceModules": [
         "admin/src/shared/api/adminApi.ts",
-        "admin/src/shared/operations/operationSelectors.test.ts"
+        "admin/src/shared/operations/operationSelectors.test.ts",
+        "admin/src/shared/types/adminTypes.ts"
       ],
       "targetModules": [
+        "admin/src/generated/contracts/adminAssignSafetyTriageItemCallablePayload.ts",
+        "admin/src/generated/contracts/adminAssignSafetyTriageItemCallableResponse.ts",
+        "admin/src/generated/contracts/adminCreateMarketingContentDraftCallablePayload.ts",
+        "admin/src/generated/contracts/adminDecideAccessApplicationCallablePayload.ts",
+        "admin/src/generated/contracts/adminDecideAccessApplicationCallableResponse.ts",
+        "admin/src/generated/contracts/adminDecideSafetyTriageItemCallablePayload.ts",
+        "admin/src/generated/contracts/adminDecideSafetyTriageItemCallableResponse.ts",
+        "admin/src/generated/contracts/adminGetOverviewCallableResponse.ts",
+        "admin/src/generated/contracts/adminRecordMarketingReviewDecisionCallablePayload.ts",
+        "admin/src/generated/contracts/adminRecordMarketingReviewDecisionCallableResponse.ts",
+        "admin/src/generated/contracts/adminSetAdminUserRolesCallablePayload.ts",
+        "admin/src/generated/contracts/adminSetAdminUserRolesCallableResponse.ts",
         "admin/src/generated/eventIntakeBridge.json",
         "admin/src/generated/externalEventImportExecutionPlan.json",
         "admin/src/generated/externalEventImportPlan.json",
@@ -3323,10 +3586,10 @@
       "sourceLayer": "app",
       "targetSurface": "website",
       "targetLayer": "feature",
-      "edges": 11,
-      "runtimeEdges": 10,
-      "typeOnlyEdges": 1,
-      "dynamicImports": 7,
+      "edges": 14,
+      "runtimeEdges": 12,
+      "typeOnlyEdges": 2,
+      "dynamicImports": 8,
       "reExports": 0,
       "sourceModules": [
         "website/src/app/App.tsx",
@@ -3335,6 +3598,8 @@
       "targetModules": [
         "website/src/features/claims/ClaimPage.tsx",
         "website/src/features/claims/claimRouting.ts",
+        "website/src/features/events/EventDetailPage.tsx",
+        "website/src/features/events/eventDetailModel.ts",
         "website/src/features/home/HomePage.tsx",
         "website/src/features/host/HostPage.tsx",
         "website/src/features/legal/LegalPage.tsx",
@@ -3354,8 +3619,8 @@
       "sourceLayer": "app",
       "targetSurface": "website",
       "targetLayer": "shared",
-      "edges": 4,
-      "runtimeEdges": 3,
+      "edges": 5,
+      "runtimeEdges": 4,
       "typeOnlyEdges": 1,
       "dynamicImports": 0,
       "reExports": 0,
@@ -3365,6 +3630,7 @@
         "website/src/main.tsx"
       ],
       "targetModules": [
+        "website/src/shared/pendingRequest.tsx",
         "website/src/shared/query/queryClient.tsx",
         "website/src/shared/site/index.ts",
         "website/src/shared/ui/primitives/index.ts"
@@ -3438,8 +3704,8 @@
       "sourceLayer": "feature",
       "targetSurface": "website",
       "targetLayer": "content",
-      "edges": 72,
-      "runtimeEdges": 71,
+      "edges": 79,
+      "runtimeEdges": 78,
       "typeOnlyEdges": 1,
       "dynamicImports": 0,
       "reExports": 0,
@@ -3450,6 +3716,9 @@
         "website/src/features/claims/useClaimFlowController.test.tsx",
         "website/src/features/claims/useClaimFlowController.ts",
         "website/src/features/claims/useListingClaimController.ts",
+        "website/src/features/events/EventDetailPage.tsx",
+        "website/src/features/events/eventDetailModel.test.ts",
+        "website/src/features/events/sections/EventDetailSections.tsx",
         "website/src/features/home/HomePage.tsx",
         "website/src/features/home/sections/HomePageSections.tsx",
         "website/src/features/host/HostPage.tsx",
@@ -3473,6 +3742,7 @@
         "website/src/features/organizers/publicDiscovery.test.ts",
         "website/src/features/organizers/publicDiscovery.ts",
         "website/src/features/organizers/publicDiscoveryData.ts",
+        "website/src/features/organizers/publicSurfaceBehavior.test.ts",
         "website/src/features/organizers/sections/ListingClaimSections.tsx",
         "website/src/features/organizers/sections/ListingEventsSections.tsx",
         "website/src/features/organizers/sections/ListingHeroSection.tsx",
@@ -3487,8 +3757,10 @@
         "website/src/features/waitlist/useWaitlistFormController.ts"
       ],
       "targetModules": [
+        "website/src/content/events.ts",
         "website/src/content/generated.ts",
         "website/src/content/host.ts",
+        "website/src/content/interpolate.ts",
         "website/src/content/legal.ts",
         "website/src/content/marketing.ts",
         "website/src/content/markets/index.ts",
@@ -3552,9 +3824,9 @@
       "sourceLayer": "feature",
       "targetSurface": "website",
       "targetLayer": "shared",
-      "edges": 60,
-      "runtimeEdges": 47,
-      "typeOnlyEdges": 13,
+      "edges": 71,
+      "runtimeEdges": 57,
+      "typeOnlyEdges": 14,
       "dynamicImports": 0,
       "reExports": 0,
       "sourceModules": [
@@ -3564,6 +3836,8 @@
         "website/src/features/claims/useClaimRequestMutation.test.tsx",
         "website/src/features/claims/useClaimRequestMutation.ts",
         "website/src/features/claims/useListingClaimController.ts",
+        "website/src/features/events/EventDetailPage.tsx",
+        "website/src/features/events/sections/EventDetailSections.tsx",
         "website/src/features/home/HomePage.tsx",
         "website/src/features/home/sections/HomePageSections.tsx",
         "website/src/features/host/HostPage.tsx",
@@ -3577,6 +3851,7 @@
         "website/src/features/host/sections/PlaybookShowcase.tsx",
         "website/src/features/legal/LegalPage.tsx",
         "website/src/features/marketing/MarketingConsentBanner.tsx",
+        "website/src/features/marketing/useAppDownloadCtas.test.tsx",
         "website/src/features/marketing/useAppDownloadCtas.ts",
         "website/src/features/notFound/NotFoundPage.tsx",
         "website/src/features/organizers/HostListingPage.tsx",
@@ -3600,7 +3875,9 @@
         "website/src/features/waitlist/useWaitlistFormController.ts"
       ],
       "targetModules": [
+        "website/src/shared/api/joinWaitlistContract.ts",
         "website/src/shared/forms/types.ts",
+        "website/src/shared/pendingRequest.tsx",
         "website/src/shared/query/queryKeys.ts",
         "website/src/shared/site/index.ts",
         "website/src/shared/ui/primitives/index.ts"
@@ -3714,6 +3991,27 @@
       ]
     },
     {
+      "id": "website:story->website:app",
+      "source": "website:story",
+      "target": "website:app",
+      "sourceSurface": "website",
+      "sourceLayer": "story",
+      "targetSurface": "website",
+      "targetLayer": "app",
+      "edges": 2,
+      "runtimeEdges": 2,
+      "typeOnlyEdges": 0,
+      "dynamicImports": 0,
+      "reExports": 0,
+      "sourceModules": [
+        "website/src/stories/EventDetailSections.stories.tsx",
+        "website/src/stories/MarketingRoutes.stories.tsx"
+      ],
+      "targetModules": [
+        "website/src/app/usePageLifecycle.ts"
+      ]
+    },
+    {
       "id": "website:story->website:content",
       "source": "website:story",
       "target": "website:content",
@@ -3743,14 +4041,15 @@
       "sourceLayer": "story",
       "targetSurface": "website",
       "targetLayer": "feature",
-      "edges": 48,
-      "runtimeEdges": 38,
-      "typeOnlyEdges": 10,
+      "edges": 54,
+      "runtimeEdges": 42,
+      "typeOnlyEdges": 12,
       "dynamicImports": 0,
       "reExports": 0,
       "sourceModules": [
         "website/src/stories/AdapterPrimitives.stories.tsx",
         "website/src/stories/ClaimSections.stories.tsx",
+        "website/src/stories/EventDetailSections.stories.tsx",
         "website/src/stories/HomeSections.stories.tsx",
         "website/src/stories/HostSections.stories.tsx",
         "website/src/stories/MarketingRoutes.stories.tsx",
@@ -3758,6 +4057,7 @@
         "website/src/stories/OrganizerSearchSections.stories.tsx",
         "website/src/stories/RouteShellPrimitives.stories.tsx",
         "website/src/stories/WaitlistForm.stories.tsx",
+        "website/src/stories/fixtures/eventDetails.ts",
         "website/src/stories/fixtures/hostListings.ts"
       ],
       "targetModules": [
@@ -3767,6 +4067,9 @@
         "website/src/features/claims/sections/ClaimPageSections.tsx",
         "website/src/features/claims/useClaimFlowController.ts",
         "website/src/features/claims/useListingClaimController.ts",
+        "website/src/features/events/EventDetailPage.tsx",
+        "website/src/features/events/eventDetailModel.ts",
+        "website/src/features/events/sections/EventDetailSections.tsx",
         "website/src/features/home/HomePage.tsx",
         "website/src/features/home/sections/HomePageSections.tsx",
         "website/src/features/host/HostPage.tsx",
@@ -3779,6 +4082,7 @@
         "website/src/features/host/sections/PlaybookShowcase.tsx",
         "website/src/features/legal/LegalPage.tsx",
         "website/src/features/marketing/MarketingConsentBanner.tsx",
+        "website/src/features/marketing/useAppDownloadCtas.ts",
         "website/src/features/notFound/NotFoundPage.tsx",
         "website/src/features/organizers/HostListingPage.tsx",
         "website/src/features/organizers/OrganizerIdentity.tsx",
@@ -3861,9 +4165,9 @@
   "externalDependencies": [
     {
       "package": "@storybook/react-vite",
-      "edges": 20,
+      "edges": 21,
       "runtimeEdges": 0,
-      "typeOnlyEdges": 20,
+      "typeOnlyEdges": 21,
       "dynamicImports": 0,
       "surfaces": [
         "admin",
@@ -3879,6 +4183,7 @@
         "packages/web-ui/src/primitives.stories.tsx",
         "website/src/stories/AdapterPrimitives.stories.tsx",
         "website/src/stories/ClaimSections.stories.tsx",
+        "website/src/stories/EventDetailSections.stories.tsx",
         "website/src/stories/FeedbackPrimitives.stories.tsx",
         "website/src/stories/HomeSections.stories.tsx",
         "website/src/stories/HostSections.stories.tsx",
@@ -3943,8 +4248,8 @@
     },
     {
       "package": "@testing-library/react",
-      "edges": 30,
-      "runtimeEdges": 30,
+      "edges": 34,
+      "runtimeEdges": 34,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "surfaces": [
@@ -3971,6 +4276,7 @@
         "admin/src/features/overview/controllers/useOverviewController.test.tsx",
         "admin/src/features/safety/controllers/useSafetyTriageController.test.tsx",
         "admin/src/features/users/controllers/useUserAnalyticsController.test.tsx",
+        "admin/src/shared/pendingOperation.test.tsx",
         "admin/src/shared/query/usePendingMutationRecord.test.tsx",
         "admin/src/shared/ui/AdminPrimitives/intake.test.tsx",
         "admin/src/shared/ui/AdminPrimitives/overview.test.tsx",
@@ -3978,17 +4284,20 @@
         "packages/web-ui/src/primitives.test.tsx",
         "website/src/features/claims/useClaimFlowController.test.tsx",
         "website/src/features/claims/useClaimRequestMutation.test.tsx",
+        "website/src/features/events/sections/EventDetailSections.test.tsx",
         "website/src/features/host/application/useHostApplicationController.test.tsx",
+        "website/src/features/marketing/useAppDownloadCtas.test.tsx",
         "website/src/features/organizers/useHostListingPageController.test.tsx",
         "website/src/features/organizers/useOrganizerDirectoryController.test.tsx",
         "website/src/features/reviews/useListingReviewsController.test.tsx",
-        "website/src/features/waitlist/useWaitlistFormController.test.tsx"
+        "website/src/features/waitlist/useWaitlistFormController.test.tsx",
+        "website/src/shared/pendingRequest.test.tsx"
       ]
     },
     {
       "package": "@testing-library/user-event",
-      "edges": 3,
-      "runtimeEdges": 3,
+      "edges": 4,
+      "runtimeEdges": 4,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "surfaces": [
@@ -3996,6 +4305,7 @@
       ],
       "sourceModules": [
         "admin/src/app/App.test.tsx",
+        "admin/src/shared/pendingOperation.test.tsx",
         "admin/src/shared/ui/AdminPrimitives/intake.test.tsx",
         "admin/src/shared/ui/AdminPrimitives/shell.test.tsx"
       ]
@@ -4135,9 +4445,9 @@
     },
     {
       "package": "react",
-      "edges": 119,
-      "runtimeEdges": 61,
-      "typeOnlyEdges": 58,
+      "edges": 124,
+      "runtimeEdges": 64,
+      "typeOnlyEdges": 60,
       "dynamicImports": 0,
       "surfaces": [
         "admin",
@@ -4184,6 +4494,8 @@
         "admin/src/features/users/controllers/useUserAnalyticsController.ts",
         "admin/src/main.tsx",
         "admin/src/shared/feedback/AdminFeedbackContext.tsx",
+        "admin/src/shared/pendingOperation.test.tsx",
+        "admin/src/shared/pendingOperation.tsx",
         "admin/src/shared/query/queryClient.tsx",
         "admin/src/shared/query/usePendingMutationRecord.test.tsx",
         "admin/src/shared/query/usePendingMutationRecord.ts",
@@ -4230,12 +4542,14 @@
         "website/src/features/waitlist/useWaitlistFormController.test.tsx",
         "website/src/features/waitlist/useWaitlistFormController.ts",
         "website/src/main.tsx",
+        "website/src/shared/pendingRequest.tsx",
         "website/src/shared/query/queryClient.tsx",
         "website/src/shared/site/PageShell.tsx",
         "website/src/shared/site/SectionHeader.tsx",
         "website/src/shared/site/SiteHeader.tsx",
         "website/src/shared/ui/primitives/actions.tsx",
         "website/src/shared/ui/primitives/actions2.tsx",
+        "website/src/shared/ui/primitives/eventDetail.tsx",
         "website/src/shared/ui/primitives/feedback.tsx",
         "website/src/shared/ui/primitives/forms.tsx",
         "website/src/shared/ui/primitives/forms2.tsx",
@@ -4252,6 +4566,7 @@
         "website/src/shared/ui/primitives/organizer2.tsx",
         "website/src/shared/ui/primitives/organizer3.tsx",
         "website/src/stories/ClaimSections.stories.tsx",
+        "website/src/stories/EventDetailSections.stories.tsx",
         "website/src/stories/LayoutPrimitives.stories.tsx",
         "website/src/stories/OrganizerListingSections.stories.tsx",
         "website/src/stories/RouteShellPrimitives.stories.tsx",
@@ -4297,8 +4612,8 @@
     },
     {
       "package": "vitest",
-      "edges": 51,
-      "runtimeEdges": 51,
+      "edges": 57,
+      "runtimeEdges": 57,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "surfaces": [
@@ -4335,6 +4650,7 @@
         "admin/src/shared/api/firebase.test.ts",
         "admin/src/shared/controllers/marketingReviewDecisionHelpers.test.ts",
         "admin/src/shared/operations/operationSelectors.test.ts",
+        "admin/src/shared/pendingOperation.test.tsx",
         "admin/src/shared/query/queryKeys.test.ts",
         "admin/src/shared/query/usePendingMutationRecord.test.tsx",
         "admin/src/shared/ui/AdminPrimitives/intake.test.tsx",
@@ -4346,9 +4662,12 @@
         "website/src/features/claims/claimRouting.test.ts",
         "website/src/features/claims/useClaimFlowController.test.tsx",
         "website/src/features/claims/useClaimRequestMutation.test.tsx",
+        "website/src/features/events/eventDetailModel.test.ts",
+        "website/src/features/events/sections/EventDetailSections.test.tsx",
         "website/src/features/host/application/applicationModel.test.ts",
         "website/src/features/host/application/useHostApplicationController.test.tsx",
         "website/src/features/marketing/tracking.test.ts",
+        "website/src/features/marketing/useAppDownloadCtas.test.tsx",
         "website/src/features/organizers/organizerPolicy.test.ts",
         "website/src/features/organizers/publicDiscovery.test.ts",
         "website/src/features/organizers/publicSurfaceBehavior.test.ts",
@@ -4357,7 +4676,9 @@
         "website/src/features/organizers/useOrganizerDirectoryController.test.tsx",
         "website/src/features/reviews/reviewModel.test.ts",
         "website/src/features/reviews/useListingReviewsController.test.tsx",
-        "website/src/features/waitlist/useWaitlistFormController.test.tsx"
+        "website/src/features/waitlist/useWaitlistFormController.test.tsx",
+        "website/src/shared/api/joinWaitlistContract.test.ts",
+        "website/src/shared/pendingRequest.test.tsx"
       ]
     }
   ],
@@ -5563,6 +5884,174 @@
       "story": false
     },
     {
+      "id": "admin/src/generated/contracts/adminAssignSafetyTriageItemCallablePayload.ts",
+      "surface": "admin",
+      "layer": "generated",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/generated/contracts/adminAssignSafetyTriageItemCallableResponse.ts",
+      "surface": "admin",
+      "layer": "generated",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/generated/contracts/adminCreateMarketingContentDraftCallablePayload.ts",
+      "surface": "admin",
+      "layer": "generated",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/generated/contracts/adminCreateMarketingContentDraftCallableResponse.ts",
+      "surface": "admin",
+      "layer": "generated",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/generated/contracts/adminDecideAccessApplicationCallablePayload.ts",
+      "surface": "admin",
+      "layer": "generated",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/generated/contracts/adminDecideAccessApplicationCallableResponse.ts",
+      "surface": "admin",
+      "layer": "generated",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/generated/contracts/adminDecideSafetyTriageItemCallablePayload.ts",
+      "surface": "admin",
+      "layer": "generated",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/generated/contracts/adminDecideSafetyTriageItemCallableResponse.ts",
+      "surface": "admin",
+      "layer": "generated",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/generated/contracts/adminGetOverviewCallablePayload.ts",
+      "surface": "admin",
+      "layer": "generated",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/generated/contracts/adminGetOverviewCallableResponse.ts",
+      "surface": "admin",
+      "layer": "generated",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/generated/contracts/adminRecordMarketingReviewDecisionCallablePayload.ts",
+      "surface": "admin",
+      "layer": "generated",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/generated/contracts/adminRecordMarketingReviewDecisionCallableResponse.ts",
+      "surface": "admin",
+      "layer": "generated",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/generated/contracts/adminSetAdminUserRolesCallablePayload.ts",
+      "surface": "admin",
+      "layer": "generated",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/generated/contracts/adminSetAdminUserRolesCallableResponse.ts",
+      "surface": "admin",
+      "layer": "generated",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
       "id": "admin/src/generated/eventIntakeBridge.json",
       "surface": "admin",
       "layer": "generated",
@@ -5858,6 +6347,30 @@
       "feature": null,
       "group": "admin:shared",
       "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/shared/pendingOperation.test.tsx",
+      "surface": "admin",
+      "layer": "shared",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".tsx",
+      "scanned": true,
+      "test": true,
+      "story": false
+    },
+    {
+      "id": "admin/src/shared/pendingOperation.tsx",
+      "surface": "admin",
+      "layer": "shared",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".tsx",
       "scanned": true,
       "test": false,
       "story": false
@@ -6571,6 +7084,18 @@
       "story": false
     },
     {
+      "id": "website/src/content/events.ts",
+      "surface": "website",
+      "layer": "content",
+      "scope": "shared",
+      "feature": null,
+      "group": "website:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
       "id": "website/src/content/generated.ts",
       "surface": "website",
       "layer": "content",
@@ -6883,6 +7408,66 @@
       "story": false
     },
     {
+      "id": "website/src/features/events/EventDetailPage.tsx",
+      "surface": "website",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "events",
+      "group": "website:feature:events",
+      "extension": ".tsx",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "website/src/features/events/eventDetailModel.test.ts",
+      "surface": "website",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "events",
+      "group": "website:feature:events",
+      "extension": ".ts",
+      "scanned": true,
+      "test": true,
+      "story": false
+    },
+    {
+      "id": "website/src/features/events/eventDetailModel.ts",
+      "surface": "website",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "events",
+      "group": "website:feature:events",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "website/src/features/events/sections/EventDetailSections.test.tsx",
+      "surface": "website",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "events",
+      "group": "website:feature:events",
+      "extension": ".tsx",
+      "scanned": true,
+      "test": true,
+      "story": false
+    },
+    {
+      "id": "website/src/features/events/sections/EventDetailSections.tsx",
+      "surface": "website",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "events",
+      "group": "website:feature:events",
+      "extension": ".tsx",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
       "id": "website/src/features/home/HomePage.tsx",
       "surface": "website",
       "layer": "feature",
@@ -7132,6 +7717,18 @@
       "extension": ".ts",
       "scanned": true,
       "test": false,
+      "story": false
+    },
+    {
+      "id": "website/src/features/marketing/useAppDownloadCtas.test.tsx",
+      "surface": "website",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "marketing",
+      "group": "website:feature:marketing",
+      "extension": ".tsx",
+      "scanned": true,
+      "test": true,
       "story": false
     },
     {
@@ -7699,6 +8296,78 @@
       "story": false
     },
     {
+      "id": "website/src/shared/api/joinWaitlistContract.test.ts",
+      "surface": "website",
+      "layer": "shared",
+      "scope": "shared",
+      "feature": null,
+      "group": "website:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": true,
+      "story": false
+    },
+    {
+      "id": "website/src/shared/api/joinWaitlistContract.ts",
+      "surface": "website",
+      "layer": "shared",
+      "scope": "shared",
+      "feature": null,
+      "group": "website:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "website/src/shared/contracts/generated/joinWaitlistHttpRequest.ts",
+      "surface": "website",
+      "layer": "shared",
+      "scope": "shared",
+      "feature": null,
+      "group": "website:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "website/src/shared/contracts/generated/joinWaitlistHttpResponse.ts",
+      "surface": "website",
+      "layer": "shared",
+      "scope": "shared",
+      "feature": null,
+      "group": "website:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "website/src/shared/contracts/generated/joinWaitlistSchemas.ts",
+      "surface": "website",
+      "layer": "shared",
+      "scope": "shared",
+      "feature": null,
+      "group": "website:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "website/src/shared/contracts/jsonSchema.ts",
+      "surface": "website",
+      "layer": "shared",
+      "scope": "shared",
+      "feature": null,
+      "group": "website:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
       "id": "website/src/shared/forms/types.ts",
       "surface": "website",
       "layer": "shared",
@@ -7706,6 +8375,30 @@
       "feature": null,
       "group": "website:shared",
       "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "website/src/shared/pendingRequest.test.tsx",
+      "surface": "website",
+      "layer": "shared",
+      "scope": "shared",
+      "feature": null,
+      "group": "website:shared",
+      "extension": ".tsx",
+      "scanned": true,
+      "test": true,
+      "story": false
+    },
+    {
+      "id": "website/src/shared/pendingRequest.tsx",
+      "surface": "website",
+      "layer": "shared",
+      "scope": "shared",
+      "feature": null,
+      "group": "website:shared",
+      "extension": ".tsx",
       "scanned": true,
       "test": false,
       "story": false
@@ -7820,6 +8513,18 @@
     },
     {
       "id": "website/src/shared/ui/primitives/actions2.tsx",
+      "surface": "website",
+      "layer": "shared",
+      "scope": "shared",
+      "feature": null,
+      "group": "website:shared",
+      "extension": ".tsx",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "website/src/shared/ui/primitives/eventDetail.tsx",
       "surface": "website",
       "layer": "shared",
       "scope": "shared",
@@ -8059,6 +8764,18 @@
       "story": true
     },
     {
+      "id": "website/src/stories/EventDetailSections.stories.tsx",
+      "surface": "website",
+      "layer": "story",
+      "scope": "support",
+      "feature": null,
+      "group": "website:story",
+      "extension": ".tsx",
+      "scanned": true,
+      "test": false,
+      "story": true
+    },
+    {
       "id": "website/src/stories/FeedbackPrimitives.stories.tsx",
       "surface": "website",
       "layer": "story",
@@ -8203,6 +8920,18 @@
       "story": true
     },
     {
+      "id": "website/src/stories/fixtures/eventDetails.ts",
+      "surface": "website",
+      "layer": "story",
+      "scope": "support",
+      "feature": null,
+      "group": "website:story",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": true
+    },
+    {
       "id": "website/src/stories/fixtures/hostListings.ts",
       "surface": "website",
       "layer": "story",
@@ -8317,11 +9046,20 @@
     },
     {
       "source": "admin/src/app/App.tsx",
+      "target": "admin/src/shared/pendingOperation.tsx",
+      "specifier": "../shared/pendingOperation",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 75,
+      "column": 1
+    },
+    {
+      "source": "admin/src/app/App.tsx",
       "target": "admin/src/features/overview/ui/OverviewScreen.tsx",
       "specifier": "../features/overview/ui/OverviewScreen",
       "kind": "import",
       "typeOnly": true,
-      "line": 75,
+      "line": 76,
       "column": 1
     },
     {
@@ -8330,7 +9068,7 @@
       "specifier": "../features/marketing/ui/MarketingOpsScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 96,
+      "line": 97,
       "column": 3
     },
     {
@@ -8339,7 +9077,7 @@
       "specifier": "../features/intake/ui/IntakeWorkspaceScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 102,
+      "line": 103,
       "column": 3
     },
     {
@@ -8348,7 +9086,7 @@
       "specifier": "../features/safety/ui/SafetyTriageScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 109,
+      "line": 110,
       "column": 3
     },
     {
@@ -8357,7 +9095,7 @@
       "specifier": "../features/access/ui/AccessReviewScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 114,
+      "line": 115,
       "column": 3
     },
     {
@@ -8366,7 +9104,7 @@
       "specifier": "../features/growth/ui/GrowthKpiScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 119,
+      "line": 120,
       "column": 3
     },
     {
@@ -8375,7 +9113,7 @@
       "specifier": "../features/finance/ui/FinanceOpsScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 124,
+      "line": 125,
       "column": 3
     },
     {
@@ -8384,7 +9122,7 @@
       "specifier": "../features/organizers/ui/OrganizerPublishingScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 129,
+      "line": 130,
       "column": 3
     },
     {
@@ -8393,7 +9131,7 @@
       "specifier": "../features/events/ui/EventPublishingScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 136,
+      "line": 137,
       "column": 3
     },
     {
@@ -8402,7 +9140,7 @@
       "specifier": "../features/users/ui/UserAnalyticsScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 141,
+      "line": 142,
       "column": 3
     },
     {
@@ -8411,7 +9149,7 @@
       "specifier": "../features/overview/ui/OverviewRouteScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 146,
+      "line": 147,
       "column": 3
     },
     {
@@ -8420,7 +9158,7 @@
       "specifier": "../features/data-quality/ui/DataQualityScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 151,
+      "line": 152,
       "column": 3
     },
     {
@@ -8429,7 +9167,7 @@
       "specifier": "../features/admin-roles/ui/AdminRoleManagementScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 156,
+      "line": 157,
       "column": 3
     },
     {
@@ -8438,7 +9176,7 @@
       "specifier": "../features/operations/ui/AdminActionExecutionsScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 163,
+      "line": 164,
       "column": 3
     },
     {
@@ -8497,11 +9235,20 @@
     },
     {
       "source": "admin/src/features/access/controllers/useAccessReviewController.ts",
+      "target": "admin/src/shared/pendingOperation.tsx",
+      "specifier": "../../../shared/pendingOperation",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 9,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/access/controllers/useAccessReviewController.ts",
       "target": "admin/src/features/access/api/accessReviewRepository.ts",
       "specifier": "../api/accessReviewRepository",
       "kind": "import",
       "typeOnly": false,
-      "line": 9,
+      "line": 10,
       "column": 1
     },
     {
@@ -8614,11 +9361,20 @@
     },
     {
       "source": "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.ts",
+      "target": "admin/src/shared/pendingOperation.tsx",
+      "specifier": "../../../shared/pendingOperation",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 11,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.ts",
       "target": "admin/src/features/admin-roles/api/adminRoleRepository.ts",
       "specifier": "../api/adminRoleRepository",
       "kind": "import",
       "typeOnly": false,
-      "line": 11,
+      "line": 12,
       "column": 1
     },
     {
@@ -8627,7 +9383,7 @@
       "specifier": "./adminRolePolicies",
       "kind": "import",
       "typeOnly": false,
-      "line": 16,
+      "line": 17,
       "column": 1
     },
     {
@@ -8889,6 +9645,15 @@
       "kind": "import",
       "typeOnly": false,
       "line": 37,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/events/controllers/useEventPublishingController.ts",
+      "target": "admin/src/shared/pendingOperation.tsx",
+      "specifier": "../../../shared/pendingOperation",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 38,
       "column": 1
     },
     {
@@ -9576,6 +10341,15 @@
       "column": 1
     },
     {
+      "source": "admin/src/features/intake/events/controllers/useEventIntakeController.ts",
+      "target": "admin/src/shared/pendingOperation.tsx",
+      "specifier": "../../../../shared/pendingOperation",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 25,
+      "column": 1
+    },
+    {
       "source": "admin/src/features/intake/events/ui/EventIntakeWorkspace.tsx",
       "target": "admin/src/shared/ui/AdminPrimitives/index.ts",
       "specifier": "../../../../shared/ui/AdminPrimitives",
@@ -9924,6 +10698,15 @@
       "kind": "import",
       "typeOnly": false,
       "line": 47,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
+      "target": "admin/src/shared/pendingOperation.tsx",
+      "specifier": "../../../../shared/pendingOperation",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 48,
       "column": 1
     },
     {
@@ -10593,6 +11376,15 @@
       "column": 1
     },
     {
+      "source": "admin/src/features/marketing/controllers/useMarketingOpsController.ts",
+      "target": "admin/src/shared/pendingOperation.tsx",
+      "specifier": "../../../shared/pendingOperation",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 28,
+      "column": 1
+    },
+    {
       "source": "admin/src/features/marketing/ui/MarketingOpsScreen.tsx",
       "target": "admin/src/shared/ui/AdminPrimitives/index.ts",
       "specifier": "../../../shared/ui/AdminPrimitives",
@@ -11116,11 +11908,20 @@
     },
     {
       "source": "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.ts",
+      "target": "admin/src/shared/pendingOperation.tsx",
+      "specifier": "../../../shared/pendingOperation",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 4,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.ts",
       "target": "admin/src/shared/types/adminTypes.ts",
       "specifier": "../../../shared/types/adminTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 4,
+      "line": 5,
       "column": 1
     },
     {
@@ -11129,7 +11930,7 @@
       "specifier": "../api/organizerPublishingRepository",
       "kind": "import",
       "typeOnly": false,
-      "line": 9,
+      "line": 10,
       "column": 1
     },
     {
@@ -11193,6 +11994,15 @@
       "kind": "import",
       "typeOnly": false,
       "line": 32,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/organizers/controllers/useOrganizerPublishingController.ts",
+      "target": "admin/src/shared/pendingOperation.tsx",
+      "specifier": "../../../shared/pendingOperation",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 33,
       "column": 1
     },
     {
@@ -11602,11 +12412,20 @@
     },
     {
       "source": "admin/src/features/safety/controllers/useSafetyTriageController.ts",
+      "target": "admin/src/shared/pendingOperation.tsx",
+      "specifier": "../../../shared/pendingOperation",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 11,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/safety/controllers/useSafetyTriageController.ts",
       "target": "admin/src/features/safety/api/safetyTriageRepository.ts",
       "specifier": "../api/safetyTriageRepository",
       "kind": "import",
       "typeOnly": false,
-      "line": 11,
+      "line": 12,
       "column": 1
     },
     {
@@ -11710,11 +12529,20 @@
     },
     {
       "source": "admin/src/features/users/controllers/useUserAnalyticsController.ts",
+      "target": "admin/src/shared/pendingOperation.tsx",
+      "specifier": "../../../shared/pendingOperation",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 10,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/users/controllers/useUserAnalyticsController.ts",
       "target": "admin/src/features/users/api/userAnalyticsRepository.ts",
       "specifier": "../api/userAnalyticsRepository",
       "kind": "import",
       "typeOnly": false,
-      "line": 10,
+      "line": 11,
       "column": 1
     },
     {
@@ -11751,6 +12579,15 @@
       "kind": "import",
       "typeOnly": false,
       "line": 2,
+      "column": 1
+    },
+    {
+      "source": "admin/src/generated/validators/adminCallableValidators.test.ts",
+      "target": "admin/src/shared/api/sampleData.ts",
+      "specifier": "../../shared/api/sampleData",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 8,
       "column": 1
     },
     {
@@ -12069,6 +12906,24 @@
       "column": 1
     },
     {
+      "source": "admin/src/shared/pendingOperation.test.tsx",
+      "target": "admin/src/shared/ui/AdminPrimitives/index.ts",
+      "specifier": "./ui/AdminPrimitives",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 6,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/pendingOperation.test.tsx",
+      "target": "admin/src/shared/pendingOperation.tsx",
+      "specifier": "./pendingOperation",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 13,
+      "column": 1
+    },
+    {
       "source": "admin/src/shared/query/queryKeys.test.ts",
       "target": "admin/src/shared/query/queryKeys.ts",
       "specifier": "./queryKeys",
@@ -12087,6 +12942,114 @@
       "column": 1
     },
     {
+      "source": "admin/src/shared/types/adminTypes.ts",
+      "target": "admin/src/generated/contracts/adminGetOverviewCallableResponse.ts",
+      "specifier": "../../generated/contracts/adminGetOverviewCallableResponse",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1737,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/types/adminTypes.ts",
+      "target": "admin/src/generated/contracts/adminDecideAccessApplicationCallablePayload.ts",
+      "specifier": "../../generated/contracts/adminDecideAccessApplicationCallablePayload",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1739,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/types/adminTypes.ts",
+      "target": "admin/src/generated/contracts/adminDecideAccessApplicationCallableResponse.ts",
+      "specifier": "../../generated/contracts/adminDecideAccessApplicationCallableResponse",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1741,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/types/adminTypes.ts",
+      "target": "admin/src/generated/contracts/adminSetAdminUserRolesCallablePayload.ts",
+      "specifier": "../../generated/contracts/adminSetAdminUserRolesCallablePayload",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1743,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/types/adminTypes.ts",
+      "target": "admin/src/generated/contracts/adminSetAdminUserRolesCallableResponse.ts",
+      "specifier": "../../generated/contracts/adminSetAdminUserRolesCallableResponse",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1745,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/types/adminTypes.ts",
+      "target": "admin/src/generated/contracts/adminDecideSafetyTriageItemCallablePayload.ts",
+      "specifier": "../../generated/contracts/adminDecideSafetyTriageItemCallablePayload",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1747,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/types/adminTypes.ts",
+      "target": "admin/src/generated/contracts/adminDecideSafetyTriageItemCallableResponse.ts",
+      "specifier": "../../generated/contracts/adminDecideSafetyTriageItemCallableResponse",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1749,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/types/adminTypes.ts",
+      "target": "admin/src/generated/contracts/adminAssignSafetyTriageItemCallablePayload.ts",
+      "specifier": "../../generated/contracts/adminAssignSafetyTriageItemCallablePayload",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1751,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/types/adminTypes.ts",
+      "target": "admin/src/generated/contracts/adminAssignSafetyTriageItemCallableResponse.ts",
+      "specifier": "../../generated/contracts/adminAssignSafetyTriageItemCallableResponse",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1753,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/types/adminTypes.ts",
+      "target": "admin/src/generated/contracts/adminCreateMarketingContentDraftCallablePayload.ts",
+      "specifier": "../../generated/contracts/adminCreateMarketingContentDraftCallablePayload",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1755,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/types/adminTypes.ts",
+      "target": "admin/src/generated/contracts/adminRecordMarketingReviewDecisionCallablePayload.ts",
+      "specifier": "../../generated/contracts/adminRecordMarketingReviewDecisionCallablePayload",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1757,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/types/adminTypes.ts",
+      "target": "admin/src/generated/contracts/adminRecordMarketingReviewDecisionCallableResponse.ts",
+      "specifier": "../../generated/contracts/adminRecordMarketingReviewDecisionCallableResponse",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1759,
+      "column": 1
+    },
+    {
       "source": "admin/src/shared/ui/AdminPrimitives/actions.tsx",
       "target": "packages/web-ui/src/index.ts",
       "specifier": "@catch/web-ui",
@@ -12097,11 +13060,20 @@
     },
     {
       "source": "admin/src/shared/ui/AdminPrimitives/actions.tsx",
+      "target": "admin/src/shared/pendingOperation.tsx",
+      "specifier": "../../pendingOperation",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 15,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/ui/AdminPrimitives/actions.tsx",
       "target": "admin/src/shared/ui/AdminPrimitives/shared.ts",
       "specifier": "./shared",
       "kind": "import",
       "typeOnly": false,
-      "line": 16,
+      "line": 17,
       "column": 1
     },
     {
@@ -12592,11 +13564,20 @@
     },
     {
       "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
+      "target": "admin/src/shared/pendingOperation.tsx",
+      "specifier": "../../pendingOperation",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 22,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
       "target": "admin/src/shared/ui/AdminPrimitives/shared.ts",
       "specifier": "./shared",
       "kind": "import",
       "typeOnly": false,
-      "line": 23,
+      "line": 27,
       "column": 1
     },
     {
@@ -13109,7 +14090,7 @@
       "specifier": "./usePageLifecycle",
       "kind": "import",
       "typeOnly": false,
-      "line": 10,
+      "line": 11,
       "column": 1
     },
     {
@@ -13118,7 +14099,7 @@
       "specifier": "./routeRegistry",
       "kind": "import",
       "typeOnly": false,
-      "line": 17,
+      "line": 18,
       "column": 1
     },
     {
@@ -13127,7 +14108,7 @@
       "specifier": "../features/marketing/MarketingConsentBanner",
       "kind": "import",
       "typeOnly": false,
-      "line": 18,
+      "line": 19,
       "column": 1
     },
     {
@@ -13136,7 +14117,7 @@
       "specifier": "../content/legal",
       "kind": "import",
       "typeOnly": false,
-      "line": 19,
+      "line": 20,
       "column": 1
     },
     {
@@ -13145,7 +14126,16 @@
       "specifier": "../features/claims/claimRouting",
       "kind": "import",
       "typeOnly": false,
-      "line": 20,
+      "line": 21,
+      "column": 1
+    },
+    {
+      "source": "website/src/app/App.tsx",
+      "target": "website/src/features/events/eventDetailModel.ts",
+      "specifier": "../features/events/eventDetailModel",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 22,
       "column": 1
     },
     {
@@ -13154,7 +14144,7 @@
       "specifier": "../features/organizers/routing",
       "kind": "import",
       "typeOnly": false,
-      "line": 21,
+      "line": 26,
       "column": 1
     },
     {
@@ -13163,7 +14153,16 @@
       "specifier": "../shared/site",
       "kind": "import",
       "typeOnly": false,
-      "line": 24,
+      "line": 29,
+      "column": 1
+    },
+    {
+      "source": "website/src/app/App.tsx",
+      "target": "website/src/shared/pendingRequest.tsx",
+      "specifier": "../shared/pendingRequest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 30,
       "column": 1
     },
     {
@@ -13172,7 +14171,7 @@
       "specifier": "../shared/ui/primitives",
       "kind": "import",
       "typeOnly": false,
-      "line": 25,
+      "line": 31,
       "column": 1
     },
     {
@@ -13181,7 +14180,7 @@
       "specifier": "../features/claims/ClaimPage",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 28,
+      "line": 34,
       "column": 19
     },
     {
@@ -13190,7 +14189,16 @@
       "specifier": "../features/home/HomePage",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 31,
+      "line": 37,
+      "column": 19
+    },
+    {
+      "source": "website/src/app/App.tsx",
+      "target": "website/src/features/events/EventDetailPage.tsx",
+      "specifier": "../features/events/EventDetailPage",
+      "kind": "dynamic-import",
+      "typeOnly": false,
+      "line": 40,
       "column": 19
     },
     {
@@ -13199,7 +14207,7 @@
       "specifier": "../features/organizers/HostListingPage",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 34,
+      "line": 43,
       "column": 19
     },
     {
@@ -13208,7 +14216,7 @@
       "specifier": "../features/host/HostPage",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 37,
+      "line": 46,
       "column": 19
     },
     {
@@ -13217,7 +14225,7 @@
       "specifier": "../features/notFound/NotFoundPage",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 40,
+      "line": 49,
       "column": 19
     },
     {
@@ -13226,7 +14234,7 @@
       "specifier": "../features/organizers/OrganizerSearchPage",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 43,
+      "line": 52,
       "column": 19
     },
     {
@@ -13235,7 +14243,7 @@
       "specifier": "../features/legal/LegalPage",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 46,
+      "line": 55,
       "column": 19
     },
     {
@@ -13249,11 +14257,20 @@
     },
     {
       "source": "website/src/app/pageMeta.ts",
+      "target": "website/src/features/events/eventDetailModel.ts",
+      "specifier": "../features/events/eventDetailModel",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/app/pageMeta.ts",
       "target": "website/src/content/meta.json",
       "specifier": "../content/meta.json",
       "kind": "import",
       "typeOnly": false,
-      "line": 2,
+      "line": 3,
       "column": 1
     },
     {
@@ -13262,7 +14279,7 @@
       "specifier": "../content/interpolate",
       "kind": "import",
       "typeOnly": false,
-      "line": 3,
+      "line": 4,
       "column": 1
     },
     {
@@ -13271,7 +14288,7 @@
       "specifier": "../content/metaContract",
       "kind": "import",
       "typeOnly": false,
-      "line": 4,
+      "line": 5,
       "column": 1
     },
     {
@@ -13712,7 +14729,7 @@
       "specifier": "./useClaimFlowController",
       "kind": "import",
       "typeOnly": false,
-      "line": 24,
+      "line": 38,
       "column": 1
     },
     {
@@ -13789,11 +14806,20 @@
     },
     {
       "source": "website/src/features/claims/useClaimFlowController.ts",
+      "target": "website/src/shared/pendingRequest.tsx",
+      "specifier": "../../shared/pendingRequest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 13,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/claims/useClaimFlowController.ts",
       "target": "website/src/features/claims/claimRouting.ts",
       "specifier": "./claimRouting",
       "kind": "import",
       "typeOnly": false,
-      "line": 13,
+      "line": 14,
       "column": 1
     },
     {
@@ -13802,7 +14828,7 @@
       "specifier": "./claimModel",
       "kind": "import",
       "typeOnly": false,
-      "line": 14,
+      "line": 15,
       "column": 1
     },
     {
@@ -13811,7 +14837,7 @@
       "specifier": "./useClaimRequestMutation",
       "kind": "import",
       "typeOnly": false,
-      "line": 24,
+      "line": 25,
       "column": 1
     },
     {
@@ -13825,11 +14851,20 @@
     },
     {
       "source": "website/src/features/claims/useClaimRequestMutation.test.tsx",
+      "target": "website/src/features/organizers/types.ts",
+      "specifier": "../organizers/types",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 6,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/claims/useClaimRequestMutation.test.tsx",
       "target": "website/src/shared/query/queryKeys.ts",
       "specifier": "../../shared/query/queryKeys",
       "kind": "import",
       "typeOnly": false,
-      "line": 23,
+      "line": 37,
       "column": 1
     },
     {
@@ -13838,7 +14873,7 @@
       "specifier": "./useListingClaimController",
       "kind": "import",
       "typeOnly": false,
-      "line": 24,
+      "line": 38,
       "column": 1
     },
     {
@@ -13847,7 +14882,7 @@
       "specifier": "./useClaimRequestMutation",
       "kind": "import",
       "typeOnly": false,
-      "line": 25,
+      "line": 39,
       "column": 1
     },
     {
@@ -13978,11 +15013,20 @@
     },
     {
       "source": "website/src/features/claims/useListingClaimController.ts",
+      "target": "website/src/shared/pendingRequest.tsx",
+      "specifier": "../../shared/pendingRequest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 7,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/claims/useListingClaimController.ts",
       "target": "website/src/features/organizers/organizerPolicy.ts",
       "specifier": "../organizers/organizerPolicy",
       "kind": "import",
       "typeOnly": false,
-      "line": 7,
+      "line": 8,
       "column": 1
     },
     {
@@ -13991,7 +15035,7 @@
       "specifier": "../organizers/listingPresentation",
       "kind": "import",
       "typeOnly": false,
-      "line": 8,
+      "line": 9,
       "column": 1
     },
     {
@@ -14000,7 +15044,7 @@
       "specifier": "../organizers/types",
       "kind": "import",
       "typeOnly": true,
-      "line": 9,
+      "line": 10,
       "column": 1
     },
     {
@@ -14009,7 +15053,7 @@
       "specifier": "./claimModel",
       "kind": "import",
       "typeOnly": false,
-      "line": 10,
+      "line": 11,
       "column": 1
     },
     {
@@ -14018,7 +15062,259 @@
       "specifier": "./useClaimRequestMutation",
       "kind": "import",
       "typeOnly": false,
-      "line": 16,
+      "line": 17,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/EventDetailPage.tsx",
+      "target": "website/src/content/events.ts",
+      "specifier": "../../content/events",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/EventDetailPage.tsx",
+      "target": "website/src/content/site.ts",
+      "specifier": "../../content/site",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/EventDetailPage.tsx",
+      "target": "website/src/shared/site/index.ts",
+      "specifier": "../../shared/site",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/EventDetailPage.tsx",
+      "target": "website/src/features/marketing/useAppDownloadCtas.ts",
+      "specifier": "../marketing/useAppDownloadCtas",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 4,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/EventDetailPage.tsx",
+      "target": "website/src/features/events/eventDetailModel.ts",
+      "specifier": "./eventDetailModel",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 5,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/EventDetailPage.tsx",
+      "target": "website/src/features/events/sections/EventDetailSections.tsx",
+      "specifier": "./sections/EventDetailSections",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 6,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/eventDetailModel.test.ts",
+      "target": "website/src/content/events.ts",
+      "specifier": "../../content/events",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/eventDetailModel.test.ts",
+      "target": "website/src/features/organizers/data.ts",
+      "specifier": "../organizers/data",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/eventDetailModel.test.ts",
+      "target": "website/src/features/organizers/types.ts",
+      "specifier": "../organizers/types",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 4,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/eventDetailModel.test.ts",
+      "target": "website/src/features/events/eventDetailModel.ts",
+      "specifier": "./eventDetailModel",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 9,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/eventDetailModel.ts",
+      "target": "website/src/features/organizers/data.ts",
+      "specifier": "../organizers/data",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/eventDetailModel.ts",
+      "target": "website/src/features/organizers/organizerPolicy.ts",
+      "specifier": "../organizers/organizerPolicy",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/eventDetailModel.ts",
+      "target": "website/src/features/organizers/types.ts",
+      "specifier": "../organizers/types",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/sections/EventDetailSections.test.tsx",
+      "target": "website/src/features/organizers/data.ts",
+      "specifier": "../../organizers/data",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/sections/EventDetailSections.test.tsx",
+      "target": "website/src/features/organizers/types.ts",
+      "specifier": "../../organizers/types",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 4,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/sections/EventDetailSections.test.tsx",
+      "target": "website/src/features/events/eventDetailModel.ts",
+      "specifier": "../eventDetailModel",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 5,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/sections/EventDetailSections.test.tsx",
+      "target": "website/src/features/events/sections/EventDetailSections.tsx",
+      "specifier": "./EventDetailSections",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 6,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/sections/EventDetailSections.tsx",
+      "target": "website/src/shared/ui/primitives/index.ts",
+      "specifier": "../../../shared/ui/primitives",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/sections/EventDetailSections.tsx",
+      "target": "website/src/shared/ui/primitives/index.ts",
+      "specifier": "../../../shared/ui/primitives",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/sections/EventDetailSections.tsx",
+      "target": "website/src/shared/site/index.ts",
+      "specifier": "../../../shared/site",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 18,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/sections/EventDetailSections.tsx",
+      "target": "website/src/content/events.ts",
+      "specifier": "../../../content/events",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 19,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/sections/EventDetailSections.tsx",
+      "target": "website/src/content/interpolate.ts",
+      "specifier": "../../../content/interpolate",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 20,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/sections/EventDetailSections.tsx",
+      "target": "website/src/features/organizers/OrganizerIdentity.tsx",
+      "specifier": "../../organizers/OrganizerIdentity",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 21,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/sections/EventDetailSections.tsx",
+      "target": "website/src/features/organizers/organizerPolicy.ts",
+      "specifier": "../../organizers/organizerPolicy",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 25,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/sections/EventDetailSections.tsx",
+      "target": "website/src/features/organizers/publicDiscovery.ts",
+      "specifier": "../../organizers/publicDiscovery",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 26,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/sections/EventDetailSections.tsx",
+      "target": "website/src/features/organizers/routing.ts",
+      "specifier": "../../organizers/routing",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 27,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/sections/EventDetailSections.tsx",
+      "target": "website/src/features/reviews/reviewModel.ts",
+      "specifier": "../../reviews/reviewModel",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 28,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/sections/EventDetailSections.tsx",
+      "target": "website/src/features/events/eventDetailModel.ts",
+      "specifier": "../eventDetailModel",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 29,
       "column": 1
     },
     {
@@ -14365,11 +15661,29 @@
     },
     {
       "source": "website/src/features/host/application/useHostApplicationController.ts",
+      "target": "website/src/shared/api/joinWaitlistContract.ts",
+      "specifier": "../../../shared/api/joinWaitlistContract",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 9,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/host/application/useHostApplicationController.ts",
       "target": "website/src/shared/forms/types.ts",
       "specifier": "../../../shared/forms/types",
       "kind": "import",
       "typeOnly": true,
-      "line": 10,
+      "line": 14,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/host/application/useHostApplicationController.ts",
+      "target": "website/src/shared/pendingRequest.tsx",
+      "specifier": "../../../shared/pendingRequest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 15,
       "column": 1
     },
     {
@@ -14378,7 +15692,7 @@
       "specifier": "../../../shared/query/queryKeys",
       "kind": "import",
       "typeOnly": false,
-      "line": 11,
+      "line": 16,
       "column": 1
     },
     {
@@ -14387,7 +15701,7 @@
       "specifier": "./applicationModel",
       "kind": "import",
       "typeOnly": false,
-      "line": 12,
+      "line": 17,
       "column": 1
     },
     {
@@ -14739,6 +16053,24 @@
       "kind": "import",
       "typeOnly": false,
       "line": 1,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/marketing/useAppDownloadCtas.test.tsx",
+      "target": "website/src/shared/ui/primitives/index.ts",
+      "specifier": "../../shared/ui/primitives",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/marketing/useAppDownloadCtas.test.tsx",
+      "target": "website/src/features/marketing/useAppDownloadCtas.ts",
+      "specifier": "./useAppDownloadCtas",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 11,
       "column": 1
     },
     {
@@ -15247,11 +16579,29 @@
     },
     {
       "source": "website/src/features/organizers/publicDiscovery.ts",
+      "target": "website/src/content/events.ts",
+      "specifier": "../../content/events",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 13,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/publicDiscovery.ts",
+      "target": "website/src/features/events/eventDetailModel.ts",
+      "specifier": "../events/eventDetailModel",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 14,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/publicDiscovery.ts",
       "target": "website/src/features/organizers/types.ts",
       "specifier": "./types",
       "kind": "import",
       "typeOnly": true,
-      "line": 13,
+      "line": 15,
       "column": 1
     },
     {
@@ -15283,11 +16633,29 @@
     },
     {
       "source": "website/src/features/organizers/publicSurfaceBehavior.test.ts",
+      "target": "website/src/content/events.ts",
+      "specifier": "../../content/events",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 4,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/publicSurfaceBehavior.test.ts",
+      "target": "website/src/features/events/eventDetailModel.ts",
+      "specifier": "../events/eventDetailModel",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 5,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/publicSurfaceBehavior.test.ts",
       "target": "website/src/features/organizers/data.ts",
       "specifier": "./data",
       "kind": "import",
       "typeOnly": false,
-      "line": 4,
+      "line": 9,
       "column": 1
     },
     {
@@ -15296,7 +16664,7 @@
       "specifier": "./listingPresentation",
       "kind": "import",
       "typeOnly": false,
-      "line": 5,
+      "line": 10,
       "column": 1
     },
     {
@@ -15305,7 +16673,7 @@
       "specifier": "./organizerPolicy",
       "kind": "import",
       "typeOnly": false,
-      "line": 9,
+      "line": 14,
       "column": 1
     },
     {
@@ -15314,7 +16682,7 @@
       "specifier": "./routing",
       "kind": "import",
       "typeOnly": false,
-      "line": 10,
+      "line": 15,
       "column": 1
     },
     {
@@ -15323,7 +16691,7 @@
       "specifier": "./types",
       "kind": "import",
       "typeOnly": true,
-      "line": 11,
+      "line": 16,
       "column": 1
     },
     {
@@ -16570,11 +17938,29 @@
     },
     {
       "source": "website/src/features/waitlist/useWaitlistFormController.ts",
+      "target": "website/src/shared/api/joinWaitlistContract.ts",
+      "specifier": "../../shared/api/joinWaitlistContract",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 9,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/waitlist/useWaitlistFormController.ts",
       "target": "website/src/shared/forms/types.ts",
       "specifier": "../../shared/forms/types",
       "kind": "import",
       "typeOnly": true,
-      "line": 10,
+      "line": 14,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/waitlist/useWaitlistFormController.ts",
+      "target": "website/src/shared/pendingRequest.tsx",
+      "specifier": "../../shared/pendingRequest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 15,
       "column": 1
     },
     {
@@ -16583,7 +17969,7 @@
       "specifier": "../../shared/query/queryKeys",
       "kind": "import",
       "typeOnly": false,
-      "line": 11,
+      "line": 16,
       "column": 1
     },
     {
@@ -16692,6 +18078,69 @@
       "kind": "import",
       "typeOnly": false,
       "line": 5,
+      "column": 1
+    },
+    {
+      "source": "website/src/shared/api/joinWaitlistContract.test.ts",
+      "target": "website/src/shared/api/joinWaitlistContract.ts",
+      "specifier": "./joinWaitlistContract",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/shared/api/joinWaitlistContract.ts",
+      "target": "website/src/shared/contracts/generated/joinWaitlistHttpRequest.ts",
+      "specifier": "../contracts/generated/joinWaitlistHttpRequest",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "website/src/shared/api/joinWaitlistContract.ts",
+      "target": "website/src/shared/contracts/generated/joinWaitlistHttpResponse.ts",
+      "specifier": "../contracts/generated/joinWaitlistHttpResponse",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "website/src/shared/api/joinWaitlistContract.ts",
+      "target": "website/src/shared/contracts/generated/joinWaitlistSchemas.ts",
+      "specifier": "../contracts/generated/joinWaitlistSchemas",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 5,
+      "column": 1
+    },
+    {
+      "source": "website/src/shared/api/joinWaitlistContract.ts",
+      "target": "website/src/shared/contracts/jsonSchema.ts",
+      "specifier": "../contracts/jsonSchema",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 9,
+      "column": 1
+    },
+    {
+      "source": "website/src/shared/pendingRequest.test.tsx",
+      "target": "website/src/shared/pendingRequest.tsx",
+      "specifier": "./pendingRequest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "website/src/shared/pendingRequest.test.tsx",
+      "target": "website/src/shared/ui/primitives/index.ts",
+      "specifier": "./ui/primitives",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 7,
       "column": 1
     },
     {
@@ -16839,6 +18288,15 @@
       "column": 1
     },
     {
+      "source": "website/src/shared/ui/primitives/actions.tsx",
+      "target": "website/src/shared/pendingRequest.tsx",
+      "specifier": "../../pendingRequest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 9,
+      "column": 1
+    },
+    {
       "source": "website/src/shared/ui/primitives/actions2.tsx",
       "target": "packages/web-ui/src/index.ts",
       "specifier": "@catch/web-ui",
@@ -16881,6 +18339,33 @@
       "kind": "import",
       "typeOnly": false,
       "line": 6,
+      "column": 1
+    },
+    {
+      "source": "website/src/shared/ui/primitives/eventDetail.tsx",
+      "target": "website/src/shared/ui/primitives/actions.tsx",
+      "specifier": "./actions",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 7,
+      "column": 1
+    },
+    {
+      "source": "website/src/shared/ui/primitives/eventDetail.tsx",
+      "target": "website/src/shared/ui/primitives/foundation.tsx",
+      "specifier": "./foundation",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 8,
+      "column": 1
+    },
+    {
+      "source": "website/src/shared/ui/primitives/eventDetail.tsx",
+      "target": "website/src/shared/ui/primitives/layout.tsx",
+      "specifier": "./layout",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 9,
       "column": 1
     },
     {
@@ -16948,11 +18433,20 @@
     },
     {
       "source": "website/src/shared/ui/primitives/forms.tsx",
+      "target": "website/src/shared/pendingRequest.tsx",
+      "specifier": "../../pendingRequest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 10,
+      "column": 1
+    },
+    {
+      "source": "website/src/shared/ui/primitives/forms.tsx",
       "target": "website/src/shared/ui/primitives/layout2.tsx",
       "specifier": "./layout2",
       "kind": "import",
       "typeOnly": true,
-      "line": 10,
+      "line": 11,
       "column": 1
     },
     {
@@ -16961,7 +18455,7 @@
       "specifier": "./feedback",
       "kind": "import",
       "typeOnly": false,
-      "line": 11,
+      "line": 12,
       "column": 1
     },
     {
@@ -16970,7 +18464,7 @@
       "specifier": "./foundation",
       "kind": "import",
       "typeOnly": false,
-      "line": 12,
+      "line": 13,
       "column": 1
     },
     {
@@ -16979,7 +18473,7 @@
       "specifier": "./layout2",
       "kind": "import",
       "typeOnly": false,
-      "line": 13,
+      "line": 14,
       "column": 1
     },
     {
@@ -17487,6 +18981,15 @@
       "column": 1
     },
     {
+      "source": "website/src/shared/ui/primitives/index.ts",
+      "target": "website/src/shared/ui/primitives/eventDetail.tsx",
+      "specifier": "./eventDetail",
+      "kind": "export",
+      "typeOnly": false,
+      "line": 32,
+      "column": 1
+    },
+    {
       "source": "website/src/shared/ui/primitives/layout.tsx",
       "target": "packages/web-ui/src/index.ts",
       "specifier": "@catch/web-ui",
@@ -17901,6 +19404,42 @@
       "column": 1
     },
     {
+      "source": "website/src/stories/EventDetailSections.stories.tsx",
+      "target": "website/src/app/usePageLifecycle.ts",
+      "specifier": "../app/usePageLifecycle",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "website/src/stories/EventDetailSections.stories.tsx",
+      "target": "website/src/features/marketing/useAppDownloadCtas.ts",
+      "specifier": "../features/marketing/useAppDownloadCtas",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 4,
+      "column": 1
+    },
+    {
+      "source": "website/src/stories/EventDetailSections.stories.tsx",
+      "target": "website/src/features/events/sections/EventDetailSections.tsx",
+      "specifier": "../features/events/sections/EventDetailSections",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 5,
+      "column": 1
+    },
+    {
+      "source": "website/src/stories/EventDetailSections.stories.tsx",
+      "target": "website/src/stories/fixtures/eventDetails.ts",
+      "specifier": "./fixtures/eventDetails",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 11,
+      "column": 1
+    },
+    {
       "source": "website/src/stories/FeedbackPrimitives.stories.tsx",
       "target": "website/src/shared/ui/primitives/index.ts",
       "specifier": "../shared/ui/primitives",
@@ -18055,11 +19594,20 @@
     },
     {
       "source": "website/src/stories/MarketingRoutes.stories.tsx",
+      "target": "website/src/app/usePageLifecycle.ts",
+      "specifier": "../app/usePageLifecycle",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "website/src/stories/MarketingRoutes.stories.tsx",
       "target": "website/src/features/claims/ClaimPage.tsx",
       "specifier": "../features/claims/ClaimPage",
       "kind": "import",
       "typeOnly": false,
-      "line": 3,
+      "line": 4,
       "column": 1
     },
     {
@@ -18068,7 +19616,7 @@
       "specifier": "../features/claims/claimRouting",
       "kind": "import",
       "typeOnly": false,
-      "line": 4,
+      "line": 5,
       "column": 1
     },
     {
@@ -18077,7 +19625,7 @@
       "specifier": "../features/home/HomePage",
       "kind": "import",
       "typeOnly": false,
-      "line": 5,
+      "line": 6,
       "column": 1
     },
     {
@@ -18086,7 +19634,16 @@
       "specifier": "../features/host/HostPage",
       "kind": "import",
       "typeOnly": false,
-      "line": 6,
+      "line": 7,
+      "column": 1
+    },
+    {
+      "source": "website/src/stories/MarketingRoutes.stories.tsx",
+      "target": "website/src/features/events/EventDetailPage.tsx",
+      "specifier": "../features/events/EventDetailPage",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 8,
       "column": 1
     },
     {
@@ -18095,7 +19652,7 @@
       "specifier": "../features/notFound/NotFoundPage",
       "kind": "import",
       "typeOnly": false,
-      "line": 7,
+      "line": 9,
       "column": 1
     },
     {
@@ -18104,7 +19661,7 @@
       "specifier": "../features/legal/LegalPage",
       "kind": "import",
       "typeOnly": false,
-      "line": 8,
+      "line": 10,
       "column": 1
     },
     {
@@ -18113,7 +19670,7 @@
       "specifier": "../content/legal",
       "kind": "import",
       "typeOnly": false,
-      "line": 9,
+      "line": 11,
       "column": 1
     },
     {
@@ -18122,7 +19679,7 @@
       "specifier": "./fixtures/hostListings",
       "kind": "import",
       "typeOnly": false,
-      "line": 10,
+      "line": 12,
       "column": 1
     },
     {
@@ -18131,7 +19688,7 @@
       "specifier": "../features/organizers/HostListingPage",
       "kind": "import",
       "typeOnly": false,
-      "line": 11,
+      "line": 13,
       "column": 1
     },
     {
@@ -18140,7 +19697,7 @@
       "specifier": "../features/organizers/OrganizerSearchPage",
       "kind": "import",
       "typeOnly": false,
-      "line": 12,
+      "line": 14,
       "column": 1
     },
     {
@@ -18149,7 +19706,7 @@
       "specifier": "../features/organizers/types",
       "kind": "import",
       "typeOnly": true,
-      "line": 13,
+      "line": 15,
       "column": 1
     },
     {
@@ -18158,7 +19715,7 @@
       "specifier": "../shared/query/queryClient",
       "kind": "import",
       "typeOnly": false,
-      "line": 14,
+      "line": 16,
       "column": 1
     },
     {
@@ -18167,7 +19724,7 @@
       "specifier": "../shared/site",
       "kind": "import",
       "typeOnly": false,
-      "line": 15,
+      "line": 17,
       "column": 1
     },
     {
@@ -18176,7 +19733,25 @@
       "specifier": "./fixtures/marketingCaptures",
       "kind": "import",
       "typeOnly": false,
-      "line": 16,
+      "line": 18,
+      "column": 1
+    },
+    {
+      "source": "website/src/stories/MarketingRoutes.stories.tsx",
+      "target": "website/src/stories/fixtures/eventDetails.ts",
+      "specifier": "./fixtures/eventDetails",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 19,
+      "column": 1
+    },
+    {
+      "source": "website/src/stories/MarketingRoutes.stories.tsx",
+      "target": "website/src/features/events/eventDetailModel.ts",
+      "specifier": "../features/events/eventDetailModel",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 23,
       "column": 1
     },
     {
@@ -18471,6 +20046,33 @@
       "source": "website/src/stories/WaitlistForm.stories.tsx",
       "target": "website/src/shared/ui/primitives/index.ts",
       "specifier": "../shared/ui/primitives",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 6,
+      "column": 1
+    },
+    {
+      "source": "website/src/stories/fixtures/eventDetails.ts",
+      "target": "website/src/features/events/eventDetailModel.ts",
+      "specifier": "../../features/events/eventDetailModel",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "website/src/stories/fixtures/eventDetails.ts",
+      "target": "website/src/features/organizers/types.ts",
+      "specifier": "../../features/organizers/types",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 5,
+      "column": 1
+    },
+    {
+      "source": "website/src/stories/fixtures/eventDetails.ts",
+      "target": "website/src/stories/fixtures/hostListings.ts",
+      "specifier": "./hostListings",
       "kind": "import",
       "typeOnly": false,
       "line": 6,
@@ -19865,6 +21467,51 @@
       "column": 1
     },
     {
+      "source": "admin/src/shared/pendingOperation.test.tsx",
+      "package": "@testing-library/react",
+      "specifier": "@testing-library/react",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/pendingOperation.test.tsx",
+      "package": "@testing-library/user-event",
+      "specifier": "@testing-library/user-event",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/pendingOperation.test.tsx",
+      "package": "react",
+      "specifier": "react",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/pendingOperation.test.tsx",
+      "package": "vitest",
+      "specifier": "vitest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 4,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/pendingOperation.tsx",
+      "package": "react",
+      "specifier": "react",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
       "source": "admin/src/shared/query/queryClient.tsx",
       "package": "@tanstack/react-query",
       "specifier": "@tanstack/react-query",
@@ -20603,6 +22250,33 @@
       "column": 1
     },
     {
+      "source": "website/src/features/events/eventDetailModel.test.ts",
+      "package": "vitest",
+      "specifier": "vitest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/sections/EventDetailSections.test.tsx",
+      "package": "@testing-library/react",
+      "specifier": "@testing-library/react",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/events/sections/EventDetailSections.test.tsx",
+      "package": "vitest",
+      "specifier": "vitest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
       "source": "website/src/features/host/application/applicationModel.test.ts",
       "package": "vitest",
       "specifier": "vitest",
@@ -20708,6 +22382,24 @@
       "kind": "import",
       "typeOnly": false,
       "line": 1,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/marketing/useAppDownloadCtas.test.tsx",
+      "package": "@testing-library/react",
+      "specifier": "@testing-library/react",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/marketing/useAppDownloadCtas.test.tsx",
+      "package": "vitest",
+      "specifier": "vitest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
       "column": 1
     },
     {
@@ -21134,6 +22826,42 @@
       "column": 1
     },
     {
+      "source": "website/src/shared/api/joinWaitlistContract.test.ts",
+      "package": "vitest",
+      "specifier": "vitest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "website/src/shared/pendingRequest.test.tsx",
+      "package": "@testing-library/react",
+      "specifier": "@testing-library/react",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "website/src/shared/pendingRequest.test.tsx",
+      "package": "vitest",
+      "specifier": "vitest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/shared/pendingRequest.tsx",
+      "package": "react",
+      "specifier": "react",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
       "source": "website/src/shared/query/queryClient.tsx",
       "package": "@tanstack/react-query",
       "specifier": "@tanstack/react-query",
@@ -21198,6 +22926,15 @@
     },
     {
       "source": "website/src/shared/ui/primitives/actions2.tsx",
+      "package": "react",
+      "specifier": "react",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "website/src/shared/ui/primitives/eventDetail.tsx",
       "package": "react",
       "specifier": "react",
       "kind": "import",
@@ -21396,6 +23133,24 @@
     },
     {
       "source": "website/src/stories/ClaimSections.stories.tsx",
+      "package": "react",
+      "specifier": "react",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/stories/EventDetailSections.stories.tsx",
+      "package": "@storybook/react-vite",
+      "specifier": "@storybook/react-vite",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "website/src/stories/EventDetailSections.stories.tsx",
       "package": "react",
       "specifier": "react",
       "kind": "import",
