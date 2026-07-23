@@ -8,19 +8,22 @@ import {
   ListingEventEvidenceList,
   ListingFactGrid,
   ListingFormatRow,
-  ListingHeroCopy,
-  ListingHeroEyebrow,
-  ListingHeroInner,
-  ListingHeroMetrics,
-  ListingHeroShareStatus,
-  ListingHeroShell,
   ListingNoteGrid,
+  ListingPolaroid,
+  ListingProfileLayout,
+  ListingProfilePrimary,
+  ListingProfileRail,
+  ListingRailActions,
+  ListingRailIdentity,
+  ListingRailLinkList,
+  ListingRailSection,
   ListingReviewLanes,
   ListingReviewSummary,
   ListingReviewWorkspace,
   ListingSection,
   ListingSectionIntro,
   ListingSourceLedger,
+  ListingStatusLedger,
   OrganizerEventHighlights,
   OrganizerResultCardBody,
   OrganizerResultCardFooter,
@@ -130,41 +133,67 @@ export const IdentityDisplayShellStory: Story = {
 };
 
 export const ListingHeroShellStory: Story = {
-  name: "Listing hero shell",
+  name: "Listing polaroid profile shell",
   parameters: {
     catchComponent: {
       id: "shared_listing_hero_shell",
       routeIds: listingRouteIds,
-      states: ["hero-shell", "metrics", "share-status"],
+      states: ["polaroid", "status-ledger", "action-rail"],
     },
   },
   render: () => (
-    <ListingHeroShell aria-labelledby="storybook-listing-hero-title">
-      <ListingHeroInner>
-        <ListingHeroCopy>
-          <ListingHeroEyebrow>
-            <ActivityMark
-              activity={dinnerActivity}
-              listing={{logo: {text: "ST"}, status: "verified"}}
-            />
-            <StatusBadge tone="verified">Verified on Catch</StatusBadge>
-          </ListingHeroEyebrow>
-          <h1 id="storybook-listing-hero-title">Sunday Table Club</h1>
-          <p>Source-backed dinner club profile with owner controls, public proof, and review signals.</p>
-          <ButtonLink href="/claim/sunday-table-club/" variant="ghost">
-            Manage claim
-          </ButtonLink>
-        </ListingHeroCopy>
-        <ListingHeroMetrics
+    <ListingProfileLayout activityToken={runActivity.token}>
+      <ListingProfilePrimary>
+        <ListingPolaroid
+          caption="Indore · India"
+          fallback={null}
+          media={{
+            alt: "A social run moving past an outdoor music setup.",
+            mobileSrcSet: "/assets/events/social-run-music-hero-960.jpg",
+            src: "/assets/events/social-run-music-hero.jpg",
+          }}
+          provenance="Source-backed listing"
+          title="After Fly"
+          titleId="storybook-listing-hero-title"
+        />
+        <ListingStatusLedger
           items={[
-            {label: "Public events", value: "12"},
-            {label: "Review score", value: "4.9"},
-            {label: "Profile", value: "92%"},
+            {label: "Sources", value: "2 sources"},
+            {label: "Claim", value: "Unclaimed"},
+            {label: "Surface", value: "Web only"},
+            {label: "Freshness", value: "Jun '26 reviewed"},
+            {label: "Ownership", value: "Ownership not verified"},
           ]}
         />
-        <ListingHeroShareStatus>Listing share link copied.</ListingHeroShareStatus>
-      </ListingHeroInner>
-    </ListingHeroShell>
+      </ListingProfilePrimary>
+      <ListingProfileRail aria-label="After Fly listing actions">
+        <ListingRailIdentity
+          activity={(
+            <ActivityMark
+              activity={runActivity}
+              listing={{logo: {text: "AF"}, status: "unclaimed"}}
+              size="lg"
+            />
+          )}
+          eyebrow="Organizer"
+          location="Indore · India"
+          name="After Fly"
+          status={<StatusBadge tone="claimed">Source-backed listing</StatusBadge>}
+        />
+        <ListingRailActions description="Claim to manage copy, publish events and respond to reviews.">
+          <ButtonLink href="/claim/?listing=afterfly">Claim this listing</ButtonLink>
+          <ButtonLink href="#sources" variant="ghost">View sources</ButtonLink>
+        </ListingRailActions>
+        <ListingRailSection eyebrow="Sources" id="sources">
+          <ListingRailLinkList
+            items={[
+              {href: "https://luma.com/", label: "Luma"},
+              {href: "https://instagram.com/", label: "Instagram"},
+            ]}
+          />
+        </ListingRailSection>
+      </ListingProfileRail>
+    </ListingProfileLayout>
   ),
 };
 

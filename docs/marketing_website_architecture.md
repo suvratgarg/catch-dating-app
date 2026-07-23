@@ -209,23 +209,26 @@ The website is already split out of the old monolithic shell:
   `ListingEventEvidenceList`, `ListingReview*`, and `ListingSourceLedger`.
   Organizer sections configure those primitives; they do not render raw
   `listing-*` structural shells or revealed intro wrappers directly.
-- `ListingFactsSection.tsx` and `ListingFitSection.tsx` own listing copy and
-  section conditions, but configure `ListingFactGrid` and `ListingNoteGrid`
-  instead of composing listing grid/card shells directly.
+- `ListingFactsSection.tsx` owns the compact About and organizer-format
+  presentation beneath the polaroid; `ListingFitSection.tsx` owns lower-page
+  positioning notes and configures `ListingNoteGrid` instead of composing
+  listing grid/card shells directly.
 - `ListingEventsSections.tsx` owns event data selection, app-download placement,
   and outbound analytics behavior, but configures `ListingEventDownloadPanel`
   and `ListingEventEvidenceList` instead of composing event download/card/meta
   shells directly.
 - `ListingSourcesSection.tsx` owns source data and analytics event selection,
-  but configures `ListingSourceLedger` instead of composing ledger rows or
-  `source-link` anchors directly.
-- Shared organizer listing hero shells live in
-  `website/src/shared/ui/primitives/` as `ListingHeroShell`,
-  `ListingHeroInner`, `ListingHeroCopy`, `ListingHeroEyebrow`,
-  `ListingHeroMetrics`, and `ListingHeroShareStatus`. `ListingHeroSection`
-  owns listing data, CTAs, analytics, and diagnostics, but configures shared
-  hero shells instead of rendering raw `listing-hero*`, `listing-panel__metrics`,
-  or `listing-share-status` markup.
+  but configures the compact `ListingRailLinkList` so sources remain visible in
+  the sticky action rail without feature-owned anchor shells.
+- Shared organizer profile shells live in
+  `website/src/shared/ui/primitives/` as `ListingProfileLayout`,
+  `ListingProfilePrimary`, `ListingProfileRail`, `ListingPolaroid`,
+  `ListingStatusLedger`, and the `ListingRail*` slots. `ListingHeroSection`
+  owns listing data and the Catch polaroid presentation, while
+  `ListingHeroRailSection` owns capability-aware claim, save, share, and
+  ownership presentation. Organizer profiles use a white-mat polaroid with a
+  mono location caption and upright Archivo identity; event notches,
+  perforation, and ticket-stub typography remain exclusive to Event Detail.
 - Shared organizer listing review shells live in
   `website/src/shared/ui/primitives/` as `ListingReviewSummary`,
   `ListingReviewWorkspace`, `ListingReviewLanes`, `ReviewSignalLane`,

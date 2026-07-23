@@ -1,94 +1,96 @@
-# Event Detail design QA
+# Organizer Detail design QA
 
 ## Scope
 
-- Route state: external, source-backed Afterfly event with claim enabled and
-  event reviews unavailable until the canonical review target is verified.
+- Route: `/organizers/afterfly/`
 - Selected visual target:
-  `/Users/suvratgarg/.codex/generated_images/019f9056-e21a-7731-ab50-b4e43ca1eac7/call_i0VSW82lrMOggsqECSFzII9A.png`
-- Flutter mobile reference:
-  `/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/design/reference_screens/screen.event.detail/member_default.png`
+  `/Users/suvratgarg/.codex/generated_images/019f9056-e21a-7731-ab50-b4e43ca1eac7/call_lB4CINEPXYXWMZoRMHnctKQ8.png`
+- Flutter organizer-detail reference:
+  `/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/design/reference_screens/screen.club.detail/member_default.png`
 - Desktop implementation:
-  `/Users/suvratgarg/.codex/visualizations/2026/07/23/019f9056-e21a-7731-ab50-b4e43ca1eac7/event-detail-option1-desktop-final.png`
+  `/Users/suvratgarg/.codex/visualizations/2026/07/23/019f9056-e21a-7731-ab50-b4e43ca1eac7/organizer-detail-option1-desktop-final.jpg`
 - Mobile implementation:
-  `/Users/suvratgarg/.codex/visualizations/2026/07/23/019f9056-e21a-7731-ab50-b4e43ca1eac7/event-detail-option1-mobile-final.png`
+  `/Users/suvratgarg/.codex/visualizations/2026/07/23/019f9056-e21a-7731-ab50-b4e43ca1eac7/organizer-detail-option1-mobile-final.jpg`
+- Lower-content and sticky-rail implementation:
+  `/Users/suvratgarg/.codex/visualizations/2026/07/23/019f9056-e21a-7731-ab50-b4e43ca1eac7/organizer-detail-option1-desktop-lower-final.jpg`
+
+## Data and capability state
+
+- AFTER FLY is source-backed, unclaimed, web-only, and not owner verified.
+- The projection supplies two public sources, no published Catch events, and no
+  public reviews.
+- Claim requests and public organizer reviews remain disabled until their
+  canonical targets are verified. The page exposes those capabilities without
+  inventing readiness.
+- The route contains no booking, checkout, sign-in, or account flow.
 
 ## Comparison evidence
 
-- Desktop target and implementation were inspected together in
-  `event-detail-option1-comparison-desktop.png`.
-- Flutter reference and mobile implementation were inspected together in
-  `event-detail-option1-comparison-mobile.png`.
-- The desktop Storybook route was also inspected at the top, event-facts,
-  provenance, and review-section scroll positions.
-- Desktop browser evidence used a 1422 by 800 viewport at device-pixel ratio
-  1.8. The fixed desktop QA frame also rendered at 1440 by 1024.
-- Mobile browser evidence used an exact 390 by 844 iframe at device-pixel ratio
-  1.8. Body client width and scroll width were both 390 pixels.
-- Tablet evidence used a 768 by 900 iframe. Body client width and scroll width
-  were both 768 pixels, and the hero resolved to a single 712-pixel column.
+- The generated target and desktop implementation were inspected at equivalent
+  top-of-page crops. Browser evidence used a 1422 by 800 viewport.
+- The responsive implementation was inspected in a fixed 390-pixel iframe.
+  Body client width and scroll width were both 390 pixels, with no horizontal
+  overflow.
+- The lower desktop sections were inspected after reveal animation settled.
+  The right action rail remained sticky while About, formats, reviews, and fit
+  content scrolled in the primary column.
+- The Luma source resolved to `https://luma.com/pxgmph3b`. Save was exercised
+  through both pressed and unpressed states, and Share remained a real button.
+- Console inspection found no application error or framework exception.
 
 ## Findings and resolutions
 
-1. Resolved: the former wide editorial hero did not preserve the selected
-   ticket-and-rail hierarchy. The implementation now uses a media ticket plus a
-   sticky organizer/action rail above 900 pixels and one column below it.
-2. Resolved: a mobile adaptation could have become a compressed desktop card.
-   At 390 pixels it now follows the Flutter screen's image, identity, compact
-   three-fact strip, plan, and review sequence. The source CTA follows the
-   ticket and the organizer panel follows the source CTA.
-3. Resolved: the concept visual showed organizer metrics and an event review
-   that the generated Afterfly projection does not supply. The implementation
-   omits invented metrics and renders the fail-closed event-review explanation.
-4. Resolved: provenance and actions are independent. The source-backed badge,
-   official-source CTA, organizer link, and conditional claim link are all
-   visible without implying owner verification.
-5. Resolved: all layout color, type, spacing, radius, focus, and activity accent
-   values resolve through Catch design tokens. The event image is a real
-   generated raster asset with an explicit illustrative-media alt description;
-   there is no CSS or SVG substitute.
-6. Resolved: no horizontal overflow was present at desktop, tablet, or mobile.
-   Long location and schedule values wrap inside their fact cells without
-   overlap or clipping.
+1. Resolved: organizer identity no longer reuses the event-ticket metaphor.
+   The hero is now a landscape Catch polaroid with a white inset mat, activity
+   image, mono location caption, upright Archivo name, and source provenance.
+2. Resolved: the page now follows the selected wide-primary/narrow-secondary
+   composition. Identity, claim/source/share/save actions, source links, and
+   event state live in a sticky secondary rail.
+3. Resolved: crawled and verified authority remain separate from claim status.
+   AFTER FLY visibly reads source-backed, unclaimed, web-only, and ownership
+   not verified rather than implying organizer control.
+4. Resolved: reviews remain a first-class organizer section even when the
+   capability is unavailable. The page explains the fail-closed state instead
+   of hiding the feature or inventing review content.
+5. Resolved: the mobile composition follows the app's organizer-detail
+   hierarchy. It presents polaroid, provenance ledger, organizer identity, and
+   actions before the remaining detail sections.
+6. Resolved: the initial format-chip color missed WCAG contrast. Its activity
+   color is now mixed with the governed text token, and all Storybook
+   accessibility checks pass.
 
-## Function and accessibility evidence
+## Intentional differences from the concept render
 
-- Browser DOM inspection confirmed semantic banner, navigation, main regions,
-  article, complementary panels, headings, definition lists, links, and footer.
-- The organizer link was exercised from the rendered Storybook route and its
-  canonical href was confirmed as `/organizers/afterfly/`.
-- The official source link was confirmed as
-  `https://luma.com/afterfly-takeoff-run-rave`; claim resolves to
-  `/claim/?listing=afterfly`.
-- The rendered page contains no booking, checkout, or sign-in control.
-- The illustrative image has descriptive alt text and shared buttons retain
-  the governed focus treatment and practical mobile tap height.
-- Console inspection found no application error or framework exception. The
-  only earlier warning came from the nested Storybook iframe trying to attach
-  its developer tooling.
+- The production Catch header is retained instead of replacing it with the
+  concept render's editorial navigation.
+- The concept shows an active coral claim button. AFTER FLY's current generated
+  capability is disabled, so the implementation keeps the CTA visible but
+  disabled and explains why. Claim-enabled listing stories render the active
+  state.
+- The implementation does not fake source/action icons with text glyphs or
+  one-off CSS artwork. Labels remain explicit until a governed icon primitive
+  is selected.
 
-## Comparison history
+## Verification
 
-- Pass 1: matched the chosen desktop composition and replaced the oversized
-  editorial hero.
-- Pass 2: moved claim to organizer identity, removed inferred metrics, and made
-  event reviews capability-aware.
-- Pass 3: tightened the mobile media ratio, fact strip, ordering, and action
-  density; verified 390-, 768-, and desktop-width layouts.
-- Pass 4: compared target and implementation in paired frames and inspected the
-  lower facts, provenance, and review sections.
+- Focused organizer tests: 47 passed.
+- Storybook accessibility: 143 passed across 16 files.
+- Marketing typecheck, production build, Storybook build, route contract,
+  component registry, copy ownership, import boundaries, React primitives,
+  component governance, shared UI adoption, query-state, and organizer build
+  output checks passed.
+- No P0, P1, or P2 behavior, accessibility, or responsive findings remain for
+  this implementation pass.
 
-No P0, P1, or P2 behavior, accessibility, or responsive findings remain.
+## Existing Event Detail fidelity follow-up
 
-## Open visual-fidelity follow-up
+- Owner feedback on 2026-07-24 remains open: Event Detail still has material
+  fit-and-finish drift from its selected proposal.
+- Revisit desktop content width, image-to-content proportions, title scale and
+  wrapping, fact-strip density, organizer/action rail hierarchy, card
+  finishing, and above-the-fold plan/review visibility.
+- Run that as a shared finishing pass after Organizer Detail is tuned so both
+  public-detail surfaces converge without transferring the organizer polaroid
+  metaphor back onto event tickets.
 
-- Owner feedback on 2026-07-24: the implementation still has material
-  fit-and-finish drift from the selected proposal. Revisit the desktop content
-  width, image-to-content proportions, title scale and wrapping, fact-strip
-  density, organizer/action rail hierarchy, card finishing, and above-the-fold
-  plan/review visibility in a dedicated comparison pass.
-- Keep this open while the Organizer Detail direction is selected. The two
-  public-detail surfaces should receive one shared finishing pass so their
-  visual grammar converges instead of being polished independently.
-
-**Final result: functional and responsive QA passed; visual-fidelity follow-up open.**
+final result: passed
