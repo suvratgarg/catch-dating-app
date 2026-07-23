@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_decide_safety_triage_item_payload.schema.json",
+  "title": "AdminDecideSafetyTriageItemCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["targetPath", "decision", "note"],
+  "properties": {
+    "targetPath": {"type": "string", "pattern": "^(reports|moderationFlags|eventSafetyReports)/[A-Za-z0-9_-]{1,180}$"},
+    "decision": {"type": "string", "enum": ["review", "dismiss"]},
+    "note": {"type": "string", "minLength": 1, "maxLength": 1000}
+  }
+}

@@ -19,16 +19,16 @@
     "nonLiteralDynamicImports": "report"
   },
   "summary": {
-    "scannedSourceModules": 296,
+    "scannedSourceModules": 301,
     "dependencyLeafNodes": 23,
-    "moduleNodes": 319,
-    "moduleEdges": 1125,
-    "runtimeModuleEdges": 902,
-    "typeOnlyModuleEdges": 223,
-    "dynamicImportEdges": 27,
+    "moduleNodes": 324,
+    "moduleEdges": 1139,
+    "runtimeModuleEdges": 911,
+    "typeOnlyModuleEdges": 228,
+    "dynamicImportEdges": 28,
     "reExportEdges": 64,
-    "featureGroups": 31,
-    "featureDependencies": 89,
+    "featureGroups": 32,
+    "featureDependencies": 92,
     "crossSurfaceDependencies": 5,
     "externalPackages": 14,
     "unresolvedImports": 0,
@@ -231,6 +231,15 @@
       "stories": 0
     },
     {
+      "id": "admin:feature:operations",
+      "surface": "admin",
+      "scope": "feature",
+      "feature": "operations",
+      "modules": 4,
+      "tests": 1,
+      "stories": 0
+    },
+    {
       "id": "admin:feature:organizers",
       "surface": "admin",
       "scope": "feature",
@@ -271,7 +280,7 @@
       "surface": "admin",
       "scope": "shared",
       "feature": null,
-      "modules": 54,
+      "modules": 55,
       "tests": 12,
       "stories": 0
     },
@@ -604,6 +613,28 @@
       ],
       "targetModules": [
         "admin/src/features/marketing/ui/MarketingOpsScreen.tsx"
+      ]
+    },
+    {
+      "id": "admin:app->admin:feature:operations",
+      "source": "admin:app",
+      "target": "admin:feature:operations",
+      "sourceSurface": "admin",
+      "sourceScope": "app",
+      "sourceFeature": null,
+      "targetSurface": "admin",
+      "targetScope": "feature",
+      "targetFeature": "operations",
+      "edges": 1,
+      "runtimeEdges": 1,
+      "typeOnlyEdges": 0,
+      "dynamicImports": 1,
+      "reExports": 0,
+      "sourceModules": [
+        "admin/src/app/App.tsx"
+      ],
+      "targetModules": [
+        "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx"
       ]
     },
     {
@@ -1005,6 +1036,35 @@
       ]
     },
     {
+      "id": "admin:feature:operations->admin:shared",
+      "source": "admin:feature:operations",
+      "target": "admin:shared",
+      "sourceSurface": "admin",
+      "sourceScope": "feature",
+      "sourceFeature": "operations",
+      "targetSurface": "admin",
+      "targetScope": "shared",
+      "targetFeature": null,
+      "edges": 8,
+      "runtimeEdges": 4,
+      "typeOnlyEdges": 4,
+      "dynamicImports": 0,
+      "reExports": 0,
+      "sourceModules": [
+        "admin/src/features/operations/api/adminActionExecutionRepository.ts",
+        "admin/src/features/operations/controllers/useAdminActionExecutionsController.test.ts",
+        "admin/src/features/operations/controllers/useAdminActionExecutionsController.ts",
+        "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx"
+      ],
+      "targetModules": [
+        "admin/src/generated/adminActionCatalog.ts",
+        "admin/src/shared/api/adminApi.ts",
+        "admin/src/shared/query/queryKeys.ts",
+        "admin/src/shared/types/adminTypes.ts",
+        "admin/src/shared/ui/AdminPrimitives/index.ts"
+      ]
+    },
+    {
       "id": "admin:feature:organizers->admin:shared",
       "source": "admin:feature:organizers",
       "target": "admin:shared",
@@ -1376,6 +1436,29 @@
       "targetModules": [
         "admin/src/features/marketing/controllers/useMarketingOpsController.ts",
         "admin/src/features/marketing/ui/MarketingOpsScreen.tsx"
+      ]
+    },
+    {
+      "id": "admin:story->admin:feature:operations",
+      "source": "admin:story",
+      "target": "admin:feature:operations",
+      "sourceSurface": "admin",
+      "sourceScope": "support",
+      "sourceFeature": null,
+      "targetSurface": "admin",
+      "targetScope": "feature",
+      "targetFeature": "operations",
+      "edges": 2,
+      "runtimeEdges": 1,
+      "typeOnlyEdges": 1,
+      "dynamicImports": 0,
+      "reExports": 0,
+      "sourceModules": [
+        "admin/src/stories/AdminRoutes.stories.tsx"
+      ],
+      "targetModules": [
+        "admin/src/features/operations/controllers/useAdminActionExecutionsController.ts",
+        "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx"
       ]
     },
     {
@@ -2810,10 +2893,10 @@
       "sourceLayer": "app",
       "targetSurface": "admin",
       "targetLayer": "feature",
-      "edges": 13,
-      "runtimeEdges": 12,
+      "edges": 14,
+      "runtimeEdges": 13,
       "typeOnlyEdges": 1,
-      "dynamicImports": 12,
+      "dynamicImports": 13,
       "reExports": 0,
       "sourceModules": [
         "admin/src/app/App.tsx"
@@ -2827,6 +2910,7 @@
         "admin/src/features/growth/ui/GrowthKpiScreen.tsx",
         "admin/src/features/intake/ui/IntakeWorkspaceScreen.tsx",
         "admin/src/features/marketing/ui/MarketingOpsScreen.tsx",
+        "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx",
         "admin/src/features/organizers/ui/OrganizerPublishingScreen.tsx",
         "admin/src/features/overview/ui/OverviewRouteScreen.tsx",
         "admin/src/features/overview/ui/OverviewScreen.tsx",
@@ -2888,16 +2972,18 @@
       "sourceLayer": "feature",
       "targetSurface": "admin",
       "targetLayer": "generated",
-      "edges": 5,
-      "runtimeEdges": 5,
+      "edges": 6,
+      "runtimeEdges": 6,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "reExports": 0,
       "sourceModules": [
         "admin/src/features/data-quality/controllers/useDataQualityController.test.tsx",
-        "admin/src/features/marketing/controllers/useMarketingOpsController.test.tsx"
+        "admin/src/features/marketing/controllers/useMarketingOpsController.test.tsx",
+        "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx"
       ],
       "targetModules": [
+        "admin/src/generated/adminActionCatalog.ts",
         "admin/src/generated/eventIntakeBridge.json",
         "admin/src/generated/externalEventImportExecutionPlan.json",
         "admin/src/generated/externalEventImportPlan.json",
@@ -2912,9 +2998,9 @@
       "sourceLayer": "feature",
       "targetSurface": "admin",
       "targetLayer": "shared",
-      "edges": 182,
-      "runtimeEdges": 122,
-      "typeOnlyEdges": 60,
+      "edges": 189,
+      "runtimeEdges": 125,
+      "typeOnlyEdges": 64,
       "dynamicImports": 0,
       "reExports": 5,
       "sourceModules": [
@@ -2983,6 +3069,10 @@
         "admin/src/features/marketing/ui/marketingLibraryPanels.tsx",
         "admin/src/features/marketing/ui/marketingPreviewPanels.tsx",
         "admin/src/features/marketing/ui/marketingWorkflowPanels.tsx",
+        "admin/src/features/operations/api/adminActionExecutionRepository.ts",
+        "admin/src/features/operations/controllers/useAdminActionExecutionsController.test.ts",
+        "admin/src/features/operations/controllers/useAdminActionExecutionsController.ts",
+        "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx",
         "admin/src/features/organizers/api/organizerPublishingRepository.ts",
         "admin/src/features/organizers/controllers/organizerPublishingHelpers.ts",
         "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.test.tsx",
@@ -3107,9 +3197,9 @@
       "sourceLayer": "story",
       "targetSurface": "admin",
       "targetLayer": "feature",
-      "edges": 33,
-      "runtimeEdges": 24,
-      "typeOnlyEdges": 9,
+      "edges": 35,
+      "runtimeEdges": 25,
+      "typeOnlyEdges": 10,
       "dynamicImports": 0,
       "reExports": 0,
       "sourceModules": [
@@ -3140,6 +3230,8 @@
         "admin/src/features/intake/ui/IntakeWorkspaceScreen.tsx",
         "admin/src/features/marketing/controllers/useMarketingOpsController.ts",
         "admin/src/features/marketing/ui/MarketingOpsScreen.tsx",
+        "admin/src/features/operations/controllers/useAdminActionExecutionsController.ts",
+        "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx",
         "admin/src/features/organizers/controllers/organizerPublishingHelpers.ts",
         "admin/src/features/organizers/controllers/useOrganizerPublishingController.ts",
         "admin/src/features/organizers/ui/OrganizerPublishingScreen.tsx",
@@ -3803,8 +3895,8 @@
     },
     {
       "package": "@tanstack/react-query",
-      "edges": 34,
-      "runtimeEdges": 34,
+      "edges": 35,
+      "runtimeEdges": 35,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "surfaces": [
@@ -3825,6 +3917,7 @@
         "admin/src/features/intake/operations/controllers/useIntakeOperationsController.ts",
         "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
         "admin/src/features/marketing/controllers/useMarketingOpsController.ts",
+        "admin/src/features/operations/controllers/useAdminActionExecutionsController.ts",
         "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.ts",
         "admin/src/features/organizers/controllers/useOrganizerPublishingController.test.tsx",
         "admin/src/features/organizers/controllers/useOrganizerPublishingController.ts",
@@ -3954,8 +4047,8 @@
     },
     {
       "package": "lucide-react",
-      "edges": 49,
-      "runtimeEdges": 49,
+      "edges": 50,
+      "runtimeEdges": 50,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "surfaces": [
@@ -3987,6 +4080,7 @@
         "admin/src/features/marketing/ui/marketingLibraryPanels.tsx",
         "admin/src/features/marketing/ui/marketingPreviewPanels.tsx",
         "admin/src/features/marketing/ui/marketingWorkflowPanels.tsx",
+        "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx",
         "admin/src/features/organizers/ui/OrganizerPublishingScreen.tsx",
         "admin/src/features/organizers/ui/organizerDetailPanels.tsx",
         "admin/src/features/organizers/ui/organizerDirectoryPanels.tsx",
@@ -4041,8 +4135,8 @@
     },
     {
       "package": "react",
-      "edges": 118,
-      "runtimeEdges": 60,
+      "edges": 119,
+      "runtimeEdges": 61,
       "typeOnlyEdges": 58,
       "dynamicImports": 0,
       "surfaces": [
@@ -4080,6 +4174,7 @@
         "admin/src/features/marketing/ui/marketingLibraryPanels.tsx",
         "admin/src/features/marketing/ui/marketingPreviewPanels.tsx",
         "admin/src/features/marketing/ui/marketingWorkflowPanels.tsx",
+        "admin/src/features/operations/controllers/useAdminActionExecutionsController.ts",
         "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.ts",
         "admin/src/features/organizers/controllers/useOrganizerPublishingController.test.tsx",
         "admin/src/features/organizers/controllers/useOrganizerPublishingController.ts",
@@ -4202,8 +4297,8 @@
     },
     {
       "package": "vitest",
-      "edges": 50,
-      "runtimeEdges": 50,
+      "edges": 51,
+      "runtimeEdges": 51,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "surfaces": [
@@ -4227,6 +4322,7 @@
         "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.test.tsx",
         "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
         "admin/src/features/marketing/controllers/useMarketingOpsController.test.tsx",
+        "admin/src/features/operations/controllers/useAdminActionExecutionsController.test.ts",
         "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.test.tsx",
         "admin/src/features/organizers/controllers/useOrganizerPublishingController.test.tsx",
         "admin/src/features/overview/controllers/useOverviewController.test.tsx",
@@ -5119,6 +5215,54 @@
       "story": false
     },
     {
+      "id": "admin/src/features/operations/api/adminActionExecutionRepository.ts",
+      "surface": "admin",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "operations",
+      "group": "admin:feature:operations",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/features/operations/controllers/useAdminActionExecutionsController.test.ts",
+      "surface": "admin",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "operations",
+      "group": "admin:feature:operations",
+      "extension": ".ts",
+      "scanned": true,
+      "test": true,
+      "story": false
+    },
+    {
+      "id": "admin/src/features/operations/controllers/useAdminActionExecutionsController.ts",
+      "surface": "admin",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "operations",
+      "group": "admin:feature:operations",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx",
+      "surface": "admin",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "operations",
+      "group": "admin:feature:operations",
+      "extension": ".tsx",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
       "id": "admin/src/features/organizers/api/organizerPublishingRepository.ts",
       "surface": "admin",
       "layer": "feature",
@@ -5402,6 +5546,18 @@
       "feature": "users",
       "group": "admin:feature:users",
       "extension": ".tsx",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/generated/adminActionCatalog.ts",
+      "surface": "admin",
+      "layer": "generated",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
       "scanned": true,
       "test": false,
       "story": false
@@ -8120,7 +8276,7 @@
       "specifier": "../shared/ui/AdminPrimitives",
       "kind": "import",
       "typeOnly": false,
-      "line": 32,
+      "line": 33,
       "column": 1
     },
     {
@@ -8129,7 +8285,7 @@
       "specifier": "../shared/api/firebase",
       "kind": "import",
       "typeOnly": false,
-      "line": 59,
+      "line": 60,
       "column": 1
     },
     {
@@ -8138,7 +8294,7 @@
       "specifier": "../shared/api/dataMode",
       "kind": "import",
       "typeOnly": false,
-      "line": 67,
+      "line": 68,
       "column": 1
     },
     {
@@ -8147,7 +8303,7 @@
       "specifier": "../shared/types/adminTypes",
       "kind": "import",
       "typeOnly": false,
-      "line": 68,
+      "line": 69,
       "column": 1
     },
     {
@@ -8156,7 +8312,7 @@
       "specifier": "../shared/feedback/AdminFeedbackContext",
       "kind": "import",
       "typeOnly": false,
-      "line": 73,
+      "line": 74,
       "column": 1
     },
     {
@@ -8165,7 +8321,7 @@
       "specifier": "../features/overview/ui/OverviewScreen",
       "kind": "import",
       "typeOnly": true,
-      "line": 74,
+      "line": 75,
       "column": 1
     },
     {
@@ -8174,7 +8330,7 @@
       "specifier": "../features/marketing/ui/MarketingOpsScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 94,
+      "line": 96,
       "column": 3
     },
     {
@@ -8183,7 +8339,7 @@
       "specifier": "../features/intake/ui/IntakeWorkspaceScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 100,
+      "line": 102,
       "column": 3
     },
     {
@@ -8192,7 +8348,7 @@
       "specifier": "../features/safety/ui/SafetyTriageScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 107,
+      "line": 109,
       "column": 3
     },
     {
@@ -8201,7 +8357,7 @@
       "specifier": "../features/access/ui/AccessReviewScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 112,
+      "line": 114,
       "column": 3
     },
     {
@@ -8210,7 +8366,7 @@
       "specifier": "../features/growth/ui/GrowthKpiScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 117,
+      "line": 119,
       "column": 3
     },
     {
@@ -8219,7 +8375,7 @@
       "specifier": "../features/finance/ui/FinanceOpsScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 122,
+      "line": 124,
       "column": 3
     },
     {
@@ -8228,7 +8384,7 @@
       "specifier": "../features/organizers/ui/OrganizerPublishingScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 127,
+      "line": 129,
       "column": 3
     },
     {
@@ -8237,7 +8393,7 @@
       "specifier": "../features/events/ui/EventPublishingScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 134,
+      "line": 136,
       "column": 3
     },
     {
@@ -8246,7 +8402,7 @@
       "specifier": "../features/users/ui/UserAnalyticsScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 139,
+      "line": 141,
       "column": 3
     },
     {
@@ -8255,7 +8411,7 @@
       "specifier": "../features/overview/ui/OverviewRouteScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 144,
+      "line": 146,
       "column": 3
     },
     {
@@ -8264,7 +8420,7 @@
       "specifier": "../features/data-quality/ui/DataQualityScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 149,
+      "line": 151,
       "column": 3
     },
     {
@@ -8273,7 +8429,16 @@
       "specifier": "../features/admin-roles/ui/AdminRoleManagementScreen",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 154,
+      "line": 156,
+      "column": 3
+    },
+    {
+      "source": "admin/src/app/App.tsx",
+      "target": "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx",
+      "specifier": "../features/operations/ui/AdminActionExecutionsScreen",
+      "kind": "dynamic-import",
+      "typeOnly": false,
+      "line": 163,
       "column": 3
     },
     {
@@ -10797,6 +10962,105 @@
       "column": 1
     },
     {
+      "source": "admin/src/features/operations/api/adminActionExecutionRepository.ts",
+      "target": "admin/src/shared/api/adminApi.ts",
+      "specifier": "../../../shared/api/adminApi",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/operations/api/adminActionExecutionRepository.ts",
+      "target": "admin/src/shared/types/adminTypes.ts",
+      "specifier": "../../../shared/types/adminTypes",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/operations/controllers/useAdminActionExecutionsController.test.ts",
+      "target": "admin/src/shared/types/adminTypes.ts",
+      "specifier": "../../../shared/types/adminTypes",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/operations/controllers/useAdminActionExecutionsController.test.ts",
+      "target": "admin/src/features/operations/controllers/useAdminActionExecutionsController.ts",
+      "specifier": "./useAdminActionExecutionsController",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 7,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/operations/controllers/useAdminActionExecutionsController.ts",
+      "target": "admin/src/shared/query/queryKeys.ts",
+      "specifier": "../../../shared/query/queryKeys",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 4,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/operations/controllers/useAdminActionExecutionsController.ts",
+      "target": "admin/src/shared/types/adminTypes.ts",
+      "specifier": "../../../shared/types/adminTypes",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 5,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/operations/controllers/useAdminActionExecutionsController.ts",
+      "target": "admin/src/features/operations/api/adminActionExecutionRepository.ts",
+      "specifier": "../api/adminActionExecutionRepository",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 10,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx",
+      "target": "admin/src/generated/adminActionCatalog.ts",
+      "specifier": "../../../generated/adminActionCatalog",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 10,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx",
+      "target": "admin/src/shared/types/adminTypes.ts",
+      "specifier": "../../../shared/types/adminTypes",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 11,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx",
+      "target": "admin/src/shared/ui/AdminPrimitives/index.ts",
+      "specifier": "../../../shared/ui/AdminPrimitives",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 14,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx",
+      "target": "admin/src/features/operations/controllers/useAdminActionExecutionsController.ts",
+      "specifier": "../controllers/useAdminActionExecutionsController",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 28,
+      "column": 1
+    },
+    {
       "source": "admin/src/features/organizers/api/organizerPublishingRepository.ts",
       "target": "admin/src/shared/api/adminApi.ts",
       "specifier": "../../../shared/api/adminApi",
@@ -12472,11 +12736,29 @@
     },
     {
       "source": "admin/src/stories/AdminRoutes.stories.tsx",
+      "target": "admin/src/features/operations/controllers/useAdminActionExecutionsController.ts",
+      "specifier": "../features/operations/controllers/useAdminActionExecutionsController",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 18,
+      "column": 1
+    },
+    {
+      "source": "admin/src/stories/AdminRoutes.stories.tsx",
+      "target": "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx",
+      "specifier": "../features/operations/ui/AdminActionExecutionsScreen",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 20,
+      "column": 1
+    },
+    {
+      "source": "admin/src/stories/AdminRoutes.stories.tsx",
       "target": "admin/src/features/data-quality/controllers/useDataQualityController.ts",
       "specifier": "../features/data-quality/controllers/useDataQualityController",
       "kind": "import",
       "typeOnly": true,
-      "line": 18,
+      "line": 22,
       "column": 1
     },
     {
@@ -12485,7 +12767,7 @@
       "specifier": "../features/data-quality/ui/DataQualityScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 23,
+      "line": 27,
       "column": 1
     },
     {
@@ -12494,7 +12776,7 @@
       "specifier": "../shared/api/sampleData",
       "kind": "import",
       "typeOnly": false,
-      "line": 24,
+      "line": 28,
       "column": 1
     },
     {
@@ -12503,7 +12785,7 @@
       "specifier": "../features/events/controllers/useEventPublishingController",
       "kind": "import",
       "typeOnly": true,
-      "line": 30,
+      "line": 34,
       "column": 1
     },
     {
@@ -12512,7 +12794,7 @@
       "specifier": "../features/events/controllers/eventPublishingHelpers",
       "kind": "import",
       "typeOnly": false,
-      "line": 31,
+      "line": 35,
       "column": 1
     },
     {
@@ -12521,7 +12803,7 @@
       "specifier": "../features/events/ui/EventPublishingScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 35,
+      "line": 39,
       "column": 1
     },
     {
@@ -12530,7 +12812,7 @@
       "specifier": "../generated/eventIntakeBridge.json",
       "kind": "import",
       "typeOnly": false,
-      "line": 36,
+      "line": 40,
       "column": 1
     },
     {
@@ -12539,7 +12821,7 @@
       "specifier": "../features/intake/events/controllers/useEventIntakeController",
       "kind": "import",
       "typeOnly": true,
-      "line": 37,
+      "line": 41,
       "column": 1
     },
     {
@@ -12548,7 +12830,7 @@
       "specifier": "../features/intake/events/ui/EventIntakeWorkspace",
       "kind": "import",
       "typeOnly": false,
-      "line": 38,
+      "line": 42,
       "column": 1
     },
     {
@@ -12557,7 +12839,7 @@
       "specifier": "../features/intake/operations/controllers/useIntakeOperationsController",
       "kind": "import",
       "typeOnly": true,
-      "line": 39,
+      "line": 43,
       "column": 1
     },
     {
@@ -12566,7 +12848,7 @@
       "specifier": "../features/intake/operations/ui/IntakeOperationsWorkspace",
       "kind": "import",
       "typeOnly": false,
-      "line": 40,
+      "line": 44,
       "column": 1
     },
     {
@@ -12575,7 +12857,7 @@
       "specifier": "../features/intake/organizer/generated/organizerIntakeBridge.json",
       "kind": "import",
       "typeOnly": false,
-      "line": 41,
+      "line": 45,
       "column": 1
     },
     {
@@ -12584,7 +12866,7 @@
       "specifier": "../features/intake/organizer/controllers/useOrganizerIntakeController",
       "kind": "import",
       "typeOnly": true,
-      "line": 42,
+      "line": 46,
       "column": 1
     },
     {
@@ -12593,7 +12875,7 @@
       "specifier": "../features/intake/organizer/ui/OrganizerIntakeScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 43,
+      "line": 47,
       "column": 1
     },
     {
@@ -12602,7 +12884,7 @@
       "specifier": "../features/intake/ui/IntakeWorkspaceScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 44,
+      "line": 48,
       "column": 1
     },
     {
@@ -12611,7 +12893,7 @@
       "specifier": "../shared/operations/sampleIntakeOperations",
       "kind": "import",
       "typeOnly": false,
-      "line": 45,
+      "line": 49,
       "column": 1
     },
     {
@@ -12620,7 +12902,7 @@
       "specifier": "../features/finance/controllers/useFinanceOpsController",
       "kind": "import",
       "typeOnly": false,
-      "line": 46,
+      "line": 50,
       "column": 1
     },
     {
@@ -12629,7 +12911,7 @@
       "specifier": "../features/finance/ui/FinanceOpsScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 52,
+      "line": 56,
       "column": 1
     },
     {
@@ -12638,7 +12920,7 @@
       "specifier": "../generated/marketingOpsBridge.json",
       "kind": "import",
       "typeOnly": false,
-      "line": 53,
+      "line": 57,
       "column": 1
     },
     {
@@ -12647,7 +12929,7 @@
       "specifier": "../features/marketing/controllers/useMarketingOpsController",
       "kind": "import",
       "typeOnly": true,
-      "line": 54,
+      "line": 58,
       "column": 1
     },
     {
@@ -12656,7 +12938,7 @@
       "specifier": "../features/marketing/ui/MarketingOpsScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 55,
+      "line": 59,
       "column": 1
     },
     {
@@ -12665,7 +12947,7 @@
       "specifier": "../features/organizers/controllers/useOrganizerPublishingController",
       "kind": "import",
       "typeOnly": false,
-      "line": 56,
+      "line": 60,
       "column": 1
     },
     {
@@ -12674,7 +12956,7 @@
       "specifier": "../features/organizers/controllers/organizerPublishingHelpers",
       "kind": "import",
       "typeOnly": false,
-      "line": 60,
+      "line": 64,
       "column": 1
     },
     {
@@ -12683,7 +12965,7 @@
       "specifier": "../features/organizers/ui/OrganizerPublishingScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 66,
+      "line": 70,
       "column": 1
     },
     {
@@ -12692,7 +12974,7 @@
       "specifier": "../features/growth/controllers/useGrowthKpiController",
       "kind": "import",
       "typeOnly": true,
-      "line": 67,
+      "line": 71,
       "column": 1
     },
     {
@@ -12701,7 +12983,7 @@
       "specifier": "../features/growth/ui/GrowthKpiScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 73,
+      "line": 77,
       "column": 1
     },
     {
@@ -12710,7 +12992,7 @@
       "specifier": "../features/overview/ui/OverviewScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 74,
+      "line": 78,
       "column": 1
     },
     {
@@ -12719,7 +13001,7 @@
       "specifier": "../features/safety/controllers/useSafetyTriageController",
       "kind": "import",
       "typeOnly": true,
-      "line": 79,
+      "line": 83,
       "column": 1
     },
     {
@@ -12728,7 +13010,7 @@
       "specifier": "../features/safety/ui/SafetyTriageScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 80,
+      "line": 84,
       "column": 1
     },
     {
@@ -12737,7 +13019,7 @@
       "specifier": "../shared/types/adminTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 81,
+      "line": 85,
       "column": 1
     },
     {
@@ -12746,7 +13028,7 @@
       "specifier": "../features/users/controllers/useUserAnalyticsController",
       "kind": "import",
       "typeOnly": false,
-      "line": 104,
+      "line": 109,
       "column": 1
     },
     {
@@ -12755,7 +13037,7 @@
       "specifier": "../features/users/ui/UserAnalyticsScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 108,
+      "line": 113,
       "column": 1
     },
     {
@@ -12764,7 +13046,7 @@
       "specifier": "../shared/ui/AdminPrimitives",
       "kind": "import",
       "typeOnly": false,
-      "line": 109,
+      "line": 114,
       "column": 1
     },
     {
@@ -18283,7 +18565,7 @@
       "specifier": "firebase/auth",
       "kind": "import",
       "typeOnly": false,
-      "line": 31,
+      "line": 32,
       "column": 1
     },
     {
@@ -19121,6 +19403,42 @@
       "kind": "import",
       "typeOnly": false,
       "line": 2,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/operations/controllers/useAdminActionExecutionsController.test.ts",
+      "package": "vitest",
+      "specifier": "vitest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/operations/controllers/useAdminActionExecutionsController.ts",
+      "package": "@tanstack/react-query",
+      "specifier": "@tanstack/react-query",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/operations/controllers/useAdminActionExecutionsController.ts",
+      "package": "react",
+      "specifier": "react",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx",
+      "package": "lucide-react",
+      "specifier": "lucide-react",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
       "column": 1
     },
     {

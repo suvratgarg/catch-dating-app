@@ -1,6 +1,6 @@
 {
-  "version": "1.1.2",
-  "updated": "2026-07-21",
+  "version": "1.2.0",
+  "updated": "2026-07-23",
   "ownerVocabulary": [
     "agent_operating_model",
     "app_platform",
@@ -76,10 +76,10 @@
     {
       "id": "operations-platform",
       "owner": "operations_platform",
-      "sources": ["operations/**", "contracts/operations/**", "tool/organizer_intake/**", "tool/host_discovery/**", "tool/marketing/event_guide/**"],
-      "generatedOutputs": ["operations/.state/**", "tool/organizer_intake/generated/**"],
-      "consumers": ["functions/src/operations/**", "functions/scripts/operations/**", "admin/src/shared/operations/**", "admin/src/features/intake/operations/**"],
-      "checks": ["operations:boundaries", "operations:workflow-manifest"],
+      "sources": ["operations/**", "contracts/admin/**", "contracts/operations/**", "tool/organizer_intake/**", "tool/host_discovery/**", "tool/marketing/event_guide/**"],
+      "generatedOutputs": ["operations/.state/**", "admin/src/generated/adminActionCatalog.ts", "functions/src/shared/generated/adminActionCatalog.ts", "tool/organizer_intake/generated/**"],
+      "consumers": ["functions/src/admin/**", "functions/src/operations/**", "functions/scripts/operations/**", "admin/src/features/operations/**", "admin/src/shared/operations/**", "admin/src/features/intake/operations/**"],
+      "checks": ["operations:admin-action-catalog", "operations:boundaries", "operations:workflow-manifest"],
       "ciWorkflows": [".github/workflows/tools-ci.yml", ".github/workflows/functions-ci.yml"]
     },
     {

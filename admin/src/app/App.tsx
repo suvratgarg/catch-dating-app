@@ -16,6 +16,7 @@ import {
   Activity,
   AlertTriangle,
   BarChart3,
+  Bot,
   CheckCircle2,
   CircleDollarSign,
   Database,
@@ -86,6 +87,7 @@ type AdminNavId =
   | "users"
   | "finance"
   | "quality"
+  | "operations"
   | "admin-roles";
 
 type PhoneSignInStage = "phone" | "code";
@@ -157,6 +159,11 @@ const AdminRoleManagementScreen = lazy(() =>
     })
   )
 );
+const AdminActionExecutionsScreen = lazy(() =>
+  import("../features/operations/ui/AdminActionExecutionsScreen").then(
+    (module) => ({default: module.AdminActionExecutionsScreen})
+  )
+);
 
 interface AdminNavigationItem {
   id: AdminNavId;
@@ -198,6 +205,13 @@ const navigationGroups: Array<{
     ],
   },
   {
+    id: "automation",
+    label: "Automation",
+    items: [
+      {id: "operations", label: "Agent activity", icon: Bot},
+    ],
+  },
+  {
     id: "governance",
     label: "Governance",
     items: [
@@ -221,6 +235,7 @@ const navRoleMap: Record<AdminNavId, readonly AdminRoleClaim[]> = {
   users: ["adminOwner", "analyticsViewer"],
   finance: ["adminOwner", "analyticsViewer"],
   quality: ["adminOwner"],
+  operations: ["admin", "adminOwner", "support"],
   "admin-roles": ["adminOwner"],
 };
 
@@ -263,6 +278,7 @@ const adminSectionTitles: Record<AdminNavId, string> = {
   users: "Users",
   finance: "Finance",
   quality: "Data quality",
+  operations: "Agent activity",
   "admin-roles": "Admin roles",
 };
 
@@ -842,6 +858,10 @@ function AdminRouteApp() {
               }}
               selectedTargetUid={adminRoleTargetUidForPath(location.pathname)}
             />
+          </Suspense>
+        ) : currentNav === "operations" ? (
+          <Suspense fallback={<AdminFeatureLoadingState label="Loading Agent activity" />}>
+            <AdminActionExecutionsScreen onError={setError} />
           </Suspense>
         ) : (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Overview" />}>

@@ -7,13 +7,15 @@ import {
 
 describe("generated admin callable validators", () => {
   it("covers every callable used by adminApi", () => {
-    expect(adminCallableValidationCoverage.callables).toHaveLength(35);
+    expect(adminCallableValidationCoverage.callables).toHaveLength(36);
+    expect(adminCallableValidationCoverage.strictRequests).toHaveLength(36);
     expect(adminCallableValidationCoverage.strictRequests).toContain(
       "adminGetHostAnalytics"
     );
     expect(adminCallableValidationCoverage.strictResponses).toEqual([
       "adminGetHostAnalytics",
       "adminGetUserAnalytics",
+      "adminListActionExecutions",
       "adminListIntakeOperations",
     ]);
   });

@@ -1040,6 +1040,23 @@
       "write": "server only"
     },
     {
+      "id": "adminActionExecutions",
+      "path": "adminActionExecutions/{executionId}",
+      "rulesMatch": "/adminActionExecutions/{executionId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "admin action execution callables",
+      "read": "server/admin callable only",
+      "write": "server only",
+      "exportedFunctions": [
+        "adminListActionExecutions",
+        "adminRecordActionExecution"
+      ],
+      "migrationNotes": [
+        "Stores only action identity, actor, timestamps, target label, hashes, terminal status, and bounded error metadata; request and response bodies are never persisted.",
+        "One started receipt advances exactly once to succeeded or failed; terminal evidence is immutable and exact replay is idempotent."
+      ]
+    },
+    {
       "id": "seedEvents",
       "path": "seedEvents/{manifestId}",
       "rulesMatch": "/seedEvents/{manifestId}",

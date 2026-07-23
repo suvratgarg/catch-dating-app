@@ -619,6 +619,18 @@ const schemaSpecs = [
       "functions/src/shared/generated/adminListIntakeOperationsCallablePayload.ts",
   },
   {
+    name: "AdminListActionExecutionsCallablePayload",
+    source: "callables/admin_list_action_executions_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminListActionExecutionsCallablePayload.ts",
+  },
+  {
+    name: "AdminRecordActionExecutionCallablePayload",
+    source: "callables/admin_record_action_execution_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminRecordActionExecutionCallablePayload.ts",
+  },
+  {
     name: "AdminDecideOrganizerEventCandidateCallablePayload",
     source: "callables/admin_decide_organizer_event_candidate_payload.schema.json",
     typeOutput:

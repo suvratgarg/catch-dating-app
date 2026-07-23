@@ -110,6 +110,8 @@ import {AdminDecideOrganizerIntakeCallablePayload} from "./adminDecideOrganizerI
 import {AdminRecordOrganizerCurationCallablePayload} from "./adminRecordOrganizerCurationCallablePayload";
 import {AdminRecordEventIntakeReviewDecisionCallablePayload} from "./adminRecordEventIntakeReviewDecisionCallablePayload";
 import {AdminListIntakeOperationsCallablePayload} from "./adminListIntakeOperationsCallablePayload";
+import {AdminListActionExecutionsCallablePayload} from "./adminListActionExecutionsCallablePayload";
+import {AdminRecordActionExecutionCallablePayload} from "./adminRecordActionExecutionCallablePayload";
 import {AdminDecideOrganizerEventCandidateCallablePayload} from "./adminDecideOrganizerEventCandidateCallablePayload";
 import {AdminDecideOrganizerPolicyGapCallablePayload} from "./adminDecideOrganizerPolicyGapCallablePayload";
 import {AdminResolveOrganizerEventLocationCallablePayload} from "./adminResolveOrganizerEventLocationCallablePayload";
@@ -298,6 +300,8 @@ import {
   adminRecordOrganizerCurationCallablePayloadSchema,
   adminRecordEventIntakeReviewDecisionCallablePayloadSchema,
   adminListIntakeOperationsCallablePayloadSchema,
+  adminListActionExecutionsCallablePayloadSchema,
+  adminRecordActionExecutionCallablePayloadSchema,
   adminDecideOrganizerEventCandidateCallablePayloadSchema,
   adminDecideOrganizerPolicyGapCallablePayloadSchema,
   adminResolveOrganizerEventLocationCallablePayloadSchema,
@@ -808,6 +812,14 @@ export const validateAdminListIntakeOperationsCallablePayload:
   ValidateFunction<AdminListIntakeOperationsCallablePayload> =
     ajv.compile(adminListIntakeOperationsCallablePayloadSchema) as
       ValidateFunction<AdminListIntakeOperationsCallablePayload>;
+export const validateAdminListActionExecutionsCallablePayload:
+  ValidateFunction<AdminListActionExecutionsCallablePayload> =
+    ajv.compile(adminListActionExecutionsCallablePayloadSchema) as
+      ValidateFunction<AdminListActionExecutionsCallablePayload>;
+export const validateAdminRecordActionExecutionCallablePayload:
+  ValidateFunction<AdminRecordActionExecutionCallablePayload> =
+    ajv.compile(adminRecordActionExecutionCallablePayloadSchema) as
+      ValidateFunction<AdminRecordActionExecutionCallablePayload>;
 export const validateAdminDecideOrganizerEventCandidateCallablePayload:
   ValidateFunction<AdminDecideOrganizerEventCandidateCallablePayload> =
     ajv.compile(adminDecideOrganizerEventCandidateCallablePayloadSchema) as

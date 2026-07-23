@@ -9,28 +9,29 @@ flowchart LR
   g6["admin:feature:growth<br/>4 modules"]
   g7["admin:feature:intake<br/>28 modules"]
   g8["admin:feature:marketing<br/>10 modules"]
-  g9["admin:feature:organizers<br/>9 modules"]
-  g10["admin:feature:overview<br/>5 modules"]
-  g11["admin:feature:safety<br/>6 modules"]
-  g12["admin:feature:users<br/>4 modules"]
-  g13["admin:shared<br/>54 modules"]
-  g14["admin:story<br/>5 modules"]
-  g15["admin:support<br/>1 modules"]
-  g16["contracts:shared<br/>12 modules"]
-  g17["web-ui:shared<br/>4 modules"]
-  g18["website:app<br/>8 modules"]
-  g19["website:feature:claims<br/>10 modules"]
-  g20["website:feature:home<br/>2 modules"]
-  g21["website:feature:host<br/>15 modules"]
-  g22["website:feature:legal<br/>1 modules"]
-  g23["website:feature:marketing<br/>4 modules"]
-  g24["website:feature:notFound<br/>1 modules"]
-  g25["website:feature:organizers<br/>33 modules"]
-  g26["website:feature:reviews<br/>4 modules"]
-  g27["website:feature:waitlist<br/>3 modules"]
-  g28["website:shared<br/>48 modules"]
-  g29["website:story<br/>16 modules"]
-  g30["website:support<br/>2 modules"]
+  g9["admin:feature:operations<br/>4 modules"]
+  g10["admin:feature:organizers<br/>9 modules"]
+  g11["admin:feature:overview<br/>5 modules"]
+  g12["admin:feature:safety<br/>6 modules"]
+  g13["admin:feature:users<br/>4 modules"]
+  g14["admin:shared<br/>55 modules"]
+  g15["admin:story<br/>5 modules"]
+  g16["admin:support<br/>1 modules"]
+  g17["contracts:shared<br/>12 modules"]
+  g18["web-ui:shared<br/>4 modules"]
+  g19["website:app<br/>8 modules"]
+  g20["website:feature:claims<br/>10 modules"]
+  g21["website:feature:home<br/>2 modules"]
+  g22["website:feature:host<br/>15 modules"]
+  g23["website:feature:legal<br/>1 modules"]
+  g24["website:feature:marketing<br/>4 modules"]
+  g25["website:feature:notFound<br/>1 modules"]
+  g26["website:feature:organizers<br/>33 modules"]
+  g27["website:feature:reviews<br/>4 modules"]
+  g28["website:feature:waitlist<br/>3 modules"]
+  g29["website:shared<br/>48 modules"]
+  g30["website:story<br/>16 modules"]
+  g31["website:support<br/>2 modules"]
   g0 -->|"1"| g1
   g0 -->|"1"| g2
   g0 -->|"1"| g3
@@ -40,83 +41,86 @@ flowchart LR
   g0 -->|"1"| g7
   g0 -->|"1"| g8
   g0 -->|"1"| g9
-  g0 -->|"2"| g10
-  g0 -->|"1"| g11
+  g0 -->|"1"| g10
+  g0 -->|"2"| g11
   g0 -->|"1"| g12
-  g0 -->|"7"| g13
-  g1 -->|"7"| g13
-  g2 -->|"9"| g13
-  g3 -->|"12"| g13
-  g4 -->|"28"| g13
-  g5 -->|"6"| g13
-  g6 -->|"6"| g13
-  g7 -->|"51"| g13
-  g8 -->|"22"| g13
-  g9 -->|"19"| g13
-  g10 -->|"10"| g13
-  g11 -->|"9"| g13
-  g12 -->|"8"| g13
-  g13 -->|"3"| g16
-  g13 -->|"8"| g17
-  g14 -->|"2"| g1
-  g14 -->|"3"| g2
-  g14 -->|"2"| g3
-  g14 -->|"3"| g4
-  g14 -->|"2"| g5
-  g14 -->|"2"| g6
-  g14 -->|"8"| g7
-  g14 -->|"2"| g8
-  g14 -->|"3"| g9
-  g14 -->|"2"| g10
-  g14 -->|"2"| g11
-  g14 -->|"2"| g12
-  g14 -->|"10"| g13
-  g18 -->|"8"| g16
-  g18 -->|"2"| g19
-  g18 -->|"1"| g20
-  g18 -->|"1"| g21
-  g18 -->|"1"| g22
-  g18 -->|"1"| g23
-  g18 -->|"1"| g24
-  g18 -->|"4"| g25
-  g18 -->|"9"| g28
-  g18 -->|"1"| g30
-  g19 -->|"8"| g18
-  g19 -->|"20"| g25
-  g19 -->|"18"| g28
-  g19 -->|"4"| g30
-  g20 -->|"2"| g23
-  g20 -->|"4"| g25
-  g20 -->|"1"| g27
-  g20 -->|"8"| g28
-  g21 -->|"1"| g23
-  g21 -->|"33"| g28
-  g21 -->|"2"| g30
-  g22 -->|"5"| g28
-  g23 -->|"4"| g28
-  g23 -->|"3"| g30
-  g24 -->|"4"| g28
-  g25 -->|"1"| g16
-  g25 -->|"1"| g18
-  g25 -->|"4"| g19
-  g25 -->|"5"| g23
-  g25 -->|"1"| g26
-  g25 -->|"48"| g28
-  g25 -->|"4"| g30
-  g26 -->|"4"| g18
-  g26 -->|"9"| g25
-  g26 -->|"6"| g28
-  g26 -->|"1"| g30
-  g27 -->|"7"| g28
-  g27 -->|"1"| g30
-  g28 -->|"7"| g17
-  g28 -->|"1"| g30
-  g29 -->|"7"| g19
-  g29 -->|"2"| g20
-  g29 -->|"8"| g21
-  g29 -->|"1"| g22
-  g29 -->|"1"| g23
-  g29 -->|"1"| g24
-  g29 -->|"27"| g25
-  g29 -->|"1"| g27
-  g29 -->|"22"| g28
+  g0 -->|"1"| g13
+  g0 -->|"7"| g14
+  g1 -->|"7"| g14
+  g2 -->|"9"| g14
+  g3 -->|"12"| g14
+  g4 -->|"28"| g14
+  g5 -->|"6"| g14
+  g6 -->|"6"| g14
+  g7 -->|"51"| g14
+  g8 -->|"22"| g14
+  g9 -->|"8"| g14
+  g10 -->|"19"| g14
+  g11 -->|"10"| g14
+  g12 -->|"9"| g14
+  g13 -->|"8"| g14
+  g14 -->|"3"| g17
+  g14 -->|"8"| g18
+  g15 -->|"2"| g1
+  g15 -->|"3"| g2
+  g15 -->|"2"| g3
+  g15 -->|"3"| g4
+  g15 -->|"2"| g5
+  g15 -->|"2"| g6
+  g15 -->|"8"| g7
+  g15 -->|"2"| g8
+  g15 -->|"2"| g9
+  g15 -->|"3"| g10
+  g15 -->|"2"| g11
+  g15 -->|"2"| g12
+  g15 -->|"2"| g13
+  g15 -->|"10"| g14
+  g19 -->|"8"| g17
+  g19 -->|"2"| g20
+  g19 -->|"1"| g21
+  g19 -->|"1"| g22
+  g19 -->|"1"| g23
+  g19 -->|"1"| g24
+  g19 -->|"1"| g25
+  g19 -->|"4"| g26
+  g19 -->|"9"| g29
+  g19 -->|"1"| g31
+  g20 -->|"8"| g19
+  g20 -->|"20"| g26
+  g20 -->|"18"| g29
+  g20 -->|"4"| g31
+  g21 -->|"2"| g24
+  g21 -->|"4"| g26
+  g21 -->|"1"| g28
+  g21 -->|"8"| g29
+  g22 -->|"1"| g24
+  g22 -->|"33"| g29
+  g22 -->|"2"| g31
+  g23 -->|"5"| g29
+  g24 -->|"4"| g29
+  g24 -->|"3"| g31
+  g25 -->|"4"| g29
+  g26 -->|"1"| g17
+  g26 -->|"1"| g19
+  g26 -->|"4"| g20
+  g26 -->|"5"| g24
+  g26 -->|"1"| g27
+  g26 -->|"48"| g29
+  g26 -->|"4"| g31
+  g27 -->|"4"| g19
+  g27 -->|"9"| g26
+  g27 -->|"6"| g29
+  g27 -->|"1"| g31
+  g28 -->|"7"| g29
+  g28 -->|"1"| g31
+  g29 -->|"7"| g18
+  g29 -->|"1"| g31
+  g30 -->|"7"| g20
+  g30 -->|"2"| g21
+  g30 -->|"8"| g22
+  g30 -->|"1"| g23
+  g30 -->|"1"| g24
+  g30 -->|"1"| g25
+  g30 -->|"27"| g26
+  g30 -->|"1"| g28
+  g30 -->|"22"| g29

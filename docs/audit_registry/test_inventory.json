@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 563,
+  "total": 566,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -308,9 +308,10 @@
       ]
     },
     "functions_source": {
-      "count": 89,
+      "count": 90,
       "files": [
         "functions/src/admin/accessApplications.test.ts",
+        "functions/src/admin/adminActionExecutions.test.ts",
         "functions/src/admin/adminAuth.test.ts",
         "functions/src/admin/adminUserRoles.test.ts",
         "functions/src/admin/clubClaimReview.test.ts",
@@ -402,8 +403,9 @@
       ]
     },
     "tooling": {
-      "count": 133,
+      "count": 134,
       "files": [
+        "tool/admin/generate_admin_action_catalog.test.mjs",
         "tool/agent/check_agent_readiness.test.mjs",
         "tool/architecture/check_adopted_architecture_boundaries.test.mjs",
         "tool/architecture/check_app_architecture_exhibits.test.mjs",
@@ -540,7 +542,7 @@
       ]
     },
     "web": {
-      "count": 58,
+      "count": 59,
       "files": [
         "admin/src/app/App.test.tsx",
         "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
@@ -557,6 +559,7 @@
         "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.test.tsx",
         "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
         "admin/src/features/marketing/controllers/useMarketingOpsController.test.tsx",
+        "admin/src/features/operations/controllers/useAdminActionExecutionsController.test.ts",
         "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.test.tsx",
         "admin/src/features/organizers/controllers/useOrganizerPublishingController.test.tsx",
         "admin/src/features/overview/controllers/useOverviewController.test.tsx",
