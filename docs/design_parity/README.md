@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.30
+version: 0.1.32
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -20,7 +20,7 @@ checks in one durable matrix.
 | `claude_widgetbook_inventory.md` | Persistent inventory comparison between the Claude Design export, local Widgetbook, local component contracts, and foundation token/style sources. |
 | `comprehensive_todo.md` | Canonical execution checklist for remaining design-parity work across sources of truth, state contracts, Widgetbook, captures, pixel comparison, composition, tokens, features, drift prevention, and pass cadence. |
 | `composition_migration_spec.md` | Layered implementation spec for migrating screens into controller-owned state composition, registered sections, registered components, and platform-neutral design tokens/contracts. |
-| `event_detail_composition_tracker.md` | First screen-level composition tracker, mapping Event Detail from Claude event primitives to current Flutter sections, states, Widgetbook gaps, and migration tasks. |
+| `../../design/features/event_detail.feature.json` | Current Event Detail surface, state, action, outcome, and evidence orchestration; the completed first composition tracker is retirement-ready. |
 | `design/screens/screen_coverage.json` | Exhaustive route-to-screen coverage ledger. Every generated route is contracted, aliased, planned, or excluded from baseline design parity. |
 | `design/screens/catch.screens.json` | Machine-readable screen composition registry connecting routes, controller owners, states, captures, sections, and implementation paths. |
 | `design/features/*.feature.json` | Structured multi-surface feature orchestration contracts. Each surface binds a Flutter screen, marketing route, or admin route plus native components, action owners, and evidence. |
@@ -357,6 +357,38 @@ protection, but it is not a field-level request/response schema;
 `ADMIN-CALLABLE-STRICTNESS-001` owns that migration. The separate
 `ADMIN-MUTATION-SNAPSHOT-001` debt covers Admin controls and peer mutations
 that remain live after a request or query snapshot has been captured.
+
+## Structural Lessons From Full Coverage
+
+The complete Flutter, marketing, and Admin migration establishes the feature
+contract as a coordination layer rather than a new monolithic source of truth.
+The feature contract owns semantic feature identity and the checked links among
+runtime projections. Screen and route registries continue to own state
+inventories; component registries own reusable UI and previews; data schemas
+own payload shape; production controllers own behavior; and tests and captures
+own evidence. Duplicating any of those details in the feature contract would
+create a second authority instead of preventing drift.
+
+A durable feature boundary follows a coherent user goal plus overlapping data
+and action semantics, not a route, widget, or class boundary. One feature may
+therefore contain several route projections, while two routes that share an
+implementation may remain separate when their viewer policy or operational
+goal differs. This is why Organizer Detail spans three runtimes, Host
+Organizers contains several workspace spokes, and Host Inbox remains distinct
+from the shared Chat Thread implementation.
+
+The preferred implementation seam is now explicit: registered authority to
+controller-owned state, provider-free view composition, typed action outcome,
+and native evidence. Contracts revealed risk wherever production collapses
+loading, missing, and failed dependencies into one state; leaves peer controls
+active after a mutation snapshot; or exposes a runtime boundary with only
+structural-object validation. Those are architectural debts in the code, not
+conditions the contract should hide.
+
+New tooling should extend this graph by resolving existing authorities and
+validation strength. It should not generate product behavior from prose or
+replace specialist schemas. That separation keeps the format deterministic
+while allowing the application structure to improve independently.
 
 Required evidence stays strict. A real missing capture, preview, or test may be
 admitted only through an explicit evidence exception tied to a stable open debt

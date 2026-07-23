@@ -1,6 +1,6 @@
 {
-  "version": "1.5.49",
-  "updated": "2026-07-22",
+  "version": "1.5.50",
+  "updated": "2026-07-23",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
   "patterns": [
@@ -279,7 +279,7 @@
           "id": "ARCH-SCREEN-001-CHATS-INBOX-BOUNDARY",
           "path": "lib/chats/presentation/inbox/widgets/chats_list.dart",
           "reason": "ChatsList still re-watches route providers for celebration and display-state construction. Keep this as explicit screen-boundary migration debt; do not mark the Chats inbox route aligned until the route owns those reads and passes display state/callbacks down.",
-          "detectedBy": "docs/plans/explore_findings_remediation_spec.md#phase-48-chats-register-the-pattern-adoption",
+          "detectedBy": "docs/audit_registry/passes.jsonl#2026-07-03-profile-chats-state-governance",
           "addedPass": "2026-07-03-profile-chats-state-governance"
         },
         {

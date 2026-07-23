@@ -1,6 +1,6 @@
 ---
 doc_id: docs_index
-version: 4.7.4
+version: 4.7.5
 updated: 2026-07-23
 owner: recursive_audit_loop
 status: active
@@ -100,8 +100,41 @@ durable owners above or closed in code.
 | `config_cicd_platform_audit_2026-05-21.md` | Config/CI/CD/platform hardening is mostly closed, but Crashlytics script noise, analytics plist verification, contract-source migration, and Razorpay env guard follow-ups remain. |
 | `event_success_theatrical_experience_tracker.md` | Event Success live ceremony polish is active: native sensory cues, attendee moment theatre, host showtime console, invite-loop follow-up, private afterglow recap planning, and the optional First Hello arrival ritual. |
 | `sales_demo_seed_tracker.md` | Sales-grade synthetic supply is active: canonical personas/assets, cohort scope, image production, U.S./India market packs, host sales scenario, event policy coverage, and migration of lower-quality demo surfaces remain. |
-| `plans/repository_root_hygiene_spec.md` | Implemented historical closeout for root classification, safe regenerable cleanup, retention, portable docs, test inventory, and worktree policy. Current policy lives in `tool/repository_root_manifest.json`, `tool/README.md`, `artifacts/README.md`, and `docs/agent_operating_model.md`; do not treat the plan as a live source of truth. |
-| `plans/catch_ui_enforcement_system_spec.md` | Implemented historical receipt for the generated Catch UI analyzer/API/checker enforcement system. Current policy lives in `docs/app_architecture.md`, `design/components/README.md`, `design/screens/catch.screens.json`, and `tool/README.md`. |
+
+## Retirement-Ready Documents
+
+The 2026-07-23 feature-contract lifecycle audit reviewed all 99 Markdown files
+under `docs/`. The executable contracts replace current surface, state, action,
+route, component, and evidence inventories; they do not replace product intent,
+architecture, business policy, data schemas, copy, release procedures, or
+operational runbooks.
+
+The following 11 documents are ready to delete after their named inbound
+references are rewritten in the same change. Their durable decisions already
+live in the listed owners and pass receipts. Actual deletion is tracked by
+`DOC-FEATURE-CONTRACT-RETIREMENT-001`; until then, do not treat these files as
+active sources of truth.
+
+| Retirement-ready document | Why it is redundant | Durable replacement |
+|---|---|---|
+| `design_parity/event_detail_composition_tracker.md` | Its section map, exact states, actions, evidence, and remaining gaps are now represented by checked screen, component, and feature contracts. | `../design/screens/catch.screens.json`, `../design/components/catch.components.json`, `../design/features/event_detail.feature.json`, `design_parity/comprehensive_todo.md` |
+| `design_parity/event_club_profile_parity_handoff.md` | The 22-item Event Map, Organizer Detail, and Profile handoff is fully implemented; current projections and evidence are compiled rather than checklist-owned. | `../design/features/explore.feature.json`, `../design/features/organizer_detail.feature.json`, `../design/features/profile_self.feature.json`, `../design/features/profile_public.feature.json`, component/screen registries, `audit_registry/passes.jsonl` |
+| `plans/explore_screen_quality_pass_spec.md` | The quality pass is complete; current Explore states/actions/evidence are compiled and its durable ranking, data, privacy, and capture constraints are guarded elsewhere. | `../design/features/explore.feature.json`, `app_architecture.md`, `data_contracts.md`, `design_language.md`, `agent_regression_ledger.json`, `design_parity/comprehensive_todo.md` |
+| `plans/explore_findings_remediation_spec.md` | All three named implementation receipts landed; feature coverage is compiled and architecture/scanner adoption has durable machine owners. | `../design/features/explore.feature.json`, `../design/features/profile_self.feature.json`, `../design/features/profile_public.feature.json`, `../design/features/member_chat.feature.json`, `app_architecture.md`, `audit_registry/architecture_pattern_adoption.json`, `audit_registry/rules.json` |
+| `design_parity/adaptive_tab_bar_spec.md` | The work order is complete and the remaining Home/Catches absorption is separately owned. | `../design/components/catch.components.json`, `app_architecture.md`, `widget_catalog.md`, tab-root scanners/tests, `plans/home_catches_unification_spec.md` |
+| `design_parity/fable_ui_issue_handoff.md` | The single issue is resolved and the containment rule is encoded in the field/section contracts and architecture guidance. | `../design/components/catch.components.json`, `app_architecture.md`, `agent_regression_ledger.json`, focused tests |
+| `audit_registry/host_consumer_ui_reconciliation_findings_2026-07-18.md` | Every finding is resolved; current constraints and proof have canonical owners. | `app_architecture.md`, `widget_catalog.md`, `agent_regression_ledger.json`, `audit_registry/passes.jsonl` |
+| `plans/catch_ui_enforcement_system_spec.md` | The implementation receipt is complete and the live rule set is executable. | `app_architecture.md`, `../design/components/README.md`, `../design/screens/catch.screens.json`, `../tool/README.md`, analyzer/scanner tests |
+| `plans/repository_root_hygiene_spec.md` | The owner-reviewed plan is fully implemented and already labels itself historical. | `../tool/repository_root_manifest.json`, `../tool/README.md`, `../artifacts/README.md`, `agent_operating_model.md` |
+| `plans/web_platform_hardening_spec.md` | All phases and final verification are complete; current React and callable-validation rules are enforced by registries and gates. | `web_surface_architecture.md`, `marketing_website_architecture.md`, `../design/website/components.json`, `../design/admin/components.json`, web checks |
+| `plans/catch_system_stretch_spec.md` | The completion audit closes every phase and owner gate; current field, top-bar, async, terminal-padding, and schema rules have durable owners. | `app_architecture.md`, `widget_catalog.md`, `../design/components/`, `../contracts/`, generated contract and UI gates |
+
+Feature-related docs that remain intentionally active include Event Success
+theatre, Home live-layer and Home/Catches unification, Host Edit/Live Guide,
+Host Insights, Profile quality and public-profile work, Splash/Welcome boot
+policy, Admin product/analytics specs, and the website copy deck/implementation
+spec. Each contains open work, owner decisions, future product intent, copy, or
+runtime policy that a current-state feature contract deliberately does not own.
 
 Completed temporary trackers removed or folded into owner docs after code
 verification include `dashboard_run_focus_tracker.md`,

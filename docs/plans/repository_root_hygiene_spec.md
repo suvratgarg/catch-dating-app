@@ -1,9 +1,9 @@
 ---
 doc_id: repository_root_hygiene_spec
 version: 1.0.0
-updated: 2026-07-19
+updated: 2026-07-23
 owner: repository_hygiene
-status: implemented
+status: retirement_ready
 reviewers:
   - Fable
   - repository owner

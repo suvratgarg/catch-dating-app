@@ -1,5 +1,5 @@
 {
-  "version": "4.5.163",
+  "version": "4.5.164",
   "updated": "2026-07-23",
   "owner": "recursive_audit_loop",
   "summaries": {
@@ -23,6 +23,16 @@
       ],
       "skip_when": [
         "Only source refactoring is needed"
+      ]
+    },
+    "docs/README.md": {
+      "purpose": "Canonical documentation index, lifecycle policy, source-of-truth routing, and the reviewed 99-file feature-contract retirement boundary with 11 retirement-ready documents.",
+      "read_when": [
+        "Adding, deleting, consolidating, or routing documentation",
+        "Checking whether a feature spec or completed handoff is retirement-ready"
+      ],
+      "skip_when": [
+        "A narrow code-only change does not affect documentation ownership"
       ]
     },
     "AGENTS.md": {

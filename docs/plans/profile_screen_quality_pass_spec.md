@@ -1,16 +1,16 @@
 ---
 doc_id: profile_screen_quality_pass_spec
-version: 1.0.0
-updated: 2026-07-17
+version: 1.0.1
+updated: 2026-07-23
 owner: app
 status: active
 ---
 
 # Profile Screen Quality Pass — UX, Visual Craft & Surface Coherence Spec
 
-Companion to `docs/plans/explore_screen_quality_pass_spec.md`. Same method:
-code audit, rendered-capture review, and design-language assessment — this time
-across the four profile surfaces.
+Uses the same code-audit, rendered-capture, and design-language method whose
+current Explore evidence is compiled by `design/features/explore.feature.json`;
+this pass applies it across the four profile surfaces.
 
 ## 0. Context
 
