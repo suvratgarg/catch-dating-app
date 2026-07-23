@@ -44,6 +44,49 @@ void main() {
     expect(userRepository.updatedFields, {'prefsWeeklyDigest': true});
   });
 
+  test(
+    'one active settings write freezes every controller write domain',
+    () async {
+      final updateCompleter = Completer<void>();
+      final userRepository = _SettingsUserProfileRepository(
+        updateCompleter: updateCompleter,
+      );
+      final safetyRepository = _FakeSafetyRepository();
+      final container = ProviderContainer(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          userProfileRepositoryProvider.overrideWith((ref) => userRepository),
+          safetyRepositoryProvider.overrideWith((ref) => safetyRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+      await _primeUidProvider(container);
+      final controllerSubscription = container.listen(
+        settingsControllerProvider,
+        (_, _) {},
+      );
+      addTearDown(controllerSubscription.close);
+
+      final controller = container.read(settingsControllerProvider.notifier);
+      final first = controller.savePreference(
+        preference: SettingsPreference.weeklyDigest,
+        value: true,
+      );
+      final overlapping = controller.unblockUser(targetUserId: 'blocked-1');
+
+      expect(identical(first, overlapping), isTrue);
+      expect(userRepository.updateCallCount, 1);
+      expect(safetyRepository.unblockedUserId, isNull);
+
+      updateCompleter.complete();
+      await Future.wait([first, overlapping]);
+      await container.pump();
+
+      await controller.unblockUser(targetUserId: 'blocked-1');
+      expect(safetyRepository.unblockedUserId, 'blocked-1');
+    },
+  );
+
   test('unblockUser delegates to SafetyRepository', () async {
     final safetyRepository = _FakeSafetyRepository();
     final container = ProviderContainer(
@@ -149,6 +192,10 @@ void main() {
 
 class _SettingsUserProfileRepository extends Fake
     implements UserProfileRepository {
+  _SettingsUserProfileRepository({this.updateCompleter});
+
+  final Completer<void>? updateCompleter;
+  int updateCallCount = 0;
   String? updatedUid;
   Map<String, dynamic>? updatedFields;
 
@@ -158,8 +205,10 @@ class _SettingsUserProfileRepository extends Fake
     required UpdateUserProfilePatch patch,
     String action = 'update_profile',
   }) async {
+    updateCallCount += 1;
     updatedUid = uid;
     updatedFields = Map<String, dynamic>.from(patch.toFieldsJson());
+    await updateCompleter?.future;
   }
 }
 

@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.35
+version: 0.1.36
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -263,18 +263,16 @@ every control that can mutate, dismiss, or invalidate an in-flight snapshot as
 part of the pending action matrix, even when the primary button itself is
 disabled. Versioned editing and independently keyed concurrency remain explicit
 tested variants under `ARCH-PENDING-SNAPSHOT-001`, not implicit exceptions.
-Member Onboarding, Matching Preferences, Host Organizer Create, and Host Event
-Edit are promoted adopters. Onboarding freezes step-back plus identity, prompt,
-and running-preference controls; Matching Preferences freezes route exit,
-reset, age, gender, and apply; Host Organizer Create freezes route, steps,
-media, fields, defaults, and footer actions; Host Event Edit freezes route and
-the complete form. All four add controller-level deduplication and focused
-route, state, and widget proof.
-Account Settings extends the rule across independent mutation domains:
-preference, unblock, delete, and sign-out guards currently disable only their
-own controls, so destructive and route actions can overlap. Contract the whole
-surface's concurrent action availability, not just the button owned by one
-controller.
+Member Onboarding, Matching Preferences, Host Organizer Create, Host Event
+Edit, Reviews, and Account Settings are promoted adopters. Onboarding freezes
+step-back plus identity, prompt, and running-preference controls; Matching
+Preferences freezes route exit, reset, age, gender, and apply; Host Organizer
+Create freezes route, steps, media, fields, defaults, and footer actions; Host
+Event Edit freezes route and the complete form. Reviews freezes rating,
+comment, both writes, and sheet dismissal. Account Settings freezes every
+route, recovery, external, preference, unblock, delete, and sign-out action
+while any mutation is pending. Their controller/state/widget proof prevents
+duplicate or overlapping writes from drifting away from the visible snapshot.
 
 When two registered surfaces use the same production implementation and differ
 only by viewer policy, prefer separate projections in one feature contract.

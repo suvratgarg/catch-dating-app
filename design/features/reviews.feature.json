@@ -17,7 +17,7 @@
         "excluded": [
           "Review/event joining, row ordering, context labels, and edit eligibility are read-model behavior rather than user actions.",
           "Raw review-comment entry remains form data governed by CatchField and the review schema rather than a cardinalized action.",
-          "Event-context loading, failure, and genuine absence currently share the same fallback label under DP-REVIEWS-HISTORY-005; submit/delete pending leaves the rating and comment draft live under DP-REVIEWS-HISTORY-006."
+          "Event-context loading, failure, and genuine absence currently share the same fallback label under DP-REVIEWS-HISTORY-005."
         ]
       },
       "bindings": {
@@ -189,16 +189,16 @@
           "actionCases": [
             {"id": "editable", "enabledActions": ["select_review_rating", "save_review", "delete_review"]},
             {
-              "id": "submit_pending_with_live_draft",
+              "id": "submit_pending_frozen_snapshot",
               "dimensions": {"mutation": "submit_pending"},
-              "enabledActions": ["select_review_rating"],
-              "disabledActions": ["save_review", "delete_review"]
+              "enabledActions": [],
+              "disabledActions": ["select_review_rating", "save_review", "delete_review"]
             },
             {
-              "id": "delete_pending_with_live_draft",
+              "id": "delete_pending_frozen_snapshot",
               "dimensions": {"mutation": "delete_pending"},
-              "enabledActions": ["select_review_rating"],
-              "disabledActions": ["save_review", "delete_review"]
+              "enabledActions": [],
+              "disabledActions": ["select_review_rating", "save_review", "delete_review"]
             },
             {
               "id": "failed",

@@ -502,6 +502,31 @@ void main() {
       expect(container.read(exploreSearchQueryProvider), isEmpty);
       expect(container.read(exploreFiltersProvider), defaultFilters);
     });
+
+    test('signOut returns one active session operation', () async {
+      final signOutCompleter = Completer<void>();
+      final repository = _SignOutAuthRepository(
+        signOutCompleter: signOutCompleter,
+      );
+      final container = _authControllerContainer(repository);
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+      final subscription = container.listen(
+        authSessionControllerProvider,
+        (_, _) {},
+      );
+      addTearDown(subscription.close);
+
+      final controller = container.read(authSessionControllerProvider.notifier);
+      final first = controller.signOut();
+      final duplicate = controller.signOut();
+
+      expect(identical(first, duplicate), isTrue);
+      expect(repository.signOutCallCount, 1);
+
+      signOutCompleter.complete();
+      await Future.wait([first, duplicate]);
+    });
   });
 }
 
@@ -518,10 +543,14 @@ ProviderContainer _authControllerContainer(
 }
 
 class _SignOutAuthRepository extends FakeAuthRepository {
+  _SignOutAuthRepository({this.signOutCompleter});
+
+  final Completer<void>? signOutCompleter;
   int signOutCallCount = 0;
 
   @override
   Future<void> signOut() async {
     signOutCallCount += 1;
+    await signOutCompleter?.future;
   }
 }

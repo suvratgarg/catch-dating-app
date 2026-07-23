@@ -86,7 +86,7 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
   }
 
   Future<void> _submit() async {
-    if (_rating == 0) return;
+    if (_rating == 0 || _writePending) return;
     try {
       await WriteReviewController.submitMutation.run(ref, (tx) async {
         await tx
@@ -107,6 +107,7 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
   }
 
   Future<void> _confirmDelete() async {
+    if (_writePending) return;
     final review = widget.existingReview;
     if (review == null) return;
 
@@ -116,7 +117,7 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
       message: context.l10n.reviewsWriteReviewSheetMessageThisRemovesYourReview,
       confirmLabel: context.l10n.sharedActionDelete,
     );
-    if (confirmed != true || !mounted) return;
+    if (confirmed != true || !mounted || _writePending) return;
 
     try {
       await WriteReviewController.deleteMutation.run(ref, (tx) async {
@@ -144,80 +145,92 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
       }
     });
 
-    return CatchBottomSheetScaffold(
-      title: _isEdit
-          ? context.l10n.reviewsWriteReviewSheetTitleEditReview
-          : context.l10n.reviewsWriteReviewSheetTitleWriteAReview,
-      keyboardSafe: true,
-      padding: EdgeInsets.fromLTRB(
-        CatchSpacing.s4,
-        CatchSpacing.s3,
-        CatchSpacing.s4,
-        CatchSpacing.s4 + MediaQuery.viewInsetsOf(context).bottom,
-      ),
-      action: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (_isEdit) ...[
+    return PopScope(
+      canPop: !submitting,
+      child: CatchBottomSheetScaffold(
+        title: _isEdit
+            ? context.l10n.reviewsWriteReviewSheetTitleEditReview
+            : context.l10n.reviewsWriteReviewSheetTitleWriteAReview,
+        keyboardSafe: true,
+        padding: EdgeInsets.fromLTRB(
+          CatchSpacing.s4,
+          CatchSpacing.s3,
+          CatchSpacing.s4,
+          CatchSpacing.s4 + MediaQuery.viewInsetsOf(context).bottom,
+        ),
+        action: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_isEdit) ...[
+              CatchButton(
+                key: ReviewKeys.deleteReviewButton,
+                label: context.l10n.reviewsWriteReviewSheetLabelDeleteReview,
+                onPressed: submitting ? null : _confirmDelete,
+                isLoading: deleteMutation.isPending,
+                variant: CatchButtonVariant.danger,
+                fullWidth: true,
+              ),
+              gapH12,
+            ],
             CatchButton(
-              key: ReviewKeys.deleteReviewButton,
-              label: context.l10n.reviewsWriteReviewSheetLabelDeleteReview,
-              onPressed: submitting ? null : _confirmDelete,
-              isLoading: deleteMutation.isPending,
-              variant: CatchButtonVariant.danger,
+              key: ReviewKeys.submitReviewButton,
+              label: _isEdit
+                  ? context.l10n.reviewsWriteReviewSheetLabelSave
+                  : context.l10n.reviewsWriteReviewSheetLabelSubmit,
+              onPressed: _rating == 0 || submitting ? null : _submit,
+              isLoading: mutation.isPending,
               fullWidth: true,
             ),
-            gapH12,
           ],
-          CatchButton(
-            key: ReviewKeys.submitReviewButton,
-            label: _isEdit
-                ? context.l10n.reviewsWriteReviewSheetLabelSave
-                : context.l10n.reviewsWriteReviewSheetLabelSubmit,
-            onPressed: _rating == 0 || submitting ? null : _submit,
-            isLoading: mutation.isPending,
-            fullWidth: true,
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          StarRatingPicker(
-            rating: _rating,
-            onChanged: (r) => setState(() => _rating = r),
-            keyBuilder: ReviewKeys.ratingStar,
-          ),
-          gapH16,
-          CatchField.input(
-            key: ReviewKeys.commentField,
-            title: context.l10n.reviewsWriteReviewSheetTitleReview,
-            isOptional: true,
-            controller: _commentController,
-            maxLines: 3,
-            placeholder: context
-                .l10n
-                .reviewsWriteReviewSheetPlaceholderShareYourExperience,
-            textCapitalization: TextCapitalization.sentences,
-            // Mirror the backend review-comment maxLength so the user can't type
-            // past the limit and hit a server rejection on submit.
-            inputFormatters: [LengthLimitingTextInputFormatter(1000)],
-          ),
-          if (mutation.hasError) ...[
-            gapH12,
-            CatchErrorBanner(
-              message: mutationErrorMessage(mutation, l10n: context.l10n),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            StarRatingPicker(
+              rating: _rating,
+              onChanged: (r) => setState(() => _rating = r),
+              keyBuilder: ReviewKeys.ratingStar,
+              enabled: !submitting,
             ),
-          ],
-          if (deleteMutation.hasError) ...[
-            gapH12,
-            CatchErrorBanner(
-              message: mutationErrorMessage(deleteMutation, l10n: context.l10n),
+            gapH16,
+            CatchField.input(
+              key: ReviewKeys.commentField,
+              title: context.l10n.reviewsWriteReviewSheetTitleReview,
+              isOptional: true,
+              controller: _commentController,
+              enabled: !submitting,
+              maxLines: 3,
+              placeholder: context
+                  .l10n
+                  .reviewsWriteReviewSheetPlaceholderShareYourExperience,
+              textCapitalization: TextCapitalization.sentences,
+              // Mirror the backend review-comment maxLength so the user can't type
+              // past the limit and hit a server rejection on submit.
+              inputFormatters: [LengthLimitingTextInputFormatter(1000)],
             ),
+            if (mutation.hasError) ...[
+              gapH12,
+              CatchErrorBanner(
+                message: mutationErrorMessage(mutation, l10n: context.l10n),
+              ),
+            ],
+            if (deleteMutation.hasError) ...[
+              gapH12,
+              CatchErrorBanner(
+                message: mutationErrorMessage(
+                  deleteMutation,
+                  l10n: context.l10n,
+                ),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
+
+  bool get _writePending =>
+      ref.read(WriteReviewController.submitMutation).isPending ||
+      ref.read(WriteReviewController.deleteMutation).isPending;
 }

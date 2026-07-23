@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -12,6 +15,7 @@ import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
+import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -158,6 +162,73 @@ void main() {
       find.text('Something went wrong. Please try again.'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('pending settings write freezes the whole settings surface', (
+    tester,
+  ) async {
+    final pendingWrite = Completer<void>();
+    final container = _settingsContainer(
+      user: buildUser(),
+      blockedUsers: [
+        BlockedUser(
+          uid: 'blocked-1',
+          source: 'chat',
+          createdAt: DateTime(2026, 5),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await _pumpSettings(tester, container);
+    final write = SettingsController.savePreferenceMutation.run(
+      container,
+      (_) => pendingWrite.future,
+    );
+    await tester.pump();
+
+    expect(
+      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).leadingType,
+      CatchTopBarLeading.none,
+    );
+    expect(
+      tester
+          .widget<CatchField>(find.byKey(SettingsKeys.weeklyDigestSwitch))
+          .onToggle,
+      isNull,
+    );
+    expect(
+      tester
+          .widget<CatchField>(find.byKey(SettingsKeys.reviewHistoryRow))
+          .onTap,
+      isNull,
+    );
+    expect(
+      tester
+          .widget<CatchField>(find.byKey(SettingsKeys.deleteAccountRow))
+          .onTap,
+      isNull,
+    );
+    expect(
+      tester.widget<CatchField>(find.byKey(SettingsKeys.signOutRow)).onTap,
+      isNull,
+    );
+    expect(
+      tester
+          .widget<CatchButton>(
+            find.byKey(SettingsKeys.unblockButton('blocked-1')),
+          )
+          .onPressed,
+      isNull,
+    );
+    expect(
+      find.byWidgetPredicate((widget) => widget is PopScope && !widget.canPop),
+      findsOneWidget,
+    );
+
+    pendingWrite.complete();
+    await write;
+    await tester.pump();
   });
 
   testWidgets('blocked account rows use profile data and unblock controller', (

@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/account_settings.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:b6e3e48ed2fc813406c9d960288ded3dab9be1a57ab4bff4041fd68ba06fbb53",
-  "resolvedDigest": "sha256:b453a15b9a2416b11c2c95b40f03d6bcb416ff37899f75eb49ddc81af98cdaa4",
+  "sourceDigest": "sha256:bd27f6aeb747d16625070712c63b106d721c8f4f571f402a8a2b3403d1f01c9d",
+  "resolvedDigest": "sha256:f32ffbc8d13941ec4a10fb582302db5298a3f21f7b86d0c24a52689de16a71bf",
   "feature": {
     "id": "feature.account_settings",
     "name": "Account Settings",
@@ -20,7 +20,7 @@
     "actions": 13,
     "captures": 23,
     "previews": 3,
-    "testFiles": 2,
+    "testFiles": 4,
     "evidenceExceptions": 7
   },
   "surfaces": [
@@ -36,7 +36,7 @@
         "excluded": [
           "Phone, email, version, visibility-copy, blocked-count, profile formatting, and blocked-profile enrichment are display projections rather than user actions.",
           "Developer-only policy, Event Success, and manual-QA lab routes are configuration-gated diagnostics rather than Account Settings product actions.",
-          "Independent mutation guards allow unrelated navigation, external links, and destructive actions to overlap under DP-SETTINGS-ACCOUNT-004; external link results remain unobserved under DP-SETTINGS-ACCOUNT-005."
+          "External link results remain unobserved and unguarded against repeated taps under DP-SETTINGS-ACCOUNT-005."
         ]
       },
       "bindings": {
@@ -96,7 +96,7 @@
         "actions": 13,
         "captures": 23,
         "previews": 3,
-        "testFiles": 2,
+        "testFiles": 4,
         "evidenceExceptions": 7
       },
       "dimensions": {
@@ -831,12 +831,14 @@
               "SettingsScreen/Mutation states"
             ],
             "tests": [
-              "test/safety/settings_screen_test.dart"
+              "test/safety/settings_screen_test.dart",
+              "test/safety/settings_controller_test.dart",
+              "test/safety/settings_account_state_test.dart"
             ]
           },
           "actionCases": [
             {
-              "id": "preference_pending_other_actions_live",
+              "id": "preference_pending_surface_frozen",
               "dimensions": {
                 "profile": "ready",
                 "blocked_accounts": "empty",
@@ -846,25 +848,23 @@
                 "theme": "standard"
               },
               "actions": {
-                "enabled": [
+                "enabled": [],
+                "disabled": [
                   "close_settings",
+                  "retry_profile",
                   "open_review_history",
                   "open_payment_history",
                   "open_host_app",
+                  "set_preference",
+                  "retry_blocked_accounts",
+                  "unblock_account",
                   "open_privacy_policy",
                   "request_account_deletion",
                   "open_help_support",
                   "open_terms",
                   "sign_out"
                 ],
-                "disabled": [
-                  "set_preference"
-                ],
-                "notAllowed": [
-                  "retry_profile",
-                  "retry_blocked_accounts",
-                  "unblock_account"
-                ]
+                "notAllowed": []
               }
             }
           ]
@@ -1212,12 +1212,13 @@
               "SettingsScreen/Mutation states"
             ],
             "tests": [
-              "test/safety/settings_screen_test.dart"
+              "test/safety/settings_screen_test.dart",
+              "test/safety/settings_controller_test.dart"
             ]
           },
           "actionCases": [
             {
-              "id": "pending_other_actions_live",
+              "id": "pending_surface_frozen",
               "dimensions": {
                 "profile": "ready",
                 "blocked_accounts": "content",
@@ -1227,25 +1228,23 @@
                 "theme": "standard"
               },
               "actions": {
-                "enabled": [
+                "enabled": [],
+                "disabled": [
                   "close_settings",
+                  "retry_profile",
                   "open_review_history",
                   "open_payment_history",
                   "open_host_app",
                   "set_preference",
+                  "retry_blocked_accounts",
+                  "unblock_account",
                   "open_privacy_policy",
                   "request_account_deletion",
                   "open_help_support",
                   "open_terms",
                   "sign_out"
                 ],
-                "disabled": [
-                  "unblock_account"
-                ],
-                "notAllowed": [
-                  "retry_profile",
-                  "retry_blocked_accounts"
-                ]
+                "notAllowed": []
               }
             },
             {
@@ -1304,7 +1303,8 @@
               "SettingsScreen/Mutation states"
             ],
             "tests": [
-              "test/safety/settings_screen_test.dart"
+              "test/safety/settings_screen_test.dart",
+              "test/safety/settings_controller_test.dart"
             ]
           },
           "actionCases": [
@@ -1340,7 +1340,7 @@
               }
             },
             {
-              "id": "pending_other_actions_live",
+              "id": "pending_surface_frozen",
               "dimensions": {
                 "profile": "ready",
                 "blocked_accounts": "empty",
@@ -1350,25 +1350,23 @@
                 "theme": "standard"
               },
               "actions": {
-                "enabled": [
+                "enabled": [],
+                "disabled": [
                   "close_settings",
+                  "retry_profile",
                   "open_review_history",
                   "open_payment_history",
                   "open_host_app",
                   "set_preference",
+                  "retry_blocked_accounts",
+                  "unblock_account",
                   "open_privacy_policy",
+                  "request_account_deletion",
                   "open_help_support",
                   "open_terms",
                   "sign_out"
                 ],
-                "disabled": [
-                  "request_account_deletion"
-                ],
-                "notAllowed": [
-                  "retry_profile",
-                  "retry_blocked_accounts",
-                  "unblock_account"
-                ]
+                "notAllowed": []
               }
             },
             {
@@ -1426,12 +1424,13 @@
               "SettingsScreen/Mutation states"
             ],
             "tests": [
-              "test/safety/settings_screen_test.dart"
+              "test/safety/settings_screen_test.dart",
+              "test/auth/presentation/auth_controller_test.dart"
             ]
           },
           "actionCases": [
             {
-              "id": "pending_other_actions_live",
+              "id": "pending_surface_frozen",
               "dimensions": {
                 "profile": "ready",
                 "blocked_accounts": "empty",
@@ -1441,25 +1440,23 @@
                 "theme": "standard"
               },
               "actions": {
-                "enabled": [
+                "enabled": [],
+                "disabled": [
                   "close_settings",
+                  "retry_profile",
                   "open_review_history",
                   "open_payment_history",
                   "open_host_app",
                   "set_preference",
+                  "retry_blocked_accounts",
+                  "unblock_account",
                   "open_privacy_policy",
                   "request_account_deletion",
                   "open_help_support",
-                  "open_terms"
-                ],
-                "disabled": [
+                  "open_terms",
                   "sign_out"
                 ],
-                "notAllowed": [
-                  "retry_profile",
-                  "retry_blocked_accounts",
-                  "unblock_account"
-                ]
+                "notAllowed": []
               }
             },
             {

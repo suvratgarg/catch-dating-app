@@ -1,5 +1,5 @@
 {
-  "version": "1.5.53",
+  "version": "1.5.54",
   "updated": "2026-07-23",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
@@ -1814,6 +1814,30 @@
           "role": "controller, state, and widget proof for one event update and a frozen edit route",
           "status": "aligned",
           "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "lib/reviews/shared/write_review_sheet.dart and lib/reviews/shared/write_review_controller.dart",
+          "role": "frozen-snapshot adopter disabling rating, comment, submit, delete, and sheet dismissal across review writes with controller deduplication",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "test/reviews/write_review_controller_test.dart and test/reviews/reviews_widgets_test.dart",
+          "role": "controller and widget proof for one review write and a frozen edit-sheet snapshot",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "lib/safety/presentation/settings_account_state.dart, lib/safety/presentation/settings_controller.dart, lib/safety/presentation/settings_screen.dart, and lib/auth/presentation/auth_session_controller.dart",
+          "role": "whole-surface exclusive adopter freezing route, recovery, navigation, external, preference, unblock, delete, and sign-out actions during any settings mutation with settings-write and sign-out controller deduplication",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
+        },
+        {
+          "path": "test/safety/settings_account_state_test.dart, test/safety/settings_controller_test.dart, test/safety/settings_screen_test.dart, and test/auth/presentation/auth_controller_test.dart",
+          "role": "state, controller, and widget proof for global settings exclusivity, one overlapping settings write, and one sign-out operation",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-pending-operation-integrity"
         }
       ],
       "variantPatterns": [
@@ -1829,18 +1853,6 @@
         }
       ],
       "candidateQueue": [
-        {
-          "id": "DP-REVIEWS-HISTORY-006",
-          "path": "lib/reviews/presentation",
-          "reason": "Review submission needs a declared pending snapshot policy and duplicate-operation proof.",
-          "addedPass": "2026-07-23-feature-contract-debt-audit"
-        },
-        {
-          "id": "DP-SETTINGS-ACCOUNT-004",
-          "path": "lib/safety/presentation",
-          "reason": "Independent account mutation domains need explicit typed scope and cross-domain concurrency policy.",
-          "addedPass": "2026-07-23-feature-contract-debt-audit"
-        },
         {
           "id": "WEB-FORM-SUBMISSION-SNAPSHOT-001",
           "path": "website/src/features",
@@ -1866,7 +1878,7 @@
         "dart analyze",
         "node tool/agent/check_agent_readiness.mjs"
       ],
-      "notes": "Frozen snapshot is the default for one submitted form or route action. Versioned editing and independently keyed concurrency are explicit variants, not implicit exceptions. Phone Authentication is the reference; Member Onboarding, Matching Preferences, Host Organizer Create, and Host Event Edit are aligned adopters. Remaining Flutter, marketing, and Admin candidates stay open until production behavior and focused tests align."
+      "notes": "Frozen snapshot is the default for one submitted form or route action. Versioned editing and independently keyed concurrency are explicit variants, not implicit exceptions. Phone Authentication is the reference; Member Onboarding, Matching Preferences, Host Organizer Create, Host Event Edit, Reviews, and Account Settings are aligned adopters. Marketing and Admin candidates stay open until production behavior and focused tests align."
     },
     {
       "id": "ARCH-ROUTER-LIFECYCLE-001",

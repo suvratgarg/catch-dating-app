@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.314
+version: 0.2.315
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -56,11 +56,11 @@ ledgers as the source of truth when counts differ:
   Member Onboarding with its Start Welcome projection add 27 exact states and
   31 actions. They distinguish opening from selecting a country, minimum from
   surplus photo policy, mark the unreachable Instagram step explicitly, and
-  expose request-defining controls that remain live during pending mutations.
+  contract frozen request snapshots across their pending mutations.
   Event Planning binds Calendar and Saved Events as two projections of one
   agenda goal, compiling 19 states and 12 actions without inventing list-level
-  save mutations. Matching Preferences adds 11 states and six actions and
-  exposes both its pending request-snapshot drift and blank null-profile body.
+  save mutations. Matching Preferences adds 11 states and six actions with a
+  frozen save snapshot while retaining its blank null-profile body as debt.
   Event Recap adds ten exact states and four close/recovery/selection/handoff
   actions. Event Detail now binds the 11-state read-only exact-location map as
   a second projection, with route recovery, back, and directions actions. This
@@ -69,9 +69,11 @@ ledgers as the source of truth when counts differ:
   Notifications, Reviews, Payments, and Account Settings complete Flutter
   migration with 59 exact states and 28 actions. Their contracts distinguish
   identity failure from sign-out, unresolved enrichment from genuine absence,
-  support guidance from a real support handoff, and independent mutation guards
-  from whole-surface concurrency. Missing behavior is retained as seven stable
-  product gaps rather than normalized into false success states.
+  support guidance from a real support handoff, and safe whole-surface
+  concurrency from isolated loading buttons. Reviews and Account Settings now
+  freeze their complete pending surfaces; the remaining missing behavior is
+  retained as five stable product gaps rather than normalized into false
+  success states.
   Marketing Home, Host Acquisition, and Organizer Claim add 16 exact route
   states and 45 surface actions. The dynamic Claim lookup is compiled as a
   second projection because its four authority states are independently useful;
@@ -91,8 +93,8 @@ ledgers as the source of truth when counts differ:
 - Screen priority spread: 18 P1, 9 P2, and 5 P3 contracted screens.
 - Contracted screen states: 597.
 - Contracted screen sections: 227.
-- Screen registry migration gaps: 29 open, 24 blocked, and 99 closed. One of
-  the 29 non-blocked gaps is currently marked in progress. These are
+- Screen registry migration gaps: 27 open, 24 blocked, and 101 closed. One of
+  the 27 non-blocked gaps is currently marked in progress. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
 - Contracted section states: 1,069.

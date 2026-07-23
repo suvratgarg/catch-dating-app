@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/reviews.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:dfe5b24c56c0733152b5234fbbdd9ecf4a592d72d311524d15fc829ae61f7c86",
-  "resolvedDigest": "sha256:2e81d9ef5055c61bb6bc2edb2748601cf88db48fba8eec6f901152217016d9ce",
+  "sourceDigest": "sha256:a3ed108b94d849a64f4c957977a6f83add91e27d461d405a309e77af7231dbb3",
+  "resolvedDigest": "sha256:f4b0b0623a03eef2289327ae33bfaf8dcf568115da0d1925cff6f3e338d6a9ba",
   "feature": {
     "id": "feature.reviews",
     "name": "Reviews",
@@ -20,7 +20,7 @@
     "actions": 7,
     "captures": 10,
     "previews": 2,
-    "testFiles": 1,
+    "testFiles": 2,
     "evidenceExceptions": 5
   },
   "surfaces": [
@@ -36,7 +36,7 @@
         "excluded": [
           "Review/event joining, row ordering, context labels, and edit eligibility are read-model behavior rather than user actions.",
           "Raw review-comment entry remains form data governed by CatchField and the review schema rather than a cardinalized action.",
-          "Event-context loading, failure, and genuine absence currently share the same fallback label under DP-REVIEWS-HISTORY-005; submit/delete pending leaves the rating and comment draft live under DP-REVIEWS-HISTORY-006."
+          "Event-context loading, failure, and genuine absence currently share the same fallback label under DP-REVIEWS-HISTORY-005."
         ]
       },
       "bindings": {
@@ -85,7 +85,7 @@
         "actions": 7,
         "captures": 10,
         "previews": 2,
-        "testFiles": 1,
+        "testFiles": 2,
         "evidenceExceptions": 5
       },
       "dimensions": {
@@ -802,7 +802,8 @@
               "WriteReviewSheet/Sheet states"
             ],
             "tests": [
-              "test/reviews/reviews_widgets_test.dart"
+              "test/reviews/reviews_widgets_test.dart",
+              "test/reviews/write_review_controller_test.dart"
             ]
           },
           "actionCases": [
@@ -834,7 +835,7 @@
               }
             },
             {
-              "id": "submit_pending_with_live_draft",
+              "id": "submit_pending_frozen_snapshot",
               "dimensions": {
                 "access": "signed_in",
                 "profile": "ready",
@@ -846,10 +847,9 @@
                 "theme": "standard"
               },
               "actions": {
-                "enabled": [
-                  "select_review_rating"
-                ],
+                "enabled": [],
                 "disabled": [
+                  "select_review_rating",
                   "save_review",
                   "delete_review"
                 ],
@@ -862,7 +862,7 @@
               }
             },
             {
-              "id": "delete_pending_with_live_draft",
+              "id": "delete_pending_frozen_snapshot",
               "dimensions": {
                 "access": "signed_in",
                 "profile": "ready",
@@ -874,10 +874,9 @@
                 "theme": "standard"
               },
               "actions": {
-                "enabled": [
-                  "select_review_rating"
-                ],
+                "enabled": [],
                 "disabled": [
+                  "select_review_rating",
                   "save_review",
                   "delete_review"
                 ],

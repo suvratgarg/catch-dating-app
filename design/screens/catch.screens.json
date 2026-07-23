@@ -22209,11 +22209,12 @@
           "id": "edit_review_sheet",
           "kind": "mutation",
           "status": "tested",
-          "source": "Event-backed own reviews open the shared Edit review sheet through showWriteReviewSheet; submit/delete disable their buttons while pending, but rating and comment inputs remain editable after the request payload is captured.",
+          "source": "Event-backed own reviews open the shared Edit review sheet through showWriteReviewSheet; submit/delete pending freezes rating, comment, both write actions, and sheet dismissal while WriteReviewController returns the active write future to duplicate callers.",
           "tests": [
-            "test/reviews/reviews_widgets_test.dart"
+            "test/reviews/reviews_widgets_test.dart",
+            "test/reviews/write_review_controller_test.dart"
           ],
-          "nextAction": "Freeze or version request-defining draft input while a review mutation is pending under DP-REVIEWS-HISTORY-006, and add pending/error snapshot-drift proof.",
+          "nextAction": "Keep the frozen review snapshot intact while adding a dedicated sheet capture and later visual comparison.",
           "previewIds": [
             "ReviewsHistoryScreen/Screen states",
             "WriteReviewSheet/Sheet states"
@@ -22403,8 +22404,8 @@
         },
         {
           "id": "DP-REVIEWS-HISTORY-006",
-          "status": "open",
-          "nextAction": "The edit sheet captures rating/comment at submit time but leaves both fields live while update or delete is pending, so the visible draft can diverge from the in-flight request. Freeze the draft or version the request and add concurrent-edit proof."
+          "status": "closed",
+          "nextAction": "Closed by frozen rating/comment/write/dismiss controls during submit or delete, controller-level duplicate-write deduplication, and focused widget/controller proof."
         }
       ]
     },
@@ -22741,14 +22742,16 @@
           "id": "notification_preferences",
           "kind": "mutation",
           "status": "captured",
-          "source": "Preference toggles optimistically update local CatchToggle state and persist through SettingsController.savePreference; the pending guard disables preferences only while navigation, external actions, unblock, delete, and sign-out remain live.",
+          "source": "Preference toggles optimistically update local CatchToggle state and persist through SettingsController.savePreference; any settings mutation freezes every settings action plus route exit, while SettingsController deduplicates overlapping preference, unblock, and delete calls.",
           "captureIds": [
             "settings_preference_pending"
           ],
           "tests": [
-            "test/safety/settings_screen_test.dart"
+            "test/safety/settings_screen_test.dart",
+            "test/safety/settings_controller_test.dart",
+            "test/safety/settings_account_state_test.dart"
           ],
-          "nextAction": "Define cross-domain mutation and route-exit exclusivity under DP-SETTINGS-ACCOUNT-004, then compare disabled-toggle pending affordance during visual polish.",
+          "nextAction": "Keep whole-surface exclusivity intact while comparing the disabled-toggle pending affordance during visual polish.",
           "previewIds": [
             "SettingsScreen/Screen states",
             "SettingsScreen/Mutation states"
@@ -22837,15 +22840,16 @@
           "id": "unblock_mutation",
           "kind": "mutation",
           "status": "captured",
-          "source": "Unblock action routes through SettingsController.unblockUserMutation and shows shared Catch snackbar success feedback; only unblock controls are guarded while other settings mutations and route actions remain live.",
+          "source": "Unblock action routes through SettingsController.unblockUserMutation and shows shared Catch snackbar success feedback; pending unblock freezes every settings action and route exit, and the controller rejects overlapping settings writes.",
           "captureIds": [
             "settings_unblock_pending",
             "settings_unblock_error"
           ],
           "tests": [
-            "test/safety/settings_screen_test.dart"
+            "test/safety/settings_screen_test.dart",
+            "test/safety/settings_controller_test.dart"
           ],
-          "nextAction": "Define cross-domain mutation exclusivity under DP-SETTINGS-ACCOUNT-004 before comparing unblock pending/error affordances during visual polish.",
+          "nextAction": "Compare unblock pending/error affordances during visual polish without weakening whole-surface exclusivity.",
           "previewIds": [
             "SettingsScreen/Mutation states"
           ]
@@ -22854,15 +22858,16 @@
           "id": "delete_account_flow",
           "kind": "mutation",
           "status": "captured",
-          "source": "Delete account row opens the confirm danger dialog and delegates confirmed deletion to SettingsController.requestAccountDeletion; delete pending disables only the delete row while sign-out, preferences, unblock, navigation, and external actions remain live.",
+          "source": "Delete account row opens the confirm danger dialog and delegates confirmed deletion to SettingsController.requestAccountDeletion; the dialog rechecks global pending state, and delete pending freezes every settings action plus route exit.",
           "captureIds": [
             "settings_delete_pending",
             "settings_delete_error"
           ],
           "tests": [
-            "test/safety/settings_screen_test.dart"
+            "test/safety/settings_screen_test.dart",
+            "test/safety/settings_controller_test.dart"
           ],
-          "nextAction": "Prevent destructive overlap and define route-exit behavior under DP-SETTINGS-ACCOUNT-004; add a dedicated confirm-dialog capture if destructive-dialog pixel parity becomes blocking.",
+          "nextAction": "Add a dedicated confirm-dialog capture if destructive-dialog pixel parity becomes blocking.",
           "previewIds": [
             "CatchConfirmDialog/Contract states",
             "SettingsScreen/Mutation states"
@@ -22872,15 +22877,16 @@
           "id": "sign_out_action",
           "kind": "mutation",
           "status": "captured",
-          "source": "Log out row delegates to AuthSessionController.signOutMutation and shows a pending spinner; sign-out pending disables only that row while deletion and other actions remain live.",
+          "source": "Log out row delegates to AuthSessionController.signOutMutation and shows a pending spinner; sign-out pending freezes every settings action and route exit, while AuthSessionController returns the active session future to duplicate callers.",
           "captureIds": [
             "settings_sign_out_pending",
             "settings_sign_out_error"
           ],
           "tests": [
-            "test/safety/settings_screen_test.dart"
+            "test/safety/settings_screen_test.dart",
+            "test/auth/presentation/auth_controller_test.dart"
           ],
-          "nextAction": "Prevent destructive overlap and define route-exit behavior under DP-SETTINGS-ACCOUNT-004 before comparing sign-out pending/error affordances during visual polish.",
+          "nextAction": "Compare sign-out pending/error affordances during visual polish without weakening whole-surface exclusivity.",
           "previewIds": [
             "SettingsScreen/Mutation states"
           ]
@@ -23142,8 +23148,8 @@
         },
         {
           "id": "DP-SETTINGS-ACCOUNT-004",
-          "status": "open",
-          "nextAction": "Preference, unblock, delete, and sign-out mutations guard only their own controls, while navigation/external actions and other mutations remain live; destructive operations can overlap. Define a shared mutation-exclusivity and route-exit policy, prevent destructive concurrency, and add focused interaction tests."
+          "status": "closed",
+          "nextAction": "Closed by SettingsMutationState.operationPending, global action and route-exit freezing, confirmation rechecks, controller-level write deduplication, and focused state/controller/widget proof."
         },
         {
           "id": "DP-SETTINGS-ACCOUNT-005",

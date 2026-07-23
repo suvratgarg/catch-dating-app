@@ -1,5 +1,5 @@
 {
-  "version": 82,
+  "version": 83,
   "updated": "2026-07-23",
   "owner": "agent_operating_model",
   "entries": [
@@ -2589,15 +2589,15 @@
       "symptom": "A primary button shows loading while request-defining inputs, route exits, mutation-reset callbacks, or conflicting actions remain live; a second dispatch starts another operation or a stale callback advances a reset or edited flow.",
       "guard": {
         "type": "command",
-        "command": "flutter test --concurrency=1 test/auth/presentation/auth_controller_test.dart test/auth/presentation/auth_presentation_state_test.dart test/auth/presentation/auth_screen_test.dart test/onboarding/onboarding_controller_test.dart test/onboarding/onboarding_flow_state_test.dart test/onboarding/onboarding_widgets_test.dart test/swipes/filters_screen_test.dart test/swipes/filters_screen_state_test.dart test/clubs/clubs_controllers_test.dart test/hosts/host_club_create_state_test.dart test/hosts/host_event_booking_controller_test.dart test/hosts/edit_hosted_event_screen_test.dart && flutter test --concurrency=1 test/explore/explore_widgets_test.dart --plain-name \"CreateClubScreen freezes route and draft controls while submit is pending\" && node tool/design/build_feature_contracts.mjs --check && node tool/design/check_screen_contracts.mjs --check",
-        "guardEvidence": "Phone Authentication proves duplicate-send and stale-callback protection; Member Onboarding proves frozen route, identity, prompt, and running-preference snapshots plus controller deduplication; Matching Preferences proves frozen route, reset, age, gender, and apply controls plus one persisted save; Host Organizer Create proves frozen submit, draft-save, and draft-restore controls plus one create request; Host Event Edit proves frozen route/form controls plus one update request; generated feature and screen contracts retain the same pending action matrices."
+        "command": "flutter test --concurrency=1 test/auth/presentation/auth_controller_test.dart test/auth/presentation/auth_presentation_state_test.dart test/auth/presentation/auth_screen_test.dart test/onboarding/onboarding_controller_test.dart test/onboarding/onboarding_flow_state_test.dart test/onboarding/onboarding_widgets_test.dart test/swipes/filters_screen_test.dart test/swipes/filters_screen_state_test.dart test/clubs/clubs_controllers_test.dart test/hosts/host_club_create_state_test.dart test/hosts/host_event_booking_controller_test.dart test/hosts/edit_hosted_event_screen_test.dart test/reviews/write_review_controller_test.dart test/reviews/reviews_widgets_test.dart test/safety/settings_controller_test.dart test/safety/settings_account_state_test.dart test/safety/settings_screen_test.dart && flutter test --concurrency=1 test/explore/explore_widgets_test.dart --plain-name \"CreateClubScreen freezes route and draft controls while submit is pending\" && node tool/design/build_feature_contracts.mjs --check && node tool/design/check_screen_contracts.mjs --check",
+        "guardEvidence": "Phone Authentication proves duplicate-send and stale-callback protection; Member Onboarding proves frozen route, identity, prompt, and running-preference snapshots plus controller deduplication; Matching Preferences proves frozen route, reset, age, gender, and apply controls plus one persisted save; Host Organizer Create proves frozen submit, draft-save, and draft-restore controls plus one create request; Host Event Edit proves frozen route/form controls plus one update request; Reviews proves frozen rating, comment, write, and dismissal controls plus one write request; Account Settings proves whole-surface action and route freezing across preference, unblock, delete, and sign-out domains plus one overlapping controller write; generated feature and screen contracts retain the same pending action matrices."
       },
       "owner_docs": [
         "docs/app_architecture.md",
         "docs/design_parity/README.md",
         "docs/web_surface_architecture.md"
       ],
-      "notes": "Phone Authentication is the frozen-snapshot reference. Member Onboarding, Matching Preferences, Host Organizer Create, and Host Event Edit are aligned adopters. Versioned editing and independently keyed concurrency remain permitted only as explicit, tested variants. Apply this guard pattern to the remaining recorded Flutter, marketing, and Admin candidates before closing their debt."
+      "notes": "Phone Authentication is the frozen-snapshot reference. Member Onboarding, Matching Preferences, Host Organizer Create, Host Event Edit, Reviews, and Account Settings are aligned adopters. Versioned editing and independently keyed concurrency remain permitted only as explicit, tested variants. Apply this guard pattern to the remaining marketing and Admin candidates before closing their debt."
     },
     {
       "id": "REG-FEATURE-CONTRACT-DRIFT-001",

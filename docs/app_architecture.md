@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.5.7
-updated: 2026-07-22
+version: 1.5.8
+updated: 2026-07-23
 owner: recursive_audit_loop
 status: active
 ---
@@ -1255,6 +1255,14 @@ initial draft-restore operations. Event editing freezes route dismissal and
 the complete schedule, location, pace, policy, and text-field form during
 save. Their action controllers return the active future to duplicate callers,
 so widget disabling and controller behavior enforce the same request snapshot.
+
+Reviews and Account Settings extend the reference beyond single-submit forms.
+The review sheet freezes rating, comment, both write actions, and dismissal
+during submit or delete, while its controller returns one active write future.
+Account Settings treats preference, unblock, delete, and sign-out as one
+surface-exclusive operation domain: any pending mutation disables every
+settings action and route exit, confirmation callbacks recheck the shared
+pending state, and the settings controller deduplicates overlapping writes.
 
 Every adopting feature must declare the chosen policy in its feature contract.
 If the implementation is not yet safe, the pending-state action matrix must
