@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
@@ -315,6 +316,77 @@ void main() {
 
     expect(launchedUri, Uri.parse('https://catchdates.com/host'));
     expect(launchMode, LaunchMode.externalApplication);
+  });
+
+  testWidgets(
+    'pending host handoff freezes settings and false result is visible',
+    (tester) async {
+      final launchResult = Completer<bool>();
+      var launchCallCount = 0;
+      final container = _settingsContainer(
+        user: buildUser(),
+        blockedUsers: const [],
+        externalUrlLauncher: (uri, {mode = LaunchMode.platformDefault}) {
+          launchCallCount += 1;
+          return launchResult.future;
+        },
+      );
+      addTearDown(container.dispose);
+
+      await _pumpSettings(tester, container);
+      await tester.tap(find.byKey(SettingsKeys.hostAppRow));
+      await tester.pump();
+
+      expect(
+        find.descendant(
+          of: find.byKey(SettingsKeys.hostAppRow),
+          matching: find.byType(CatchLoadingIndicator),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        tester
+            .widget<CatchField>(find.byKey(SettingsKeys.reviewHistoryRow))
+            .onTap,
+        isNull,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is PopScope && !widget.canPop,
+        ),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.byKey(SettingsKeys.hostAppRow));
+      await tester.pump();
+      expect(launchCallCount, 1);
+
+      launchResult.complete(false);
+      await pumpFeatureUi(tester);
+      expect(
+        find.text('Could not open that link. Please try again.'),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets('host handoff reports a thrown launcher failure', (tester) async {
+    final container = _settingsContainer(
+      user: buildUser(),
+      blockedUsers: const [],
+      externalUrlLauncher: (uri, {mode = LaunchMode.platformDefault}) async =>
+          throw StateError('launcher unavailable'),
+    );
+    addTearDown(container.dispose);
+
+    await _pumpSettings(tester, container);
+    await tester.tap(find.byKey(SettingsKeys.hostAppRow));
+    await pumpFeatureUi(tester);
+
+    expect(
+      find.text('Could not open that link. Please try again.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('delete account confirmation delegates to controller', (

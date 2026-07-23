@@ -1,7 +1,7 @@
 {
   "$schema": "./widget_classification.schema.json",
   "version": 2,
-  "updated": "2026-07-22",
+  "updated": "2026-07-23",
   "sourceOfTruth": {
     "scope": "Generated inventory for production Flutter widget and widget-state classes under lib/**. Widgetbook/test scaffolds are intentionally out of scope.",
     "canonicalContracts": "design/components/catch.components.json owns canonical global component contracts and governance metadata.",
@@ -10,23 +10,23 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1099,
+    "total": 1100,
     "widgetClasses": 967,
-    "stateClasses": 132,
+    "stateClasses": 133,
     "publicClasses": 962,
-    "privateClasses": 137,
+    "privateClasses": 138,
     "byRole": {
       "atom": 57,
       "composition": 353,
       "feature-adapter": 285,
       "pattern": 17,
       "screen": 255,
-      "widget-state": 132
+      "widget-state": 133
     },
     "byDecision": {
       "keep-canonical-contract": 195,
       "keep-public-cataloged": 702,
-      "keep-widget-state": 132,
+      "keep-widget-state": 133,
       "review-catalog-coverage": 44,
       "review-promote-or-consolidate": 21,
       "review-promote-or-inline": 5
@@ -34,7 +34,7 @@
     "byCatalogStatus": {
       "cataloged": 665,
       "contracted": 195,
-      "not-applicable": 132,
+      "not-applicable": 133,
       "route-covered": 54,
       "uncataloged": 53
     },
@@ -17598,6 +17598,35 @@
       "flags": []
     },
     {
+      "name": "_EventLocationMapRouteScreenState",
+      "file": "lib/events/presentation/event_location_map_screen.dart",
+      "classKind": "widget-state",
+      "baseClass": "ConsumerState<EventLocationMapRouteScreen>",
+      "visibility": "private",
+      "role": "widget-state",
+      "canonicalFamily": "state.event_location_map_route_screen",
+      "publicApi": false,
+      "catalogStatus": "not-applicable",
+      "contractId": null,
+      "conceptRole": null,
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": null,
+      "decisionRef": null,
+      "allowedDependencyLevel": "owning-widget-state",
+      "stateOwnership": "owning-widget-state",
+      "asyncOwnership": "owning-widget-state",
+      "layoutOwnership": "owning-widget-state",
+      "actionOwnership": "owning-widget-state",
+      "decision": "keep-widget-state",
+      "remediationOptions": [
+        "moveStateToController",
+        "routeThroughScreenState"
+      ],
+      "flags": []
+    },
+    {
       "name": "ChromelessMapScaffold",
       "file": "lib/events/presentation/event_location_map_screen.dart",
       "classKind": "widget",
@@ -17659,7 +17688,7 @@
       "name": "EventLocationMapRouteScreen",
       "file": "lib/events/presentation/event_location_map_screen.dart",
       "classKind": "widget",
-      "baseClass": "ConsumerWidget",
+      "baseClass": "ConsumerStatefulWidget",
       "visibility": "public",
       "role": "screen",
       "canonicalFamily": "screen.event_location_map_route_screen",

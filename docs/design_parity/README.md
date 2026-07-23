@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.39
+version: 0.1.40
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -243,16 +243,18 @@ collapse as debt instead of calling an unresolved dependency a successful empty
 or fallback state, then retain separate states after the implementation closes
 that debt.
 The same rule applies to external effects: requesting directions or opening an
-external settings link is implemented, but ignored false/error results and
-unrestricted repeated taps remain part of the action contract until production
-defines pending and failure behavior.
+external settings link is not complete merely because a Future was started.
+The owning route must await the result, give the action a visible pending state,
+reject duplicate or conflicting actions at the declared cardinality, and show
+honest feedback for both a false platform result and a thrown failure. Event
+Location Map and Account Settings are the current Flutter reference adopters.
 
 Action names describe observed outcomes rather than promising more than the
 implementation does. Payment History therefore contracts its current support
-CTA as `show_support_guidance`: the button closes the sheet and displays a
-snackbar, but it does not open a support channel. Either production behavior or
-the visible label must change before the contract can truthfully call that
-action a support handoff.
+CTA as `show_support_guidance`: How to get help with this booking closes the
+sheet and displays actionable receipt-ID guidance, but it does not claim to
+open a support channel. A future channel may change both the implementation and
+contract together; prose alone must not upgrade the outcome.
 
 Action availability must describe production behavior, including unsafe
 behavior. Host Organizer Create and Host Event Edit now use frozen request

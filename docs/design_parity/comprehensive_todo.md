@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.318
+version: 0.2.319
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -74,8 +74,10 @@ ledgers as the source of truth when counts differ:
   concurrency from isolated loading buttons. Notifications now keeps identity
   failure distinct from resolved sign-out, Payment History separates event-title
   loading/error/missing states, and Reviews plus Account Settings freeze their
-  complete pending surfaces. Remaining behavior gaps stay explicit rather than
-  normalized into false success states.
+  complete pending surfaces. Payment guidance is now labeled for its real
+  instructional outcome, while Event Location Map and Account Settings await
+  external launches, freeze duplicate or conflicting actions, and surface false
+  or thrown launcher failures instead of implying success.
   Marketing Home, Host Acquisition, and Organizer Claim add 16 exact route
   states and 45 surface actions. The dynamic Claim lookup is compiled as a
   second projection because its four authority states are independently useful;
@@ -96,8 +98,8 @@ ledgers as the source of truth when counts differ:
 - Screen priority spread: 18 P1, 9 P2, and 5 P3 contracted screens.
 - Contracted screen states: 597.
 - Contracted screen sections: 227.
-- Screen registry migration gaps: 18 open, 24 blocked, and 110 closed. One of
-  the 27 non-blocked gaps is currently marked in progress. These are
+- Screen registry migration gaps: 15 open, 24 blocked, and 113 closed. One of
+  the 15 non-blocked gaps is currently marked in progress. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
 - Contracted section states: 1,069.
@@ -756,11 +758,11 @@ from those ledgers rather than hand-editing counts.
 | P2 | `screen.onboarding.flow` | 13 | 7 | 6 | Blocked: interaction variants need canonical exports | `DS-ONBOARDING-004` blocked, `DS-ONBOARDING-005` | `feature.member_onboarding` compiles all 13 flow states and 22 actions across booking identity, profile completion, run preferences, draft resume, exact minimum/surplus photo policy, prompts, and mutation behavior. The implemented Instagram step is explicitly `orphaned`: no production entry mode or forward transition reaches it, so retire it or reconnect it with route proof under `DS-ONBOARDING-005`. `DS-ONBOARDING-006` is closed under `REG-PENDING-SNAPSHOT-001`: pending saves freeze step-back and every request-defining identity, prompt, or running-preference control, and controller tests prove duplicate dispatches share one request. Existing Widgetbook, captures, adapters, and primary references remain registered; interaction-specific references stay blocked under `DS-ONBOARDING-004`. |
 | P2 | `screen.saved_events.list` | 9 | 4 | 0 | Blocked: no standalone Saved Events source | `DS-SAVED-EVENTS-004` blocked | Event Planning binds Saved Events as the saved-only projection of Calendar's agenda goal, compiling all nine states and five back/recovery/Event Detail actions. The contract intentionally declares no list-level save/unsave action even though a saved-event repository exists, because those mutations remain on Event Detail. Widgetbook and captures remain complete; canonical reference export is still blocked. |
 | P2 | `screen.start.welcome` | 6 | 3 | 1 | State-specific references are optional until strict comparison requires them | `DS-START-001` blocked | Member Onboarding binds Start Welcome as a second projection of the same `WelcomePage` implementation and reuses its skip, phone-auth, and guest-Explore action identities. All six reel, landed, CTA, reduced-motion, text-scale, and fixed-dark states compile against their own Start authority evidence instead of creating a duplicate feature. Additional state-specific references remain blocked/reference-only unless strict visual comparison requires them. |
-| P3 | `screen.event.location_map` | 11 | 4 | 0 | Blocked: no standalone full-screen map source; map primitives only | `DP-EVENT-MAP-003` blocked, `DP-EVENT-MAP-004` blocked, `DP-EVENT-MAP-005` | Event Detail now binds Event Location Map as its read-only exact-location projection, compiling all 11 states and three back/recovery/directions actions. The directions Future is currently discarded, so false/error results have no feedback and repeated taps stay live while launch is pending; define and test that policy under `DP-EVENT-MAP-005`. Exported map masks and pixel comparison remain blocked on a canonical route source. |
+| P3 | `screen.event.location_map` | 11 | 4 | 0 | Blocked: no standalone full-screen map source; map primitives only | `DP-EVENT-MAP-003` blocked, `DP-EVENT-MAP-004` blocked | Event Detail binds Event Location Map as its read-only exact-location projection, compiling all 11 states and three back/recovery/directions actions. `DP-EVENT-MAP-005` is closed: directions launch is singleton while pending, the button shows progress, and false or thrown failures restore the action with visible feedback. Pending/failure visual evidence moves to the evidence-closure phase; exported map masks and pixel comparison remain blocked on a canonical route source. |
 | P3 | `screen.notifications.list` | 14 | 4 | 0 | None | None | `feature.notifications` compiles all 14 states and four identity-retry/activity-retry/read/navigation actions. `DP-NOTIFICATIONS-004` is closed: uidProvider failure now renders a branded auth retry state, while resolved null uid alone owns the signed-out empty state. Deterministic uid-error preview and capture evidence is scheduled in the evidence-closure phase. |
-| P3 | `screen.payments.history` | 17 | 4 | 0 | Blocked: no standalone Payment History source; Booking moments only | `DP-PAYMENT-HISTORY-002` blocked, `DP-PAYMENT-HISTORY-004` blocked, `DP-PAYMENT-HISTORY-005` | `feature.payments` compiles all 17 states and six recovery/receipt/support actions. `DP-PAYMENT-HISTORY-006` is closed: event-title loading renders skeletons, failure exposes event-specific retry, and resolved absence says Event unavailable instead of Event booking. The remaining Get help outcome is tracked under `DP-PAYMENT-HISTORY-005`; canonical reference export remains blocked. |
+| P3 | `screen.payments.history` | 17 | 4 | 0 | Blocked: no standalone Payment History source; Booking moments only | `DP-PAYMENT-HISTORY-002` blocked, `DP-PAYMENT-HISTORY-004` blocked | `feature.payments` compiles all 17 states and six recovery/receipt/support actions. `DP-PAYMENT-HISTORY-005` is closed by the honest How to get help label and tested payment/order-ID guidance; `DP-PAYMENT-HISTORY-006` is closed by distinct event-title loading, failure, and resolved-absence behavior. Canonical reference export remains blocked. |
 | P3 | `screen.reviews.history` | 12 | 4 | 0 | Blocked: no standalone Reviews History source; `ReviewRow` primitive only | `DP-REVIEWS-HISTORY-004` blocked, `DP-REVIEWS-HISTORY-005` | `feature.reviews` compiles all 12 states and seven recovery/edit/rating/save/delete actions. Review mutation fields now freeze with their captured request under `REG-PENDING-SNAPSHOT-001`; event enrichment loading/failure/missing still shares one fallback under `DP-REVIEWS-HISTORY-005`. Reference export remains blocked. |
-| P3 | `screen.settings.account` | 19 | 6 | 1 | None | `DP-SETTINGS-ACCOUNT-005` | `feature.account_settings` compiles all 19 states and 13 navigation, preference, safety, external, deletion, and sign-out actions. `DP-SETTINGS-ACCOUNT-004` is closed by whole-surface pending exclusivity across route, recovery, external, preference, unblock, delete, and sign-out actions. External-link Futures still need explicit false/error/pending outcomes under `DP-SETTINGS-ACCOUNT-005`. |
+| P3 | `screen.settings.account` | 19 | 6 | 1 | None | None | `feature.account_settings` compiles all 19 states and 13 navigation, preference, safety, external, deletion, and sign-out actions. `DP-SETTINGS-ACCOUNT-004` and `DP-SETTINGS-ACCOUNT-005` are closed: mutation and external-link operations freeze the whole surface, the selected external row shows progress, duplicate taps are rejected, and false or thrown launcher failures produce visible feedback. |
 
 ### Currently Blocked Or User-Input Dependent
 
@@ -1705,7 +1707,7 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - tested: `edit_review_sheet`
   - captured: `uid_missing`, `profile_loading`, `profile_error`, `reviews_loading`, `reviews_error`, `empty_reviews`, `reviews_history_list`, `event_context_missing`, `text_scale_2`, `reduced_motion`, `light_dark`
 - [ ] `settings.account` (19 state follow-ups, 0 open gaps)
-  - tested: `history_navigation_rows`, `host_app_handoff`, `shared_unblock_feedback`
+  - tested: `history_navigation_rows`, `external_link_outcomes`, `shared_unblock_feedback`
   - captured: `profile_backed_account`, `profile_loading`, `profile_error`, `profile_missing`, `notification_preferences`, `preference_save_error`, `privacy_safety_defaults`, `blocked_accounts_loading_error`, `blocked_accounts_empty`, `blocked_accounts_list`, `unblock_mutation`, `delete_account_flow`, `sign_out_action`, `offline`, `text_scale_2`, `reduced_motion`, `light_dark`
   - DP-SETTINGS-ACCOUNT-002: closed; Settings Account route captures now cover profile loading/error/offline/missing, blocked-user loading/error/offline/list, preference/delete/sign-out/unblock mutation pending/error/offline, text scale, reduced motion, and light/dark. Unblock success feedback now uses the shared Catch snackbar helper. Settings intentionally uses the shared offline provider/mutation error copy instead of Settings-specific copy.
 - [ ] `payments.history` (15 state follow-ups, 0 open gaps; 2 blocked reference gaps)

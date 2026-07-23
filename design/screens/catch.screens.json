@@ -21251,11 +21251,11 @@
           "id": "directions_action",
           "kind": "mutation",
           "status": "tested",
-          "source": "Get directions invokes the route-owned callback; EventLocationMapRouteScreen delegates the state directions URI to externalLinkControllerProvider without awaiting or presenting false-result, pending, or failure state.",
+          "source": "Get directions invokes a route-owned singleton launch for the current directions URI; EventLocationMapRouteScreen shows button progress and rejects duplicate taps while pending, then restores the action and reports false or thrown launcher failures.",
           "tests": [
             "test/events/events_widgets_test.dart"
           ],
-          "nextAction": "Await the external-launch result, guard repeated taps while pending, and provide actionable failure feedback under DP-EVENT-MAP-005.",
+          "nextAction": "Add deterministic pending/failure preview and capture evidence in the evidence-closure phase; focused success, false, thrown-error, and duplicate-tap tests are current.",
           "previewIds": [
             "EventLocationMapScreen/Map states"
           ]
@@ -21467,8 +21467,8 @@
         },
         {
           "id": "DP-EVENT-MAP-005",
-          "status": "open",
-          "nextAction": "EventLocationMapRouteScreen discards the Future returned by ExternalLinkController.openExternal. A false launcher result or thrown platform/backend error has no route-level feedback, and Get directions remains repeatable while the launch is pending. Await the result, define pending/failure behavior, and add focused false/error/duplicate-tap proof."
+          "status": "closed",
+          "nextAction": "Closed. EventLocationMapRouteScreen awaits ExternalLinkController.openExternal, renders Get directions loading while the request is pending, rejects duplicate taps, restores the action afterward, and shows route-owned feedback for both false launcher results and thrown failures; focused widget tests prove success, false, error, and pending paths."
         }
       ]
     },
@@ -22763,14 +22763,14 @@
           ]
         },
         {
-          "id": "host_app_handoff",
+          "id": "external_link_outcomes",
           "kind": "mutation",
           "status": "tested",
-          "source": "Catch Host row starts the central host handoff through ExternalLinkController without awaiting its Future or observing false-result/error outcomes.",
+          "source": "Catch Host and configured privacy, support, and terms rows use one route-owned external-link operation. The selected row shows progress, the whole Settings surface freezes while pending, false and thrown failures show honest feedback, and actions restore afterward.",
           "tests": [
             "test/safety/settings_screen_test.dart"
           ],
-          "nextAction": "Define pending, false-result, failure, and repeated-tap behavior under DP-SETTINGS-ACCOUNT-005; separately decide whether the destination stays external or becomes an in-app role switch.",
+          "nextAction": "Keep the destination policy separate from launch integrity; whether Catch Host stays external or becomes an in-app role switch remains an owner decision.",
           "previewIds": [
             "SettingsScreen/Screen states"
           ]
@@ -23044,7 +23044,7 @@
             "states": [
               "profile_backed_account",
               "history_navigation_rows",
-              "host_app_handoff"
+              "external_link_outcomes"
             ],
             "migration": "Keep Account rows data-driven and route callbacks owned by the adapter.",
             "previewIds": [
@@ -23190,8 +23190,8 @@
         },
         {
           "id": "DP-SETTINGS-ACCOUNT-005",
-          "status": "open",
-          "nextAction": "Host-app and external policy/support/terms launches discard their Futures, ignore false launcher results and errors, and have no repeated-tap guard. Await outcomes and provide pending/failure feedback with duplicate-tap proof."
+          "status": "closed",
+          "nextAction": "Closed. Host-app and configured privacy/support/terms launches now share a route-owned pending guard, disable every Settings action and route exit while pending, show a spinner on the selected row, restore the surface afterward, and present visible feedback for false and thrown launcher failures; focused widget tests prove duplicate-tap exclusion and both failure paths."
         }
       ]
     },
@@ -23484,7 +23484,7 @@
           "id": "failed_signup_help",
           "kind": "mutation",
           "status": "captured",
-          "source": "Sign-up failure payments show a Get help with this booking action, but the handler only closes the sheet and shows a snackbar telling the member to contact Catch support; it opens no support route, composer, or contact channel.",
+          "source": "Sign-up failure payments honestly label the action How to get help with this booking; it closes the receipt and shows actionable guidance to include the visible payment and order IDs when contacting Catch support without claiming to open an unimplemented channel.",
           "captureIds": [
             "payment_history_failed_signup_receipt_sheet",
             "payment_history_support_snackbar"
@@ -23492,7 +23492,7 @@
           "tests": [
             "test/payments/payment_history_screen_test.dart"
           ],
-          "nextAction": "Under DP-PAYMENT-HISTORY-005, either relabel the CTA as guidance or connect it to an actionable support channel and test the actual outcome.",
+          "nextAction": "Keep the guidance label and outcome aligned unless a configured support route, composer, email, phone, or case-creation channel is implemented.",
           "previewIds": [
             "PaymentHistoryScreen/Screen states",
             "PaymentReceiptSheet/Receipt states"
@@ -23732,8 +23732,8 @@
         },
         {
           "id": "DP-PAYMENT-HISTORY-005",
-          "status": "open",
-          "nextAction": "Get help with this booking promises an action but only closes the receipt and shows contact guidance in a snackbar. Relabel it honestly or connect it to a real support route, composer, mail, or phone channel and test that outcome."
+          "status": "closed",
+          "nextAction": "Closed. The receipt CTA now says How to get help with this booking, closes the sheet, and shows actionable guidance to include the visible payment and order IDs; the focused widget test proves the exact label and snackbar outcome without implying an unimplemented support handoff."
         },
         {
           "id": "DP-PAYMENT-HISTORY-006",

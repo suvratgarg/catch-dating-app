@@ -9937,7 +9937,7 @@
               "tests": [
                 "test/events/events_widgets_test.dart"
               ],
-              "notes": "Get directions delegates to externalLinkControllerProvider with the event directions URI.",
+              "notes": "Get directions is a route-owned singleton launch for the event directions URI; focused tests cover success, pending progress, duplicate-tap exclusion, false launcher results, thrown failures, action restoration, and visible feedback.",
               "previewIds": [
                 "EventLocationMapScreen/Map states"
               ]
@@ -10642,13 +10642,13 @@
               ]
             },
             {
-              "id": "host_app_handoff",
+              "id": "external_link_outcomes",
               "kind": "mutation",
               "status": "tested",
               "tests": [
                 "test/safety/settings_screen_test.dart"
               ],
-              "notes": "Catch Host row opens the central host handoff link through ExternalLinkController.",
+              "notes": "Catch Host and configured privacy, support, and terms rows share one route-owned external-link operation; focused tests cover pending whole-surface freezing, selected-row progress, duplicate-tap exclusion, false results, thrown failures, restoration, and visible feedback.",
               "previewIds": [
                 "SettingsScreen/Screen states"
               ]
@@ -11041,7 +11041,7 @@
               "tests": [
                 "test/payments/payment_history_screen_test.dart"
               ],
-              "notes": "Sign-up failure payments show support recovery copy and a Get help with this booking action in the detail sheet; captures cover the help sheet and shared Catch snackbar support feedback.",
+              "notes": "Sign-up failure payments honestly label the CTA How to get help with this booking; it closes the receipt and shows actionable guidance to include the visible payment and order IDs without claiming an unimplemented support handoff.",
               "previewIds": [
                 "PaymentHistoryScreen/Screen states",
                 "PaymentReceiptSheet/Receipt states"

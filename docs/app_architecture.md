@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.5.10
+version: 1.5.11
 updated: 2026-07-23
 owner: recursive_audit_loop
 status: active
@@ -1272,6 +1272,14 @@ Account Settings treats preference, unblock, delete, and sign-out as one
 surface-exclusive operation domain: any pending mutation disables every
 settings action and route exit, confirmation callbacks recheck the shared
 pending state, and the settings controller deduplicates overlapping writes.
+External platform effects follow the same contract even when they do not write
+backend data. Await the platform result, expose progress on the initiating
+control, enforce the declared singleton or keyed concurrency policy, and make
+both `false` and thrown outcomes visible before restoring the action. Account
+Settings extends its surface-exclusive domain to host/legal/support links;
+Event Location Map keeps back navigation available but makes the directions
+launch itself singleton. Starting and discarding a platform Future is not a
+successful action outcome.
 
 The Admin console uses the same whole-surface exclusive policy for operator
 writes and submitted analytics queries. A synchronous provider-level lease is

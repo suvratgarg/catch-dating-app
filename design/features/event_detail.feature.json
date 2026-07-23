@@ -429,8 +429,7 @@
         "included": "Closing the exact-location projection, retrying its Event Detail read model, and launching walking directions for the event's canonical starting point.",
         "excluded": [
           "Map camera movement, network-tile loading, and marker rendering are presentation behavior rather than user decisions.",
-          "This read-only route does not search for, move, or persist event locations; LocationPickerScreen remains owned by host create/edit workflows.",
-          "The external-link controller currently provides no route-level pending, false-result, or failure feedback; that behavior remains explicit debt under DP-EVENT-MAP-005."
+          "This read-only route does not search for, move, or persist event locations; LocationPickerScreen remains owned by host create/edit workflows."
         ]
       },
       "bindings": {
@@ -482,7 +481,7 @@
         },
         "directions": {
           "default": "idle",
-          "values": ["idle", "launch_requested"]
+          "values": ["idle", "pending", "failure"]
         },
         "accessibility": {
           "default": "standard",
@@ -520,12 +519,13 @@
           "id": "get_directions",
           "owner": "external_links",
           "codeValue": "openExternal",
-          "cardinality": "unbounded",
+          "cardinality": "singleton",
           "scopeKeys": ["routeInstanceId", "eventId", "directionsUri"],
           "outcomes": [
+            {"kind": "surface_state", "stateIds": ["directions_action"]},
             {"kind": "side_effect", "id": "external_links.open_walking_directions"}
           ],
-          "description": "Requests the platform's external maps application with walking directions to the exact starting coordinate."
+          "description": "Requests the platform's external maps application with walking directions to the exact starting coordinate, disables duplicate launches while pending, and restores the action with visible feedback after false or thrown failures."
         }
       ],
       "stateIds": [
@@ -565,7 +565,24 @@
           "actionCases": [{"id": "unavailable", "enabledActions": ["close_location_map"]}]
         },
         "directions_action": {
-          "dimensions": {"directions": "launch_requested"}
+          "actionCases": [
+            {
+              "id": "idle",
+              "dimensions": {"directions": "idle"},
+              "enabledActions": ["close_location_map", "get_directions"]
+            },
+            {
+              "id": "pending",
+              "dimensions": {"directions": "pending"},
+              "enabledActions": ["close_location_map"],
+              "disabledActions": ["get_directions"]
+            },
+            {
+              "id": "failure",
+              "dimensions": {"directions": "failure"},
+              "enabledActions": ["close_location_map", "get_directions"]
+            }
+          ]
         },
         "network_tiles_disabled_capture": {
           "dimensions": {"map_mode": "deterministic"}
@@ -599,7 +616,7 @@
           "stateIds": ["directions_action"],
           "evidence": ["captures"],
           "debtId": "FEATURE-CONTRACT-MIGRATION-001",
-          "reason": "The directions request has focused route and callback tests plus Widgetbook action presence, but no stable post-launch in-app capture."
+          "reason": "Directions success, false-result, thrown-failure, pending, and duplicate-tap behavior have focused route tests plus Widgetbook action presence, but pending/failure still need deterministic visual evidence in the evidence-closure phase."
         },
         {
           "stateIds": ["map_masking"],

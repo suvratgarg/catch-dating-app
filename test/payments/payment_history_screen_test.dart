@@ -108,7 +108,7 @@ void main() {
       expect(find.text('10 Feb 2025 · 12:00 AM'), findsWidgets);
     });
 
-    testWidgets('detail sheet shows Get help button for sign-up failures', (
+    testWidgets('detail sheet labels and performs support guidance honestly', (
       tester,
     ) async {
       await _pumpPaymentHistory(
@@ -129,7 +129,18 @@ void main() {
       await tester.tap(find.byKey(PaymentHistoryKeys.paymentTile('pay-4')));
       await _pumpPaymentSheet(tester);
 
-      expect(find.text('Get help with this booking'), findsOneWidget);
+      expect(find.text('How to get help with this booking'), findsOneWidget);
+
+      await tester.tap(find.text('How to get help with this booking'));
+      await pumpFeatureUi(tester);
+
+      expect(find.byType(PaymentReceiptSheet), findsNothing);
+      expect(
+        find.text(
+          'Contact Catch support and include the payment and order IDs shown on this receipt.',
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('shows all status badge variants correctly', (tester) async {

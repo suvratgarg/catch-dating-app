@@ -46,8 +46,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   SettingsPreferenceValues _preferences =
       const SettingsPreferenceValues.defaults();
   String? _seededUid;
+  _SettingsExternalLinkAction? _pendingExternalLink;
 
   bool get _operationPending =>
+      _pendingExternalLink != null ||
       ref.read(SettingsController.savePreferenceMutation).isPending ||
       ref.read(SettingsController.requestAccountDeletionMutation).isPending ||
       ref.read(AuthSessionController.signOutMutation).isPending ||
@@ -122,14 +124,48 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  void _openExternal(Uri uri) {
-    if (_operationPending) return;
-    unawaited(ref.read(externalLinkControllerProvider).openExternal(uri));
+  void _openExternal(_SettingsExternalLinkAction action, Uri uri) {
+    unawaited(
+      _launchExternalLink(
+        action,
+        () => ref.read(externalLinkControllerProvider).openExternal(uri),
+      ),
+    );
   }
 
   void _openHostApp() {
+    unawaited(
+      _launchExternalLink(
+        _SettingsExternalLinkAction.hostApp,
+        () => ref.read(externalLinkControllerProvider).openHostApp(),
+      ),
+    );
+  }
+
+  Future<void> _launchExternalLink(
+    _SettingsExternalLinkAction action,
+    Future<bool> Function() launch,
+  ) async {
     if (_operationPending) return;
-    unawaited(ref.read(externalLinkControllerProvider).openHostApp());
+
+    setState(() => _pendingExternalLink = action);
+    var opened = false;
+    try {
+      opened = await launch();
+    } catch (_) {
+      // ExternalLinkController retains the backend context; this route owns
+      // the visible result for both thrown and false launcher outcomes.
+    } finally {
+      if (mounted) {
+        setState(() => _pendingExternalLink = null);
+      }
+    }
+
+    if (!mounted || opened) return;
+    showCatchSnackBar(
+      context,
+      context.l10n.safetySettingsScreenExternalLinkOpenFailed,
+    );
   }
 
   void _unblockUser(String targetUserId) {
@@ -182,7 +218,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         unblocking: ref.watch(SettingsController.unblockUserMutation).isPending,
       ),
     );
-    final operationPending = state.mutations.operationPending;
+    final operationPending =
+        state.mutations.operationPending || _pendingExternalLink != null;
 
     ref.listen(SettingsController.unblockUserMutation, (previous, current) {
       if (previous?.isPending == true && current.isSuccess) {
@@ -284,6 +321,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               .l10n
                               .safetySettingsScreenBodyManageEventsAndClubs,
                           icon: CatchIcons.workOutlineRounded,
+                          action:
+                              _pendingExternalLink ==
+                                  _SettingsExternalLinkAction.hostApp
+                              ? const SizedBox.square(
+                                  dimension: CatchIcon.control,
+                                  child: CatchLoadingIndicator(strokeWidth: 2),
+                                )
+                              : null,
                           onTap: operationPending ? null : _openHostApp,
                         ),
                       ],
@@ -478,13 +523,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ),
                         if (AppConfig.privacyPolicyUrl case final uri?)
                           CatchField.nav(
+                            key: SettingsKeys.privacyPolicyRow,
                             title: context
                                 .l10n
                                 .safetySettingsScreenTitlePrivacyPolicy,
                             icon: CatchIcons.lockOutline,
+                            action:
+                                _pendingExternalLink ==
+                                    _SettingsExternalLinkAction.privacyPolicy
+                                ? const SizedBox.square(
+                                    dimension: CatchIcon.control,
+                                    child: CatchLoadingIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : null,
                             onTap: operationPending
                                 ? null
-                                : () => _openExternal(uri),
+                                : () => _openExternal(
+                                    _SettingsExternalLinkAction.privacyPolicy,
+                                    uri,
+                                  ),
                           ),
                         CatchField.nav(
                           key: SettingsKeys.deleteAccountRow,
@@ -510,25 +569,53 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       children: [
                         if (AppConfig.helpUrl case final uri?)
                           CatchField.nav(
+                            key: SettingsKeys.helpSupportRow,
                             title: context
                                 .l10n
                                 .safetySettingsScreenTitleHelpSupport,
                             valueText:
                                 context.l10n.safetySettingsScreenBodyContactUs,
                             icon: CatchIcons.helpOutline,
+                            action:
+                                _pendingExternalLink ==
+                                    _SettingsExternalLinkAction.helpSupport
+                                ? const SizedBox.square(
+                                    dimension: CatchIcon.control,
+                                    child: CatchLoadingIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : null,
                             onTap: operationPending
                                 ? null
-                                : () => _openExternal(uri),
+                                : () => _openExternal(
+                                    _SettingsExternalLinkAction.helpSupport,
+                                    uri,
+                                  ),
                           ),
                         if (AppConfig.termsUrl case final uri?)
                           CatchField.nav(
+                            key: SettingsKeys.termsRow,
                             title: context.l10n.safetySettingsScreenTitleTerms,
                             valueText:
                                 context.l10n.safetySettingsScreenBodyLegal,
                             icon: CatchIcons.descriptionOutlined,
+                            action:
+                                _pendingExternalLink ==
+                                    _SettingsExternalLinkAction.terms
+                                ? const SizedBox.square(
+                                    dimension: CatchIcon.control,
+                                    child: CatchLoadingIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : null,
                             onTap: operationPending
                                 ? null
-                                : () => _openExternal(uri),
+                                : () => _openExternal(
+                                    _SettingsExternalLinkAction.terms,
+                                    uri,
+                                  ),
                           ),
                         CatchField.read(
                           title: context.l10n.safetySettingsScreenTitleVersion,
@@ -576,6 +663,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 }
+
+enum _SettingsExternalLinkAction { hostApp, privacyPolicy, helpSupport, terms }
 
 class AccountProfileStatus extends StatelessWidget {
   const AccountProfileStatus({

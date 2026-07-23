@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/event_detail.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:f8424578537d83ed0a74d40548921b77102dc8fefa1a1c145e1218e8fda47963",
-  "resolvedDigest": "sha256:bb5fe5b2facce4fe590c47c9b9aee75fcf1c71a36af9624a3f95b8ebf94a44a4",
+  "sourceDigest": "sha256:4f5150846f9f442e63febb8fcabe719b6e5d6daa45c12e9c6954c7d62c03f88b",
+  "resolvedDigest": "sha256:a9a0d32b7333cc48fedc91f91cb00f9efe3e65d6a6b1eb456ae85b64a390ad5e",
   "feature": {
     "id": "feature.event_detail",
     "name": "Event Detail",
@@ -16,7 +16,7 @@
     "surfaces": 2,
     "states": 26,
     "scenarios": 26,
-    "actionCases": 35,
+    "actionCases": 37,
     "actions": 10,
     "captures": 31,
     "previews": 8,
@@ -1404,8 +1404,7 @@
         "included": "Closing the exact-location projection, retrying its Event Detail read model, and launching walking directions for the event's canonical starting point.",
         "excluded": [
           "Map camera movement, network-tile loading, and marker rendering are presentation behavior rather than user decisions.",
-          "This read-only route does not search for, move, or persist event locations; LocationPickerScreen remains owned by host create/edit workflows.",
-          "The external-link controller currently provides no route-level pending, false-result, or failure feedback; that behavior remains explicit debt under DP-EVENT-MAP-005."
+          "This read-only route does not search for, move, or persist event locations; LocationPickerScreen remains owned by host create/edit workflows."
         ]
       },
       "bindings": {
@@ -1445,7 +1444,7 @@
       "coverage": {
         "states": 11,
         "scenarios": 11,
-        "actionCases": 11,
+        "actionCases": 13,
         "actions": 3,
         "captures": 7,
         "previews": 2,
@@ -1481,7 +1480,8 @@
           "default": "idle",
           "values": [
             "idle",
-            "launch_requested"
+            "pending",
+            "failure"
           ]
         },
         "accessibility": {
@@ -1545,7 +1545,7 @@
           "id": "get_directions",
           "owner": "external_links",
           "codeValue": "openExternal",
-          "cardinality": "unbounded",
+          "cardinality": "singleton",
           "scopeKeys": [
             "routeInstanceId",
             "eventId",
@@ -1553,11 +1553,17 @@
           ],
           "outcomes": [
             {
+              "kind": "surface_state",
+              "stateIds": [
+                "directions_action"
+              ]
+            },
+            {
               "kind": "side_effect",
               "id": "external_links.open_walking_directions"
             }
           ],
-          "description": "Requests the platform's external maps application with walking directions to the exact starting coordinate.",
+          "description": "Requests the platform's external maps application with walking directions to the exact starting coordinate, disables duplicate launches while pending, and restores the action with visible feedback after false or thrown failures.",
           "implementationStatus": "implemented"
         }
       ],
@@ -1585,7 +1591,7 @@
             "captures"
           ],
           "debtId": "FEATURE-CONTRACT-MIGRATION-001",
-          "reason": "The directions request has focused route and callback tests plus Widgetbook action presence, but no stable post-launch in-app capture."
+          "reason": "Directions success, false-result, thrown-failure, pending, and duplicate-tap behavior have focused route tests plus Widgetbook action presence, but pending/failure still need deterministic visual evidence in the evidence-closure phase."
         },
         {
           "stateIds": [
@@ -1846,7 +1852,7 @@
             "load": "ready",
             "location": "exact",
             "map_mode": "network",
-            "directions": "launch_requested",
+            "directions": "idle",
             "accessibility": "standard",
             "theme": "standard"
           },
@@ -1861,12 +1867,55 @@
           },
           "actionCases": [
             {
-              "id": "exact_location",
+              "id": "idle",
               "dimensions": {
                 "load": "ready",
                 "location": "exact",
                 "map_mode": "network",
-                "directions": "launch_requested",
+                "directions": "idle",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "close_location_map",
+                  "get_directions"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_event_location"
+                ]
+              }
+            },
+            {
+              "id": "pending",
+              "dimensions": {
+                "load": "ready",
+                "location": "exact",
+                "map_mode": "network",
+                "directions": "pending",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "close_location_map"
+                ],
+                "disabled": [
+                  "get_directions"
+                ],
+                "notAllowed": [
+                  "retry_event_location"
+                ]
+              }
+            },
+            {
+              "id": "failure",
+              "dimensions": {
+                "load": "ready",
+                "location": "exact",
+                "map_mode": "network",
+                "directions": "failure",
                 "accessibility": "standard",
                 "theme": "standard"
               },

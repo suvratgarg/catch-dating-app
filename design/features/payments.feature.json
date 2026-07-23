@@ -16,7 +16,7 @@
         "included": "Closing Payment History, retrying identity, payment, or event-title loads, opening a receipt sheet, and requesting the current failed-booking support guidance.",
         "excluded": [
           "Payment ordering, status presentation, currency/date formatting, and event-title joining are read-model behavior rather than user actions.",
-          "The Get help action currently closes the receipt and shows guidance but opens no contact channel under DP-PAYMENT-HISTORY-005."
+          "Support guidance does not claim to open chat, email, phone, or a support case; those capabilities require a separately configured and implemented channel."
         ]
       },
       "bindings": {
@@ -120,7 +120,7 @@
           "cardinality": "unbounded",
           "scopeKeys": ["routeInstanceId", "paymentId"],
           "outcomes": [{"kind": "side_effect", "id": "payments.show_support_guidance"}],
-          "description": "Closes a failed-signup receipt and shows the current snackbar guidance to contact Catch support."
+          "description": "The honestly labeled How to get help action closes a failed-signup receipt and shows guidance to include its visible payment and order IDs when contacting Catch support."
         }
       ],
       "stateIds": [
