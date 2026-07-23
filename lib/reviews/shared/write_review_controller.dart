@@ -18,6 +18,8 @@ class WriteReviewController extends _$WriteReviewController {
   static final deleteMutation = Mutation<void>();
   static final responseMutation = Mutation<void>();
 
+  Future<void>? _writeInFlight;
+
   @override
   void build() {}
 
@@ -29,6 +31,28 @@ class WriteReviewController extends _$WriteReviewController {
     required int rating,
     required String comment,
     Review? existingReview,
+  }) {
+    return _trackWrite(
+      () => _submit(
+        clubId: clubId,
+        eventId: eventId,
+        reviewerUserId: reviewerUserId,
+        reviewerName: reviewerName,
+        rating: rating,
+        comment: comment,
+        existingReview: existingReview,
+      ),
+    );
+  }
+
+  Future<void> _submit({
+    required String clubId,
+    required String eventId,
+    required String reviewerUserId,
+    required String reviewerName,
+    required int rating,
+    required String comment,
+    required Review? existingReview,
   }) async {
     if (rating < 1 || rating > 5) {
       throw ArgumentError.value(rating, 'rating', 'Rating must be 1-5.');
@@ -56,11 +80,29 @@ class WriteReviewController extends _$WriteReviewController {
     }
   }
 
-  Future<void> delete(String reviewId) async {
+  Future<void> delete(String reviewId) {
+    return _trackWrite(() => _delete(reviewId));
+  }
+
+  Future<void> _delete(String reviewId) async {
     if (reviewId.isEmpty) {
       throw ArgumentError.value(reviewId, 'reviewId', 'Review id is required.');
     }
     await ref.read(reviewsRepositoryProvider).deleteReview(reviewId);
+  }
+
+  Future<void> _trackWrite(Future<void> Function() operation) {
+    final existingRequest = _writeInFlight;
+    if (existingRequest != null) return existingRequest;
+
+    late final Future<void> trackedRequest;
+    trackedRequest = operation().whenComplete(() {
+      if (identical(_writeInFlight, trackedRequest)) {
+        _writeInFlight = null;
+      }
+    });
+    _writeInFlight = trackedRequest;
+    return trackedRequest;
   }
 
   Future<void> setOwnerResponse({

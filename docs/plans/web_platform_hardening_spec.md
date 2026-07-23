@@ -1,3 +1,11 @@
+---
+doc_id: web_platform_hardening_spec
+version: 1.0.0
+updated: 2026-07-23
+owner: web_platform
+status: retirement_ready
+---
+
 # Web Platform Hardening Spec — Testing, Primitives, Lexicon, Visual Regression (for Codex)
 
 Status: implementation complete; final verification recorded below · 2026-07-12

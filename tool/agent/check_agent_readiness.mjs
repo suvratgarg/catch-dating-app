@@ -4,6 +4,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {scanDependencyDirection} from "../architecture/check_dependency_direction.mjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
+import {buildInventory, renderInventory} from "../test_inventory.mjs";
 
 const isCliEntrypoint =
   process.argv[1] != null &&
@@ -28,6 +29,10 @@ function runCli() {
   checkPath(metricsPath, "Agent metrics ledger exists.");
   checkPath("tool/agent/context_pack.mjs", "Context pack tool exists.");
   checkPath("tool/agent/check_agent_readiness.mjs", "Readiness tool exists.");
+  checkPath(
+    "docs/audit_registry/test_inventory.json",
+    "Canonical test inventory exists.",
+  );
   checkPath(
     "tool/agent/record_delegation_outcome.mjs",
     "Delegation outcome recorder exists.",
@@ -87,6 +92,13 @@ function runCli() {
     "docs/README.md",
     "agent_skills/",
     "Docs index includes project-local skills.",
+  );
+  check(
+    testInventoryMatches(
+      readText("docs/audit_registry/test_inventory.json"),
+      buildInventory(),
+    ),
+    "Canonical test inventory matches tracked and untracked test files.",
   );
 
   for (const [docId, expectedPath] of Object.entries({
@@ -337,6 +349,10 @@ export function extractDependencyBaselineSnapshot(entry) {
   };
 }
 
+export function testInventoryMatches(currentSource, expectedInventory) {
+  return currentSource === renderInventory(expectedInventory);
+}
+
 export function dependencyBaselineGrowthWarnings(entries, currentSnapshot) {
   const previousSnapshot = entries
     .map(extractDependencyBaselineSnapshot)
@@ -417,6 +433,14 @@ function readJson(relativePath) {
     return JSON.parse(fs.readFileSync(fromRepo(relativePath), "utf8"));
   } catch {
     return null;
+  }
+}
+
+function readText(relativePath) {
+  try {
+    return fs.readFileSync(fromRepo(relativePath), "utf8");
+  } catch {
+    return "";
   }
 }
 

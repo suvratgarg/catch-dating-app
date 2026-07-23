@@ -16,10 +16,26 @@ part 'auth_session_controller.g.dart';
 class AuthSessionController extends _$AuthSessionController {
   static final signOutMutation = Mutation<void>();
 
+  Future<void>? _signOutInFlight;
+
   @override
   void build() {}
 
-  Future<void> signOut() async {
+  Future<void> signOut() {
+    final active = _signOutInFlight;
+    if (active != null) return active;
+
+    late final Future<void> trackedRequest;
+    trackedRequest = _signOut().whenComplete(() {
+      if (identical(_signOutInFlight, trackedRequest)) {
+        _signOutInFlight = null;
+      }
+    });
+    _signOutInFlight = trackedRequest;
+    return trackedRequest;
+  }
+
+  Future<void> _signOut() async {
     clearLocalFlowState();
     await ref.read(authRepositoryProvider).signOut();
     clearLocalFlowState();

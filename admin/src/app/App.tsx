@@ -72,6 +72,7 @@ import {
   adminRoleClaimKeys,
 } from "../shared/types/adminTypes";
 import {AdminFeedbackProvider} from "../shared/feedback/AdminFeedbackContext";
+import {AdminPendingOperationProvider} from "../shared/pendingOperation";
 import type {OverviewQueueDestination} from
   "../features/overview/ui/OverviewScreen";
 
@@ -285,7 +286,9 @@ const adminSectionTitles: Record<AdminNavId, string> = {
 export function App() {
   return (
     <BrowserRouter>
-      <AdminRouteApp />
+      <AdminPendingOperationProvider>
+        <AdminRouteApp />
+      </AdminPendingOperationProvider>
     </BrowserRouter>
   );
 }

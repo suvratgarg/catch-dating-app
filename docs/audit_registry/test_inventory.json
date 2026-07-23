@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 566,
+  "total": 576,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -403,7 +403,7 @@
       ]
     },
     "tooling": {
-      "count": 134,
+      "count": 138,
       "files": [
         "tool/admin/generate_admin_action_catalog.test.mjs",
         "tool/agent/check_agent_readiness.test.mjs",
@@ -445,8 +445,10 @@
         "tool/demo/seed_demo_data_append.test.mjs",
         "tool/demo/seed_demo_data_schema.test.mjs",
         "tool/design/build_design_sync_manifest.test.mjs",
+        "tool/design/build_feature_contracts.test.mjs",
         "tool/design/check_component_enforcement_coverage.test.mjs",
         "tool/design/check_component_lexicon.test.mjs",
+        "tool/design/check_feature_coverage.test.mjs",
         "tool/design/check_host_event_field_contracts.test.mjs",
         "tool/design/check_option_group_usage.test.mjs",
         "tool/design/check_public_surface_behavior.test.mjs",
@@ -536,13 +538,15 @@
         "tool/platform/verify_ios_release_identity.test.mjs",
         "tool/repository_hygiene.test.mjs",
         "tool/run.test.mjs",
+        "tool/test/check_flutter_test_size.test.mjs",
+        "tool/test/flutter_coverage_report.test.mjs",
         "tool/test_inventory.test.mjs",
         "tool/web/react_dependency_graph.test.mjs",
         "tool/widget_dedupe/test/fingerprint_extractor_test.dart"
       ]
     },
     "web": {
-      "count": 59,
+      "count": 65,
       "files": [
         "admin/src/app/App.test.tsx",
         "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
@@ -572,6 +576,7 @@
         "admin/src/shared/api/firebase.test.ts",
         "admin/src/shared/controllers/marketingReviewDecisionHelpers.test.ts",
         "admin/src/shared/operations/operationSelectors.test.ts",
+        "admin/src/shared/pendingOperation.test.tsx",
         "admin/src/shared/query/queryKeys.test.ts",
         "admin/src/shared/query/usePendingMutationRecord.test.tsx",
         "admin/src/shared/ui/AdminPrimitives/intake.test.tsx",
@@ -591,9 +596,12 @@
         "website/src/features/claims/claimRouting.test.ts",
         "website/src/features/claims/useClaimFlowController.test.tsx",
         "website/src/features/claims/useClaimRequestMutation.test.tsx",
+        "website/src/features/events/eventDetailModel.test.ts",
+        "website/src/features/events/sections/EventDetailSections.test.tsx",
         "website/src/features/host/application/applicationModel.test.ts",
         "website/src/features/host/application/useHostApplicationController.test.tsx",
         "website/src/features/marketing/tracking.test.ts",
+        "website/src/features/marketing/useAppDownloadCtas.test.tsx",
         "website/src/features/organizers/organizerPolicy.test.ts",
         "website/src/features/organizers/publicDiscovery.test.ts",
         "website/src/features/organizers/publicSurfaceBehavior.test.ts",
@@ -602,7 +610,9 @@
         "website/src/features/organizers/useOrganizerDirectoryController.test.tsx",
         "website/src/features/reviews/reviewModel.test.ts",
         "website/src/features/reviews/useListingReviewsController.test.tsx",
-        "website/src/features/waitlist/useWaitlistFormController.test.tsx"
+        "website/src/features/waitlist/useWaitlistFormController.test.tsx",
+        "website/src/shared/api/joinWaitlistContract.test.ts",
+        "website/src/shared/pendingRequest.test.tsx"
       ]
     }
   }

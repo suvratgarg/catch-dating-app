@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-23",
+  "generator": "tool/store/generate_app_listing_screenshot_prototypes.swift",
+  "status": "prototype_for_visual_review",
+  "platform": "apple_iphone_6_9",
+  "dimensions": {
+    "width": 1320,
+    "height": 2868,
+    "alpha": false
+  },
+  "assets": [
+    {
+      "conceptId": "C01",
+      "app": "consumer",
+      "order": 1,
+      "sourceCaptureId": "member_event_discovery",
+      "sourcePath": "artifacts/marketing/app-screenshots/member-event-discovery.png",
+      "sourceSha256": "34d45c28a19c5e5333b903a4072617965513bcc922e13189a3ea2577b4dbbe04",
+      "outputPath": "docs/store/app_listing_prototypes/iphone_6_9/catch-consumer-01-events-before-matches-iphone-6_9.png",
+      "outputSha256": "782f50225306c5aedb485fd159f10edaf147696fbcbfd75d897b7a9ebec6ce56"
+    },
+    {
+      "conceptId": "C02",
+      "app": "consumer",
+      "order": 2,
+      "sourceCaptureId": "event_detail_member_ticket",
+      "sourcePath": "artifacts/store/app-listing-prototypes/raw/event_detail_member_ticket/light.png",
+      "sourceSha256": "22c6995a0a8a35b17ce0e432e7176ccecf1fe542c3b803651d7af1837e652285",
+      "outputPath": "docs/store/app_listing_prototypes/iphone_6_9/catch-consumer-02-event-confidence-iphone-6_9.png",
+      "outputSha256": "a7a6ae7a6e9a08ef3f1b00391cf5823bb6a4afc7ef5ea5c2150f33cc01ad6311"
+    },
+    {
+      "conceptId": "C03",
+      "app": "consumer",
+      "order": 3,
+      "sourceCaptureId": "post_run_catch_window",
+      "sourcePath": "artifacts/marketing/app-screenshots/post-run-catch-window.png",
+      "sourceSha256": "4936f9d8fcfc138998f4c1139c52f1edd4ff338ef35cbfd196883f8d45b24f40",
+      "outputPath": "docs/store/app_listing_prototypes/iphone_6_9/catch-consumer-03-attendance-gated-catches-iphone-6_9.png",
+      "outputSha256": "66639efc6cde22c447344dc38db595ee58b12448d1837a11b7a7998f26d0c5ba"
+    },
+    {
+      "conceptId": "H01",
+      "app": "host",
+      "order": 1,
+      "sourceCaptureId": "host_live_console",
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-console.png",
+      "sourceSha256": "9b375e65d48586b76c4200fbd10ed9e8a35ff135d5e3423d395e874bc4215360",
+      "outputPath": "docs/store/app_listing_prototypes/iphone_6_9/catch-host-01-live-console-iphone-6_9.png",
+      "outputSha256": "0b4dfbba01f9caad0c659dee938b323ea886822a1f0a21a155a173ba61a225ec"
+    },
+    {
+      "conceptId": "H02",
+      "app": "host",
+      "order": 2,
+      "sourceCaptureId": "host_create_success_manage",
+      "sourcePath": "artifacts/store/app-listing-prototypes/raw/host_create_success_manage/light.png",
+      "sourceSha256": "7b0af285b63445409134be037ddbc1bb973a8db5c08a043f24739e18cef3863d",
+      "outputPath": "docs/store/app_listing_prototypes/iphone_6_9/catch-host-02-guided-publishing-iphone-6_9.png",
+      "outputSha256": "ad20722ab538550f45714440050bc9e05c974ec25ca36a6a2f377c71dcf31789"
+    },
+    {
+      "conceptId": "H03",
+      "app": "host",
+      "order": 3,
+      "sourceCaptureId": "host_create_policy",
+      "sourcePath": "artifacts/marketing/app-screenshots/host-create-policy.png",
+      "sourceSha256": "64bcf4ea9e9d936b9a6f56a35ab77c492ba66261c5e30a43a21aace5da430a46",
+      "outputPath": "docs/store/app_listing_prototypes/iphone_6_9/catch-host-03-admission-controls-iphone-6_9.png",
+      "outputSha256": "e0d828afa3b90a13182e1ca816d017b93d6d5aab1d323d1ec0ae8a8214a8b09c"
+    }
+  ]
+}

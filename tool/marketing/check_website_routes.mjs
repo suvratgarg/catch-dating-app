@@ -155,6 +155,7 @@ function validateRoutes(routes, storyDeclarations) {
     "not_found",
     "organizer_listing_canonical",
     "organizer_listing_legacy",
+    "event_detail_canonical",
   ]);
 
   for (const route of routes) {
@@ -187,8 +188,18 @@ function validateRoute(route, storyDeclarations) {
   const label = route.id ?? "<missing-id>";
   const allowedKinds = new Set(["static", "clientDynamic", "generatedFamily"]);
   const allowedOutputs = new Set(["postbuild", "generated-postbuild", "spa-rewrite"]);
-  const allowedIndexing = new Set(["index", "noindex-follow", "listing-controlled"]);
-  const allowedSitemap = new Set(["included", "excluded", "listing-controlled"]);
+  const allowedIndexing = new Set([
+    "index",
+    "noindex-follow",
+    "listing-controlled",
+    "event-controlled",
+  ]);
+  const allowedSitemap = new Set([
+    "included",
+    "excluded",
+    "listing-controlled",
+    "event-controlled",
+  ]);
 
   if (!route.id) errors.push("route missing id.");
   if (!allowedKinds.has(route.kind)) errors.push(`${label}: invalid kind ${route.kind}.`);
@@ -260,7 +271,16 @@ function marketingNotFoundHostingErrors(config) {
 
 function validatePageKey(route) {
   const allowedPageKeys = new Set([
-    "home", "host", "organizers", "listing", "claim", "privacy", "terms", "help", "not_found",
+    "home",
+    "host",
+    "organizers",
+    "listing",
+    "event_detail",
+    "claim",
+    "privacy",
+    "terms",
+    "help",
+    "not_found",
   ]);
   if (!allowedPageKeys.has(route.pageKey)) {
     errors.push(`${route.id}: invalid pageKey ${route.pageKey}.`);
@@ -269,6 +289,15 @@ function validatePageKey(route) {
   if (route.pageKey === "listing") {
     if (!appRoutingSource.includes("getHostListingRouteForPath")) {
       errors.push(`${route.id}: App.tsx must resolve generated listing routes first.`);
+    }
+    return;
+  }
+  if (route.pageKey === "event_detail") {
+    if (!appRoutingSource.includes("getEventDetailForPath")) {
+      errors.push(`${route.id}: App.tsx must resolve generated event routes first.`);
+    }
+    if (!appRoutingSource.includes("marketingRoutePaths.event_detail")) {
+      errors.push(`${route.id}: App.tsx must render the event detail route.`);
     }
     return;
   }
@@ -420,6 +449,17 @@ function validateStaticOutput(route) {
       }
       if (!postbuildSource.includes('robots: "noindex, follow"')) {
         errors.push("organizer_listing_legacy: postbuild must force noindex, follow.");
+      }
+    }
+    if (route.id === "event_detail_canonical") {
+      if (!postbuildSource.includes("for (const event of publicEvents)")) {
+        errors.push("event_detail_canonical: postbuild must iterate publicEvents.");
+      }
+      if (!postbuildSource.includes("writeRoute(event.path")) {
+        errors.push("event_detail_canonical: postbuild must emit event.path.");
+      }
+      if (!postbuildSource.includes("buildEventStructuredData")) {
+        errors.push("event_detail_canonical: postbuild must emit Event structured data.");
       }
     }
   }
@@ -844,6 +884,24 @@ export const OrganizerSearch = {
         sourcesHeading: "Public sources",
         lastVerifiedPrefix: "Last verified",
         notRecorded: "not recorded",
+        homeBreadcrumb: "Catch",
+        organizersBreadcrumb: "Organizers",
+      },
+    },
+    event: {
+      titleTemplate: "{title} | {city} | Catch",
+      catchTwitterTemplate: "{title} by {organizer}. Booking stays in the Catch app.",
+      externalTwitterTemplate:
+        "{title} from {source}. Registration stays on the official source.",
+      staticLabels: {
+        eventEyebrow: "Event details",
+        hostedByPrefix: "Hosted by",
+        scheduleHeading: "Schedule and location",
+        locationLabel: "Location",
+        priceLabel: "Price",
+        sourceLabel: "Source",
+        reviewsHeading: "Event reviews",
+        lastReviewedPrefix: "Listing sources last reviewed",
         homeBreadcrumb: "Catch",
         organizersBreadcrumb: "Organizers",
       },

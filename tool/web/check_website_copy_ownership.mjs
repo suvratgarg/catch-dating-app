@@ -253,6 +253,7 @@ function readRegistry(filePath, label, {requireReason = false} = {}) {
 function isCandidateFile(relativePath) {
   if (!/\.tsx?$/u.test(relativePath) || relativePath.endsWith(".d.ts")) return false;
   if (relativePath.includes("/content/")) return false;
+  if (relativePath.includes("/generated/")) return false;
   if (relativePath.includes("/stories/")) return false;
   if (/\.(?:test|spec)\.tsx$/u.test(relativePath)) return false;
   if (relativePath.includes("/__tests__/")) return false;

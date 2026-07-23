@@ -2,18 +2,13 @@ import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {onRequest} from "firebase-functions/v2/https";
 import {checkIpRateLimit} from "../shared/rateLimit";
-
-interface JoinWaitlistBody {
-  fullName?: unknown;
-  email?: unknown;
-  city?: unknown;
-  role?: unknown;
-  instagram?: unknown;
-  website?: unknown;
-  hostApplication?: unknown;
-  attribution?: unknown;
-  analytics?: unknown;
-}
+import type {JoinWaitlistHTTPResponse} from
+  "../shared/generated/joinWaitlistHttpResponse";
+import {
+  schemaErrorMessages,
+  validateJoinWaitlistHTTPRequest,
+  validateJoinWaitlistHTTPResponse,
+} from "../shared/generated/schemaValidators";
 
 interface NormalizedMarketingAnalytics {
   consent: Record<string, unknown> | null;
@@ -101,20 +96,39 @@ export function resolveWaitlistCorsOrigin(
  * @param {unknown} rawBody The raw request body.
  * @return {JoinWaitlistBody} The parsed body.
  */
-function parseBody(rawBody: unknown): JoinWaitlistBody {
+function parseBody(rawBody: unknown): Record<string, unknown> {
   if (typeof rawBody === "string" && rawBody.trim()) {
     try {
-      return JSON.parse(rawBody) as JoinWaitlistBody;
+      const parsed: unknown = JSON.parse(rawBody);
+      return isRecord(parsed) ? parsed : {};
     } catch {
       return {};
     }
   }
 
-  if (typeof rawBody === "object" && rawBody !== null) {
-    return rawBody as JoinWaitlistBody;
-  }
+  return isRecord(rawBody) ? rawBody : {};
+}
 
-  return {};
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function sendWaitlistJson(
+  response: {
+    status: (status: number) => {
+      json: (body: JoinWaitlistHTTPResponse) => unknown;
+    };
+  },
+  status: number,
+  body: JoinWaitlistHTTPResponse
+): void {
+  if (!validateJoinWaitlistHTTPResponse(body)) {
+    throw new Error(
+      "joinWaitlist produced an invalid response: " +
+      schemaErrorMessages(validateJoinWaitlistHTTPResponse).join("; ")
+    );
+  }
+  response.status(status).json(body);
 }
 
 /**
@@ -419,7 +433,7 @@ export const joinWaitlist = onRequest(
   {region: "asia-south1"},
   async (request, response) => {
     if (!setCorsHeaders(request, response)) {
-      response.status(403).json({error: "Origin not allowed."});
+      sendWaitlistJson(response, 403, {error: "Origin not allowed."});
       return;
     }
 
@@ -429,7 +443,7 @@ export const joinWaitlist = onRequest(
     }
 
     if (request.method !== "POST") {
-      response.status(405).json({error: "Method not allowed."});
+      sendWaitlistJson(response, 405, {error: "Method not allowed."});
       return;
     }
 
@@ -452,7 +466,7 @@ export const joinWaitlist = onRequest(
       "unknown";
 
     if (!checkIpRateLimit(clientIp)) {
-      response.status(429).json({
+      sendWaitlistJson(response, 429, {
         error: "Too many requests. Please try again later.",
       });
       return;
@@ -460,29 +474,45 @@ export const joinWaitlist = onRequest(
 
     if (honeypot) {
       logger.info("Waitlist honeypot tripped", {email});
-      response.status(200).json({ok: true, alreadyJoined: false});
+      sendWaitlistJson(response, 200, {ok: true, alreadyJoined: false});
       return;
     }
 
     if (fullName.length < 2 || fullName.length > 100) {
-      response.status(400).json({error: "Please enter your full name."});
+      sendWaitlistJson(response, 400, {
+        error: "Please enter your full name.",
+      });
       return;
     }
 
     if (!isValidEmail(email)) {
-      response.status(400).json({error: "Please enter a valid email."});
+      sendWaitlistJson(response, 400, {
+        error: "Please enter a valid email.",
+      });
       return;
     }
 
     if (!isValidCity(city)) {
-      response.status(400).json({
+      sendWaitlistJson(response, 400, {
         error: "Please tell us which city you event in.",
       });
       return;
     }
 
     if (!allowedRoles.has(submittedRole)) {
-      response.status(400).json({error: "Please choose how you're joining."});
+      sendWaitlistJson(response, 400, {
+        error: "Please choose how you're joining.",
+      });
+      return;
+    }
+
+    if (!validateJoinWaitlistHTTPRequest(body)) {
+      logger.warn("Waitlist request failed schema validation", {
+        errors: schemaErrorMessages(validateJoinWaitlistHTTPRequest),
+      });
+      sendWaitlistJson(response, 400, {
+        error: "Please check your submission and try again.",
+      });
       return;
     }
 
@@ -567,7 +597,7 @@ export const joinWaitlist = onRequest(
       alreadyJoined,
     });
 
-    response.status(200).json({
+    sendWaitlistJson(response, 200, {
       ok: true,
       alreadyJoined,
     });

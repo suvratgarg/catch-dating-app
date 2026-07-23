@@ -26,9 +26,10 @@ if (args.selfTest) {
 
 const allowedFeatureImports = new Map([
   ["claims", new Set(["marketing", "organizers"])],
+  ["events", new Set(["marketing", "organizers", "reviews"])],
   ["home", new Set(["marketing", "organizers", "waitlist"])],
   ["host", new Set(["marketing"])],
-  ["organizers", new Set(["claims", "marketing", "reviews"])],
+  ["organizers", new Set(["claims", "events", "marketing", "reviews"])],
   ["reviews", new Set(["organizers"])],
 ]);
 

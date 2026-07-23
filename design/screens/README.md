@@ -22,3 +22,9 @@ The second resolves every Dart source and fails missing symbols, mismatched
 top-bar/state contracts, or increases to the shell-owned nested-Scaffold
 ratchet. New screen contracts must add all three enforcement columns in the
 same change.
+
+Every screen in this registry must also have exactly one decision in
+`design/features/feature_coverage.json`. A screen contract governs composition;
+a feature contract adds state/action/evidence orchestration. Keeping the two
+layers separate prevents a planned feature-contract migration from weakening
+the already-blocking screen and route contracts.

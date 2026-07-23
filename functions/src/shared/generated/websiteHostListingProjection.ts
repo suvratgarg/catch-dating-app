@@ -60,9 +60,13 @@ export interface WebsiteHostListingProjection {
     timeline: "upcoming" | "past";
     startTime: string;
     endTime: string;
+    timezone?: string;
     date: string;
     location: string;
+    locationDetails?: string;
     summary: string;
+    requirements?: string;
+    accessibility?: string;
     capacityLimit: number;
     bookedCount: number;
     checkedInCount: number;
@@ -79,9 +83,13 @@ export interface WebsiteHostListingProjection {
     availability: "read_only_external";
     startTime: string;
     endTime: string | null;
+    timezone?: string;
     date: string;
     location: string;
+    locationDetails?: string;
     summary: string;
+    requirements?: string;
+    accessibility?: string;
     priceLabel: string;
     sourceLabel: string;
     sourceHref: string;
@@ -107,6 +115,7 @@ export interface WebsiteHostListingProjection {
   }[];
   reviews: {
     id: string | null;
+    eventId: string | null;
     reviewerName: string;
     rating: number;
     comment: string;

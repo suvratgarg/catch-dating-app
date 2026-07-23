@@ -499,6 +499,168 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const adminAssignSafetyTriageItemCallablePayloadAssigneeUid = CatchContractFieldConstraints(
+    path: 'adminAssignSafetyTriageItemCallablePayload.assigneeUid',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{3,128}\$',
+  );
+
+  static const adminAssignSafetyTriageItemCallablePayloadNote = CatchContractFieldConstraints(
+    path: 'adminAssignSafetyTriageItemCallablePayload.note',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminAssignSafetyTriageItemCallablePayloadTargetPath = CatchContractFieldConstraints(
+    path: 'adminAssignSafetyTriageItemCallablePayload.targetPath',
+    maxLength: 260,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^(reports|moderationFlags|eventSafetyReports)/[^/]+\$',
+  );
+
+  static const adminAssignSafetyTriageItemCallableResponseAssignmentAssigneeUid = CatchContractFieldConstraints(
+    path: 'adminAssignSafetyTriageItemCallableResponse.assignment.assigneeUid',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{3,128}\$',
+  );
+
+  static const adminAssignSafetyTriageItemCallableResponseAssignmentOwnerTeam = CatchContractFieldConstraints(
+    path: 'adminAssignSafetyTriageItemCallableResponse.assignment.ownerTeam',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminAssignSafetyTriageItemCallableResponseAssignmentQueue = CatchContractFieldConstraints(
+    path: 'adminAssignSafetyTriageItemCallableResponse.assignment.queue',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminAssignSafetyTriageItemCallableResponseAssignmentSeverity = CatchContractFieldConstraints(
+    path: 'adminAssignSafetyTriageItemCallableResponse.assignment.severity',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['high', 'medium', 'watch'],
+  );
+
+  static const adminAssignSafetyTriageItemCallableResponseTargetPath = CatchContractFieldConstraints(
+    path: 'adminAssignSafetyTriageItemCallableResponse.targetPath',
+    maxLength: 260,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^(reports|moderationFlags|eventSafetyReports)/[^/]+\$',
+  );
+
+  static const adminCreateMarketingContentDraftCallablePayloadCityId = CatchContractFieldConstraints(
+    path: 'adminCreateMarketingContentDraftCallablePayload.cityId',
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9-]{2,60}\$',
+  );
+
+  static const adminCreateMarketingContentDraftCallablePayloadDraftType = CatchContractFieldConstraints(
+    path: 'adminCreateMarketingContentDraftCallablePayload.draftType',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['event_highlights', 'feature_explainer'],
+  );
+
+  static const adminCreateMarketingContentDraftCallablePayloadSourceRecommendationSetId = CatchContractFieldConstraints(
+    path: 'adminCreateMarketingContentDraftCallablePayload.sourceRecommendationSetId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminCreateMarketingContentDraftCallablePayloadTitle = CatchContractFieldConstraints(
+    path: 'adminCreateMarketingContentDraftCallablePayload.title',
+    maxLength: 140,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminCreateMarketingContentDraftCallablePayloadWeekStart = CatchContractFieldConstraints(
+    path: 'adminCreateMarketingContentDraftCallablePayload.weekStart',
+    valueTypes: <String>['string'],
+    format: 'date',
+  );
+
+  static const adminCreateMarketingContentDraftCallableResponseBridge = CatchContractFieldConstraints(
+    path: 'adminCreateMarketingContentDraftCallableResponse.bridge',
+    required: true,
+    valueTypes: <String>['object'],
+  );
+
+  static const adminCreateMarketingContentDraftCallableResponseDashboardPath = CatchContractFieldConstraints(
+    path: 'adminCreateMarketingContentDraftCallableResponse.dashboardPath',
+    maxLength: 260,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminCreateMarketingContentDraftCallableResponseDraft = CatchContractFieldConstraints(
+    path: 'adminCreateMarketingContentDraftCallableResponse.draft',
+    required: true,
+    valueTypes: <String>['object'],
+  );
+
+  static const adminDecideAccessApplicationCallablePayloadApplicationUid = CatchContractFieldConstraints(
+    path: 'adminDecideAccessApplicationCallablePayload.applicationUid',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{3,128}\$',
+  );
+
+  static const adminDecideAccessApplicationCallablePayloadCohortId = CatchContractFieldConstraints(
+    path: 'adminDecideAccessApplicationCallablePayload.cohortId',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminDecideAccessApplicationCallablePayloadDecision = CatchContractFieldConstraints(
+    path: 'adminDecideAccessApplicationCallablePayload.decision',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['approve', 'deny'],
+  );
+
+  static const adminDecideAccessApplicationCallablePayloadNote = CatchContractFieldConstraints(
+    path: 'adminDecideAccessApplicationCallablePayload.note',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminDecideAccessApplicationCallableResponseApplicationUid = CatchContractFieldConstraints(
+    path: 'adminDecideAccessApplicationCallableResponse.applicationUid',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{3,128}\$',
+  );
+
+  static const adminDecideAccessApplicationCallableResponseDecision = CatchContractFieldConstraints(
+    path: 'adminDecideAccessApplicationCallableResponse.decision',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['approve', 'deny'],
+  );
+
+  static const adminDecideAccessApplicationCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'adminDecideAccessApplicationCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['approvedForProfile', 'notSelectedYet'],
+  );
+
   static const adminDecideClubClaimCallablePayloadDecision = CatchContractFieldConstraints(
     path: 'adminDecideClubClaimCallablePayload.decision',
     required: true,
@@ -741,6 +903,51 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const adminDecideSafetyTriageItemCallablePayloadDecision = CatchContractFieldConstraints(
+    path: 'adminDecideSafetyTriageItemCallablePayload.decision',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['review', 'dismiss'],
+  );
+
+  static const adminDecideSafetyTriageItemCallablePayloadNote = CatchContractFieldConstraints(
+    path: 'adminDecideSafetyTriageItemCallablePayload.note',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminDecideSafetyTriageItemCallablePayloadTargetPath = CatchContractFieldConstraints(
+    path: 'adminDecideSafetyTriageItemCallablePayload.targetPath',
+    maxLength: 260,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^(reports|moderationFlags|eventSafetyReports)/[^/]+\$',
+  );
+
+  static const adminDecideSafetyTriageItemCallableResponseDecision = CatchContractFieldConstraints(
+    path: 'adminDecideSafetyTriageItemCallableResponse.decision',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['review', 'dismiss'],
+  );
+
+  static const adminDecideSafetyTriageItemCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'adminDecideSafetyTriageItemCallableResponse.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['reviewed', 'dismissed'],
+  );
+
+  static const adminDecideSafetyTriageItemCallableResponseTargetPath = CatchContractFieldConstraints(
+    path: 'adminDecideSafetyTriageItemCallableResponse.targetPath',
+    maxLength: 260,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^(reports|moderationFlags|eventSafetyReports)/[^/]+\$',
+  );
+
   static const adminGetClubDetailsCallablePayloadClubId = CatchContractFieldConstraints(
     path: 'adminGetClubDetailsCallablePayload.clubId',
     maxLength: 180,
@@ -763,6 +970,480 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseDataQuality = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.dataQuality',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+  );
+
+  static const adminGetOverviewCallableResponseDataQualityItemsDetail = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.dataQuality.items.detail',
+    maxLength: 1000,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseDataQualityItemsId = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.dataQuality.items.id',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseDataQualityItemsLabel = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.dataQuality.items.label',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseDataQualityItemsNextAction = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.dataQuality.items.nextAction',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseDataQualityItemsOwner = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.dataQuality.items.owner',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseDataQualityItemsRunbook = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.dataQuality.items.runbook',
+    maxLength: 260,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseDataQualityItemsState = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.dataQuality.items.state',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['ok', 'warning', 'blocked'],
+  );
+
+  static const adminGetOverviewCallableResponseGeneratedAt = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.generatedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminGetOverviewCallableResponseMetrics = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.metrics',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+  );
+
+  static const adminGetOverviewCallableResponseMetricsItemsId = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.metrics.items.id',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseMetricsItemsLabel = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.metrics.items.label',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseMetricsItemsUnit = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.metrics.items.unit',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseMetricsItemsValue = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.metrics.items.value',
+    required: true,
+    valueTypes: <String>['number'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesAccessApplications = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.accessApplications',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesAccessApplicationsItemsCreatedAt = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.accessApplications.items.createdAt',
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminGetOverviewCallableResponseQueuesAccessApplicationsItemsDetail = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.accessApplications.items.detail',
+    maxLength: 1000,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesAccessApplicationsItemsId = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.accessApplications.items.id',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesAccessApplicationsItemsStatus = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.accessApplications.items.status',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesAccessApplicationsItemsTargetPath = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.accessApplications.items.targetPath',
+    maxLength: 260,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesAccessApplicationsItemsTitle = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.accessApplications.items.title',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesClubClaimRequests = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.clubClaimRequests',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsCreatedAt = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.createdAt',
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsDetail = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.detail',
+    maxLength: 1000,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsId = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.id',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsStatus = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.status',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsTargetPath = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.targetPath',
+    maxLength: 260,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsTitle = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.title',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesClubIndexReviews = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.clubIndexReviews',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsCreatedAt = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.createdAt',
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsDetail = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.detail',
+    maxLength: 1000,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsId = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.id',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsStatus = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.status',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsTargetPath = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.targetPath',
+    maxLength: 260,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsTitle = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.title',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesEventSafetyReports = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.eventSafetyReports',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesEventSafetyReportsItemsCreatedAt = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.eventSafetyReports.items.createdAt',
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminGetOverviewCallableResponseQueuesEventSafetyReportsItemsDetail = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.eventSafetyReports.items.detail',
+    maxLength: 1000,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesEventSafetyReportsItemsId = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.eventSafetyReports.items.id',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesEventSafetyReportsItemsStatus = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.eventSafetyReports.items.status',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesEventSafetyReportsItemsTargetPath = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.eventSafetyReports.items.targetPath',
+    maxLength: 260,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesEventSafetyReportsItemsTitle = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.eventSafetyReports.items.title',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesModerationFlags = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.moderationFlags',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesModerationFlagsItemsCreatedAt = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.moderationFlags.items.createdAt',
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminGetOverviewCallableResponseQueuesModerationFlagsItemsDetail = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.moderationFlags.items.detail',
+    maxLength: 1000,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesModerationFlagsItemsId = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.moderationFlags.items.id',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesModerationFlagsItemsStatus = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.moderationFlags.items.status',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesModerationFlagsItemsTargetPath = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.moderationFlags.items.targetPath',
+    maxLength: 260,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesModerationFlagsItemsTitle = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.moderationFlags.items.title',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesPaymentIssues = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.paymentIssues',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesPaymentIssuesItemsCreatedAt = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.paymentIssues.items.createdAt',
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminGetOverviewCallableResponseQueuesPaymentIssuesItemsDetail = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.paymentIssues.items.detail',
+    maxLength: 1000,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesPaymentIssuesItemsId = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.paymentIssues.items.id',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesPaymentIssuesItemsStatus = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.paymentIssues.items.status',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesPaymentIssuesItemsTargetPath = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.paymentIssues.items.targetPath',
+    maxLength: 260,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesPaymentIssuesItemsTitle = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.paymentIssues.items.title',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesSafetyReports = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.safetyReports',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesSafetyReportsItemsCreatedAt = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.safetyReports.items.createdAt',
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminGetOverviewCallableResponseQueuesSafetyReportsItemsDetail = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.safetyReports.items.detail',
+    maxLength: 1000,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesSafetyReportsItemsId = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.safetyReports.items.id',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesSafetyReportsItemsStatus = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.safetyReports.items.status',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesSafetyReportsItemsTargetPath = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.safetyReports.items.targetPath',
+    maxLength: 260,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseQueuesSafetyReportsItemsTitle = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.queues.safetyReports.items.title',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminGetOverviewCallableResponseTimezone = CatchContractFieldConstraints(
+    path: 'adminGetOverviewCallableResponse.timezone',
+    required: true,
   );
 
   static const adminListActionExecutionsCallablePayloadCursor = CatchContractFieldConstraints(
@@ -1233,6 +1914,123 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['source_profile', 'query_template', 'run_plan', 'source_result', 'event_candidate'],
   );
 
+  static const adminRecordMarketingReviewDecisionCallablePayloadChecklistCopyReviewed = CatchContractFieldConstraints(
+    path: 'adminRecordMarketingReviewDecisionCallablePayload.checklist.copyReviewed',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminRecordMarketingReviewDecisionCallablePayloadChecklistDateReviewed = CatchContractFieldConstraints(
+    path: 'adminRecordMarketingReviewDecisionCallablePayload.checklist.dateReviewed',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminRecordMarketingReviewDecisionCallablePayloadChecklistNoCatchHostingImplied = CatchContractFieldConstraints(
+    path: 'adminRecordMarketingReviewDecisionCallablePayload.checklist.noCatchHostingImplied',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminRecordMarketingReviewDecisionCallablePayloadChecklistRightsReviewed = CatchContractFieldConstraints(
+    path: 'adminRecordMarketingReviewDecisionCallablePayload.checklist.rightsReviewed',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminRecordMarketingReviewDecisionCallablePayloadChecklistSourceReviewed = CatchContractFieldConstraints(
+    path: 'adminRecordMarketingReviewDecisionCallablePayload.checklist.sourceReviewed',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminRecordMarketingReviewDecisionCallablePayloadChecklistVenueReviewed = CatchContractFieldConstraints(
+    path: 'adminRecordMarketingReviewDecisionCallablePayload.checklist.venueReviewed',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminRecordMarketingReviewDecisionCallablePayloadDecision = CatchContractFieldConstraints(
+    path: 'adminRecordMarketingReviewDecisionCallablePayload.decision',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['approve', 'needs_changes', 'hold', 'reject', 'export_ready'],
+  );
+
+  static const adminRecordMarketingReviewDecisionCallablePayloadEdits = CatchContractFieldConstraints(
+    path: 'adminRecordMarketingReviewDecisionCallablePayload.edits',
+    valueTypes: <String>['object'],
+  );
+
+  static const adminRecordMarketingReviewDecisionCallablePayloadNote = CatchContractFieldConstraints(
+    path: 'adminRecordMarketingReviewDecisionCallablePayload.note',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminRecordMarketingReviewDecisionCallablePayloadRunId = CatchContractFieldConstraints(
+    path: 'adminRecordMarketingReviewDecisionCallablePayload.runId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminRecordMarketingReviewDecisionCallablePayloadTargetId = CatchContractFieldConstraints(
+    path: 'adminRecordMarketingReviewDecisionCallablePayload.targetId',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminRecordMarketingReviewDecisionCallablePayloadTargetType = CatchContractFieldConstraints(
+    path: 'adminRecordMarketingReviewDecisionCallablePayload.targetType',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['source_profile', 'query_template', 'run_plan', 'source_result', 'event_candidate', 'recommendation_item', 'recommendation_set', 'content_draft'],
+  );
+
+  static const adminRecordMarketingReviewDecisionCallableResponseDecision = CatchContractFieldConstraints(
+    path: 'adminRecordMarketingReviewDecisionCallableResponse.decision',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['approve', 'needs_changes', 'hold', 'reject', 'export_ready'],
+  );
+
+  static const adminRecordMarketingReviewDecisionCallableResponseDecisionId = CatchContractFieldConstraints(
+    path: 'adminRecordMarketingReviewDecisionCallableResponse.decisionId',
+    maxLength: 150,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminRecordMarketingReviewDecisionCallableResponseDecisionPath = CatchContractFieldConstraints(
+    path: 'adminRecordMarketingReviewDecisionCallableResponse.decisionPath',
+    maxLength: 260,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^marketingReviewDecisions/[^/]+\$',
+  );
+
+  static const adminRecordMarketingReviewDecisionCallableResponseDecisionStatus = CatchContractFieldConstraints(
+    path: 'adminRecordMarketingReviewDecisionCallableResponse.decisionStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['approved', 'needs_changes', 'held', 'rejected', 'export_ready'],
+  );
+
+  static const adminRecordMarketingReviewDecisionCallableResponseTargetId = CatchContractFieldConstraints(
+    path: 'adminRecordMarketingReviewDecisionCallableResponse.targetId',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminRecordMarketingReviewDecisionCallableResponseTargetType = CatchContractFieldConstraints(
+    path: 'adminRecordMarketingReviewDecisionCallableResponse.targetType',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['source_profile', 'query_template', 'run_plan', 'source_result', 'event_candidate', 'recommendation_item', 'recommendation_set', 'content_draft'],
+  );
+
   static const adminRecordOrganizerCurationCallablePayloadDecision = CatchContractFieldConstraints(
     path: 'adminRecordOrganizerCurationCallablePayload.decision',
     valueTypes: <String>['string'],
@@ -1513,6 +2311,115 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const adminSetAdminUserRolesCallablePayloadNote = CatchContractFieldConstraints(
+    path: 'adminSetAdminUserRolesCallablePayload.note',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminSetAdminUserRolesCallablePayloadRoles = CatchContractFieldConstraints(
+    path: 'adminSetAdminUserRolesCallablePayload.roles',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer'],
+    uniqueItems: true,
+  );
+
+  static const adminSetAdminUserRolesCallablePayloadRolesItems = CatchContractFieldConstraints(
+    path: 'adminSetAdminUserRolesCallablePayload.roles.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer'],
+  );
+
+  static const adminSetAdminUserRolesCallablePayloadTargetUid = CatchContractFieldConstraints(
+    path: 'adminSetAdminUserRolesCallablePayload.targetUid',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{3,128}\$',
+  );
+
+  static const adminSetAdminUserRolesCallableResponseAfterRoles = CatchContractFieldConstraints(
+    path: 'adminSetAdminUserRolesCallableResponse.afterRoles',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer'],
+    uniqueItems: true,
+  );
+
+  static const adminSetAdminUserRolesCallableResponseAfterRolesItems = CatchContractFieldConstraints(
+    path: 'adminSetAdminUserRolesCallableResponse.afterRoles.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer'],
+  );
+
+  static const adminSetAdminUserRolesCallableResponseBeforeRoles = CatchContractFieldConstraints(
+    path: 'adminSetAdminUserRolesCallableResponse.beforeRoles',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer'],
+    uniqueItems: true,
+  );
+
+  static const adminSetAdminUserRolesCallableResponseBeforeRolesItems = CatchContractFieldConstraints(
+    path: 'adminSetAdminUserRolesCallableResponse.beforeRoles.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer'],
+  );
+
+  static const adminSetAdminUserRolesCallableResponseUserAssignmentPath = CatchContractFieldConstraints(
+    path: 'adminSetAdminUserRolesCallableResponse.user.assignmentPath',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^adminRoleAssignments/[^/]+\$',
+  );
+
+  static const adminSetAdminUserRolesCallableResponseUserDisabled = CatchContractFieldConstraints(
+    path: 'adminSetAdminUserRolesCallableResponse.user.disabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminSetAdminUserRolesCallableResponseUserDisplayName = CatchContractFieldConstraints(
+    path: 'adminSetAdminUserRolesCallableResponse.user.displayName',
+    valueTypes: <String>['string'],
+  );
+
+  static const adminSetAdminUserRolesCallableResponseUserEmail = CatchContractFieldConstraints(
+    path: 'adminSetAdminUserRolesCallableResponse.user.email',
+    valueTypes: <String>['string'],
+  );
+
+  static const adminSetAdminUserRolesCallableResponseUserRoles = CatchContractFieldConstraints(
+    path: 'adminSetAdminUserRolesCallableResponse.user.roles',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer'],
+    uniqueItems: true,
+  );
+
+  static const adminSetAdminUserRolesCallableResponseUserRolesItems = CatchContractFieldConstraints(
+    path: 'adminSetAdminUserRolesCallableResponse.user.roles.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['admin', 'adminOwner', 'safetyReviewer', 'support', 'finance', 'analyticsViewer'],
+  );
+
+  static const adminSetAdminUserRolesCallableResponseUserTargetUid = CatchContractFieldConstraints(
+    path: 'adminSetAdminUserRolesCallableResponse.user.targetUid',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{3,128}\$',
   );
 
   static const adminSetClubIndexStatusCallablePayloadChecklistCadenceVerified = CatchContractFieldConstraints(
@@ -13695,6 +14602,456 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const joinWaitlistHTTPRequestAnalyticsConsentAnalytics = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.analytics.consent.analytics',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const joinWaitlistHTTPRequestAnalyticsConsentChoice = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.analytics.consent.choice',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['accepted', 'essential'],
+  );
+
+  static const joinWaitlistHTTPRequestAnalyticsConsentMarketing = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.analytics.consent.marketing',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const joinWaitlistHTTPRequestAnalyticsConsentUpdatedAt = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.analytics.consent.updatedAt',
+    maxLength: 80,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const joinWaitlistHTTPRequestAnalyticsEventId = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.analytics.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAnalyticsFormVariant = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.analytics.formVariant',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['member', 'host'],
+  );
+
+  static const joinWaitlistHTTPRequestAnalyticsPagePath = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.analytics.pagePath',
+    maxLength: 512,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAnalyticsPageTitle = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.analytics.pageTitle',
+    maxLength: 240,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAnalyticsSubmittedAt = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.analytics.submittedAt',
+    maxLength: 80,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const joinWaitlistHTTPRequestAttributionFirstTouchCapturedAt = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.firstTouch.capturedAt',
+    maxLength: 80,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const joinWaitlistHTTPRequestAttributionFirstTouchLandingPath = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.firstTouch.landingPath',
+    maxLength: 512,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionFirstTouchLandingUrl = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.firstTouch.landingUrl',
+    maxLength: 1024,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionFirstTouchReferrer = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.firstTouch.referrer',
+    maxLength: 1024,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionFirstTouchValuesFbclid = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.firstTouch.values.fbclid',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionFirstTouchValuesGbraid = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.firstTouch.values.gbraid',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionFirstTouchValuesGclid = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.firstTouch.values.gclid',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionFirstTouchValuesLiFatId = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.firstTouch.values.li_fat_id',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionFirstTouchValuesMsclkid = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.firstTouch.values.msclkid',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionFirstTouchValuesRdtCid = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.firstTouch.values.rdt_cid',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionFirstTouchValuesTtclid = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.firstTouch.values.ttclid',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionFirstTouchValuesUtmCampaign = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.firstTouch.values.utm_campaign',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionFirstTouchValuesUtmContent = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.firstTouch.values.utm_content',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionFirstTouchValuesUtmMedium = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.firstTouch.values.utm_medium',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionFirstTouchValuesUtmSource = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.firstTouch.values.utm_source',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionFirstTouchValuesUtmTerm = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.firstTouch.values.utm_term',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionFirstTouchValuesWbraid = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.firstTouch.values.wbraid',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionLastTouchCapturedAt = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.lastTouch.capturedAt',
+    maxLength: 80,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const joinWaitlistHTTPRequestAttributionLastTouchLandingPath = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.lastTouch.landingPath',
+    maxLength: 512,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionLastTouchLandingUrl = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.lastTouch.landingUrl',
+    maxLength: 1024,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionLastTouchReferrer = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.lastTouch.referrer',
+    maxLength: 1024,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionLastTouchValuesFbclid = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.lastTouch.values.fbclid',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionLastTouchValuesGbraid = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.lastTouch.values.gbraid',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionLastTouchValuesGclid = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.lastTouch.values.gclid',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionLastTouchValuesLiFatId = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.lastTouch.values.li_fat_id',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionLastTouchValuesMsclkid = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.lastTouch.values.msclkid',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionLastTouchValuesRdtCid = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.lastTouch.values.rdt_cid',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionLastTouchValuesTtclid = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.lastTouch.values.ttclid',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionLastTouchValuesUtmCampaign = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.lastTouch.values.utm_campaign',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionLastTouchValuesUtmContent = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.lastTouch.values.utm_content',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionLastTouchValuesUtmMedium = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.lastTouch.values.utm_medium',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionLastTouchValuesUtmSource = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.lastTouch.values.utm_source',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionLastTouchValuesUtmTerm = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.lastTouch.values.utm_term',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestAttributionLastTouchValuesWbraid = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.attribution.lastTouch.values.wbraid',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestCity = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.city',
+    maxLength: 80,
+    minLength: 2,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestEmail = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.email',
+    maxLength: 320,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'email',
+  );
+
+  static const joinWaitlistHTTPRequestFullName = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.fullName',
+    maxLength: 100,
+    minLength: 2,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestHostApplicationAdmissionModel = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.admissionModel',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestHostApplicationCommunityLink = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.communityLink',
+    maxLength: 512,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestHostApplicationEventCadence = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.eventCadence',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestHostApplicationEventLocation = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.eventLocation',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestHostApplicationEventSuccessModules = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.eventSuccessModules',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 16,
+    uniqueItems: true,
+  );
+
+  static const joinWaitlistHTTPRequestHostApplicationEventSuccessModulesItems = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.eventSuccessModules.items',
+    maxLength: 120,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestHostApplicationExpectedCapacity = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.expectedCapacity',
+    maxLength: 40,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestHostApplicationFormats = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.formats',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 10,
+    uniqueItems: true,
+  );
+
+  static const joinWaitlistHTTPRequestHostApplicationFormatsItems = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.formats.items',
+    maxLength: 80,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestHostApplicationHostGoals = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.hostGoals',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestHostApplicationNextEventDate = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.nextEventDate',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestHostApplicationNextEventName = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.nextEventName',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestHostApplicationOperatingCity = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.operatingCity',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestHostApplicationOperatingNotes = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.operatingNotes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestHostApplicationOrganizationName = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.organizationName',
+    maxLength: 140,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestHostApplicationOrganizationType = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.organizationType',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestHostApplicationPaymentReadiness = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.paymentReadiness',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestHostApplicationPriceRange = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.priceRange',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestHostApplicationWaitlistPlan = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.waitlistPlan',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestInstagram = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.instagram',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestRole = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.role',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['member', 'runner', 'host', 'both'],
+  );
+
+  static const joinWaitlistHTTPRequestWebsite = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.website',
+    maxLength: 512,
+    valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPResponseAlreadyJoined = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPResponse.alreadyJoined',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const joinWaitlistHTTPResponseOk = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPResponse.ok',
+    required: true,
+  );
+
   static const listPublicClubReviewsCallablePayloadClubId = CatchContractFieldConstraints(
     path: 'listPublicClubReviewsCallablePayload.clubId',
     maxLength: 180,
@@ -23852,6 +25209,11 @@ abstract final class CatchContractConstraints {
     itemValueTypes: <String>['object'],
   );
 
+  static const websiteHostListingProjectionCatchEventsItemsAccessibility = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.accessibility',
+    valueTypes: <String>['string'],
+  );
+
   static const websiteHostListingProjectionCatchEventsItemsActivityKind = CatchContractFieldConstraints(
     path: 'websiteHostListingProjection.catchEvents.items.activityKind',
     minLength: 1,
@@ -23908,10 +25270,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const websiteHostListingProjectionCatchEventsItemsLocationDetails = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.locationDetails',
+    valueTypes: <String>['string'],
+  );
+
   static const websiteHostListingProjectionCatchEventsItemsPriceLabel = CatchContractFieldConstraints(
     path: 'websiteHostListingProjection.catchEvents.items.priceLabel',
     minLength: 1,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsRequirements = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.requirements',
     valueTypes: <String>['string'],
   );
 
@@ -23945,6 +25317,13 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['upcoming', 'past'],
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsTimezone = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.timezone',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const websiteHostListingProjectionCatchEventsItemsTitle = CatchContractFieldConstraints(
@@ -24126,6 +25505,11 @@ abstract final class CatchContractConstraints {
     itemValueTypes: <String>['object'],
   );
 
+  static const websiteHostListingProjectionExternalEventsItemsAccessibility = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.externalEvents.items.accessibility',
+    valueTypes: <String>['string'],
+  );
+
   static const websiteHostListingProjectionExternalEventsItemsActivityKind = CatchContractFieldConstraints(
     path: 'websiteHostListingProjection.externalEvents.items.activityKind',
     minLength: 1,
@@ -24180,10 +25564,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const websiteHostListingProjectionExternalEventsItemsLocationDetails = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.externalEvents.items.locationDetails',
+    valueTypes: <String>['string'],
+  );
+
   static const websiteHostListingProjectionExternalEventsItemsPriceLabel = CatchContractFieldConstraints(
     path: 'websiteHostListingProjection.externalEvents.items.priceLabel',
     minLength: 1,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const websiteHostListingProjectionExternalEventsItemsRequirements = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.externalEvents.items.requirements',
     valueTypes: <String>['string'],
   );
 
@@ -24210,6 +25604,13 @@ abstract final class CatchContractConstraints {
 
   static const websiteHostListingProjectionExternalEventsItemsSummary = CatchContractFieldConstraints(
     path: 'websiteHostListingProjection.externalEvents.items.summary',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const websiteHostListingProjectionExternalEventsItemsTimezone = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.externalEvents.items.timezone',
+    minLength: 1,
     required: true,
     valueTypes: <String>['string'],
   );
@@ -24464,6 +25865,11 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const websiteHostListingProjectionReviewsItemsEventId = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.reviews.items.eventId',
+    valueTypes: <String>['string'],
+  );
+
   static const websiteHostListingProjectionReviewsItemsId = CatchContractFieldConstraints(
     path: 'websiteHostListingProjection.reviews.items.id',
     valueTypes: <String>['string'],
@@ -24669,6 +26075,29 @@ abstract final class CatchContractConstraints {
     'addOrganizerManagerCallablePayload.organizerId': addOrganizerManagerCallablePayloadOrganizerId,
     'addOrganizerManagerCallablePayload.phoneNumber': addOrganizerManagerCallablePayloadPhoneNumber,
     'addOrganizerManagerCallablePayload.uid': addOrganizerManagerCallablePayloadUid,
+    'adminAssignSafetyTriageItemCallablePayload.assigneeUid': adminAssignSafetyTriageItemCallablePayloadAssigneeUid,
+    'adminAssignSafetyTriageItemCallablePayload.note': adminAssignSafetyTriageItemCallablePayloadNote,
+    'adminAssignSafetyTriageItemCallablePayload.targetPath': adminAssignSafetyTriageItemCallablePayloadTargetPath,
+    'adminAssignSafetyTriageItemCallableResponse.assignment.assigneeUid': adminAssignSafetyTriageItemCallableResponseAssignmentAssigneeUid,
+    'adminAssignSafetyTriageItemCallableResponse.assignment.ownerTeam': adminAssignSafetyTriageItemCallableResponseAssignmentOwnerTeam,
+    'adminAssignSafetyTriageItemCallableResponse.assignment.queue': adminAssignSafetyTriageItemCallableResponseAssignmentQueue,
+    'adminAssignSafetyTriageItemCallableResponse.assignment.severity': adminAssignSafetyTriageItemCallableResponseAssignmentSeverity,
+    'adminAssignSafetyTriageItemCallableResponse.targetPath': adminAssignSafetyTriageItemCallableResponseTargetPath,
+    'adminCreateMarketingContentDraftCallablePayload.cityId': adminCreateMarketingContentDraftCallablePayloadCityId,
+    'adminCreateMarketingContentDraftCallablePayload.draftType': adminCreateMarketingContentDraftCallablePayloadDraftType,
+    'adminCreateMarketingContentDraftCallablePayload.sourceRecommendationSetId': adminCreateMarketingContentDraftCallablePayloadSourceRecommendationSetId,
+    'adminCreateMarketingContentDraftCallablePayload.title': adminCreateMarketingContentDraftCallablePayloadTitle,
+    'adminCreateMarketingContentDraftCallablePayload.weekStart': adminCreateMarketingContentDraftCallablePayloadWeekStart,
+    'adminCreateMarketingContentDraftCallableResponse.bridge': adminCreateMarketingContentDraftCallableResponseBridge,
+    'adminCreateMarketingContentDraftCallableResponse.dashboardPath': adminCreateMarketingContentDraftCallableResponseDashboardPath,
+    'adminCreateMarketingContentDraftCallableResponse.draft': adminCreateMarketingContentDraftCallableResponseDraft,
+    'adminDecideAccessApplicationCallablePayload.applicationUid': adminDecideAccessApplicationCallablePayloadApplicationUid,
+    'adminDecideAccessApplicationCallablePayload.cohortId': adminDecideAccessApplicationCallablePayloadCohortId,
+    'adminDecideAccessApplicationCallablePayload.decision': adminDecideAccessApplicationCallablePayloadDecision,
+    'adminDecideAccessApplicationCallablePayload.note': adminDecideAccessApplicationCallablePayloadNote,
+    'adminDecideAccessApplicationCallableResponse.applicationUid': adminDecideAccessApplicationCallableResponseApplicationUid,
+    'adminDecideAccessApplicationCallableResponse.decision': adminDecideAccessApplicationCallableResponseDecision,
+    'adminDecideAccessApplicationCallableResponse.status': adminDecideAccessApplicationCallableResponseStatus,
     'adminDecideClubClaimCallablePayload.decision': adminDecideClubClaimCallablePayloadDecision,
     'adminDecideClubClaimCallablePayload.decisionReason': adminDecideClubClaimCallablePayloadDecisionReason,
     'adminDecideClubClaimCallablePayload.requestId': adminDecideClubClaimCallablePayloadRequestId,
@@ -24705,9 +26134,79 @@ abstract final class CatchContractConstraints {
     'adminDecideOrganizerPolicyGapCallablePayload.note': adminDecideOrganizerPolicyGapCallablePayloadNote,
     'adminDecideOrganizerPolicyGapCallablePayload.requiredInputsReviewed': adminDecideOrganizerPolicyGapCallablePayloadRequiredInputsReviewed,
     'adminDecideOrganizerPolicyGapCallablePayload.requiredInputsReviewed.items': adminDecideOrganizerPolicyGapCallablePayloadRequiredInputsReviewedItems,
+    'adminDecideSafetyTriageItemCallablePayload.decision': adminDecideSafetyTriageItemCallablePayloadDecision,
+    'adminDecideSafetyTriageItemCallablePayload.note': adminDecideSafetyTriageItemCallablePayloadNote,
+    'adminDecideSafetyTriageItemCallablePayload.targetPath': adminDecideSafetyTriageItemCallablePayloadTargetPath,
+    'adminDecideSafetyTriageItemCallableResponse.decision': adminDecideSafetyTriageItemCallableResponseDecision,
+    'adminDecideSafetyTriageItemCallableResponse.status': adminDecideSafetyTriageItemCallableResponseStatus,
+    'adminDecideSafetyTriageItemCallableResponse.targetPath': adminDecideSafetyTriageItemCallableResponseTargetPath,
     'adminGetClubDetailsCallablePayload.clubId': adminGetClubDetailsCallablePayloadClubId,
     'adminGetEventDetailsCallablePayload.eventId': adminGetEventDetailsCallablePayloadEventId,
     'adminGetOrganizerDetailsCallablePayload.organizerId': adminGetOrganizerDetailsCallablePayloadOrganizerId,
+    'adminGetOverviewCallableResponse.dataQuality': adminGetOverviewCallableResponseDataQuality,
+    'adminGetOverviewCallableResponse.dataQuality.items.detail': adminGetOverviewCallableResponseDataQualityItemsDetail,
+    'adminGetOverviewCallableResponse.dataQuality.items.id': adminGetOverviewCallableResponseDataQualityItemsId,
+    'adminGetOverviewCallableResponse.dataQuality.items.label': adminGetOverviewCallableResponseDataQualityItemsLabel,
+    'adminGetOverviewCallableResponse.dataQuality.items.nextAction': adminGetOverviewCallableResponseDataQualityItemsNextAction,
+    'adminGetOverviewCallableResponse.dataQuality.items.owner': adminGetOverviewCallableResponseDataQualityItemsOwner,
+    'adminGetOverviewCallableResponse.dataQuality.items.runbook': adminGetOverviewCallableResponseDataQualityItemsRunbook,
+    'adminGetOverviewCallableResponse.dataQuality.items.state': adminGetOverviewCallableResponseDataQualityItemsState,
+    'adminGetOverviewCallableResponse.generatedAt': adminGetOverviewCallableResponseGeneratedAt,
+    'adminGetOverviewCallableResponse.metrics': adminGetOverviewCallableResponseMetrics,
+    'adminGetOverviewCallableResponse.metrics.items.id': adminGetOverviewCallableResponseMetricsItemsId,
+    'adminGetOverviewCallableResponse.metrics.items.label': adminGetOverviewCallableResponseMetricsItemsLabel,
+    'adminGetOverviewCallableResponse.metrics.items.unit': adminGetOverviewCallableResponseMetricsItemsUnit,
+    'adminGetOverviewCallableResponse.metrics.items.value': adminGetOverviewCallableResponseMetricsItemsValue,
+    'adminGetOverviewCallableResponse.queues.accessApplications': adminGetOverviewCallableResponseQueuesAccessApplications,
+    'adminGetOverviewCallableResponse.queues.accessApplications.items.createdAt': adminGetOverviewCallableResponseQueuesAccessApplicationsItemsCreatedAt,
+    'adminGetOverviewCallableResponse.queues.accessApplications.items.detail': adminGetOverviewCallableResponseQueuesAccessApplicationsItemsDetail,
+    'adminGetOverviewCallableResponse.queues.accessApplications.items.id': adminGetOverviewCallableResponseQueuesAccessApplicationsItemsId,
+    'adminGetOverviewCallableResponse.queues.accessApplications.items.status': adminGetOverviewCallableResponseQueuesAccessApplicationsItemsStatus,
+    'adminGetOverviewCallableResponse.queues.accessApplications.items.targetPath': adminGetOverviewCallableResponseQueuesAccessApplicationsItemsTargetPath,
+    'adminGetOverviewCallableResponse.queues.accessApplications.items.title': adminGetOverviewCallableResponseQueuesAccessApplicationsItemsTitle,
+    'adminGetOverviewCallableResponse.queues.clubClaimRequests': adminGetOverviewCallableResponseQueuesClubClaimRequests,
+    'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.createdAt': adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsCreatedAt,
+    'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.detail': adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsDetail,
+    'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.id': adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsId,
+    'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.status': adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsStatus,
+    'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.targetPath': adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsTargetPath,
+    'adminGetOverviewCallableResponse.queues.clubClaimRequests.items.title': adminGetOverviewCallableResponseQueuesClubClaimRequestsItemsTitle,
+    'adminGetOverviewCallableResponse.queues.clubIndexReviews': adminGetOverviewCallableResponseQueuesClubIndexReviews,
+    'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.createdAt': adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsCreatedAt,
+    'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.detail': adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsDetail,
+    'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.id': adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsId,
+    'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.status': adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsStatus,
+    'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.targetPath': adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsTargetPath,
+    'adminGetOverviewCallableResponse.queues.clubIndexReviews.items.title': adminGetOverviewCallableResponseQueuesClubIndexReviewsItemsTitle,
+    'adminGetOverviewCallableResponse.queues.eventSafetyReports': adminGetOverviewCallableResponseQueuesEventSafetyReports,
+    'adminGetOverviewCallableResponse.queues.eventSafetyReports.items.createdAt': adminGetOverviewCallableResponseQueuesEventSafetyReportsItemsCreatedAt,
+    'adminGetOverviewCallableResponse.queues.eventSafetyReports.items.detail': adminGetOverviewCallableResponseQueuesEventSafetyReportsItemsDetail,
+    'adminGetOverviewCallableResponse.queues.eventSafetyReports.items.id': adminGetOverviewCallableResponseQueuesEventSafetyReportsItemsId,
+    'adminGetOverviewCallableResponse.queues.eventSafetyReports.items.status': adminGetOverviewCallableResponseQueuesEventSafetyReportsItemsStatus,
+    'adminGetOverviewCallableResponse.queues.eventSafetyReports.items.targetPath': adminGetOverviewCallableResponseQueuesEventSafetyReportsItemsTargetPath,
+    'adminGetOverviewCallableResponse.queues.eventSafetyReports.items.title': adminGetOverviewCallableResponseQueuesEventSafetyReportsItemsTitle,
+    'adminGetOverviewCallableResponse.queues.moderationFlags': adminGetOverviewCallableResponseQueuesModerationFlags,
+    'adminGetOverviewCallableResponse.queues.moderationFlags.items.createdAt': adminGetOverviewCallableResponseQueuesModerationFlagsItemsCreatedAt,
+    'adminGetOverviewCallableResponse.queues.moderationFlags.items.detail': adminGetOverviewCallableResponseQueuesModerationFlagsItemsDetail,
+    'adminGetOverviewCallableResponse.queues.moderationFlags.items.id': adminGetOverviewCallableResponseQueuesModerationFlagsItemsId,
+    'adminGetOverviewCallableResponse.queues.moderationFlags.items.status': adminGetOverviewCallableResponseQueuesModerationFlagsItemsStatus,
+    'adminGetOverviewCallableResponse.queues.moderationFlags.items.targetPath': adminGetOverviewCallableResponseQueuesModerationFlagsItemsTargetPath,
+    'adminGetOverviewCallableResponse.queues.moderationFlags.items.title': adminGetOverviewCallableResponseQueuesModerationFlagsItemsTitle,
+    'adminGetOverviewCallableResponse.queues.paymentIssues': adminGetOverviewCallableResponseQueuesPaymentIssues,
+    'adminGetOverviewCallableResponse.queues.paymentIssues.items.createdAt': adminGetOverviewCallableResponseQueuesPaymentIssuesItemsCreatedAt,
+    'adminGetOverviewCallableResponse.queues.paymentIssues.items.detail': adminGetOverviewCallableResponseQueuesPaymentIssuesItemsDetail,
+    'adminGetOverviewCallableResponse.queues.paymentIssues.items.id': adminGetOverviewCallableResponseQueuesPaymentIssuesItemsId,
+    'adminGetOverviewCallableResponse.queues.paymentIssues.items.status': adminGetOverviewCallableResponseQueuesPaymentIssuesItemsStatus,
+    'adminGetOverviewCallableResponse.queues.paymentIssues.items.targetPath': adminGetOverviewCallableResponseQueuesPaymentIssuesItemsTargetPath,
+    'adminGetOverviewCallableResponse.queues.paymentIssues.items.title': adminGetOverviewCallableResponseQueuesPaymentIssuesItemsTitle,
+    'adminGetOverviewCallableResponse.queues.safetyReports': adminGetOverviewCallableResponseQueuesSafetyReports,
+    'adminGetOverviewCallableResponse.queues.safetyReports.items.createdAt': adminGetOverviewCallableResponseQueuesSafetyReportsItemsCreatedAt,
+    'adminGetOverviewCallableResponse.queues.safetyReports.items.detail': adminGetOverviewCallableResponseQueuesSafetyReportsItemsDetail,
+    'adminGetOverviewCallableResponse.queues.safetyReports.items.id': adminGetOverviewCallableResponseQueuesSafetyReportsItemsId,
+    'adminGetOverviewCallableResponse.queues.safetyReports.items.status': adminGetOverviewCallableResponseQueuesSafetyReportsItemsStatus,
+    'adminGetOverviewCallableResponse.queues.safetyReports.items.targetPath': adminGetOverviewCallableResponseQueuesSafetyReportsItemsTargetPath,
+    'adminGetOverviewCallableResponse.queues.safetyReports.items.title': adminGetOverviewCallableResponseQueuesSafetyReportsItemsTitle,
+    'adminGetOverviewCallableResponse.timezone': adminGetOverviewCallableResponseTimezone,
     'adminListActionExecutionsCallablePayload.cursor': adminListActionExecutionsCallablePayloadCursor,
     'adminListActionExecutionsCallablePayload.limit': adminListActionExecutionsCallablePayloadLimit,
     'adminListClubDetailsCallablePayload.appVisibility': adminListClubDetailsCallablePayloadAppVisibility,
@@ -24778,6 +26277,24 @@ abstract final class CatchContractConstraints {
     'adminRecordEventIntakeReviewDecisionCallablePayload.runId': adminRecordEventIntakeReviewDecisionCallablePayloadRunId,
     'adminRecordEventIntakeReviewDecisionCallablePayload.targetId': adminRecordEventIntakeReviewDecisionCallablePayloadTargetId,
     'adminRecordEventIntakeReviewDecisionCallablePayload.targetType': adminRecordEventIntakeReviewDecisionCallablePayloadTargetType,
+    'adminRecordMarketingReviewDecisionCallablePayload.checklist.copyReviewed': adminRecordMarketingReviewDecisionCallablePayloadChecklistCopyReviewed,
+    'adminRecordMarketingReviewDecisionCallablePayload.checklist.dateReviewed': adminRecordMarketingReviewDecisionCallablePayloadChecklistDateReviewed,
+    'adminRecordMarketingReviewDecisionCallablePayload.checklist.noCatchHostingImplied': adminRecordMarketingReviewDecisionCallablePayloadChecklistNoCatchHostingImplied,
+    'adminRecordMarketingReviewDecisionCallablePayload.checklist.rightsReviewed': adminRecordMarketingReviewDecisionCallablePayloadChecklistRightsReviewed,
+    'adminRecordMarketingReviewDecisionCallablePayload.checklist.sourceReviewed': adminRecordMarketingReviewDecisionCallablePayloadChecklistSourceReviewed,
+    'adminRecordMarketingReviewDecisionCallablePayload.checklist.venueReviewed': adminRecordMarketingReviewDecisionCallablePayloadChecklistVenueReviewed,
+    'adminRecordMarketingReviewDecisionCallablePayload.decision': adminRecordMarketingReviewDecisionCallablePayloadDecision,
+    'adminRecordMarketingReviewDecisionCallablePayload.edits': adminRecordMarketingReviewDecisionCallablePayloadEdits,
+    'adminRecordMarketingReviewDecisionCallablePayload.note': adminRecordMarketingReviewDecisionCallablePayloadNote,
+    'adminRecordMarketingReviewDecisionCallablePayload.runId': adminRecordMarketingReviewDecisionCallablePayloadRunId,
+    'adminRecordMarketingReviewDecisionCallablePayload.targetId': adminRecordMarketingReviewDecisionCallablePayloadTargetId,
+    'adminRecordMarketingReviewDecisionCallablePayload.targetType': adminRecordMarketingReviewDecisionCallablePayloadTargetType,
+    'adminRecordMarketingReviewDecisionCallableResponse.decision': adminRecordMarketingReviewDecisionCallableResponseDecision,
+    'adminRecordMarketingReviewDecisionCallableResponse.decisionId': adminRecordMarketingReviewDecisionCallableResponseDecisionId,
+    'adminRecordMarketingReviewDecisionCallableResponse.decisionPath': adminRecordMarketingReviewDecisionCallableResponseDecisionPath,
+    'adminRecordMarketingReviewDecisionCallableResponse.decisionStatus': adminRecordMarketingReviewDecisionCallableResponseDecisionStatus,
+    'adminRecordMarketingReviewDecisionCallableResponse.targetId': adminRecordMarketingReviewDecisionCallableResponseTargetId,
+    'adminRecordMarketingReviewDecisionCallableResponse.targetType': adminRecordMarketingReviewDecisionCallableResponseTargetType,
     'adminRecordOrganizerCurationCallablePayload.decision': adminRecordOrganizerCurationCallablePayloadDecision,
     'adminRecordOrganizerCurationCallablePayload.entityId': adminRecordOrganizerCurationCallablePayloadEntityId,
     'adminRecordOrganizerCurationCallablePayload.newEntityId': adminRecordOrganizerCurationCallablePayloadNewEntityId,
@@ -24818,6 +26335,21 @@ abstract final class CatchContractConstraints {
     'adminResolveOrganizerEventLocationCallablePayload.location.notes': adminResolveOrganizerEventLocationCallablePayloadLocationNotes,
     'adminResolveOrganizerEventLocationCallablePayload.location.placeId': adminResolveOrganizerEventLocationCallablePayloadLocationPlaceId,
     'adminResolveOrganizerEventLocationCallablePayload.note': adminResolveOrganizerEventLocationCallablePayloadNote,
+    'adminSetAdminUserRolesCallablePayload.note': adminSetAdminUserRolesCallablePayloadNote,
+    'adminSetAdminUserRolesCallablePayload.roles': adminSetAdminUserRolesCallablePayloadRoles,
+    'adminSetAdminUserRolesCallablePayload.roles.items': adminSetAdminUserRolesCallablePayloadRolesItems,
+    'adminSetAdminUserRolesCallablePayload.targetUid': adminSetAdminUserRolesCallablePayloadTargetUid,
+    'adminSetAdminUserRolesCallableResponse.afterRoles': adminSetAdminUserRolesCallableResponseAfterRoles,
+    'adminSetAdminUserRolesCallableResponse.afterRoles.items': adminSetAdminUserRolesCallableResponseAfterRolesItems,
+    'adminSetAdminUserRolesCallableResponse.beforeRoles': adminSetAdminUserRolesCallableResponseBeforeRoles,
+    'adminSetAdminUserRolesCallableResponse.beforeRoles.items': adminSetAdminUserRolesCallableResponseBeforeRolesItems,
+    'adminSetAdminUserRolesCallableResponse.user.assignmentPath': adminSetAdminUserRolesCallableResponseUserAssignmentPath,
+    'adminSetAdminUserRolesCallableResponse.user.disabled': adminSetAdminUserRolesCallableResponseUserDisabled,
+    'adminSetAdminUserRolesCallableResponse.user.displayName': adminSetAdminUserRolesCallableResponseUserDisplayName,
+    'adminSetAdminUserRolesCallableResponse.user.email': adminSetAdminUserRolesCallableResponseUserEmail,
+    'adminSetAdminUserRolesCallableResponse.user.roles': adminSetAdminUserRolesCallableResponseUserRoles,
+    'adminSetAdminUserRolesCallableResponse.user.roles.items': adminSetAdminUserRolesCallableResponseUserRolesItems,
+    'adminSetAdminUserRolesCallableResponse.user.targetUid': adminSetAdminUserRolesCallableResponseUserTargetUid,
     'adminSetClubIndexStatusCallablePayload.checklist.cadenceVerified': adminSetClubIndexStatusCallablePayloadChecklistCadenceVerified,
     'adminSetClubIndexStatusCallablePayload.checklist.mediaRightsVerified': adminSetClubIndexStatusCallablePayloadChecklistMediaRightsVerified,
     'adminSetClubIndexStatusCallablePayload.checklist.ownerContactVerified': adminSetClubIndexStatusCallablePayloadChecklistOwnerContactVerified,
@@ -26512,6 +28044,76 @@ abstract final class CatchContractConstraints {
     'hostProfileDocument.updatedAt._nanoseconds': hostProfileDocumentUpdatedAtNanoseconds,
     'hostProfileDocument.updatedAt._seconds': hostProfileDocumentUpdatedAtSeconds,
     'hostProfileDocument.verified': hostProfileDocumentVerified,
+    'joinWaitlistHTTPRequest.analytics.consent.analytics': joinWaitlistHTTPRequestAnalyticsConsentAnalytics,
+    'joinWaitlistHTTPRequest.analytics.consent.choice': joinWaitlistHTTPRequestAnalyticsConsentChoice,
+    'joinWaitlistHTTPRequest.analytics.consent.marketing': joinWaitlistHTTPRequestAnalyticsConsentMarketing,
+    'joinWaitlistHTTPRequest.analytics.consent.updatedAt': joinWaitlistHTTPRequestAnalyticsConsentUpdatedAt,
+    'joinWaitlistHTTPRequest.analytics.eventId': joinWaitlistHTTPRequestAnalyticsEventId,
+    'joinWaitlistHTTPRequest.analytics.formVariant': joinWaitlistHTTPRequestAnalyticsFormVariant,
+    'joinWaitlistHTTPRequest.analytics.pagePath': joinWaitlistHTTPRequestAnalyticsPagePath,
+    'joinWaitlistHTTPRequest.analytics.pageTitle': joinWaitlistHTTPRequestAnalyticsPageTitle,
+    'joinWaitlistHTTPRequest.analytics.submittedAt': joinWaitlistHTTPRequestAnalyticsSubmittedAt,
+    'joinWaitlistHTTPRequest.attribution.firstTouch.capturedAt': joinWaitlistHTTPRequestAttributionFirstTouchCapturedAt,
+    'joinWaitlistHTTPRequest.attribution.firstTouch.landingPath': joinWaitlistHTTPRequestAttributionFirstTouchLandingPath,
+    'joinWaitlistHTTPRequest.attribution.firstTouch.landingUrl': joinWaitlistHTTPRequestAttributionFirstTouchLandingUrl,
+    'joinWaitlistHTTPRequest.attribution.firstTouch.referrer': joinWaitlistHTTPRequestAttributionFirstTouchReferrer,
+    'joinWaitlistHTTPRequest.attribution.firstTouch.values.fbclid': joinWaitlistHTTPRequestAttributionFirstTouchValuesFbclid,
+    'joinWaitlistHTTPRequest.attribution.firstTouch.values.gbraid': joinWaitlistHTTPRequestAttributionFirstTouchValuesGbraid,
+    'joinWaitlistHTTPRequest.attribution.firstTouch.values.gclid': joinWaitlistHTTPRequestAttributionFirstTouchValuesGclid,
+    'joinWaitlistHTTPRequest.attribution.firstTouch.values.li_fat_id': joinWaitlistHTTPRequestAttributionFirstTouchValuesLiFatId,
+    'joinWaitlistHTTPRequest.attribution.firstTouch.values.msclkid': joinWaitlistHTTPRequestAttributionFirstTouchValuesMsclkid,
+    'joinWaitlistHTTPRequest.attribution.firstTouch.values.rdt_cid': joinWaitlistHTTPRequestAttributionFirstTouchValuesRdtCid,
+    'joinWaitlistHTTPRequest.attribution.firstTouch.values.ttclid': joinWaitlistHTTPRequestAttributionFirstTouchValuesTtclid,
+    'joinWaitlistHTTPRequest.attribution.firstTouch.values.utm_campaign': joinWaitlistHTTPRequestAttributionFirstTouchValuesUtmCampaign,
+    'joinWaitlistHTTPRequest.attribution.firstTouch.values.utm_content': joinWaitlistHTTPRequestAttributionFirstTouchValuesUtmContent,
+    'joinWaitlistHTTPRequest.attribution.firstTouch.values.utm_medium': joinWaitlistHTTPRequestAttributionFirstTouchValuesUtmMedium,
+    'joinWaitlistHTTPRequest.attribution.firstTouch.values.utm_source': joinWaitlistHTTPRequestAttributionFirstTouchValuesUtmSource,
+    'joinWaitlistHTTPRequest.attribution.firstTouch.values.utm_term': joinWaitlistHTTPRequestAttributionFirstTouchValuesUtmTerm,
+    'joinWaitlistHTTPRequest.attribution.firstTouch.values.wbraid': joinWaitlistHTTPRequestAttributionFirstTouchValuesWbraid,
+    'joinWaitlistHTTPRequest.attribution.lastTouch.capturedAt': joinWaitlistHTTPRequestAttributionLastTouchCapturedAt,
+    'joinWaitlistHTTPRequest.attribution.lastTouch.landingPath': joinWaitlistHTTPRequestAttributionLastTouchLandingPath,
+    'joinWaitlistHTTPRequest.attribution.lastTouch.landingUrl': joinWaitlistHTTPRequestAttributionLastTouchLandingUrl,
+    'joinWaitlistHTTPRequest.attribution.lastTouch.referrer': joinWaitlistHTTPRequestAttributionLastTouchReferrer,
+    'joinWaitlistHTTPRequest.attribution.lastTouch.values.fbclid': joinWaitlistHTTPRequestAttributionLastTouchValuesFbclid,
+    'joinWaitlistHTTPRequest.attribution.lastTouch.values.gbraid': joinWaitlistHTTPRequestAttributionLastTouchValuesGbraid,
+    'joinWaitlistHTTPRequest.attribution.lastTouch.values.gclid': joinWaitlistHTTPRequestAttributionLastTouchValuesGclid,
+    'joinWaitlistHTTPRequest.attribution.lastTouch.values.li_fat_id': joinWaitlistHTTPRequestAttributionLastTouchValuesLiFatId,
+    'joinWaitlistHTTPRequest.attribution.lastTouch.values.msclkid': joinWaitlistHTTPRequestAttributionLastTouchValuesMsclkid,
+    'joinWaitlistHTTPRequest.attribution.lastTouch.values.rdt_cid': joinWaitlistHTTPRequestAttributionLastTouchValuesRdtCid,
+    'joinWaitlistHTTPRequest.attribution.lastTouch.values.ttclid': joinWaitlistHTTPRequestAttributionLastTouchValuesTtclid,
+    'joinWaitlistHTTPRequest.attribution.lastTouch.values.utm_campaign': joinWaitlistHTTPRequestAttributionLastTouchValuesUtmCampaign,
+    'joinWaitlistHTTPRequest.attribution.lastTouch.values.utm_content': joinWaitlistHTTPRequestAttributionLastTouchValuesUtmContent,
+    'joinWaitlistHTTPRequest.attribution.lastTouch.values.utm_medium': joinWaitlistHTTPRequestAttributionLastTouchValuesUtmMedium,
+    'joinWaitlistHTTPRequest.attribution.lastTouch.values.utm_source': joinWaitlistHTTPRequestAttributionLastTouchValuesUtmSource,
+    'joinWaitlistHTTPRequest.attribution.lastTouch.values.utm_term': joinWaitlistHTTPRequestAttributionLastTouchValuesUtmTerm,
+    'joinWaitlistHTTPRequest.attribution.lastTouch.values.wbraid': joinWaitlistHTTPRequestAttributionLastTouchValuesWbraid,
+    'joinWaitlistHTTPRequest.city': joinWaitlistHTTPRequestCity,
+    'joinWaitlistHTTPRequest.email': joinWaitlistHTTPRequestEmail,
+    'joinWaitlistHTTPRequest.fullName': joinWaitlistHTTPRequestFullName,
+    'joinWaitlistHTTPRequest.hostApplication.admissionModel': joinWaitlistHTTPRequestHostApplicationAdmissionModel,
+    'joinWaitlistHTTPRequest.hostApplication.communityLink': joinWaitlistHTTPRequestHostApplicationCommunityLink,
+    'joinWaitlistHTTPRequest.hostApplication.eventCadence': joinWaitlistHTTPRequestHostApplicationEventCadence,
+    'joinWaitlistHTTPRequest.hostApplication.eventLocation': joinWaitlistHTTPRequestHostApplicationEventLocation,
+    'joinWaitlistHTTPRequest.hostApplication.eventSuccessModules': joinWaitlistHTTPRequestHostApplicationEventSuccessModules,
+    'joinWaitlistHTTPRequest.hostApplication.eventSuccessModules.items': joinWaitlistHTTPRequestHostApplicationEventSuccessModulesItems,
+    'joinWaitlistHTTPRequest.hostApplication.expectedCapacity': joinWaitlistHTTPRequestHostApplicationExpectedCapacity,
+    'joinWaitlistHTTPRequest.hostApplication.formats': joinWaitlistHTTPRequestHostApplicationFormats,
+    'joinWaitlistHTTPRequest.hostApplication.formats.items': joinWaitlistHTTPRequestHostApplicationFormatsItems,
+    'joinWaitlistHTTPRequest.hostApplication.hostGoals': joinWaitlistHTTPRequestHostApplicationHostGoals,
+    'joinWaitlistHTTPRequest.hostApplication.nextEventDate': joinWaitlistHTTPRequestHostApplicationNextEventDate,
+    'joinWaitlistHTTPRequest.hostApplication.nextEventName': joinWaitlistHTTPRequestHostApplicationNextEventName,
+    'joinWaitlistHTTPRequest.hostApplication.operatingCity': joinWaitlistHTTPRequestHostApplicationOperatingCity,
+    'joinWaitlistHTTPRequest.hostApplication.operatingNotes': joinWaitlistHTTPRequestHostApplicationOperatingNotes,
+    'joinWaitlistHTTPRequest.hostApplication.organizationName': joinWaitlistHTTPRequestHostApplicationOrganizationName,
+    'joinWaitlistHTTPRequest.hostApplication.organizationType': joinWaitlistHTTPRequestHostApplicationOrganizationType,
+    'joinWaitlistHTTPRequest.hostApplication.paymentReadiness': joinWaitlistHTTPRequestHostApplicationPaymentReadiness,
+    'joinWaitlistHTTPRequest.hostApplication.priceRange': joinWaitlistHTTPRequestHostApplicationPriceRange,
+    'joinWaitlistHTTPRequest.hostApplication.waitlistPlan': joinWaitlistHTTPRequestHostApplicationWaitlistPlan,
+    'joinWaitlistHTTPRequest.instagram': joinWaitlistHTTPRequestInstagram,
+    'joinWaitlistHTTPRequest.role': joinWaitlistHTTPRequestRole,
+    'joinWaitlistHTTPRequest.website': joinWaitlistHTTPRequestWebsite,
+    'joinWaitlistHTTPResponse.alreadyJoined': joinWaitlistHTTPResponseAlreadyJoined,
+    'joinWaitlistHTTPResponse.ok': joinWaitlistHTTPResponseOk,
     'listPublicClubReviewsCallablePayload.clubId': listPublicClubReviewsCallablePayloadClubId,
     'listPublicClubReviewsCallableResponse.reviews': listPublicClubReviewsCallableResponseReviews,
     'listPublicClubReviewsCallableResponse.reviews.items.comment': listPublicClubReviewsCallableResponseReviewsItemsComment,
@@ -27928,6 +29530,7 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.capabilities.publicReviews.targetState': websiteHostListingProjectionCapabilitiesPublicReviewsTargetState,
     'websiteHostListingProjection.capabilities.publicReviews.writeState': websiteHostListingProjectionCapabilitiesPublicReviewsWriteState,
     'websiteHostListingProjection.catchEvents': websiteHostListingProjectionCatchEvents,
+    'websiteHostListingProjection.catchEvents.items.accessibility': websiteHostListingProjectionCatchEventsItemsAccessibility,
     'websiteHostListingProjection.catchEvents.items.activityKind': websiteHostListingProjectionCatchEventsItemsActivityKind,
     'websiteHostListingProjection.catchEvents.items.bookedCount': websiteHostListingProjectionCatchEventsItemsBookedCount,
     'websiteHostListingProjection.catchEvents.items.capacityLimit': websiteHostListingProjectionCatchEventsItemsCapacityLimit,
@@ -27936,12 +29539,15 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.catchEvents.items.endTime': websiteHostListingProjectionCatchEventsItemsEndTime,
     'websiteHostListingProjection.catchEvents.items.id': websiteHostListingProjectionCatchEventsItemsId,
     'websiteHostListingProjection.catchEvents.items.location': websiteHostListingProjectionCatchEventsItemsLocation,
+    'websiteHostListingProjection.catchEvents.items.locationDetails': websiteHostListingProjectionCatchEventsItemsLocationDetails,
     'websiteHostListingProjection.catchEvents.items.priceLabel': websiteHostListingProjectionCatchEventsItemsPriceLabel,
+    'websiteHostListingProjection.catchEvents.items.requirements': websiteHostListingProjectionCatchEventsItemsRequirements,
     'websiteHostListingProjection.catchEvents.items.role': websiteHostListingProjectionCatchEventsItemsRole,
     'websiteHostListingProjection.catchEvents.items.scorecard': websiteHostListingProjectionCatchEventsItemsScorecard,
     'websiteHostListingProjection.catchEvents.items.startTime': websiteHostListingProjectionCatchEventsItemsStartTime,
     'websiteHostListingProjection.catchEvents.items.summary': websiteHostListingProjectionCatchEventsItemsSummary,
     'websiteHostListingProjection.catchEvents.items.timeline': websiteHostListingProjectionCatchEventsItemsTimeline,
+    'websiteHostListingProjection.catchEvents.items.timezone': websiteHostListingProjectionCatchEventsItemsTimezone,
     'websiteHostListingProjection.catchEvents.items.title': websiteHostListingProjectionCatchEventsItemsTitle,
     'websiteHostListingProjection.catchEvents.items.waitlistedCount': websiteHostListingProjectionCatchEventsItemsWaitlistedCount,
     'websiteHostListingProjection.category': websiteHostListingProjectionCategory,
@@ -27968,6 +29574,7 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.eventSuccessSummary.mutualMatchCount': websiteHostListingProjectionEventSuccessSummaryMutualMatchCount,
     'websiteHostListingProjection.eventSuccessSummary.safetyIncidentCount': websiteHostListingProjectionEventSuccessSummarySafetyIncidentCount,
     'websiteHostListingProjection.externalEvents': websiteHostListingProjectionExternalEvents,
+    'websiteHostListingProjection.externalEvents.items.accessibility': websiteHostListingProjectionExternalEventsItemsAccessibility,
     'websiteHostListingProjection.externalEvents.items.activityKind': websiteHostListingProjectionExternalEventsItemsActivityKind,
     'websiteHostListingProjection.externalEvents.items.availability': websiteHostListingProjectionExternalEventsItemsAvailability,
     'websiteHostListingProjection.externalEvents.items.date': websiteHostListingProjectionExternalEventsItemsDate,
@@ -27976,11 +29583,14 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.externalEvents.items.externalLinkCount': websiteHostListingProjectionExternalEventsItemsExternalLinkCount,
     'websiteHostListingProjection.externalEvents.items.id': websiteHostListingProjectionExternalEventsItemsId,
     'websiteHostListingProjection.externalEvents.items.location': websiteHostListingProjectionExternalEventsItemsLocation,
+    'websiteHostListingProjection.externalEvents.items.locationDetails': websiteHostListingProjectionExternalEventsItemsLocationDetails,
     'websiteHostListingProjection.externalEvents.items.priceLabel': websiteHostListingProjectionExternalEventsItemsPriceLabel,
+    'websiteHostListingProjection.externalEvents.items.requirements': websiteHostListingProjectionExternalEventsItemsRequirements,
     'websiteHostListingProjection.externalEvents.items.sourceHref': websiteHostListingProjectionExternalEventsItemsSourceHref,
     'websiteHostListingProjection.externalEvents.items.sourceLabel': websiteHostListingProjectionExternalEventsItemsSourceLabel,
     'websiteHostListingProjection.externalEvents.items.startTime': websiteHostListingProjectionExternalEventsItemsStartTime,
     'websiteHostListingProjection.externalEvents.items.summary': websiteHostListingProjectionExternalEventsItemsSummary,
+    'websiteHostListingProjection.externalEvents.items.timezone': websiteHostListingProjectionExternalEventsItemsTimezone,
     'websiteHostListingProjection.externalEvents.items.title': websiteHostListingProjectionExternalEventsItemsTitle,
     'websiteHostListingProjection.facts': websiteHostListingProjectionFacts,
     'websiteHostListingProjection.facts.items.label': websiteHostListingProjectionFactsItemsLabel,
@@ -28018,6 +29628,7 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.reviews': websiteHostListingProjectionReviews,
     'websiteHostListingProjection.reviews.items.comment': websiteHostListingProjectionReviewsItemsComment,
     'websiteHostListingProjection.reviews.items.createdAt': websiteHostListingProjectionReviewsItemsCreatedAt,
+    'websiteHostListingProjection.reviews.items.eventId': websiteHostListingProjectionReviewsItemsEventId,
     'websiteHostListingProjection.reviews.items.id': websiteHostListingProjectionReviewsItemsId,
     'websiteHostListingProjection.reviews.items.isAnonymous': websiteHostListingProjectionReviewsItemsIsAnonymous,
     'websiteHostListingProjection.reviews.items.ownerResponse.hostAvatarUrl': websiteHostListingProjectionReviewsItemsOwnerResponseHostAvatarUrl,

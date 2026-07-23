@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-07-22",
+  "updated": "2026-07-23",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -2052,11 +2052,16 @@
               "status": "closed",
               "nextAction": "Closed by dashboardHomeScreenStateProvider, which owns user/profile/membership/booked-event branch selection, typed retry targets, header copy, followed-club ids, and empty/full selection before DashboardScreen composes sections."
             },
-            {
-              "id": "DP-DASHBOARD-004",
-              "status": "closed",
-              "nextAction": "Closed by Dashboard Home reference export and advisory comparison tooling. Current empty_start comparison after the hero-shell pass is 54.05% mismatch / 59.13 meanDelta, down from the first 58.50% / 76.92 baseline; full_dashboard remains at 28.50% / 36.79 until the populated-state pass."
-            }
+    {
+      "id": "DP-DASHBOARD-004",
+      "status": "closed",
+      "nextAction": "Closed by Dashboard Home reference export and advisory comparison tooling. Current empty_start comparison after the hero-shell pass is 54.05% mismatch / 59.13 meanDelta, down from the first 58.50% / 76.92 baseline; full_dashboard remains at 28.50% / 36.79 until the populated-state pass."
+    },
+    {
+      "id": "DP-DASHBOARD-005",
+      "status": "open",
+      "nextAction": "Add focused state-level tests for profile_error, memberships_error, offline, text_scale_2, reduced_motion, and light_dark; feature.dashboard_home carries these six explicit evidence exceptions while compiling all 19 registered states and 12 Dashboard-owned actions."
+    }
           ]
         }
       ],
@@ -2588,16 +2593,21 @@
               "status": "closed",
               "nextAction": "Closed by companion route loading/error/access/offline, runtime moment, action pending, text-scale, reduced-motion, and paired light/dark captures. Mutation failure/snackbar variants should be added only if product copy diverges from the shared mutation listener behavior."
             },
-            {
-              "id": "DP-EVENT-SUCCESS-COMPANION-003",
-              "status": "closed",
-              "nextAction": "Closed by EventSuccessCompanionScreenState plus provider-free companion action sections. CompatibilityQuestionnaireSection, FirstHelloCheckInCard, SelfCheckInCard, PaperSelfCheckInBar, MicroPodCard, RotationScheduleCard, WingmanRequestSection, and EventSuccessFeedbackForm now receive explicit action state and typed callbacks from EventSuccessCompanionScreen/EventSuccessCompanionRouteScreen."
+    {
+      "id": "DP-EVENT-SUCCESS-COMPANION-003",
+      "status": "closed",
+      "nextAction": "Closed for provider-free companion section APIs and EventSuccessCompanionScreenState ownership. FirstHelloCheckInCard, SelfCheckInCard, PaperSelfCheckInBar, MicroPodCard, RotationScheduleCard, WingmanRequestSection, EventSuccessFeedbackForm, and CompatibilityQuestionnaireSection receive explicit action state and typed callbacks from EventSuccessCompanionScreen. The missing production route binding for the compatibility callback is tracked separately by DP-EVENT-SUCCESS-COMPANION-005."
             },
-            {
-              "id": "DP-EVENT-SUCCESS-COMPANION-004",
-              "status": "blocked",
-              "nextAction": "Blocked on missing canonical design exports for runtime-stage, reveal, wingman, afterglow, feedback, offline/error, accessibility, and theme variants. The only local Event Success Companion reference is design/reference_screens/screen.event_success.companion/default_live_guide.png with masks.json."
-            }
+    {
+      "id": "DP-EVENT-SUCCESS-COMPANION-004",
+      "status": "blocked",
+      "nextAction": "Blocked on missing canonical design exports for runtime-stage, reveal, wingman, afterglow, feedback, offline/error, accessibility, and theme variants. The only local Event Success Companion reference is design/reference_screens/screen.event_success.companion/default_live_guide.png with masks.json."
+    },
+    {
+      "id": "DP-EVENT-SUCCESS-COMPANION-005",
+      "status": "open",
+      "nextAction": "Wire EventSuccessCompanionRouteScreen to EventSuccessController.saveCompatibilityResponse through compatibilityResponseMutation, add route-level persistence proof, then remove FEATURE-ACTION-WIRING-001 from feature.event_success. Separately add focused tests for the nine registered state-level test exceptions; auto_launch remains launcher-policy evidence without synthetic visual evidence."
+    }
           ]
         }
       ],
@@ -4823,6 +4833,11 @@
               "id": "DP-HOST-HOME-004",
               "status": "blocked",
               "nextAction": "Restore Events below the canonical mean-delta threshold and remove HOST-V2-EVENTS-VISUAL-DRIFT-001. Continue HOST-V2-TODAY-FUNCTIONAL-PARITY-001 by composing real pending-approval, offer, draft, and guest-inquiry sources; remove the Today regressionThresholds only after the canonical threshold passes. Additional loading/empty/role/theme variants still need design exports."
+            },
+            {
+              "id": "DS-HOST-HOME-005",
+              "status": "open",
+              "nextAction": "Close feature.host_home evidence exceptions with focused tests for 12 registered route, nested-event, empty, offline, accessibility, and theme states; standalone captures for create/manage navigation; and a dedicated Widgetbook scenario for nested hosted-event offline."
             }
           ]
         },
@@ -5597,6 +5612,11 @@
               "id": "DS-HOST-CLUBS-004",
               "status": "closed",
               "nextAction": "The 2026-07-10 production full-shell Organizer comparison is within the aggregate advisory threshold at 12.02% mismatch / 7.79 meanDelta with navigation chrome included. Extra cohost, empty, loading/error/offline, analytics, payout, inline editor, team mutation, text-scale, reduced-motion, and light/dark comparisons depend on future design exports."
+            },
+            {
+              "id": "DS-HOST-CLUBS-005",
+              "status": "open",
+              "nextAction": "Close feature.host_organizers evidence exceptions with focused tests for 31 registered states, deterministic captures for 14 preview-only states, and a dedicated Widgetbook scenario for host_team_offline."
             }
           ]
         },
@@ -6526,6 +6546,11 @@
               "id": "DS-HOST-EVENT-CREATE-005",
               "status": "closed",
               "nextAction": "Closed. HostCreateEventRouteState now watches signed-in uid state and renders a host-access error before CreateEventScreen for signed-out or non-host-team users, with state and widget coverage."
+            },
+            {
+              "id": "DS-HOST-EVENT-CREATE-006",
+              "status": "open",
+              "nextAction": "feature.host_event_create compiles all 31 registered states and 33 meaningful actions. Add focused state tests for the nine registered test exceptions and one dedicated location-picker offline Widgetbook scenario to retire its ten evidence exceptions."
             }
           ]
         },
@@ -8049,6 +8074,11 @@
               "id": "DP-HOST-INBOX-004",
               "status": "in_progress",
               "nextAction": "Product semantics, the authorized callable, and visual parity are implemented locally. Keep production sending disabled until the live callable/IAM preflight succeeds, then record Activity durability, preference-gated push, and no match/message fan-out evidence."
+            },
+            {
+              "id": "DP-HOST-INBOX-005",
+              "status": "open",
+              "nextAction": "feature.host_inbox compiles all 25 registered states and ten actions. Add four standalone interaction captures and focused tests for the eight registered test exceptions to retire its twelve evidence exceptions."
             }
           ]
         },
@@ -8506,6 +8536,11 @@
               "id": "DP-HOST-CHAT-005",
               "status": "blocked",
               "nextAction": "Blocked. Baseline shared Messaging-thread Host Chat reference and masks are registered; dedicated Host Chat references are still needed for keyboard/safe-area, timestamps, remote photos, generated share-card rasterization if retained, dynamic message times, unread/read markers, host-shell chrome, accessibility, and theme states."
+            },
+            {
+              "id": "DP-HOST-CHAT-006",
+              "status": "open",
+              "nextAction": "feature.member_chat now binds Host Chat as a second projection of the same ChatScreen implementation, compiling all 29 host states and nine host actions. Add six standalone captures and focused tests for the 19 registered test exceptions to retire its 25 host-surface evidence exceptions."
             }
           ]
         }
@@ -9557,6 +9592,8 @@
             "event_recap_missing_event",
             "event_recap_empty_roster",
             "event_recap_partial_profiles",
+            "event_recap_profile_lookup_loading",
+            "event_recap_profile_lookup_error",
             "event_recap_selected_tiles",
             "event_recap_text_scale_2",
             "event_recap_reduced_motion",
@@ -9655,6 +9692,38 @@
               ]
             },
             {
+              "id": "profile_lookup_loading",
+              "kind": "loading",
+              "status": "captured",
+              "captureIds": [
+                "event_recap_profile_lookup_loading"
+              ],
+              "tests": [
+                "test/swipes/event_recap_screen_state_test.dart",
+                "test/swipes/event_recap_screen_test.dart"
+              ],
+              "notes": "A resolved recap preserves the hero and deck action while the batched attendee-profile lookup renders VibeGridSkeleton instead of Guest rows.",
+              "previewIds": [
+                "EventRecapScreen/Event recap route states"
+              ]
+            },
+            {
+              "id": "profile_lookup_error",
+              "kind": "error",
+              "status": "captured",
+              "captureIds": [
+                "event_recap_profile_lookup_error"
+              ],
+              "tests": [
+                "test/swipes/event_recap_screen_state_test.dart",
+                "test/swipes/event_recap_screen_test.dart"
+              ],
+              "notes": "A failed attendee-profile lookup keeps the recap visible and exposes branded inline retry for the exact batched query.",
+              "previewIds": [
+                "EventRecapScreen/Event recap route states"
+              ]
+            },
+            {
               "id": "profile_lookup_fallback",
               "kind": "populated",
               "status": "captured",
@@ -9664,7 +9733,7 @@
               "tests": [
                 "test/swipes/event_recap_screen_state_test.dart"
               ],
-              "notes": "Missing public-profile entries map to Guest fallback attendee rows while present profiles supply tile names and photos.",
+              "notes": "After profile lookup resolves, genuinely missing public-profile entries map to Guest fallback attendee rows while present profiles supply tile names and photos.",
               "previewIds": [
                 "EventRecapScreen/Event recap route states"
               ]
@@ -9786,6 +9855,8 @@
             "event_location_map_error",
             "event_location_map_not_found",
             "event_location_map_no_coordinate",
+            "event_location_map_directions_pending",
+            "event_location_map_directions_failure",
             "event_location_map_text_scale_2",
             "event_location_map_reduced_motion"
           ],
@@ -9878,11 +9949,15 @@
             {
               "id": "directions_action",
               "kind": "mutation",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "event_location_map_directions_pending",
+                "event_location_map_directions_failure"
+              ],
               "tests": [
                 "test/events/events_widgets_test.dart"
               ],
-              "notes": "Get directions delegates to externalLinkControllerProvider with the event directions URI.",
+              "notes": "Get directions is a route-owned singleton launch for the event directions URI; focused tests cover success, pending progress, duplicate-tap exclusion, false launcher results, thrown failures, action restoration, and visible feedback.",
               "previewIds": [
                 "EventLocationMapScreen/Map states"
               ]
@@ -9988,6 +10063,7 @@
           "captureIds": [
             "notifications_activity",
             "notifications_uid_loading",
+            "notifications_uid_error",
             "notifications_signed_out",
             "notifications_activity_loading",
             "notifications_activity_error",
@@ -10028,13 +10104,28 @@
               ]
             },
             {
+              "id": "uid_error",
+              "kind": "error",
+              "status": "captured",
+              "captureIds": [
+                "notifications_uid_error"
+              ],
+              "tests": [
+                "test/dashboard/dashboard_screen_test.dart"
+              ],
+              "notes": "uidProvider failure renders a branded auth error with retry and never masquerades as No activity yet.",
+              "previewIds": [
+                "ActivityScreen/Screen states"
+              ]
+            },
+            {
               "id": "signed_out",
               "kind": "permission",
               "status": "captured",
               "captureIds": [
                 "notifications_signed_out"
               ],
-              "notes": "Null uid or uid provider error renders ActivitySignedOutState with No activity yet copy.",
+              "notes": "A successfully resolved null uid alone renders ActivitySignedOutState with No activity yet copy.",
               "previewIds": [
                 "ActivityScreen/Screen states"
               ]
@@ -10481,6 +10572,8 @@
             "settings_unblock_pending",
             "settings_unblock_error",
             "settings_unblock_offline",
+            "settings_external_link_pending",
+            "settings_external_link_failure",
             "settings_text_scale_2",
             "settings_reduced_motion"
           ],
@@ -10578,13 +10671,17 @@
               ]
             },
             {
-              "id": "host_app_handoff",
+              "id": "external_link_outcomes",
               "kind": "mutation",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "settings_external_link_pending",
+                "settings_external_link_failure"
+              ],
               "tests": [
                 "test/safety/settings_screen_test.dart"
               ],
-              "notes": "Catch Host row opens the central host handoff link through ExternalLinkController.",
+              "notes": "Catch Host and configured privacy, support, and terms rows share one route-owned external-link operation; focused tests cover pending whole-surface freezing, selected-row progress, duplicate-tap exclusion, false results, thrown failures, restoration, and visible feedback.",
               "previewIds": [
                 "SettingsScreen/Screen states"
               ]
@@ -10831,6 +10928,8 @@
             "payment_history_failed_signup_receipt_sheet",
             "payment_history_support_snackbar",
             "payment_history_missing_event_title",
+            "payment_history_event_title_loading",
+            "payment_history_event_title_error",
             "payment_history_text_scale_2",
             "payment_history_reduced_motion"
           ],
@@ -10977,20 +11076,50 @@
               "tests": [
                 "test/payments/payment_history_screen_test.dart"
               ],
-              "notes": "Sign-up failure payments show support recovery copy and a Get help with this booking action in the detail sheet; captures cover the help sheet and shared Catch snackbar support feedback.",
+              "notes": "Sign-up failure payments honestly label the CTA How to get help with this booking; it closes the receipt and shows actionable guidance to include the visible payment and order IDs without claiming an unimplemented support handoff.",
               "previewIds": [
                 "PaymentHistoryScreen/Screen states",
                 "PaymentReceiptSheet/Receipt states"
               ]
             },
             {
-              "id": "event_title_loading_missing",
+              "id": "event_title_loading",
               "kind": "loading",
+              "status": "captured",
+              "captureIds": [
+                "payment_history_event_title_loading"
+              ],
+              "tests": [
+                "test/payments/payment_history_screen_test.dart"
+              ],
+              "notes": "Resolved payments retain explicit event-title enrichment loading and render row-shaped skeletons instead of a false missing-event label.",
+              "previewIds": [
+                "PaymentHistoryScreen/Screen states"
+              ]
+            },
+            {
+              "id": "event_title_error",
+              "kind": "error",
+              "status": "captured",
+              "captureIds": [
+                "payment_history_event_title_error"
+              ],
+              "tests": [
+                "test/payments/payment_history_screen_test.dart"
+              ],
+              "notes": "Event-title lookup failure renders an event-specific branded retry state for the exact payment event-id set.",
+              "previewIds": [
+                "PaymentHistoryScreen/Screen states"
+              ]
+            },
+            {
+              "id": "event_title_missing",
+              "kind": "empty",
               "status": "captured",
               "tests": [
                 "test/payments/payment_history_screen_test.dart"
               ],
-              "notes": "payment_history_missing_event_title captures the batched event-title lookup fallback to Event booking when a referenced event is unavailable.",
+              "notes": "payment_history_missing_event_title now captures the honest Event unavailable label only after event enrichment resolves without the referenced record.",
               "previewIds": [
                 "PaymentHistoryScreen/Screen states"
               ],
@@ -11006,7 +11135,7 @@
                 "payment_history_uid_offline",
                 "payment_history_payments_offline"
               ],
-              "notes": "Payment History uses shared obviousOfflineException/appErrorDescriptor copy for uid and payment stream retry surfaces; event-title lookup keeps the existing fallback row behavior.",
+              "notes": "Payment History uses shared obviousOfflineException/appErrorDescriptor copy for uid, payment, and event-title retry surfaces; offline enrichment no longer looks like a missing event.",
               "previewIds": [
                 "PaymentHistoryScreen/Screen states"
               ]

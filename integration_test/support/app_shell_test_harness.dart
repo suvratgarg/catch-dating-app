@@ -312,9 +312,7 @@ List<Object> appShellTestOverrides({
             shouldCollect: false,
           ),
     ),
-    errorLoggerProvider.overrideWithValue(
-      errorLogger ?? ErrorLogger(shouldReportErrors: false),
-    ),
+    errorLoggerProvider.overrideWithValue(errorLogger ?? ErrorLogger.silent()),
     appConnectivityProvider.overrideWith(
       (ref) => Stream.value(const [ConnectivityResult.wifi]),
     ),
@@ -596,8 +594,7 @@ class FakeShellEventDiscoveryRepository implements EventDiscoveryRepository {
 }
 
 class RecordingFcmService extends FcmService {
-  RecordingFcmService()
-    : super(FakeFirebaseFirestore(), ErrorLogger(shouldReportErrors: false));
+  RecordingFcmService() : super(FakeFirebaseFirestore(), ErrorLogger.silent());
 
   final initializedUids = <String>[];
 

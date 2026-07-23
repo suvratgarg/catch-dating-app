@@ -1,28 +1,29 @@
 import {websiteCopy} from "@content/generated";
 import {useMutation} from "@tanstack/react-query";
-import {type FormEvent, useMemo, useState} from "react";
+import {type FormEvent, useMemo, useRef, useState} from "react";
 import {
   createMarketingEventId,
   trackMarketingEvent,
-  type WaitlistAnalyticsPayload,
   waitlistAnalyticsPayload,
 } from "../../analytics";
+import {
+  parseJoinWaitlistHttpResponse,
+  type JoinWaitlistHTTPRequest,
+  type JoinWaitlistHTTPResponse,
+} from "../../shared/api/joinWaitlistContract";
 import type {FormStatus, FormVariant} from "../../shared/forms/types";
+import {usePendingRequestRegistration} from "../../shared/pendingRequest";
 import {websiteQueryKeys} from "../../shared/query/queryKeys";
 
-type JoinWaitlistBody = WaitlistAnalyticsPayload & {
-  fullName: string;
-  email: string;
-  city: string;
-  role: string;
-  instagram: string;
-  website: string;
-};
+type JoinWaitlistHTTPSuccessResponse = Extract<
+  JoinWaitlistHTTPResponse,
+  {ok: true}
+>;
+type JoinWaitlistRole = JoinWaitlistHTTPRequest["role"];
 
-type JoinWaitlistResponse = {
-  alreadyJoined?: boolean;
-  error?: string;
-};
+function isJoinWaitlistRole(value: string): value is JoinWaitlistRole {
+  return ["member", "runner", "host", "both"].includes(value);
+}
 
 export function useWaitlistFormController(variant: FormVariant) {
   const [status, setStatus] = useState<FormStatus>({message: "", tone: ""});
@@ -32,6 +33,9 @@ export function useWaitlistFormController(variant: FormVariant) {
     mutationKey: websiteQueryKeys.waitlist.submit(variant),
     mutationFn: submitJoinWaitlist,
   });
+  const submissionInFlight =
+    useRef<Promise<JoinWaitlistHTTPSuccessResponse> | null>(null);
+  usePendingRequestRegistration(submitMutation.isPending);
 
   const roleOptions = useMemo(
     () =>
@@ -50,6 +54,7 @@ export function useWaitlistFormController(variant: FormVariant) {
   );
 
   function handleCityChange(city: string) {
+    if (submissionInFlight.current) return;
     setShowCustomCity(city === "Other");
     if (!city) return;
     trackMarketingEvent("city_selected", {
@@ -59,6 +64,7 @@ export function useWaitlistFormController(variant: FormVariant) {
   }
 
   function handleRoleChange(role: string) {
+    if (submissionInFlight.current) return;
     if (!role) return;
     trackMarketingEvent("role_selected", {
       form_variant: variant,
@@ -67,6 +73,7 @@ export function useWaitlistFormController(variant: FormVariant) {
   }
 
   function handleFormStart() {
+    if (submissionInFlight.current) return;
     if (hasStarted) return;
     setHasStarted(true);
     trackMarketingEvent(
@@ -77,6 +84,7 @@ export function useWaitlistFormController(variant: FormVariant) {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submissionInFlight.current) return;
     const form = event.currentTarget;
     const payload = new FormData(form);
     const cityValue =
@@ -88,23 +96,26 @@ export function useWaitlistFormController(variant: FormVariant) {
       variant === "host" ? "host_lead" : "waitlist"
     );
     const conversionPayload = waitlistAnalyticsPayload(eventId, variant);
-    const body = {
-      fullName: String(payload.get("fullName") || "").trim(),
-      email: String(payload.get("email") || "").trim(),
-      city: cityValue,
-      role: String(payload.get("role") || "").trim(),
-      instagram: String(payload.get("instagram") || "").trim(),
-      website: String(payload.get("website") || "").trim(),
-      ...conversionPayload,
-    };
+    const fullName = String(payload.get("fullName") || "").trim();
+    const email = String(payload.get("email") || "").trim();
+    const role = String(payload.get("role") || "").trim();
 
-    if (!body.fullName || !body.email || !body.city || !body.role) {
+    if (!fullName || !email || !cityValue || !isJoinWaitlistRole(role)) {
       setStatus({
         message: websiteCopy["usewaitlistformcontroller_0511"],
         tone: "is-error",
       });
       return;
     }
+    const body: JoinWaitlistHTTPRequest = {
+      fullName,
+      email,
+      city: cityValue,
+      role,
+      instagram: String(payload.get("instagram") || "").trim(),
+      website: String(payload.get("website") || "").trim(),
+      ...conversionPayload,
+    };
 
     setStatus({message: "", tone: ""});
     trackMarketingEvent(
@@ -112,8 +123,10 @@ export function useWaitlistFormController(variant: FormVariant) {
       {city: body.city, event_id: eventId, form_variant: variant, role: body.role}
     );
 
+    const request = submitMutation.mutateAsync(body);
+    submissionInFlight.current = request;
     try {
-      const data = await submitMutation.mutateAsync(body);
+      const data = await request;
       form.reset();
       setShowCustomCity(false);
       setHasStarted(false);
@@ -151,6 +164,10 @@ export function useWaitlistFormController(variant: FormVariant) {
         event_id: eventId,
         form_variant: variant,
       });
+    } finally {
+      if (submissionInFlight.current === request) {
+        submissionInFlight.current = null;
+      }
     }
   }
 
@@ -166,21 +183,30 @@ export function useWaitlistFormController(variant: FormVariant) {
   };
 }
 
-async function submitJoinWaitlist(body: JoinWaitlistBody): Promise<JoinWaitlistResponse> {
+async function submitJoinWaitlist(
+  body: JoinWaitlistHTTPRequest
+): Promise<JoinWaitlistHTTPSuccessResponse> {
   const response = await fetch("/api/join-waitlist", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify(body),
   });
-  const data = (await response.json().catch(() => ({}))) as JoinWaitlistResponse;
+  const data = parseJoinWaitlistHttpResponse(
+    await response.json().catch(() => ({}))
+  );
 
   if (!response.ok) {
     throw new Error(
-      typeof data.error === "string"
+      "error" in data
         ? data.error
         : "We couldn't save your spot. Please try again."
     );
   }
 
+  if (!("ok" in data)) {
+    throw new Error(
+      "Catch returned an unexpected waitlist response. Please try again."
+    );
+  }
   return data;
 }

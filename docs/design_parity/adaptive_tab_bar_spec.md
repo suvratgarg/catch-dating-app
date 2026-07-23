@@ -1,9 +1,9 @@
 ---
 doc_id: adaptive_tab_bar_spec
 version: 1.0.3
-updated: 2026-07-12
+updated: 2026-07-23
 owner: design_parity_review
-status: implemented
+status: retirement_ready
 depends_on: home_catches_unification_spec
 ---
 

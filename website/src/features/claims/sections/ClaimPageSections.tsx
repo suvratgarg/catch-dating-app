@@ -105,7 +105,10 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
   } = controller;
 
   return (
-    <ClaimFlowWorkspace onSubmit={handleClaimSubmit}>
+    <ClaimFlowWorkspace
+      onSubmit={handleClaimSubmit}
+      pending={isSubmitting}
+    >
       <StepRail
         currentIndex={currentStepIndex}
         getDisabled={(_item, index) => index > currentStepIndex}

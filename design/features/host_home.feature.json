@@ -1,0 +1,379 @@
+{
+  "$schema": "./feature_contract.schema.json",
+  "version": 2,
+  "updated": "2026-07-23",
+  "id": "feature.host_home",
+  "name": "Host Home",
+  "owner": "hosts",
+  "status": "pilot",
+  "description": "Orchestrates the host Today and Events entry workspace across authentication, organizer selection, hosted-event lifecycle state, recovery, and typed create, repeat, manage, and task navigation.",
+  "surfaces": [
+    {
+      "id": "host_flutter",
+      "runtime": "flutter",
+      "authority": {
+        "registry": "flutter_screens",
+        "id": "screen.host.home"
+      },
+      "actionScope": {
+        "included": "Host Home authentication recovery, organizer switching, Today/Events workspace selection, event-list filtering and retry, and typed create, repeat, manage, and Today-task navigation.",
+        "excluded": [
+          "Organizer editing, event creation internals, event management mutations, booking policy, analytics, payouts, and host-team administration retain their owning feature contracts or controllers."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "widgetbook/lib/hosts/host_operations_use_cases.dart"
+        ],
+        "actionOwners": [
+          {
+            "id": "route_screen",
+            "language": "dart",
+            "file": "lib/hosts/presentation/host_operations/host_operations_home_screen.dart",
+            "symbol": "HostOperationsHomeScreen"
+          },
+          {
+            "id": "workspace",
+            "language": "dart",
+            "file": "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
+            "symbol": "HostEventsScaffold"
+          },
+          {
+            "id": "events_list",
+            "language": "dart",
+            "file": "lib/hosts/presentation/host_operations/host_events_list.dart",
+            "symbol": "HostEventsClubCard"
+          },
+          {
+            "id": "auth_required",
+            "language": "dart",
+            "file": "lib/hosts/presentation/host_operations/host_auth_required_screen.dart",
+            "symbol": "HostAuthRequiredScreen"
+          }
+        ],
+        "componentContracts": [
+          "catch.button",
+          "catch.empty_state",
+          "catch.error_state",
+          "catch.event_card",
+          "catch.menu",
+          "catch.option_group",
+          "catch.skeleton",
+          "catch.surface",
+          "catch.top_bar"
+        ],
+        "dataContracts": [
+          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/events.schema.json",
+          "contracts/firestore/organizer_team_memberships.schema.json",
+          "contracts/firestore/organizers.schema.json"
+        ]
+      },
+      "dimensions": {
+        "load": {
+          "default": "ready",
+          "values": ["ready", "loading", "error", "offline"]
+        },
+        "access": {
+          "default": "owner",
+          "values": ["owner", "cohost", "signed_out"]
+        },
+        "organizer_supply": {
+          "default": "one",
+          "values": ["one", "multiple", "none"]
+        },
+        "workspace": {
+          "default": "today",
+          "values": ["today", "events"]
+        },
+        "event_supply": {
+          "default": "populated",
+          "values": ["populated", "empty"]
+        },
+        "accessibility": {
+          "default": "standard",
+          "values": ["standard", "text_scale_2", "reduced_motion"]
+        },
+        "theme": {
+          "default": "standard",
+          "values": ["standard", "light_dark"]
+        }
+      },
+      "actions": [
+        {
+          "id": "sign_in",
+          "owner": "auth_required",
+          "codeValue": "go",
+          "cardinality": "singleton",
+          "scopeKeys": ["routeInstanceId", "authSessionId"],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {"registry": "flutter_screens", "id": "screen.auth.phone_entry"}
+            }
+          ],
+          "description": "Leaves the signed-out host state for the shared phone authentication route."
+        },
+        {
+          "id": "retry_host_home",
+          "owner": "route_screen",
+          "codeValue": "invalidate",
+          "cardinality": "singleton",
+          "scopeKeys": ["routeInstanceId", "retryTarget", "failureStateVersion"],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": ["host_clubs_loading", "one_owned_club", "multiple_clubs_switcher", "no_host_clubs"]
+            }
+          ],
+          "description": "Invalidates only the failed authentication or hosted-organizer provider for the current route failure."
+        },
+        {
+          "id": "retry_host_events",
+          "owner": "events_list",
+          "codeValue": "invalidate",
+          "cardinality": "singleton",
+          "scopeKeys": ["viewerUid", "clubId", "failureStateVersion"],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": ["club_events_loading", "upcoming_events", "empty_events"]
+            }
+          ],
+          "description": "Invalidates the selected organizer's hosted-event stream after a nested list failure."
+        },
+        {
+          "id": "create_organizer",
+          "owner": "workspace",
+          "codeValue": "hostCreateClubScreen",
+          "cardinality": "singleton",
+          "scopeKeys": ["viewerUid", "routeInstanceId", "emptyStateVersion"],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {"registry": "flutter_screens", "id": "screen.host.club.create"}
+            }
+          ],
+          "description": "Opens Host Create Organizer from the no-organizers state."
+        },
+        {
+          "id": "switch_organizer",
+          "owner": "workspace",
+          "codeValue": "selectClubIndex",
+          "cardinality": "unbounded",
+          "scopeKeys": ["viewerUid", "routeInstanceId", "clubId"],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": ["multiple_clubs_switcher", "cohost_role", "upcoming_events", "empty_events"]
+            }
+          ],
+          "description": "Switches the Today and Events projections to another organizer the viewer hosts."
+        },
+        {
+          "id": "view_events",
+          "owner": "workspace",
+          "codeValue": "selectTab",
+          "cardinality": "unbounded",
+          "scopeKeys": ["viewerUid", "routeInstanceId", "tabSelectionVersion"],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": ["club_events_loading", "upcoming_events", "empty_events"]
+            }
+          ],
+          "description": "Moves from Today to the selected organizer's Events workspace."
+        },
+        {
+          "id": "filter_events",
+          "owner": "workspace",
+          "codeValue": "HostEventsLifecycleFilter",
+          "cardinality": "unbounded",
+          "scopeKeys": ["viewerUid", "clubId", "filterSelectionVersion"],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": ["upcoming_events", "empty_events"]
+            }
+          ],
+          "description": "Selects the Upcoming, Live, or Past lifecycle projection without changing the hosted-event source."
+        },
+        {
+          "id": "create_event",
+          "owner": "workspace",
+          "codeValue": "_openCreateEvent",
+          "cardinality": "unbounded",
+          "scopeKeys": ["viewerUid", "clubId", "tapAttemptId"],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {"registry": "flutter_screens", "id": "screen.host.event.create"}
+            }
+          ],
+          "description": "Opens Host Event Create with the selected organizer id and organizer snapshot."
+        },
+        {
+          "id": "repeat_event",
+          "owner": "workspace",
+          "codeValue": "_openRepeatEvent",
+          "cardinality": "unbounded",
+          "scopeKeys": ["viewerUid", "clubId", "eventId", "tapAttemptId"],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {"registry": "flutter_screens", "id": "screen.host.event.create"}
+            }
+          ],
+          "description": "Opens Host Event Create with a policy-gated repeat prefill from the latest eligible event."
+        },
+        {
+          "id": "manage_event",
+          "owner": "workspace",
+          "codeValue": "_openManageEvent",
+          "cardinality": "unbounded",
+          "scopeKeys": ["viewerUid", "clubId", "eventId", "tapAttemptId"],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {"registry": "flutter_screens", "id": "screen.host.event.manage"}
+            }
+          ],
+          "description": "Opens Host Event Manage for a selected lifecycle-list event."
+        },
+        {
+          "id": "open_today_event",
+          "owner": "workspace",
+          "codeValue": "_openTodayEvent",
+          "cardinality": "unbounded",
+          "scopeKeys": ["viewerUid", "clubId", "eventId", "eventClockState"],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {"registry": "flutter_screens", "id": "screen.host.event.manage"}
+            }
+          ],
+          "description": "Opens the Today event in its live or setup Host Manage section based on the current event clock."
+        },
+        {
+          "id": "open_today_task",
+          "owner": "workspace",
+          "codeValue": "_openTodayTask",
+          "cardinality": "unbounded",
+          "scopeKeys": ["viewerUid", "clubId", "eventId", "taskDestination"],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {"registry": "flutter_screens", "id": "screen.host.event.manage"}
+            }
+          ],
+          "description": "Routes a truthful Today task to the matching guests or setup section of Host Event Manage."
+        }
+      ],
+      "stateIds": [
+        "uid_missing",
+        "host_clubs_loading",
+        "host_clubs_error",
+        "no_host_clubs",
+        "one_owned_club",
+        "multiple_clubs_switcher",
+        "cohost_role",
+        "club_events_loading",
+        "club_events_error",
+        "club_events_offline",
+        "upcoming_events",
+        "empty_events",
+        "create_event_action",
+        "manage_event_navigation",
+        "offline",
+        "text_scale_2",
+        "reduced_motion",
+        "light_dark"
+      ],
+      "scenarioDefaults": {
+        "dimensions": {},
+        "actionCases": [{"id": "default"}]
+      },
+      "scenarioOverrides": {
+        "uid_missing": {
+          "dimensions": {"access": "signed_out"},
+          "actionCases": [{"id": "authentication", "enabledActions": ["sign_in"]}]
+        },
+        "host_clubs_loading": {"dimensions": {"load": "loading"}},
+        "host_clubs_error": {
+          "dimensions": {"load": "error"},
+          "actionCases": [{"id": "recovery", "enabledActions": ["retry_host_home"]}]
+        },
+        "no_host_clubs": {
+          "dimensions": {"organizer_supply": "none"},
+          "actionCases": [{"id": "create", "enabledActions": ["create_organizer"]}]
+        },
+        "one_owned_club": {
+          "actionCases": [{"id": "today", "enabledActions": ["view_events", "create_event", "open_today_event", "open_today_task"]}]
+        },
+        "multiple_clubs_switcher": {
+          "dimensions": {"organizer_supply": "multiple"},
+          "actionCases": [{"id": "switch", "enabledActions": ["switch_organizer", "view_events", "create_event"]}]
+        },
+        "cohost_role": {
+          "dimensions": {"access": "cohost"},
+          "actionCases": [{"id": "cohost", "enabledActions": ["switch_organizer", "view_events", "create_event"]}]
+        },
+        "club_events_loading": {"dimensions": {"load": "loading", "workspace": "events"}},
+        "club_events_error": {
+          "dimensions": {"load": "error", "workspace": "events"},
+          "actionCases": [{"id": "recovery", "enabledActions": ["retry_host_events"]}]
+        },
+        "club_events_offline": {
+          "dimensions": {"load": "offline", "workspace": "events"},
+          "actionCases": [{"id": "recovery", "enabledActions": ["retry_host_events"]}]
+        },
+        "upcoming_events": {
+          "dimensions": {"workspace": "events"},
+          "actionCases": [{"id": "events", "enabledActions": ["switch_organizer", "filter_events", "create_event", "repeat_event", "manage_event"]}]
+        },
+        "empty_events": {
+          "dimensions": {"workspace": "events", "event_supply": "empty"},
+          "actionCases": [{"id": "empty", "enabledActions": ["switch_organizer", "filter_events", "create_event"]}]
+        },
+        "create_event_action": {
+          "actionCases": [{"id": "create", "enabledActions": ["create_event"]}]
+        },
+        "manage_event_navigation": {
+          "actionCases": [{"id": "manage", "enabledActions": ["manage_event", "open_today_event", "open_today_task"]}]
+        },
+        "offline": {
+          "dimensions": {"load": "offline"},
+          "actionCases": [{"id": "recovery", "enabledActions": ["retry_host_home"]}]
+        },
+        "text_scale_2": {"dimensions": {"accessibility": "text_scale_2"}},
+        "reduced_motion": {"dimensions": {"accessibility": "reduced_motion"}},
+        "light_dark": {"dimensions": {"theme": "light_dark"}}
+      },
+      "requiredEvidence": {
+        "captures": true,
+        "previews": true,
+        "tests": true
+      },
+      "evidenceExceptions": [
+        {
+          "stateIds": ["uid_missing", "host_clubs_loading", "host_clubs_error", "no_host_clubs", "club_events_loading", "club_events_error", "club_events_offline", "empty_events", "offline", "text_scale_2", "reduced_motion", "light_dark"],
+          "evidence": ["tests"],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "These registered Host Home states have deterministic capture and preview evidence but no focused state-level automated test recorded by the screen authority yet."
+        },
+        {
+          "stateIds": ["club_events_offline"],
+          "evidence": ["previews"],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "The nested hosted-event offline state is captured but has no dedicated Widgetbook scenario registered yet."
+        },
+        {
+          "stateIds": ["create_event_action", "manage_event_navigation"],
+          "evidence": ["captures"],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "The typed Host Home route actions are covered by focused widget tests and the route-state catalog but do not yet have standalone deterministic captures."
+        }
+      ]
+    }
+  ]
+}

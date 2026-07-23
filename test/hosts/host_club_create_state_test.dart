@@ -25,18 +25,17 @@ void main() {
     expect(state.currentStep, 1);
     expect(state.totalSteps, 3);
     expect(state.isLastStep, isFalse);
-    expect(state.canPickMedia, isTrue);
-    expect(state.canSaveDraft, isTrue);
+    expect(state.canPickMedia, isFalse);
+    expect(state.canSaveDraft, isFalse);
+    expect(state.requestControlsEnabled, isFalse);
+    expect(state.fields.detailsEnabled, isFalse);
     expect(state.lastStepLabel, 'Create organizer');
     expect(state.isLoading, isTrue);
     expect(state.mutationError, 'Unable to save draft.');
     expect(state.footer.primaryEnabled, isFalse);
     expect(state.footer.primaryLabel, 'Next');
     expect(state.footer.primaryIntent, HostClubCreatePrimaryIntent.nextStep);
-    expect(
-      state.footer.saveDraftIntent,
-      HostClubCreateSaveDraftIntent.saveDraft,
-    );
+    expect(state.footer.saveDraftIntent, isNull);
   });
 
   test('HostClubCreateState maps draft restore retry and disable state', () {

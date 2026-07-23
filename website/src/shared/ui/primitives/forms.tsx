@@ -7,6 +7,7 @@ import {
 } from "@catch/web-ui";
 import type {FormHTMLAttributes, HTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes} from "react";
 import type {FormStatus as FormStatusModel} from "../../forms/types";
+import {usePendingRequestNavigationBlocked} from "../../pendingRequest";
 import type {ChipRailItem} from "./layout2";
 import {LiveStatus} from "./feedback";
 import {classNames} from "./foundation";
@@ -371,22 +372,36 @@ export function FormStatus({
 
 export const Form = forwardRef<
   HTMLFormElement,
-  FormHTMLAttributes<HTMLFormElement> & {reveal?: boolean}
+  FormHTMLAttributes<HTMLFormElement> & {pending?: boolean; reveal?: boolean}
 >(function Form({
   children,
+  pending,
   reveal = false,
   ...props
 }, ref) {
+  const navigationBlocked = usePendingRequestNavigationBlocked();
+  const controlsDisabled = pending === true || navigationBlocked;
+  const renderControlBoundary = pending !== undefined || navigationBlocked;
+
   return (
-    <form data-reveal={reveal || undefined} ref={ref} {...props}>
-      {children}
+    <form
+      {...props}
+      aria-busy={pending || undefined}
+      data-reveal={reveal || undefined}
+      ref={ref}
+    >
+      {!renderControlBoundary ? children : (
+        <fieldset className="form-control-boundary" disabled={controlsDisabled}>
+          {children}
+        </fieldset>
+      )}
     </form>
   );
 });
 
 export const WaitlistFormShell = forwardRef<
   HTMLFormElement,
-  FormHTMLAttributes<HTMLFormElement> & {reveal?: boolean}
+  FormHTMLAttributes<HTMLFormElement> & {pending?: boolean; reveal?: boolean}
 >(function WaitlistFormShell({
   className,
   ...props
@@ -402,7 +417,7 @@ export const WaitlistFormShell = forwardRef<
 
 export const ListingReviewForm = forwardRef<
   HTMLFormElement,
-  FormHTMLAttributes<HTMLFormElement> & {reveal?: boolean}
+  FormHTMLAttributes<HTMLFormElement> & {pending?: boolean; reveal?: boolean}
 >(function ListingReviewForm({
   className,
   ...props
@@ -418,7 +433,7 @@ export const ListingReviewForm = forwardRef<
 
 export const ClaimRequestForm = forwardRef<
   HTMLFormElement,
-  FormHTMLAttributes<HTMLFormElement> & {reveal?: boolean}
+  FormHTMLAttributes<HTMLFormElement> & {pending?: boolean; reveal?: boolean}
 >(function ClaimRequestForm({
   className,
   ...props

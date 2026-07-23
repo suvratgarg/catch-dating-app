@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
@@ -323,6 +325,8 @@ class FakeEventRepository extends Fake implements EventRepository {
   Object? hostCancelError;
   Object? deleteEventError;
   Object? updateEventError;
+  Completer<void>? updateEventCompleter;
+  int updateEventCallCount = 0;
   Object? joinWaitlistError;
   Object? leaveWaitlistError;
   Object? recordInviteOpenError;
@@ -459,8 +463,13 @@ class FakeEventRepository extends Fake implements EventRepository {
     bool includePolicy = false,
     String? inviteCode,
   }) async {
+    updateEventCallCount += 1;
     if (updateEventError != null) {
       throw updateEventError!;
+    }
+    final pendingUpdate = updateEventCompleter;
+    if (pendingUpdate != null) {
+      await pendingUpdate.future;
     }
     updatedEvent = event;
     updatedEventIncludePolicy = includePolicy;

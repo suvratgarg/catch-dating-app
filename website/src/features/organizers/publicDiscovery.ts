@@ -10,6 +10,8 @@ import {eligibleHomeCatchEvents} from "./homeEventEligibility";
 import {isFutureCatchEvent} from "./selectors";
 import {isPubliclyReadableListing} from "./selectors";
 import {organizerPolicyForListing} from "./organizerPolicy";
+import {eventDetailCopy} from "../../content/events";
+import {eventDetailPath} from "../events/eventDetailModel";
 import type {HostListing, HostListingCatchEvent, HostListingExternalEvent} from "./types";
 
 export interface OrganizerEventHighlight {
@@ -233,10 +235,10 @@ export function eventAnchorId(event: HostListingCatchEvent) {
 }
 
 export function eventDeepLinkForListing(
-  listing: HostListing,
+  _listing: HostListing,
   event: HostListingCatchEvent
 ) {
-  return `${listing.path}#${eventAnchorId(event)}`;
+  return eventDetailPath(event.id);
 }
 
 export function externalEventAnchorId(event: HostListingExternalEvent) {
@@ -244,10 +246,10 @@ export function externalEventAnchorId(event: HostListingExternalEvent) {
 }
 
 export function externalEventDeepLinkForListing(
-  listing: HostListing,
+  _listing: HostListing,
   event: HostListingExternalEvent
 ) {
-  return `${listing.path}#${externalEventAnchorId(event)}`;
+  return eventDetailPath(event.id);
 }
 
 export function isFutureExternalEvent(event: HostListingExternalEvent) {
@@ -261,7 +263,11 @@ export function eventActionCardForListing(
 ): EventActionCardModel {
   const isFuture = isFutureCatchEvent(event);
   const activity = activityForKind(event.activityKind);
-  const actions: EventActionCardModel["actions"] = [];
+  const actions: EventActionCardModel["actions"] = [{
+    href: eventDetailPath(event.id),
+    label: eventDetailCopy.hero.viewDetailsAction,
+    trackingLabel: "listing_event_open_details",
+  }];
 
   if (event.scorecard) {
     actions.push({
@@ -308,10 +314,16 @@ export function externalEventActionCardForListing(
   const activity = activityForKind(event.activityKind);
   const actions: EventActionCardModel["actions"] = [
     {
+      href: eventDetailPath(event.id),
+      label: eventDetailCopy.hero.viewDetailsAction,
+      trackingLabel: "external_event_open_details",
+    },
+    {
       href: event.sourceHref,
       label: websiteCopy["publicdiscovery_0359"],
       target: "_blank",
       rel: "noreferrer",
+      variant: "secondary",
       trackingLabel: "external_event_source",
     },
   ];

@@ -9,6 +9,10 @@ on:
       - "test/goldens/**"
       - "test/integration/**"
       - "tool/test_app_shell_integration.sh"
+      - "tool/ci/check_toolchain_consistency.sh"
+      - "tool/ci/toolchain.env"
+      - "pubspec.yaml"
+      - "pubspec.lock"
       - ".github/workflows/visual-integration-ci.yml"
   push:
     branches: [main]
@@ -19,6 +23,10 @@ on:
       - "test/goldens/**"
       - "test/integration/**"
       - "tool/test_app_shell_integration.sh"
+      - "tool/ci/check_toolchain_consistency.sh"
+      - "tool/ci/toolchain.env"
+      - "pubspec.yaml"
+      - "pubspec.lock"
       - ".github/workflows/visual-integration-ci.yml"
   schedule:
     - cron: "17 3 * * 1-5"
@@ -30,9 +38,9 @@ concurrency:
 
 jobs:
   visual-and-integration:
-    name: macOS goldens & app-shell integration
-    runs-on: macos-15
-    timeout-minutes: 45
+    name: macOS goldens, headless integration & native smoke
+    runs-on: macos-26
+    timeout-minutes: 60
 
     steps:
       - uses: actions/checkout@v6
@@ -48,6 +56,9 @@ jobs:
 
       - name: Deterministic app-shell integration suites
         run: bash tool/test_app_shell_integration.sh
+
+      - name: Hosted native app-shell smoke
+        run: bash tool/test_app_shell_integration.sh macos smoke
 
       - name: Retain golden failure diffs
         if: failure()

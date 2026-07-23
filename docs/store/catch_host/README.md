@@ -19,11 +19,16 @@ the consumer Catch app.
 | Asset | Path | Status |
 | --- | --- | --- |
 | App icon, 1024x1024 PNG | `docs/store/catch_host/icon/app-icon-1024.png` | Ready from existing host prod icon |
-| 6.9-inch iPhone screenshots | `docs/store/catch_host/screenshots/iphone_6_9/` | Ready from deterministic Host captures |
+| 6.9-inch iPhone screenshots | `docs/store/catch_host/screenshots/iphone_6_9/` | Draft sources; revision required by the eight-shot production brief |
 | Metadata draft | `docs/store/catch_host/metadata.md` | Ready for owner review |
 | Privacy inventory draft | `docs/store/catch_host/privacy_inventory.md` | Ready for legal/product review |
 | App Review notes draft | `docs/store/catch_host/review_notes.md` | Needs demo credentials and backend confirmation |
-| Asset manifest | `docs/store/catch_host/asset_manifest.json` | Ready |
+| Asset manifest | `docs/store/catch_host/asset_manifest.json` | Updated; screenshot revision required |
+
+The approved cross-app screenshot order, replacement decisions, platform export
+matrix, and QA contract now live in
+[`../app_listing_screenshot_production_brief.md`](../app_listing_screenshot_production_brief.md).
+The five images in this pack are source drafts, not final upload assets.
 
 ## Apple requirements referenced
 

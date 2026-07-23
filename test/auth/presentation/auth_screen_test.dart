@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -161,6 +162,70 @@ void main() {
       expect(container.read(authControllerProvider).step, AuthStep.otp);
       expect(find.text('Enter the code'), findsOneWidget);
     });
+
+    testWidgets(
+      'phone form freezes request inputs and ignores duplicate sends',
+      (tester) async {
+        final requestGate = Completer<void>();
+        final repository = FakeAuthRepository()
+          ..onVerifyPhoneNumber =
+              ({
+                required verificationCompleted,
+                required verificationFailed,
+                required codeSent,
+                required codeAutoRetrievalTimeout,
+              }) async {
+                await requestGate.future;
+                codeSent('verification-id', 11);
+              };
+        final container = _authControllerContainer(repository);
+        addTearDown(repository.dispose);
+        addTearDown(container.dispose);
+
+        await pumpAuthScreen(tester, container: container);
+
+        await tester.enterText(
+          find.descendant(
+            of: find.byKey(AuthFormKeys.phoneField),
+            matching: find.byType(EditableText),
+          ),
+          '9999999999',
+        );
+        await tester.tap(find.byKey(AuthFormKeys.sendCode));
+        await tester.pump();
+
+        expect(repository.verifyPhoneNumberCallCount, 1);
+        expect(
+          tester
+              .widget<TextField>(
+                find.descendant(
+                  of: find.byKey(AuthFormKeys.phoneField),
+                  matching: find.byType(TextField),
+                ),
+              )
+              .enabled,
+          false,
+        );
+        expect(
+          tester
+              .widget<CountryCodePicker>(find.byType(CountryCodePicker))
+              .enabled,
+          false,
+        );
+
+        await tester.tap(find.byKey(AuthFormKeys.sendCode));
+        await tester.tap(find.byKey(AuthFormKeys.countryCode));
+        await tester.pump();
+
+        expect(repository.verifyPhoneNumberCallCount, 1);
+        expect(find.text('Select Country'), findsNothing);
+
+        requestGate.complete();
+        await pumpFeatureUi(tester);
+
+        expect(container.read(authControllerProvider).step, AuthStep.otp);
+      },
+    );
 
     testWidgets('phone form shows validation before sending OTP', (
       tester,

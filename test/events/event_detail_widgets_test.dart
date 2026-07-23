@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_share_card_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -33,8 +34,8 @@ import 'package:catch_dating_app/events/presentation/widgets/event_detail_loadin
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/shared/event_share_card.dart';
-import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
+import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -190,6 +191,107 @@ void main() {
 
       expect(find.text('Event not found'), findsOneWidget);
       expect(find.text('This event is no longer available.'), findsOneWidget);
+    });
+
+    testWidgets('renders the offline state with recovery', (tester) async {
+      await pumpEventsTestApp(
+        tester,
+        const EventDetailScreen(
+          enableMapNetworkTiles: false,
+          clubId: 'club-1',
+          eventId: 'event-1',
+        ),
+        overrides: [
+          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          eventDetailViewModelProvider('event-1').overrideWith(
+            (ref) => AsyncError(
+              StateError('No network connection for Event Detail'),
+              StackTrace.empty,
+            ),
+          ),
+        ],
+      );
+
+      expect(find.bySubtype<CatchErrorScaffold>(), findsOneWidget);
+      final errorBody = tester.widget<CatchErrorBody>(
+        find.byType(CatchErrorBody),
+      );
+      expect(errorBody.onRetry, isNotNull);
+    });
+
+    testWidgets('renders the loaded state at text scale 2', (tester) async {
+      final media = MediaQueryData.fromView(
+        tester.view,
+      ).copyWith(textScaler: const TextScaler.linear(2));
+
+      await pumpEventsTestApp(
+        tester,
+        MediaQuery(
+          data: media,
+          child: const EventDetailScreen(
+            clubId: 'club-1',
+            eventId: 'event-1',
+          ),
+        ),
+        overrides: [
+          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          eventDetailViewModelProvider('event-1').overrideWith(
+            (ref) => AsyncData(
+              EventDetailViewModel(
+                event: buildEvent(),
+                userProfile: buildUser(),
+                reviews: const [],
+                isAuthenticated: true,
+                isHost: false,
+                isSaved: false,
+                participation: null,
+              ),
+            ),
+          ),
+          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+        ],
+      );
+
+      final body = tester.element(find.byType(EventDetailBody));
+      expect(MediaQuery.textScalerOf(body).scale(1), 2);
+    });
+
+    testWidgets('renders the loaded state with reduced motion', (tester) async {
+      final media = MediaQueryData.fromView(
+        tester.view,
+      ).copyWith(disableAnimations: true);
+
+      await pumpEventsTestApp(
+        tester,
+        MediaQuery(
+          data: media,
+          child: const EventDetailScreen(
+            enableMapNetworkTiles: false,
+            clubId: 'club-1',
+            eventId: 'event-1',
+          ),
+        ),
+        overrides: [
+          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          eventDetailViewModelProvider('event-1').overrideWith(
+            (ref) => AsyncData(
+              EventDetailViewModel(
+                event: buildEvent(),
+                userProfile: buildUser(),
+                reviews: const [],
+                isAuthenticated: true,
+                isHost: false,
+                isSaved: false,
+                participation: null,
+              ),
+            ),
+          ),
+          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+        ],
+      );
+
+      final body = tester.element(find.byType(EventDetailBody));
+      expect(MediaQuery.disableAnimationsOf(body), isTrue);
     });
 
     testWidgets('renders the loaded state', (tester) async {

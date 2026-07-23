@@ -24,6 +24,8 @@ class HostEventBookingController extends _$HostEventBookingController {
   static final deleteEventMutation = Mutation<void>();
   static final updateHostedEventMutation = Mutation<void>();
 
+  Future<void>? _updateHostedEventInFlight;
+
   static HostEventParticipantMutationKey waitlistOfferMutationKey({
     required String eventId,
     required String userId,
@@ -79,6 +81,29 @@ class HostEventBookingController extends _$HostEventBookingController {
     required Event event,
     bool includePolicy = false,
     String? inviteCode,
+  }) {
+    final existingRequest = _updateHostedEventInFlight;
+    if (existingRequest != null) return existingRequest;
+
+    late final Future<void> trackedRequest;
+    trackedRequest =
+        _updateHostedEvent(
+          event: event,
+          includePolicy: includePolicy,
+          inviteCode: inviteCode,
+        ).whenComplete(() {
+          if (identical(_updateHostedEventInFlight, trackedRequest)) {
+            _updateHostedEventInFlight = null;
+          }
+        });
+    _updateHostedEventInFlight = trackedRequest;
+    return trackedRequest;
+  }
+
+  Future<void> _updateHostedEvent({
+    required Event event,
+    required bool includePolicy,
+    required String? inviteCode,
   }) async {
     _requireSignedIn(action: 'edit a hosted event');
     await ref

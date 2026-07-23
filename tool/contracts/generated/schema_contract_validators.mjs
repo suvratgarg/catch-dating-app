@@ -192,6 +192,22 @@ import {
   deleteSavedEventClientWriteSchema,
   markNotificationReadClientWriteSchema,
   resetMatchUnreadCountClientWriteSchema,
+  adminGetOverviewCallablePayloadSchema,
+  adminGetOverviewCallableResponseSchema,
+  adminDecideAccessApplicationCallablePayloadSchema,
+  adminDecideAccessApplicationCallableResponseSchema,
+  adminSetAdminUserRolesCallablePayloadSchema,
+  adminSetAdminUserRolesCallableResponseSchema,
+  adminDecideSafetyTriageItemCallablePayloadSchema,
+  adminDecideSafetyTriageItemCallableResponseSchema,
+  adminAssignSafetyTriageItemCallablePayloadSchema,
+  adminAssignSafetyTriageItemCallableResponseSchema,
+  adminCreateMarketingContentDraftCallablePayloadSchema,
+  adminCreateMarketingContentDraftCallableResponseSchema,
+  adminRecordMarketingReviewDecisionCallablePayloadSchema,
+  adminRecordMarketingReviewDecisionCallableResponseSchema,
+  joinWaitlistHTTPRequestSchema,
+  joinWaitlistHTTPResponseSchema,
 } from "./schema_contract_registry.mjs";
 
 const requireFromRepo = createRequire(
@@ -405,6 +421,22 @@ export const validateCreateSavedEventClientWrite = ajv.compile(createSavedEventC
 export const validateDeleteSavedEventClientWrite = ajv.compile(deleteSavedEventClientWriteSchema);
 export const validateMarkNotificationReadClientWrite = ajv.compile(markNotificationReadClientWriteSchema);
 export const validateResetMatchUnreadCountClientWrite = ajv.compile(resetMatchUnreadCountClientWriteSchema);
+export const validateAdminGetOverviewCallablePayload = ajv.compile(adminGetOverviewCallablePayloadSchema);
+export const validateAdminGetOverviewCallableResponse = ajv.compile(adminGetOverviewCallableResponseSchema);
+export const validateAdminDecideAccessApplicationCallablePayload = ajv.compile(adminDecideAccessApplicationCallablePayloadSchema);
+export const validateAdminDecideAccessApplicationCallableResponse = ajv.compile(adminDecideAccessApplicationCallableResponseSchema);
+export const validateAdminSetAdminUserRolesCallablePayload = ajv.compile(adminSetAdminUserRolesCallablePayloadSchema);
+export const validateAdminSetAdminUserRolesCallableResponse = ajv.compile(adminSetAdminUserRolesCallableResponseSchema);
+export const validateAdminDecideSafetyTriageItemCallablePayload = ajv.compile(adminDecideSafetyTriageItemCallablePayloadSchema);
+export const validateAdminDecideSafetyTriageItemCallableResponse = ajv.compile(adminDecideSafetyTriageItemCallableResponseSchema);
+export const validateAdminAssignSafetyTriageItemCallablePayload = ajv.compile(adminAssignSafetyTriageItemCallablePayloadSchema);
+export const validateAdminAssignSafetyTriageItemCallableResponse = ajv.compile(adminAssignSafetyTriageItemCallableResponseSchema);
+export const validateAdminCreateMarketingContentDraftCallablePayload = ajv.compile(adminCreateMarketingContentDraftCallablePayloadSchema);
+export const validateAdminCreateMarketingContentDraftCallableResponse = ajv.compile(adminCreateMarketingContentDraftCallableResponseSchema);
+export const validateAdminRecordMarketingReviewDecisionCallablePayload = ajv.compile(adminRecordMarketingReviewDecisionCallablePayloadSchema);
+export const validateAdminRecordMarketingReviewDecisionCallableResponse = ajv.compile(adminRecordMarketingReviewDecisionCallableResponseSchema);
+export const validateJoinWaitlistHTTPRequest = ajv.compile(joinWaitlistHTTPRequestSchema);
+export const validateJoinWaitlistHTTPResponse = ajv.compile(joinWaitlistHTTPResponseSchema);
 
 export function schemaErrorMessages(validator) {
   return (validator.errors ?? []).map((error) => {

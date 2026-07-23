@@ -1,13 +1,35 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_assign_safety_triage_item_payload.schema.json",
-  "title": "AdminAssignSafetyTriageItemCallablePayload",
+  "title": "Admin Assign Safety Triage Item Callable Payload",
   "type": "object",
   "additionalProperties": false,
-  "required": ["targetPath", "assigneeUid", "note"],
+  "required": [
+    "targetPath",
+    "assigneeUid",
+    "note"
+  ],
   "properties": {
-    "targetPath": {"type": "string", "pattern": "^(reports|moderationFlags|eventSafetyReports)/[A-Za-z0-9_-]{1,180}$"},
-    "assigneeUid": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
-    "note": {"type": "string", "minLength": 1, "maxLength": 1000}
+    "targetPath": {
+      "type": "string",
+      "maxLength": 260,
+      "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+    },
+    "assigneeUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
   }
 }

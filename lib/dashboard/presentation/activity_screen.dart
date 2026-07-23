@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
@@ -69,9 +70,9 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
       ),
       body: CatchAsyncValueView<String?>(
         value: uidAsync,
+        errorContext: AppErrorContext.auth,
         onRetry: () => ref.invalidate(uidProvider),
         loadingBuilder: (_) => const ActivityScreenLoading(),
-        errorBuilder: (_, _, _) => const ActivitySignedOutState(),
         builder: (context, uid) {
           if (uid == null) return const ActivitySignedOutState();
           return CatchAsyncValueView<List<ActivityNotification>>(

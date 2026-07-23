@@ -10,6 +10,7 @@ function review(
 ): HostListingReview {
   return {
     id,
+    eventId: verificationStatus === "verified" ? "event-review-fixture" : null,
     reviewerName: `Reviewer ${id}`,
     rating,
     comment: "Review comment",

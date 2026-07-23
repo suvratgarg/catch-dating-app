@@ -1,5 +1,5 @@
 {
-  "version": "1.2.0",
+  "version": "1.2.1",
   "updated": "2026-07-23",
   "ownerVocabulary": [
     "agent_operating_model",
@@ -70,7 +70,7 @@
       "sources": ["design/**", "lib/core/theme/**", "lib/core/widgets/**", "widgetbook/**", "packages/catch_ui_lints/**", "packages/phosphor_flutter/**"],
       "generatedOutputs": ["design_context_pack/**", "docs/design_parity/**", "docs/audit_registry/widget_*.json", "widgetbook/lib/main.directories.g.dart"],
       "consumers": ["lib/**", "admin/**", "website/**", "test/design/**", "test/goldens/**", "artifacts/**"],
-      "checks": ["design:tokens", "design:parity-gate", "design:public-surface-behavior", "design:flutter-field-surface-inventory", "design:widgetbook-contract-refs", "design:widgetbook-coverage", "lint:catch-ui-plugin-smoke"],
+      "checks": ["design:tokens", "design:parity-gate", "design:feature-contracts", "design:public-surface-behavior", "design:flutter-field-surface-inventory", "design:widgetbook-contract-refs", "design:widgetbook-coverage", "lint:catch-ui-plugin-smoke"],
       "ciWorkflows": [".github/workflows/flutter-ci.yml", ".github/workflows/tools-ci.yml", ".github/workflows/visual-integration-ci.yml"]
     },
     {

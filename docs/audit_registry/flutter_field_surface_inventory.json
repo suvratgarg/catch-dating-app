@@ -7,7 +7,7 @@
     "routeInventory": "tool/ui_capture/route_inventory.json",
     "routeInventorySha256": "f92fe6fc7058c567b3603d9fa3ae46f122871a70ded3aa43eb17017b6470e245",
     "screenContracts": "design/screens/catch.screens.json",
-    "screenContractsSha256": "6951e62ffd37d15c59a4e914a1d4e46c59944885808ae19467e699a22d5092f2"
+    "screenContractsSha256": "b9f6955dfdd6d1bea7299cc4f30a477541d18ff6ad773d2f2f1a5e69f87f3ed3"
   },
   "summary": {
     "candidateCount": 10,
@@ -128,12 +128,12 @@
           "expected": 6,
           "observed": 6,
           "lines": [
-            418,
-            475,
-            545,
-            1014,
-            1247,
-            1298
+            426,
+            486,
+            558,
+            1046,
+            1279,
+            1330
           ]
         },
         {
@@ -143,8 +143,8 @@
           "expected": 2,
           "observed": 2,
           "lines": [
-            1117,
-            1174
+            1149,
+            1206
           ]
         },
         {
@@ -154,9 +154,9 @@
           "expected": 3,
           "observed": 3,
           "lines": [
-            422,
-            433,
-            506
+            431,
+            442,
+            518
           ]
         },
         {
@@ -166,17 +166,17 @@
           "expected": 11,
           "observed": 11,
           "lines": [
-            478,
-            525,
-            551,
-            618,
-            1024,
-            1037,
-            1079,
-            1119,
-            1135,
-            1176,
-            1193
+            490,
+            538,
+            564,
+            635,
+            1056,
+            1069,
+            1111,
+            1151,
+            1167,
+            1208,
+            1225
           ]
         },
         {
@@ -186,7 +186,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            593
+            609
           ]
         },
         {
@@ -196,8 +196,8 @@
           "expected": 2,
           "observed": 2,
           "lines": [
-            1061,
-            1222
+            1093,
+            1254
           ]
         },
         {
@@ -207,7 +207,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            445
+            454
           ]
         },
         {
@@ -217,8 +217,8 @@
           "expected": 2,
           "observed": 2,
           "lines": [
-            1104,
-            1163
+            1136,
+            1195
           ]
         },
         {
@@ -228,14 +228,14 @@
           "expected": 8,
           "observed": 8,
           "lines": [
-            1155,
-            1250,
-            1258,
-            1266,
-            1276,
-            1281,
-            1301,
-            1306
+            1187,
+            1282,
+            1290,
+            1298,
+            1308,
+            1313,
+            1333,
+            1338
           ]
         }
       ]
@@ -285,7 +285,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            241
+            263
           ]
         }
       ]
@@ -736,7 +736,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            97
+            96
           ]
         },
         {

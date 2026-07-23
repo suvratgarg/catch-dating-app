@@ -104,7 +104,10 @@ void main() {
     );
 
     test('returns the operation result on success', () async {
-      final result = await withAppErrorContext(() async => 42, context: context);
+      final result = await withAppErrorContext(
+        () async => 42,
+        context: context,
+      );
       expect(result, 42);
     });
 
@@ -141,7 +144,10 @@ void main() {
 
     setUp(() {
       reporter = _FakeCrashReporter();
-      logger = ErrorLogger(crashReporter: reporter, shouldReportErrors: true);
+      logger = ErrorLogger.silent(
+        crashReporter: reporter,
+        shouldReportErrors: true,
+      );
     });
 
     test('logAppError reports unexpected errors to the crash reporter', () {
@@ -173,36 +179,40 @@ void main() {
       expect(reporter.recordedErrors, isEmpty);
     });
 
-    test('runLoggingAppErrors returns true and does not log on success',
-        () async {
-      final ok = await runLoggingAppErrors(
-        () async {},
-        context: const AppErrorContext(
-          operation: AppOperation.localPersistence,
-          action: 'save draft',
-        ),
-        logError: logger,
-      );
+    test(
+      'runLoggingAppErrors returns true and does not log on success',
+      () async {
+        final ok = await runLoggingAppErrors(
+          () async {},
+          context: const AppErrorContext(
+            operation: AppOperation.localPersistence,
+            action: 'save draft',
+          ),
+          logError: logger,
+        );
 
-      expect(ok, isTrue);
-      expect(reporter.recordedErrors, isEmpty);
-    });
+        expect(ok, isTrue);
+        expect(reporter.recordedErrors, isEmpty);
+      },
+    );
 
-    test('runLoggingAppErrors swallows, logs, and returns false on failure',
-        () async {
-      final ok = await runLoggingAppErrors(
-        () async => throw StateError('disk full'),
-        context: const AppErrorContext(
-          operation: AppOperation.localPersistence,
-          action: 'save draft',
-          resource: 'event_draft',
-        ),
-        logError: logger,
-      );
+    test(
+      'runLoggingAppErrors swallows, logs, and returns false on failure',
+      () async {
+        final ok = await runLoggingAppErrors(
+          () async => throw StateError('disk full'),
+          context: const AppErrorContext(
+            operation: AppOperation.localPersistence,
+            action: 'save draft',
+            resource: 'event_draft',
+          ),
+          logError: logger,
+        );
 
-      expect(ok, isFalse);
-      expect(reporter.recordedErrors, hasLength(1));
-    });
+        expect(ok, isFalse);
+        expect(reporter.recordedErrors, hasLength(1));
+      },
+    );
   });
 }
 

@@ -1711,6 +1711,19 @@ Widget eventLocationMapScreenStates(BuildContext context) {
           ),
         ),
       ),
+      _StateCard(
+        label: 'directions pending',
+        child: _DeviceFrame(
+          child: EventLocationMapScreen(
+            state: EventLocationMapState.fromEvent(
+              _event,
+              enableNetworkTiles: false,
+            ),
+            directionsPending: true,
+            onGetDirections: () {},
+          ),
+        ),
+      ),
     ],
   );
 }
@@ -1730,6 +1743,16 @@ Widget activityScreenStates(BuildContext context) {
         child: _DeviceFrame(
           child: _ActivityScreenScope(
             uidStream: _loadingStream<String?>(),
+            notificationsStream: Stream.value(_notifications),
+            child: const ActivityScreen(),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'uid error',
+        child: _DeviceFrame(
+          child: _ActivityScreenScope(
+            uidStream: _errorStream<String?>('Identity failed'),
             notificationsStream: Stream.value(_notifications),
             child: const ActivityScreen(),
           ),
@@ -2582,6 +2605,24 @@ Widget paymentHistoryScreenStates(BuildContext context) {
             payments: _payments.take(1).toList(),
             paymentsStream: Stream.value(_payments.take(1).toList()),
             eventsById: const {},
+            child: const PaymentHistoryScreen(),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'event titles loading',
+        child: _DeviceFrame(
+          child: _PaymentScope(
+            eventsStream: _loadingStream<List<Event>>(),
+            child: const PaymentHistoryScreen(),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'event titles error',
+        child: _DeviceFrame(
+          child: _PaymentScope(
+            eventsStream: _errorStream<List<Event>>('Event titles failed'),
             child: const PaymentHistoryScreen(),
           ),
         ),
@@ -3862,6 +3903,7 @@ class _PaymentScope extends StatelessWidget {
     this.paymentsStream,
     this.paymentsByPaymentId,
     this.eventsById,
+    this.eventsStream,
   });
 
   final Widget child;
@@ -3870,6 +3912,7 @@ class _PaymentScope extends StatelessWidget {
   final Stream<List<Payment>>? paymentsStream;
   final Map<String, Payment?>? paymentsByPaymentId;
   final Map<String, Event>? eventsById;
+  final Stream<List<Event>>? eventsStream;
 
   @override
   Widget build(BuildContext context) {
@@ -3913,7 +3956,7 @@ class _PaymentScope extends StatelessWidget {
         if (eventIds.isNotEmpty)
           watchEventsByIdsProvider(
             EventsByIdQuery(eventIds),
-          ).overrideWith((ref) => Stream.value(batchedEvents)),
+          ).overrideWith((ref) => eventsStream ?? Stream.value(batchedEvents)),
         watchClubProvider(
           _event.clubId,
         ).overrideWith((ref) => Stream<Club?>.value(null)),

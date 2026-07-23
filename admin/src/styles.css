@@ -226,6 +226,14 @@ button {
   container-type: inline-size;
 }
 
+.admin-pending-operation-boundary {
+  border: 0;
+  display: contents;
+  margin: 0;
+  min-inline-size: 0;
+  padding: 0;
+}
+
 .topbar {
   display: flex;
   align-items: center;

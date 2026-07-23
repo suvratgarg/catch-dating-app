@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.11.2
-updated: 2026-07-23
+version: 1.11.4
+updated: 2026-07-24
 owner: recursive_audit_loop
 status: active
 ---
@@ -26,10 +26,14 @@ production project. A development or staging `hosting:<target>` deployment
 therefore fails until that target is explicitly created and mapped; do not
 work around that failure by falling back to production.
 
-Flutter, Node, Java, Firebase CLI, and CocoaPods versions are owned together in
-`tool/ci/toolchain.env`. GitHub Actions and Xcode Cloud read that contract;
-`bash tool/ci/check_toolchain_consistency.sh` fails when a required pin or the
-Functions Node engine drifts.
+Flutter, Node, Java, Firebase CLI, CocoaPods, the GitHub-hosted Apple runner,
+and the minimum Xcode version are owned together in `tool/ci/toolchain.env`.
+GitHub Actions and Xcode Cloud read that contract;
+`bash tool/ci/check_toolchain_consistency.sh` fails when a required pin, the
+Functions Node engine, or an Apple-native workflow runner drifts. Keep the
+Apple runner major aligned with the minimum Xcode major. `connectivity_plus`
+7.x requires Xcode 26.1.1 or newer, so the native build, release, and hosted
+visual-smoke workflows use `macos-26`.
 
 ## Storage Rules Cross-Service Readiness
 
@@ -982,15 +986,21 @@ node tool/run.mjs run test:app-shell-integration
 
 Pull requests that touch Flutter integration or golden surfaces run
 `.github/workflows/visual-integration-ci.yml` on macOS. It executes the desktop
-goldens with the checked 0.30% hosted-macOS raster tolerance and all deterministic
-app-shell wrappers sequentially, retains failure diffs, and also runs on a
-weekday schedule so platform drift cannot hide behind path filtering. The
+goldens with the checked 0.30% hosted-macOS raster tolerance, all deterministic
+headless app-shell wrappers, and the bounded app-shell smoke through the native
+macOS integration binding sequentially. It retains failure diffs and also runs
+on a weekday schedule so platform drift cannot hide behind path filtering. The
 tolerance has a focused known-good/known-bad regression test and must not be
-widened to accept a visual change. `bash tool/test_app_shell_integration.sh <device>`
-remains the explicit native-device lane. The main Flutter workflow separately
-analyzes and builds `widgetbook/` for web. These are repository integration
-gates; the live service/device evidence below remains separately required for
-affected releases.
+widened to accept a visual change.
+
+Use `bash tool/test_app_shell_integration.sh <device> smoke` for the bounded
+native lane and `bash tool/test_app_shell_integration.sh <device> all` for every
+native suite. The main Flutter workflow separately analyzes and builds
+`widgetbook/` for web, runs the unit/widget suite with LCOV, publishes the raw
+LCOV plus a handwritten feature-level Markdown summary, and deliberately does
+not impose a global coverage percentage threshold. These are repository
+integration gates; the live service/device evidence below remains separately
+required for affected releases.
 
 The split suite covers app-shell launch/routing plus focused club, event,
 dashboard, Catches, chat, settings, review, and regression flows with service

@@ -4,6 +4,7 @@ import {
   dependencyBaselineGrowthWarnings,
   extractCommandPaths,
   extractDependencyBaselineSnapshot,
+  testInventoryMatches,
 } from "./check_agent_readiness.mjs";
 
 test("extractCommandPaths validates Functions build outputs through tracked sources", () => {
@@ -179,4 +180,23 @@ test("dependencyBaselineGrowthWarnings is silent when baseline is stable", () =>
   );
 
   assert.deepEqual(warnings, []);
+});
+
+test("test inventory readiness proof rejects stale generated content", () => {
+  const inventory = {
+    schemaVersion: 1,
+    generatedFrom: "fixture",
+    generatedBy: "fixture",
+    total: 1,
+    categories: {
+      flutter_unit_widget: {
+        count: 1,
+        files: ["test/current_test.dart"],
+      },
+    },
+  };
+  const current = `${JSON.stringify(inventory, null, 2)}\n`;
+
+  assert.equal(testInventoryMatches(current, inventory), true);
+  assert.equal(testInventoryMatches('{"total":0}\n', inventory), false);
 });

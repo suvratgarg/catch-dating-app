@@ -1,3 +1,11 @@
+---
+doc_id: catch_ui_enforcement_system_spec
+version: 1.0.0
+updated: 2026-07-23
+owner: catch_ui_enforcement
+status: retirement_ready
+---
+
 # Catch UI Enforcement System Spec (for Codex)
 
 Status: implemented v1.0.0 · all phases completed · 2026-07-19

@@ -1,0 +1,691 @@
+{
+  "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
+  "version": 2,
+  "generatedFrom": "design/features/admin_organizer_publishing.feature.json",
+  "generatedFor": "2026-07-23",
+  "sourceDigest": "sha256:8b3e6a8f224a6be30c79ea56a763c9ac56262c6eef237eb0d86c7596c6f27476",
+  "resolvedDigest": "sha256:eda9604ceca62d7ce6c41e743e1ebe7f68d808961d15342a7c2445c2e52ee0a7",
+  "feature": {
+    "id": "feature.admin_organizer_publishing",
+    "name": "Admin Organizer Publishing",
+    "owner": "admin_console",
+    "status": "pilot",
+    "description": "Orchestrates canonical organizer directory and editor work, publish-readiness gating, public index publication, and organizer claim review in one administrative supply workflow."
+  },
+  "coverage": {
+    "surfaces": 1,
+    "states": 1,
+    "scenarios": 1,
+    "actionCases": 8,
+    "actions": 12,
+    "captures": 0,
+    "previews": 1,
+    "testFiles": 3,
+    "evidenceExceptions": 0
+  },
+  "surfaces": [
+    {
+      "id": "admin_web",
+      "runtime": "react_admin",
+      "authority": {
+        "registry": "admin_routes",
+        "id": "route_organizer_publishing"
+      },
+      "actionScope": {
+        "included": "Switching directory and claim workspaces, selecting and refreshing records, returning to registers, changing the publish checklist, saving canonical details, publishing index state, deciding organizer claims, and freezing the complete Admin workspace during any write.",
+        "excluded": [
+          "Search, directory filter, canonical editor fields, and claim note edits remain query or form data.",
+          "Publishing requires saved canonical data plus the full checklist; claim approval remains a separate authority transition."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "admin/src/stories/AdminRoutes.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "publishing_controller",
+            "language": "typescript",
+            "file": "admin/src/features/organizers/controllers/useOrganizerPublishingController.ts",
+            "symbol": "useOrganizerPublishingController"
+          },
+          {
+            "id": "claim_controller",
+            "language": "typescript",
+            "file": "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.ts",
+            "symbol": "useOrganizerClaimReviewController"
+          },
+          {
+            "id": "screen",
+            "language": "typescript",
+            "file": "admin/src/features/organizers/ui/OrganizerPublishingScreen.tsx",
+            "symbol": "OrganizerPublishingWorkspace"
+          }
+        ],
+        "componentContracts": [
+          "route_organizer_publishing"
+        ],
+        "dataContracts": [
+          "contracts/callables/admin_list_organizer_details_payload.schema.json",
+          "contracts/callables/admin_get_organizer_details_payload.schema.json",
+          "contracts/callables/admin_update_organizer_details_payload.schema.json",
+          "contracts/callables/admin_set_club_index_status_payload.schema.json",
+          "contracts/callables/admin_decide_club_claim_payload.schema.json",
+          "contracts/firestore/organizers.schema.json",
+          "contracts/firestore/organizer_claim_requests.schema.json"
+        ],
+        "runtimeContracts": [
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminListOrganizerDetails",
+            "requestValidation": "strict_schema",
+            "responseValidation": "structural_object"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetOrganizerDetails",
+            "requestValidation": "strict_schema",
+            "responseValidation": "structural_object"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminUpdateOrganizerDetails",
+            "requestValidation": "strict_schema",
+            "responseValidation": "structural_object"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminSetClubIndexStatus",
+            "requestValidation": "strict_schema",
+            "responseValidation": "structural_object"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminListClubClaimRequests",
+            "requestValidation": "strict_schema",
+            "responseValidation": "structural_object"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminGetClubClaimRequestDetails",
+            "requestValidation": "strict_schema",
+            "responseValidation": "structural_object"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminDecideClubClaim",
+            "requestValidation": "strict_schema",
+            "responseValidation": "structural_object"
+          }
+        ],
+        "testEvidence": {
+          "canonical-directory": [
+            "admin/src/features/organizers/controllers/useOrganizerPublishingController.test.tsx",
+            "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.test.tsx",
+            "admin/src/shared/pendingOperation.test.tsx"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 1,
+        "scenarios": 1,
+        "actionCases": 8,
+        "actions": 12,
+        "captures": 0,
+        "previews": 1,
+        "testFiles": 3,
+        "evidenceExceptions": 0
+      },
+      "dimensions": {
+        "workspace": {
+          "default": "directory",
+          "values": [
+            "directory",
+            "organizer_detail",
+            "claims",
+            "claim_detail",
+            "unavailable"
+          ]
+        },
+        "mutation": {
+          "default": "idle",
+          "values": [
+            "idle",
+            "saving",
+            "publishing",
+            "claim_pending",
+            "failed",
+            "success"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "select_organizer_workspace",
+          "owner": "screen",
+          "codeValue": "onWorkspaceChange",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "workspaceId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            }
+          ],
+          "description": "Switches between canonical organizer directory and claim review.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "select_organizer_profile",
+          "owner": "publishing_controller",
+          "codeValue": "selectOrganizer",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "organizerId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            }
+          ],
+          "description": "Opens one canonical organizer profile for governed editing and publication.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "back_to_organizer_directory",
+          "owner": "publishing_controller",
+          "codeValue": "backToList",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "organizerId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            }
+          ],
+          "description": "Returns from organizer detail to the directory.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "refresh_organizer_directory",
+          "owner": "publishing_controller",
+          "codeValue": "refreshList",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "directoryVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            }
+          ],
+          "description": "Refetches the canonical organizer directory.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "toggle_organizer_publish_checklist",
+          "owner": "publishing_controller",
+          "codeValue": "setChecklist",
+          "cardinality": "domain_bounded",
+          "scopeKeys": [
+            "reviewerUid",
+            "organizerId",
+            "checklistItem",
+            "draftVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            }
+          ],
+          "description": "Marks one bounded publish-readiness assertion for the selected organizer.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "save_organizer_profile",
+          "owner": "publishing_controller",
+          "codeValue": "save",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "reviewerUid",
+            "organizerId",
+            "editorDraftVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "admin.organizer_details_saved"
+            }
+          ],
+          "description": "Validates and persists the canonical organizer diff.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "publish_organizer_profile",
+          "owner": "publishing_controller",
+          "codeValue": "saveAndPublish",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "reviewerUid",
+            "organizerId",
+            "editorDraftVersion",
+            "checklistVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "admin.organizer_index_published"
+            }
+          ],
+          "description": "Saves valid canonical data and changes public index status only after every checklist assertion passes.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "select_organizer_claim",
+          "owner": "claim_controller",
+          "codeValue": "select",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "claimRequestId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            }
+          ],
+          "description": "Opens one organizer claim request and its direct evidence read.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "back_to_organizer_claims",
+          "owner": "screen",
+          "codeValue": "onBackToClaims",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "adminSessionId",
+            "claimRequestId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            }
+          ],
+          "description": "Returns from claim detail to the claim register.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "refresh_organizer_claims",
+          "owner": "claim_controller",
+          "codeValue": "refresh",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "claimSnapshotVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            }
+          ],
+          "description": "Refetches the organizer claim register.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "refresh_organizer_claim_detail",
+          "owner": "claim_controller",
+          "codeValue": "refreshDetail",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "adminSessionId",
+            "claimRequestId"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            }
+          ],
+          "description": "Retries the selected claim evidence without substituting another request.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "decide_organizer_claim",
+          "owner": "claim_controller",
+          "codeValue": "decide",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "reviewerUid",
+            "claimRequestId",
+            "decisionVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "canonical-directory"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "admin.organizer_claim_decided"
+            }
+          ],
+          "description": "Approves or rejects one validated organizer claim with an audited decision reason.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [],
+      "scenarios": [
+        {
+          "id": "canonical_directory",
+          "stateId": "canonical-directory",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "workspace": "directory",
+            "mutation": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_organizer_publishing/OrganizerPublishingRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/organizers/controllers/useOrganizerPublishingController.test.tsx",
+              "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.test.tsx",
+              "admin/src/shared/pendingOperation.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "directory",
+              "dimensions": {
+                "workspace": "directory",
+                "mutation": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "select_organizer_workspace",
+                  "select_organizer_profile",
+                  "refresh_organizer_directory"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "back_to_organizer_directory",
+                  "toggle_organizer_publish_checklist",
+                  "save_organizer_profile",
+                  "publish_organizer_profile",
+                  "select_organizer_claim",
+                  "back_to_organizer_claims",
+                  "refresh_organizer_claims",
+                  "refresh_organizer_claim_detail",
+                  "decide_organizer_claim"
+                ]
+              }
+            },
+            {
+              "id": "organizer_detail",
+              "dimensions": {
+                "workspace": "organizer_detail",
+                "mutation": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "select_organizer_workspace",
+                  "back_to_organizer_directory",
+                  "toggle_organizer_publish_checklist",
+                  "save_organizer_profile",
+                  "publish_organizer_profile"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "select_organizer_profile",
+                  "refresh_organizer_directory",
+                  "select_organizer_claim",
+                  "back_to_organizer_claims",
+                  "refresh_organizer_claims",
+                  "refresh_organizer_claim_detail",
+                  "decide_organizer_claim"
+                ]
+              }
+            },
+            {
+              "id": "organizer_save_pending_frozen_workspace",
+              "dimensions": {
+                "workspace": "organizer_detail",
+                "mutation": "saving"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "select_organizer_workspace",
+                  "back_to_organizer_directory",
+                  "toggle_organizer_publish_checklist",
+                  "save_organizer_profile",
+                  "publish_organizer_profile"
+                ],
+                "notAllowed": [
+                  "select_organizer_profile",
+                  "refresh_organizer_directory",
+                  "select_organizer_claim",
+                  "back_to_organizer_claims",
+                  "refresh_organizer_claims",
+                  "refresh_organizer_claim_detail",
+                  "decide_organizer_claim"
+                ]
+              }
+            },
+            {
+              "id": "organizer_publish_pending_frozen_workspace",
+              "dimensions": {
+                "workspace": "organizer_detail",
+                "mutation": "publishing"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "select_organizer_workspace",
+                  "back_to_organizer_directory",
+                  "toggle_organizer_publish_checklist",
+                  "save_organizer_profile",
+                  "publish_organizer_profile"
+                ],
+                "notAllowed": [
+                  "select_organizer_profile",
+                  "refresh_organizer_directory",
+                  "select_organizer_claim",
+                  "back_to_organizer_claims",
+                  "refresh_organizer_claims",
+                  "refresh_organizer_claim_detail",
+                  "decide_organizer_claim"
+                ]
+              }
+            },
+            {
+              "id": "claims",
+              "dimensions": {
+                "workspace": "claims",
+                "mutation": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "select_organizer_workspace",
+                  "select_organizer_claim",
+                  "refresh_organizer_claims"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "select_organizer_profile",
+                  "back_to_organizer_directory",
+                  "refresh_organizer_directory",
+                  "toggle_organizer_publish_checklist",
+                  "save_organizer_profile",
+                  "publish_organizer_profile",
+                  "back_to_organizer_claims",
+                  "refresh_organizer_claim_detail",
+                  "decide_organizer_claim"
+                ]
+              }
+            },
+            {
+              "id": "claim_detail",
+              "dimensions": {
+                "workspace": "claim_detail",
+                "mutation": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "select_organizer_workspace",
+                  "back_to_organizer_claims",
+                  "refresh_organizer_claim_detail",
+                  "decide_organizer_claim"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "select_organizer_profile",
+                  "back_to_organizer_directory",
+                  "refresh_organizer_directory",
+                  "toggle_organizer_publish_checklist",
+                  "save_organizer_profile",
+                  "publish_organizer_profile",
+                  "select_organizer_claim",
+                  "refresh_organizer_claims"
+                ]
+              }
+            },
+            {
+              "id": "claim_pending_frozen_workspace",
+              "dimensions": {
+                "workspace": "claim_detail",
+                "mutation": "claim_pending"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "select_organizer_workspace",
+                  "back_to_organizer_claims",
+                  "refresh_organizer_claim_detail",
+                  "decide_organizer_claim"
+                ],
+                "notAllowed": [
+                  "select_organizer_profile",
+                  "back_to_organizer_directory",
+                  "refresh_organizer_directory",
+                  "toggle_organizer_publish_checklist",
+                  "save_organizer_profile",
+                  "publish_organizer_profile",
+                  "select_organizer_claim",
+                  "refresh_organizer_claims"
+                ]
+              }
+            },
+            {
+              "id": "selected_unavailable",
+              "dimensions": {
+                "workspace": "unavailable",
+                "mutation": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "select_organizer_workspace",
+                  "back_to_organizer_directory",
+                  "back_to_organizer_claims",
+                  "refresh_organizer_directory",
+                  "refresh_organizer_claim_detail"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "select_organizer_profile",
+                  "toggle_organizer_publish_checklist",
+                  "save_organizer_profile",
+                  "publish_organizer_profile",
+                  "select_organizer_claim",
+                  "refresh_organizer_claims",
+                  "decide_organizer_claim"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "route_organizer_publishing",
+          "source": "admin/src/features/organizers/ui/OrganizerPublishingScreen.tsx",
+          "exportName": "OrganizerPublishingScreen"
+        },
+        "components": [
+          {
+            "id": "route_organizer_publishing",
+            "kind": "route",
+            "source": "admin/src/features/organizers/ui/OrganizerPublishingScreen.tsx",
+            "exportName": "OrganizerPublishingScreen",
+            "storybook": {
+              "status": "ready",
+              "story": "admin/src/stories/AdminRoutes.stories.tsx",
+              "exportName": "OrganizerPublishingRouteStory",
+              "states": [
+                "canonical-directory"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "route_organizer_publishing/OrganizerPublishingRouteStory"
+        ]
+      }
+    }
+  ]
+}

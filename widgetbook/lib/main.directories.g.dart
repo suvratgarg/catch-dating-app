@@ -7937,6 +7937,16 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostEventManageRouteScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Route and section states',
+                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                    .hostEventManageRouteAndSectionStates,
+              ),
+            ],
+          ),
           _widgetbook.WidgetbookFolder(
             name: 'Sections',
             children: [

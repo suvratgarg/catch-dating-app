@@ -1,6 +1,6 @@
 {
-  "version": "4.5.150",
-  "updated": "2026-07-18",
+  "version": "4.5.166",
+  "updated": "2026-07-24",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -61,7 +61,7 @@
       ]
     },
     "docs/agent_regression_ledger.json": {
-      "purpose": "Machine-readable list of hard-won agent regression guards, including audit-loop, design-system, generated-metadata, Widgetbook, canonical market display, nullable organizer data, parallel Flutter test, parallel delegation ownership, and enforcement-integrity drift failures.",
+      "purpose": "Machine-readable list of hard-won agent regression guards, including feature-contract projection grouping, exact route versus modal ownership, identity and enrichment fallback classification, actual CTA outcome naming, external-effect result handling, action wiring versus repository capability, unreachable-state classification, pending-mutation snapshot and cross-domain concurrency drift, audit-loop, design-system, generated-metadata, Widgetbook, canonical market display, nullable organizer data, parallel Flutter test, parallel delegation ownership, and enforcement-integrity drift failures.",
       "read_when": [
         "Generating a context pack",
         "Touching a scope with known agent regression risks",
@@ -94,7 +94,7 @@
       ]
     },
     "docs/app_architecture.md": {
-      "purpose": "Canonical Flutter app architecture spec for dependency-direction seams, generated Riverpod provider topology and reviewed relationship candidates, Firebase/domain boundaries, mutation-cardinality grain, app-role boundaries, feature/layer/screen/controller/repository/widget ownership, exhaustive screen-chrome role contracts, async state boundaries, error-surface taxonomy, UI layout/scroll/sizing, routing/navigation constants, realtime stream lifecycle, reference implementation exhibits, exhibit-freshness markers, and enforcement policy.",
+      "purpose": "Canonical Flutter app architecture spec for dependency-direction seams, generated Riverpod provider topology and reviewed relationship candidates, Firebase/domain boundaries, mutation-cardinality grain, pending request snapshot integrity, app-role boundaries, feature/layer/screen/controller/repository/widget ownership, exhaustive screen-chrome role contracts, async state boundaries, error-surface taxonomy, logging test seams, coverage and test-spec maintainability, UI layout/scroll/sizing, routing/navigation constants, realtime stream lifecycle, reference implementation exhibits, exhibit-freshness markers, and enforcement policy.",
       "read_when": [
         "Changing code organization under lib/",
         "Starting or continuing an architecture migration rollout",
@@ -105,12 +105,14 @@
         "Moving behavior between widgets, controllers, repositories, services, or domain classes",
         "Deciding screen vs body/widget ownership",
         "Changing async loading/error/mutation state boundaries",
+        "Choosing frozen, versioned, or independently keyed behavior for pending operations",
         "Changing shared screen padding, tab body insets, sliver body gaps, scroll ownership, or sizing constraints",
         "Changing exceptions, error mappers, operation context, logging, analytics, or user-facing error rendering",
         "Changing keepAlive, autoDispose, or retained-tab stream ownership",
         "Adding architecture lints, scanners, or overrides",
         "Changing route literal scanners, frontend error scanner ratchets, or rule enforcement metadata for Flutter app architecture",
-        "Changing dependency-direction controller-seam carve-outs, Firebase/domain target policy, mutation-cardinality grain, or architecture exhibit freshness checks"
+        "Changing dependency-direction controller-seam carve-outs, Firebase/domain target policy, mutation-cardinality grain, or architecture exhibit freshness checks",
+        "Changing Flutter coverage reporting, expected-error test logging, or test-spec maintainability enforcement"
       ],
       "skip_when": [
         "Only changing a backend data contract already covered by data_contracts.md",
@@ -386,7 +388,7 @@
       ]
     },
     "docs/release_operations.md": {
-      "purpose": "Consolidated CI, release, deploy, environment, app-shell integration, smoke-test, store-readiness, host TestFlight, and release-evidence runbook.",
+      "purpose": "Consolidated CI, release, deploy, environment, Flutter coverage evidence, app-shell headless/native integration, smoke-test, store-readiness, host TestFlight, and release-evidence runbook.",
       "read_when": [
         "Changing GitHub Actions release gates",
         "Deploying Firebase/Functions/rules/storage changes",
@@ -399,7 +401,7 @@
       ]
     },
     "docs/web_surface_architecture.md": {
-      "purpose": "Domain/subdomain ownership, Firebase Hosting targets, stack boundaries for marketing/app/admin, React Router/TanStack Query governance, React primitive and component-family enforcement including the retired website legacy site barrel/import boundary, website page shells, admin directory/detail screen shells, admin workbench layouts, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin marketing layout shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin overview analytics shells, admin command lists, admin intake tag lists, admin intake section/search-candidate shells, admin intake state grids, admin row/tag cell shells, admin roadmap lists, admin intake/status chips, admin quality rows, admin quality lists, website capture-card shells, website empty-state variants, website badge/status rows, website identity display shells, website process status panels, UI label spans, section headings, action groups, control rows, waitlist/application sections, waitlist form shells, configured success grids, claim shells, claim-flow route/root/auth-row shells, content grids, panel shells, product shells including product-module grids, row/list shells, Host Preview route shells including main/hero/hero-store/offer/section/apply/format-rail/chip-row wrappers, Host Page route shells, Host Application flow shells, Host feature section shells, marketing section shells, marketing info-card shells, marketing loop-list shells, marketing consent banner shells, featured organizer card shells, app-download CTA group/shells, organizer listing shells, organizer listing intro shells, organizer listing hero shells, organizer listing review shells including review-signal and owner-response shells, organizer listing claim shells, organizer listing card-grid shells, organizer listing event section shells including event-action cards, organizer listing source ledger shells, organizer search section shells, organizer search result shells, and search-form shells including PublicSearchBar ownership, direct public-search slot composition, and public event-card shells, organizer website functionality, marketing CI/CD, and future host-portal placement.",
+      "purpose": "Domain/subdomain ownership, Firebase Hosting targets, complete stateful marketing and Admin feature-contract coverage, exact Admin callable validation-strength bindings, pending Admin mutation-snapshot debt, stack boundaries for marketing/app/admin, React Router/TanStack Query governance, React primitive and component-family enforcement including the retired website legacy site barrel/import boundary, website page shells, admin directory/detail screen shells, admin workbench layouts, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin marketing layout shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin overview analytics shells, admin command lists, admin intake tag lists, admin intake section/search-candidate shells, admin intake state grids, admin row/tag cell shells, admin roadmap lists, admin intake/status chips, admin quality rows, admin quality lists, website capture-card shells, website empty-state variants, website badge/status rows, website identity display shells, website process status panels, UI label spans, section headings, action groups, control rows, waitlist/application sections, waitlist form shells, configured success grids, claim shells, claim-flow route/root/auth-row shells, content grids, panel shells, product shells including product-module grids, row/list shells, Host Preview route shells including main/hero/hero-store/offer/section/apply/format-rail/chip-row wrappers, Host Page route shells, Host Application flow shells, Host feature section shells, marketing section shells, marketing info-card shells, marketing loop-list shells, marketing consent banner shells, featured organizer card shells, app-download CTA group/shells, organizer listing shells, organizer listing intro shells, organizer listing hero shells, organizer listing review shells including review-signal and owner-response shells, organizer listing claim shells, organizer listing card-grid shells, organizer listing event section shells including event-action cards, organizer listing source ledger shells, organizer search section shells, organizer search result shells, and search-form shells including PublicSearchBar ownership, direct public-search slot composition, and public event-card shells, organizer website functionality, marketing CI/CD, and future host-portal placement.",
       "read_when": [
         "Changing website stacks",
         "Changing shared React routing, query, feature-folder, or primitive ownership",
@@ -503,7 +505,7 @@
       ]
     },
     "docs/design_parity/README.md": {
-      "purpose": "Design parity folder owner and workflow for state matrices, screen contracts, captures, Widgetbook, component contracts, and route-ledger hygiene.",
+      "purpose": "Design parity folder owner and workflow for exhaustive Flutter, marketing, and Admin feature contracts, state matrices, multi-surface and coordinated-workspace contracts, exact route versus modal ownership, stateful secondary-route projection versus static grouping, dependency and identity loading/failure versus genuine fallback states, actual CTA outcome naming, missing network-schema disclosure, exact Admin callable validation-strength bindings, external-effect result handling, honest pending-mutation and cross-domain concurrency availability, shared-implementation and filtered-route goal projections, action wiring versus repository capability, explicit unreachable and blank-data state classification, meaningful-action versus raw-form-data boundaries, stable Flutter preview-builder evidence, top-level Dart action owners, known implementation-gap actions, explicit React route-state preview mappings, captures, Widgetbook and Storybook evidence, component contracts, and route-ledger hygiene.",
       "read_when": [
         "Starting design-parity work",
         "Changing screen contracts, capture coverage, Widgetbook references, or design parity ledgers"
@@ -590,7 +592,7 @@
       ]
     },
     "docs/marketing_website_architecture.md": {
-      "purpose": "Marketing website source layout, route shell ownership, route Storybook evidence through parameters.catchRoute, React dependency choices, feature/page/controller/component boundaries, CSS ownership, component registry, and shared primitive/component-family governance including admin marketing guide shells, admin marketing stacked-section shells, and website route/section shell families.",
+      "purpose": "Marketing website source layout, complete stateful route feature contracts, route shell ownership, route Storybook evidence through parameters.catchRoute, pending form snapshot and lead API schema debt, React dependency choices, feature/page/controller/component boundaries, CSS ownership, component registry, and shared primitive/component-family governance including admin marketing guide shells, admin marketing stacked-section shells, and website route/section shell families.",
       "read_when": [
         "Changing marketing website source layout, React routing, route Storybook evidence, dependency choices, controller seams, CSS ownership, component registry, or shared primitive/component governance",
         "Changing Home, Host, Host Preview, claim, organizer listing, organizer search, or marketing section decomposition"
@@ -634,6 +636,38 @@
       "skip_when": [
         "Working only on shared admin primitives",
         "Changing website-only component coverage"
+      ]
+    },
+    "docs/README.md": {
+      "purpose": "Canonical documentation index, lifecycle policy, source-of-truth routing, and the reviewed 99-file feature-contract retirement boundary with 11 retirement-ready documents.",
+      "read_when": [
+        "Adding, deleting, consolidating, or routing documentation",
+        "Checking whether a feature spec or completed handoff is retirement-ready"
+      ],
+      "skip_when": [
+        "A narrow code-only change does not affect documentation ownership"
+      ]
+    },
+    "design/features/feature_contract.schema.json": {
+      "purpose": "Executable schema for one semantic feature identity with runtime-native Flutter, marketing, and Admin surface projections, compact exact state matrices, explicit registered-preview evidence mappings, exact Admin callable request/response validation strength, action owners, known implementation gaps, outcomes, and evidence requirements.",
+      "read_when": [
+        "Creating or changing a feature contract",
+        "Extending one feature identity across another runtime",
+        "Changing action, scenario, outcome, or evidence semantics"
+      ],
+      "skip_when": [
+        "Only consuming already-generated feature contract output"
+      ]
+    },
+    "design/features/feature_coverage.json": {
+      "purpose": "Exhaustive migration ledger for registered Flutter screens, marketing routes, and admin route components, including planned shared identities, grouped projections, and justified exclusions.",
+      "read_when": [
+        "Choosing the next feature-contract migration",
+        "Checking whole-repository feature coverage",
+        "Adding or removing a registered Flutter or React authority"
+      ],
+      "skip_when": [
+        "Working inside one already-contracted feature without changing authority coverage"
       ]
     }
   }

@@ -1,9 +1,9 @@
 ---
 doc_id: host_consumer_ui_reconciliation_findings_2026_07_18
 version: 1.1.0
-updated: 2026-07-18
+updated: 2026-07-23
 owner: recursive_audit_loop
-status: resolved
+status: retirement_ready
 ---
 
 # Host and Consumer UI Reconciliation Findings

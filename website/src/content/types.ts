@@ -77,6 +77,24 @@ export interface ListingMetaCopy {
   };
 }
 
+export interface EventMetaCopy {
+  readonly titleTemplate: string;
+  readonly catchTwitterTemplate: string;
+  readonly externalTwitterTemplate: string;
+  readonly staticLabels: {
+    readonly eventEyebrow: string;
+    readonly hostedByPrefix: string;
+    readonly scheduleHeading: string;
+    readonly locationLabel: string;
+    readonly priceLabel: string;
+    readonly sourceLabel: string;
+    readonly reviewsHeading: string;
+    readonly lastReviewedPrefix: string;
+    readonly homeBreadcrumb: string;
+    readonly organizersBreadcrumb: string;
+  };
+}
+
 export interface WebsiteMetaCopy {
   readonly routes: Readonly<
     Record<
@@ -85,6 +103,7 @@ export interface WebsiteMetaCopy {
     >
   >;
   readonly listing: ListingMetaCopy;
+  readonly event: EventMetaCopy;
 }
 
 export type PublishedLegalPath = "/help/" | "/privacy/" | "/terms/";

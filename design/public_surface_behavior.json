@@ -1,7 +1,7 @@
 {
   "$schema": "./public_surface_behavior.schema.json",
   "version": 1,
-  "updated": "2026-07-21",
+  "updated": "2026-07-24",
   "purpose": "Decision-state contract for public and adjacent authenticated app and marketing surfaces. It records which UI and actions are visible, gated, local, native, web, or external without duplicating the existing screen, route, async-state, or booking-policy inventories.",
   "coveragePolicy": "Each surface declares only dimensions that change its behavior and a targeted set of meaningful configurations. Loading, empty, error, offline, permission, mutation, theme, and accessibility remain orthogonal in the design-parity state matrix; event eligibility remains owned by the viewer availability resolver.",
   "inventorySources": {
@@ -61,6 +61,7 @@
         "web.homeOrganizerDiscovery",
         "web.organizerSearch",
         "web.organizerListing",
+        "web.eventDetail",
         "web.claim"
       ],
       "evidence": {
@@ -5932,6 +5933,256 @@
       }
     },
     {
+      "id": "web.eventDetail",
+      "platform": "web",
+      "coverageKind": "matrix",
+      "coverageRationale": "The generated web Event Detail family is read-only. Catch-native events expose an app-download handoff, external events expose only their official registration source, event reviews require an exact eventId match, and organizer provenance remains independent from event supply.",
+      "routeIds": [
+        "event_detail_canonical"
+      ],
+      "decisionDimensions": [
+        "organizer.publishStatus",
+        "organizer.ownershipState",
+        "organizer.claimState",
+        "organizer.verificationStatus",
+        "event.supply",
+        "website.claimRequestCapability",
+        "website.publicReviewTargetCapability",
+        "website.publicReviewReadCapability"
+      ],
+      "invariantDimensions": [
+        "viewer.session",
+        "organizer.appVisibility",
+        "website.publicReviewWriteCapability"
+      ],
+      "compositionIds": [
+        "website.organizerPolicySelectors"
+      ],
+      "elements": [
+        {
+          "id": "route.access",
+          "kind": "routeGuard",
+          "description": "Whether a unique event under a publicly readable organizer resolves."
+        },
+        {
+          "id": "organizer.provenanceBadge",
+          "kind": "badge",
+          "description": "Organizer provenance shown independently from event supply."
+        },
+        {
+          "id": "event.details",
+          "kind": "content",
+          "description": "Read-only schedule, timezone, location disclosure, price, registration status, requirements, accessibility, and freshness."
+        },
+        {
+          "id": "event.appAction",
+          "kind": "action",
+          "description": "Catch-native registration handoff to the app stores."
+        },
+        {
+          "id": "event.officialSource",
+          "kind": "action",
+          "description": "External-event registration handoff to the approved official source."
+        },
+        {
+          "id": "organizer.openDetail",
+          "kind": "action",
+          "description": "Open the organizer profile that owns the event route."
+        },
+        {
+          "id": "organizer.claim",
+          "kind": "action",
+          "description": "Claim the organizer behind an eligible source-attributed event."
+        },
+        {
+          "id": "review.read",
+          "kind": "content",
+          "description": "Read only reviews whose eventId exactly matches the event route."
+        }
+      ],
+      "configurations": [
+        {
+          "id": "web.eventDetail.catchNative",
+          "values": {
+            "organizer.publishStatus": "published",
+            "organizer.ownershipState": "userCreated",
+            "organizer.claimState": "verified",
+            "organizer.verificationStatus": "ownerVerified",
+            "event.supply": "catchNative",
+            "website.claimRequestCapability": "disabled",
+            "website.publicReviewTargetCapability": "enabled",
+            "website.publicReviewReadCapability": "enabled"
+          },
+          "expectations": {
+            "route.access": {
+              "disposition": "visibleWeb"
+            },
+            "organizer.provenanceBadge": {
+              "disposition": "visibleReadOnly",
+              "variant": "first-party"
+            },
+            "event.details": {
+              "disposition": "visibleReadOnly"
+            },
+            "event.appAction": {
+              "disposition": "visibleExternal",
+              "variant": "app-download"
+            },
+            "event.officialSource": {
+              "disposition": "hidden"
+            },
+            "organizer.openDetail": {
+              "disposition": "visibleWeb",
+              "target": "/organizers/:slug/"
+            },
+            "organizer.claim": {
+              "disposition": "hidden"
+            },
+            "review.read": {
+              "disposition": "visibleReadOnly",
+              "variant": "event-scoped"
+            }
+          },
+          "implementationStatus": "verified",
+          "proofHarnessIds": [
+            "web.publicSurfaceBehavior"
+          ]
+        },
+        {
+          "id": "web.eventDetail.external",
+          "values": {
+            "organizer.publishStatus": "published",
+            "organizer.ownershipState": "programmatic",
+            "organizer.claimState": "unclaimed",
+            "organizer.verificationStatus": "sourceBacked",
+            "event.supply": "external",
+            "website.claimRequestCapability": "enabled",
+            "website.publicReviewTargetCapability": "disabled",
+            "website.publicReviewReadCapability": "disabled"
+          },
+          "expectations": {
+            "route.access": {
+              "disposition": "visibleWeb"
+            },
+            "organizer.provenanceBadge": {
+              "disposition": "visibleReadOnly",
+              "variant": "crawled-source-backed"
+            },
+            "event.details": {
+              "disposition": "visibleReadOnly"
+            },
+            "event.appAction": {
+              "disposition": "hidden"
+            },
+            "event.officialSource": {
+              "disposition": "visibleExternal",
+              "target": ":sourceUrl"
+            },
+            "organizer.openDetail": {
+              "disposition": "visibleWeb",
+              "target": "/organizers/:slug/"
+            },
+            "organizer.claim": {
+              "disposition": "visibleWeb",
+              "target": "/claim/?listing=:id"
+            },
+            "review.read": {
+              "disposition": "visibleDisabled",
+              "variant": "event-reviews-unavailable"
+            }
+          },
+          "implementationStatus": "verified",
+          "proofHarnessIds": [
+            "web.publicSurfaceBehavior"
+          ]
+        },
+        {
+          "id": "web.eventDetail.unpublished",
+          "values": {
+            "organizer.publishStatus": "qa",
+            "organizer.ownershipState": "programmatic",
+            "organizer.claimState": "unclaimed",
+            "organizer.verificationStatus": "sourceBacked",
+            "event.supply": "catchNative",
+            "website.claimRequestCapability": "enabled",
+            "website.publicReviewTargetCapability": "enabled",
+            "website.publicReviewReadCapability": "enabled"
+          },
+          "expectations": {
+            "route.access": {
+              "disposition": "hidden",
+              "variant": "not-found"
+            },
+            "organizer.provenanceBadge": {
+              "disposition": "hidden"
+            },
+            "event.details": {
+              "disposition": "hidden"
+            },
+            "event.appAction": {
+              "disposition": "hidden"
+            },
+            "event.officialSource": {
+              "disposition": "hidden"
+            },
+            "organizer.openDetail": {
+              "disposition": "hidden"
+            },
+            "organizer.claim": {
+              "disposition": "hidden"
+            },
+            "review.read": {
+              "disposition": "hidden"
+            }
+          },
+          "implementationStatus": "verified",
+          "proofHarnessIds": [
+            "web.publicSurfaceBehavior"
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "path": "website/src/features/events/eventDetailModel.test.ts",
+          "contains": [
+            "resolves public Catch and external events to canonical read-only routes",
+            "shows only reviews explicitly scoped to the event id",
+            "fails closed for unpublished organizers and ambiguous duplicate event ids"
+          ]
+        },
+        {
+          "path": "website/src/features/events/sections/EventDetailSections.test.tsx",
+          "contains": [
+            "keeps external events read-only and sends registration to the source",
+            "hands Catch booking to the app and renders only event-scoped reviews"
+          ]
+        }
+      ],
+      "excludedDecisionValues": {
+        "organizer.publishStatus": {
+          "draft": "All non-published values resolve to the same public not-found state.",
+          "suppressed": "All non-published values resolve to the same public not-found state.",
+          "removed": "All non-published values resolve to the same public not-found state."
+        },
+        "organizer.ownershipState": {
+          "claimed": "Claimed ownership follows the same non-claimable verified organizer treatment.",
+          "transferred": "Transferred ownership follows claimed ownership treatment."
+        },
+        "organizer.claimState": {
+          "claimPending": "Claim-pending event routes remain readable without a claim action.",
+          "claimed": "Claimed event routes follow the same non-claimable organizer treatment.",
+          "suppressed": "Suppressed organizers are absent from public event output."
+        },
+        "organizer.verificationStatus": {
+          "unverified": "Unverified source events use the same read-only event body with the crawled-unclaimed badge."
+        },
+        "event.supply": {},
+        "website.claimRequestCapability": {},
+        "website.publicReviewTargetCapability": {},
+        "website.publicReviewReadCapability": {}
+      }
+    },
+    {
       "id": "web.claim",
       "platform": "web",
       "coverageKind": "matrix",
@@ -6403,6 +6654,7 @@
         "web.homeOrganizerDiscovery",
         "web.organizerSearch",
         "web.organizerListing",
+        "web.eventDetail",
         "web.claim"
       ],
       "configurationIds": [
@@ -6426,6 +6678,9 @@
         "web.organizerListing.reviewTargetUnavailable",
         "web.organizerListing.unpublished",
         "web.organizerListing.publishedSuppressed",
+        "web.eventDetail.catchNative",
+        "web.eventDetail.external",
+        "web.eventDetail.unpublished",
         "web.claim.authResolving",
         "web.claim.guestUnclaimed",
         "web.claim.signedInUnclaimed",
@@ -6449,17 +6704,6 @@
       ],
       "counterpartSurfaceId": "app.eventDetail",
       "reason": "External events remain outbound rows and map pins. They must not enter the Catch-native Event Detail, booking, save, review, or companion flows."
-    },
-    {
-      "id": "web.eventDetail",
-      "platform": "web",
-      "checkedInventory": "websiteRoutes",
-      "forbiddenRouteIds": [
-        "event_detail",
-        "event_detail_canonical"
-      ],
-      "counterpartSurfaceId": "app.eventDetail",
-      "reason": "Catch-native event booking remains an app action. Website event cards stay within organizer listings or hand off externally; there is no standalone web Event Detail route."
     },
     {
       "id": "web.appExploreEquivalent",

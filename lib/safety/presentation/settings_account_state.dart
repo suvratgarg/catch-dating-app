@@ -224,6 +224,9 @@ final class SettingsMutationState {
   final bool deletingAccount;
   final bool signingOut;
   final bool unblocking;
+
+  bool get operationPending =>
+      savingPreference || deletingAccount || signingOut || unblocking;
 }
 
 String settingsEmailForDisplay(String email) {

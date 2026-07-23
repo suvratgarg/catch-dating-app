@@ -3,6 +3,11 @@ import assert from "node:assert/strict";
 import {spawnSync} from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
+import {
+  supportedToolPlatforms,
+  toolSupportsPlatform,
+  validateToolPlatforms,
+} from "./lib/tool_platform.mjs";
 
 function run(args) {
   return spawnSync("node", ["tool/run.mjs", ...args], {
@@ -15,6 +20,26 @@ test("filtered checks fail when a category matches no tools", () => {
   const result = run(["check", "--category", "definitely-missing"]);
   assert.equal(result.status, 64);
   assert.match(result.stderr, /No active tools matched category definitely-missing/);
+});
+
+test("platform-specific tools run only on declared operating systems", () => {
+  const tool = {id: "fixture:darwin-only", platforms: ["darwin"]};
+  assert.equal(toolSupportsPlatform(tool, "darwin"), true);
+  assert.equal(toolSupportsPlatform(tool, "linux"), false);
+  assert.equal(toolSupportsPlatform({id: "fixture:anywhere"}, "linux"), true);
+  assert.deepEqual(validateToolPlatforms(tool), []);
+  assert.deepEqual(
+    validateToolPlatforms({platforms: ["darwin", "darwin"]}),
+    ["platforms must not contain duplicates"],
+  );
+  assert.deepEqual(
+    validateToolPlatforms({platforms: ["plan9"]}),
+    ['platforms contains unsupported value "plan9"'],
+  );
+  assert.deepEqual(
+    [...supportedToolPlatforms],
+    ["darwin", "linux", "win32"],
+  );
 });
 
 test("impact routing reports the owning relationship and checks", () => {

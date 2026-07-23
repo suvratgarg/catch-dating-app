@@ -1,9 +1,9 @@
 ---
 doc_id: fable_ui_issue_handoff
 version: 0.1.0
-updated: 2026-07-04
+updated: 2026-07-23
 owner: design_parity_review
-status: resolved
+status: retirement_ready
 ---
 
 # Fable UI Issue Handoff
@@ -166,4 +166,3 @@ node tool/agent/check_agent_readiness.mjs
 
 If changing `CatchField`, also run focused primitive tests from
 `test/core/catch_primitives_test.dart`.
-

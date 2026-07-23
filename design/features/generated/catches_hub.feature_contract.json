@@ -1,0 +1,802 @@
+{
+  "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
+  "version": 2,
+  "generatedFrom": "design/features/catches_hub.feature.json",
+  "generatedFor": "2026-07-23",
+  "sourceDigest": "sha256:75e85878dff27bfc6076a7e5bd50bacde175d27b4c8394ad90d0ca7495675bc9",
+  "resolvedDigest": "sha256:e2c11c154ce1879aa27082d5fadbaea0085b4e5a468d21a5160a5f3ceea1c3b2",
+  "feature": {
+    "id": "feature.catches_hub",
+    "name": "Catches Hub",
+    "owner": "swipes",
+    "status": "pilot",
+    "description": "Orchestrates the signed-in consumer hub for active post-event Catch windows, event-scoped Catches entry, recap navigation, and empty-state recovery."
+  },
+  "coverage": {
+    "surfaces": 1,
+    "states": 12,
+    "scenarios": 12,
+    "actionCases": 12,
+    "actions": 3,
+    "captures": 10,
+    "previews": 5,
+    "testFiles": 1,
+    "evidenceExceptions": 10
+  },
+  "surfaces": [
+    {
+      "id": "consumer_flutter",
+      "runtime": "flutter",
+      "authority": {
+        "registry": "flutter_screens",
+        "id": "screen.catches.hub"
+      },
+      "actionScope": {
+        "included": "Navigation from active Catch-window rows plus the no-active-window recovery route.",
+        "excluded": [
+          "Authentication recovery remains shell-owned; event loading and open-window filtering remain provider/controller responsibilities."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "widgetbook/lib/catches/catches_use_cases.dart"
+        ],
+        "actionOwners": [
+          {
+            "id": "hub_route",
+            "language": "dart",
+            "file": "lib/swipes/presentation/swipe_hub_screen.dart",
+            "symbol": "SwipeHubScreen"
+          }
+        ],
+        "componentContracts": [
+          "catch.badge",
+          "catch.button",
+          "catch.surface"
+        ],
+        "dataContracts": [
+          "contracts/firestore/event_participations.schema.json",
+          "contracts/firestore/events.schema.json"
+        ]
+      },
+      "coverage": {
+        "states": 12,
+        "scenarios": 12,
+        "actionCases": 12,
+        "actions": 3,
+        "captures": 10,
+        "previews": 5,
+        "testFiles": 1,
+        "evidenceExceptions": 10
+      },
+      "dimensions": {
+        "load": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "loading",
+            "error",
+            "offline"
+          ]
+        },
+        "access": {
+          "default": "signed_in",
+          "values": [
+            "signed_in",
+            "signed_out"
+          ]
+        },
+        "content": {
+          "default": "active_windows",
+          "values": [
+            "active_windows",
+            "empty"
+          ]
+        },
+        "accessibility": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "text_scale_2",
+            "reduced_motion"
+          ]
+        },
+        "theme": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "dark_component",
+            "light_dark"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "open_catch_window",
+          "owner": "hub_route",
+          "codeValue": "onOpenCatch",
+          "cardinality": "domain_bounded",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId",
+            "windowClosesAt"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.catches.event"
+              }
+            }
+          ],
+          "description": "Opens the event-scoped Catch deck for an attended event whose Catch window is still open.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_event_recap",
+          "owner": "hub_route",
+          "codeValue": "onOpenRecap",
+          "cardinality": "domain_bounded",
+          "scopeKeys": [
+            "viewerUid",
+            "eventId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.event.recap"
+              }
+            }
+          ],
+          "description": "Opens the recap for one attended event represented by the hub row.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "find_event",
+          "owner": "hub_route",
+          "codeValue": "onFindEvent",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "viewerUid",
+            "routeInstanceId",
+            "emptyStateVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.explore.discovery"
+              }
+            }
+          ],
+          "description": "Leaves the empty hub for Explore once for the current empty-state presentation.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [
+        {
+          "stateIds": [
+            "uid_loading",
+            "uid_error",
+            "signed_out_hidden",
+            "attended_events_loading",
+            "attended_events_error",
+            "no_active_windows",
+            "offline",
+            "text_scale_2",
+            "reduced_motion",
+            "light_dark"
+          ],
+          "evidence": [
+            "tests"
+          ],
+          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
+          "reason": "These registered states have deterministic captures and Widgetbook evidence but no focused state-level automated test recorded by the screen authority yet."
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "uid_loading",
+          "stateId": "uid_loading",
+          "kind": "loading",
+          "status": "captured",
+          "dimensions": {
+            "load": "loading",
+            "access": "signed_in",
+            "content": "active_windows",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "swipe_hub_uid_loading"
+            ],
+            "previewIds": [
+              "SwipeHubScreen/Hub route states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "loading",
+                "access": "signed_in",
+                "content": "active_windows",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "open_catch_window",
+                  "open_event_recap",
+                  "find_event"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "uid_error",
+          "stateId": "uid_error",
+          "kind": "error",
+          "status": "captured",
+          "dimensions": {
+            "load": "error",
+            "access": "signed_in",
+            "content": "active_windows",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "swipe_hub_uid_error"
+            ],
+            "previewIds": [
+              "SwipeHubScreen/Hub route states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "error",
+                "access": "signed_in",
+                "content": "active_windows",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "open_catch_window",
+                  "open_event_recap",
+                  "find_event"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "signed_out_hidden",
+          "stateId": "signed_out_hidden",
+          "kind": "permission",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "access": "signed_out",
+            "content": "active_windows",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "swipe_hub_signed_out"
+            ],
+            "previewIds": [
+              "SwipeHubScreen/Hub route states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "ready",
+                "access": "signed_out",
+                "content": "active_windows",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "open_catch_window",
+                  "open_event_recap",
+                  "find_event"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "attended_events_loading",
+          "stateId": "attended_events_loading",
+          "kind": "loading",
+          "status": "captured",
+          "dimensions": {
+            "load": "loading",
+            "access": "signed_in",
+            "content": "active_windows",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "swipe_hub_attended_events_loading"
+            ],
+            "previewIds": [
+              "SwipeHubScreen/Hub route states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "loading",
+                "access": "signed_in",
+                "content": "active_windows",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "open_catch_window",
+                  "open_event_recap",
+                  "find_event"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "attended_events_error",
+          "stateId": "attended_events_error",
+          "kind": "error",
+          "status": "captured",
+          "dimensions": {
+            "load": "error",
+            "access": "signed_in",
+            "content": "active_windows",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "swipe_hub_attended_events_error"
+            ],
+            "previewIds": [
+              "SwipeHubScreen/Hub route states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "error",
+                "access": "signed_in",
+                "content": "active_windows",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "open_catch_window",
+                  "open_event_recap",
+                  "find_event"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "active_windows",
+          "stateId": "active_windows",
+          "kind": "populated",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "access": "signed_in",
+            "content": "active_windows",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "swipe_hub_active"
+            ],
+            "previewIds": [
+              "SwipeHubScreen/Hub route states",
+              "CatchesHubContent/Hub composition",
+              "CatchesIntroCard/Intro card states",
+              "AttendedEventTile/Tile states"
+            ],
+            "tests": [
+              "test/swipes/swipe_hub_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "active",
+              "dimensions": {
+                "load": "ready",
+                "access": "signed_in",
+                "content": "active_windows",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "open_catch_window",
+                  "open_event_recap"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "find_event"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "no_active_windows",
+          "stateId": "no_active_windows",
+          "kind": "empty",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "access": "signed_in",
+            "content": "empty",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "swipe_hub_empty"
+            ],
+            "previewIds": [
+              "SwipeHubScreen/Hub route states",
+              "CatchesHubEmptyState/Empty states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "empty_recovery",
+              "dimensions": {
+                "load": "ready",
+                "access": "signed_in",
+                "content": "empty",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "find_event"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_catch_window",
+                  "open_event_recap"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "dark_intro_cta",
+          "stateId": "dark_intro_cta",
+          "kind": "theme",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "access": "signed_in",
+            "content": "active_windows",
+            "accessibility": "standard",
+            "theme": "dark_component"
+          },
+          "evidence": {
+            "captureIds": [
+              "swipe_hub_active"
+            ],
+            "previewIds": [
+              "SwipeHubScreen/Hub route states",
+              "CatchesIntroCard/Intro card states"
+            ],
+            "tests": [
+              "test/swipes/swipe_hub_screen_test.dart"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "active",
+              "dimensions": {
+                "load": "ready",
+                "access": "signed_in",
+                "content": "active_windows",
+                "accessibility": "standard",
+                "theme": "dark_component"
+              },
+              "actions": {
+                "enabled": [
+                  "open_catch_window",
+                  "open_event_recap"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "find_event"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "offline",
+          "stateId": "offline",
+          "kind": "offline",
+          "status": "captured",
+          "dimensions": {
+            "load": "offline",
+            "access": "signed_in",
+            "content": "active_windows",
+            "accessibility": "standard",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "swipe_hub_offline"
+            ],
+            "previewIds": [
+              "SwipeHubScreen/Hub route states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "load": "offline",
+                "access": "signed_in",
+                "content": "active_windows",
+                "accessibility": "standard",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "open_catch_window",
+                  "open_event_recap",
+                  "find_event"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "text_scale_2",
+          "stateId": "text_scale_2",
+          "kind": "accessibility",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "access": "signed_in",
+            "content": "active_windows",
+            "accessibility": "text_scale_2",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "swipe_hub_text_scale_2"
+            ],
+            "previewIds": [
+              "SwipeHubScreen/Hub route states",
+              "CatchesHubContent/Hub composition"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "active",
+              "dimensions": {
+                "load": "ready",
+                "access": "signed_in",
+                "content": "active_windows",
+                "accessibility": "text_scale_2",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "open_catch_window",
+                  "open_event_recap"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "find_event"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "reduced_motion",
+          "stateId": "reduced_motion",
+          "kind": "accessibility",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "access": "signed_in",
+            "content": "active_windows",
+            "accessibility": "reduced_motion",
+            "theme": "standard"
+          },
+          "evidence": {
+            "captureIds": [
+              "swipe_hub_reduced_motion"
+            ],
+            "previewIds": [
+              "SwipeHubScreen/Hub route states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "active",
+              "dimensions": {
+                "load": "ready",
+                "access": "signed_in",
+                "content": "active_windows",
+                "accessibility": "reduced_motion",
+                "theme": "standard"
+              },
+              "actions": {
+                "enabled": [
+                  "open_catch_window",
+                  "open_event_recap"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "find_event"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "light_dark",
+          "stateId": "light_dark",
+          "kind": "theme",
+          "status": "captured",
+          "dimensions": {
+            "load": "ready",
+            "access": "signed_in",
+            "content": "active_windows",
+            "accessibility": "standard",
+            "theme": "light_dark"
+          },
+          "evidence": {
+            "captureIds": [
+              "swipe_hub_active"
+            ],
+            "previewIds": [
+              "SwipeHubScreen/Hub route states"
+            ],
+            "tests": []
+          },
+          "actionCases": [
+            {
+              "id": "active",
+              "dimensions": {
+                "load": "ready",
+                "access": "signed_in",
+                "content": "active_windows",
+                "accessibility": "standard",
+                "theme": "light_dark"
+              },
+              "actions": {
+                "enabled": [
+                  "open_catch_window",
+                  "open_event_recap"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "find_event"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "screen.catches.hub",
+          "owner": "swipes",
+          "routes": [
+            {
+              "id": "swipeHubScreen",
+              "path": "/catches",
+              "role": "primary"
+            }
+          ]
+        },
+        "components": [
+          {
+            "id": "catch.badge",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchBadge",
+              "file": "lib/core/widgets/catch_badge.dart",
+              "constructors": [
+                "CatchBadge",
+                "CatchBadge.functional",
+                "CatchBadge.solid",
+                "CatchBadge.solidStatus",
+                "CatchBadge.live",
+                "CatchBadge.onDark",
+                "CatchBadge.onDarkStatus",
+                "CatchBadge.privacy"
+              ]
+            }
+          },
+          {
+            "id": "catch.button",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchButton",
+              "file": "lib/core/widgets/catch_button.dart",
+              "constructors": [
+                "CatchButton"
+              ]
+            }
+          },
+          {
+            "id": "catch.surface",
+            "kind": "primitive",
+            "dart": {
+              "symbol": "CatchSurface",
+              "file": "lib/core/widgets/catch_surface.dart",
+              "constructors": [
+                "CatchSurface",
+                "CatchSurface.card",
+                "CatchSurface.tinted",
+                "CatchSurface.message"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "AttendedEventTile/Tile states",
+          "CatchesHubContent/Hub composition",
+          "CatchesHubEmptyState/Empty states",
+          "CatchesIntroCard/Intro card states",
+          "SwipeHubScreen/Hub route states"
+        ]
+      }
+    }
+  ]
+}
