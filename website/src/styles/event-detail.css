@@ -4,6 +4,11 @@
 
 .event-detail-hero {
   --catch-focus-ring-color: var(--activity, var(--website-accent));
+  --event-detail-activity-contrast: color-mix(
+    in srgb,
+    var(--activity, var(--website-accent)) 78%,
+    var(--website-text)
+  );
   padding: calc(var(--header-height) + var(--catch-space-s6)) var(--gutter)
     var(--catch-space-s16);
   border-bottom: 1px solid var(--website-line);
@@ -68,7 +73,7 @@
 
 .event-detail-ticket .ui-label,
 .event-detail-ticket__plan .ui-label {
-  color: var(--activity, var(--website-accent));
+  color: var(--event-detail-activity-contrast);
   font-family: var(--catch-font-mono), ui-monospace, monospace;
   letter-spacing: 0.08em;
 }
@@ -300,8 +305,12 @@
 }
 
 .event-detail-action-panel__actions .button:not(.button--ghost):not(.button--ghost-light) {
-  background: var(--activity, var(--website-accent));
+  background: var(--event-detail-activity-contrast);
   color: var(--catch-color-dark-ink);
+}
+
+.event-detail-hero .activity-mark.is-unclaimed {
+  color: var(--website-text-muted);
 }
 
 .event-detail-action-panel__actions

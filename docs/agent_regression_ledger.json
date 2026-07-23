@@ -1,5 +1,5 @@
 {
-  "version": 90,
+  "version": 91,
   "updated": "2026-07-24",
   "owner": "agent_operating_model",
   "entries": [
@@ -2854,6 +2854,27 @@
         "design/public_surface_behavior.json"
       ],
       "notes": "Catch-native events hand registration to the app. External events hand registration to their official source. Claim eligibility belongs to the organizer policy and is shown independently from event supply."
+    },
+    {
+      "id": "REG-WEB-EVENT-DETAIL-CONTRAST-001",
+      "title": "Activity accents lose contrast inside event-detail cards and actions",
+      "status": "active",
+      "applies_to": [
+        "website/src/styles/event-detail.css",
+        "website/src/stories/EventDetailSections.stories.tsx",
+        "website/src/stories/MarketingRoutes.stories.tsx"
+      ],
+      "symptom": "An activity accent remains decorative-strength when used as small text or a button background on a light event-detail surface, or an unclaimed organizer mark uses the faint ink token below the large-text contrast floor.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-marketing run test:storybook:a11y",
+        "guardEvidence": "the event-detail section and full-route stories run in Chromium with axe color-contrast failures blocking CI"
+      },
+      "owner_docs": [
+        "docs/marketing_website_architecture.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "Keep activity identity in decorative treatments, but mix activity accents toward semantic ink before using them for foreground text or action backgrounds on light surfaces."
     }
   ]
 }
