@@ -4,9 +4,13 @@ import {type FormEvent, useRef, useState} from "react";
 import {
   createMarketingEventId,
   trackMarketingEvent,
-  type WaitlistAnalyticsPayload,
   waitlistAnalyticsPayload,
 } from "../../../analytics";
+import {
+  parseJoinWaitlistHttpResponse,
+  type JoinWaitlistHTTPRequest,
+  type JoinWaitlistHTTPResponse,
+} from "../../../shared/api/joinWaitlistContract";
 import type {FormStatus} from "../../../shared/forms/types";
 import {usePendingRequestRegistration} from "../../../shared/pendingRequest";
 import {websiteQueryKeys} from "../../../shared/query/queryKeys";
@@ -20,38 +24,10 @@ import {
   type HostApplicationStep,
 } from "./applicationModel";
 
-type HostApplicationSubmitBody = WaitlistAnalyticsPayload & {
-  fullName: string;
-  email: string;
-  city: string;
-  role: "host";
-  instagram: string;
-  website: string;
-  hostApplication: {
-    organizationName: string;
-    organizationType: string;
-    operatingCity: string;
-    communityLink: string;
-    formats: string[];
-    eventCadence: string;
-    nextEventName: string;
-    nextEventDate: string;
-    eventLocation: string;
-    expectedCapacity: string;
-    priceRange: string;
-    admissionModel: string;
-    waitlistPlan: string;
-    paymentReadiness: string;
-    eventSuccessModules: string[];
-    hostGoals: string;
-    operatingNotes: string;
-  };
-};
-
-type HostApplicationSubmitResponse = {
-  alreadyJoined?: boolean;
-  error?: string;
-};
+type JoinWaitlistHTTPSuccessResponse = Extract<
+  JoinWaitlistHTTPResponse,
+  {ok: true}
+>;
 
 export function useHostApplicationController() {
   const [draft, setDraft] = useState<HostApplicationDraft>(initialHostApplicationDraft);
@@ -64,7 +40,7 @@ export function useHostApplicationController() {
     mutationFn: submitHostApplication,
   });
   const submissionInFlight =
-    useRef<Promise<HostApplicationSubmitResponse> | null>(null);
+    useRef<Promise<JoinWaitlistHTTPSuccessResponse> | null>(null);
   usePendingRequestRegistration(submitMutation.isPending);
 
   const currentStepIndex = hostApplicationSteps.findIndex((item) => item.id === step);
@@ -238,23 +214,29 @@ export function useHostApplicationController() {
 }
 
 async function submitHostApplication(
-  body: HostApplicationSubmitBody
-): Promise<HostApplicationSubmitResponse> {
+  body: JoinWaitlistHTTPRequest
+): Promise<JoinWaitlistHTTPSuccessResponse> {
   const response = await fetch("/api/join-waitlist", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify(body),
   });
-  const data = (await response.json().catch(() => ({}))) as
-    HostApplicationSubmitResponse;
+  const data = parseJoinWaitlistHttpResponse(
+    await response.json().catch(() => ({}))
+  );
 
   if (!response.ok) {
     throw new Error(
-      typeof data.error === "string"
+      "error" in data
         ? data.error
         : "We couldn't submit the host application. Please try again."
     );
   }
 
+  if (!("ok" in data)) {
+    throw new Error(
+      "Catch returned an unexpected waitlist response. Please try again."
+    );
+  }
   return data;
 }

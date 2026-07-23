@@ -4,6 +4,11 @@ import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAdmin} from "./adminAuth";
 import {writeAdminAuditLog} from "./adminAudit";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
+import type {AdminGetOverviewCallableResponse} from
+  "../shared/generated/adminGetOverviewCallableResponse";
+import {validateAdminGetOverviewCallablePayload} from
+  "../shared/generated/schemaValidators";
+import {validateCallableWithAjv} from "../shared/validation";
 
 const authScanPageSize = 1000;
 
@@ -23,29 +28,7 @@ export interface AdminQueueItem {
   targetPath: string;
 }
 
-export interface AdminOverviewResponse {
-  generatedAt: string;
-  timezone: "UTC";
-  metrics: AdminOverviewMetric[];
-  queues: {
-    safetyReports: AdminQueueItem[];
-    moderationFlags: AdminQueueItem[];
-    eventSafetyReports: AdminQueueItem[];
-    accessApplications: AdminQueueItem[];
-    clubClaimRequests: AdminQueueItem[];
-    clubIndexReviews: AdminQueueItem[];
-    paymentIssues: AdminQueueItem[];
-  };
-  dataQuality: Array<{
-    id: string;
-    label: string;
-    state: "ok" | "warning" | "blocked";
-    detail: string;
-    owner: string;
-    runbook: string;
-    nextAction: string;
-  }>;
-}
+export type AdminOverviewResponse = AdminGetOverviewCallableResponse;
 
 interface AuthUserLike {
   metadata: {
@@ -150,6 +133,7 @@ export async function adminGetOverviewHandler(
   deps: OverviewDeps = defaultDeps
 ): Promise<AdminOverviewResponse> {
   const adminContext = requireAdmin(request);
+  validateCallableWithAjv(request, validateAdminGetOverviewCallablePayload);
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, adminContext.uid, "adminGetOverview");
   const now = deps.now();

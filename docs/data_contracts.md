@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.4.2
-updated: 2026-07-22
+version: 1.4.3
+updated: 2026-07-23
 owner: recursive_audit_loop
 status: active
 ---
@@ -35,9 +35,10 @@ Read this before changing:
 
 | Surface | Owner |
 |---|---|
-| Persisted document schemas, callable payload schemas, fixtures, catalogs | `contracts/` |
+| Persisted document, callable, and public HTTP schemas plus fixtures and catalogs | `contracts/` |
 | Storage path contracts (upload paths, content-type, size limits, owner) | `contracts/storage/` |
 | Generated TypeScript interfaces, Ajv validators, and Admin SDK Timestamp types | `functions/src/shared/generated/` |
+| Generated website and Admin browser contract types | `website/src/shared/contracts/generated/` and `admin/src/generated/contracts/` |
 | Generated Dart schema constants/registry | `lib/core/schema_contracts/generated/` |
 | Tool-side schema registry and validators | `tool/contracts/generated/` |
 | Firestore operation ownership metadata | `tool/contracts/firestore_contract.json` |
@@ -65,6 +66,20 @@ come from JSON Schema; the boundary is the timestamp representation:
 `tool/contracts/check_firestore_contract.mjs` cross-checks that the Admin SDK
 projection has the expected fields for every collection with a
 `typescriptInterface` entry.
+
+### Public HTTP And Admin Callable Boundaries
+
+The public `/api/join-waitlist` endpoint uses the versioned schemas under
+`contracts/http/` for both member waitlist and optional Host application
+payloads. The generator emits the same types into website and Functions code;
+Functions validates incoming requests and every JSON response, while the
+website validates response JSON before treating a submission as successful.
+
+High-risk Admin overview, access-decision, role, safety, and marketing mutation
+requests/responses use dedicated schemas under `contracts/callables/` and
+`contracts/callable_responses/`. The generator emits Functions and Admin types,
+and `admin/scripts/generateCallableValidators.mjs` compiles the same schema
+sources into the browser runtime validator registry.
 
 ## Organizer Authority
 

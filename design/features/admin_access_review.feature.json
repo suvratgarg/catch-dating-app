@@ -38,9 +38,9 @@
         "componentContracts": ["route_access_review"],
         "dataContracts": [],
         "runtimeContracts": [
-          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminGetOverview", "requestValidation": "structural_object", "responseValidation": "structural_object"},
+          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminGetOverview", "requestValidation": "strict_schema", "responseValidation": "strict_schema"},
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminGetAccessApplicationDetails", "requestValidation": "structural_object", "responseValidation": "structural_object"},
-          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminDecideAccessApplication", "requestValidation": "structural_object", "responseValidation": "structural_object"}
+          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminDecideAccessApplication", "requestValidation": "strict_schema", "responseValidation": "strict_schema"}
         ],
         "testEvidence": {
           "capped-directory": [

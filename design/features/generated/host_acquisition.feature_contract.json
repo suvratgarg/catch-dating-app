@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_acquisition.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:d8f4a82f46227ae2806b538ca93a7be55e9e678873589c95685e599403794aae",
+  "sourceDigest": "sha256:081d2ce90bbbf75ccc1b507886c0b073988a4e4504ad733acf064033bcbf03be",
   "resolvedDigest": "sha256:8c11c9320fc2ce21f17743456cc5b2900ff4e6dab368d237b2f9e5d36898d1cc",
   "feature": {
     "id": "feature.host_acquisition",
@@ -35,8 +35,7 @@
         "included": "Opening the application, operating the create-event and Playbook previews, expanding the comparison, navigating the application, choosing bounded format/module decisions, submitting the host packet, and following post-submission routes.",
         "excluded": [
           "Site-header anchors, consent choices, static FAQ/trust content, and capture rendering retain shared shell or presentation ownership.",
-          "Host application text and select field edits remain form data governed by the application model rather than separate feature actions.",
-          "The /api/join-waitlist host-application payload and response have no shared schema; WEB-LEAD-API-CONTRACT-001 tracks the missing data-contract boundary."
+          "Host application text and select field edits remain form data governed by the application model rather than separate feature actions."
         ]
       },
       "bindings": {
@@ -89,7 +88,10 @@
           "host_playbook_showcase",
           "host_comparison_section"
         ],
-        "dataContracts": [],
+        "dataContracts": [
+          "contracts/http/join_waitlist_request.schema.json",
+          "contracts/http/join_waitlist_response.schema.json"
+        ],
         "testEvidence": {
           "host-application": [
             "website/src/features/host/application/applicationModel.test.ts",

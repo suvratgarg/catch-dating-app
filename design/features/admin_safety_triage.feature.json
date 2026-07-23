@@ -28,10 +28,10 @@
         "componentContracts": ["route_safety_triage"],
         "dataContracts": [],
         "runtimeContracts": [
-          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminGetOverview", "requestValidation": "structural_object", "responseValidation": "structural_object"},
+          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminGetOverview", "requestValidation": "strict_schema", "responseValidation": "strict_schema"},
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminGetSafetyTriageDetails", "requestValidation": "structural_object", "responseValidation": "structural_object"},
-          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminAssignSafetyTriageItem", "requestValidation": "structural_object", "responseValidation": "structural_object"},
-          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminDecideSafetyTriageItem", "requestValidation": "structural_object", "responseValidation": "structural_object"}
+          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminAssignSafetyTriageItem", "requestValidation": "strict_schema", "responseValidation": "strict_schema"},
+          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminDecideSafetyTriageItem", "requestValidation": "strict_schema", "responseValidation": "strict_schema"}
         ],
         "testEvidence": {
           "directory": ["admin/src/features/safety/controllers/useSafetyTriageController.test.tsx"],

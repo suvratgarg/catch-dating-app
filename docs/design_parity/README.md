@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.41
+version: 0.1.42
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -363,13 +363,11 @@ Admin Intake and Overview do not qualify for grouping: Organizer Intake has
 three independently reviewable states, and the live Overview wrapper has its
 own query lifecycle and actions, so both compile as explicit projections.
 
-A feature orchestration contract cannot replace a missing network schema.
-Marketing Home and Host Acquisition can prove controller ownership, action
-availability, UI evidence, and mutation outcomes, but `/api/join-waitlist`
-still has separately declared website and Functions types. Keep their
-`dataContracts` empty and name `WEB-LEAD-API-CONTRACT-001` until one checked
-request/response schema spans that boundary; do not cite nearby Firestore or
-analytics schemas as false proof.
+A feature orchestration contract must cite the actual network boundary rather
+than nearby Firestore or analytics schemas. Marketing Home and Host Acquisition
+now bind the shared `/api/join-waitlist` request and response schemas; generated
+website and Functions types plus runtime validators make those references
+executable.
 
 An Admin callable binding must also state validation strength rather than
 treating every generated validator as equivalent. `bindings.runtimeContracts`
@@ -377,10 +375,11 @@ names the callable and declares request and response validation separately as
 `strict_schema` or `structural_object`. The compiler compares those values with
 `admin/src/generated/validators/adminCallableValidators.ts` and rejects both
 overclaiming and stale underclaiming. Structural validation is real boundary
-protection, but it is not a field-level request/response schema;
-`ADMIN-CALLABLE-STRICTNESS-001` owns that migration. Pending-operation
-integrity is separately enforced by the Admin-wide frozen-snapshot lease and
-the compiled pending action matrices.
+protection, but it is not a field-level request/response schema. The prioritized
+overview, access-decision, role, safety, and marketing mutation directions now
+compile as `strict_schema`; remaining structural bindings continue to say so
+explicitly. Pending-operation integrity is separately enforced by the
+Admin-wide frozen-snapshot lease and the compiled pending action matrices.
 
 ## Structural Lessons From Full Coverage
 

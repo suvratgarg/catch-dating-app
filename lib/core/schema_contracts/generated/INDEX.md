@@ -197,6 +197,22 @@ Do not edit it by hand.
 | DeleteSavedEventClientWrite | `client_writes/delete_saved_event.schema.json` | `functions/src/shared/generated/deleteSavedEventClientWrite.ts` |
 | MarkNotificationReadClientWrite | `client_writes/mark_notification_read.schema.json` | `functions/src/shared/generated/markNotificationReadClientWrite.ts` |
 | ResetMatchUnreadCountClientWrite | `client_writes/reset_match_unread_count.schema.json` | `functions/src/shared/generated/resetMatchUnreadCountClientWrite.ts` |
+| AdminGetOverviewCallablePayload | `callables/admin_get_overview_payload.schema.json` | `functions/src/shared/generated/adminGetOverviewCallablePayload.ts` |
+| AdminGetOverviewCallableResponse | `callable_responses/admin_get_overview_response.schema.json` | `functions/src/shared/generated/adminGetOverviewCallableResponse.ts` |
+| AdminDecideAccessApplicationCallablePayload | `callables/admin_decide_access_application_payload.schema.json` | `functions/src/shared/generated/adminDecideAccessApplicationCallablePayload.ts` |
+| AdminDecideAccessApplicationCallableResponse | `callable_responses/admin_decide_access_application_response.schema.json` | `functions/src/shared/generated/adminDecideAccessApplicationCallableResponse.ts` |
+| AdminSetAdminUserRolesCallablePayload | `callables/admin_set_admin_user_roles_payload.schema.json` | `functions/src/shared/generated/adminSetAdminUserRolesCallablePayload.ts` |
+| AdminSetAdminUserRolesCallableResponse | `callable_responses/admin_set_admin_user_roles_response.schema.json` | `functions/src/shared/generated/adminSetAdminUserRolesCallableResponse.ts` |
+| AdminDecideSafetyTriageItemCallablePayload | `callables/admin_decide_safety_triage_item_payload.schema.json` | `functions/src/shared/generated/adminDecideSafetyTriageItemCallablePayload.ts` |
+| AdminDecideSafetyTriageItemCallableResponse | `callable_responses/admin_decide_safety_triage_item_response.schema.json` | `functions/src/shared/generated/adminDecideSafetyTriageItemCallableResponse.ts` |
+| AdminAssignSafetyTriageItemCallablePayload | `callables/admin_assign_safety_triage_item_payload.schema.json` | `functions/src/shared/generated/adminAssignSafetyTriageItemCallablePayload.ts` |
+| AdminAssignSafetyTriageItemCallableResponse | `callable_responses/admin_assign_safety_triage_item_response.schema.json` | `functions/src/shared/generated/adminAssignSafetyTriageItemCallableResponse.ts` |
+| AdminCreateMarketingContentDraftCallablePayload | `callables/admin_create_marketing_content_draft_payload.schema.json` | `functions/src/shared/generated/adminCreateMarketingContentDraftCallablePayload.ts` |
+| AdminCreateMarketingContentDraftCallableResponse | `callable_responses/admin_create_marketing_content_draft_response.schema.json` | `functions/src/shared/generated/adminCreateMarketingContentDraftCallableResponse.ts` |
+| AdminRecordMarketingReviewDecisionCallablePayload | `callables/admin_record_marketing_review_decision_payload.schema.json` | `functions/src/shared/generated/adminRecordMarketingReviewDecisionCallablePayload.ts` |
+| AdminRecordMarketingReviewDecisionCallableResponse | `callable_responses/admin_record_marketing_review_decision_response.schema.json` | `functions/src/shared/generated/adminRecordMarketingReviewDecisionCallableResponse.ts` |
+| JoinWaitlistHTTPRequest | `http/join_waitlist_request.schema.json` | `functions/src/shared/generated/joinWaitlistHttpRequest.ts` |
+| JoinWaitlistHTTPResponse | `http/join_waitlist_response.schema.json` | `functions/src/shared/generated/joinWaitlistHttpResponse.ts` |
 
 ## Dart Schema Constants
 
@@ -387,6 +403,22 @@ Do not edit it by hand.
 | `schemaDeleteSavedEventClientWriteSchema` | DeleteSavedEventClientWrite | `client_writes/delete_saved_event.schema.json` | `lib/core/schema_contracts/generated/schemas/delete_saved_event_client_write.g.dart` |
 | `schemaMarkNotificationReadClientWriteSchema` | MarkNotificationReadClientWrite | `client_writes/mark_notification_read.schema.json` | `lib/core/schema_contracts/generated/schemas/mark_notification_read_client_write.g.dart` |
 | `schemaResetMatchUnreadCountClientWriteSchema` | ResetMatchUnreadCountClientWrite | `client_writes/reset_match_unread_count.schema.json` | `lib/core/schema_contracts/generated/schemas/reset_match_unread_count_client_write.g.dart` |
+| `schemaAdminGetOverviewCallablePayloadSchema` | AdminGetOverviewCallablePayload | `callables/admin_get_overview_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_overview_callable_payload.g.dart` |
+| `schemaAdminGetOverviewCallableResponseSchema` | AdminGetOverviewCallableResponse | `callable_responses/admin_get_overview_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_overview_callable_response.g.dart` |
+| `schemaAdminDecideAccessApplicationCallablePayloadSchema` | AdminDecideAccessApplicationCallablePayload | `callables/admin_decide_access_application_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_decide_access_application_callable_payload.g.dart` |
+| `schemaAdminDecideAccessApplicationCallableResponseSchema` | AdminDecideAccessApplicationCallableResponse | `callable_responses/admin_decide_access_application_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_decide_access_application_callable_response.g.dart` |
+| `schemaAdminSetAdminUserRolesCallablePayloadSchema` | AdminSetAdminUserRolesCallablePayload | `callables/admin_set_admin_user_roles_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_set_admin_user_roles_callable_payload.g.dart` |
+| `schemaAdminSetAdminUserRolesCallableResponseSchema` | AdminSetAdminUserRolesCallableResponse | `callable_responses/admin_set_admin_user_roles_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_set_admin_user_roles_callable_response.g.dart` |
+| `schemaAdminDecideSafetyTriageItemCallablePayloadSchema` | AdminDecideSafetyTriageItemCallablePayload | `callables/admin_decide_safety_triage_item_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_decide_safety_triage_item_callable_payload.g.dart` |
+| `schemaAdminDecideSafetyTriageItemCallableResponseSchema` | AdminDecideSafetyTriageItemCallableResponse | `callable_responses/admin_decide_safety_triage_item_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_decide_safety_triage_item_callable_response.g.dart` |
+| `schemaAdminAssignSafetyTriageItemCallablePayloadSchema` | AdminAssignSafetyTriageItemCallablePayload | `callables/admin_assign_safety_triage_item_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_assign_safety_triage_item_callable_payload.g.dart` |
+| `schemaAdminAssignSafetyTriageItemCallableResponseSchema` | AdminAssignSafetyTriageItemCallableResponse | `callable_responses/admin_assign_safety_triage_item_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_assign_safety_triage_item_callable_response.g.dart` |
+| `schemaAdminCreateMarketingContentDraftCallablePayloadSchema` | AdminCreateMarketingContentDraftCallablePayload | `callables/admin_create_marketing_content_draft_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_create_marketing_content_draft_callable_payload.g.dart` |
+| `schemaAdminCreateMarketingContentDraftCallableResponseSchema` | AdminCreateMarketingContentDraftCallableResponse | `callable_responses/admin_create_marketing_content_draft_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_create_marketing_content_draft_callable_response.g.dart` |
+| `schemaAdminRecordMarketingReviewDecisionCallablePayloadSchema` | AdminRecordMarketingReviewDecisionCallablePayload | `callables/admin_record_marketing_review_decision_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_record_marketing_review_decision_callable_payload.g.dart` |
+| `schemaAdminRecordMarketingReviewDecisionCallableResponseSchema` | AdminRecordMarketingReviewDecisionCallableResponse | `callable_responses/admin_record_marketing_review_decision_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_record_marketing_review_decision_callable_response.g.dart` |
+| `schemaJoinWaitlistHTTPRequestSchema` | JoinWaitlistHTTPRequest | `http/join_waitlist_request.schema.json` | `lib/core/schema_contracts/generated/schemas/join_waitlist_http_request.g.dart` |
+| `schemaJoinWaitlistHTTPResponseSchema` | JoinWaitlistHTTPResponse | `http/join_waitlist_response.schema.json` | `lib/core/schema_contracts/generated/schemas/join_waitlist_http_response.g.dart` |
 
 ## Dart Callable Classes
 
@@ -473,6 +505,12 @@ Do not edit it by hand.
 | PlacesAutocompleteCallableRequest | PlacesAutocompleteCallablePayload | `callables/places_autocomplete_payload.schema.json` | `lib/core/schema_contracts/generated/callables/places_autocomplete_callable_request.g.dart` |
 | PlaceDetailsCallableRequest | PlaceDetailsCallablePayload | `callables/place_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/place_details_callable_request.g.dart` |
 | ExploreSearchCallableRequest | ExploreSearchCallablePayload | `callables/explore_search_payload.schema.json` | `lib/core/schema_contracts/generated/callables/explore_search_callable_request.g.dart` |
+| AdminDecideAccessApplicationCallableRequest | AdminDecideAccessApplicationCallablePayload | `callables/admin_decide_access_application_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_decide_access_application_callable_request.g.dart` |
+| AdminSetAdminUserRolesCallableRequest | AdminSetAdminUserRolesCallablePayload | `callables/admin_set_admin_user_roles_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_set_admin_user_roles_callable_request.g.dart` |
+| AdminDecideSafetyTriageItemCallableRequest | AdminDecideSafetyTriageItemCallablePayload | `callables/admin_decide_safety_triage_item_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_decide_safety_triage_item_callable_request.g.dart` |
+| AdminAssignSafetyTriageItemCallableRequest | AdminAssignSafetyTriageItemCallablePayload | `callables/admin_assign_safety_triage_item_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_assign_safety_triage_item_callable_request.g.dart` |
+| AdminCreateMarketingContentDraftCallableRequest | AdminCreateMarketingContentDraftCallablePayload | `callables/admin_create_marketing_content_draft_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_create_marketing_content_draft_callable_request.g.dart` |
+| AdminRecordMarketingReviewDecisionCallableRequest | AdminRecordMarketingReviewDecisionCallablePayload | `callables/admin_record_marketing_review_decision_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_record_marketing_review_decision_callable_request.g.dart` |
 
 ## Callable Schemas Still Hand-Written In Dart
 
@@ -484,6 +522,7 @@ Do not edit it by hand.
 | AdminUpdateOrganizerDetailsCallablePayloadPatch | no Dart patch config |
 | AdminUpdateEventDetailsCallablePayloadPatch | no Dart patch config |
 | RefreshStripeHostPaymentAccountCallablePayload | no properties |
+| AdminGetOverviewCallablePayload | not an object schema |
 
 ## Registry And Validator Outputs
 

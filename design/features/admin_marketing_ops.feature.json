@@ -28,8 +28,8 @@
         "dataContracts": [],
         "runtimeContracts": [
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminGetMarketingOpsDashboard", "requestValidation": "structural_object", "responseValidation": "structural_object"},
-          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminCreateMarketingContentDraft", "requestValidation": "structural_object", "responseValidation": "structural_object"},
-          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminRecordMarketingReviewDecision", "requestValidation": "structural_object", "responseValidation": "structural_object"}
+          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminCreateMarketingContentDraft", "requestValidation": "strict_schema", "responseValidation": "strict_schema"},
+          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminRecordMarketingReviewDecision", "requestValidation": "strict_schema", "responseValidation": "strict_schema"}
         ],
         "testEvidence": {
           "post-board": [

@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/admin_marketing_ops.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:e7cd6880b3b9f0e556d1286c4e19a027de68ef6c95175b6e5665236045e2a568",
+  "sourceDigest": "sha256:5df3a111cc3e0a554036171cfd8ae3b0a5d9810cf3ec7f6c8cf2487ae6c91634",
   "resolvedDigest": "sha256:984c02d987396daffd29cc658a891f1f5368b992032ed7aab07d529bb026c9f3",
   "feature": {
     "id": "feature.admin_marketing_ops",
@@ -66,15 +66,15 @@
             "kind": "admin_callable",
             "registry": "admin/src/generated/validators/adminCallableValidators.ts",
             "callable": "adminCreateMarketingContentDraft",
-            "requestValidation": "structural_object",
-            "responseValidation": "structural_object"
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
           },
           {
             "kind": "admin_callable",
             "registry": "admin/src/generated/validators/adminCallableValidators.ts",
             "callable": "adminRecordMarketingReviewDecision",
-            "requestValidation": "structural_object",
-            "responseValidation": "structural_object"
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
           }
         ],
         "testEvidence": {

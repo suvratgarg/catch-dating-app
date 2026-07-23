@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/admin_data_quality.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:aeef30d8834b83f2d834614bacb58a64172e8e2850d4a83b4c43184df63e698c",
+  "sourceDigest": "sha256:4cfac7e65b3a52b32e90212810f875604f76b8cc92164f3bddca9565660b6859",
   "resolvedDigest": "sha256:cb4f0c5ae11fbbeca7573517fd3c88ad676299b726ece385c644c91bc71c4823",
   "feature": {
     "id": "feature.admin_data_quality",
@@ -69,8 +69,8 @@
             "kind": "admin_callable",
             "registry": "admin/src/generated/validators/adminCallableValidators.ts",
             "callable": "adminGetOverview",
-            "requestValidation": "structural_object",
-            "responseValidation": "structural_object"
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
           },
           {
             "kind": "admin_callable",

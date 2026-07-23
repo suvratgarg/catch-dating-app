@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_set_admin_user_roles_response.schema.json",
+  "title": "Admin Set Admin User Roles Callable Response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "user",
+    "beforeRoles",
+    "afterRoles"
+  ],
+  "properties": {
+    "user": {
+      "$ref": "#/definitions/user"
+    },
+    "beforeRoles": {
+      "$ref": "#/definitions/roles"
+    },
+    "afterRoles": {
+      "$ref": "#/definitions/roles"
+    }
+  },
+  "definitions": {
+    "adminRole": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support",
+        "finance",
+        "analyticsViewer"
+      ]
+    },
+    "roles": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/adminRole"
+      }
+    },
+    "nullableText": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "user": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetUid",
+        "email",
+        "displayName",
+        "disabled",
+        "roles",
+        "assignmentPath"
+      ],
+      "properties": {
+        "targetUid": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "email": {
+          "$ref": "#/definitions/nullableText"
+        },
+        "displayName": {
+          "$ref": "#/definitions/nullableText"
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "roles": {
+          "$ref": "#/definitions/roles"
+        },
+        "assignmentPath": {
+          "type": "string",
+          "pattern": "^adminRoleAssignments/[^/]+$"
+        }
+      }
+    }
+  }
+}

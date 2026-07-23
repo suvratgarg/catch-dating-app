@@ -16,8 +16,7 @@
         "included": "Opening the application, operating the create-event and Playbook previews, expanding the comparison, navigating the application, choosing bounded format/module decisions, submitting the host packet, and following post-submission routes.",
         "excluded": [
           "Site-header anchors, consent choices, static FAQ/trust content, and capture rendering retain shared shell or presentation ownership.",
-          "Host application text and select field edits remain form data governed by the application model rather than separate feature actions.",
-          "The /api/join-waitlist host-application payload and response have no shared schema; WEB-LEAD-API-CONTRACT-001 tracks the missing data-contract boundary."
+          "Host application text and select field edits remain form data governed by the application model rather than separate feature actions."
         ]
       },
       "bindings": {
@@ -70,7 +69,10 @@
           "host_playbook_showcase",
           "host_comparison_section"
         ],
-        "dataContracts": [],
+        "dataContracts": [
+          "contracts/http/join_waitlist_request.schema.json",
+          "contracts/http/join_waitlist_response.schema.json"
+        ],
         "testEvidence": {
           "host-application": [
             "website/src/features/host/application/applicationModel.test.ts",

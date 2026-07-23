@@ -1,0 +1,7 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_overview_payload.schema.json",
+  "title": "Admin Get Overview Callable Payload",
+  "type": "object",
+  "additionalProperties": false
+}

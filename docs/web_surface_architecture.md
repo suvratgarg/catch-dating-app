@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.8.9
+version: 0.8.10
 updated: 2026-07-23
 owner: web_platform
 status: active
@@ -58,14 +58,15 @@ Intake and Overview each use two because Organizer Intake and the live Overview
 controller wrapper own independently reviewable states and actions. No Admin
 authority remains planned or grouped.
 
-Cross-surface orchestration does not make an unversioned HTTP boundary
-deterministic. The two `/api/join-waitlist` callers and the Function currently
-declare separate TypeScript shapes; `WEB-LEAD-API-CONTRACT-001` owns a future
-shared schema and generated/validated types. Pending request snapshots are a
-separate, closed concern for Marketing: waitlist, Host application, and Claim
-use the frozen-snapshot policy from `ARCH-PENDING-SNAPSHOT-001`, including
-request-defining controls, steps, auth, sibling forms, shared route links, and
-browser exit.
+Marketing Home and Host Acquisition now share the versioned
+`contracts/http/join_waitlist_{request,response}.schema.json` boundary with the
+Function. The schema generator emits website and Functions types plus runtime
+schema projections; browser responses and Functions requests/responses are
+validated, including the legacy `runner` role compatibility case. Pending
+request snapshots remain a separate, closed concern for Marketing: waitlist,
+Host application, and Claim use the frozen-snapshot policy from
+`ARCH-PENDING-SNAPSHOT-001`, including request-defining controls, steps, auth,
+sibling forms, shared route links, and browser exit.
 
 Admin applies a whole-console frozen-snapshot policy to operator writes and
 submitted analytics queries. `AdminPendingOperationProvider` grants one
@@ -427,9 +428,11 @@ independently as `strict_schema` or `structural_object`, and the feature
 compiler compares those declarations with the generated registry. This rejects
 both overclaiming a structural validator as field-level proof and retaining a
 stale structural declaration after a strict schema lands.
-`ADMIN-CALLABLE-STRICTNESS-001` tracks promotion of the remaining high-risk
-structural-only directions, especially access, role, safety, marketing,
-overview, and mutation responses.
+The highest-risk access decision, role mutation, safety assignment/decision,
+marketing draft/decision, and shared overview request/response directions now
+use dedicated strict schemas. Other callables remain explicitly structural
+where no field-level contract exists, so the registry still reports their
+weaker boundary honestly.
 
 Run `node tool/run.mjs check web:admin-callable-validators`. Admin
 `pretypecheck` runs the same drift check, so a callable or schema change cannot

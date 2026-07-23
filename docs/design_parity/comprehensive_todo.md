@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.320
+version: 0.2.321
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -81,10 +81,10 @@ ledgers as the source of truth when counts differ:
   Marketing Home, Host Acquisition, and Organizer Claim add 16 exact route
   states and 45 surface actions. The dynamic Claim lookup is compiled as a
   second projection because its four authority states are independently useful;
-  Home and Host expose that `/api/join-waitlist` lacks a shared network schema,
-  while all three form workflows now freeze request-defining controls, steps,
-  auth, sibling forms, and route exits under `ARCH-PENDING-SNAPSHOT-001`.
-  `WEB-LEAD-API-CONTRACT-001` remains the separate network-schema debt.
+  Home and Host now bind the shared `/api/join-waitlist` request/response
+  schemas, generated website and Functions types, and runtime validators. All
+  three form workflows freeze request-defining controls, steps, auth, sibling
+  forms, and route exits under `ARCH-PENDING-SNAPSHOT-001`.
   Twelve Admin feature identities now compile all 14 Admin route authorities.
   Intake and Overview each use two projections because Organizer Intake and
   the live Overview controller wrapper own independently useful states and
@@ -92,9 +92,10 @@ ledgers as the source of truth when counts differ:
   generated structural object validation for every cited callable. Admin now
   closes its first systemic debt with one exclusive operation lease that
   freezes all request-defining controls, route actions, shared links, and peer
-  mutations during any contracted write or submitted query. The remaining
-  systemic debt is critical callable directions that still need field-level
-  schemas (`ADMIN-CALLABLE-STRICTNESS-001`).
+  mutations during any contracted write or submitted query. The highest-risk
+  overview, access-decision, role, safety, and marketing mutation directions
+  now have strict request and response schemas; remaining structural callables
+  stay explicitly labeled rather than being overclaimed.
 - Screen priority spread: 18 P1, 9 P2, and 5 P3 contracted screens.
 - Contracted screen states: 597.
 - Contracted screen sections: 227.

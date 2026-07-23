@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/admin_role_management.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:0aff0f470bf423ce797eecc7006223c9f0a5f46658995ddc9eea47d8a7af520b",
+  "sourceDigest": "sha256:5f772b183839512ee3c3ef666e9016ec17b056a6d4620043f9fd6bef314b5755",
   "resolvedDigest": "sha256:84c9bd24c457e7eb523fc222a47a22df8517d489a94e91f7af7cbc2d4d747d7b",
   "feature": {
     "id": "feature.admin_role_management",
@@ -79,8 +79,8 @@
             "kind": "admin_callable",
             "registry": "admin/src/generated/validators/adminCallableValidators.ts",
             "callable": "adminSetAdminUserRoles",
-            "requestValidation": "structural_object",
-            "responseValidation": "structural_object"
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
           }
         ],
         "testEvidence": {

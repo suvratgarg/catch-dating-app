@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/admin_finance_ops.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:6461f0050fc5e0da5f01e5b026e998f0a0de377c895f3751adadbf1ee8f18e82",
+  "sourceDigest": "sha256:edd2c75dbbca56c2fc69e48f0f40327d21c9d29276c90d40fecdbae74927a4c8",
   "resolvedDigest": "sha256:acb2ab3f0c7f499989fd8cb944cb93248a13e7b6ab565f6965edc069ed4b5ecf",
   "feature": {
     "id": "feature.admin_finance_ops",
@@ -69,8 +69,8 @@
             "kind": "admin_callable",
             "registry": "admin/src/generated/validators/adminCallableValidators.ts",
             "callable": "adminGetOverview",
-            "requestValidation": "structural_object",
-            "responseValidation": "structural_object"
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
           },
           {
             "kind": "admin_callable",

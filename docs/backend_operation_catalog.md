@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.3.1
-updated: 2026-07-21
+version: 1.3.2
+updated: 2026-07-23
 owner: recursive_audit_loop
 status: active
 ---
@@ -171,7 +171,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `onBlockCreated` | Firestore trigger on `blocks/{blockId}` create | Backend | `matches/{matchId}` status | Secondary safety guard to close matches after block edge writes. |
 | `reportUser` | Callable | `SafetyRepository.reportUser` | `reports/{autoId}` | Bounded report payload. |
 | `requestAccountDeletion` | Callable | `SafetyRepository.requestAccountDeletion` | `deletedUsers/{uid}`, `users/{uid}`, `publicProfiles/{uid}`, Storage deletes, Auth delete, relationship cleanup across memberships, participations, saved events, profile decisions, matches, reviews, payments, notifications, blocks, reports, and `eventBroadcasts` | Rate-limited before destructive work; backend-only account deletion/anonymization. Writes a processing tombstone before cleanup so notification fan-out cannot race deletion, deletes host-authored broadcast receipts, removes a recipient's target identifier and delivery evidence, deletes original profile photos plus thumbnails, and uses relationship-doc queries instead of scanning parent arrays. |
-| `joinWaitlist` | HTTP function | Marketing site/waitlist form | `launchWaitlist/{emailHash}` | Public endpoint with CORS and IP rate limiting. |
+| `joinWaitlist` | HTTP function | Marketing member waitlist and Host application | `launchWaitlist/{emailHash}`, `marketingConversionEvents/{emailHash}` | Public endpoint with CORS and IP rate limiting; request/response shapes are versioned under `contracts/http/`, generated into website and Functions types, and validated at both boundaries. |
 
 ## Direct Client Firestore Writes
 

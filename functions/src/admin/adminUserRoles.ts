@@ -10,6 +10,13 @@ import {
 } from "./adminAuth";
 import {writeAdminAuditLog} from "./adminAudit";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
+import type {AdminSetAdminUserRolesCallablePayload} from
+  "../shared/generated/adminSetAdminUserRolesCallablePayload";
+import type {AdminSetAdminUserRolesCallableResponse} from
+  "../shared/generated/adminSetAdminUserRolesCallableResponse";
+import {validateAdminSetAdminUserRolesCallablePayload} from
+  "../shared/generated/schemaValidators";
+import {validateCallableWithAjv} from "../shared/validation";
 
 const adminUserRoleOwnerRoles = ["adminOwner"] as const;
 
@@ -47,17 +54,11 @@ export interface AdminListAdminRoleAssignmentsResponse {
   source: "adminRoleAssignments";
 }
 
-export interface AdminSetAdminUserRolesPayload {
-  targetUid: string;
-  roles: AdminRoleClaim[];
-  note: string;
-}
+export type AdminSetAdminUserRolesPayload =
+  AdminSetAdminUserRolesCallablePayload;
 
-export interface AdminSetAdminUserRolesResponse {
-  user: AdminUserRoleRecord;
-  beforeRoles: AdminRoleClaim[];
-  afterRoles: AdminRoleClaim[];
-}
+export type AdminSetAdminUserRolesResponse =
+  AdminSetAdminUserRolesCallableResponse;
 
 interface AuthUserRecord {
   uid: string;
@@ -159,6 +160,10 @@ export async function adminSetAdminUserRolesHandler(
   deps: AdminUserRolesDeps = defaultDeps
 ): Promise<AdminSetAdminUserRolesResponse> {
   const adminContext = requireAdminRole(request, adminUserRoleOwnerRoles);
+  validateCallableWithAjv(
+    request,
+    validateAdminSetAdminUserRolesCallablePayload
+  );
   const payload = normalizeSetAdminUserRolesPayload(request.data);
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, adminContext.uid, "adminSetAdminUserRoles");

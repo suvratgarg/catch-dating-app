@@ -82,11 +82,27 @@ function buildModel() {
     }
   }
 
-  const responsePaths = new Map([
-    ["adminListIntakeOperations", path.join(contractsRoot, "callable_responses/admin_list_intake_operations_response.schema.json")],
-    ["adminGetHostAnalytics", path.join(contractsRoot, "callable_responses/host_analytics_response.schema.json")],
-    ["adminGetUserAnalytics", path.join(contractsRoot, "callable_responses/user_analytics_response.schema.json")],
-  ]);
+  const responsePaths = new Map();
+  const responseDir = path.join(contractsRoot, "callable_responses");
+  for (const filename of fs.readdirSync(responseDir).filter((name) => name.endsWith(".schema.json"))) {
+    const filePath = path.join(responseDir, filename);
+    const schema = readJson(filePath);
+    const base = filename.replace(/_response\.schema\.json$/u, "");
+    const inferred = snakeToCamel(base);
+    const aliases = Array.isArray(schema["x-callable-aliases"]) ?
+      schema["x-callable-aliases"] : [];
+    for (const name of [inferred, ...aliases]) {
+      if (names.includes(name)) responsePaths.set(name, filePath);
+    }
+  }
+  responsePaths.set(
+    "adminGetHostAnalytics",
+    path.join(responseDir, "host_analytics_response.schema.json")
+  );
+  responsePaths.set(
+    "adminGetUserAnalytics",
+    path.join(responseDir, "user_analytics_response.schema.json")
+  );
   const strictResponses = new Set(responsePaths.keys());
   const entryPaths = [...requestPaths.values(), ...responsePaths.values()];
   const schemas = collectSchemas(entryPaths);

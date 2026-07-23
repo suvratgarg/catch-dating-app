@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/admin_overview.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:76d5f2e76d2d6b4ff4f9c179a85444cb5e50cbf61006ce1ab2e59897cb91c93b",
+  "sourceDigest": "sha256:91ce542ee1e690a1299bf40276ca7e83d0c6529d5a7106a88ee2bf5bf562d2d7",
   "resolvedDigest": "sha256:87a77890e66b4712b419d0fb3de30f9fb00ecd109b3246018d8372255cdfab7d",
   "feature": {
     "id": "feature.admin_overview",
@@ -69,8 +69,8 @@
             "kind": "admin_callable",
             "registry": "admin/src/generated/validators/adminCallableValidators.ts",
             "callable": "adminGetOverview",
-            "requestValidation": "structural_object",
-            "responseValidation": "structural_object"
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
           },
           {
             "kind": "admin_callable",
@@ -593,8 +593,8 @@
             "kind": "admin_callable",
             "registry": "admin/src/generated/validators/adminCallableValidators.ts",
             "callable": "adminGetOverview",
-            "requestValidation": "structural_object",
-            "responseValidation": "structural_object"
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
           },
           {
             "kind": "admin_callable",

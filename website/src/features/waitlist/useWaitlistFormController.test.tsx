@@ -58,7 +58,10 @@ describe("useWaitlistFormController", () => {
   });
 
   it("submits the normalized payload and reports success", async () => {
-    const fetchMock = vi.fn().mockResolvedValue({ok: true, json: async () => ({alreadyJoined: false})});
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ok: true, alreadyJoined: false}),
+    });
     vi.stubGlobal("fetch", fetchMock);
     const {result} = renderHook(() => useWaitlistFormController("member"), {wrapper: wrapper()});
     const element = form({
@@ -125,7 +128,7 @@ describe("useWaitlistFormController", () => {
 
     resolveFetch({
       ok: true,
-      json: async () => ({alreadyJoined: false}),
+      json: async () => ({ok: true, alreadyJoined: false}),
     });
     await act(async () => firstSubmit);
     expect(result.current.status.tone).toBe("is-success");

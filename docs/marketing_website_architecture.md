@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.4.175
+version: 0.4.176
 updated: 2026-07-23
 owner: marketing_website
 status: active
@@ -74,10 +74,11 @@ The website is already split out of the old monolithic shell:
   and temporarily block sibling forms, shared route links, and browser exit.
   This keeps the visible draft, auth session, step, and submitted payload
   identical until the request settles.
-- `WEB-LEAD-API-CONTRACT-001` owns the remaining missing shared
-  request/response schema for `/api/join-waitlist`; until it closes, Marketing
-  Home and Host Acquisition deliberately have no false data-contract reference
-  for their remote lead mutation.
+- Marketing Home and Host Acquisition bind their remote lead mutation to the
+  shared `contracts/http/join_waitlist_request.schema.json` and
+  `join_waitlist_response.schema.json` contracts. The generator projects the
+  same types into website and Functions code, while both boundaries reject
+  malformed payloads and responses.
 - `website/src/generated/hostListings.json` is production-only and excludes
   `dataOrigin: "catchDemo"` plus organizer-intake and seed records that do not
   resolve to a `live` city in the active market pack. Multi-market organizer

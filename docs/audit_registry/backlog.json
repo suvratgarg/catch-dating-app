@@ -1,5 +1,5 @@
 {
-  "version": "2.7.171",
+  "version": "2.7.172",
   "updated": "2026-07-23",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, uid-loading conflation follow-up, React component-governance follow-up including class-name boundary enforcement and exported website feature component registry coverage, admin feature export boundary, the retired website legacy site barrel/import boundary, UI label spans, empty-state variants, page shells, claim-flow route/root/auth-row shells, website Host Page route, Host Application flow, Host feature section, waitlist form shells, marketing section, marketing info-card, marketing loop-list, marketing consent banner, featured organizer card, app-download CTA group, organizer listing, organizer listing hero, organizer listing event section including event-action cards, organizer search section, organizer search result shells, PublicSearchBar ownership, public event-card shells, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin loading icon shells, admin toolbar shells/modifiers, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin marketing layout shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision/footer shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin roadmap lists, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
@@ -314,56 +314,6 @@
         "docs/demo_data_seeding.md"
       ],
       "source": "deep_semantic_audit_2026-06"
-    },
-    {
-      "id": "WEB-LEAD-API-CONTRACT-001",
-      "title": "Create one shared schema for the marketing lead API",
-      "status": "active",
-      "owner": "agent",
-      "area": "website,functions,contracts,waitlist,host-acquisition",
-      "priority": "high",
-      "summary": "The member waitlist and Host application both POST to /api/join-waitlist, but website controllers and Functions own separate TypeScript request/response shapes and no checked schema or generated type spans the boundary. Feature contracts can prove the action owner and UI lifecycle but cannot claim a deterministic network payload contract until this seam is centralized.",
-      "acceptance": [
-        "add versioned request and response schemas for /api/join-waitlist including the optional Host application packet",
-        "generate or validate both website and Functions types from the same schema and reject drift in the data-contract gate",
-        "add valid, invalid, compatibility, and response-error fixtures across both producers and consumers",
-        "bind Marketing Home and Host Acquisition feature contracts to the new schemas"
-      ],
-      "paths": [
-        "website/src/features/waitlist/useWaitlistFormController.ts",
-        "website/src/features/host/application/useHostApplicationController.ts",
-        "functions/src/waitlist/joinWaitlist.ts",
-        "contracts",
-        "tool/check_data_contract.sh",
-        "design/features/marketing_home.feature.json",
-        "design/features/host_acquisition.feature.json"
-      ],
-      "source": "2026-07-23-marketing-feature-contracts"
-    },
-    {
-      "id": "ADMIN-CALLABLE-STRICTNESS-001",
-      "title": "Promote critical Admin callables from structural to strict schemas",
-      "status": "active",
-      "owner": "agent",
-      "area": "admin,functions,contracts,callables,feature-contracts",
-      "priority": "high",
-      "summary": "Every Admin callable is protected by a generated top-level object validator, but many critical request or response boundaries still have only structural validation. Feature contracts now bind each callable to its exact generated strictness, so structural coverage remains honest instead of being mistaken for a field-level deterministic API contract.",
-      "acceptance": [
-        "add dedicated request and response JSON schemas for the highest-risk structural-only Admin callables, prioritizing access, roles, safety, marketing, overview, and mutation responses",
-        "generate or validate Admin and Functions types from the same schemas and keep valid, invalid, and compatibility fixtures beside the boundary",
-        "update the Admin feature-contract runtime bindings as each direction becomes strict and keep the compiler rejection for underclaiming or overclaiming validation strength",
-        "run the callable-validator, data-contract, focused Admin, and feature-contract gates"
-      ],
-      "paths": [
-        "admin/src/shared/api/adminApi.ts",
-        "admin/src/generated/validators/adminCallableValidators.ts",
-        "admin/scripts/generateCallableValidators.mjs",
-        "contracts/callables",
-        "contracts/callable_responses",
-        "functions/src",
-        "design/features/admin_*.feature.json"
-      ],
-      "source": "2026-07-23-admin-feature-contracts"
     },
     {
       "id": "DOC-FEATURE-CONTRACT-RETIREMENT-001",

@@ -30,7 +30,7 @@
         "runtimeContracts": [
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminGetAdminUserRoles", "requestValidation": "structural_object", "responseValidation": "structural_object"},
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminListAdminRoleAssignments", "requestValidation": "structural_object", "responseValidation": "structural_object"},
-          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminSetAdminUserRoles", "requestValidation": "structural_object", "responseValidation": "structural_object"}
+          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminSetAdminUserRoles", "requestValidation": "strict_schema", "responseValidation": "strict_schema"}
         ],
         "testEvidence": {
           "role-assignment-detail": [

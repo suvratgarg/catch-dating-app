@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/admin_growth_kpi.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:62db2e6f9731d311cea47000278d2b70ba1d86c9fb6df274567a3e09ea13bb8b",
+  "sourceDigest": "sha256:91af932e1e728d598507f14856d0decbe132bb060f908cf1ebc449af440dafd1",
   "resolvedDigest": "sha256:0055ab272e544832abf78729b587bf4913d80385068ed09ddfc3ef0b432d6f95",
   "feature": {
     "id": "feature.admin_growth_kpi",
@@ -69,8 +69,8 @@
             "kind": "admin_callable",
             "registry": "admin/src/generated/validators/adminCallableValidators.ts",
             "callable": "adminGetOverview",
-            "requestValidation": "structural_object",
-            "responseValidation": "structural_object"
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
           },
           {
             "kind": "admin_callable",

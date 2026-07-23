@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/admin_safety_triage.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:e71826dc27439b51a4df9c572001d60cefa3aa8ad33612dcb7e40636255ff3c1",
+  "sourceDigest": "sha256:8d1e2bd9bf142853221814b2cd911036baa135b940a8e7def73d484a7da6bc25",
   "resolvedDigest": "sha256:08454c51e7028985ece7dfa3480144745d66d7d2623d08acec76e17d5b7e0890",
   "feature": {
     "id": "feature.admin_safety_triage",
@@ -65,8 +65,8 @@
             "kind": "admin_callable",
             "registry": "admin/src/generated/validators/adminCallableValidators.ts",
             "callable": "adminGetOverview",
-            "requestValidation": "structural_object",
-            "responseValidation": "structural_object"
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
           },
           {
             "kind": "admin_callable",
@@ -79,15 +79,15 @@
             "kind": "admin_callable",
             "registry": "admin/src/generated/validators/adminCallableValidators.ts",
             "callable": "adminAssignSafetyTriageItem",
-            "requestValidation": "structural_object",
-            "responseValidation": "structural_object"
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
           },
           {
             "kind": "admin_callable",
             "registry": "admin/src/generated/validators/adminCallableValidators.ts",
             "callable": "adminDecideSafetyTriageItem",
-            "requestValidation": "structural_object",
-            "responseValidation": "structural_object"
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
           }
         ],
         "testEvidence": {

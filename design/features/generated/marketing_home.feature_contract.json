@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/marketing_home.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:215919300a6f88a4594dad137722eef79184d0664ecd17d6d88ca0b087d5659d",
+  "sourceDigest": "sha256:831ed515dad679432145a59cfd4c807e8d6e9b4fa97daeec734b15d1e74d5f01",
   "resolvedDigest": "sha256:c248e9e125c29d9be8947690dc53656fd53ffc61740973eb977ce3095924a31a",
   "feature": {
     "id": "feature.marketing_home",
@@ -35,8 +35,7 @@
         "included": "Organizer and public-event discovery handoffs, Host acquisition routing, configured or unavailable store CTAs, and member waitlist submission.",
         "excluded": [
           "In-page section anchors, consent choices, and footer legal links retain shared site-shell ownership.",
-          "Waitlist field edits and first-focus analytics are form data and telemetry rather than separately cardinalized product actions.",
-          "The /api/join-waitlist payload and response are duplicated TypeScript shapes without a shared schema; WEB-LEAD-API-CONTRACT-001 tracks that data-contract boundary."
+          "Waitlist field edits and first-focus analytics are form data and telemetry rather than separately cardinalized product actions."
         ]
       },
       "bindings": {
@@ -74,7 +73,9 @@
           "waitlist_form_adapter"
         ],
         "dataContracts": [
-          "contracts/public/website_host_listing_projection.schema.json"
+          "contracts/public/website_host_listing_projection.schema.json",
+          "contracts/http/join_waitlist_request.schema.json",
+          "contracts/http/join_waitlist_response.schema.json"
         ],
         "testEvidence": {
           "default": [

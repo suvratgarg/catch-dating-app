@@ -14,29 +14,7 @@ export interface AdminQueueItem {
   targetPath: string;
 }
 
-export interface AdminOverviewResponse {
-  generatedAt: string;
-  timezone: "UTC";
-  metrics: AdminOverviewMetric[];
-  queues: {
-    safetyReports: AdminQueueItem[];
-    moderationFlags: AdminQueueItem[];
-    eventSafetyReports: AdminQueueItem[];
-    accessApplications: AdminQueueItem[];
-    clubClaimRequests: AdminQueueItem[];
-    clubIndexReviews: AdminQueueItem[];
-    paymentIssues: AdminQueueItem[];
-  };
-  dataQuality: Array<{
-    id: string;
-    label: string;
-    state: "ok" | "warning" | "blocked";
-    detail: string;
-    owner: string;
-    runbook: string;
-    nextAction: string;
-  }>;
-}
+export type AdminOverviewResponse = AdminGetOverviewCallableResponse;
 
 export type AdminSafetyTriageKind =
   | "report"
@@ -123,28 +101,17 @@ export interface AdminGetSafetyTriageDetailsResponse {
 
 export type AdminSafetyTriageDecision = "review" | "dismiss";
 
-export interface AdminDecideSafetyTriageItemPayload {
-  targetPath: string;
-  decision: AdminSafetyTriageDecision;
-  note: string;
-}
+export type AdminDecideSafetyTriageItemPayload =
+  AdminDecideSafetyTriageItemCallablePayload;
 
-export interface AdminDecideSafetyTriageItemResponse {
-  targetPath: string;
-  decision: AdminSafetyTriageDecision;
-  status: "reviewed" | "dismissed";
-}
+export type AdminDecideSafetyTriageItemResponse =
+  AdminDecideSafetyTriageItemCallableResponse;
 
-export interface AdminAssignSafetyTriageItemPayload {
-  targetPath: string;
-  assigneeUid: string | null;
-  note: string;
-}
+export type AdminAssignSafetyTriageItemPayload =
+  AdminAssignSafetyTriageItemCallablePayload;
 
-export interface AdminAssignSafetyTriageItemResponse {
-  targetPath: string;
-  assignment: AdminSafetyTriageAssignment;
-}
+export type AdminAssignSafetyTriageItemResponse =
+  AdminAssignSafetyTriageItemCallableResponse;
 
 export interface HostAnalyticsQueryPayload {
   organizerId?: string | null;
@@ -381,17 +348,11 @@ export interface AdminListAdminRoleAssignmentsResponse {
   source: "adminRoleAssignments";
 }
 
-export interface AdminSetAdminUserRolesPayload {
-  targetUid: string;
-  roles: AdminRoleClaim[];
-  note: string;
-}
+export type AdminSetAdminUserRolesPayload =
+  AdminSetAdminUserRolesCallablePayload;
 
-export interface AdminSetAdminUserRolesResponse {
-  user: AdminUserRoleRecord;
-  beforeRoles: AdminRoleClaim[];
-  afterRoles: AdminRoleClaim[];
-}
+export type AdminSetAdminUserRolesResponse =
+  AdminSetAdminUserRolesCallableResponse;
 
 export type AccessApplicationDecision = "approve" | "deny";
 export type ClubClaimDecision = "approve" | "reject";
@@ -490,18 +451,11 @@ export interface OrganizerCurationSurface {
   notes: string;
 }
 
-export interface AdminDecideAccessApplicationPayload {
-  applicationUid: string;
-  decision: AccessApplicationDecision;
-  note: string;
-  cohortId?: string | null;
-}
+export type AdminDecideAccessApplicationPayload =
+  AdminDecideAccessApplicationCallablePayload;
 
-export interface AdminDecideAccessApplicationResponse {
-  applicationUid: string;
-  decision: AccessApplicationDecision;
-  status: "approvedForProfile" | "notSelectedYet";
-}
+export type AdminDecideAccessApplicationResponse =
+  AdminDecideAccessApplicationCallableResponse;
 
 export interface AdminGetAccessApplicationDetailsPayload {
   applicationUid: string;
@@ -1690,13 +1644,8 @@ export interface AdminGetEventIntakeDashboardResponse {
   bridge: EventIntakeBridge;
 }
 
-export interface AdminCreateMarketingContentDraftPayload {
-  draftType: MarketingContentDraftType;
-  cityId?: string | null;
-  weekStart?: string | null;
-  sourceRecommendationSetId?: string | null;
-  title?: string | null;
-}
+export type AdminCreateMarketingContentDraftPayload =
+  AdminCreateMarketingContentDraftCallablePayload;
 
 export interface AdminCreateMarketingContentDraftResponse {
   draft: MarketingContentDraft;
@@ -1743,28 +1692,32 @@ export interface AdminRecordEventIntakeReviewDecisionResponse {
   decisionPath: string;
 }
 
-export interface AdminRecordMarketingReviewDecisionPayload {
-  targetType: MarketingOpsTargetType;
-  targetId: string;
-  decision: MarketingOpsDecision;
-  runId?: string | null;
-  note: string;
-  edits?: Record<string, unknown>;
-  checklist?: {
-    sourceReviewed?: boolean;
-    dateReviewed?: boolean;
-    venueReviewed?: boolean;
-    copyReviewed?: boolean;
-    rightsReviewed?: boolean;
-    noCatchHostingImplied?: boolean;
-  };
-}
+export type AdminRecordMarketingReviewDecisionPayload =
+  AdminRecordMarketingReviewDecisionCallablePayload;
 
-export interface AdminRecordMarketingReviewDecisionResponse {
-  decisionId: string;
-  targetType: MarketingOpsTargetType;
-  targetId: string;
-  decision: MarketingOpsDecision;
-  decisionStatus: "approved" | "needs_changes" | "held" | "rejected" | "export_ready";
-  decisionPath: string;
-}
+export type AdminRecordMarketingReviewDecisionResponse =
+  AdminRecordMarketingReviewDecisionCallableResponse;
+import type {AdminGetOverviewCallableResponse} from
+  "../../generated/contracts/adminGetOverviewCallableResponse";
+import type {AdminDecideAccessApplicationCallablePayload} from
+  "../../generated/contracts/adminDecideAccessApplicationCallablePayload";
+import type {AdminDecideAccessApplicationCallableResponse} from
+  "../../generated/contracts/adminDecideAccessApplicationCallableResponse";
+import type {AdminSetAdminUserRolesCallablePayload} from
+  "../../generated/contracts/adminSetAdminUserRolesCallablePayload";
+import type {AdminSetAdminUserRolesCallableResponse} from
+  "../../generated/contracts/adminSetAdminUserRolesCallableResponse";
+import type {AdminDecideSafetyTriageItemCallablePayload} from
+  "../../generated/contracts/adminDecideSafetyTriageItemCallablePayload";
+import type {AdminDecideSafetyTriageItemCallableResponse} from
+  "../../generated/contracts/adminDecideSafetyTriageItemCallableResponse";
+import type {AdminAssignSafetyTriageItemCallablePayload} from
+  "../../generated/contracts/adminAssignSafetyTriageItemCallablePayload";
+import type {AdminAssignSafetyTriageItemCallableResponse} from
+  "../../generated/contracts/adminAssignSafetyTriageItemCallableResponse";
+import type {AdminCreateMarketingContentDraftCallablePayload} from
+  "../../generated/contracts/adminCreateMarketingContentDraftCallablePayload";
+import type {AdminRecordMarketingReviewDecisionCallablePayload} from
+  "../../generated/contracts/adminRecordMarketingReviewDecisionCallablePayload";
+import type {AdminRecordMarketingReviewDecisionCallableResponse} from
+  "../../generated/contracts/adminRecordMarketingReviewDecisionCallableResponse";

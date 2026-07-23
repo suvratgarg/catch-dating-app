@@ -6,6 +6,19 @@ import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAdminRole} from "./adminAuth";
 import {setAdminAuditLogInTransaction} from "./adminAudit";
+import type {AdminCreateMarketingContentDraftCallablePayload} from
+  "../shared/generated/adminCreateMarketingContentDraftCallablePayload";
+import type {AdminCreateMarketingContentDraftCallableResponse} from
+  "../shared/generated/adminCreateMarketingContentDraftCallableResponse";
+import type {AdminRecordMarketingReviewDecisionCallablePayload} from
+  "../shared/generated/adminRecordMarketingReviewDecisionCallablePayload";
+import type {AdminRecordMarketingReviewDecisionCallableResponse} from
+  "../shared/generated/adminRecordMarketingReviewDecisionCallableResponse";
+import {
+  validateAdminCreateMarketingContentDraftCallablePayload,
+  validateAdminRecordMarketingReviewDecisionCallablePayload,
+} from "../shared/generated/schemaValidators";
+import {validateCallableWithAjv} from "../shared/validation";
 
 const marketingOpsRoles = ["admin", "adminOwner", "support"] as const;
 const decisionCollection = "marketingReviewDecisions";
@@ -73,41 +86,19 @@ interface MarketingReviewChecklist {
   noCatchHostingImplied?: boolean;
 }
 
-interface AdminRecordMarketingReviewDecisionPayload {
-  targetType: MarketingOpsTargetType;
-  targetId: string;
-  decision: MarketingOpsDecision;
-  runId?: string | null;
-  note?: string | null;
-  edits?: Record<string, unknown>;
-  checklist?: MarketingReviewChecklist;
-}
+type AdminRecordMarketingReviewDecisionPayload =
+  AdminRecordMarketingReviewDecisionCallablePayload;
 
-interface AdminRecordMarketingReviewDecisionResponse {
-  decisionId: string;
-  targetType: MarketingOpsTargetType;
-  targetId: string;
-  decision: MarketingOpsDecision;
-  decisionStatus:
-    "approved" | "needs_changes" | "held" | "rejected" | "export_ready";
-  decisionPath: string;
-}
+type AdminRecordMarketingReviewDecisionResponse =
+  AdminRecordMarketingReviewDecisionCallableResponse;
 
 type MarketingDraftType = "event_highlights" | "feature_explainer";
 
-interface AdminCreateMarketingContentDraftPayload {
-  draftType: MarketingDraftType;
-  cityId?: string | null;
-  weekStart?: string | null;
-  sourceRecommendationSetId?: string | null;
-  title?: string | null;
-}
+type AdminCreateMarketingContentDraftPayload =
+  AdminCreateMarketingContentDraftCallablePayload;
 
-interface AdminCreateMarketingContentDraftResponse {
-  draft: Record<string, unknown>;
-  bridge: Record<string, unknown>;
-  dashboardPath: string;
-}
+type AdminCreateMarketingContentDraftResponse =
+  AdminCreateMarketingContentDraftCallableResponse;
 
 interface AdminGetMarketingOpsDashboardResponse {
   bridge: Record<string, unknown>;
@@ -157,6 +148,10 @@ export async function adminRecordMarketingReviewDecisionHandler(
   deps: MarketingOpsDeps = defaultDeps
 ): Promise<AdminRecordMarketingReviewDecisionResponse> {
   const adminContext = requireAdminRole(request, marketingOpsRoles);
+  validateCallableWithAjv(
+    request,
+    validateAdminRecordMarketingReviewDecisionCallablePayload
+  );
   const data = normalizePayload(request.data);
   assertPayload(data);
   assertDecisionAllowed(data);
@@ -233,6 +228,10 @@ export async function adminCreateMarketingContentDraftHandler(
   deps: MarketingOpsDeps = defaultDeps
 ): Promise<AdminCreateMarketingContentDraftResponse> {
   const adminContext = requireAdminRole(request, marketingOpsRoles);
+  validateCallableWithAjv(
+    request,
+    validateAdminCreateMarketingContentDraftCallablePayload
+  );
   const data = normalizeDraftPayload(request.data);
   assertDraftPayload(data);
 
@@ -337,7 +336,7 @@ function normalizePayload(
     targetId: trim(data.targetId),
     decision: trim(data.decision) as MarketingOpsDecision,
     runId: nullableTrim(data.runId),
-    note: nullableTrim(data.note),
+    note: trim(data.note),
     edits: plainRecord(data.edits),
     checklist: plainRecord(data.checklist) as MarketingReviewChecklist,
   };

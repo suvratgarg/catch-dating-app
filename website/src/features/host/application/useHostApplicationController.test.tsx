@@ -40,7 +40,10 @@ describe("useHostApplicationController", () => {
   });
 
   it("submits a complete operating packet and reports success", async () => {
-    const fetchMock = vi.fn().mockResolvedValue({ok: true, json: async () => ({alreadyJoined: false})});
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ok: true, alreadyJoined: false}),
+    });
     vi.stubGlobal("fetch", fetchMock);
     const {result} = renderHook(() => useHostApplicationController(), {wrapper: wrapper()});
 
@@ -117,7 +120,7 @@ describe("useHostApplicationController", () => {
 
     resolveFetch({
       ok: true,
-      json: async () => ({alreadyJoined: false}),
+      json: async () => ({ok: true, alreadyJoined: false}),
     });
     await act(async () => firstSubmit);
     expect(result.current.submitted).toBe(true);
