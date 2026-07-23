@@ -30,6 +30,10 @@ node tool/run.mjs run demo:ops --help
 Filtered `list` and `check` commands fail with exit 64 when no active tool
 matches; an empty category can never count as a successful CI lane. Tools CI
 declares every active manifest category and validates that matrix before fanout.
+Tools that require an operating-system framework declare `platforms` using
+Node platform names (`darwin`, `linux`, or `win32`). Category checks report and
+skip incompatible entries; direct `run` calls fail with exit 64 instead of
+executing a platform-incompatible command.
 
 `impacted` joins changed paths through
 `tool/repository_root_manifest.json#relationships` to their source, generated

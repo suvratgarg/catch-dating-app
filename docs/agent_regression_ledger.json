@@ -1,5 +1,5 @@
 {
-  "version": 91,
+  "version": 92,
   "updated": "2026-07-24",
   "owner": "agent_operating_model",
   "entries": [
@@ -2875,6 +2875,28 @@
         "docs/web_surface_architecture.md"
       ],
       "notes": "Keep activity identity in decorative treatments, but mix activity accents toward semantic ink before using them for foreground text or action backgrounds on light surfaces."
+    },
+    {
+      "id": "REG-TOOL-PLATFORM-COMPAT-001",
+      "title": "Platform-native generators run in incompatible CI lanes",
+      "status": "active",
+      "applies_to": [
+        "tool/run.mjs",
+        "tool/lib/tool_platform.mjs",
+        "tool/tools_manifest.json",
+        ".github/workflows/tools-ci.yml"
+      ],
+      "symptom": "A category-wide Ubuntu tool check invokes a macOS framework-backed Swift generator and fails with a missing AppKit module even though the generator and its outputs are healthy on Darwin.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/run.test.mjs && node tool/run.mjs check --manifest-only && node tool/run.mjs check --category marketing",
+        "guardEvidence": "the runner validates declared Node platform names, skips incompatible checks in category runs, and rejects direct execution on an unsupported operating system"
+      },
+      "owner_docs": [
+        "tool/README.md",
+        "docs/agent_operating_model.md"
+      ],
+      "notes": "Keep syntax-only checks platform-neutral only when they are useful; the owning native generator check must remain declared for its actual operating system."
     }
   ]
 }

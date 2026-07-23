@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-23",
+  "updated": "2026-07-24",
   "tools": [
     {
       "id": "tool:runner",
@@ -23,6 +23,7 @@
         "path": "tool/run.test.mjs",
         "contains": [
           "filtered checks fail when a category matches no tools",
+          "platform-specific tools run only on declared operating systems",
           "impact routing reports the owning relationship and checks",
           "impact routing includes field inventory for Flutter design consumers",
           "impact routing fails closed for an unmapped changed path",
@@ -3310,6 +3311,9 @@
       "command": "swift tool/store/generate_app_listing_screenshot_prototypes.swift",
       "safety": "local-writes-store-assets",
       "status": "active",
+      "platforms": [
+        "darwin"
+      ],
       "description": "Generates the six approved Catch and Catch Host iPhone 6.9-inch App Store listing prototypes from deterministic app captures.",
       "checks": [
         "swiftc -parse tool/store/generate_app_listing_screenshot_prototypes.swift",
