@@ -46,7 +46,7 @@
     },
     {
       "file": "lib/auth/presentation/phone_page.dart",
-      "line": 113,
+      "line": 112,
       "symbol": "input",
       "contract": "CatchContractConstraints .onboardingDraftDocumentPhoneNumber",
       "contractValue": null,
@@ -636,7 +636,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 445,
+      "line": 454,
       "symbol": "stepper",
       "contract": "CatchContractConstraints .mobileFormStateEventDurationMinutes",
       "contractValue": null,
@@ -646,7 +646,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 478,
+      "line": 490,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsMeetingPoint",
       "contractValue": null,
@@ -656,7 +656,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 525,
+      "line": 538,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsLocationDetails",
       "contractValue": null,
@@ -666,7 +666,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 551,
+      "line": 564,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsDistanceKm",
       "contractValue": null,
@@ -676,7 +676,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 593,
+      "line": 609,
       "symbol": "choices",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsPace",
       "contractValue": "(value) => value.name",
@@ -686,7 +686,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 618,
+      "line": 635,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsDescription",
       "contractValue": null,
@@ -696,7 +696,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1024,
+      "line": 1056,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsCapacityLimit",
       "contractValue": null,
@@ -706,7 +706,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1037,
+      "line": 1069,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsPriceInPaise",
       "contractValue": null,
@@ -716,7 +716,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1061,
+      "line": 1093,
       "symbol": "optionCards",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsEventPolicyAdmissionFormat",
       "contractValue": "(preset) => switch (preset) { EventAdmissionPreset.openCapacity => 'open', EventAdmissionPreset.inviteOnly => 'inviteOnly', EventAdmissionPreset.requestToJoin => 'manualApproval', EventAdmissionPreset.balancedSingles => 'balancedRatio', }",
@@ -726,7 +726,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1079,
+      "line": 1111,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsPrivateAccessInviteCode",
       "contractValue": null,
@@ -736,7 +736,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1104,
+      "line": 1136,
       "symbol": "toggle",
       "contract": "CatchContractConstraints.mobileFormStateEventCohortCapsEnabled",
       "contractValue": null,
@@ -746,7 +746,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1119,
+      "line": 1151,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsConstraintsMaxMen",
       "contractValue": null,
@@ -756,7 +756,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1135,
+      "line": 1167,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsConstraintsMaxWomen",
       "contractValue": null,
@@ -766,7 +766,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1163,
+      "line": 1195,
       "symbol": "toggle",
       "contract": "CatchContractConstraints .mobileFormStateEventDynamicPricingEnabled",
       "contractValue": null,
@@ -776,7 +776,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1176,
+      "line": 1208,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsEventPolicyPricingDemandPricingRulesItemsStepAdjustmentInPaise",
       "contractValue": null,
@@ -786,7 +786,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1193,
+      "line": 1225,
       "symbol": "input",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsEventPolicyPricingDemandPricingRulesItemsMaxAdjustmentInPaise",
       "contractValue": null,
@@ -796,7 +796,7 @@
     },
     {
       "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1222,
+      "line": 1254,
       "symbol": "optionCards",
       "contract": "CatchContractConstraints .updateEventCallablePayloadFieldsEventPolicyCancellationPolicyId",
       "contractValue": "(value) => value.name",
@@ -1376,7 +1376,7 @@
     },
     {
       "file": "lib/onboarding/presentation/pages/gender_interest_page.dart",
-      "line": 133,
+      "line": 140,
       "symbol": "choices",
       "contract": "CatchContractConstraints .onboardingDraftDocumentGender",
       "contractValue": "(gender) => gender.name",
@@ -1386,7 +1386,7 @@
     },
     {
       "file": "lib/onboarding/presentation/pages/gender_interest_page.dart",
-      "line": 154,
+      "line": 164,
       "symbol": "choices",
       "contract": "CatchContractConstraints .onboardingDraftDocumentInterestedInGenders",
       "contractValue": "(gender) => gender.name",
@@ -1446,7 +1446,7 @@
     },
     {
       "file": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
-      "line": 210,
+      "line": 216,
       "symbol": "choices",
       "contract": "CatchContractConstraints.profilePromptAnswerPromptId",
       "contractValue": "(value) => value",
@@ -1456,7 +1456,7 @@
     },
     {
       "file": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
-      "line": 225,
+      "line": 234,
       "symbol": "input",
       "contract": "CatchContractConstraints.profilePromptAnswerAnswer",
       "contractValue": null,
@@ -1466,7 +1466,7 @@
     },
     {
       "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
-      "line": 186,
+      "line": 199,
       "symbol": "control",
       "contract": "CatchContractConstraints .updateUserProfilePatchActivityPreferencesRunningPaceMinSecsPerKm",
       "contractValue": null,
@@ -1476,7 +1476,7 @@
     },
     {
       "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
-      "line": 230,
+      "line": 243,
       "symbol": "rangeSlider",
       "contract": null,
       "contractValue": null,
@@ -1486,7 +1486,7 @@
     },
     {
       "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
-      "line": 264,
+      "line": 279,
       "symbol": "choices",
       "contract": "CatchContractConstraints .updateUserProfilePatchActivityPreferencesRunningPreferredDistances",
       "contractValue": "(value) => value.name",
@@ -1496,7 +1496,7 @@
     },
     {
       "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
-      "line": 285,
+      "line": 303,
       "symbol": "choices",
       "contract": "CatchContractConstraints .updateUserProfilePatchActivityPreferencesRunningRunningReasons",
       "contractValue": "(value) => value.name",
@@ -1506,7 +1506,7 @@
     },
     {
       "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
-      "line": 304,
+      "line": 325,
       "symbol": "choices",
       "contract": "CatchContractConstraints .updateUserProfilePatchActivityPreferencesRunningPreferredRunTimes",
       "contractValue": "(value) => value.name",
@@ -1526,7 +1526,7 @@
     },
     {
       "file": "lib/reviews/shared/write_review_sheet.dart",
-      "line": 193,
+      "line": 196,
       "symbol": "input",
       "contract": "CatchContractConstraints .createEventReviewCallablePayloadComment",
       "contractValue": null,
@@ -1536,7 +1536,7 @@
     },
     {
       "file": "lib/safety/presentation/settings_screen.dart",
-      "line": 310,
+      "line": 396,
       "symbol": "toggle",
       "contract": "CatchContractConstraints .updateUserProfilePatchPrefsNewCatches",
       "contractValue": null,
@@ -1546,7 +1546,7 @@
     },
     {
       "file": "lib/safety/presentation/settings_screen.dart",
-      "line": 326,
+      "line": 412,
       "symbol": "toggle",
       "contract": "CatchContractConstraints .updateUserProfilePatchPrefsMessages",
       "contractValue": null,
@@ -1556,7 +1556,7 @@
     },
     {
       "file": "lib/safety/presentation/settings_screen.dart",
-      "line": 340,
+      "line": 426,
       "symbol": "toggle",
       "contract": "CatchContractConstraints .updateUserProfilePatchPrefsEventReminders",
       "contractValue": null,
@@ -1566,7 +1566,7 @@
     },
     {
       "file": "lib/safety/presentation/settings_screen.dart",
-      "line": 356,
+      "line": 442,
       "symbol": "toggle",
       "contract": "CatchContractConstraints .updateUserProfilePatchPrefsRunStatusUpdates",
       "contractValue": null,
@@ -1576,7 +1576,7 @@
     },
     {
       "file": "lib/safety/presentation/settings_screen.dart",
-      "line": 373,
+      "line": 459,
       "symbol": "toggle",
       "contract": "CatchContractConstraints .updateUserProfilePatchPrefsClubUpdates",
       "contractValue": null,
@@ -1586,7 +1586,7 @@
     },
     {
       "file": "lib/safety/presentation/settings_screen.dart",
-      "line": 389,
+      "line": 475,
       "symbol": "toggle",
       "contract": "CatchContractConstraints .updateUserProfilePatchPrefsWeeklyDigest",
       "contractValue": null,
@@ -1596,7 +1596,7 @@
     },
     {
       "file": "lib/safety/presentation/settings_screen.dart",
-      "line": 429,
+      "line": 522,
       "symbol": "toggle",
       "contract": "CatchContractConstraints .updateUserProfilePatchPrefsShowOnMap",
       "contractValue": null,
@@ -1606,7 +1606,7 @@
     },
     {
       "file": "lib/swipes/presentation/filters_screen.dart",
-      "line": 217,
+      "line": 239,
       "symbol": "rangeSlider",
       "contract": null,
       "contractValue": null,
@@ -1616,7 +1616,7 @@
     },
     {
       "file": "lib/swipes/presentation/filters_screen.dart",
-      "line": 241,
+      "line": 263,
       "symbol": "selectableChip",
       "contract": "CatchContractConstraints .updateUserProfilePatchInterestedInGenders",
       "contractValue": "gender.name",
