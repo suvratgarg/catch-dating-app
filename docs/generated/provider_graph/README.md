@@ -8,7 +8,7 @@ Open [provider_graph.html](provider_graph.html) for the interactive feature/prov
 
 | Measure | Count |
 |---|---:|
-| Handwritten Dart files | 794 |
+| Handwritten Dart files | 795 |
 | Providers | 214 |
 | Mutations | 83 |
 | Unique provider relationships | 328 |

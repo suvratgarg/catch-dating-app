@@ -85,10 +85,10 @@
   },
   "agent_regression_ledger": {
     "path": "docs/agent_regression_ledger.json",
-    "version": "62",
+    "version": "64",
     "updated": "2026-07-23",
     "status": "active",
-    "read_policy": "Use before touching a scope with hard-won prior fixes; context packs surface matching active/watch regression guards, including section-ownership drift, parallel-delegation ownership, enforcement-integrity drift, and reconciliation merges that can hide dropped conflict-resolution intent."
+    "read_policy": "Use before touching a scope with hard-won prior fixes; context packs surface matching active/watch regression guards, including form-contract drift, deterministic React visual-story data, section-ownership drift, parallel-delegation ownership, enforcement-integrity drift, and reconciliation merges that can hide dropped conflict-resolution intent."
   },
   "agent_skills": {
     "path": "docs/agent_skills/README.md",

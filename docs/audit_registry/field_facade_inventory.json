@@ -3,7 +3,7 @@
   "generatedBy": "tool/design/generate_field_inventory.mjs",
   "source": {
     "catchField": "lib/core/widgets/catch_field.dart",
-    "catchFieldApiSha256": "0fac6d089ab840d5d035941cc6c10606dde16fb45a481144938db3dcdf3247ba",
+    "catchFieldApiSha256": "bff5be74e82e2b41d43cdb0264c8b3f308a5722043e912bcc65422c52113acc8",
     "catchSection": "lib/core/widgets/catch_section_layout.dart",
     "catchSectionApiSha256": "3b2165551c0c70af07a22324dc82669e42abda9ed6222636fb3be3859d28af5d",
     "interactionContracts": "design/components/catch.components.json"
@@ -530,6 +530,11 @@
           "hasDefault": false
         },
         {
+          "name": "contract",
+          "required": false,
+          "hasDefault": false
+        },
+        {
           "name": "value",
           "required": true,
           "hasDefault": false
@@ -619,6 +624,11 @@
         {
           "name": "title",
           "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "contract",
+          "required": false,
           "hasDefault": false
         },
         {
@@ -897,6 +907,16 @@
           "hasDefault": false
         },
         {
+          "name": "contract",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "contractExemption",
+          "required": false,
+          "hasDefault": false
+        },
+        {
           "name": "control",
           "required": true,
           "hasDefault": false
@@ -1042,6 +1062,16 @@
         },
         {
           "name": "body",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "contract",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "contractValue",
           "required": false,
           "hasDefault": false
         },
@@ -1206,6 +1236,16 @@
           "hasDefault": false
         },
         {
+          "name": "contract",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "contractValue",
+          "required": false,
+          "hasDefault": false
+        },
+        {
           "name": "values",
           "required": true,
           "hasDefault": false
@@ -1340,6 +1380,11 @@
           "hasDefault": false
         },
         {
+          "name": "contract",
+          "required": false,
+          "hasDefault": false
+        },
+        {
           "name": "value",
           "required": true,
           "hasDefault": false
@@ -1362,7 +1407,7 @@
         {
           "name": "step",
           "required": false,
-          "hasDefault": true
+          "hasDefault": false
         },
         {
           "name": "unit",
@@ -1495,6 +1540,11 @@
         {
           "name": "title",
           "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "contract",
+          "required": false,
           "hasDefault": false
         },
         {
@@ -1721,6 +1771,16 @@
         {
           "name": "title",
           "required": true,
+          "hasDefault": false
+        },
+        {
+          "name": "contract",
+          "required": false,
+          "hasDefault": false
+        },
+        {
+          "name": "contractValue",
+          "required": false,
           "hasDefault": false
         },
         {

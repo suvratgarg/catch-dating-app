@@ -1,5 +1,5 @@
 {
-  "version": 63,
+  "version": 64,
   "updated": "2026-07-23",
   "owner": "agent_operating_model",
   "entries": [
@@ -2632,6 +2632,31 @@
         "docs/audit_registry/rules.json"
       ],
       "notes": "Presentation-only composite state belongs in contracts/forms rather than pretending to be a stored payload field. Explicit UI limits may narrow a backend contract but never relax it."
+    },
+    {
+      "id": "REG-WEB-VISUAL-STORY-DATA-001",
+      "title": "Marketing visual stories drift with mutable production organizer projections",
+      "status": "active",
+      "applies_to": [
+        "website/src/features/organizers/OrganizerSearchPage.tsx",
+        "website/src/features/organizers/useOrganizerDirectoryController.ts",
+        "website/src/stories/MarketingRoutes.stories.tsx",
+        "website/src/stories/OrganizerSearchSections.stories.tsx",
+        "website/src/stories/fixtures/hostListings.ts",
+        "design/visual_baselines/website/**"
+      ],
+      "symptom": "Organizer-search Storybook captures change when the committed production organizer projection gains or loses a listing, even though the story contract and UI implementation are unchanged.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-marketing run test:unit -- --run src/features/organizers/useOrganizerDirectoryController.test.tsx && npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check",
+        "guardEvidence": "the controller test proves preview callers can inject typed static listings, and both organizer-search stories use the governed demo projection so production listing churn cannot alter their captures"
+      },
+      "owner_docs": [
+        "docs/marketing_website_architecture.md",
+        "docs/web_surface_architecture.md",
+        "design/website/components.json"
+      ],
+      "notes": "Production routes continue to use the receipt-free generated organizer projection by default. Only preview surfaces inject the stable demo fixture."
     }
   ]
 }

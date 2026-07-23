@@ -9,6 +9,7 @@ const trackOrganizerSearchAppearance = vi.hoisted(() => vi.fn());
 vi.mock("../../analytics", () => ({trackMarketingEvent}));
 vi.mock("./analytics", () => ({trackOrganizerSearchAppearance}));
 
+import {hostListings} from "./data";
 import {useOrganizerDirectoryController} from "./useOrganizerDirectoryController";
 
 function wrapper(initialEntry = "/organizers/") {
@@ -47,5 +48,26 @@ describe("useOrganizerDirectoryController", () => {
     act(() => result.current.clearFilters());
     await waitFor(() => expect(result.current.query).toBe(""));
     expect(result.current.statusFilter).toBe("all");
+  });
+
+  it("uses explicit static listings for deterministic preview surfaces", () => {
+    const source = hostListings[0];
+    const previewListings = [
+      {...source, id: "preview-mumbai", slug: "preview-mumbai", city: "Mumbai"},
+      {...source, id: "preview-indore", slug: "preview-indore", city: "Indore"},
+    ];
+
+    const {result} = renderHook(
+      () => useOrganizerDirectoryController(previewListings),
+      {wrapper: wrapper()}
+    );
+
+    expect(result.current.summary.profileCount).toBe(2);
+    expect(result.current.summary.unclaimedCount).toBe(2);
+    expect(result.current.cityOptions).toEqual(["Indore", "Mumbai"]);
+    expect(result.current.results.map((listing) => listing.id)).toEqual([
+      "preview-mumbai",
+      "preview-indore",
+    ]);
   });
 });

@@ -234,7 +234,7 @@ export const OrganizerSearch: Story = {
   },
   render: () => (
     <MemoryRouter initialEntries={["/organizers/"]}>
-      <OrganizerSearchPage />
+      <OrganizerSearchPage listings={hostListings} />
     </MemoryRouter>
   ),
 };
