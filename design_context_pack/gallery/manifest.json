@@ -3,7 +3,7 @@
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
     "routes": 52,
-    "captures": 599,
+    "captures": 608,
     "statusCounts": {
       "excluded": 6,
       "captured": 36,
@@ -3846,6 +3846,40 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "event_location_map_directions_pending",
+      "routes": [
+        "eventLocationMapScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_location_map_directions_pending.png",
+        "dark": "dark/event_location_map_directions_pending.png"
+      },
+      "whatItIs": "Event Location Map Directions Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_location_map_directions_failure",
+      "routes": [
+        "eventLocationMapScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_location_map_directions_failure.png",
+        "dark": "dark/event_location_map_directions_failure.png"
+      },
+      "whatItIs": "Event Location Map Directions Failure",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "event_location_map_text_scale_2",
       "routes": [
         "eventLocationMapScreen"
@@ -6987,6 +7021,23 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "notifications_uid_error",
+      "routes": [
+        "notificationsScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/notifications_uid_error.png",
+        "dark": "dark/notifications_uid_error.png"
+      },
+      "whatItIs": "Notifications Uid Error",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "notifications_signed_out",
       "routes": [
         "notificationsScreen"
@@ -7188,6 +7239,40 @@
         "dark": "dark/event_recap_partial_profiles.png"
       },
       "whatItIs": "Event Recap Partial Profiles",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_recap_profile_lookup_loading",
+      "routes": [
+        "eventRecapScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_recap_profile_lookup_loading.png",
+        "dark": "dark/event_recap_profile_lookup_loading.png"
+      },
+      "whatItIs": "Event Recap Profile Lookup Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_recap_profile_lookup_error",
+      "routes": [
+        "eventRecapScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_recap_profile_lookup_error.png",
+        "dark": "dark/event_recap_profile_lookup_error.png"
+      },
+      "whatItIs": "Event Recap Profile Lookup Error",
       "keepChangeNotes": ""
     },
     {
@@ -9778,6 +9863,40 @@
       "keepChangeNotes": ""
     },
     {
+      "id": "settings_external_link_pending",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_external_link_pending.png",
+        "dark": "dark/settings_external_link_pending.png"
+      },
+      "whatItIs": "Settings External Link Pending",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_external_link_failure",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_external_link_failure.png",
+        "dark": "dark/settings_external_link_failure.png"
+      },
+      "whatItIs": "Settings External Link Failure",
+      "keepChangeNotes": ""
+    },
+    {
       "id": "settings_preference_pending",
       "routes": [
         "settingsScreen"
@@ -10200,6 +10319,40 @@
         "dark": "dark/payment_history_missing_event_title.png"
       },
       "whatItIs": "Payment History Missing Event Title",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "payment_history_event_title_loading",
+      "routes": [
+        "paymentHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/payment_history_event_title_loading.png",
+        "dark": "dark/payment_history_event_title_loading.png"
+      },
+      "whatItIs": "Payment History Event Title Loading",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "payment_history_event_title_error",
+      "routes": [
+        "paymentHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/payment_history_event_title_error.png",
+        "dark": "dark/payment_history_event_title_error.png"
+      },
+      "whatItIs": "Payment History Event Title Error",
       "keepChangeNotes": ""
     },
     {
