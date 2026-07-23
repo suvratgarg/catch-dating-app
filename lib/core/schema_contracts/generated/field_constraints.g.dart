@@ -14099,6 +14099,21 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const mobileFormStateAuthOtpCode = CatchContractFieldConstraints(
+    path: 'mobileFormState.authOtpCode',
+    maxLength: 6,
+    minLength: 6,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\d{6}\$',
+  );
+
+  static const mobileFormStateChatsInboxSearchQuery = CatchContractFieldConstraints(
+    path: 'mobileFormState.chatsInboxSearchQuery',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
   static const mobileFormStateEventCohortCapsEnabled = CatchContractFieldConstraints(
     path: 'mobileFormState.eventCohortCapsEnabled',
     valueTypes: <String>['boolean'],
@@ -14126,6 +14141,17 @@ abstract final class CatchContractConstraints {
     path: 'mobileFormState.eventSuccessManualQaScenario',
     valueTypes: <String>['string'],
     enumValues: <String>['socialRun', 'racketPairs', 'quizTeams', 'singlesMixer'],
+  );
+
+  static const mobileFormStateEventSuccessModuleSelected = CatchContractFieldConstraints(
+    path: 'mobileFormState.eventSuccessModuleSelected',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const mobileFormStateEventSuccessQuestionnaireMode = CatchContractFieldConstraints(
+    path: 'mobileFormState.eventSuccessQuestionnaireMode',
+    valueTypes: <String>['string'],
+    enumValues: <String>['off', 'cluesOnly', 'cluesAndPairing'],
   );
 
   static const mobileFormStateExploreActivityTag = CatchContractFieldConstraints(
@@ -14182,6 +14208,12 @@ abstract final class CatchContractConstraints {
     path: 'mobileFormState.hostRosterFilter',
     valueTypes: <String>['string'],
     enumValues: <String>['all', 'booked', 'waitlist', 'slots', 'requests', 'due', 'checkedIn', 'attended', 'noShow'],
+  );
+
+  static const mobileFormStateHostRosterSearchQuery = CatchContractFieldConstraints(
+    path: 'mobileFormState.hostRosterSearchQuery',
+    maxLength: 120,
+    valueTypes: <String>['string'],
   );
 
   static const mobileFormStateOnboardingDateOfBirthText = CatchContractFieldConstraints(
@@ -26455,11 +26487,15 @@ abstract final class CatchContractConstraints {
     'matchDocument.unreadCounts': matchDocumentUnreadCounts,
     'matchDocument.user1Id': matchDocumentUser1Id,
     'matchDocument.user2Id': matchDocumentUser2Id,
+    'mobileFormState.authOtpCode': mobileFormStateAuthOtpCode,
+    'mobileFormState.chatsInboxSearchQuery': mobileFormStateChatsInboxSearchQuery,
     'mobileFormState.eventCohortCapsEnabled': mobileFormStateEventCohortCapsEnabled,
     'mobileFormState.eventDurationMinutes': mobileFormStateEventDurationMinutes,
     'mobileFormState.eventDynamicPricingEnabled': mobileFormStateEventDynamicPricingEnabled,
     'mobileFormState.eventSuccessLiveCardIncluded': mobileFormStateEventSuccessLiveCardIncluded,
     'mobileFormState.eventSuccessManualQaScenario': mobileFormStateEventSuccessManualQaScenario,
+    'mobileFormState.eventSuccessModuleSelected': mobileFormStateEventSuccessModuleSelected,
+    'mobileFormState.eventSuccessQuestionnaireMode': mobileFormStateEventSuccessQuestionnaireMode,
     'mobileFormState.exploreActivityTag': mobileFormStateExploreActivityTag,
     'mobileFormState.exploreArea': mobileFormStateExploreArea,
     'mobileFormState.exploreDistanceFilter': mobileFormStateExploreDistanceFilter,
@@ -26469,6 +26505,7 @@ abstract final class CatchContractConstraints {
     'mobileFormState.hostEventsLifecycleFilter': mobileFormStateHostEventsLifecycleFilter,
     'mobileFormState.hostInboxAudienceSegment': mobileFormStateHostInboxAudienceSegment,
     'mobileFormState.hostRosterFilter': mobileFormStateHostRosterFilter,
+    'mobileFormState.hostRosterSearchQuery': mobileFormStateHostRosterSearchQuery,
     'mobileFormState.onboardingDateOfBirthText': mobileFormStateOnboardingDateOfBirthText,
     'mobileFormState.suvbotTesterPhoneNumber': mobileFormStateSuvbotTesterPhoneNumber,
     'moderationFlagDocument.context': moderationFlagDocumentContext,

@@ -17,11 +17,14 @@ const EDITABLE_SYMBOLS = new Set([
   "optionGroup",
   "optionCards",
   "rangeSlider",
+  "searchField",
   "select",
   "selectableChip",
   "stepper",
+  "topBarSearch",
   "toggle",
   "directToggle",
+  "otpCodeField",
   "formCustomRow",
   "formMultiChoiceRow",
   "formSingleChoiceRow",
@@ -96,6 +99,18 @@ export function scanCatchFieldCalls({source, file = "fixture.dart"}) {
     {
       expression: /CatchRangeSlider\s*\(/g,
       symbol: () => "rangeSlider",
+    },
+    {
+      expression: /CatchSearchField\s*\(/g,
+      symbol: () => "searchField",
+    },
+    {
+      expression: /CatchTopBarSearch\s*\(/g,
+      symbol: () => "topBarSearch",
+    },
+    {
+      expression: /CatchOtpCodeField\s*\(/g,
+      symbol: () => "otpCodeField",
     },
     {
       expression: /CatchChip\.selectable\s*\(/g,

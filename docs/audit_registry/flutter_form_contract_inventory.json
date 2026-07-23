@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "generatedBy": "tool/contracts/generate_flutter_form_contract_inventory.mjs",
   "summary": {
-    "editableCallsites": 185,
-    "boundCallsites": 183,
+    "editableCallsites": 190,
+    "boundCallsites": 188,
     "exemptCallsites": 2,
     "unboundCallsites": 0,
     "bySymbol": {
@@ -20,22 +20,45 @@
       "optionCard": 1,
       "optionCards": 10,
       "optionGroup": 5,
+      "otpCodeField": 1,
       "rangeSlider": 4,
+      "searchField": 1,
       "select": 5,
       "selectableChip": 8,
       "selfProfileMultiChoiceDescriptor": 3,
       "selfProfileRangeDescriptor": 1,
       "selfProfileSingleChoiceDescriptor": 5,
       "stepper": 7,
-      "toggle": 19
+      "toggle": 19,
+      "topBarSearch": 3
     }
   },
   "callsites": [
+    {
+      "file": "lib/auth/presentation/otp_page.dart",
+      "line": 162,
+      "symbol": "otpCodeField",
+      "contract": "CatchContractConstraints.mobileFormStateAuthOtpCode",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
     {
       "file": "lib/auth/presentation/phone_page.dart",
       "line": 113,
       "symbol": "input",
       "contract": "CatchContractConstraints .onboardingDraftDocumentPhoneNumber",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
+      "line": 74,
+      "symbol": "topBarSearch",
+      "contract": "CatchContractConstraints.mobileFormStateChatsInboxSearchQuery",
       "contractValue": null,
       "minimumContract": null,
       "maximumContract": null,
@@ -195,7 +218,7 @@
       "file": "lib/event_success/presentation/event_success_setup_body.dart",
       "line": 296,
       "symbol": "optionCards",
-      "contract": "CatchContractConstraints .eventSuccessPlanDocumentSelectedModuleIds",
+      "contract": "CatchContractConstraints .mobileFormStateEventSuccessQuestionnaireMode",
       "contractValue": "(value) => value.name",
       "minimumContract": null,
       "maximumContract": null,
@@ -205,7 +228,7 @@
       "file": "lib/event_success/presentation/event_success_setup_body.dart",
       "line": 334,
       "symbol": "toggle",
-      "contract": "CatchContractConstraints .eventSuccessPlanDocumentSelectedModuleIds",
+      "contract": "CatchContractConstraints .mobileFormStateEventSuccessModuleSelected",
       "contractValue": null,
       "minimumContract": null,
       "maximumContract": null,
@@ -422,6 +445,26 @@
       "contractExemption": null
     },
     {
+      "file": "lib/explore/presentation/widgets/explore_header.dart",
+      "line": 65,
+      "symbol": "topBarSearch",
+      "contract": "CatchContractConstraints.exploreSearchCallablePayloadQuery",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/explore/presentation/widgets/explore_header.dart",
+      "line": 212,
+      "symbol": "topBarSearch",
+      "contract": "CatchContractConstraints.exploreSearchCallablePayloadQuery",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
       "file": "lib/hosts/presentation/club_management/create/widgets/club_basics_step.dart",
       "line": 86,
       "symbol": "choices",
@@ -485,7 +528,7 @@
       "file": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
       "line": 275,
       "symbol": "optionCards",
-      "contract": "CatchContractConstraints.mobileFormStateEventCohortCapsEnabled",
+      "contract": "CatchContractConstraints .createClubCallablePayloadHostDefaultsEventPolicyAdmissionPreset",
       "contractValue": "(value) => value.name",
       "minimumContract": null,
       "maximumContract": null,
@@ -495,7 +538,7 @@
       "file": "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart",
       "line": 298,
       "symbol": "toggle",
-      "contract": "CatchContractConstraints .createClubCallablePayloadHostDefaultsEventPolicyAdmissionPreset",
+      "contract": "CatchContractConstraints.mobileFormStateEventCohortCapsEnabled",
       "contractValue": null,
       "minimumContract": null,
       "maximumContract": null,
@@ -1203,7 +1246,17 @@
     },
     {
       "file": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
-      "line": 1171,
+      "line": 1118,
+      "symbol": "searchField",
+      "contract": "CatchContractConstraints.mobileFormStateHostRosterSearchQuery",
+      "contractValue": null,
+      "minimumContract": null,
+      "maximumContract": null,
+      "contractExemption": null
+    },
+    {
+      "file": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
+      "line": 1172,
       "symbol": "optionGroup",
       "contract": "CatchContractConstraints.mobileFormStateHostRosterFilter",
       "contractValue": "(filter) => filter.name",
@@ -1463,7 +1516,7 @@
     },
     {
       "file": "lib/reviews/shared/reviews_section.dart",
-      "line": 547,
+      "line": 546,
       "symbol": "input",
       "contract": "CatchContractConstraints .setReviewResponseCallablePayloadMessage",
       "contractValue": null,

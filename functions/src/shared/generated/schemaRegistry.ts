@@ -10,6 +10,18 @@ export const mobileFormStateSchema: Record<string, unknown> = {
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "authOtpCode": {
+      "type": "string",
+      "minLength": 6,
+      "maxLength": 6,
+      "pattern": "^\\d{6}$",
+      "description": "Six-digit SMS verification code entered before Firebase credential exchange."
+    },
+    "chatsInboxSearchQuery": {
+      "type": "string",
+      "maxLength": 120,
+      "description": "Local Consumer or Host inbox participant-name filter."
+    },
     "eventDurationMinutes": {
       "type": "integer",
       "minimum": 30,
@@ -28,6 +40,19 @@ export const mobileFormStateSchema: Record<string, unknown> = {
     "eventSuccessLiveCardIncluded": {
       "type": "boolean",
       "description": "Whether a host includes an optional live event-success card."
+    },
+    "eventSuccessModuleSelected": {
+      "type": "boolean",
+      "description": "Whether a host includes an optional event-success module in the selected module id collection."
+    },
+    "eventSuccessQuestionnaireMode": {
+      "type": "string",
+      "enum": [
+        "off",
+        "cluesOnly",
+        "cluesAndPairing"
+      ],
+      "description": "Presentation mode that derives questionnaire module selection and pairing configuration."
     },
     "eventSuccessManualQaScenario": {
       "type": "string",
@@ -100,6 +125,11 @@ export const mobileFormStateSchema: Record<string, unknown> = {
         "attended",
         "noShow"
       ]
+    },
+    "hostRosterSearchQuery": {
+      "type": "string",
+      "maxLength": 120,
+      "description": "Local Host attendee-roster name filter."
     },
     "onboardingDateOfBirthText": {
       "type": "string",

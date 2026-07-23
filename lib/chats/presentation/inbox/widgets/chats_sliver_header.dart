@@ -72,6 +72,8 @@ class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {
           leadingType: CatchTopBarLeading.none,
           applySafeArea: false,
           search: CatchTopBarSearch(
+            contract:
+                CatchContractConstraints.mobileFormStateChatsInboxSearchQuery,
             enabled: widget.showSearchAction || searchActive,
             expanded: searchActive,
             onExpandedChanged: (expanded) =>

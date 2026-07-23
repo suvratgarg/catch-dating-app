@@ -2610,8 +2610,11 @@
         "lib/core/widgets/catch_field*.dart",
         "lib/core/widgets/catch_chip*.dart",
         "lib/core/widgets/catch_option_*.dart",
+        "lib/core/widgets/catch_otp_code_field.dart",
         "lib/core/widgets/catch_range_slider.dart",
+        "lib/core/widgets/catch_search_field.dart",
         "lib/core/widgets/catch_toggle.dart",
+        "lib/core/widgets/catch_top_bar.dart",
         "lib/**/presentation/**",
         "tool/contracts/generate_schema_contracts.mjs",
         "tool/contracts/generate_flutter_form_contract_inventory.mjs",
@@ -2621,7 +2624,7 @@
       "guard": {
         "type": "command",
         "command": "node --test tool/contracts/generate_flutter_form_contract_inventory.test.mjs && node tool/contracts/generate_flutter_form_contract_inventory.mjs --check && flutter test --concurrency=1 test/core/forms/contract_alignment_test.dart test/core/widgets/catch_field/input_test.dart test/core/widgets/catch_field/control_test.dart",
-        "guardEvidence": "known-bad scanner fixtures reject missing direct and descriptor bindings, the generated inventory requires typed serializers and both range endpoints, and widget tests prove text, choice, and numeric configuration is derived at runtime"
+        "guardEvidence": "known-bad scanner fixtures reject missing direct, search, OTP, and descriptor bindings, the generated inventory requires typed serializers and both range endpoints, and widget tests prove text, choice, and numeric configuration is derived at runtime"
       },
       "owner_docs": [
         "docs/data_contracts.md",

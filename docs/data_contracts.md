@@ -263,11 +263,12 @@ Every editable canonical control and descriptor instance under production
 `lib/` is covered by
 `docs/audit_registry/flutter_form_contract_inventory.json`. The source scanner
 recognizes `CatchField`, `CatchChipField`, selectable chips, option groups/cards,
-range sliders, toggles, `CatchForm*Row`, and the retained self-profile
-descriptors. It fails when a control lacks its generated contract, a typed
-choice lacks its serializer, a range lacks either endpoint, or an exemption is
-not explicit. The current two exemptions are disclosure-only Host analytics
-controls, not editable form values.
+range sliders, toggles, OTP entry, direct and top-bar search fields,
+`CatchForm*Row`, and the retained self-profile descriptors. It fails when a
+control lacks its generated contract, a typed choice lacks its serializer, a
+range lacks either endpoint, or an exemption is not explicit. The current two
+exemptions are disclosure-only Host analytics controls, not editable form
+values.
 
 Run the exhaustive gate with:
 

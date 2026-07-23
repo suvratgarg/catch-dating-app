@@ -20,7 +20,6 @@ import 'package:catch_dating_app/reviews/shared/write_review_controller.dart';
 import 'package:catch_dating_app/reviews/shared/write_review_sheet.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum ReviewsEmptyPresentation { hidden, inline, contained, standalone }

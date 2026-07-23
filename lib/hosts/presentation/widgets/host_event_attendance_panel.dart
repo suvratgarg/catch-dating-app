@@ -1117,6 +1117,7 @@ class HostRosterSearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchSearchField(
       key: ValueKey('hostRosterSearch-$label'),
+      contract: CatchContractConstraints.mobileFormStateHostRosterSearchQuery,
       value: value,
       placeholder: label,
       semanticLabel: label,

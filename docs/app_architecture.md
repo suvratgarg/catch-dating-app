@@ -2574,9 +2574,10 @@ onboarding retains its step-specific composition.
 Schema-derived configuration is broader than descriptor adoption. Every
 editable canonical control and descriptor instance in both installable apps
 binds a generated field contract, including text fields, choices, option
-groups/cards, chips, toggles, steppers, and range sliders. The generated Flutter
-form-contract inventory is the exhaustive boundary; descriptor migration may
-continue incrementally without reopening contract drift.
+groups/cards, chips, toggles, steppers, range sliders, OTP entry, and direct or
+top-bar search. The generated Flutter form-contract inventory is the exhaustive
+boundary; descriptor migration may continue incrementally without reopening
+contract drift.
 
 ```dart
 CatchFormRowList<UpdateUserProfilePatch>(

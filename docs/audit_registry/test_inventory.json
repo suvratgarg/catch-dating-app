@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 562,
+  "total": 563,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -402,7 +402,7 @@
       ]
     },
     "tooling": {
-      "count": 132,
+      "count": 133,
       "files": [
         "tool/agent/check_agent_readiness.test.mjs",
         "tool/architecture/check_adopted_architecture_boundaries.test.mjs",
@@ -420,6 +420,7 @@
         "tool/contracts/check_firestore_read_limits.test.mjs",
         "tool/contracts/check_migration_contracts.test.mjs",
         "tool/contracts/check_schema_fixtures.test.mjs",
+        "tool/contracts/generate_flutter_form_contract_inventory.test.mjs",
         "tool/copy/check_l10n_key_usage.test.mjs",
         "tool/data/backfill_event_admin_search.test.mjs",
         "tool/data/backfill_event_discovery_fields.test.mjs",

@@ -299,7 +299,7 @@ class EventSuccessModuleRows extends StatelessWidget {
                 .l10n
                 .eventSuccessEventSuccessSetupBodyTextMatchClueQuestions,
             contract: CatchContractConstraints
-                .eventSuccessPlanDocumentSelectedModuleIds,
+                .mobileFormStateEventSuccessQuestionnaireMode,
             contractValue: (value) => value.name,
             values: _QuestionnaireMode.values,
             itemTitle: (mode) => switch (mode) {
@@ -335,7 +335,7 @@ class EventSuccessModuleRows extends StatelessWidget {
             key: ValueKey('eventSuccessModule-${module.id}'),
             title: module.title,
             contract: CatchContractConstraints
-                .eventSuccessPlanDocumentSelectedModuleIds,
+                .mobileFormStateEventSuccessModuleSelected,
             body: _recommendation.reason,
             badgeLabel: _recommendationBadgeLabel(_recommendation),
             bodyMaxLines: 3,

@@ -161,6 +161,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         gapH28,
         CatchOtpCodeField(
           inputKey: AuthFormKeys.otpField,
+          contract: CatchContractConstraints.mobileFormStateAuthOtpCode,
           controller: _otpController,
           autofocus: viewState.shouldAutofocus,
           onSubmitted: _submit,

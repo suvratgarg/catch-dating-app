@@ -82,6 +82,21 @@ test("inventory includes bound and unbound product callsites", () => {
         options: options,
         selected: selected,
       );
+      final search = CatchSearchField(
+        contract: searchContract,
+        value: query,
+      );
+      final topBarSearch = CatchTopBarSearch(
+        contract: queryContract,
+        placeholder: 'Search',
+        tooltip: 'Search',
+      );
+      final otp = CatchOtpCodeField(
+        contract: otpContract,
+        controller: controller,
+        onChanged: onChanged,
+        onSubmitted: onSubmitted,
+      );
       final range = CatchRangeSlider(
         minimumContract: minContract,
         maximumContract: maxContract,
@@ -103,8 +118,8 @@ test("inventory includes bound and unbound product callsites", () => {
 
   const inventory = buildFormContractInventory({repoRoot: root});
 
-  assert.equal(inventory.summary.editableCallsites, 6);
-  assert.equal(inventory.summary.boundCallsites, 4);
+  assert.equal(inventory.summary.editableCallsites, 9);
+  assert.equal(inventory.summary.boundCallsites, 7);
   assert.equal(inventory.summary.unboundCallsites, 2);
 });
 

@@ -274,8 +274,8 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
         if (!widget.advancedOnly)
           CatchField.optionCards<EventAdmissionDefaultPreset>(
             title: context.l10n.hostsClubHostDefaultsStepLabelAdmissionFormat,
-            contract:
-                CatchContractConstraints.mobileFormStateEventCohortCapsEnabled,
+            contract: CatchContractConstraints
+                .createClubCallablePayloadHostDefaultsEventPolicyAdmissionPreset,
             contractValue: (value) => value.name,
             values: visibleAdmissionPresets,
             itemTitle: (preset) => preset.label(context.l10n),
@@ -297,8 +297,8 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
         if (selectedAdmissionPreset == EventAdmissionDefaultPreset.openCapacity)
           CatchField.toggle(
             title: context.l10n.hostsClubHostDefaultsStepTitleCohortCaps,
-            contract: CatchContractConstraints
-                .createClubCallablePayloadHostDefaultsEventPolicyAdmissionPreset,
+            contract:
+                CatchContractConstraints.mobileFormStateEventCohortCapsEnabled,
             body: context
                 .l10n
                 .hostsClubHostDefaultsStepBodyOptionallyPrefillStraightMen,

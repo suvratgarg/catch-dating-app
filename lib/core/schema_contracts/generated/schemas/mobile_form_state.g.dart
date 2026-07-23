@@ -12,6 +12,18 @@ const schemaMobileFormStateSchema = <String, Object?>{
   'type': 'object',
   'additionalProperties': false,
   'properties': <String, Object?>{
+    'authOtpCode': <String, Object?>{
+      'type': 'string',
+      'minLength': 6,
+      'maxLength': 6,
+      'pattern': '^\\d{6}\$',
+      'description': 'Six-digit SMS verification code entered before Firebase credential exchange.',
+    },
+    'chatsInboxSearchQuery': <String, Object?>{
+      'type': 'string',
+      'maxLength': 120,
+      'description': 'Local Consumer or Host inbox participant-name filter.',
+    },
     'eventDurationMinutes': <String, Object?>{
       'type': 'integer',
       'minimum': 30,
@@ -30,6 +42,19 @@ const schemaMobileFormStateSchema = <String, Object?>{
     'eventSuccessLiveCardIncluded': <String, Object?>{
       'type': 'boolean',
       'description': 'Whether a host includes an optional live event-success card.',
+    },
+    'eventSuccessModuleSelected': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Whether a host includes an optional event-success module in the selected module id collection.',
+    },
+    'eventSuccessQuestionnaireMode': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'off',
+        'cluesOnly',
+        'cluesAndPairing',
+      ],
+      'description': 'Presentation mode that derives questionnaire module selection and pairing configuration.',
     },
     'eventSuccessManualQaScenario': <String, Object?>{
       'type': 'string',
@@ -102,6 +127,11 @@ const schemaMobileFormStateSchema = <String, Object?>{
         'attended',
         'noShow',
       ],
+    },
+    'hostRosterSearchQuery': <String, Object?>{
+      'type': 'string',
+      'maxLength': 120,
+      'description': 'Local Host attendee-roster name filter.',
     },
     'onboardingDateOfBirthText': <String, Object?>{
       'type': 'string',

@@ -7,6 +7,14 @@
  */
 export interface MobileFormState {
   /**
+   * Six-digit SMS verification code entered before Firebase credential exchange.
+   */
+  authOtpCode?: string;
+  /**
+   * Local Consumer or Host inbox participant-name filter.
+   */
+  chatsInboxSearchQuery?: string;
+  /**
    * Create/edit event duration. Save adapters derive endTimeMillis from this value and startTimeMillis.
    */
   eventDurationMinutes?: number;
@@ -22,6 +30,14 @@ export interface MobileFormState {
    * Whether a host includes an optional live event-success card.
    */
   eventSuccessLiveCardIncluded?: boolean;
+  /**
+   * Whether a host includes an optional event-success module in the selected module id collection.
+   */
+  eventSuccessModuleSelected?: boolean;
+  /**
+   * Presentation mode that derives questionnaire module selection and pairing configuration.
+   */
+  eventSuccessQuestionnaireMode?: "off" | "cluesOnly" | "cluesAndPairing";
   eventSuccessManualQaScenario?:
     | "socialRun"
     | "racketPairs"
@@ -45,6 +61,10 @@ export interface MobileFormState {
     | "checkedIn"
     | "attended"
     | "noShow";
+  /**
+   * Local Host attendee-roster name filter.
+   */
+  hostRosterSearchQuery?: string;
   /**
    * Read-only date text rendered by the onboarding date picker before it is saved as a timestamp.
    */
