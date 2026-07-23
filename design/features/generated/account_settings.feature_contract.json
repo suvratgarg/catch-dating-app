@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/account_settings.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:e2f64bf54081ec3539ff09f0db3f11e5dcb5144a6dc235db223f486e79399bfd",
-  "resolvedDigest": "sha256:b949156c384c39691c74c1c55c5d3b50bfd669858591bf2aea46a63c1bf64722",
+  "sourceDigest": "sha256:395b1839d97b5e3c026f0a75899ee3e75950cf008d11aea0c78cc6535ebfba86",
+  "resolvedDigest": "sha256:500bf37173807343555a5ccfd6434e7a87fcf5a5aed673ac8cc71a505111e2ca",
   "feature": {
     "id": "feature.account_settings",
     "name": "Account Settings",
@@ -18,10 +18,10 @@
     "scenarios": 19,
     "actionCases": 31,
     "actions": 13,
-    "captures": 23,
+    "captures": 25,
     "previews": 3,
     "testFiles": 4,
-    "evidenceExceptions": 7
+    "evidenceExceptions": 6
   },
   "surfaces": [
     {
@@ -93,10 +93,10 @@
         "scenarios": 19,
         "actionCases": 31,
         "actions": 13,
-        "captures": 23,
+        "captures": 25,
         "previews": 3,
         "testFiles": 4,
-        "evidenceExceptions": 7
+        "evidenceExceptions": 6
       },
       "dimensions": {
         "profile": {
@@ -481,14 +481,13 @@
         },
         {
           "stateIds": [
-            "history_navigation_rows",
-            "external_link_outcomes"
+            "history_navigation_rows"
           ],
           "evidence": [
             "captures"
           ],
           "debtId": "FEATURE-CONTRACT-MIGRATION-001",
-          "reason": "History navigation plus external-link idle, pending, false-result, thrown-failure, and duplicate-tap behavior are focused-test and Widgetbook proven but do not yet have dedicated standalone state captures."
+          "reason": "Review and payment history navigation rows are focused-test and Widgetbook proven but share the profile-backed account capture rather than dedicated standalone state captures."
         }
       ],
       "scenarios": [
@@ -798,7 +797,7 @@
           "id": "external_link_outcomes",
           "stateId": "external_link_outcomes",
           "kind": "mutation",
-          "status": "tested",
+          "status": "captured",
           "dimensions": {
             "profile": "ready",
             "blocked_accounts": "empty",
@@ -809,7 +808,10 @@
             "theme": "standard"
           },
           "evidence": {
-            "captureIds": [],
+            "captureIds": [
+              "settings_external_link_pending",
+              "settings_external_link_failure"
+            ],
             "previewIds": [
               "SettingsScreen/Screen states"
             ],

@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/event_recap.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:184098525e4f8be9d24b41d4efc0ce6e4ce0f122571ae144db831c656af0395a",
-  "resolvedDigest": "sha256:c5d749a7009594a061d75977c99680fdb3188cf939341f4969a4a9de6300650c",
+  "sourceDigest": "sha256:f471eb216b3ee2157fc8c2561324ad012069334b5c8be1b384d5428b13e6ba6c",
+  "resolvedDigest": "sha256:4e849d59cf2f763ae7000f773bfdb92052b53db9004a73252c5b463311fc05a0",
   "feature": {
     "id": "feature.event_recap",
     "name": "Event Recap",
@@ -18,10 +18,10 @@
     "scenarios": 12,
     "actionCases": 13,
     "actions": 5,
-    "captures": 10,
+    "captures": 12,
     "previews": 1,
     "testFiles": 2,
-    "evidenceExceptions": 8
+    "evidenceExceptions": 4
   },
   "surfaces": [
     {
@@ -68,10 +68,10 @@
         "scenarios": 12,
         "actionCases": 13,
         "actions": 5,
-        "captures": 10,
+        "captures": 12,
         "previews": 1,
         "testFiles": 2,
-        "evidenceExceptions": 8
+        "evidenceExceptions": 4
       },
       "dimensions": {
         "load": {
@@ -247,18 +247,6 @@
           ],
           "debtId": "FEATURE-CONTRACT-MIGRATION-001",
           "reason": "These Event Recap accessibility states have deterministic capture and Widgetbook evidence but no focused state-level test recorded by the screen authority."
-        },
-        {
-          "stateIds": [
-            "profile_lookup_loading",
-            "profile_lookup_error"
-          ],
-          "evidence": [
-            "captures",
-            "previews"
-          ],
-          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
-          "reason": "The newly truthful profile-enrichment loading and failure states have focused screen and state tests; deterministic preview and capture entries are completed in the evidence-closure phase."
         },
         {
           "stateIds": [
@@ -551,7 +539,7 @@
           "id": "profile_lookup_loading",
           "stateId": "profile_lookup_loading",
           "kind": "loading",
-          "status": "tested",
+          "status": "captured",
           "dimensions": {
             "load": "ready",
             "roster": "loading",
@@ -561,8 +549,12 @@
             "accessibility": "standard"
           },
           "evidence": {
-            "captureIds": [],
-            "previewIds": [],
+            "captureIds": [
+              "event_recap_profile_lookup_loading"
+            ],
+            "previewIds": [
+              "EventRecapScreen/Event recap route states"
+            ],
             "tests": [
               "test/swipes/event_recap_screen_state_test.dart",
               "test/swipes/event_recap_screen_test.dart"
@@ -598,7 +590,7 @@
           "id": "profile_lookup_error",
           "stateId": "profile_lookup_error",
           "kind": "error",
-          "status": "tested",
+          "status": "captured",
           "dimensions": {
             "load": "ready",
             "roster": "error",
@@ -608,8 +600,12 @@
             "accessibility": "standard"
           },
           "evidence": {
-            "captureIds": [],
-            "previewIds": [],
+            "captureIds": [
+              "event_recap_profile_lookup_error"
+            ],
+            "previewIds": [
+              "EventRecapScreen/Event recap route states"
+            ],
             "tests": [
               "test/swipes/event_recap_screen_state_test.dart",
               "test/swipes/event_recap_screen_test.dart"

@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/notifications.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:cce25f250c7569ee338f7b4783dba865c4e3cbdd45663ca1c38ff52ee1af919a",
-  "resolvedDigest": "sha256:c1dc315c2a574118f6d2125986e2e7104026341021e3f238c53756ce64c5909b",
+  "sourceDigest": "sha256:43fa1d1178e44c2e412709dcedb75d10acd8849cc32bf88952ddeb32ce956ec9",
+  "resolvedDigest": "sha256:01f645cbf88947406a092c0040096f97272ef7220abba54735cd8229a437f762",
   "feature": {
     "id": "feature.notifications",
     "name": "Notifications",
@@ -18,10 +18,10 @@
     "scenarios": 14,
     "actionCases": 17,
     "actions": 4,
-    "captures": 11,
+    "captures": 12,
     "previews": 3,
     "testFiles": 1,
-    "evidenceExceptions": 12
+    "evidenceExceptions": 10
   },
   "surfaces": [
     {
@@ -79,10 +79,10 @@
         "scenarios": 14,
         "actionCases": 17,
         "actions": 4,
-        "captures": 11,
+        "captures": 12,
         "previews": 3,
         "testFiles": 1,
-        "evidenceExceptions": 12
+        "evidenceExceptions": 10
       },
       "dimensions": {
         "access": {
@@ -261,17 +261,6 @@
       "evidenceExceptions": [
         {
           "stateIds": [
-            "uid_error"
-          ],
-          "evidence": [
-            "captures",
-            "previews"
-          ],
-          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
-          "reason": "The newly truthful identity-error state has focused screen coverage; deterministic preview and capture entries are completed in the evidence-closure phase."
-        },
-        {
-          "stateIds": [
             "uid_loading",
             "signed_out",
             "activity_loading",
@@ -285,7 +274,7 @@
             "tests"
           ],
           "debtId": "FEATURE-CONTRACT-MIGRATION-001",
-          "reason": "These Notifications states have deterministic capture and Widgetbook evidence but no focused state-level test recorded by the screen authority; uid_error now has focused screen coverage."
+          "reason": "These Notifications states have deterministic capture and Widgetbook evidence but no focused state-level test recorded by the screen authority."
         },
         {
           "stateIds": [
@@ -352,7 +341,7 @@
           "id": "uid_error",
           "stateId": "uid_error",
           "kind": "error",
-          "status": "tested",
+          "status": "captured",
           "dimensions": {
             "access": "error",
             "data": "error",
@@ -363,8 +352,12 @@
             "theme": "standard"
           },
           "evidence": {
-            "captureIds": [],
-            "previewIds": [],
+            "captureIds": [
+              "notifications_uid_error"
+            ],
+            "previewIds": [
+              "ActivityScreen/Screen states"
+            ],
             "tests": [
               "test/dashboard/dashboard_screen_test.dart"
             ]

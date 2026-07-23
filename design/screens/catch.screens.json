@@ -19387,6 +19387,16 @@
           "notes": "Batched profile lookup fallback where missing profiles render Guest tiles."
         },
         {
+          "id": "event_recap_profile_lookup_loading",
+          "status": "captured",
+          "notes": "Resolved recap with batched attendee-profile enrichment still loading."
+        },
+        {
+          "id": "event_recap_profile_lookup_error",
+          "status": "captured",
+          "notes": "Resolved recap with attendee-profile enrichment failure and exact-query retry."
+        },
+        {
           "id": "event_recap_selected_tiles",
           "status": "captured",
           "notes": "Real route seeded with selected vibe ids to show selected and unselected attendee tiles."
@@ -19492,24 +19502,36 @@
         {
           "id": "profile_lookup_loading",
           "kind": "loading",
-          "status": "tested",
+          "status": "captured",
           "source": "When the recap is resolved but publicProfilesByIdsProvider is still loading, EventRecapReadyBody preserves the hero and deck action while VibeGridSkeleton replaces unresolved attendee rows.",
+          "captureIds": [
+            "event_recap_profile_lookup_loading"
+          ],
           "tests": [
             "test/swipes/event_recap_screen_state_test.dart",
             "test/swipes/event_recap_screen_test.dart"
           ],
-          "nextAction": "Add deterministic Widgetbook and capture evidence in the feature-contract evidence-closure pass."
+          "nextAction": "Keep profile-enrichment loading visually distinct from a resolved empty roster.",
+          "previewIds": [
+            "EventRecapScreen/Event recap route states"
+          ]
         },
         {
           "id": "profile_lookup_error",
           "kind": "error",
-          "status": "tested",
+          "status": "captured",
           "source": "A failed batched public-profile lookup renders CatchInlineErrorState with AppErrorContext.profile and retries the exact attendee-id query without discarding the resolved recap.",
+          "captureIds": [
+            "event_recap_profile_lookup_error"
+          ],
           "tests": [
             "test/swipes/event_recap_screen_state_test.dart",
             "test/swipes/event_recap_screen_test.dart"
           ],
-          "nextAction": "Add deterministic Widgetbook and capture evidence in the feature-contract evidence-closure pass."
+          "nextAction": "Keep the retry scoped to the exact attendee-id query while preserving resolved recap context.",
+          "previewIds": [
+            "EventRecapScreen/Event recap route states"
+          ]
         },
         {
           "id": "profile_lookup_fallback",
@@ -21161,6 +21183,16 @@
           "notes": "No exact coordinate state with branded Location unavailable copy."
         },
         {
+          "id": "event_location_map_directions_pending",
+          "status": "captured",
+          "notes": "Pinned map with the singleton directions launch held pending and its CTA showing progress."
+        },
+        {
+          "id": "event_location_map_directions_failure",
+          "status": "captured",
+          "notes": "Pinned map with a failed platform directions launch and honest visible snackbar feedback."
+        },
+        {
           "id": "event_location_map_text_scale_2",
           "status": "captured",
           "notes": "Pinned map summary and directions action under 2.0 text scale."
@@ -21250,12 +21282,16 @@
         {
           "id": "directions_action",
           "kind": "mutation",
-          "status": "tested",
+          "status": "captured",
           "source": "Get directions invokes a route-owned singleton launch for the current directions URI; EventLocationMapRouteScreen shows button progress and rejects duplicate taps while pending, then restores the action and reports false or thrown launcher failures.",
+          "captureIds": [
+            "event_location_map_directions_pending",
+            "event_location_map_directions_failure"
+          ],
           "tests": [
             "test/events/events_widgets_test.dart"
           ],
-          "nextAction": "Add deterministic pending/failure preview and capture evidence in the evidence-closure phase; focused success, false, thrown-error, and duplicate-tap tests are current.",
+          "nextAction": "Keep success, false, thrown-error, pending, and duplicate-tap tests current with the deterministic pending/failure captures.",
           "previewIds": [
             "EventLocationMapScreen/Map states"
           ]
@@ -21589,6 +21625,11 @@
           "notes": "Activity route capture for uidProvider loading under the Activity top bar."
         },
         {
+          "id": "notifications_uid_error",
+          "status": "captured",
+          "notes": "Activity route capture for uidProvider failure with explicit auth-context retry."
+        },
+        {
           "id": "notifications_signed_out",
           "status": "captured",
           "notes": "Activity route capture for signed-out or missing uid state."
@@ -21651,12 +21692,18 @@
         {
           "id": "uid_error",
           "kind": "error",
-          "status": "tested",
+          "status": "captured",
           "source": "uidProvider failure renders CatchErrorState with AppErrorContext.auth and an identity retry instead of ActivitySignedOutState.",
+          "captureIds": [
+            "notifications_uid_error"
+          ],
           "tests": [
             "test/dashboard/dashboard_screen_test.dart"
           ],
-          "nextAction": "Add deterministic ActivityScreen Widgetbook and capture evidence in the feature-contract evidence-closure pass."
+          "nextAction": "Keep identity failure visually distinct from the successfully resolved signed-out state.",
+          "previewIds": [
+            "ActivityScreen/Screen states"
+          ]
         },
         {
           "id": "signed_out",
@@ -22670,6 +22717,16 @@
           "notes": "Settings Account fixture with blocked-account unblock mutation using shared offline error feedback."
         },
         {
+          "id": "settings_external_link_pending",
+          "status": "captured",
+          "notes": "Settings Account fixture with Catch Host launch held pending, selected-row progress, and whole-surface exclusivity."
+        },
+        {
+          "id": "settings_external_link_failure",
+          "status": "captured",
+          "notes": "Settings Account fixture with a false external-launch result and honest visible feedback."
+        },
+        {
           "id": "settings_text_scale_2",
           "status": "captured",
           "notes": "Settings Account fixture rendered at text scale 2.0 with blocked-account rows."
@@ -22765,8 +22822,12 @@
         {
           "id": "external_link_outcomes",
           "kind": "mutation",
-          "status": "tested",
+          "status": "captured",
           "source": "Catch Host and configured privacy, support, and terms rows use one route-owned external-link operation. The selected row shows progress, the whole Settings surface freezes while pending, false and thrown failures show honest feedback, and actions restore afterward.",
+          "captureIds": [
+            "settings_external_link_pending",
+            "settings_external_link_failure"
+          ],
           "tests": [
             "test/safety/settings_screen_test.dart"
           ],
@@ -23344,6 +23405,16 @@
           "notes": "Payment History missing event title route capture."
         },
         {
+          "id": "payment_history_event_title_loading",
+          "status": "captured",
+          "notes": "Resolved payments with batched event-title enrichment still loading."
+        },
+        {
+          "id": "payment_history_event_title_error",
+          "status": "captured",
+          "notes": "Resolved payments with batched event-title enrichment failure and exact-query retry."
+        },
+        {
           "id": "payment_history_text_scale_2",
           "status": "captured",
           "notes": "Payment History text scale 2 route capture."
@@ -23501,22 +23572,34 @@
         {
           "id": "event_title_loading",
           "kind": "loading",
-          "status": "tested",
+          "status": "captured",
           "source": "When payments are resolved but watchEventsByIdsProvider is loading, PaymentHistoryViewModel preserves an explicit enrichment-loading status and PaymentHistoryList renders row-shaped skeletons instead of a false missing title.",
+          "captureIds": [
+            "payment_history_event_title_loading"
+          ],
           "tests": [
             "test/payments/payment_history_screen_test.dart"
           ],
-          "nextAction": "Add deterministic Widgetbook and capture evidence in the feature-contract evidence-closure pass."
+          "nextAction": "Keep enrichment loading visually distinct from resolved missing event titles.",
+          "previewIds": [
+            "PaymentHistoryScreen/Screen states"
+          ]
         },
         {
           "id": "event_title_error",
           "kind": "error",
-          "status": "tested",
+          "status": "captured",
           "source": "Event-title lookup failure is preserved in PaymentHistoryViewModel and renders an event-specific CatchErrorState with exact-query retry.",
+          "captureIds": [
+            "payment_history_event_title_error"
+          ],
           "tests": [
             "test/payments/payment_history_screen_test.dart"
           ],
-          "nextAction": "Add deterministic Widgetbook and capture evidence in the feature-contract evidence-closure pass."
+          "nextAction": "Keep the retry scoped to the batched payment event-id query and preserve the resolved payment set.",
+          "previewIds": [
+            "PaymentHistoryScreen/Screen states"
+          ]
         },
         {
           "id": "event_title_missing",

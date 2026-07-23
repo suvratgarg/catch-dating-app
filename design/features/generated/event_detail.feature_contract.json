@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/event_detail.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:4f5150846f9f442e63febb8fcabe719b6e5d6daa45c12e9c6954c7d62c03f88b",
-  "resolvedDigest": "sha256:a9a0d32b7333cc48fedc91f91cb00f9efe3e65d6a6b1eb456ae85b64a390ad5e",
+  "sourceDigest": "sha256:10a1349ecf13f46122903b98422e05eb8f1a7601415a5a37c862db16260b1e82",
+  "resolvedDigest": "sha256:854afb836e6218a755058261a74027f7ca6055b275c6c84fa96decda740b72a1",
   "feature": {
     "id": "feature.event_detail",
     "name": "Event Detail",
@@ -18,10 +18,10 @@
     "scenarios": 26,
     "actionCases": 37,
     "actions": 10,
-    "captures": 31,
+    "captures": 33,
     "previews": 8,
     "testFiles": 4,
-    "evidenceExceptions": 9
+    "evidenceExceptions": 8
   },
   "surfaces": [
     {
@@ -1446,10 +1446,10 @@
         "scenarios": 11,
         "actionCases": 13,
         "actions": 3,
-        "captures": 7,
+        "captures": 9,
         "previews": 2,
         "testFiles": 1,
-        "evidenceExceptions": 9
+        "evidenceExceptions": 8
       },
       "dimensions": {
         "load": {
@@ -1582,16 +1582,6 @@
           ],
           "debtId": "FEATURE-CONTRACT-MIGRATION-001",
           "reason": "These Event Location Map states have deterministic capture and Widgetbook evidence but no focused state-level test recorded by the screen authority."
-        },
-        {
-          "stateIds": [
-            "directions_action"
-          ],
-          "evidence": [
-            "captures"
-          ],
-          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
-          "reason": "Directions success, false-result, thrown-failure, pending, and duplicate-tap behavior have focused route tests plus Widgetbook action presence, but pending/failure still need deterministic visual evidence in the evidence-closure phase."
         },
         {
           "stateIds": [
@@ -1847,7 +1837,7 @@
           "id": "directions_action",
           "stateId": "directions_action",
           "kind": "mutation",
-          "status": "tested",
+          "status": "captured",
           "dimensions": {
             "load": "ready",
             "location": "exact",
@@ -1857,7 +1847,10 @@
             "theme": "standard"
           },
           "evidence": {
-            "captureIds": [],
+            "captureIds": [
+              "event_location_map_directions_pending",
+              "event_location_map_directions_failure"
+            ],
             "previewIds": [
               "EventLocationMapScreen/Map states"
             ],

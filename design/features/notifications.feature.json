@@ -193,16 +193,10 @@
       "requiredEvidence": {"captures": true, "previews": true, "tests": true},
       "evidenceExceptions": [
         {
-          "stateIds": ["uid_error"],
-          "evidence": ["captures", "previews"],
-          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
-          "reason": "The newly truthful identity-error state has focused screen coverage; deterministic preview and capture entries are completed in the evidence-closure phase."
-        },
-        {
           "stateIds": ["uid_loading", "signed_out", "activity_loading", "activity_error", "empty_activity", "text_scale_2", "reduced_motion", "light_dark"],
           "evidence": ["tests"],
           "debtId": "FEATURE-CONTRACT-MIGRATION-001",
-          "reason": "These Notifications states have deterministic capture and Widgetbook evidence but no focused state-level test recorded by the screen authority; uid_error now has focused screen coverage."
+          "reason": "These Notifications states have deterministic capture and Widgetbook evidence but no focused state-level test recorded by the screen authority."
         },
         {
           "stateIds": ["read_unread_rows", "row_navigation_targets"],

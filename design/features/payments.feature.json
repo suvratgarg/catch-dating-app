@@ -221,12 +221,6 @@
           "reason": "These Payment History states have deterministic capture and Widgetbook evidence but no focused state-level test recorded by the authority."
         },
         {
-          "stateIds": ["event_title_loading", "event_title_error"],
-          "evidence": ["captures", "previews"],
-          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
-          "reason": "Event-title loading and error now have focused screen tests; deterministic preview and capture entries are completed in the evidence-closure phase."
-        },
-        {
           "stateIds": ["status_variants"],
           "evidence": ["captures"],
           "debtId": "FEATURE-CONTRACT-MIGRATION-001",

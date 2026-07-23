@@ -9592,6 +9592,8 @@
             "event_recap_missing_event",
             "event_recap_empty_roster",
             "event_recap_partial_profiles",
+            "event_recap_profile_lookup_loading",
+            "event_recap_profile_lookup_error",
             "event_recap_selected_tiles",
             "event_recap_text_scale_2",
             "event_recap_reduced_motion",
@@ -9692,22 +9694,34 @@
             {
               "id": "profile_lookup_loading",
               "kind": "loading",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "event_recap_profile_lookup_loading"
+              ],
               "tests": [
                 "test/swipes/event_recap_screen_state_test.dart",
                 "test/swipes/event_recap_screen_test.dart"
               ],
-              "notes": "A resolved recap preserves the hero and deck action while the batched attendee-profile lookup renders VibeGridSkeleton instead of Guest rows."
+              "notes": "A resolved recap preserves the hero and deck action while the batched attendee-profile lookup renders VibeGridSkeleton instead of Guest rows.",
+              "previewIds": [
+                "EventRecapScreen/Event recap route states"
+              ]
             },
             {
               "id": "profile_lookup_error",
               "kind": "error",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "event_recap_profile_lookup_error"
+              ],
               "tests": [
                 "test/swipes/event_recap_screen_state_test.dart",
                 "test/swipes/event_recap_screen_test.dart"
               ],
-              "notes": "A failed attendee-profile lookup keeps the recap visible and exposes branded inline retry for the exact batched query."
+              "notes": "A failed attendee-profile lookup keeps the recap visible and exposes branded inline retry for the exact batched query.",
+              "previewIds": [
+                "EventRecapScreen/Event recap route states"
+              ]
             },
             {
               "id": "profile_lookup_fallback",
@@ -9841,6 +9855,8 @@
             "event_location_map_error",
             "event_location_map_not_found",
             "event_location_map_no_coordinate",
+            "event_location_map_directions_pending",
+            "event_location_map_directions_failure",
             "event_location_map_text_scale_2",
             "event_location_map_reduced_motion"
           ],
@@ -9933,7 +9949,11 @@
             {
               "id": "directions_action",
               "kind": "mutation",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "event_location_map_directions_pending",
+                "event_location_map_directions_failure"
+              ],
               "tests": [
                 "test/events/events_widgets_test.dart"
               ],
@@ -10043,6 +10063,7 @@
           "captureIds": [
             "notifications_activity",
             "notifications_uid_loading",
+            "notifications_uid_error",
             "notifications_signed_out",
             "notifications_activity_loading",
             "notifications_activity_error",
@@ -10085,11 +10106,17 @@
             {
               "id": "uid_error",
               "kind": "error",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "notifications_uid_error"
+              ],
               "tests": [
                 "test/dashboard/dashboard_screen_test.dart"
               ],
-              "notes": "uidProvider failure renders a branded auth error with retry and never masquerades as No activity yet."
+              "notes": "uidProvider failure renders a branded auth error with retry and never masquerades as No activity yet.",
+              "previewIds": [
+                "ActivityScreen/Screen states"
+              ]
             },
             {
               "id": "signed_out",
@@ -10545,6 +10572,8 @@
             "settings_unblock_pending",
             "settings_unblock_error",
             "settings_unblock_offline",
+            "settings_external_link_pending",
+            "settings_external_link_failure",
             "settings_text_scale_2",
             "settings_reduced_motion"
           ],
@@ -10644,7 +10673,11 @@
             {
               "id": "external_link_outcomes",
               "kind": "mutation",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "settings_external_link_pending",
+                "settings_external_link_failure"
+              ],
               "tests": [
                 "test/safety/settings_screen_test.dart"
               ],
@@ -10895,6 +10928,8 @@
             "payment_history_failed_signup_receipt_sheet",
             "payment_history_support_snackbar",
             "payment_history_missing_event_title",
+            "payment_history_event_title_loading",
+            "payment_history_event_title_error",
             "payment_history_text_scale_2",
             "payment_history_reduced_motion"
           ],
@@ -11050,20 +11085,32 @@
             {
               "id": "event_title_loading",
               "kind": "loading",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "payment_history_event_title_loading"
+              ],
               "tests": [
                 "test/payments/payment_history_screen_test.dart"
               ],
-              "notes": "Resolved payments retain explicit event-title enrichment loading and render row-shaped skeletons instead of a false missing-event label."
+              "notes": "Resolved payments retain explicit event-title enrichment loading and render row-shaped skeletons instead of a false missing-event label.",
+              "previewIds": [
+                "PaymentHistoryScreen/Screen states"
+              ]
             },
             {
               "id": "event_title_error",
               "kind": "error",
-              "status": "tested",
+              "status": "captured",
+              "captureIds": [
+                "payment_history_event_title_error"
+              ],
               "tests": [
                 "test/payments/payment_history_screen_test.dart"
               ],
-              "notes": "Event-title lookup failure renders an event-specific branded retry state for the exact payment event-id set."
+              "notes": "Event-title lookup failure renders an event-specific branded retry state for the exact payment event-id set.",
+              "previewIds": [
+                "PaymentHistoryScreen/Screen states"
+              ]
             },
             {
               "id": "event_title_missing",

@@ -457,7 +457,7 @@
       "simhash128": "622563b1889ba515f958c41cb559fd5b",
       "tokenStreamLength": 49,
       "coarseTokenStreamLength": 49,
-      "usageCountRaw": 8,
+      "usageCountRaw": 9,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -6242,7 +6242,7 @@
       "simhash128": "3201888df4ab99952f58e453daeaeb43",
       "tokenStreamLength": 96,
       "coarseTokenStreamLength": 96,
-      "usageCountRaw": 4,
+      "usageCountRaw": 5,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -10285,7 +10285,7 @@
       "simhash128": "76ec7702842af15ee6f8de9bb90af7b3",
       "tokenStreamLength": 29,
       "coarseTokenStreamLength": 29,
-      "usageCountRaw": 11,
+      "usageCountRaw": 13,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },
@@ -19361,7 +19361,7 @@
         "EventSuccessLabScreen",
         "EventSuccessManualQaScreen"
       ],
-      "usageSum": 76,
+      "usageSum": 77,
       "scope": "screen"
     },
     {
@@ -19925,7 +19925,19 @@
       "scope": "widget"
     },
     {
-      "id": "n042-event-pill",
+      "id": "n042-payment-screen",
+      "stem": "PaymentScreen",
+      "stemType": "outer",
+      "members": [
+        "PaymentConfirmationLoadingScreen",
+        "PaymentConfirmationScreen",
+        "PaymentHistoryScreen"
+      ],
+      "usageSum": 23,
+      "scope": "screen"
+    },
+    {
+      "id": "n043-event-pill",
       "stem": "EventPill",
       "stemType": "outer",
       "members": [
@@ -19937,7 +19949,7 @@
       "scope": "widget"
     },
     {
-      "id": "n043-home-screen",
+      "id": "n044-home-screen",
       "stem": "HomeScreen",
       "stemType": "final-two",
       "members": [
@@ -19946,18 +19958,6 @@
         "HostOperationsHomeScreen"
       ],
       "usageSum": 22,
-      "scope": "screen"
-    },
-    {
-      "id": "n044-payment-screen",
-      "stem": "PaymentScreen",
-      "stemType": "outer",
-      "members": [
-        "PaymentConfirmationLoadingScreen",
-        "PaymentConfirmationScreen",
-        "PaymentHistoryScreen"
-      ],
-      "usageSum": 21,
       "scope": "screen"
     },
     {
@@ -20340,7 +20340,18 @@
       "scope": "screen"
     },
     {
-      "id": "n077-count-pill",
+      "id": "n077-history-screen",
+      "stem": "HistoryScreen",
+      "stemType": "final-two",
+      "members": [
+        "PaymentHistoryScreen",
+        "ReviewsHistoryScreen"
+      ],
+      "usageSum": 27,
+      "scope": "screen"
+    },
+    {
+      "id": "n078-count-pill",
       "stem": "CountPill",
       "stemType": "final-two",
       "members": [
@@ -20351,7 +20362,7 @@
       "scope": "widget"
     },
     {
-      "id": "n078-sliver-state",
+      "id": "n079-sliver-state",
       "stem": "SliverState",
       "stemType": "outer",
       "members": [
@@ -20362,23 +20373,12 @@
       "scope": "widget"
     },
     {
-      "id": "n079-club-screen",
+      "id": "n080-club-screen",
       "stem": "ClubScreen",
       "stemType": "final-two",
       "members": [
         "CreateClubScreen",
         "HostCreateClubScreen"
-      ],
-      "usageSum": 25,
-      "scope": "screen"
-    },
-    {
-      "id": "n080-history-screen",
-      "stem": "HistoryScreen",
-      "stemType": "final-two",
-      "members": [
-        "PaymentHistoryScreen",
-        "ReviewsHistoryScreen"
       ],
       "usageSum": 25,
       "scope": "screen"
@@ -20483,7 +20483,18 @@
       "scope": "widget"
     },
     {
-      "id": "n090-state-viewport",
+      "id": "n090-map-screen",
+      "stem": "MapScreen",
+      "stemType": "final-two",
+      "members": [
+        "EventLocationMapScreen",
+        "ExploreMapScreen"
+      ],
+      "usageSum": 16,
+      "scope": "screen"
+    },
+    {
+      "id": "n091-state-viewport",
       "stem": "StateViewport",
       "stemType": "final-two",
       "members": [
@@ -20494,7 +20505,7 @@
       "scope": "widget"
     },
     {
-      "id": "n091-detail-body",
+      "id": "n092-detail-body",
       "stem": "DetailBody",
       "stemType": "final-two",
       "members": [
@@ -20503,17 +20514,6 @@
       ],
       "usageSum": 15,
       "scope": "widget"
-    },
-    {
-      "id": "n092-map-screen",
-      "stem": "MapScreen",
-      "stemType": "final-two",
-      "members": [
-        "EventLocationMapScreen",
-        "ExploreMapScreen"
-      ],
-      "usageSum": 15,
-      "scope": "screen"
     },
     {
       "id": "n093-top-action",

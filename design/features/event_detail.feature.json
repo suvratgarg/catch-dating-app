@@ -613,12 +613,6 @@
           "reason": "These Event Location Map states have deterministic capture and Widgetbook evidence but no focused state-level test recorded by the screen authority."
         },
         {
-          "stateIds": ["directions_action"],
-          "evidence": ["captures"],
-          "debtId": "FEATURE-CONTRACT-MIGRATION-001",
-          "reason": "Directions success, false-result, thrown-failure, pending, and duplicate-tap behavior have focused route tests plus Widgetbook action presence, but pending/failure still need deterministic visual evidence in the evidence-closure phase."
-        },
-        {
           "stateIds": ["map_masking"],
           "evidence": ["captures", "tests"],
           "debtId": "DP-EVENT-MAP-003",

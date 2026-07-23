@@ -393,6 +393,34 @@ Widget eventRecapScreenRouteStates(BuildContext context) {
         ),
       ),
       _StateCard(
+        label: 'profile lookup loading',
+        child: _DeviceFrame(
+          child: _RecapRouteScope(
+            event: event,
+            recapValue: AsyncData(
+              _recapViewModel(event: event, attendeeIds: attendeeIds),
+            ),
+            rosterProfilesValue:
+                const AsyncLoading<Map<String, PublicProfile>>(),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'profile lookup error',
+        child: _DeviceFrame(
+          child: _RecapRouteScope(
+            event: event,
+            recapValue: AsyncData(
+              _recapViewModel(event: event, attendeeIds: attendeeIds),
+            ),
+            rosterProfilesValue: AsyncError<Map<String, PublicProfile>>(
+              _offlineException(action: 'load attendee profiles'),
+              StackTrace.empty,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
         label: 'partial profile fallback',
         child: _DeviceFrame(
           child: _RecapRouteScope(
@@ -1853,23 +1881,27 @@ class _RecapRouteScope extends StatelessWidget {
     required this.event,
     required this.recapValue,
     this.rosterProfiles,
+    this.rosterProfilesValue,
   });
 
   final Event event;
   final AsyncValue<EventRecapViewModel?> recapValue;
   final Map<String, PublicProfile>? rosterProfiles;
+  final AsyncValue<Map<String, PublicProfile>>? rosterProfilesValue;
 
   @override
   Widget build(BuildContext context) {
     final roster = rosterProfiles ?? _recapRosterProfiles();
     final attendeeIds = recapValue.asData?.value?.attendeeIds ?? roster.keys;
+    final effectiveRosterValue =
+        rosterProfilesValue ?? AsyncData<Map<String, PublicProfile>>(roster);
 
     return ProviderScope(
       overrides: [
         eventRecapViewModelProvider(event.id).overrideWith((ref) => recapValue),
         publicProfilesByIdsProvider(
           PublicProfilesQuery(attendeeIds),
-        ).overrideWith((ref) async => roster),
+        ).overrideWithValue(effectiveRosterValue),
       ],
       child: EventRecapScreen(eventId: event.id),
     );

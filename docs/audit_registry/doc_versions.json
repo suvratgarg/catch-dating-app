@@ -170,14 +170,14 @@
   },
   "design_parity_tracker": {
     "path": "docs/design_parity/README.md",
-    "version": "0.1.40",
+    "version": "0.1.41",
     "updated": "2026-07-23",
     "status": "active",
     "read_policy": "Use before design-parity passes to pick feature scope, state coverage, screen contracts, preview/capture requirements, visual-diff gaps, component-contract gaps, and drift-prevention follow-ups."
   },
   "design_parity_comprehensive_todo": {
     "path": "docs/design_parity/comprehensive_todo.md",
-    "version": "0.2.319",
+    "version": "0.2.320",
     "updated": "2026-07-23",
     "status": "active",
     "read_policy": "Use as the canonical and only human-readable execution checklist for remaining design-parity work; detailed state and evidence live in JSON ledgers and pass receipts. Host Event Manage participant mutation-display, report-summary, profile-lookup, Event Success provider-wave ownership, private-access/invite-link offline coverage, private-access missing-code coverage, invite-link disabled/long-label coverage, Event Success plan/scorecard offline coverage, Event Success live-rich substates, check-in QR, conversation cues, revealed round, and host-edited override coverage are reflected here."
@@ -518,7 +518,7 @@
     "status": "retirement_ready",
     "read_policy": "Historical completed design-system stretch work order only. Current field, top-bar, async, layout, motion, schema, and component rules live in active owner docs, contracts, and gates."
   },
-  "version": "4.7.14",
+  "version": "4.7.15",
   "admin_components": {
     "path": "design/admin/components.json",
     "version": "34",

@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.40
+version: 0.1.41
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -248,6 +248,10 @@ The owning route must await the result, give the action a visible pending state,
 reject duplicate or conflicting actions at the declared cardinality, and show
 honest feedback for both a false platform result and a thrown failure. Event
 Location Map and Account Settings are the current Flutter reference adopters.
+Their pending and failure outcomes, together with Event Recap profile
+enrichment, Notifications identity failure, and Payment History event-title
+enrichment, now have deterministic route captures and Widgetbook previews
+where the registered feature contracts require them.
 
 Action names describe observed outcomes rather than promising more than the
 implementation does. Payment History therefore contracts its current support
