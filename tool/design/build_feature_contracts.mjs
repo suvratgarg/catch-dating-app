@@ -1033,11 +1033,17 @@ function safeRead(filePath, readPath, errors) {
 }
 
 function hasDeclaredSymbol(source, symbol) {
-  return new RegExp(
+  const keywordDeclaration = new RegExp(
     `\\b(?:class|enum|mixin|typedef|function|interface|type|const|let|var)\\s+` +
     `${escapeRegExp(symbol)}\\b`,
     "u",
-  ).test(source);
+  );
+  const dartFunctionDeclaration = new RegExp(
+    `(?:^|\\n)\\s*(?:[A-Za-z_]\\w*(?:<[^;\\n{}()]+>)?\\??)\\s+` +
+    `${escapeRegExp(symbol)}\\s*(?:<[^;\\n{}()]+>)?\\(`,
+    "u",
+  );
+  return keywordDeclaration.test(source) || dartFunctionDeclaration.test(source);
 }
 
 function hasWord(source, value) {

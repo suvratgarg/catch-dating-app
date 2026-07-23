@@ -259,38 +259,34 @@
     {
       "authority": "flutter_screens",
       "authorityId": "screen.notifications.list",
-      "status": "planned",
-      "priority": "P2",
-      "reason": "Activity feed, read-state, and deep-link workflow.",
-      "targetFeature": "feature.notifications",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Notifications contract covers access and activity provider waves, grouping/read-state evidence, mark-all-read lifecycle, and dynamic chat/event/organizer route handoff.",
+      "featureContract": "feature.notifications"
     },
     {
       "authority": "flutter_screens",
       "authorityId": "screen.reviews.history",
-      "status": "planned",
-      "priority": "P2",
-      "reason": "Member review history and edit workflow.",
-      "targetFeature": "feature.review_history",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Reviews contract covers profile/review recovery, event-context projection, editable review selection, and the shared rating/update/delete sheet lifecycle.",
+      "featureContract": "feature.reviews"
     },
     {
       "authority": "flutter_screens",
       "authorityId": "screen.settings.account",
-      "status": "planned",
-      "priority": "P2",
-      "reason": "Account, notification, privacy, safety, and deletion settings workflow.",
-      "targetFeature": "feature.account_settings",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Account Settings contract covers profile/blocked-account recovery, history and external navigation, seven preference decisions, unblock, deletion, sign-out, concurrency, accessibility, and theme states.",
+      "featureContract": "feature.account_settings"
     },
     {
       "authority": "flutter_screens",
       "authorityId": "screen.payments.history",
-      "status": "planned",
-      "priority": "P3",
-      "reason": "Member payment history, status, and help surface.",
-      "targetFeature": "feature.payment_history",
-      "debtId": "FEATURE-CONTRACT-MIGRATION-001"
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Compiled Payments contract covers identity/payment recovery, payment status variants, receipt inspection, event-title enrichment fallback, and failed-booking support guidance.",
+      "featureContract": "feature.payments"
     },
     {
       "authority": "marketing_routes",

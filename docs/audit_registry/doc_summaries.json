@@ -1,5 +1,5 @@
 {
-  "version": "4.5.161",
+  "version": "4.5.162",
   "updated": "2026-07-23",
   "owner": "recursive_audit_loop",
   "summaries": {
@@ -61,7 +61,7 @@
       ]
     },
     "docs/agent_regression_ledger.json": {
-      "purpose": "Machine-readable list of hard-won agent regression guards, including feature-contract projection grouping, exact route versus modal ownership, dependency fallback classification, action wiring versus repository capability, unreachable-state classification, pending-mutation snapshot and guard-reset drift, audit-loop, design-system, generated-metadata, Widgetbook, canonical market display, nullable organizer data, parallel Flutter test, parallel delegation ownership, and enforcement-integrity drift failures.",
+      "purpose": "Machine-readable list of hard-won agent regression guards, including feature-contract projection grouping, exact route versus modal ownership, identity and enrichment fallback classification, actual CTA outcome naming, external-effect result handling, action wiring versus repository capability, unreachable-state classification, pending-mutation snapshot and cross-domain concurrency drift, audit-loop, design-system, generated-metadata, Widgetbook, canonical market display, nullable organizer data, parallel Flutter test, parallel delegation ownership, and enforcement-integrity drift failures.",
       "read_when": [
         "Generating a context pack",
         "Touching a scope with known agent regression risks",
@@ -503,7 +503,7 @@
       ]
     },
     "docs/design_parity/README.md": {
-      "purpose": "Design parity folder owner and workflow for state matrices, multi-surface and coordinated-workspace feature contracts, exact route versus modal ownership, dependency loading and failure versus genuine fallback states, external-effect result handling, honest pending-mutation and guard-reset action availability, shared-implementation and filtered-route goal projections, action wiring versus repository capability, explicit unreachable and blank-data state classification, meaningful-action versus raw-form-data boundaries, stable Flutter preview-builder evidence, known implementation-gap actions, explicit React route-state preview mappings, captures, Widgetbook and Storybook evidence, component contracts, and route-ledger hygiene.",
+      "purpose": "Design parity folder owner and workflow for state matrices, multi-surface and coordinated-workspace feature contracts, exact route versus modal ownership, dependency and identity loading/failure versus genuine fallback states, actual CTA outcome naming, external-effect result handling, honest pending-mutation and cross-domain concurrency availability, shared-implementation and filtered-route goal projections, action wiring versus repository capability, explicit unreachable and blank-data state classification, meaningful-action versus raw-form-data boundaries, stable Flutter preview-builder evidence, top-level Dart action owners, known implementation-gap actions, explicit React route-state preview mappings, captures, Widgetbook and Storybook evidence, component contracts, and route-ledger hygiene.",
       "read_when": [
         "Starting design-parity work",
         "Changing screen contracts, capture coverage, Widgetbook references, or design parity ledgers"

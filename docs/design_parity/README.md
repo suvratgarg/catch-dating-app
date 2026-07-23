@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.27
+version: 0.1.28
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -166,14 +166,14 @@ first checked example: it contains both `screen.explore.discovery` and the
 marketing `organizer_search` route, while their components, action owners,
 states, and evidence remain runtime-specific.
 
-Event Detail, Explore, Dashboard Home, Event Success, Host Home, Host
-Organizers, Host Organizer Create, Host Event Create, Host Event Manage with
-its owner-edit projection, Host Inbox, Catches Hub,
-Catches Event, Matches List, Chat Thread, Self Profile, Public Profile, and
-Organizer Detail, Phone Authentication, and Member Onboarding with its Start
-Welcome projection, Event Planning, Matching Preferences, Event Recap, and
-Event Detail with its exact-location projection are the current reference
-contracts. Organizer Detail is the first
+Event Detail with its exact-location projection, Explore, Dashboard Home,
+Event Success, Host Home, Host Organizers, Host Organizer Create, Host Event
+Create, Host Event Manage with its owner-edit projection, Host Inbox, Catches
+Hub, Catches Event, Matches List, Chat Thread, Self Profile, Public Profile,
+Organizer Detail, Phone Authentication, Member Onboarding with its Start
+Welcome projection, Event Planning, Matching Preferences, Event Recap,
+Notifications, Reviews, Payments, and Account Settings are the current Flutter
+reference contracts. Organizer Detail is the first
 three-surface reference:
 consumer Flutter, host Flutter, and the canonical marketing listing share one
 semantic feature identity while retaining separate actions and state
@@ -221,13 +221,23 @@ its authority merely because both involve maps. Host Event Edit actually opens
 longer claims an Event Location Map transition. This preserves typed route edges
 without making one authority describe a different production screen.
 
-Dependency fallback is not automatically a valid data state. Event Recap
-currently renders the same Guest row when a public profile is genuinely absent,
-still loading, or failed to load. A feature contract should expose that collapse
-as debt instead of calling every unresolved dependency a successful fallback.
-The same rule applies to external effects: requesting directions is implemented,
-but ignored false/error results and unrestricted repeated taps remain part of
-the action contract until production defines pending and failure behavior.
+Dependency fallback is not automatically a valid data state. Event Recap,
+Reviews History, and Payment History currently render the same fallback when a
+secondary record is genuinely absent, still loading, or failed to load.
+Notifications similarly renders an identity-provider error as if the member
+were signed out. A feature contract should expose each collapse as debt instead
+of calling every unresolved dependency a successful empty or fallback state.
+The same rule applies to external effects: requesting directions or opening an
+external settings link is implemented, but ignored false/error results and
+unrestricted repeated taps remain part of the action contract until production
+defines pending and failure behavior.
+
+Action names describe observed outcomes rather than promising more than the
+implementation does. Payment History therefore contracts its current support
+CTA as `show_support_guidance`: the button closes the sheet and displays a
+snackbar, but it does not open a support channel. Either production behavior or
+the visible label must change before the contract can truthfully call that
+action a support handoff.
 
 Action availability must describe production behavior, including unsafe
 behavior. Host Organizer Create and Host Event Edit currently leave some
@@ -242,6 +252,11 @@ Matching Preferences demonstrates the same rule across local drafts: close,
 age, and gender controls remain live after the persisted request is captured,
 so the generated pending matrix must preserve those unsafe actions until the
 screen freezes or versions them.
+Account Settings extends the rule across independent mutation domains:
+preference, unblock, delete, and sign-out guards currently disable only their
+own controls, so destructive and route actions can overlap. Contract the whole
+surface's concurrent action availability, not just the button owned by one
+controller.
 
 When two registered surfaces use the same production implementation and differ
 only by viewer policy, prefer separate projections in one feature contract.
@@ -270,6 +285,11 @@ Flutter preview evidence may use the stable annotated Widgetbook builder id or
 the `Type/Use case name` identity. Prefer the builder id when the same builder
 is intentionally annotated for several component types, because the generated
 Widgetbook registry uses that builder as their shared evidence seam.
+
+Action owners may be Dart classes, enums, or top-level functions. The compiler
+validates each declared symbol directly, so route helpers such as
+`openNotificationRoute` remain attributed to their real production owner
+instead of being reassigned to a nearby class merely to satisfy the contract.
 
 An action whose owner exists but whose runtime callback is not connected may be
 declared with `implementationStatus: known_gap`, stable debt, and a concrete

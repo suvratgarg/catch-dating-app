@@ -271,6 +271,21 @@ test("compiles exact surface-state coverage and action availability", () => {
   assert.match(artifact.sourceDigest, /^sha256:[a-f0-9]{64}$/u);
 });
 
+test("recognizes top-level Dart functions as action owners", () => {
+  const data = fixture();
+  const originalReadPath = data.readPath;
+  data.source.surfaces[0].bindings.actionOwners[0].symbol =
+    "openNotificationRoute";
+  data.readPath = (filePath) => filePath === actionOwnerPath
+    ? "void openNotificationRoute() { book(); }"
+    : originalReadPath(filePath);
+
+  assert.doesNotThrow(() => compileFeatureContract({
+    ...data,
+    sourcePath: "fixture.json",
+  }));
+});
+
 test("projects known implementation gaps and rejects enabling them", () => {
   const data = fixture();
   const action = data.source.surfaces[0].actions[0];

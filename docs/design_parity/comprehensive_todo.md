@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_comprehensive_todo
-version: 0.2.308
+version: 0.2.309
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -24,9 +24,9 @@ ledgers as the source of truth when counts differ:
 - Route inventory: 52 app routes.
 - Route coverage decisions: 44 contracted, 2 alias, 0 planned, 6 excluded.
 - Screen contracts: 32 contracted screens.
-- Feature orchestration coverage: 57 registered authorities, 22 source
-  contracts, 28 contracted Flutter screens, 2 contracted marketing routes, and
-  4 planned Flutter screens. The social-journey batch compiles all 99
+- Feature orchestration coverage: 57 registered authorities, 26 source
+  contracts, 32 contracted Flutter screens, 2 contracted marketing routes, and
+  0 planned Flutter screens. The social-journey batch compiles all 99
   registered states and 23 explicit actions across Catches Hub, Catches Event,
   Matches List, Member Chat, Self Profile, and Public Profile; missing focused
   capture/test evidence remains named migration debt. Organizer Detail adds one
@@ -64,11 +64,17 @@ ledgers as the source of truth when counts differ:
   a second projection, with route recovery, back, and directions actions. This
   pass also removes Host Event Edit's false route binding: its production flow
   opens `LocationPickerScreen`, not Event Location Map.
+  Notifications, Reviews, Payments, and Account Settings complete Flutter
+  migration with 59 exact states and 28 actions. Their contracts distinguish
+  identity failure from sign-out, unresolved enrichment from genuine absence,
+  support guidance from a real support handoff, and independent mutation guards
+  from whole-surface concurrency. Missing behavior is retained as seven stable
+  product gaps rather than normalized into false success states.
 - Screen priority spread: 18 P1, 9 P2, and 5 P3 contracted screens.
 - Contracted screen states: 597.
 - Contracted screen sections: 227.
-- Screen registry migration gaps: 22 open, 24 blocked, and 99 closed. One of
-  the 22 non-blocked gaps is currently marked in progress. These are
+- Screen registry migration gaps: 29 open, 24 blocked, and 99 closed. One of
+  the 29 non-blocked gaps is currently marked in progress. These are
   product migration gaps in `design/screens/catch.screens.json`, not
   validation failures.
 - Contracted section states: 1,069.
@@ -728,10 +734,10 @@ from those ledgers rather than hand-editing counts.
 | P2 | `screen.saved_events.list` | 9 | 4 | 0 | Blocked: no standalone Saved Events source | `DS-SAVED-EVENTS-004` blocked | Event Planning binds Saved Events as the saved-only projection of Calendar's agenda goal, compiling all nine states and five back/recovery/Event Detail actions. The contract intentionally declares no list-level save/unsave action even though a saved-event repository exists, because those mutations remain on Event Detail. Widgetbook and captures remain complete; canonical reference export is still blocked. |
 | P2 | `screen.start.welcome` | 6 | 3 | 1 | State-specific references are optional until strict comparison requires them | `DS-START-001` blocked | Member Onboarding binds Start Welcome as a second projection of the same `WelcomePage` implementation and reuses its skip, phone-auth, and guest-Explore action identities. All six reel, landed, CTA, reduced-motion, text-scale, and fixed-dark states compile against their own Start authority evidence instead of creating a duplicate feature. Additional state-specific references remain blocked/reference-only unless strict visual comparison requires them. |
 | P3 | `screen.event.location_map` | 11 | 4 | 0 | Blocked: no standalone full-screen map source; map primitives only | `DP-EVENT-MAP-003` blocked, `DP-EVENT-MAP-004` blocked, `DP-EVENT-MAP-005` | Event Detail now binds Event Location Map as its read-only exact-location projection, compiling all 11 states and three back/recovery/directions actions. The directions Future is currently discarded, so false/error results have no feedback and repeated taps stay live while launch is pending; define and test that policy under `DP-EVENT-MAP-005`. Exported map masks and pixel comparison remain blocked on a canonical route source. |
-| P3 | `screen.notifications.list` | 13 | 4 | 1 | None | None | Use the complete Notifications state/capture/adapter set during pixel comparison and future visual polish. |
-| P3 | `screen.payments.history` | 15 | 4 | 0 | Blocked: no standalone Payment History source; Booking moments only | `DP-PAYMENT-HISTORY-002` blocked, `DP-PAYMENT-HISTORY-004` blocked | Preserve current capture/Widgetbook coverage; canonical reference export, receipt-id masks, and pixel comparison wait on a standalone payment-history source. |
-| P3 | `screen.reviews.history` | 12 | 4 | 0 | Blocked: no standalone Reviews History source; `ReviewRow` primitive only | `DP-REVIEWS-HISTORY-004` blocked | Preserve current capture/Widgetbook coverage; reference export waits on canonical reviews-history source. |
-| P3 | `screen.settings.account` | 19 | 6 | 1 | None | None | Use the complete Settings state capture set during pixel comparison and future visual polish. |
+| P3 | `screen.notifications.list` | 13 | 4 | 1 | None | `DP-NOTIFICATIONS-004` | `feature.notifications` compiles all 13 states and three retry/read/navigation actions. `uidProvider` errors currently collapse into the same signed-out empty state as a null uid with no retry; preserve failure as an actionable error under `DP-NOTIFICATIONS-004`. The compiler now validates the real top-level route helper and both declared Widgetbook sources. |
+| P3 | `screen.payments.history` | 15 | 4 | 0 | Blocked: no standalone Payment History source; Booking moments only | `DP-PAYMENT-HISTORY-002` blocked, `DP-PAYMENT-HISTORY-004` blocked, `DP-PAYMENT-HISTORY-005`, `DP-PAYMENT-HISTORY-006` | `feature.payments` compiles all 15 states and five recovery/receipt/support actions. The Get help CTA currently provides snackbar guidance without opening a support channel, while event-title loading/failure/missing all collapse to Event booking; resolve those semantics under the two open gaps. Canonical reference export remains blocked. |
+| P3 | `screen.reviews.history` | 12 | 4 | 0 | Blocked: no standalone Reviews History source; `ReviewRow` primitive only | `DP-REVIEWS-HISTORY-004` blocked, `DP-REVIEWS-HISTORY-005`, `DP-REVIEWS-HISTORY-006` | `feature.reviews` compiles all 12 states and seven recovery/edit/rating/save/delete actions. Event enrichment loading/failure/missing currently shares one fallback, and review fields remain live after a mutation snapshot is captured; define enrichment recovery and draft-freezing/versioning before closing the open gaps. Reference export remains blocked. |
+| P3 | `screen.settings.account` | 19 | 6 | 1 | None | `DP-SETTINGS-ACCOUNT-004`, `DP-SETTINGS-ACCOUNT-005` | `feature.account_settings` compiles all 19 states and 13 navigation, preference, safety, external, deletion, and sign-out actions. Independent mutation guards allow destructive and route actions to overlap, while external-link Futures are ignored; define whole-surface exclusivity and explicit external-effect outcomes before visual polish. |
 
 ### Currently Blocked Or User-Input Dependent
 

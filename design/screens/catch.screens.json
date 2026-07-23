@@ -21613,11 +21613,11 @@
           "id": "signed_out",
           "kind": "permission",
           "status": "captured",
-          "source": "Null uid or uid provider error renders ActivitySignedOutState with No activity yet copy.",
+          "source": "Null uid or uid provider error renders ActivitySignedOutState with No activity yet copy, so an identity-provider failure is currently indistinguishable from a real signed-out session.",
           "captureIds": [
             "notifications_signed_out"
           ],
-          "nextAction": "Confirm whether shell redirect should replace the local signed-out state.",
+          "nextAction": "Preserve identity-provider failure as a branded error with actionable retry under DP-NOTIFICATIONS-004; separately confirm whether a real signed-out session should redirect through the shell.",
           "previewIds": [
             "ActivityScreen/Screen states"
           ]
@@ -21917,6 +21917,11 @@
           "id": "DP-NOTIFICATIONS-003",
           "status": "closed",
           "nextAction": "Closed by NotificationsListState adapter with injected clock/grouping, explicit unread action lifecycle, row route intents, and provider-free ActivitySection.fromState composition."
+        },
+        {
+          "id": "DP-NOTIFICATIONS-004",
+          "status": "open",
+          "nextAction": "uidProvider failures collapse into ActivitySignedOutState and expose no retry, making an identity outage look like a signed-out or empty account. Preserve the provider error as a branded retry state and add focused error-versus-null-uid proof."
         }
       ]
     },
@@ -22176,8 +22181,8 @@
           "id": "event_context_missing",
           "kind": "empty",
           "status": "captured",
-          "source": "reviews_history_missing_event_context captures Event review and Legacy club review fallback labels from ReviewsHistoryRow display data.",
-          "nextAction": "Compare missing-context row copy against exported references.",
+          "source": "ReviewsHistoryState reads only watchEventsByIdsProvider.asData and maps event enrichment loading, failure, and genuinely missing records to the same Event review or Legacy club review fallback labels.",
+          "nextAction": "Define an explicit enrichment loading/failure policy or a deliberately cached fallback with retry under DP-REVIEWS-HISTORY-005, then compare genuine missing-context copy against exported references.",
           "previewIds": [
             "ReviewsHistoryScreen/Screen states"
           ],
@@ -22192,11 +22197,11 @@
           "id": "edit_review_sheet",
           "kind": "mutation",
           "status": "tested",
-          "source": "Event-backed own reviews open the shared Edit review sheet through showWriteReviewSheet.",
+          "source": "Event-backed own reviews open the shared Edit review sheet through showWriteReviewSheet; submit/delete disable their buttons while pending, but rating and comment inputs remain editable after the request payload is captured.",
           "tests": [
             "test/reviews/reviews_widgets_test.dart"
           ],
-          "nextAction": "Add mutation pending/error visual states for update/delete once sheet fixtures are shared.",
+          "nextAction": "Freeze or version request-defining draft input while a review mutation is pending under DP-REVIEWS-HISTORY-006, and add pending/error snapshot-drift proof.",
           "previewIds": [
             "ReviewsHistoryScreen/Screen states",
             "WriteReviewSheet/Sheet states"
@@ -22378,6 +22383,16 @@
           "id": "DP-REVIEWS-HISTORY-004",
           "status": "blocked",
           "nextAction": "Canonical Reviews History reference export is blocked until design provides a standalone reviews-history screen source; current Claude sources only provide ReviewRow and review sections inside other surfaces."
+        },
+        {
+          "id": "DP-REVIEWS-HISTORY-005",
+          "status": "open",
+          "nextAction": "Event-context enrichment loading, failure, and genuinely missing records collapse into the same fallback row label because ReviewsHistoryState reads only provider asData. Define explicit enrichment recovery or document and test a deliberate cached fallback policy."
+        },
+        {
+          "id": "DP-REVIEWS-HISTORY-006",
+          "status": "open",
+          "nextAction": "The edit sheet captures rating/comment at submit time but leaves both fields live while update or delete is pending, so the visible draft can diverge from the in-flight request. Freeze the draft or version the request and add concurrent-edit proof."
         }
       ]
     },
@@ -22701,11 +22716,11 @@
           "id": "host_app_handoff",
           "kind": "mutation",
           "status": "tested",
-          "source": "Catch Host row opens the central host handoff link through ExternalLinkController.",
+          "source": "Catch Host row starts the central host handoff through ExternalLinkController without awaiting its Future or observing false-result/error outcomes.",
           "tests": [
             "test/safety/settings_screen_test.dart"
           ],
-          "nextAction": "Decide whether host-app link stays external or becomes in-app role switch when host routes are enabled.",
+          "nextAction": "Define pending, false-result, failure, and repeated-tap behavior under DP-SETTINGS-ACCOUNT-005; separately decide whether the destination stays external or becomes an in-app role switch.",
           "previewIds": [
             "SettingsScreen/Screen states"
           ]
@@ -22714,14 +22729,14 @@
           "id": "notification_preferences",
           "kind": "mutation",
           "status": "captured",
-          "source": "Preference toggles optimistically update local CatchToggle state and persist through SettingsController.savePreference.",
+          "source": "Preference toggles optimistically update local CatchToggle state and persist through SettingsController.savePreference; the pending guard disables preferences only while navigation, external actions, unblock, delete, and sign-out remain live.",
           "captureIds": [
             "settings_preference_pending"
           ],
           "tests": [
             "test/safety/settings_screen_test.dart"
           ],
-          "nextAction": "Compare disabled-toggle pending affordance against the Settings mutation contract during visual polish.",
+          "nextAction": "Define cross-domain mutation and route-exit exclusivity under DP-SETTINGS-ACCOUNT-004, then compare disabled-toggle pending affordance during visual polish.",
           "previewIds": [
             "SettingsScreen/Screen states",
             "SettingsScreen/Mutation states"
@@ -22810,7 +22825,7 @@
           "id": "unblock_mutation",
           "kind": "mutation",
           "status": "captured",
-          "source": "Unblock action routes through SettingsController.unblockUserMutation and shows shared Catch snackbar success feedback.",
+          "source": "Unblock action routes through SettingsController.unblockUserMutation and shows shared Catch snackbar success feedback; only unblock controls are guarded while other settings mutations and route actions remain live.",
           "captureIds": [
             "settings_unblock_pending",
             "settings_unblock_error"
@@ -22818,7 +22833,7 @@
           "tests": [
             "test/safety/settings_screen_test.dart"
           ],
-          "nextAction": "Compare unblock pending/error affordances against the Settings mutation contract during visual polish.",
+          "nextAction": "Define cross-domain mutation exclusivity under DP-SETTINGS-ACCOUNT-004 before comparing unblock pending/error affordances during visual polish.",
           "previewIds": [
             "SettingsScreen/Mutation states"
           ]
@@ -22827,7 +22842,7 @@
           "id": "delete_account_flow",
           "kind": "mutation",
           "status": "captured",
-          "source": "Delete account row opens confirm danger dialog and delegates confirmed deletion to SettingsController.requestAccountDeletion.",
+          "source": "Delete account row opens the confirm danger dialog and delegates confirmed deletion to SettingsController.requestAccountDeletion; delete pending disables only the delete row while sign-out, preferences, unblock, navigation, and external actions remain live.",
           "captureIds": [
             "settings_delete_pending",
             "settings_delete_error"
@@ -22835,9 +22850,9 @@
           "tests": [
             "test/safety/settings_screen_test.dart"
           ],
-          "nextAction": "Add a dedicated confirm-dialog capture if destructive-dialog pixel parity becomes blocking.",
+          "nextAction": "Prevent destructive overlap and define route-exit behavior under DP-SETTINGS-ACCOUNT-004; add a dedicated confirm-dialog capture if destructive-dialog pixel parity becomes blocking.",
           "previewIds": [
-            "CatchConfirmDialog/Dialog states",
+            "CatchConfirmDialog/Contract states",
             "SettingsScreen/Mutation states"
           ]
         },
@@ -22845,7 +22860,7 @@
           "id": "sign_out_action",
           "kind": "mutation",
           "status": "captured",
-          "source": "Log out row delegates to AuthSessionController.signOutMutation and shows pending spinner while signing out.",
+          "source": "Log out row delegates to AuthSessionController.signOutMutation and shows a pending spinner; sign-out pending disables only that row while deletion and other actions remain live.",
           "captureIds": [
             "settings_sign_out_pending",
             "settings_sign_out_error"
@@ -22853,7 +22868,7 @@
           "tests": [
             "test/safety/settings_screen_test.dart"
           ],
-          "nextAction": "Compare sign-out pending/error affordances against the Settings mutation contract during visual polish.",
+          "nextAction": "Prevent destructive overlap and define route-exit behavior under DP-SETTINGS-ACCOUNT-004 before comparing sign-out pending/error affordances during visual polish.",
           "previewIds": [
             "SettingsScreen/Mutation states"
           ]
@@ -22950,7 +22965,7 @@
             "migration": "SettingsAccountState now owns profile provider waves, preference draft values, blocked-account rows, provider retry states, and mutation pending flags; SettingsScreen keeps route callbacks and controller calls at the edge.",
             "previewIds": [
               "SettingsScreen/Screen states",
-              "CatchConfirmDialog/Dialog states",
+              "CatchConfirmDialog/Contract states",
               "SettingsScreen/Mutation states"
             ]
           },
@@ -23033,7 +23048,7 @@
             "migration": "Keep safety row layout reusable while SettingsController owns destructive and privacy mutations.",
             "previewIds": [
               "SettingsScreen/Screen states",
-              "CatchConfirmDialog/Dialog states",
+              "CatchConfirmDialog/Contract states",
               "SettingsScreen/Mutation states"
             ]
           },
@@ -23112,6 +23127,16 @@
           "id": "DP-SETTINGS-ACCOUNT-003",
           "status": "closed",
           "nextAction": "SettingsAccountState now owns profile provider waves, preference draft values, blocked-account rows, provider retry states, and mutation pending flags before visual parity edits."
+        },
+        {
+          "id": "DP-SETTINGS-ACCOUNT-004",
+          "status": "open",
+          "nextAction": "Preference, unblock, delete, and sign-out mutations guard only their own controls, while navigation/external actions and other mutations remain live; destructive operations can overlap. Define a shared mutation-exclusivity and route-exit policy, prevent destructive concurrency, and add focused interaction tests."
+        },
+        {
+          "id": "DP-SETTINGS-ACCOUNT-005",
+          "status": "open",
+          "nextAction": "Host-app and external policy/support/terms launches discard their Futures, ignore false launcher results and errors, and have no repeated-tap guard. Await outcomes and provide pending/failure feedback with duplicate-tap proof."
         }
       ]
     },
@@ -23404,7 +23429,7 @@
           "id": "failed_signup_help",
           "kind": "mutation",
           "status": "captured",
-          "source": "Sign-up failure payments show support recovery copy and a Get help with this booking action in the detail sheet; help feedback uses the shared Catch snackbar helper.",
+          "source": "Sign-up failure payments show a Get help with this booking action, but the handler only closes the sheet and shows a snackbar telling the member to contact Catch support; it opens no support route, composer, or contact channel.",
           "captureIds": [
             "payment_history_failed_signup_receipt_sheet",
             "payment_history_support_snackbar"
@@ -23412,7 +23437,7 @@
           "tests": [
             "test/payments/payment_history_screen_test.dart"
           ],
-          "nextAction": "Revisit snackbar-only support routing if a dedicated help route or support composer ships.",
+          "nextAction": "Under DP-PAYMENT-HISTORY-005, either relabel the CTA as guidance or connect it to an actionable support channel and test the actual outcome.",
           "previewIds": [
             "PaymentHistoryScreen/Screen states",
             "PaymentReceiptSheet/Receipt states"
@@ -23422,11 +23447,11 @@
           "id": "event_title_loading_missing",
           "kind": "loading",
           "status": "captured",
-          "source": "payment_history_missing_event_title captures the batched event-title lookup fallback to Event booking when a referenced event is unavailable.",
+          "source": "PaymentHistoryViewModel reads only watchEventsByIdsProvider.asData and maps event-title enrichment loading, failure, and genuinely missing records to the same Event booking fallback.",
           "tests": [
             "test/payments/payment_history_screen_test.dart"
           ],
-          "nextAction": "Compare resolved and fallback event-title rows against exported references.",
+          "nextAction": "Define explicit enrichment loading/failure recovery or a deliberate cached fallback under DP-PAYMENT-HISTORY-006, then compare resolved and genuinely missing-title rows against exported references.",
           "previewIds": [
             "PaymentHistoryScreen/Screen states"
           ],
@@ -23629,6 +23654,16 @@
           "id": "DP-PAYMENT-HISTORY-004",
           "status": "blocked",
           "nextAction": "Canonical Payment History reference export is blocked until design provides a standalone payment-history screen source; current Claude sources only provide Booking payment and confirmation moments."
+        },
+        {
+          "id": "DP-PAYMENT-HISTORY-005",
+          "status": "open",
+          "nextAction": "Get help with this booking promises an action but only closes the receipt and shows contact guidance in a snackbar. Relabel it honestly or connect it to a real support route, composer, mail, or phone channel and test that outcome."
+        },
+        {
+          "id": "DP-PAYMENT-HISTORY-006",
+          "status": "open",
+          "nextAction": "Event-title enrichment loading, failure, and genuinely missing records collapse into Event booking because PaymentHistoryViewModel reads only provider asData. Define explicit enrichment recovery or document and test a deliberate cached fallback policy."
         }
       ]
     }
