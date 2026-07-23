@@ -1,35 +1,29 @@
-import {SectionHeader} from "../../../shared/site";
-import {ListingFactGrid, ListingSection} from "../../../shared/ui/primitives";
+import {
+  organizerAboutForSlug,
+  organizerListingCopy,
+} from "@content/organizer";
+import {
+  ListingFormatRow,
+  ListingSection,
+  ListingSectionIntro,
+  UiLabel,
+} from "../../../shared/ui/primitives";
 import {organizerPolicyForListing} from "../organizerPolicy";
-import {publicFactsForListing} from "../selectors";
 import type {HostListing} from "../types";
 
-export function ListingFactsSection({
-  isAppCreated,
-  listing,
-}: {
-  isAppCreated: boolean;
-  listing: HostListing;
-}) {
+export function ListingFactsSection({listing}: {listing: HostListing}) {
   const policy = organizerPolicyForListing(listing);
-  const factItems = publicFactsForListing(listing).map((fact) => ({
-    key: fact.label,
-    label: fact.label,
-    value: fact.value,
-  }));
 
   return (
     <ListingSection aria-labelledby="listing-facts-title">
-      <SectionHeader
+      <ListingSectionIntro
         eyebrow={policy.badge.label}
-        id="listing-facts-title"
-        title={isAppCreated ?
-          "A Catch-created club with real product context." :
-          policy.trustState === "ownerVerified" ?
-            "An owner-verified organizer profile." :
-            "A source-conservative organizer listing."}
-        body={listing.sourceSummary} />
-      <ListingFactGrid items={factItems} />
+        titleId="listing-facts-title"
+        title={organizerListingCopy.detail.aboutTitle(listing.name)}
+        body={organizerAboutForSlug(listing.slug, listing.description)}
+      />
+      <UiLabel>{organizerListingCopy.detail.formatsLabel}</UiLabel>
+      <ListingFormatRow items={listing.formats} />
     </ListingSection>
   );
 }
