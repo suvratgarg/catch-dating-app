@@ -812,6 +812,28 @@
       }
     },
     {
+      "id": "web:admin-pending-operations",
+      "category": "lint",
+      "path": "tool/web/check_admin_pending_operations.mjs",
+      "command": "node tool/web/check_admin_pending_operations.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Enforces one exclusive Admin operation lease across every controller derived from frozen pending feature-contract cases, the shared workspace/navigation boundary, and immutable-snapshot regression proof.",
+      "checks": [
+        "node --check tool/web/check_admin_pending_operations.mjs",
+        "node tool/web/check_admin_pending_operations.mjs --self-test",
+        "node tool/web/check_admin_pending_operations.mjs --check --summary"
+      ],
+      "role": "gate",
+      "rules": [
+        "REG-PENDING-SNAPSHOT-001"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/web/check_admin_pending_operations.mjs --self-test"
+      }
+    },
+    {
       "id": "web:admin-components",
       "category": "lint",
       "path": "tool/web/check_admin_components.mjs",

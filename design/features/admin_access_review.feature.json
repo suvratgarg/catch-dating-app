@@ -13,11 +13,10 @@
       "runtime": "react_admin",
       "authority": {"registry": "admin_routes", "id": "route_access_review"},
       "actionScope": {
-        "included": "Selecting an application, returning to the queue, refreshing list or detail evidence, and recording the audited access decision.",
+        "included": "Selecting an application, returning to the queue, refreshing list or detail evidence, recording the audited access decision, and freezing the complete Admin workspace while that decision is pending.",
         "excluded": [
           "Queue search and note/cohort field edits remain local query or form data.",
-          "Approval records eligibility for profile creation; it does not invite or notify the applicant.",
-          "Decision inputs and route exit remain live after the mutation captures its payload; ADMIN-MUTATION-SNAPSHOT-001 tracks the shared pending policy."
+          "Approval records eligibility for profile creation; it does not invite or notify the applicant."
         ]
       },
       "bindings": {
@@ -44,7 +43,10 @@
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminDecideAccessApplication", "requestValidation": "structural_object", "responseValidation": "structural_object"}
         ],
         "testEvidence": {
-          "capped-directory": ["admin/src/features/access/controllers/useAccessReviewController.test.tsx"]
+          "capped-directory": [
+            "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
+            "admin/src/shared/pendingOperation.test.tsx"
+          ]
         }
       },
       "dimensions": {
@@ -112,7 +114,7 @@
             {"id": "directory_loading", "dimensions": {"source": "loading"}, "disabledActions": ["select_access_application", "refresh_access_queue"]},
             {"id": "detail_ready", "dimensions": {"view": "detail"}, "enabledActions": ["back_to_access_queue", "refresh_access_detail", "decide_access_application"]},
             {"id": "detail_unavailable", "dimensions": {"view": "unavailable", "source": "failed"}, "enabledActions": ["back_to_access_queue", "refresh_access_detail"]},
-            {"id": "decision_pending_live_form", "dimensions": {"view": "detail", "mutation": "pending"}, "enabledActions": ["back_to_access_queue"], "disabledActions": ["refresh_access_detail", "decide_access_application"]},
+            {"id": "decision_pending_frozen_workspace", "dimensions": {"view": "detail", "mutation": "pending"}, "disabledActions": ["back_to_access_queue", "refresh_access_detail", "decide_access_application"]},
             {"id": "decision_failed", "dimensions": {"view": "detail", "mutation": "failed"}, "enabledActions": ["back_to_access_queue", "refresh_access_detail", "decide_access_application"]}
           ]
         }

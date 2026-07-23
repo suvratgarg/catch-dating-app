@@ -369,6 +369,7 @@ node tool/run.mjs check web:react-component-governance
 node tool/run.mjs check web:react-query-state
 node tool/run.mjs check web:shared-ui-adoption
 node tool/run.mjs check web:react-controller-test-targets
+node tool/run.mjs check web:admin-pending-operations
 node tool/run.mjs check web:react-dependency-graph
 npm run web:ui:test
 npm run web:ui:typecheck
@@ -390,6 +391,12 @@ accessible table/field/button contracts, and package CI path coverage.
 hook classified in `tool/web/react_controller_test_targets.json`. Promoted
 targets need a named importing behavior suite; planned targets remain visible
 without turning aggregate coverage percentages into a brittle merge gate.
+
+`web:admin-pending-operations` derives write and submitted-query controllers
+from frozen Admin feature-contract cases. It requires each controller to
+acquire and release the shared exclusive lease, rejects pending cases with
+enabled actions, and verifies the workspace, navigation, link, unload, and
+focused regression-test boundary remains installed.
 
 Registry-ready Storybook stories also have deterministic desktop and mobile
 image baselines under `design/visual_baselines/<surface>/<platform>/`. Build

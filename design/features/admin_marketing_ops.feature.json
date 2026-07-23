@@ -13,11 +13,10 @@
       "runtime": "react_admin",
       "authority": {"registry": "admin_routes", "id": "route_marketing_ops"},
       "actionScope": {
-        "included": "Refreshing the bridge, switching studio views, opening or creating a draft, navigating composer stages, discarding working-copy edits, confirming media rights, and recording governed review decisions.",
+        "included": "Refreshing the bridge, switching studio views, opening or creating a draft, navigating composer stages, discarding working-copy edits, confirming media rights, recording governed review decisions, and freezing the complete Admin workspace during either write.",
         "excluded": [
           "Type filter, notes, recommendation edits, draft fields, and slide fields remain session-local query or editor data.",
-          "Review receipts do not persist later unsaved working-copy edits; refresh or exit can discard them.",
-          "Studio navigation and request-defining working copies remain live for independently keyed mutations; ADMIN-MUTATION-SNAPSHOT-001 tracks the shared pending policy."
+          "Review receipts do not persist later unsaved working-copy edits; refresh or exit can discard them."
         ]
       },
       "bindings": {
@@ -33,7 +32,10 @@
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminRecordMarketingReviewDecision", "requestValidation": "structural_object", "responseValidation": "structural_object"}
         ],
         "testEvidence": {
-          "post-board": ["admin/src/features/marketing/controllers/useMarketingOpsController.test.tsx"]
+          "post-board": [
+            "admin/src/features/marketing/controllers/useMarketingOpsController.test.tsx",
+            "admin/src/shared/pendingOperation.test.tsx"
+          ]
         }
       },
       "dimensions": {
@@ -61,11 +63,11 @@
           "actionCases": [
             {"id": "posts", "enabledActions": ["refresh_marketing_bridge", "select_marketing_view", "open_marketing_draft"]},
             {"id": "new_draft", "dimensions": {"view": "new"}, "enabledActions": ["refresh_marketing_bridge", "select_marketing_view", "create_marketing_draft"]},
-            {"id": "create_pending", "dimensions": {"view": "new", "mutation": "pending"}, "enabledActions": ["select_marketing_view"], "disabledActions": ["refresh_marketing_bridge", "create_marketing_draft"]},
+            {"id": "create_pending_frozen_workspace", "dimensions": {"view": "new", "mutation": "pending"}, "disabledActions": ["refresh_marketing_bridge", "select_marketing_view", "create_marketing_draft"]},
             {"id": "draft_clean", "dimensions": {"view": "draft"}, "enabledActions": ["refresh_marketing_bridge", "select_marketing_view", "select_composer_step", "confirm_marketing_rights", "record_marketing_decision"]},
             {"id": "draft_dirty", "dimensions": {"view": "draft", "working_copy": "dirty"}, "enabledActions": ["refresh_marketing_bridge", "select_marketing_view", "select_composer_step", "discard_marketing_edits", "confirm_marketing_rights", "record_marketing_decision"]},
             {"id": "draft_too_large", "dimensions": {"view": "draft", "working_copy": "too_large"}, "enabledActions": ["select_marketing_view", "select_composer_step", "discard_marketing_edits"], "disabledActions": ["record_marketing_decision"]},
-            {"id": "decision_pending_live_workspace", "dimensions": {"view": "draft", "mutation": "pending"}, "enabledActions": ["select_marketing_view", "select_composer_step", "discard_marketing_edits", "confirm_marketing_rights"], "disabledActions": ["record_marketing_decision"]},
+            {"id": "decision_pending_frozen_workspace", "dimensions": {"view": "draft", "mutation": "pending"}, "disabledActions": ["refresh_marketing_bridge", "select_marketing_view", "select_composer_step", "discard_marketing_edits", "confirm_marketing_rights", "record_marketing_decision"]},
             {"id": "library_or_diagnostics", "dimensions": {"view": "events"}, "enabledActions": ["refresh_marketing_bridge", "select_marketing_view", "record_marketing_decision"]},
             {"id": "bridge_unavailable", "dimensions": {"view": "unavailable"}, "enabledActions": ["refresh_marketing_bridge"]}
           ]

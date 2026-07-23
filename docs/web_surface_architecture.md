@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.8.8
+version: 0.8.9
 updated: 2026-07-23
 owner: web_platform
 status: active
@@ -67,11 +67,15 @@ use the frozen-snapshot policy from `ARCH-PENDING-SNAPSHOT-001`, including
 request-defining controls, steps, auth, sibling forms, shared route links, and
 browser exit.
 
-Admin contracts apply the same honesty to operator workflows.
-`ADMIN-MUTATION-SNAPSHOT-001` owns request-defining controls, route exits, and
-peer operations that remain live after an Admin mutation or submitted-query
-snapshot is captured. The contract records current availability; it does not
-pretend a workspace is frozen merely because one submit button is pending.
+Admin applies a whole-console frozen-snapshot policy to operator writes and
+submitted analytics queries. `AdminPendingOperationProvider` grants one
+synchronous exclusive lease across all controllers; while held, the complete
+workspace, Admin navigation, shared links, and browser unload are blocked.
+Controllers capture their request payload before dispatch and release the lease
+in `finally`, so visible inputs cannot drift from the audited request and peer
+operations cannot overlap. The compiled Admin action matrices disable every
+surface action in those pending states. This deliberately trades small amounts
+of operator throughput for deterministic receipts and unambiguous recovery.
 
 Run `node tool/design/check_feature_coverage.mjs --check` after adding or
 removing any registered product surface. A planned decision is migration debt,

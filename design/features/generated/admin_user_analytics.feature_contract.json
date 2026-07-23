@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_user_analytics.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:87be7f9cd48b35e7c525b4844a19cc4482294bf0e0a48a8c0c4f9a4b9d52f195",
-  "resolvedDigest": "sha256:77dba1716a521487e6e85faef350e82ad50766999cc67843e06562d6279e25fe",
+  "sourceDigest": "sha256:64bd114747cce275bf6e045e85d9602336f3a4d57b0cb6ec930d5f3ad5f756fc",
+  "resolvedDigest": "sha256:73c0df7ab17b288462d94d9d48029937234a390370efa22ba560ab7ae41bc857",
   "feature": {
     "id": "feature.admin_user_analytics",
     "name": "Admin User Analytics",
@@ -20,7 +20,7 @@
     "actions": 1,
     "captures": 0,
     "previews": 1,
-    "testFiles": 1,
+    "testFiles": 2,
     "evidenceExceptions": 0
   },
   "surfaces": [
@@ -32,11 +32,10 @@
         "id": "route_user_analytics"
       },
       "actionScope": {
-        "included": "Submitting one normalized uid and analytics range, then retrying the same read after a missing, forbidden, or failed result.",
+        "included": "Submitting one normalized uid and analytics range, retrying the same read after a missing, forbidden, or failed result, and freezing the complete Admin workspace while that submitted query is pending.",
         "excluded": [
           "Uid, range, date, and granularity edits remain validated query form data.",
-          "The report is aggregate and read-only; it does not expose event-member detail or mutate member state.",
-          "Query inputs remain live after a request snapshot is submitted; ADMIN-MUTATION-SNAPSHOT-001 tracks visible-versus-requested scope drift."
+          "The report is aggregate and read-only; it does not expose event-member detail or mutate member state."
         ]
       },
       "bindings": {
@@ -69,7 +68,8 @@
         ],
         "testEvidence": {
           "aggregate-report": [
-            "admin/src/features/users/controllers/useUserAnalyticsController.test.tsx"
+            "admin/src/features/users/controllers/useUserAnalyticsController.test.tsx",
+            "admin/src/shared/pendingOperation.test.tsx"
           ]
         }
       },
@@ -80,7 +80,7 @@
         "actions": 1,
         "captures": 0,
         "previews": 1,
-        "testFiles": 1,
+        "testFiles": 2,
         "evidenceExceptions": 0
       },
       "dimensions": {
@@ -142,7 +142,8 @@
               "route_user_analytics/UserAnalyticsRouteStory"
             ],
             "tests": [
-              "admin/src/features/users/controllers/useUserAnalyticsController.test.tsx"
+              "admin/src/features/users/controllers/useUserAnalyticsController.test.tsx",
+              "admin/src/shared/pendingOperation.test.tsx"
             ]
           },
           "actionCases": [
@@ -173,7 +174,7 @@
               }
             },
             {
-              "id": "loading_live_query",
+              "id": "loading_frozen_query",
               "dimensions": {
                 "view": "loading"
               },

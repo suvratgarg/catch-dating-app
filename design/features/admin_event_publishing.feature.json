@@ -13,11 +13,10 @@
       "runtime": "react_admin",
       "authority": {"registry": "admin_routes", "id": "route_event_publishing"},
       "actionScope": {
-        "included": "Switching event workspaces, selecting canonical or external evidence, returning to lists, refreshing each source, saving canonical edits, selecting readiness actions, and publishing reviewed external supply.",
+        "included": "Switching event workspaces, selecting canonical or external evidence, returning to lists, refreshing each source, saving canonical edits, selecting readiness actions, publishing reviewed external supply, and freezing the complete Admin workspace during either write.",
         "excluded": [
           "Search, filter, editor field, checklist, and review-note changes remain query or form data.",
-          "External publication creates read-only supply and does not silently enable Catch booking.",
-          "Editor, checklist, workspace, and route controls remain live while save or publication is pending; ADMIN-MUTATION-SNAPSHOT-001 tracks the shared pending policy."
+          "External publication creates read-only supply and does not silently enable Catch booking."
         ]
       },
       "bindings": {
@@ -45,7 +44,10 @@
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminPublishExternalEvent", "requestValidation": "strict_schema", "responseValidation": "structural_object"}
         ],
         "testEvidence": {
-          "canonical-directory": ["admin/src/features/events/controllers/useEventPublishingController.test.tsx"]
+          "canonical-directory": [
+            "admin/src/features/events/controllers/useEventPublishingController.test.tsx",
+            "admin/src/shared/pendingOperation.test.tsx"
+          ]
         }
       },
       "dimensions": {
@@ -77,11 +79,11 @@
             {"id": "canonical_directory", "enabledActions": ["select_event_workspace", "select_canonical_event", "refresh_canonical_events", "open_event_readiness", "open_external_event_supply"]},
             {"id": "canonical_loading", "dimensions": {"source": "loading"}, "enabledActions": ["select_event_workspace"], "disabledActions": ["select_canonical_event", "refresh_canonical_events"]},
             {"id": "canonical_detail", "dimensions": {"workspace": "canonical_detail"}, "enabledActions": ["select_event_workspace", "back_to_event_list", "save_canonical_event"]},
-            {"id": "canonical_save_pending_live_editor", "dimensions": {"workspace": "canonical_detail", "mutation": "pending"}, "enabledActions": ["select_event_workspace", "back_to_event_list"], "disabledActions": ["save_canonical_event"]},
+            {"id": "canonical_save_pending_frozen_workspace", "dimensions": {"workspace": "canonical_detail", "mutation": "pending"}, "disabledActions": ["select_event_workspace", "back_to_event_list", "save_canonical_event"]},
             {"id": "readiness", "dimensions": {"workspace": "readiness"}, "enabledActions": ["select_event_workspace", "back_to_event_list", "select_readiness_action", "refresh_event_readiness", "open_external_event_supply"]},
             {"id": "external_list", "dimensions": {"workspace": "external_list"}, "enabledActions": ["select_event_workspace", "back_to_event_list", "select_external_event", "refresh_external_events", "open_event_readiness"]},
             {"id": "external_detail", "dimensions": {"workspace": "external_detail"}, "enabledActions": ["select_event_workspace", "back_to_event_list", "refresh_external_events", "publish_external_event"]},
-            {"id": "external_publish_pending_live_review", "dimensions": {"workspace": "external_detail", "mutation": "pending"}, "enabledActions": ["select_event_workspace", "back_to_event_list"], "disabledActions": ["publish_external_event"]},
+            {"id": "external_publish_pending_frozen_workspace", "dimensions": {"workspace": "external_detail", "mutation": "pending"}, "disabledActions": ["select_event_workspace", "back_to_event_list", "refresh_external_events", "publish_external_event"]},
             {"id": "source_failed", "dimensions": {"source": "failed"}, "enabledActions": ["select_event_workspace", "refresh_canonical_events", "refresh_event_readiness", "refresh_external_events"]}
           ]
         }

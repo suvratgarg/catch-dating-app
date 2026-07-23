@@ -29,6 +29,9 @@ describe("useUserAnalyticsController", () => {
     }), {wrapper});
 
     await waitFor(() => expect(result.current.report?.scope.userId).toBe("user-1"));
+    await act(async () => {
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
     act(() => result.current.setUserId("user-2"));
     expect(result.current.report).toBeNull();
     expect(["idle", "loading"]).toContain(result.current.viewState);

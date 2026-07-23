@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_event_publishing.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:2db5c5ef4073734536bb00f4c259434041728d1d63ec1aaa2fdd61faddd5ebc1",
-  "resolvedDigest": "sha256:4578ae10c4c3c70c251b89d20196781b74d6505b2ccda1b70db9a824602f55cd",
+  "sourceDigest": "sha256:c40f361bf91d078a7e3f6f6e6c6cec8a3a6ee1941c55c510656bdefee7caa76c",
+  "resolvedDigest": "sha256:ce5f08d4b4733addae89a020eaa857f18dfde22376cc4e12b41c35262e564a71",
   "feature": {
     "id": "feature.admin_event_publishing",
     "name": "Admin Event Publishing",
@@ -20,7 +20,7 @@
     "actions": 12,
     "captures": 0,
     "previews": 1,
-    "testFiles": 1,
+    "testFiles": 2,
     "evidenceExceptions": 0
   },
   "surfaces": [
@@ -32,11 +32,10 @@
         "id": "route_event_publishing"
       },
       "actionScope": {
-        "included": "Switching event workspaces, selecting canonical or external evidence, returning to lists, refreshing each source, saving canonical edits, selecting readiness actions, and publishing reviewed external supply.",
+        "included": "Switching event workspaces, selecting canonical or external evidence, returning to lists, refreshing each source, saving canonical edits, selecting readiness actions, publishing reviewed external supply, and freezing the complete Admin workspace during either write.",
         "excluded": [
           "Search, filter, editor field, checklist, and review-note changes remain query or form data.",
-          "External publication creates read-only supply and does not silently enable Catch booking.",
-          "Editor, checklist, workspace, and route controls remain live while save or publication is pending; ADMIN-MUTATION-SNAPSHOT-001 tracks the shared pending policy."
+          "External publication creates read-only supply and does not silently enable Catch booking."
         ]
       },
       "bindings": {
@@ -115,7 +114,8 @@
         ],
         "testEvidence": {
           "canonical-directory": [
-            "admin/src/features/events/controllers/useEventPublishingController.test.tsx"
+            "admin/src/features/events/controllers/useEventPublishingController.test.tsx",
+            "admin/src/shared/pendingOperation.test.tsx"
           ]
         }
       },
@@ -126,7 +126,7 @@
         "actions": 12,
         "captures": 0,
         "previews": 1,
-        "testFiles": 1,
+        "testFiles": 2,
         "evidenceExceptions": 0
       },
       "dimensions": {
@@ -429,7 +429,8 @@
               "route_event_publishing/EventPublishingRouteStory"
             ],
             "tests": [
-              "admin/src/features/events/controllers/useEventPublishingController.test.tsx"
+              "admin/src/features/events/controllers/useEventPublishingController.test.tsx",
+              "admin/src/shared/pendingOperation.test.tsx"
             ]
           },
           "actionCases": [
@@ -516,18 +517,17 @@
               }
             },
             {
-              "id": "canonical_save_pending_live_editor",
+              "id": "canonical_save_pending_frozen_workspace",
               "dimensions": {
                 "workspace": "canonical_detail",
                 "source": "ready",
                 "mutation": "pending"
               },
               "actions": {
-                "enabled": [
-                  "select_event_workspace",
-                  "back_to_event_list"
-                ],
+                "enabled": [],
                 "disabled": [
+                  "select_event_workspace",
+                  "back_to_event_list",
                   "save_canonical_event"
                 ],
                 "notAllowed": [
@@ -625,18 +625,18 @@
               }
             },
             {
-              "id": "external_publish_pending_live_review",
+              "id": "external_publish_pending_frozen_workspace",
               "dimensions": {
                 "workspace": "external_detail",
                 "source": "ready",
                 "mutation": "pending"
               },
               "actions": {
-                "enabled": [
-                  "select_event_workspace",
-                  "back_to_event_list"
-                ],
+                "enabled": [],
                 "disabled": [
+                  "select_event_workspace",
+                  "back_to_event_list",
+                  "refresh_external_events",
                   "publish_external_event"
                 ],
                 "notAllowed": [
@@ -647,8 +647,7 @@
                   "select_readiness_action",
                   "refresh_event_readiness",
                   "open_external_event_supply",
-                  "select_external_event",
-                  "refresh_external_events"
+                  "select_external_event"
                 ]
               }
             },

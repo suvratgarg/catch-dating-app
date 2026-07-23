@@ -1,6 +1,6 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.37
+version: 0.1.38
 updated: 2026-07-23
 owner: product_design_parity
 status: active
@@ -278,6 +278,12 @@ Marketing waitlist, Host application, and Claim flows freeze their complete
 form, step, auth, sibling-form, shared-link, and browser-exit boundary; focused
 controller and UI tests prove one request and one visible snapshot until
 settlement.
+Admin uses one console-wide exclusive operation lease for every contracted
+write and submitted analytics query. The shared provider freezes the complete
+workspace, navigation, links, and browser unload; controller guards reject
+same-tick peer operations, and the pending action matrices disable every
+surface action until settlement. This closes `ADMIN-MUTATION-SNAPSHOT-001`
+without pretending independently keyed concurrency exists.
 
 When two registered surfaces use the same production implementation and differ
 only by viewer policy, prefer separate projections in one feature contract.
@@ -363,9 +369,9 @@ names the callable and declares request and response validation separately as
 `admin/src/generated/validators/adminCallableValidators.ts` and rejects both
 overclaiming and stale underclaiming. Structural validation is real boundary
 protection, but it is not a field-level request/response schema;
-`ADMIN-CALLABLE-STRICTNESS-001` owns that migration. The separate
-`ADMIN-MUTATION-SNAPSHOT-001` debt covers Admin controls and peer mutations
-that remain live after a request or query snapshot has been captured.
+`ADMIN-CALLABLE-STRICTNESS-001` owns that migration. Pending-operation
+integrity is separately enforced by the Admin-wide frozen-snapshot lease and
+the compiled pending action matrices.
 
 ## Structural Lessons From Full Coverage
 

@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_role_management.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:49dbb3c6dc9b77aca980b1a99c0de668b4b5750e2ab5d1cb73ac0c8bc6aa8f08",
-  "resolvedDigest": "sha256:e59420dde1e71608fcb139a3bc9bf5e228c495ffb3fb3ac6146d1bcadfe801f1",
+  "sourceDigest": "sha256:0aff0f470bf423ce797eecc7006223c9f0a5f46658995ddc9eea47d8a7af520b",
+  "resolvedDigest": "sha256:84c9bd24c457e7eb523fc222a47a22df8517d489a94e91f7af7cbc2d4d747d7b",
   "feature": {
     "id": "feature.admin_role_management",
     "name": "Admin Role Management",
@@ -20,7 +20,7 @@
     "actions": 7,
     "captures": 0,
     "previews": 1,
-    "testFiles": 1,
+    "testFiles": 2,
     "evidenceExceptions": 0
   },
   "surfaces": [
@@ -32,11 +32,10 @@
         "id": "route_admin_role_management"
       },
       "actionScope": {
-        "included": "Refreshing or selecting an assignment, loading an exact uid, returning to the register, choosing roles, confirming high-risk changes, and saving the governed diff.",
+        "included": "Refreshing or selecting an assignment, loading an exact uid, returning to the register, choosing roles, confirming high-risk changes, saving the governed diff, and freezing the complete Admin workspace while that save is pending.",
         "excluded": [
           "Register search/filter and uid/note text entry remain query or form data.",
-          "The route intentionally provides no email, display-name, phone, or unbounded Firebase Auth search.",
-          "Role choices, confirmation, and route exit remain live while save is pending; ADMIN-MUTATION-SNAPSHOT-001 tracks the shared pending policy."
+          "The route intentionally provides no email, display-name, phone, or unbounded Firebase Auth search."
         ]
       },
       "bindings": {
@@ -86,7 +85,8 @@
         ],
         "testEvidence": {
           "role-assignment-detail": [
-            "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.test.tsx"
+            "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.test.tsx",
+            "admin/src/shared/pendingOperation.test.tsx"
           ]
         }
       },
@@ -97,7 +97,7 @@
         "actions": 7,
         "captures": 0,
         "previews": 1,
-        "testFiles": 1,
+        "testFiles": 2,
         "evidenceExceptions": 0
       },
       "dimensions": {
@@ -293,7 +293,8 @@
               "route_admin_role_management/AdminRoleManagementRouteStory"
             ],
             "tests": [
-              "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.test.tsx"
+              "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.test.tsx",
+              "admin/src/shared/pendingOperation.test.tsx"
             ]
           },
           "actionCases": [
@@ -387,19 +388,18 @@
               }
             },
             {
-              "id": "save_pending_live_draft",
+              "id": "save_pending_frozen_workspace",
               "dimensions": {
                 "view": "detail",
                 "risk": "standard",
                 "mutation": "pending"
               },
               "actions": {
-                "enabled": [
+                "enabled": [],
+                "disabled": [
                   "back_to_role_register",
                   "toggle_admin_role",
-                  "confirm_high_risk_role_change"
-                ],
-                "disabled": [
+                  "confirm_high_risk_role_change",
                   "save_admin_roles"
                 ],
                 "notAllowed": [

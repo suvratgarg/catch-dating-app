@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_marketing_ops.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:79d01072c54be2d0eeaf166dc2c249b250a295556b108669ebdb41acb7dd7cc4",
-  "resolvedDigest": "sha256:080800ac7913f29d7e1860f2ece30e6950d4a29d56b80aec0a554a4e8dc3be50",
+  "sourceDigest": "sha256:e7cd6880b3b9f0e556d1286c4e19a027de68ef6c95175b6e5665236045e2a568",
+  "resolvedDigest": "sha256:984c02d987396daffd29cc658a891f1f5368b992032ed7aab07d529bb026c9f3",
   "feature": {
     "id": "feature.admin_marketing_ops",
     "name": "Admin Marketing Operations",
@@ -20,7 +20,7 @@
     "actions": 8,
     "captures": 0,
     "previews": 1,
-    "testFiles": 1,
+    "testFiles": 2,
     "evidenceExceptions": 0
   },
   "surfaces": [
@@ -32,11 +32,10 @@
         "id": "route_marketing_ops"
       },
       "actionScope": {
-        "included": "Refreshing the bridge, switching studio views, opening or creating a draft, navigating composer stages, discarding working-copy edits, confirming media rights, and recording governed review decisions.",
+        "included": "Refreshing the bridge, switching studio views, opening or creating a draft, navigating composer stages, discarding working-copy edits, confirming media rights, recording governed review decisions, and freezing the complete Admin workspace during either write.",
         "excluded": [
           "Type filter, notes, recommendation edits, draft fields, and slide fields remain session-local query or editor data.",
-          "Review receipts do not persist later unsaved working-copy edits; refresh or exit can discard them.",
-          "Studio navigation and request-defining working copies remain live for independently keyed mutations; ADMIN-MUTATION-SNAPSHOT-001 tracks the shared pending policy."
+          "Review receipts do not persist later unsaved working-copy edits; refresh or exit can discard them."
         ]
       },
       "bindings": {
@@ -80,7 +79,8 @@
         ],
         "testEvidence": {
           "post-board": [
-            "admin/src/features/marketing/controllers/useMarketingOpsController.test.tsx"
+            "admin/src/features/marketing/controllers/useMarketingOpsController.test.tsx",
+            "admin/src/shared/pendingOperation.test.tsx"
           ]
         }
       },
@@ -91,7 +91,7 @@
         "actions": 8,
         "captures": 0,
         "previews": 1,
-        "testFiles": 1,
+        "testFiles": 2,
         "evidenceExceptions": 0
       },
       "dimensions": {
@@ -330,7 +330,8 @@
               "route_marketing_ops/MarketingOpsRouteStory"
             ],
             "tests": [
-              "admin/src/features/marketing/controllers/useMarketingOpsController.test.tsx"
+              "admin/src/features/marketing/controllers/useMarketingOpsController.test.tsx",
+              "admin/src/shared/pendingOperation.test.tsx"
             ]
           },
           "actionCases": [
@@ -383,7 +384,7 @@
               }
             },
             {
-              "id": "create_pending",
+              "id": "create_pending_frozen_workspace",
               "dimensions": {
                 "view": "new",
                 "composer_step": "source",
@@ -391,11 +392,10 @@
                 "mutation": "pending"
               },
               "actions": {
-                "enabled": [
-                  "select_marketing_view"
-                ],
+                "enabled": [],
                 "disabled": [
                   "refresh_marketing_bridge",
+                  "select_marketing_view",
                   "create_marketing_draft"
                 ],
                 "notAllowed": [
@@ -481,7 +481,7 @@
               }
             },
             {
-              "id": "decision_pending_live_workspace",
+              "id": "decision_pending_frozen_workspace",
               "dimensions": {
                 "view": "draft",
                 "composer_step": "source",
@@ -489,17 +489,16 @@
                 "mutation": "pending"
               },
               "actions": {
-                "enabled": [
+                "enabled": [],
+                "disabled": [
+                  "refresh_marketing_bridge",
                   "select_marketing_view",
                   "select_composer_step",
                   "discard_marketing_edits",
-                  "confirm_marketing_rights"
-                ],
-                "disabled": [
+                  "confirm_marketing_rights",
                   "record_marketing_decision"
                 ],
                 "notAllowed": [
-                  "refresh_marketing_bridge",
                   "open_marketing_draft",
                   "create_marketing_draft"
                 ]

@@ -13,7 +13,7 @@
       "runtime": "react_admin",
       "authority": {"registry": "admin_routes", "id": "route_intake_workspace"},
       "actionScope": {
-        "included": "Switching intake workspaces, expanding publication boundaries, navigating Event Intake, refreshing or deciding event evidence, and refreshing or paging read-only Automation operations.",
+        "included": "Switching intake workspaces, expanding publication boundaries, navigating Event Intake, refreshing or deciding event evidence, refreshing or paging read-only Automation operations, and freezing the complete Admin workspace while an Event Intake decision is pending.",
         "excluded": [
           "Event source/result/candidate edits and decision notes remain session form data.",
           "Automation is read-only; exceptions are resolved in the owning Event or Organizer surface and a later run observes the receipt.",
@@ -45,7 +45,8 @@
             "admin/src/features/intake/events/controllers/eventIntakeReviewDecisionHelpers.test.ts",
             "admin/src/features/intake/operations/controllers/useIntakeOperationsController.test.tsx",
             "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.test.tsx",
-            "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx"
+            "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
+            "admin/src/shared/pendingOperation.test.tsx"
           ]
         }
       },
@@ -72,7 +73,7 @@
           "dimensions": {},
           "actionCases": [
             {"id": "event_candidates", "enabledActions": ["select_intake_workspace", "toggle_intake_publication_boundary", "select_event_intake_tab", "refresh_event_intake", "record_event_intake_decision"]},
-            {"id": "event_decision_pending_live_workspace", "dimensions": {"mutation": "pending"}, "enabledActions": ["select_intake_workspace", "toggle_intake_publication_boundary", "select_event_intake_tab"], "disabledActions": ["refresh_event_intake", "record_event_intake_decision"]},
+            {"id": "event_decision_pending_frozen_workspace", "dimensions": {"mutation": "pending"}, "disabledActions": ["select_intake_workspace", "toggle_intake_publication_boundary", "select_event_intake_tab", "refresh_event_intake", "record_event_intake_decision"]},
             {"id": "event_source_failed", "dimensions": {"source": "failed"}, "enabledActions": ["select_intake_workspace", "toggle_intake_publication_boundary", "refresh_event_intake"]},
             {"id": "organizer_projection", "dimensions": {"workspace": "organizers"}, "enabledActions": ["select_intake_workspace", "toggle_intake_publication_boundary"]},
             {"id": "operations_ready", "dimensions": {"workspace": "operations"}, "enabledActions": ["select_intake_workspace", "refresh_intake_operations", "load_more_intake_operations"]},
@@ -87,11 +88,10 @@
       "runtime": "react_admin",
       "authority": {"registry": "admin_routes", "id": "route_organizer_intake"},
       "actionScope": {
-        "included": "Switching review and diagnostics, deciding organizer intake, attaching or curating candidates, deciding event candidates and policy gaps, classifying pending inputs, and resolving event locations.",
+        "included": "Switching review and diagnostics, deciding organizer intake, attaching or curating candidates, deciding event candidates and policy gaps, classifying pending inputs, resolving event locations, and freezing the complete Admin workspace during any organizer-intake write.",
         "excluded": [
           "Decision notes, curation fields, manual-report acknowledgement, and location fields remain form data.",
-          "Approval creates a publishing handoff; ownership, app visibility, claims, crawling, and canonical publication remain separately gated.",
-          "Independent item mutations leave other request-defining forms and workflow navigation live; ADMIN-MUTATION-SNAPSHOT-001 tracks the shared pending policy."
+          "Approval creates a publishing handoff; ownership, app visibility, claims, crawling, and canonical publication remain separately gated."
         ]
       },
       "bindings": {
@@ -123,15 +123,18 @@
         "testEvidence": {
           "default": [
             "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.test.tsx",
-            "admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.test.ts"
+            "admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.test.ts",
+            "admin/src/shared/pendingOperation.test.tsx"
           ],
           "workflow-readiness": [
             "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.test.tsx",
-            "admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.test.ts"
+            "admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.test.ts",
+            "admin/src/shared/pendingOperation.test.tsx"
           ],
           "publication-packets": [
             "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.test.tsx",
-            "admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.test.ts"
+            "admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.test.ts",
+            "admin/src/shared/pendingOperation.test.tsx"
           ]
         }
       },
@@ -157,7 +160,7 @@
           "dimensions": {},
           "actionCases": [
             {"id": "review_queue", "enabledActions": ["toggle_organizer_intake_diagnostics", "decide_organizer_intake", "attach_organizer_candidate", "record_organizer_curation"]},
-            {"id": "decision_pending_peers_live", "dimensions": {"mutation": "pending"}, "enabledActions": ["toggle_organizer_intake_diagnostics", "attach_organizer_candidate", "record_organizer_curation"], "disabledActions": ["decide_organizer_intake"]},
+            {"id": "decision_pending_frozen_workspace", "dimensions": {"mutation": "pending"}, "disabledActions": ["toggle_organizer_intake_diagnostics", "decide_organizer_intake", "attach_organizer_candidate", "record_organizer_curation"]},
             {"id": "diagnostics", "dimensions": {"view": "diagnostics"}, "enabledActions": ["toggle_organizer_intake_diagnostics"]}
           ]
         },
@@ -167,7 +170,7 @@
           "dimensions": {},
           "actionCases": [
             {"id": "readiness_tasks", "enabledActions": ["toggle_organizer_intake_diagnostics", "decide_organizer_event_candidate", "decide_organizer_policy_gap", "decide_pending_intake_input", "resolve_organizer_event_location"]},
-            {"id": "readiness_mutation_pending", "dimensions": {"mutation": "pending"}, "enabledActions": ["toggle_organizer_intake_diagnostics", "decide_organizer_policy_gap", "decide_pending_intake_input", "resolve_organizer_event_location"], "disabledActions": ["decide_organizer_event_candidate"]}
+            {"id": "readiness_mutation_pending_frozen_workspace", "dimensions": {"mutation": "pending"}, "disabledActions": ["toggle_organizer_intake_diagnostics", "decide_organizer_event_candidate", "decide_organizer_policy_gap", "decide_pending_intake_input", "resolve_organizer_event_location"]}
           ]
         },
         {

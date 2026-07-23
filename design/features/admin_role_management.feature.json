@@ -13,11 +13,10 @@
       "runtime": "react_admin",
       "authority": {"registry": "admin_routes", "id": "route_admin_role_management"},
       "actionScope": {
-        "included": "Refreshing or selecting an assignment, loading an exact uid, returning to the register, choosing roles, confirming high-risk changes, and saving the governed diff.",
+        "included": "Refreshing or selecting an assignment, loading an exact uid, returning to the register, choosing roles, confirming high-risk changes, saving the governed diff, and freezing the complete Admin workspace while that save is pending.",
         "excluded": [
           "Register search/filter and uid/note text entry remain query or form data.",
-          "The route intentionally provides no email, display-name, phone, or unbounded Firebase Auth search.",
-          "Role choices, confirmation, and route exit remain live while save is pending; ADMIN-MUTATION-SNAPSHOT-001 tracks the shared pending policy."
+          "The route intentionally provides no email, display-name, phone, or unbounded Firebase Auth search."
         ]
       },
       "bindings": {
@@ -34,7 +33,10 @@
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminSetAdminUserRoles", "requestValidation": "structural_object", "responseValidation": "structural_object"}
         ],
         "testEvidence": {
-          "role-assignment-detail": ["admin/src/features/admin-roles/controllers/useAdminRoleManagementController.test.tsx"]
+          "role-assignment-detail": [
+            "admin/src/features/admin-roles/controllers/useAdminRoleManagementController.test.tsx",
+            "admin/src/shared/pendingOperation.test.tsx"
+          ]
         }
       },
       "dimensions": {
@@ -61,7 +63,7 @@
             {"id": "detail_standard", "dimensions": {"view": "detail"}, "enabledActions": ["back_to_role_register", "toggle_admin_role", "save_admin_roles"]},
             {"id": "detail_high_risk_unconfirmed", "dimensions": {"view": "detail", "risk": "high_unconfirmed"}, "enabledActions": ["back_to_role_register", "toggle_admin_role", "confirm_high_risk_role_change"], "disabledActions": ["save_admin_roles"]},
             {"id": "detail_high_risk_confirmed", "dimensions": {"view": "detail", "risk": "high_confirmed"}, "enabledActions": ["back_to_role_register", "toggle_admin_role", "confirm_high_risk_role_change", "save_admin_roles"]},
-            {"id": "save_pending_live_draft", "dimensions": {"view": "detail", "mutation": "pending"}, "enabledActions": ["back_to_role_register", "toggle_admin_role", "confirm_high_risk_role_change"], "disabledActions": ["save_admin_roles"]},
+            {"id": "save_pending_frozen_workspace", "dimensions": {"view": "detail", "mutation": "pending"}, "disabledActions": ["back_to_role_register", "toggle_admin_role", "confirm_high_risk_role_change", "save_admin_roles"]},
             {"id": "target_unavailable", "dimensions": {"view": "unavailable"}, "enabledActions": ["back_to_role_register", "load_exact_admin_uid"]}
           ]
         }

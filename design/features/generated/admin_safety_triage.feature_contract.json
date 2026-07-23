@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_safety_triage.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:2f0decff6ed907e313e315af4968201a1c0ca0bd810083726aabcc6111c70158",
-  "resolvedDigest": "sha256:e8df2d56222ca87a03edd064ba003e4378747442a29d286527faf0eedd68dbda",
+  "sourceDigest": "sha256:e71826dc27439b51a4df9c572001d60cefa3aa8ad33612dcb7e40636255ff3c1",
+  "resolvedDigest": "sha256:08454c51e7028985ece7dfa3480144745d66d7d2623d08acec76e17d5b7e0890",
   "feature": {
     "id": "feature.admin_safety_triage",
     "name": "Admin Safety Triage",
@@ -20,7 +20,7 @@
     "actions": 6,
     "captures": 0,
     "previews": 1,
-    "testFiles": 2,
+    "testFiles": 3,
     "evidenceExceptions": 0
   },
   "surfaces": [
@@ -32,11 +32,10 @@
         "id": "route_safety_triage"
       },
       "actionScope": {
-        "included": "Filtering the bounded queue, opening one exact target path, returning to the queue, refreshing evidence, assigning an owner, and recording review or dismissal.",
+        "included": "Filtering the bounded queue, opening one exact target path, returning to the queue, refreshing evidence, assigning an owner, recording review or dismissal, and freezing the complete Admin workspace during either write.",
         "excluded": [
           "Free-text search and assignment/decision note edits remain local query or form data.",
-          "Priority and age analytics describe only capped returned preview rows; aggregate open counts remain separately labelled.",
-          "Assignment and decision are independent mutations whose forms and peer action remain live; ADMIN-MUTATION-SNAPSHOT-001 tracks snapshot and cross-mutation policy."
+          "Priority and age analytics describe only capped returned preview rows; aggregate open counts remain separately labelled."
         ]
       },
       "bindings": {
@@ -99,7 +98,8 @@
             "admin/src/features/safety/controllers/useSafetyTriageController.test.tsx"
           ],
           "open-action": [
-            "admin/src/features/safety/controllers/useSafetyTriageController.test.tsx"
+            "admin/src/features/safety/controllers/useSafetyTriageController.test.tsx",
+            "admin/src/shared/pendingOperation.test.tsx"
           ],
           "queue-health": [
             "admin/src/features/safety/controllers/useSafetyTriageController.test.tsx"
@@ -117,7 +117,7 @@
         "actions": 6,
         "captures": 0,
         "previews": 1,
-        "testFiles": 2,
+        "testFiles": 3,
         "evidenceExceptions": 0
       },
       "dimensions": {
@@ -388,7 +388,8 @@
               "route_safety_triage/SafetyTriageRouteStory"
             ],
             "tests": [
-              "admin/src/features/safety/controllers/useSafetyTriageController.test.tsx"
+              "admin/src/features/safety/controllers/useSafetyTriageController.test.tsx",
+              "admin/src/shared/pendingOperation.test.tsx"
             ]
           },
           "actionCases": [
@@ -414,19 +415,18 @@
               }
             },
             {
-              "id": "assignment_pending_peer_live",
+              "id": "assignment_pending_frozen_workspace",
               "dimensions": {
                 "view": "detail",
                 "assignment": "pending",
                 "decision": "idle"
               },
               "actions": {
-                "enabled": [
-                  "back_to_safety_queue",
-                  "decide_safety_item"
-                ],
+                "enabled": [],
                 "disabled": [
-                  "assign_safety_item"
+                  "back_to_safety_queue",
+                  "assign_safety_item",
+                  "decide_safety_item"
                 ],
                 "notAllowed": [
                   "filter_safety_queue",
@@ -436,18 +436,17 @@
               }
             },
             {
-              "id": "decision_pending_peer_live",
+              "id": "decision_pending_frozen_workspace",
               "dimensions": {
                 "view": "detail",
                 "assignment": "idle",
                 "decision": "pending"
               },
               "actions": {
-                "enabled": [
-                  "back_to_safety_queue",
-                  "assign_safety_item"
-                ],
+                "enabled": [],
                 "disabled": [
+                  "back_to_safety_queue",
+                  "assign_safety_item",
                   "decide_safety_item"
                 ],
                 "notAllowed": [

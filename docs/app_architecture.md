@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.5.8
+version: 1.5.9
 updated: 2026-07-23
 owner: recursive_audit_loop
 status: active
@@ -1263,6 +1263,15 @@ Account Settings treats preference, unblock, delete, and sign-out as one
 surface-exclusive operation domain: any pending mutation disables every
 settings action and route exit, confirmation callbacks recheck the shared
 pending state, and the settings controller deduplicates overlapping writes.
+
+The Admin console uses the same whole-surface exclusive policy for operator
+writes and submitted analytics queries. A synchronous provider-level lease is
+acquired before dispatch, so controllers in different workspaces cannot start
+overlapping operations in the same tick. While held, the workspace fieldset,
+Admin navigation, shared links, and browser unload are blocked; each controller
+submits an immutable payload and releases the lease in `finally`. This
+intentionally favors an unambiguous audited operation over parallel Admin
+throughput.
 
 Every adopting feature must declare the chosen policy in its feature contract.
 If the implementation is not yet safe, the pending-state action matrix must

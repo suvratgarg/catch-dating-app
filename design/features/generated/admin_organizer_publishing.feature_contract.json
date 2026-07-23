@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/admin_organizer_publishing.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:52b01b675f9a7e9d8e7bb1912baee88efa859359542b93f60e076a5c94a07d67",
-  "resolvedDigest": "sha256:f78a9932d035156d5d8b18cdb0dd564da4dce7302840a992c5ea85bffe325a15",
+  "sourceDigest": "sha256:c4841304d87109e7fae6dfc17c879af908f1a7ac28c656f9b57aff0d0814e784",
+  "resolvedDigest": "sha256:eda9604ceca62d7ce6c41e743e1ebe7f68d808961d15342a7c2445c2e52ee0a7",
   "feature": {
     "id": "feature.admin_organizer_publishing",
     "name": "Admin Organizer Publishing",
@@ -20,7 +20,7 @@
     "actions": 12,
     "captures": 0,
     "previews": 1,
-    "testFiles": 2,
+    "testFiles": 3,
     "evidenceExceptions": 0
   },
   "surfaces": [
@@ -32,11 +32,10 @@
         "id": "route_organizer_publishing"
       },
       "actionScope": {
-        "included": "Switching directory and claim workspaces, selecting and refreshing records, returning to registers, changing the publish checklist, saving canonical details, publishing index state, and deciding organizer claims.",
+        "included": "Switching directory and claim workspaces, selecting and refreshing records, returning to registers, changing the publish checklist, saving canonical details, publishing index state, deciding organizer claims, and freezing the complete Admin workspace during any write.",
         "excluded": [
           "Search, directory filter, canonical editor fields, and claim note edits remain query or form data.",
-          "Publishing requires saved canonical data plus the full checklist; claim approval remains a separate authority transition.",
-          "Editor/checklist and claim forms remain live across independently keyed mutations; ADMIN-MUTATION-SNAPSHOT-001 tracks snapshot and cross-mutation policy."
+          "Publishing requires saved canonical data plus the full checklist; claim approval remains a separate authority transition."
         ]
       },
       "bindings": {
@@ -129,7 +128,8 @@
         "testEvidence": {
           "canonical-directory": [
             "admin/src/features/organizers/controllers/useOrganizerPublishingController.test.tsx",
-            "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.test.tsx"
+            "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.test.tsx",
+            "admin/src/shared/pendingOperation.test.tsx"
           ]
         }
       },
@@ -140,7 +140,7 @@
         "actions": 12,
         "captures": 0,
         "previews": 1,
-        "testFiles": 2,
+        "testFiles": 3,
         "evidenceExceptions": 0
       },
       "dimensions": {
@@ -444,7 +444,8 @@
             ],
             "tests": [
               "admin/src/features/organizers/controllers/useOrganizerPublishingController.test.tsx",
-              "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.test.tsx"
+              "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.test.tsx",
+              "admin/src/shared/pendingOperation.test.tsx"
             ]
           },
           "actionCases": [
@@ -501,18 +502,17 @@
               }
             },
             {
-              "id": "organizer_save_pending_live_editor",
+              "id": "organizer_save_pending_frozen_workspace",
               "dimensions": {
                 "workspace": "organizer_detail",
                 "mutation": "saving"
               },
               "actions": {
-                "enabled": [
+                "enabled": [],
+                "disabled": [
                   "select_organizer_workspace",
                   "back_to_organizer_directory",
-                  "toggle_organizer_publish_checklist"
-                ],
-                "disabled": [
+                  "toggle_organizer_publish_checklist",
                   "save_organizer_profile",
                   "publish_organizer_profile"
                 ],
@@ -528,18 +528,17 @@
               }
             },
             {
-              "id": "organizer_publish_pending_live_editor",
+              "id": "organizer_publish_pending_frozen_workspace",
               "dimensions": {
                 "workspace": "organizer_detail",
                 "mutation": "publishing"
               },
               "actions": {
-                "enabled": [
+                "enabled": [],
+                "disabled": [
                   "select_organizer_workspace",
                   "back_to_organizer_directory",
-                  "toggle_organizer_publish_checklist"
-                ],
-                "disabled": [
+                  "toggle_organizer_publish_checklist",
                   "save_organizer_profile",
                   "publish_organizer_profile"
                 ],
@@ -607,17 +606,16 @@
               }
             },
             {
-              "id": "claim_pending_live_form",
+              "id": "claim_pending_frozen_workspace",
               "dimensions": {
                 "workspace": "claim_detail",
                 "mutation": "claim_pending"
               },
               "actions": {
-                "enabled": [
-                  "select_organizer_workspace",
-                  "back_to_organizer_claims"
-                ],
+                "enabled": [],
                 "disabled": [
+                  "select_organizer_workspace",
+                  "back_to_organizer_claims",
                   "refresh_organizer_claim_detail",
                   "decide_organizer_claim"
                 ],

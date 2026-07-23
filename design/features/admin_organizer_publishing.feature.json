@@ -13,11 +13,10 @@
       "runtime": "react_admin",
       "authority": {"registry": "admin_routes", "id": "route_organizer_publishing"},
       "actionScope": {
-        "included": "Switching directory and claim workspaces, selecting and refreshing records, returning to registers, changing the publish checklist, saving canonical details, publishing index state, and deciding organizer claims.",
+        "included": "Switching directory and claim workspaces, selecting and refreshing records, returning to registers, changing the publish checklist, saving canonical details, publishing index state, deciding organizer claims, and freezing the complete Admin workspace during any write.",
         "excluded": [
           "Search, directory filter, canonical editor fields, and claim note edits remain query or form data.",
-          "Publishing requires saved canonical data plus the full checklist; claim approval remains a separate authority transition.",
-          "Editor/checklist and claim forms remain live across independently keyed mutations; ADMIN-MUTATION-SNAPSHOT-001 tracks snapshot and cross-mutation policy."
+          "Publishing requires saved canonical data plus the full checklist; claim approval remains a separate authority transition."
         ]
       },
       "bindings": {
@@ -49,7 +48,8 @@
         "testEvidence": {
           "canonical-directory": [
             "admin/src/features/organizers/controllers/useOrganizerPublishingController.test.tsx",
-            "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.test.tsx"
+            "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.test.tsx",
+            "admin/src/shared/pendingOperation.test.tsx"
           ]
         }
       },
@@ -80,11 +80,11 @@
           "actionCases": [
             {"id": "directory", "enabledActions": ["select_organizer_workspace", "select_organizer_profile", "refresh_organizer_directory"]},
             {"id": "organizer_detail", "dimensions": {"workspace": "organizer_detail"}, "enabledActions": ["select_organizer_workspace", "back_to_organizer_directory", "toggle_organizer_publish_checklist", "save_organizer_profile", "publish_organizer_profile"]},
-            {"id": "organizer_save_pending_live_editor", "dimensions": {"workspace": "organizer_detail", "mutation": "saving"}, "enabledActions": ["select_organizer_workspace", "back_to_organizer_directory", "toggle_organizer_publish_checklist"], "disabledActions": ["save_organizer_profile", "publish_organizer_profile"]},
-            {"id": "organizer_publish_pending_live_editor", "dimensions": {"workspace": "organizer_detail", "mutation": "publishing"}, "enabledActions": ["select_organizer_workspace", "back_to_organizer_directory", "toggle_organizer_publish_checklist"], "disabledActions": ["save_organizer_profile", "publish_organizer_profile"]},
+            {"id": "organizer_save_pending_frozen_workspace", "dimensions": {"workspace": "organizer_detail", "mutation": "saving"}, "disabledActions": ["select_organizer_workspace", "back_to_organizer_directory", "toggle_organizer_publish_checklist", "save_organizer_profile", "publish_organizer_profile"]},
+            {"id": "organizer_publish_pending_frozen_workspace", "dimensions": {"workspace": "organizer_detail", "mutation": "publishing"}, "disabledActions": ["select_organizer_workspace", "back_to_organizer_directory", "toggle_organizer_publish_checklist", "save_organizer_profile", "publish_organizer_profile"]},
             {"id": "claims", "dimensions": {"workspace": "claims"}, "enabledActions": ["select_organizer_workspace", "select_organizer_claim", "refresh_organizer_claims"]},
             {"id": "claim_detail", "dimensions": {"workspace": "claim_detail"}, "enabledActions": ["select_organizer_workspace", "back_to_organizer_claims", "refresh_organizer_claim_detail", "decide_organizer_claim"]},
-            {"id": "claim_pending_live_form", "dimensions": {"workspace": "claim_detail", "mutation": "claim_pending"}, "enabledActions": ["select_organizer_workspace", "back_to_organizer_claims"], "disabledActions": ["refresh_organizer_claim_detail", "decide_organizer_claim"]},
+            {"id": "claim_pending_frozen_workspace", "dimensions": {"workspace": "claim_detail", "mutation": "claim_pending"}, "disabledActions": ["select_organizer_workspace", "back_to_organizer_claims", "refresh_organizer_claim_detail", "decide_organizer_claim"]},
             {"id": "selected_unavailable", "dimensions": {"workspace": "unavailable"}, "enabledActions": ["select_organizer_workspace", "back_to_organizer_directory", "back_to_organizer_claims", "refresh_organizer_directory", "refresh_organizer_claim_detail"]}
           ]
         }

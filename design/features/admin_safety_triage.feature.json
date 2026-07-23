@@ -13,11 +13,10 @@
       "runtime": "react_admin",
       "authority": {"registry": "admin_routes", "id": "route_safety_triage"},
       "actionScope": {
-        "included": "Filtering the bounded queue, opening one exact target path, returning to the queue, refreshing evidence, assigning an owner, and recording review or dismissal.",
+        "included": "Filtering the bounded queue, opening one exact target path, returning to the queue, refreshing evidence, assigning an owner, recording review or dismissal, and freezing the complete Admin workspace during either write.",
         "excluded": [
           "Free-text search and assignment/decision note edits remain local query or form data.",
-          "Priority and age analytics describe only capped returned preview rows; aggregate open counts remain separately labelled.",
-          "Assignment and decision are independent mutations whose forms and peer action remain live; ADMIN-MUTATION-SNAPSHOT-001 tracks snapshot and cross-mutation policy."
+          "Priority and age analytics describe only capped returned preview rows; aggregate open counts remain separately labelled."
         ]
       },
       "bindings": {
@@ -37,7 +36,10 @@
         "testEvidence": {
           "directory": ["admin/src/features/safety/controllers/useSafetyTriageController.test.tsx"],
           "filters": ["admin/src/features/safety/controllers/useSafetyTriageController.test.tsx"],
-          "open-action": ["admin/src/features/safety/controllers/useSafetyTriageController.test.tsx"],
+          "open-action": [
+            "admin/src/features/safety/controllers/useSafetyTriageController.test.tsx",
+            "admin/src/shared/pendingOperation.test.tsx"
+          ],
           "queue-health": ["admin/src/features/safety/controllers/useSafetyTriageController.test.tsx"],
           "honest-preview-analytics": [
             "admin/src/features/safety/controllers/useSafetyTriageController.test.tsx",
@@ -68,8 +70,8 @@
           "dimensions": {"view": "detail"},
           "actionCases": [
             {"id": "detail_ready", "enabledActions": ["back_to_safety_queue", "assign_safety_item", "decide_safety_item"]},
-            {"id": "assignment_pending_peer_live", "dimensions": {"assignment": "pending"}, "enabledActions": ["back_to_safety_queue", "decide_safety_item"], "disabledActions": ["assign_safety_item"]},
-            {"id": "decision_pending_peer_live", "dimensions": {"decision": "pending"}, "enabledActions": ["back_to_safety_queue", "assign_safety_item"], "disabledActions": ["decide_safety_item"]},
+            {"id": "assignment_pending_frozen_workspace", "dimensions": {"assignment": "pending"}, "disabledActions": ["back_to_safety_queue", "assign_safety_item", "decide_safety_item"]},
+            {"id": "decision_pending_frozen_workspace", "dimensions": {"decision": "pending"}, "disabledActions": ["back_to_safety_queue", "assign_safety_item", "decide_safety_item"]},
             {"id": "detail_unavailable", "dimensions": {"view": "unavailable"}, "enabledActions": ["back_to_safety_queue"]}
           ]
         },

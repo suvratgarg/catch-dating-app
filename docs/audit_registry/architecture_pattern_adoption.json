@@ -1,5 +1,5 @@
 {
-  "version": "1.5.55",
+  "version": "1.5.56",
   "updated": "2026-07-23",
   "sourceOfTruth": "docs/app_architecture.md#reference-implementation-workflow",
   "purpose": "Tracks architecture reference exhibits, prototype files, adopter files, candidate status, and back-propagation obligations so migrations stay aligned with the latest pattern.",
@@ -1850,6 +1850,24 @@
           "role": "controller and UI proof for immutable marketing form snapshots, one request per submit, frozen auth and steps, and blocked route exits",
           "status": "aligned",
           "lastReviewedPass": "2026-07-23-marketing-pending-operation-integrity"
+        },
+        {
+          "path": "admin/src/shared/pendingOperation.tsx, admin/src/app/App.tsx, and admin/src/shared/ui/AdminPrimitives",
+          "role": "Admin whole-surface exclusive operation lease freezing workspace controls, shared links, route navigation, peer operations, and browser unload until settlement",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-admin-pending-operation-integrity"
+        },
+        {
+          "path": "admin/src/features/access, admin/src/features/admin-roles, admin/src/features/events, admin/src/features/intake, admin/src/features/marketing, admin/src/features/organizers, admin/src/features/safety, and admin/src/features/users",
+          "role": "Admin controller adopters acquiring one synchronous global lease around immutable mutation or submitted-query snapshots",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-admin-pending-operation-integrity"
+        },
+        {
+          "path": "admin/src/shared/pendingOperation.test.tsx and design/features/admin_*.feature.json",
+          "role": "cross-controller, visible-snapshot, navigation, unload, and compiled pending-action proof for the Admin exclusive policy",
+          "status": "aligned",
+          "lastReviewedPass": "2026-07-23-admin-pending-operation-integrity"
         }
       ],
       "variantPatterns": [
@@ -1864,14 +1882,7 @@
           "rule": "Allow simultaneous operations only when typed scope keys and separate pending/error surfaces prevent sibling interference."
         }
       ],
-      "candidateQueue": [
-        {
-          "id": "ADMIN-MUTATION-SNAPSHOT-001",
-          "path": "admin/src/features",
-          "reason": "Admin workspaces need explicit frozen versus independently keyed pending-operation policy.",
-          "addedPass": "2026-07-23-feature-contract-debt-audit"
-        }
-      ],
+      "candidateQueue": [],
       "exceptions": [],
       "requiredBackPropagation": "When pending ownership, request-defining inputs, reset behavior, cancellation, deduplication, route exits, scope keys, or stale-result handling change, update the Phone Authentication reference, every promoted adopter, feature-contract action matrices, screen debt, regression guard, and focused interaction tests in the same pass.",
       "requiredChecks": [
@@ -1879,13 +1890,16 @@
         "flutter test --concurrency=1 test/onboarding/onboarding_controller_test.dart test/onboarding/onboarding_flow_state_test.dart test/onboarding/onboarding_widgets_test.dart",
         "flutter test --concurrency=1 test/swipes/filters_screen_test.dart test/swipes/filters_screen_state_test.dart",
         "npm --prefix website exec vitest run -- --project=unit src/features/waitlist/useWaitlistFormController.test.tsx src/features/host/application/useHostApplicationController.test.tsx src/features/claims/useClaimFlowController.test.tsx src/features/claims/useClaimRequestMutation.test.tsx src/shared/pendingRequest.test.tsx",
+        "npm --prefix admin test -- --run",
+        "npm --prefix admin run typecheck",
+        "node tool/run.mjs check web:admin-pending-operations",
         "node tool/design/build_feature_contracts.mjs --check",
         "node tool/design/check_screen_contracts.mjs --check",
         "node tool/architecture/check_app_architecture_exhibits.mjs",
         "dart analyze",
         "node tool/agent/check_agent_readiness.mjs"
       ],
-      "notes": "Frozen snapshot is the default for one submitted form or route action. Versioned editing and independently keyed concurrency are explicit variants, not implicit exceptions. Phone Authentication is the reference; Member Onboarding, Matching Preferences, Host Organizer Create, Host Event Edit, Reviews, Account Settings, and Marketing forms are aligned adopters. The Admin candidate stays open until production behavior and focused tests align."
+      "notes": "Frozen snapshot is the default for one submitted form or route action. Versioned editing and independently keyed concurrency are explicit variants, not implicit exceptions. Phone Authentication is the reference; Member Onboarding, Matching Preferences, Host Organizer Create, Host Event Edit, Reviews, Account Settings, Marketing forms, and the Admin console are aligned adopters. Admin deliberately uses one global exclusive lease because operator writes and submitted queries share navigation, feedback, query-cache, and selection surfaces; the small throughput trade-off prevents cross-workspace ambiguity."
     },
     {
       "id": "ARCH-ROUTER-LIFECYCLE-001",
