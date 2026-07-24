@@ -19,12 +19,12 @@
     "nonLiteralDynamicImports": "report"
   },
   "summary": {
-    "scannedSourceModules": 338,
+    "scannedSourceModules": 340,
     "dependencyLeafNodes": 18,
-    "moduleNodes": 356,
-    "moduleEdges": 1238,
+    "moduleNodes": 358,
+    "moduleEdges": 1240,
     "runtimeModuleEdges": 981,
-    "typeOnlyModuleEdges": 257,
+    "typeOnlyModuleEdges": 259,
     "dynamicImportEdges": 29,
     "reExportEdges": 65,
     "featureGroups": 33,
@@ -280,7 +280,7 @@
       "surface": "admin",
       "scope": "shared",
       "feature": null,
-      "modules": 68,
+      "modules": 70,
       "tests": 13,
       "stories": 0
     },
@@ -3368,9 +3368,9 @@
       "sourceLayer": "shared",
       "targetSurface": "admin",
       "targetLayer": "generated",
-      "edges": 14,
+      "edges": 16,
       "runtimeEdges": 2,
-      "typeOnlyEdges": 12,
+      "typeOnlyEdges": 14,
       "dynamicImports": 0,
       "reExports": 0,
       "sourceModules": [
@@ -3382,6 +3382,8 @@
         "admin/src/generated/contracts/adminAssignSafetyTriageItemCallablePayload.ts",
         "admin/src/generated/contracts/adminAssignSafetyTriageItemCallableResponse.ts",
         "admin/src/generated/contracts/adminCreateMarketingContentDraftCallablePayload.ts",
+        "admin/src/generated/contracts/adminCreateOrganizerDraftFromCandidateCallablePayload.ts",
+        "admin/src/generated/contracts/adminCreateOrganizerDraftFromCandidateCallableResponse.ts",
         "admin/src/generated/contracts/adminDecideAccessApplicationCallablePayload.ts",
         "admin/src/generated/contracts/adminDecideAccessApplicationCallableResponse.ts",
         "admin/src/generated/contracts/adminDecideSafetyTriageItemCallablePayload.ts",
@@ -4564,8 +4566,8 @@
     },
     {
       "package": "react-router",
-      "edges": 8,
-      "runtimeEdges": 8,
+      "edges": 9,
+      "runtimeEdges": 9,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "surfaces": [
@@ -4575,6 +4577,7 @@
       "sourceModules": [
         "admin/src/app/App.tsx",
         "admin/src/features/events/ui/EventPublishingScreen.tsx",
+        "admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx",
         "admin/src/features/intake/ui/IntakeWorkspaceScreen.tsx",
         "website/src/app/App.tsx",
         "website/src/features/organizers/useOrganizerDirectoryController.test.tsx",
@@ -5907,6 +5910,30 @@
     },
     {
       "id": "admin/src/generated/contracts/adminCreateMarketingContentDraftCallableResponse.ts",
+      "surface": "admin",
+      "layer": "generated",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/generated/contracts/adminCreateOrganizerDraftFromCandidateCallablePayload.ts",
+      "surface": "admin",
+      "layer": "generated",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/generated/contracts/adminCreateOrganizerDraftFromCandidateCallableResponse.ts",
       "surface": "admin",
       "layer": "generated",
       "scope": "shared",
@@ -10548,7 +10575,7 @@
       "specifier": "../types/organizerIntakeTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 10,
+      "line": 11,
       "column": 1
     },
     {
@@ -10584,7 +10611,7 @@
       "specifier": "../types/organizerIntakeTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 10,
+      "line": 11,
       "column": 1
     },
     {
@@ -10611,7 +10638,7 @@
       "specifier": "../api/organizerIntakeRepository",
       "kind": "import",
       "typeOnly": false,
-      "line": 3,
+      "line": 7,
       "column": 1
     },
     {
@@ -10620,7 +10647,7 @@
       "specifier": "./organizerIntakeHelpers",
       "kind": "import",
       "typeOnly": false,
-      "line": 10,
+      "line": 15,
       "column": 1
     },
     {
@@ -10629,7 +10656,7 @@
       "specifier": "./loadOrganizerIntakeBridge",
       "kind": "import",
       "typeOnly": false,
-      "line": 29,
+      "line": 36,
       "column": 1
     },
     {
@@ -10638,7 +10665,7 @@
       "specifier": "../../../../shared/types/adminTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 30,
+      "line": 37,
       "column": 1
     },
     {
@@ -10647,7 +10674,7 @@
       "specifier": "../types/organizerIntakeTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 45,
+      "line": 54,
       "column": 1
     },
     {
@@ -10656,7 +10683,7 @@
       "specifier": "../../../../shared/query/queryKeys",
       "kind": "import",
       "typeOnly": false,
-      "line": 46,
+      "line": 55,
       "column": 1
     },
     {
@@ -10665,7 +10692,7 @@
       "specifier": "../../../../shared/query/usePendingMutationRecord",
       "kind": "import",
       "typeOnly": false,
-      "line": 47,
+      "line": 56,
       "column": 1
     },
     {
@@ -10674,7 +10701,7 @@
       "specifier": "../../../../shared/pendingOperation",
       "kind": "import",
       "typeOnly": false,
-      "line": 48,
+      "line": 57,
       "column": 1
     },
     {
@@ -10692,7 +10719,7 @@
       "specifier": "../../../../shared/ui/AdminPrimitives",
       "kind": "import",
       "typeOnly": false,
-      "line": 3,
+      "line": 4,
       "column": 1
     },
     {
@@ -10701,7 +10728,7 @@
       "specifier": "../../../../shared/feedback/AdminFeedbackContext",
       "kind": "import",
       "typeOnly": false,
-      "line": 8,
+      "line": 9,
       "column": 1
     },
     {
@@ -10710,7 +10737,7 @@
       "specifier": "../controllers/useOrganizerIntakeController",
       "kind": "import",
       "typeOnly": false,
-      "line": 10,
+      "line": 11,
       "column": 1
     },
     {
@@ -10719,7 +10746,7 @@
       "specifier": "./organizerIntakeWorkbench",
       "kind": "import",
       "typeOnly": false,
-      "line": 14,
+      "line": 15,
       "column": 1
     },
     {
@@ -10728,7 +10755,7 @@
       "specifier": "./organizerIntakeDiagnostics",
       "kind": "dynamic-import",
       "typeOnly": false,
-      "line": 17,
+      "line": 18,
       "column": 24
     },
     {
@@ -11142,7 +11169,7 @@
       "specifier": "../../../../shared/types/adminTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 16,
+      "line": 18,
       "column": 1
     },
     {
@@ -11151,7 +11178,7 @@
       "specifier": "../controllers/organizerIntakeHelpers",
       "kind": "import",
       "typeOnly": false,
-      "line": 18,
+      "line": 20,
       "column": 1
     },
     {
@@ -11160,7 +11187,7 @@
       "specifier": "../controllers/useOrganizerIntakeController",
       "kind": "import",
       "typeOnly": true,
-      "line": 22,
+      "line": 25,
       "column": 1
     },
     {
@@ -11169,7 +11196,7 @@
       "specifier": "../types/organizerIntakeTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 24,
+      "line": 27,
       "column": 1
     },
     {
@@ -12906,7 +12933,7 @@
       "specifier": "../../generated/contracts/adminGetOverviewCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1737,
+      "line": 1743,
       "column": 1
     },
     {
@@ -12915,7 +12942,7 @@
       "specifier": "../../generated/contracts/adminDecideAccessApplicationCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1739,
+      "line": 1745,
       "column": 1
     },
     {
@@ -12924,7 +12951,7 @@
       "specifier": "../../generated/contracts/adminDecideAccessApplicationCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1741,
+      "line": 1747,
       "column": 1
     },
     {
@@ -12933,7 +12960,7 @@
       "specifier": "../../generated/contracts/adminSetAdminUserRolesCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1743,
+      "line": 1749,
       "column": 1
     },
     {
@@ -12942,7 +12969,7 @@
       "specifier": "../../generated/contracts/adminSetAdminUserRolesCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1745,
+      "line": 1751,
       "column": 1
     },
     {
@@ -12951,7 +12978,7 @@
       "specifier": "../../generated/contracts/adminDecideSafetyTriageItemCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1747,
+      "line": 1753,
       "column": 1
     },
     {
@@ -12960,7 +12987,7 @@
       "specifier": "../../generated/contracts/adminDecideSafetyTriageItemCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1749,
+      "line": 1755,
       "column": 1
     },
     {
@@ -12969,7 +12996,7 @@
       "specifier": "../../generated/contracts/adminAssignSafetyTriageItemCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1751,
+      "line": 1757,
       "column": 1
     },
     {
@@ -12978,7 +13005,7 @@
       "specifier": "../../generated/contracts/adminAssignSafetyTriageItemCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1753,
+      "line": 1759,
       "column": 1
     },
     {
@@ -12987,7 +13014,25 @@
       "specifier": "../../generated/contracts/adminCreateMarketingContentDraftCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1755,
+      "line": 1761,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/types/adminTypes.ts",
+      "target": "admin/src/generated/contracts/adminCreateOrganizerDraftFromCandidateCallablePayload.ts",
+      "specifier": "../../generated/contracts/adminCreateOrganizerDraftFromCandidateCallablePayload",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1763,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/types/adminTypes.ts",
+      "target": "admin/src/generated/contracts/adminCreateOrganizerDraftFromCandidateCallableResponse.ts",
+      "specifier": "../../generated/contracts/adminCreateOrganizerDraftFromCandidateCallableResponse",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1765,
       "column": 1
     },
     {
@@ -12996,7 +13041,7 @@
       "specifier": "../../generated/contracts/adminRecordMarketingReviewDecisionCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1757,
+      "line": 1767,
       "column": 1
     },
     {
@@ -13005,7 +13050,7 @@
       "specifier": "../../generated/contracts/adminRecordMarketingReviewDecisionCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1759,
+      "line": 1769,
       "column": 1
     },
     {
@@ -20756,7 +20801,7 @@
       "specifier": "react",
       "kind": "import",
       "typeOnly": false,
-      "line": 2,
+      "line": 6,
       "column": 1
     },
     {
@@ -20766,6 +20811,15 @@
       "kind": "import",
       "typeOnly": false,
       "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx",
+      "package": "react-router",
+      "specifier": "react-router",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
       "column": 1
     },
     {
