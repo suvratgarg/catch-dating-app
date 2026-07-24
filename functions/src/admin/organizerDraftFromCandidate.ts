@@ -30,6 +30,9 @@ const curationCollection = "organizerIntakeCurationDecisions";
 interface OrganizerDraftDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
+  sourceTimestamp: (
+    verifiedAt: string | null
+  ) => FirebaseFirestore.Timestamp;
   checkRateLimit?: (
     db: FirebaseFirestore.Firestore,
     uid: string,
@@ -41,6 +44,7 @@ interface OrganizerDraftDeps {
 const defaultDeps: OrganizerDraftDeps = {
   firestore: () => admin.firestore(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+  sourceTimestamp: sourceTimestampFromVerifiedAt,
   checkRateLimit: defaultCheckRateLimit,
   reserveCanonicalRoute: reserveOrganizerCanonicalRoute,
 };
@@ -150,6 +154,9 @@ export async function adminCreateOrganizerDraftFromCandidateHandler(
       data,
       market,
       timestamp,
+      sourceTimestamp: deps.sourceTimestamp(
+        candidate.reviewContext?.verifiedAt ?? null
+      ),
     });
     organizer.adminSearch = buildOrganizerAdminSearchProjection(
       data.organizerId,
@@ -256,12 +263,14 @@ function buildOrganizerDraft({
   data,
   market,
   timestamp,
+  sourceTimestamp,
 }: {
   adminUid: string;
   candidate: OrganizerCandidate;
   data: AdminCreateOrganizerDraftFromCandidateCallablePayload;
   market: NonNullable<ReturnType<typeof marketForIdOrAlias>>;
   timestamp: FirebaseFirestore.FieldValue;
+  sourceTimestamp: FirebaseFirestore.Timestamp;
 }): OrganizerDocument {
   const sourceDetail = boundedText(
     candidate.reviewContext?.reviewNotes ??
@@ -363,9 +372,18 @@ function buildOrganizerDraft({
       detail: sourceDetail,
       href: candidate.canonicalUrl,
       confidence: "medium",
-      lastCheckedAt: timestamp as never,
+      lastCheckedAt: sourceTimestamp as never,
     }],
   };
+}
+
+function sourceTimestampFromVerifiedAt(
+  verifiedAt: string | null
+): FirebaseFirestore.Timestamp {
+  const milliseconds = verifiedAt ? Date.parse(verifiedAt) : Number.NaN;
+  return admin.firestore.Timestamp.fromMillis(
+    Number.isFinite(milliseconds) ? milliseconds : Date.now()
+  );
 }
 
 function requireWorkItem(

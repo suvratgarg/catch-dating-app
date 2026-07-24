@@ -3093,6 +3093,26 @@
         "docs/web_surface_architecture.md"
       ],
       "notes": "Deploy response-producing callables before dependent Admin bundles. Additive response fields still require a client-side compatibility default so a partial or rolled-back deploy cannot crash the route."
+    },
+    {
+      "id": "REG-ADMIN-ORGANIZER-DRAFT-SOURCE-TIMESTAMP-001",
+      "title": "Organizer draft source timestamp uses an array transform",
+      "status": "active",
+      "applies_to": [
+        "functions/src/admin/organizerDraftFromCandidate.ts",
+        "functions/src/admin/organizerDraftFromCandidate.test.ts"
+      ],
+      "symptom": "Creating a reviewed organizer draft returns INTERNAL because Firestore rejects FieldValue.serverTimestamp() inside the publicSources array.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions run build && node --test functions/lib/admin/organizerDraftFromCandidate.test.js",
+        "guardEvidence": "publicSources.lastCheckedAt uses a concrete Firestore Timestamp derived from the reviewed-at date, while top-level write timestamps continue to use server transforms"
+      },
+      "owner_docs": [
+        "docs/data_contracts.md",
+        "docs/backend_operation_catalog.md"
+      ],
+      "notes": "Firestore transforms are valid for top-level and nested map fields but not within array elements. Array timestamps must be concrete values before the transaction write."
     }
   ]
 }
