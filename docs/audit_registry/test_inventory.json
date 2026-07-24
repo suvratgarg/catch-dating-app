@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 579,
+  "total": 581,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -548,7 +548,7 @@
       ]
     },
     "web": {
-      "count": 66,
+      "count": 68,
       "files": [
         "admin/src/app/App.test.tsx",
         "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
@@ -567,6 +567,7 @@
         "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
         "admin/src/features/marketing/controllers/useMarketingOpsController.test.tsx",
         "admin/src/features/operations/controllers/useAdminActionExecutionsController.test.ts",
+        "admin/src/features/organizers/controllers/organizerPublishingHelpers.test.ts",
         "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.test.tsx",
         "admin/src/features/organizers/controllers/useOrganizerPublishingController.test.tsx",
         "admin/src/features/overview/controllers/useOverviewController.test.tsx",
@@ -586,6 +587,7 @@
         "admin/src/shared/ui/AdminPrimitives/overview.test.tsx",
         "admin/src/shared/ui/AdminPrimitives/shell.test.tsx",
         "admin/src/shared/ui/adminPresentation.test.ts",
+        "admin/src/shared/ui/operatorFacingImplementationCopy.test.ts",
         "website/scripts/analyticsContract.test.mjs",
         "website/scripts/checkOrganizerBuildOutputs.test.mjs",
         "website/scripts/generateOrganizerListings.test.mjs",
