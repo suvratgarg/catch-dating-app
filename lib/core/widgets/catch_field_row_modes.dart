@@ -343,6 +343,7 @@ extension _CatchFieldRowModes on _CatchFieldState {
       return CatchFieldTrailing.toggle(
         value: widget.toggled,
         onChanged: _isSaving ? null : widget.onToggle,
+        contract: widget.contract,
         semanticLabel: _title,
         status: _effectiveStatus,
         topPadding: 0,
@@ -509,6 +510,11 @@ extension _CatchFieldRowModes on _CatchFieldState {
         excludeSemantics: true,
         child: Text.rich(
           _inlineAddTextSpan(t),
+          style: _fieldValueTextStyle(
+            context,
+            color: t.ink3,
+            fontWeight: FontWeight.w500,
+          ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -536,6 +542,11 @@ extension _CatchFieldRowModes on _CatchFieldState {
           inputHintWidgetOverride: inlineAddAtRest
               ? Text.rich(
                   _inlineAddTextSpan(t),
+                  style: _fieldValueTextStyle(
+                    context,
+                    color: t.ink3,
+                    fontWeight: FontWeight.w500,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 )

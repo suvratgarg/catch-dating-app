@@ -1,10 +1,15 @@
+import 'package:catch_dating_app/core/schema_contracts/catch_contract_field_policy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_button.dart';
-import 'package:flutter/material.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:flutter/material.dart';
+
+export 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart'
+    show CatchContractConstraints, CatchContractFieldConstraints;
 
 enum CatchSearchFieldMode { field, expanding, expanded }
 
@@ -14,6 +19,8 @@ class CatchSearchField extends StatefulWidget {
   const CatchSearchField({
     super.key,
     this.value = '',
+    this.contract,
+    this.contractExemption,
     this.placeholder,
     this.onChanged,
     this.autofocus = false,
@@ -40,6 +47,8 @@ class CatchSearchField extends StatefulWidget {
   });
 
   final String value;
+  final CatchContractFieldConstraints? contract;
+  final String? contractExemption;
   final String? placeholder;
   final ValueChanged<String>? onChanged;
   final bool autofocus;
@@ -155,6 +164,11 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                 autofocus: widget.autofocus,
                 enabled: widget.enabled,
                 textInputAction: widget.textInputAction,
+                inputFormatters:
+                    CatchContractFieldPolicy.effectiveInputFormatters(
+                      widget.contract,
+                      null,
+                    ),
                 onChanged: widget.onChanged,
                 onSubmitted: _handleSubmitted,
                 onTapOutside: (_) => _focusNode.unfocus(),
@@ -329,6 +343,11 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                                   autofocus: widget.autofocus,
                                   enabled: widget.enabled,
                                   textInputAction: widget.textInputAction,
+                                  inputFormatters:
+                                      CatchContractFieldPolicy.effectiveInputFormatters(
+                                        widget.contract,
+                                        null,
+                                      ),
                                   onChanged: widget.onChanged,
                                   onSubmitted: _handleSubmitted,
                                   onTapOutside: (_) => _focusNode.unfocus(),

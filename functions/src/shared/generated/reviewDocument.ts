@@ -6,7 +6,11 @@
  * Canonical organizer review stored at reviews/{reviewId}. Verified reviews come from attended Catch events; unverified reviews can come from public listing pages.
  */
 export interface ReviewDocument {
+  /**
+   * Deprecated organizer id alias retained while released clients migrate.
+   */
   clubId: string;
+  organizerId: string;
   eventId?: string | null;
   /**
    * Catch user id for signed-in reviewers. Null for anonymous public listing reviews.

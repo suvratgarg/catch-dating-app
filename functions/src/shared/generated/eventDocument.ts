@@ -9,6 +9,7 @@ import {UploadedPhoto} from "./uploadedPhoto";
  */
 export interface EventDocument {
   clubId: string;
+  organizerId?: string;
   /**
    * Serialized Firestore Timestamp fixture shape.
    */

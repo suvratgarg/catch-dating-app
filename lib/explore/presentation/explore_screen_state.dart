@@ -12,6 +12,7 @@ import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/organizers/organizers.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -38,6 +39,30 @@ enum ExploreScreenBodyKind {
 }
 
 enum ExploreScreenRetryTarget { explore, eventFeed }
+
+enum ExploreOrganizerMembershipActionState {
+  hidden,
+  signInGate,
+  follow,
+  following,
+}
+
+ExploreOrganizerMembershipActionState exploreOrganizerMembershipActionState({
+  required bool contentVisible,
+  required bool authResolved,
+  required String? uid,
+  required bool isFollowing,
+}) {
+  if (!contentVisible || !authResolved) {
+    return ExploreOrganizerMembershipActionState.hidden;
+  }
+  if (uid == null) {
+    return ExploreOrganizerMembershipActionState.signInGate;
+  }
+  return isFollowing
+      ? ExploreOrganizerMembershipActionState.following
+      : ExploreOrganizerMembershipActionState.follow;
+}
 
 const int minimumExploreThisWeekRecommendationCount = 2;
 
@@ -675,9 +700,11 @@ class ExploreClubCardState {
     required this.title,
     required this.supportingLabel,
     required this.ratingReviewLabel,
+    required this.trustLabel,
     required this.hostEyebrow,
     required this.hostName,
     required this.hostAvatarUrl,
+    required this.hasHostIdentity,
     required this.semanticLabel,
     required this.rowKicker,
     required this.tags,
@@ -687,11 +714,16 @@ class ExploreClubCardState {
     Club club, {
     required AppLocalizations l10n,
   }) {
+    final hasHostIdentity = club.displayHostProfiles.isNotEmpty;
     final hostEyebrow = l10n.exploreExploreScreenStateLabelHostedBy;
     final hostName = club.displayHostName;
     final ratingReviewLabel = l10n.exploreExploreScreenStateClubRatingReviews(
       rating: club.rating.toStringAsFixed(1),
       reviewCount: club.reviewCount,
+    );
+    final trustLabel = organizerTrustLabel(
+      club.organizerAuthority.trustState,
+      l10n,
     );
     return ExploreClubCardState(
       memberCountLabel: clubMemberCountLabel(club),
@@ -702,11 +734,13 @@ class ExploreClubCardState {
       title: club.name,
       supportingLabel: _clubSupportingLabel(club, l10n),
       ratingReviewLabel: ratingReviewLabel,
+      trustLabel: trustLabel,
       hostEyebrow: hostEyebrow,
       hostName: hostName,
       hostAvatarUrl: club.hostAvatarUrl,
+      hasHostIdentity: hasHostIdentity,
       semanticLabel:
-          '${l10n.exploreExploreScreenStateClubCardSemantics(title: club.name, caption: (club.nextEventLabel ?? l10n.exploreExploreScreenStateCaptionClubToKnow).toUpperCase(), supportingLabel: _clubSupportingLabel(club, l10n), memberCountLabel: clubMemberCountLabel(club), ratingReviewLabel: ratingReviewLabel)}, $hostEyebrow $hostName',
+          '${l10n.exploreExploreScreenStateClubCardSemantics(title: club.name, caption: (club.nextEventLabel ?? l10n.exploreExploreScreenStateCaptionClubToKnow).toUpperCase(), supportingLabel: _clubSupportingLabel(club, l10n), memberCountLabel: clubMemberCountLabel(club), ratingReviewLabel: ratingReviewLabel)}, $trustLabel${hasHostIdentity ? ', $hostEyebrow $hostName' : ''}',
       rowKicker: l10n.exploreExploreScreenStateVisiblecopyClubToKnow,
       tags: visibleClubTags(club, limit: 2),
     );
@@ -717,9 +751,11 @@ class ExploreClubCardState {
   final String title;
   final String supportingLabel;
   final String ratingReviewLabel;
+  final String trustLabel;
   final String hostEyebrow;
   final String hostName;
   final String? hostAvatarUrl;
+  final bool hasHostIdentity;
   final String semanticLabel;
   final String rowKicker;
   final List<String> tags;
@@ -1276,11 +1312,6 @@ class ExploreScreenBodyState {
     required bool eventFeedHasContent,
     required ExploreDiscoveryEmptyState emptyState,
   }) {
-    if (viewModelLoading) {
-      return const ExploreScreenBodyState._(
-        kind: ExploreScreenBodyKind.loading,
-      );
-    }
     if (viewModelError != null) {
       if (eventFeedHasContent) {
         return ExploreScreenBodyState._(
@@ -1293,6 +1324,11 @@ class ExploreScreenBodyState {
         kind: ExploreScreenBodyKind.error,
         error: viewModelError,
         retryTarget: ExploreScreenRetryTarget.explore,
+      );
+    }
+    if (viewModelLoading) {
+      return const ExploreScreenBodyState._(
+        kind: ExploreScreenBodyKind.loading,
       );
     }
 
@@ -1308,16 +1344,16 @@ class ExploreScreenBodyState {
         viewModel: resolvedViewModel,
       );
     }
-    if (eventFeedLoading) {
-      return const ExploreScreenBodyState._(
-        kind: ExploreScreenBodyKind.loading,
-      );
-    }
     if (eventFeedError != null) {
       return ExploreScreenBodyState._(
         kind: ExploreScreenBodyKind.error,
         error: eventFeedError,
         retryTarget: ExploreScreenRetryTarget.eventFeed,
+      );
+    }
+    if (eventFeedLoading) {
+      return const ExploreScreenBodyState._(
+        kind: ExploreScreenBodyKind.loading,
       );
     }
     return ExploreScreenBodyState._(

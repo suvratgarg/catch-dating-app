@@ -19,6 +19,7 @@ _ActivityNotification _$ActivityNotificationFromJson(
   matchId: json['matchId'] as String?,
   eventId: json['eventId'] as String?,
   clubId: json['clubId'] as String?,
+  organizerId: json['organizerId'] as String?,
   postId: json['postId'] as String?,
   actorUid: json['actorUid'] as String?,
   actorName: json['actorName'] as String?,
@@ -36,6 +37,7 @@ Map<String, dynamic> _$ActivityNotificationToJson(
   'matchId': instance.matchId,
   'eventId': instance.eventId,
   'clubId': instance.clubId,
+  'organizerId': instance.organizerId,
   'postId': instance.postId,
   'actorUid': instance.actorUid,
   'actorName': instance.actorName,
@@ -50,4 +52,5 @@ const _$ActivityNotificationTypeEnumMap = {
   ActivityNotificationType.eventCancelled: 'eventCancelled',
   ActivityNotificationType.eventUpdated: 'eventUpdated',
   ActivityNotificationType.clubUpdate: 'clubUpdate',
+  ActivityNotificationType.organizerUpdate: 'organizerUpdate',
 };

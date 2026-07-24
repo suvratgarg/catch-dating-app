@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -77,31 +78,31 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
         EventRecapMissingEvent() => CatchErrorState(
           title: context.l10n.swipesEventRecapScreenTitleEventNotFound,
           message: context.l10n.swipesEventRecapScreenMessageThisEventIsNo,
+          secondaryAction: const CatchErrorBackAction(),
         ),
         EventRecapReady ready => EventRecapReadyBody(
           state: ready,
           onToggleVibe: _toggleVibe,
+          onRetryRosterProfiles: _retryRosterProfiles,
           onOpenCatchesDeck: _openCatchesDeck,
         ),
       },
     );
   }
 
-  Map<String, PublicProfile> _watchRosterProfiles(
+  CatchAsyncState<Map<String, PublicProfile>> _watchRosterProfiles(
     EventRecapViewModel? viewModel,
   ) {
     final attendeeIds = viewModel?.attendeeIds ?? const <String>[];
-    if (attendeeIds.isEmpty) return const <String, PublicProfile>{};
+    if (attendeeIds.isEmpty) {
+      return const CatchAsyncState.data(<String, PublicProfile>{});
+    }
 
     // Resolve every roster profile in one batched fetch instead of a realtime
     // stream per grid tile.
-    return ref
-            .watch(
-              publicProfilesByIdsProvider(PublicProfilesQuery(attendeeIds)),
-            )
-            .asData
-            ?.value ??
-        const <String, PublicProfile>{};
+    return _catchAsyncState(
+      ref.watch(publicProfilesByIdsProvider(PublicProfilesQuery(attendeeIds))),
+    );
   }
 
   void _retry(EventRecapRetryIntent intent) {
@@ -119,6 +120,12 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
     });
   }
 
+  void _retryRosterProfiles(Iterable<String> attendeeIds) {
+    ref.invalidate(
+      publicProfilesByIdsProvider(PublicProfilesQuery(attendeeIds)),
+    );
+  }
+
   void _openCatchesDeck(EventRecapOpenDeckIntent intent) {
     context.goNamed(
       Routes.swipeEventScreen.name,
@@ -133,11 +140,13 @@ class EventRecapReadyBody extends StatelessWidget {
     super.key,
     required this.state,
     required this.onToggleVibe,
+    required this.onRetryRosterProfiles,
     required this.onOpenCatchesDeck,
   });
 
   final EventRecapReady state;
   final ValueChanged<String> onToggleVibe;
+  final ValueChanged<Iterable<String>> onRetryRosterProfiles;
   final ValueChanged<EventRecapOpenDeckIntent> onOpenCatchesDeck;
 
   @override
@@ -178,10 +187,20 @@ class EventRecapReadyBody extends StatelessWidget {
                         .swipesEventRecapScreenMessageNoOtherCheckedIn,
                   )
                 else
-                  VibeGrid(
-                    rows: state.attendeeRows,
-                    onToggleVibe: onToggleVibe,
-                  ),
+                  switch (state.profileLookupStatus) {
+                    EventRecapProfileLookupStatus.loading =>
+                      const VibeGridSkeleton(),
+                    EventRecapProfileLookupStatus.error =>
+                      CatchInlineErrorState.fromError(
+                        state.profileLookupError!,
+                        context: AppErrorContext.profile,
+                        onRetry: () => onRetryRosterProfiles(state.attendeeIds),
+                      ),
+                    EventRecapProfileLookupStatus.ready => VibeGrid(
+                      rows: state.attendeeRows,
+                      onToggleVibe: onToggleVibe,
+                    ),
+                  },
                 gapH24,
                 CatchButton(
                   key: SwipeKeys.openCatchesDeckButton,
@@ -292,9 +311,9 @@ class RecapHeroSkeleton extends StatelessWidget {
         children: [
           CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
           gapH10,
-          CatchSkeleton.text(width: CatchSpacing.s16 * 2),
+          CatchSkeleton.text(width: CatchLayout.skeletonTextTertiaryWidth),
           gapH4,
-          CatchSkeleton.text(width: CatchSpacing.s16 * 3),
+          CatchSkeleton.text(width: CatchLayout.skeletonTextDescriptionWidth),
           gapH18,
           const Row(
             children: [
@@ -537,11 +556,7 @@ class VibeTile extends StatelessWidget {
 }
 
 CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
-  return value.when(
-    data: CatchAsyncState<T>.data,
-    loading: () => const CatchAsyncState.loading(),
-    error: (error, stackTrace) => CatchAsyncState<T>.error(error),
-  );
+  return catchAsyncStateFromAsyncValue(value);
 }
 
 class RecapProfilePhoto extends StatelessWidget {

@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/request_organizer_claim_payload.schema.json",
+  "title": "RequestOrganizerClaimCallablePayload",
+  "description": "Callable payload accepted by requestOrganizerClaim.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "requesterName", "requesterRole"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "requesterName": {"type": "string", "minLength": 1, "maxLength": 120},
+    "requesterRole": {
+      "type": "string",
+      "enum": ["owner", "founder", "manager", "marketer", "venueManager", "other"]
+    },
+    "businessEmail": {"type": ["string", "null"], "maxLength": 320},
+    "businessPhone": {"type": ["string", "null"], "maxLength": 32},
+    "proofUrls": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {"$ref": "../shared/profile_common.schema.json#/definitions/url"},
+      "uniqueItems": true
+    },
+    "message": {"type": ["string", "null"], "maxLength": 1000}
+  }
+}

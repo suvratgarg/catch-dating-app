@@ -1,14 +1,16 @@
 import {websiteCopy} from "@content/generated";
-import {type FormEvent, useCallback, useMemo, useState} from "react";
+import {type FormEvent, useCallback, useMemo, useRef, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
 import {claimFirebaseConfigured} from "../../firebaseConfig";
 import {hostListings} from "../organizers/data";
+import {organizerPolicyForListing} from "../organizers/organizerPolicy";
 import {
   isClaimSubmissionEnabledListing,
-  isPublicApiEnabled,
+  isPubliclyReadableListing,
 } from "../organizers/selectors";
 import type {HostListing} from "../organizers/types";
 import type {FormStatus} from "../../shared/forms/types";
+import {usePendingRequestRegistration} from "../../shared/pendingRequest";
 import {emptyClaimRouteState, type ClaimRouteState} from "./claimRouting";
 import {
   claimContactValidationMessage,
@@ -27,36 +29,42 @@ import {
 
 export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimRouteState) {
   const claimLookup = routeState.lookup;
-  const preselectedListing = routeState.listing;
+  const preselectedListing = routeState.listing &&
+    isPubliclyReadableListing(routeState.listing) ?
+    routeState.listing :
+    null;
   const claimUrlState = routeState.urlState;
   const urlRequestId = routeState.requestId;
-  const [step, setStep] = useState<ClaimFlowStep>(
+  const submissionInFlight = useRef<Promise<unknown> | null>(null);
+  const [step, setStepState] = useState<ClaimFlowStep>(
     claimUrlState ? "listing" : preselectedListing ? "role" : "listing"
   );
   const [listing, setListing] = useState<HostListing | null>(preselectedListing);
-  const [query, setQuery] = useState(preselectedListing?.name ?? "");
-  const [requesterName, setRequesterName] = useState("");
-  const [requesterRole, setRequesterRole] = useState<ClaimRole>("owner");
-  const [businessEmail, setBusinessEmail] = useState("");
-  const [businessPhone, setBusinessPhone] = useState("");
-  const [proofUrls, setProofUrls] = useState("");
-  const [message, setMessage] = useState("");
+  const [query, setQueryState] = useState(preselectedListing?.name ?? "");
+  const [requesterName, setRequesterNameState] = useState("");
+  const [requesterRole, setRequesterRoleState] = useState<ClaimRole>("owner");
+  const [businessEmail, setBusinessEmailState] = useState("");
+  const [businessPhone, setBusinessPhoneState] = useState("");
+  const [proofUrls, setProofUrlsState] = useState("");
+  const [message, setMessageState] = useState("");
   const [verificationMethod, setVerificationMethod] =
     useState<ClaimVerificationMethodId>("publicProof");
   const [requestId, setRequestId] = useState<string | null>(null);
   const [status, setStatus] = useState<FormStatus>({message: "", tone: ""});
 
   const claimRequestMutation = useClaimRequestMutation(listing?.id ?? null);
+  usePendingRequestRegistration(claimRequestMutation.isPending);
   const handleAuthUser = useCallback((nextUser: ReturnType<
     typeof useClaimAuthController
   >["user"]) => {
-    setRequesterName((current) => current || nextUser?.displayName || "");
-    setBusinessEmail((current) => current || nextUser?.email || "");
+    if (submissionInFlight.current) return;
+    setRequesterNameState((current) => current || nextUser?.displayName || "");
+    setBusinessEmailState((current) => current || nextUser?.email || "");
   }, []);
   const {
     authReady,
-    handleSignIn,
-    handleSignOut,
+    handleSignIn: handleAuthSignIn,
+    handleSignOut: handleAuthSignOut,
     isSigningIn,
     user,
   } = useClaimAuthController({
@@ -96,20 +104,78 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
       proofUrls.trim().length > 0);
 
   function selectListing(nextListing: HostListing) {
+    if (submissionInFlight.current) return;
     setListing(nextListing);
-    setQuery(nextListing.name);
+    setQueryState(nextListing.name);
+  }
+
+  function setQuery(nextQuery: string) {
+    if (submissionInFlight.current) return;
+    setQueryState(nextQuery);
+  }
+
+  function setRequesterName(nextRequesterName: string) {
+    if (submissionInFlight.current) return;
+    setRequesterNameState(nextRequesterName);
+  }
+
+  function setRequesterRole(nextRequesterRole: ClaimRole) {
+    if (submissionInFlight.current) return;
+    setRequesterRoleState(nextRequesterRole);
+  }
+
+  function setBusinessEmail(nextBusinessEmail: string) {
+    if (submissionInFlight.current) return;
+    setBusinessEmailState(nextBusinessEmail);
+  }
+
+  function setBusinessPhone(nextBusinessPhone: string) {
+    if (submissionInFlight.current) return;
+    setBusinessPhoneState(nextBusinessPhone);
+  }
+
+  function setProofUrls(nextProofUrls: string) {
+    if (submissionInFlight.current) return;
+    setProofUrlsState(nextProofUrls);
+  }
+
+  function setMessage(nextMessage: string) {
+    if (submissionInFlight.current) return;
+    setMessageState(nextMessage);
+  }
+
+  function setVerificationMethodSafely(nextMethod: ClaimVerificationMethodId) {
+    if (submissionInFlight.current) return;
+    setVerificationMethod(nextMethod);
+  }
+
+  function setStep(nextStep: ClaimFlowStep) {
+    if (submissionInFlight.current) return;
+    setStepState(nextStep);
+  }
+
+  async function handleSignIn() {
+    if (submissionInFlight.current) return;
+    await handleAuthSignIn();
+  }
+
+  async function handleSignOut() {
+    if (submissionInFlight.current) return;
+    await handleAuthSignOut();
   }
 
   async function handleClaimSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submissionInFlight.current) return;
     if (!listing) {
       setStatus({message: websiteCopy["useclaimflowcontroller_0102"], tone: "is-error"});
-      setStep("listing");
+      setStepState("listing");
       return;
     }
-    if (!isPublicApiEnabled(listing)) {
+    const policy = organizerPolicyForListing(listing);
+    if (!policy.canRequestClaim) {
       setStatus({
-        message: listing.publicApi.reason,
+        message: policy.claimRequestReason,
         tone: "is-error",
       });
       return;
@@ -125,7 +191,7 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
     });
     if (validationMessage) {
       setStatus({message: validationMessage, tone: "is-error"});
-      setStep("role");
+      setStepState("role");
       return;
     }
     if (!claimFirebaseConfigured) {
@@ -154,22 +220,24 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
       verification_method: verificationMethod,
     });
 
+    const request = claimRequestMutation.mutateAsync({
+      organizerId: listing.id,
+      requesterName: requesterName.trim(),
+      requesterRole,
+      businessEmail: businessEmail.trim() || null,
+      businessPhone: businessPhone.trim() || null,
+      proofUrls: parsedProofUrls,
+      message: reviewMessage || null,
+    });
+    submissionInFlight.current = request;
     try {
-      const response = await claimRequestMutation.mutateAsync({
-        clubId: listing.id,
-        requesterName: requesterName.trim(),
-        requesterRole,
-        businessEmail: businessEmail.trim() || null,
-        businessPhone: businessPhone.trim() || null,
-        proofUrls: parsedProofUrls,
-        message: reviewMessage || null,
-      });
+      const response = await request;
       setRequestId(response.requestId);
       setStatus({
         message: websiteCopy["useclaimflowcontroller_0103"],
         tone: "is-success",
       });
-      setStep("submitted");
+      setStepState("submitted");
       trackMarketingEvent("claim_flow_submitted", {
         club_id: listing.id,
         claim_role: requesterRole,
@@ -181,6 +249,10 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
       trackMarketingEvent("claim_flow_submit_error", {
         club_id: listing.id,
       });
+    } finally {
+      if (submissionInFlight.current === request) {
+        submissionInFlight.current = null;
+      }
     }
   }
 
@@ -198,6 +270,7 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
     handleSignOut,
     isSigningIn,
     isSubmitting: claimRequestMutation.isPending,
+    claimRuntimeAvailable: claimFirebaseConfigured,
     listing,
     message,
     proofUrls,
@@ -216,7 +289,7 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
     setRequesterName,
     setRequesterRole,
     setStep,
-    setVerificationMethod,
+    setVerificationMethod: setVerificationMethodSafely,
     status,
     step,
     user,

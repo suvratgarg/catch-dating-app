@@ -36,6 +36,7 @@ class ExploreFilterRail extends StatelessWidget {
     this.onClearFilters,
     this.onOpenFilters,
     this.backgroundColor,
+    this.showJoinedOnly = true,
   });
 
   final Color? backgroundColor;
@@ -51,6 +52,7 @@ class ExploreFilterRail extends StatelessWidget {
   final ValueChanged<String>? onToggleArea;
   final VoidCallback? onClearFilters;
   final VoidCallback? onOpenFilters;
+  final bool showJoinedOnly;
 
   static List<CatchOption<ExploreTimeFilter>> _timeOptions(
     ExploreDateStripState state,
@@ -121,7 +123,7 @@ class ExploreFilterRail extends StatelessWidget {
         ),
       );
     }
-    if (filters.joinedOnly) {
+    if (showJoinedOnly && filters.joinedOnly) {
       chips.add(
         CatchChip.removable(
           key: const ValueKey('explore-applied-joined'),
@@ -185,6 +187,7 @@ class ExploreFilterRail extends StatelessWidget {
         onToggleActivityTag: onToggleActivityTag,
         onToggleArea: onToggleArea,
         onClearFilters: onClearFilters,
+        showJoinedOnly: showJoinedOnly,
       ),
     );
   }
@@ -201,6 +204,7 @@ class ExploreFilterSheet extends StatelessWidget {
     this.onToggleActivityTag,
     this.onToggleArea,
     this.onClearFilters,
+    this.showJoinedOnly = true,
   });
 
   final ExploreFilterSelection filters;
@@ -211,6 +215,7 @@ class ExploreFilterSheet extends StatelessWidget {
   final ValueChanged<String>? onToggleActivityTag;
   final ValueChanged<String>? onToggleArea;
   final VoidCallback? onClearFilters;
+  final bool showJoinedOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -268,6 +273,9 @@ class ExploreFilterSheet extends StatelessWidget {
                 children: [
                   for (final option in sheetState.distanceOptions)
                     CatchChip.selectable(
+                      contract: CatchContractConstraints
+                          .mobileFormStateExploreDistanceFilter,
+                      contractValue: option.value.name,
                       label: option.label,
                       selected: filters.distanceFilter == option.value,
                       enabled: onDistanceFilterSelected != null,
@@ -286,14 +294,20 @@ class ExploreFilterSheet extends StatelessWidget {
                 spacing: CatchSpacing.s2,
                 runSpacing: CatchSpacing.s2,
                 children: [
+                  if (showJoinedOnly)
+                    CatchChip.selectable(
+                      key: const ValueKey('explore-filter-joined'),
+                      contract: CatchContractConstraints
+                          .mobileFormStateExploreJoinedOnly,
+                      label:
+                          context.l10n.exploreExploreFilterRailLabelJoinedClubs,
+                      selected: filters.joinedOnly,
+                      enabled: onToggleJoinedOnly != null,
+                      onChanged: (_) => onToggleJoinedOnly?.call(),
+                    ),
                   CatchChip.selectable(
-                    label:
-                        context.l10n.exploreExploreFilterRailLabelJoinedClubs,
-                    selected: filters.joinedOnly,
-                    enabled: onToggleJoinedOnly != null,
-                    onChanged: (_) => onToggleJoinedOnly?.call(),
-                  ),
-                  CatchChip.selectable(
+                    contract: CatchContractConstraints
+                        .mobileFormStateExploreHighRatedOnly,
                     label: context.l10n.exploreExploreFilterRailLabelRated45,
                     selected: filters.highRatedOnly,
                     enabled: onToggleHighRatedOnly != null,
@@ -313,6 +327,9 @@ class ExploreFilterSheet extends StatelessWidget {
                 children: [
                   for (final kind in primaryBrowseActivityKinds)
                     CatchChip.selectable(
+                      contract: CatchContractConstraints
+                          .mobileFormStateExploreActivityTag,
+                      contractValue: kind.name,
                       label: kind.label,
                       selected: _activityFilterActive(
                         filters.activityTag,
@@ -336,6 +353,9 @@ class ExploreFilterSheet extends StatelessWidget {
                   children: [
                     for (final area in sheetState.areaOptions)
                       CatchChip.selectable(
+                        contract:
+                            CatchContractConstraints.mobileFormStateExploreArea,
+                        contractValue: area,
                         label: area,
                         selected: exploreFilterValuesMatch(filters.area, area),
                         enabled: onToggleArea != null,

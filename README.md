@@ -32,11 +32,11 @@ Firebase defaults to the development project. Every deployment or remote log com
 | Surface | Source | Typical local command |
 |---|---|---|
 | Flutter consumer app | `lib/` | `./tool/flutter_with_env.sh dev run` |
-| Flutter host app | `lib/host/` | `./tool/flutter_with_env.sh dev run --target lib/host/main_host.dart` |
+| Flutter host app | `lib/hosts/` + `lib/main_host.dart` | `./tool/flutter_with_env.sh dev run --target lib/main_host.dart` |
 | Marketing website | `website/` | `npm run web:marketing:dev` |
 | Admin console | `admin/` | `npm run web:admin:dev` |
 | Cloud Functions | `functions/` | `npm --prefix functions run build` |
-| Widgetbook | `widgetbook/` | `flutter run -d chrome -t widgetbook/main.dart` |
+| Widgetbook | `widgetbook/` | `cd widgetbook && flutter run -d chrome` |
 
 ## Core checks
 
@@ -50,6 +50,8 @@ node tool/agent/check_agent_readiness.mjs
 ```
 
 Use `node tool/run.mjs list` to discover governed checks. Data-contract changes must also run `./tool/check_data_contract.sh`.
+Use `node tool/run.mjs impacted --check` to derive and run the checks owned by
+the changed root relationships; unmatched changed paths fail closed.
 
 ## Repository housekeeping
 

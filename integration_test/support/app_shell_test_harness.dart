@@ -1,26 +1,30 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/app.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/clubs/data/club_draft_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_draft.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
-import 'package:catch_dating_app/core/data/cursor_page.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
+import 'package:catch_dating_app/core/data/cursor_page.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show UpdateUserProfilePatch;
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
+import 'package:catch_dating_app/events/data/event_check_in_location_service.dart';
 import 'package:catch_dating_app/events/data/event_discovery_repository.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -29,15 +33,14 @@ import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
-import 'package:catch_dating_app/events/data/event_check_in_location_service.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
@@ -51,13 +54,11 @@ import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/data/profile_location_initializer.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
-    show UpdateUserProfilePatch;
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' show User;
 import 'package:flutter/widgets.dart';
@@ -69,7 +70,6 @@ import '../../test/clubs/clubs_test_helpers.dart' as club_helpers;
 import '../../test/events/events_test_helpers.dart' as event_helpers;
 import '../../test/onboarding/onboarding_test_helpers.dart'
     as onboarding_helpers;
-import '../../test/test_pump_helpers.dart';
 
 const testShellCity = CityData(
   name: 'mumbai',
@@ -90,6 +90,7 @@ Future<void> pumpCatchAppShell(
 
   await tester.pumpWidget(
     ProviderScope(
+      key: UniqueKey(),
       overrides: [
         initialAppLocationProvider.overrideWithValue(initialRoute),
         ...overrides.cast(),
@@ -97,7 +98,7 @@ Future<void> pumpCatchAppShell(
       child: const MyApp(),
     ),
   );
-  await pumpFeatureUi(tester);
+  await pumpAppShellFrames(tester);
 }
 
 /// Route transitions in app-shell integration tests should use this named
@@ -105,6 +106,17 @@ Future<void> pumpCatchAppShell(
 Future<void> pumpRoute(WidgetTester tester) => pumpAppShellFrames(tester);
 
 Future<void> pumpAppShellFrames(WidgetTester tester, {int frames = 8}) async {
+  for (var i = 0; i < frames; i += 1) {
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+}
+
+/// Advances fake clocks and provider microtasks without draining the process
+/// event queue, which can remain live for the lifetime of the mounted app.
+Future<void> flushAppShellCallbacks(
+  WidgetTester tester, {
+  int frames = 4,
+}) async {
   for (var i = 0; i < frames; i += 1) {
     await tester.pump(const Duration(milliseconds: 100));
   }
@@ -127,20 +139,15 @@ Future<void> pumpMutationUi(WidgetTester tester) async {
   await tester.pump();
 }
 
-Future<void> pumpSheet(WidgetTester tester) => pumpFeatureUi(tester);
-
-Future<void> flushRepositoryCallbacks(
-  WidgetTester tester, {
-  int times = 20,
-}) async {
-  await flushTestEventQueue(times: times);
-  await tester.pump();
-}
+Future<void> pumpSheet(WidgetTester tester) => pumpAppShellFrames(tester);
 
 Future<void> openClubDetail(WidgetTester tester, Club club) async {
   if (await _tapVisibleClubCard(tester, club)) return;
 
-  final context = tester.element(find.byType(AppShell).first);
+  final shell = find.byType(AppShell);
+  final context = tester.element(
+    shell.evaluate().isNotEmpty ? shell.first : find.byType(Navigator).first,
+  );
   unawaited(
     GoRouter.of(context).pushNamed(
       Routes.clubDetailScreen.name,
@@ -157,7 +164,10 @@ Future<void> openEventDetail(
   required Event event,
   bool settle = true,
 }) async {
-  final context = tester.element(find.byType(AppShell).first);
+  final shell = find.byType(AppShell);
+  final context = tester.element(
+    shell.evaluate().isNotEmpty ? shell.first : find.byType(Navigator).first,
+  );
   unawaited(
     GoRouter.of(context).pushNamed(
       Routes.eventDetailScreen.name,
@@ -173,7 +183,10 @@ Future<void> openEventDetail(
 }
 
 Future<void> openSwipeDeck(WidgetTester tester, Event event) async {
-  final context = tester.element(find.byType(AppShell).first);
+  final shell = find.byType(AppShell);
+  final context = tester.element(
+    shell.evaluate().isNotEmpty ? shell.first : find.byType(Navigator).first,
+  );
   unawaited(
     GoRouter.of(context).pushNamed(
       Routes.swipeEventScreen.name,
@@ -184,15 +197,16 @@ Future<void> openSwipeDeck(WidgetTester tester, Event event) async {
 }
 
 Future<void> openAppTab(WidgetTester tester, String label) async {
-  final destinationLabel = switch (label) {
-    'Clubs' => 'Explore',
-    _ => label,
-  };
   final destination = find.descendant(
     of: find.byKey(AppShellKeys.navigationBar),
-    matching: find.text(destinationLabel),
+    matching: find.bySemanticsLabel(label),
   );
-  await tester.tap(destination.last);
+  expect(
+    destination,
+    findsOneWidget,
+    reason: 'The app-shell navigation must expose $label.',
+  );
+  await tester.tap(destination);
   await pumpRoute(tester);
 }
 
@@ -214,7 +228,6 @@ List<Object> appShellTestOverrides({
   Map<String, List<Review>> clubReviews = const {},
   Map<String, List<Review>> eventReviews = const {},
   List<Review> reviewsByUser = const [],
-  bool canCreateClub = false,
   List<PublicProfile> swipeCandidates = const [],
   List<Match> matches = const [],
   List<PublicProfile> publicProfiles = const [],
@@ -299,9 +312,7 @@ List<Object> appShellTestOverrides({
             shouldCollect: false,
           ),
     ),
-    errorLoggerProvider.overrideWithValue(
-      errorLogger ?? ErrorLogger(shouldReportErrors: false),
-    ),
+    errorLoggerProvider.overrideWithValue(errorLogger ?? ErrorLogger.silent()),
     appConnectivityProvider.overrideWith(
       (ref) => Stream.value(const [ConnectivityResult.wifi]),
     ),
@@ -414,6 +425,10 @@ List<Object> appShellTestOverrides({
       ),
     ),
     exploreSourceClubsProvider.overrideWithValue(AsyncData<List<Club>>(clubs)),
+    exploreFeedViewModelProvider.overrideWithValue(
+      const AsyncData(ExploreFeedViewModel(items: [])),
+    ),
+    exploreRecommendationsProvider.overrideWithValue(const AsyncData([])),
     filteredExploreClubsProvider.overrideWithValue(
       AsyncData<List<Club>>(clubs),
     ),
@@ -579,8 +594,7 @@ class FakeShellEventDiscoveryRepository implements EventDiscoveryRepository {
 }
 
 class RecordingFcmService extends FcmService {
-  RecordingFcmService()
-    : super(FakeFirebaseFirestore(), ErrorLogger(shouldReportErrors: false));
+  RecordingFcmService() : super(FakeFirebaseFirestore(), ErrorLogger.silent());
 
   final initializedUids = <String>[];
 

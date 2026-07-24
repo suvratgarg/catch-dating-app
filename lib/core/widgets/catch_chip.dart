@@ -1,9 +1,13 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
+
+export 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart'
+    show CatchContractConstraints, CatchContractFieldConstraints;
 
 /// Visual emphasis for an activity chip.
 enum CatchChipEmphasis { soft, solid }
@@ -42,6 +46,9 @@ class CatchChip extends StatefulWidget {
     required String label,
     required bool selected,
     required ValueChanged<bool> onChanged,
+    CatchContractFieldConstraints? contract,
+    String? contractValue,
+    String? contractExemption,
     bool enabled = true,
     Widget? leading,
     Color? accent,
@@ -53,6 +60,9 @@ class CatchChip extends StatefulWidget {
          leading: leading,
          selected: selected,
          onChanged: onChanged,
+         contract: contract,
+         contractValue: contractValue,
+         contractExemption: contractExemption,
          enabled: enabled,
          accent: accent,
          semanticsLabel: semanticsLabel,
@@ -114,6 +124,9 @@ class CatchChip extends StatefulWidget {
     this._onTap,
     this._onRemove,
     this._semanticsLabel,
+    this._contract,
+    this._contractValue,
+    this._contractExemption,
   });
 
   final _CatchChipVariant _variant;
@@ -130,6 +143,9 @@ class CatchChip extends StatefulWidget {
   final VoidCallback? _onTap;
   final VoidCallback? _onRemove;
   final String? _semanticsLabel;
+  final CatchContractFieldConstraints? _contract;
+  final String? _contractValue;
+  final String? _contractExemption;
 
   /// Visible label for tag, selectable, and removable chips, or the optional
   /// label override for an activity chip.
@@ -151,6 +167,7 @@ class CatchChip extends StatefulWidget {
   VoidCallback? get onTap => _onTap;
   VoidCallback? get onRemove => _onRemove;
   String? get semanticsLabel => _semanticsLabel;
+  String? get contractExemption => _contractExemption;
 
   @override
   State<CatchChip> createState() => _CatchChipState();
@@ -201,6 +218,15 @@ class _CatchChipState extends State<CatchChip> {
 
   @override
   Widget build(BuildContext context) {
+    final allowedContractValues =
+        widget._contract?.enumValues ?? widget._contract?.itemEnumValues;
+    assert(
+      widget._contract == null ||
+          widget._contractValue == null ||
+          allowedContractValues == null ||
+          allowedContractValues.contains(widget._contractValue),
+      'CatchChip.selectable value must be allowed by its contract.',
+    );
     final t = CatchTokens.of(context);
     final activityKind = widget._activityKind;
     final activity = activityKind == null

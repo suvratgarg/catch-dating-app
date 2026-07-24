@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -67,11 +68,11 @@ class ReviewsHistoryScreen extends ConsumerWidget {
       onRetryReviews = () => ref.invalidate(watchReviewsByUserProvider(uid));
     }
 
-    return Scaffold(
-      appBar: CatchScreenTopBar(
-        context: context,
+    return CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.reviewsReviewsHistoryScreenTitleReviewHistory,
-        border: true,
+        leadingType: CatchTopBarLeading.back,
+        divider: scrolledUnder,
       ),
       body: ReviewsHistoryBody(
         state: state,

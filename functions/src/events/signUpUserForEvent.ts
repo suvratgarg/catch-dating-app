@@ -198,6 +198,8 @@ export async function signUpUserForEvent(
       uid: userId,
       eventId,
       clubId: event.clubId,
+
+      organizerId: event.organizerId ?? event.clubId,
       startTimeMillis: event.startTime.toMillis(),
       endTimeMillis: event.endTime.toMillis(),
     });
@@ -238,6 +240,8 @@ export async function signUpUserForEvent(
         exists: participationSnap.exists,
         eventId,
         clubId: event.clubId,
+
+        organizerId: event.organizerId ?? event.clubId,
         uid: userId,
         status: "signedUp",
         genderAtSignup: gender,
@@ -261,6 +265,8 @@ export async function signUpUserForEvent(
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       eventId,
       clubId: event.clubId,
+
+      organizerId: event.organizerId ?? event.clubId,
     });
   });
 }

@@ -23,9 +23,13 @@ const hostListingsPath = path.resolve(
 const metaContentPath = path.resolve(
   args.metaContent ?? path.join(websiteRoot, "src", "content", "meta.json")
 );
+const legalContentPath = path.join(websiteRoot, "src", "content", "legal.json");
 const baseUrl = String(args.baseUrl ?? "https://catchdates.com").replace(/\/+$/, "");
 const hostListings = JSON.parse(fs.readFileSync(hostListingsPath, "utf8"));
 const websiteMeta = readWebsiteMeta(metaContentPath);
+const legalContent = JSON.parse(fs.readFileSync(legalContentPath, "utf8"));
+const publicListings = hostListings.filter(isPubliclyReadableListing);
+const publicEvents = buildPublicEventRecords(publicListings);
 
 const rootHtmlPath = path.join(distRoot, "index.html");
 const rootHtml = fs.readFileSync(rootHtmlPath, "utf8");
@@ -35,10 +39,22 @@ writeRoute("/", staticRouteMeta(websiteMeta, "home", baseUrl));
 writeRoute("/host/", staticRouteMeta(websiteMeta, "host", baseUrl));
 writeRoute("/organizers/", staticRouteMeta(websiteMeta, "organizers", baseUrl));
 writeRoute("/claim/", staticRouteMeta(websiteMeta, "claim", baseUrl));
+writeRoute("/privacy/", {
+  ...staticRouteMeta(websiteMeta, "privacy", baseUrl),
+  bodyHtml: buildLegalStaticBody(legalContent.pages.privacy, legalContent.effectiveDate),
+});
+writeRoute("/terms/", {
+  ...staticRouteMeta(websiteMeta, "terms", baseUrl),
+  bodyHtml: buildLegalStaticBody(legalContent.pages.terms, legalContent.effectiveDate),
+});
+writeRoute("/help/", {
+  ...staticRouteMeta(websiteMeta, "help", baseUrl),
+  bodyHtml: buildLegalStaticBody(legalContent.pages.help, legalContent.effectiveDate),
+});
 writeRoute("/404/", staticRouteMeta(websiteMeta, "not_found", baseUrl));
 writeStaticHtml("404.html", staticRouteMeta(websiteMeta, "not_found", baseUrl));
 
-for (const listing of hostListings) {
+for (const listing of publicListings) {
   const listingMeta = {
     title: formatContentTemplate(websiteMeta.listing.titleTemplate, {
       name: listing.name,
@@ -62,6 +78,33 @@ for (const listing of hostListings) {
       robots: "noindex, follow",
     });
   }
+}
+
+for (const event of publicEvents) {
+  writeRoute(event.path, {
+    title: formatContentTemplate(websiteMeta.event.titleTemplate, {
+      title: event.title,
+      city: event.listing.city,
+    }),
+    description: event.summary || event.listing.description,
+    canonical: `${baseUrl}${event.path}`,
+    twitterDescription: event.supply === "external"
+      ? formatContentTemplate(websiteMeta.event.externalTwitterTemplate, {
+        title: event.title,
+        source: event.sourceLabel,
+      })
+      : formatContentTemplate(websiteMeta.event.catchTwitterTemplate, {
+        title: event.title,
+        organizer: event.listing.name,
+      }),
+    robots: event.listing.indexing,
+    lastModified: event.listing.lastVerifiedAt,
+    bodyHtml: buildEventStaticBody(event, websiteMeta.event.staticLabels),
+    structuredData: buildEventStructuredData(
+      event,
+      websiteMeta.event.staticLabels
+    ),
+  });
 }
 
 writeSitemap(sitemapEntries);
@@ -144,6 +187,10 @@ function buildListingStaticBody(listing, labels) {
     .map((format) => `<li>${escapeHtml(String(format))}</li>`)
     .join("");
   const facts = (listing.facts ?? [])
+    .filter((fact) =>
+      canReadPublicReviews(listing) ||
+      !/(?:rating|review)/iu.test(`${fact.label ?? ""} ${fact.value ?? ""}`)
+    )
     .map((fact) =>
       `<div><dt>${escapeHtml(String(fact.label))}</dt>` +
         `<dd>${escapeHtml(String(fact.value))}</dd></div>`
@@ -167,6 +214,61 @@ function buildListingStaticBody(listing, labels) {
     facts ? `<section><h2>${escapeHtml(labels.factsHeading)}</h2><dl>${facts}</dl></section>` : "",
     sources ? `<section><h2>${escapeHtml(labels.sourcesHeading)}</h2><ul>${sources}</ul></section>` : "",
     `<p>${escapeHtml(labels.lastVerifiedPrefix)} ${escapeHtml(String(listing.lastVerifiedAt ?? labels.notRecorded))}.</p>`,
+    "</main>",
+  ].join("");
+}
+
+function buildEventStaticBody(event, labels) {
+  const source = event.sourceHref && safePublicUrl(event.sourceHref)
+    ? `<a href="${escapeHtml(event.sourceHref)}" rel="noopener noreferrer">` +
+      `${escapeHtml(event.sourceLabel)}</a>`
+    : escapeHtml(event.sourceLabel);
+  const reviews = event.eventReviews
+    .map((review) => (
+      `<article><p>${escapeHtml(String(review.reviewerName))} · ` +
+      `${escapeHtml(String(review.rating))}/5</p>` +
+      `<p>${escapeHtml(String(review.comment ?? ""))}</p></article>`
+    ))
+    .join("");
+  return [
+    '<main data-static-event-detail="true">',
+    `<header><p>${escapeHtml(labels.eventEyebrow)}</p>`,
+    `<h1>${escapeHtml(event.title)}</h1>`,
+    `<p>${escapeHtml(event.summary)}</p>`,
+    `<p>${escapeHtml(labels.hostedByPrefix)} ` +
+      `<a href="${escapeHtml(event.listing.path)}">${escapeHtml(event.listing.name)}</a></p></header>`,
+    `<section><h2>${escapeHtml(labels.scheduleHeading)}</h2><dl>`,
+    `<div><dt>${escapeHtml(labels.locationLabel)}</dt><dd>${escapeHtml(event.location)}</dd></div>`,
+    `<div><dt>${escapeHtml(labels.priceLabel)}</dt><dd>${escapeHtml(event.priceLabel)}</dd></div>`,
+    `<div><dt>${escapeHtml(labels.sourceLabel)}</dt><dd>${source}</dd></div>`,
+    "</dl></section>",
+    reviews
+      ? `<section><h2>${escapeHtml(labels.reviewsHeading)}</h2>${reviews}</section>`
+      : "",
+    `<p>${escapeHtml(labels.lastReviewedPrefix)} ` +
+      `${escapeHtml(String(event.listing.lastVerifiedAt))}.</p>`,
+    "</main>",
+  ].join("");
+}
+
+function buildLegalStaticBody(page, effectiveDate) {
+  const sections = page.sections.map((section) => {
+    const paragraphs = section.paragraphs
+      .map((paragraph) => `<p>${escapeHtml(String(paragraph))}</p>`)
+      .join("");
+    const bullets = (section.bullets ?? [])
+      .map((bullet) => `<li>${escapeHtml(String(bullet))}</li>`)
+      .join("");
+    return `<section><h2>${escapeHtml(String(section.heading))}</h2>` +
+      `${paragraphs}${bullets ? `<ul>${bullets}</ul>` : ""}</section>`;
+  }).join("");
+  return [
+    `<main data-static-legal-page="${escapeHtml(String(page.path))}">`,
+    `<header><p>${escapeHtml(String(page.eyebrow))}</p>`,
+    `<h1>${escapeHtml(String(page.title))}</h1>`,
+    `<p>${escapeHtml(String(page.summary))}</p>`,
+    `<p>Effective ${escapeHtml(String(effectiveDate))}</p></header>`,
+    sections,
     "</main>",
   ].join("");
 }
@@ -220,6 +322,142 @@ function buildListingStructuredData(listing, labels) {
   };
 }
 
+function buildEventStructuredData(event, labels) {
+  const canonical = `${baseUrl}${event.path}`;
+  const eventNode = {
+    "@type": "Event",
+    "@id": `${canonical}#event`,
+    name: event.title,
+    description: event.summary,
+    url: canonical,
+    startDate: event.startTime,
+    endDate: event.endTime ?? undefined,
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    eventStatus: event.isUpcoming
+      ? "https://schema.org/EventScheduled"
+      : "https://schema.org/EventCompleted",
+    location: {
+      "@type": "Place",
+      name: event.location,
+    },
+    organizer: {
+      "@type": "Organization",
+      name: event.listing.name,
+      url: `${baseUrl}${event.listing.path}`,
+    },
+  };
+  if (event.sourceHref && safePublicUrl(event.sourceHref)) {
+    eventNode.sameAs = event.sourceHref;
+  }
+  if (event.eventReviews.length) {
+    eventNode.review = event.eventReviews.map((review) => ({
+      "@type": "Review",
+      author: {
+        "@type": "Person",
+        name: review.reviewerName,
+      },
+      datePublished: review.createdAt,
+      reviewBody: review.comment,
+      reviewRating: {
+        "@type": "Rating",
+        ratingValue: review.rating,
+        bestRating: 5,
+      },
+    }));
+  }
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      eventNode,
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: labels.homeBreadcrumb,
+            item: `${baseUrl}/`,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: labels.organizersBreadcrumb,
+            item: `${baseUrl}/organizers/`,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: event.listing.name,
+            item: `${baseUrl}${event.listing.path}`,
+          },
+          {
+            "@type": "ListItem",
+            position: 4,
+            name: event.title,
+            item: canonical,
+          },
+        ],
+      },
+    ],
+  };
+}
+
+function buildPublicEventRecords(listings) {
+  const candidates = listings.flatMap((listing) => [
+    ...(listing.catchEvents ?? []).map((event) => ({
+      endTime: event.endTime,
+      eventId: event.id,
+      eventReviews: eventReviewsForListing(listing, event.id),
+      isUpcoming: event.timeline === "upcoming",
+      listing,
+      location: event.location,
+      path: eventPath(event.id),
+      priceLabel: event.priceLabel,
+      sourceHref: null,
+      sourceLabel: "Catch",
+      startTime: event.startTime,
+      summary: event.summary || listing.description,
+      supply: "catchNative",
+      title: event.title,
+    })),
+    ...(listing.externalEvents ?? []).map((event) => ({
+      endTime: event.endTime,
+      eventId: event.id,
+      eventReviews: eventReviewsForListing(listing, event.id),
+      isUpcoming: eventIsUpcoming(event),
+      listing,
+      location: event.location,
+      path: eventPath(event.id),
+      priceLabel: event.priceLabel,
+      sourceHref: event.sourceHref,
+      sourceLabel: event.sourceLabel,
+      startTime: event.startTime,
+      summary: event.summary || listing.description,
+      supply: "external",
+      title: event.title,
+    })),
+  ]);
+  const counts = new Map();
+  for (const candidate of candidates) {
+    counts.set(candidate.eventId, (counts.get(candidate.eventId) ?? 0) + 1);
+  }
+  return candidates.filter((candidate) => counts.get(candidate.eventId) === 1);
+}
+
+function eventReviewsForListing(listing, eventId) {
+  if (!canReadPublicReviews(listing)) return [];
+  return (listing.reviews ?? []).filter((review) => review.eventId === eventId);
+}
+
+function eventPath(eventId) {
+  return `/events/${encodeURIComponent(eventId)}/`;
+}
+
+function eventIsUpcoming(event) {
+  const timestamp = Date.parse(event.endTime ?? event.startTime);
+  return !Number.isFinite(timestamp) || timestamp >= Date.now();
+}
+
 function safePublicUrl(value) {
   if (typeof value !== "string") return false;
   try {
@@ -228,6 +466,19 @@ function safePublicUrl(value) {
   } catch {
     return false;
   }
+}
+
+function isPubliclyReadableListing(listing) {
+  if (!listing?.authority) return true;
+  return listing.authority.publishStatus === "published" &&
+    listing.authority.claimState !== "suppressed";
+}
+
+function canReadPublicReviews(listing) {
+  if (!isPubliclyReadableListing(listing)) return false;
+  if (!listing?.capabilities) return true;
+  return listing.capabilities.publicReviews?.targetState === "enabled" &&
+    listing.capabilities.publicReviews?.readState === "enabled";
 }
 
 function escapeHtml(value) {

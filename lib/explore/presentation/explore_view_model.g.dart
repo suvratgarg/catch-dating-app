@@ -463,7 +463,7 @@ final class FilteredExploreClubsProvider
 }
 
 String _$filteredExploreClubsHash() =>
-    r'ce30663f2f1854b1983e5647a29cd78454d9536f';
+    r'b6504f122012bf040d43df60a48b1723f6fde5fd';
 
 /// **Pattern D: View-model provider**
 ///

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -16,6 +17,8 @@ class ClubBasicsStep extends StatelessWidget {
     required this.formKey,
     this.autovalidateMode = AutovalidateMode.disabled,
     required this.nameController,
+    this.selectedOrganizerType = OrganizerType.club,
+    this.onOrganizerTypeChanged,
     required this.selectedCity,
     required this.onCityChanged,
     required this.areaController,
@@ -33,6 +36,8 @@ class ClubBasicsStep extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final AutovalidateMode autovalidateMode;
   final TextEditingController nameController;
+  final OrganizerType selectedOrganizerType;
+  final ValueChanged<OrganizerType>? onOrganizerTypeChanged;
   final CityOption? selectedCity;
   final ValueChanged<CityOption?> onCityChanged;
   final TextEditingController areaController;
@@ -54,6 +59,7 @@ class ClubBasicsStep extends StatelessWidget {
       child: SingleChildScrollView(
         padding: CatchInsets.formStepBody,
         child: CatchSectionList(
+          emptyStateOmitted: true,
           gap: 0,
           children: [
             CatchSection.plain(
@@ -77,8 +83,29 @@ class ClubBasicsStep extends StatelessWidget {
             ),
             CatchSection.fieldRows(
               children: [
+                CatchField.choices<OrganizerType>(
+                  title: context.l10n.hostsOrganizerTypeLabel,
+                  contract: CatchContractConstraints
+                      .createClubCallablePayloadOrganizerType,
+                  contractValue: (value) => value.name,
+                  body: _organizerTypeLabel(context, selectedOrganizerType),
+                  icon: CatchIcons.groups3Outlined,
+                  values: OrganizerType.values,
+                  itemLabel: (type) => _organizerTypeLabel(context, type),
+                  selected: {selectedOrganizerType},
+                  enabled: detailsEnabled,
+                  onSelectionChanged: detailsEnabled
+                      ? (selection) {
+                          if (selection.isNotEmpty) {
+                            onOrganizerTypeChanged?.call(selection.single);
+                          }
+                        }
+                      : null,
+                ),
                 CatchField.input(
                   title: context.l10n.hostsClubBasicsStepTitleClubName,
+                  contract:
+                      CatchContractConstraints.createClubCallablePayloadName,
                   controller: nameController,
                   icon: CatchIcons.groupOutlined,
                   enabled: detailsEnabled,
@@ -105,6 +132,9 @@ class ClubBasicsStep extends StatelessWidget {
                       : null,
                   builder: (field) => CatchField.choices<CityOption>(
                     title: context.l10n.hostsClubBasicsStepTitleCity,
+                    contract: CatchContractConstraints
+                        .createClubCallablePayloadLocation,
+                    contractValue: (city) => city.effectiveMarketId,
                     body: selectedCity?.label,
                     icon: CatchIcons.locationCityOutlined,
                     values: defaultCityOptions
@@ -130,6 +160,8 @@ class ClubBasicsStep extends StatelessWidget {
                 ),
                 CatchField.input(
                   title: context.l10n.hostsClubBasicsStepTitleAreaNeighbourhood,
+                  contract:
+                      CatchContractConstraints.createClubCallablePayloadArea,
                   controller: areaController,
                   icon: CatchIcons.locationOnOutlined,
                   enabled: detailsEnabled,
@@ -155,3 +187,14 @@ class ClubBasicsStep extends StatelessWidget {
     );
   }
 }
+
+String _organizerTypeLabel(BuildContext context, OrganizerType type) =>
+    switch (type) {
+      OrganizerType.club => context.l10n.hostsOrganizerTypeClub,
+      OrganizerType.community => context.l10n.hostsOrganizerTypeCommunity,
+      OrganizerType.individual => context.l10n.hostsOrganizerTypeIndividual,
+      OrganizerType.eventProducer =>
+        context.l10n.hostsOrganizerTypeEventProducer,
+      OrganizerType.venue => context.l10n.hostsOrganizerTypeVenue,
+      OrganizerType.brand => context.l10n.hostsOrganizerTypeBrand,
+    };

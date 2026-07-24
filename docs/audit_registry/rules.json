@@ -95,6 +95,44 @@
         }
       ]
     },
+    "FLUTTER-TEST-MAINTAINABILITY-001": {
+      "title": "Keep Flutter test specs bounded while coverage remains honest evidence",
+      "status": "active",
+      "kind": "scar",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.5.5"
+      },
+      "applies_to": [
+        "test/**/*_test.dart",
+        "test/**/*_tests.dart",
+        "integration_test/**/*_test.dart",
+        "integration_test/**/*_tests.dart",
+        "tool/test/**",
+        ".github/workflows/flutter-ci.yml"
+      ],
+      "instruction": "Keep new and split Flutter test specs at or below 1,200 lines, reject growth in every reviewed oversized legacy spec, and use feature-level LCOV as visibility rather than an unsupported aggregate percentage threshold.",
+      "sunset_when": [
+        "A stronger structure-aware test-maintainability gate replaces line-based spec bounds without losing decrease-only legacy tracking"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "test:flutter-test-size",
+          "stage": "scanner-ratchet",
+          "docAnchor": "TESTS.md#coverage-and-test-maintainability",
+          "baseline": "tool/test/flutter_test_size_baseline.json"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/app_architecture.md#testing-expectations"
+        }
+      ]
+    },
     "EXHIBIT-FRESHNESS-001": {
       "title": "Keep architecture exhibits fresh against their tracker anchors",
       "status": "active",
@@ -167,9 +205,24 @@
           "docAnchor": "docs/agent_operating_model.md#done-criteria-for-this-harness"
         },
         {
+          "tool": "design:feature-coverage",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/design_parity/README.md#feature-contract-compiler"
+        },
+        {
           "tool": "git:audit-merge-drops",
           "stage": "scanner-gate",
           "docAnchor": "docs/agent_operating_model.md#git-preservation-and-reconciliation-contract"
+        },
+        {
+          "tool": "tool:runner",
+          "stage": "scanner-gate",
+          "docAnchor": "tool/README.md#tooling"
+        },
+        {
+          "tool": "meta:ci-tool-category-coverage",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/agent_operating_model.md#enforcement-integrity"
         }
       ]
     },
@@ -264,7 +317,7 @@
         "tool/web/check_react_architecture_boundaries.mjs",
         ".github/workflows/marketing-website.yml"
       ],
-      "instruction": "Before changing public marketing routes, generated organizer route families, SEO metadata, static postbuild output, robots/sitemap behavior, review states, route Storybook evidence, or route-owned URL state, update design/website/routes.json when the public contract changes and pass node tool/run.mjs check marketing:website-routes plus node tool/run.mjs check web:react-architecture-boundaries when React route boundaries are touched. The route gate validates runtime/static metadata and matching Storybook parameters.catchRoute declarations for Storybook-backed review states. Start component-first review only after the route contract is current.",
+      "instruction": "Before changing public marketing routes, generated organizer route families, SEO metadata, static postbuild output, robots/sitemap behavior, review states, route Storybook evidence, or route-owned URL state, update design/website/routes.json when the public contract changes and pass node tool/run.mjs check marketing:website-routes plus node tool/run.mjs check web:react-architecture-boundaries when React route boundaries are touched. The route gate validates runtime/static metadata, rejects deployable organizer listings outside live active-market cities, and validates matching Storybook parameters.catchRoute declarations for Storybook-backed review states. Start component-first review only after the route contract is current.",
       "sunset_when": [
         "A website component workbench enforces route-linked page/state coverage in CI",
         "Five consecutive marketing website route changes pass the route contract gate without follow-up fixes"
@@ -509,13 +562,23 @@
       "applies_to": [
         "contracts/**/*.schema.json",
         "tool/contracts/generate_schema_contracts.mjs",
+        "tool/contracts/generate_flutter_form_contract_inventory.mjs",
+        "docs/audit_registry/flutter_form_contract_inventory.json",
         "lib/core/schema_contracts/generated/field_constraints.g.dart",
+        "lib/core/schema_contracts/catch_contract_field_policy.dart",
         "lib/core/forms/**",
+        "lib/core/widgets/catch_field*.dart",
+        "lib/core/widgets/catch_chip*.dart",
+        "lib/core/widgets/catch_option_*.dart",
+        "lib/core/widgets/catch_range_slider.dart",
+        "lib/core/widgets/catch_toggle.dart",
+        "lib/**/presentation/**",
+        "test/core/forms/contract_alignment_test.dart",
+        "tool/contracts/generate_flutter_form_contract_inventory.test.mjs",
         "lib/user_profile/presentation/**",
-        "lib/hosts/presentation/**",
-        "test/core/forms/contract_alignment_test.dart"
+        "lib/hosts/presentation/**"
       ],
-      "instruction": "Editable consumer and host form rows that map to schema-owned fields must bind the generated CatchContractFieldConstraints entry instead of repeating length, required, pattern, enum, or numeric constraints as literals.",
+      "instruction": "Every editable canonical control and form-descriptor instance in the Consumer and Catch Host apps must bind generated CatchContractFieldConstraints instead of repeating length, required, pattern, collection, enum, format, or numeric constraints. Typed choices must declare their wire-value serializer, range controls must bind both endpoints, and genuinely non-editable disclosures must carry an explicit audited exemption.",
       "sunset_when": [
         "All schema-backed form factories are generated directly from schema-owned form metadata"
       ],
@@ -527,6 +590,11 @@
       "enforcement": [
         {
           "tool": "contracts:form-alignment",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/data_contracts.md#field-constraint-projection"
+        },
+        {
+          "tool": "contracts:flutter-form-inventory",
           "stage": "scanner-gate",
           "docAnchor": "docs/data_contracts.md#field-constraint-projection"
         }
@@ -588,6 +656,11 @@
           "tool": "contracts:migration-contracts",
           "stage": "scanner-gate",
           "docAnchor": "docs/audit_registry/rules.json"
+        },
+        {
+          "tool": "data:migrate-clubs-to-organizers",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/migrations/clubs_to_organizers.md#environment-run-order"
         }
       ]
     },
@@ -619,6 +692,11 @@
           "tool": "contracts:storage-contract",
           "stage": "scanner-gate",
           "docAnchor": "docs/audit_registry/rules.json"
+        },
+        {
+          "tool": "data:migrate-clubs-to-organizers",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/migrations/clubs_to_organizers.md#what-the-migration-copies"
         },
         {
           "stage": "manual",
@@ -861,7 +939,7 @@
       ]
     },
     "ASYNC-LOADING-PRESENTATION-001": {
-      "title": "Async loading states render credible data before blocking skeletons",
+      "title": "Async loading states render credible data before blocking skeletons and always recover",
       "status": "active",
       "kind": "contract",
       "introduced_in": {
@@ -873,7 +951,7 @@
         "lib/core/widgets/**",
         "test/**"
       ],
-      "instruction": "When credible initial or fallback data is available (route extra, cached value, optimistic snapshot), render it ahead of blocking loading skeletons. Loading states should use skeletons that resemble the eventual UI shape when that shape is known; use compact spinners or loading copy only for tiny inline metadata, unknown one-off work, or platform/plugin actions.",
+      "instruction": "When credible initial or fallback data is available (route extra, cached value, optimistic snapshot), render it ahead of blocking loading skeletons. Loading states should use skeletons that resemble the eventual UI shape when that shape is known; use compact spinners or loading copy only for tiny inline metadata, unknown one-off work, or platform/plugin actions. Initial provider loads must reach an actionable error state after the shared presentation deadline, and CatchAsyncValueView/CatchAsyncValueSliver call sites must supply onRetry that restarts the failing provider boundary.",
       "sunset_when": [
         "Widgetbook and captures include content-shaped loading states for every contracted screen"
       ],
@@ -884,8 +962,9 @@
       ],
       "enforcement": [
         {
-          "stage": "manual",
-          "docAnchor": "docs/audit_registry/rules.json"
+          "tool": "lint:catch-ui-plugin-smoke",
+          "stage": "analyzer-warning",
+          "docAnchor": "docs/app_architecture.md#async-state-boundary-taxonomy"
         }
       ]
     },
@@ -914,7 +993,7 @@
       "enforcement": [
         {
           "stage": "manual",
-          "docAnchor": "docs/audit_registry/rules.json"
+          "docAnchor": "docs/widget_catalog.md"
         }
       ]
     },
@@ -977,12 +1056,16 @@
         "analysis_options.yaml",
         "packages/catch_ui_lints/**",
         "tool/check_catch_ui_lints.sh",
+        "tool/check_catch_ui_lint_drift.sh",
+        "tool/design/build_lint_enforcement_tables.mjs",
+        "tool/design/check_component_enforcement_coverage.mjs",
+        "tool/architecture/check_ui_composition_contracts.dart",
         "tool/check_riverpod_lint.sh",
         ".github/workflows/**",
         "lib/**",
         "lib/core/widgets/**"
       ],
-      "instruction": "When a UI surface invariant is deterministic, move it into packages/catch_ui_lints as an analysis_server_plugin diagnostic that runs across handwritten lib/** by default. Exempt only semantic source-of-truth folders such as lib/core/theme/** and generated code. Do not add new custom_lint rules. Keep broad scanners only for triage and migration discovery.",
+      "instruction": "When a UI surface invariant is deterministic, move it into packages/catch_ui_lints as an analysis_server_plugin diagnostic that runs across handwritten lib/** by default. Verify Catch diagnostics with the seeded harness or repository-root dart analyze, never flutter analyze or a targeted subdirectory analysis. Generate steering tables from component contracts, use the resolved checker for cross-file composition, exempt only semantic source-of-truth folders or generated code, and keep broad scanners only for triage and migration discovery.",
       "sunset_when": [
         "All high-value UI scanner findings either migrate into analyzer plugin diagnostics or are documented as intentionally broad triage queues",
         "New audited screens stay covered by strict UI diagnostics without custom one-off scripts"
@@ -1001,6 +1084,36 @@
         {
           "tool": "lint:catch-ui-plugin-smoke",
           "stage": "analyzer-warning",
+          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
+        },
+        {
+          "tool": "lint:catch-ui-drift",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
+        },
+        {
+          "tool": "lint:catch-ui-drift-ratchet-engine",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
+        },
+        {
+          "tool": "design:lint-enforcement-generate",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
+        },
+        {
+          "tool": "design:component-enforcement-coverage",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
+        },
+        {
+          "tool": "design:ui-lint-promotion-parity",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
+        },
+        {
+          "tool": "architecture:ui-composition-contracts",
+          "stage": "scanner-ratchet",
           "docAnchor": "docs/app_architecture.md#ui-analyzer-lint-policy"
         },
         {
@@ -1181,6 +1294,11 @@
         {
           "stage": "manual",
           "docAnchor": "docs/audit_registry/rules.json"
+        },
+        {
+          "tool": "data:migrate-clubs-to-organizers",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/migrations/clubs_to_organizers.md#what-the-migration-copies"
         }
       ]
     },
@@ -1372,6 +1490,7 @@
         "lib/**/presentation/**",
         "lib/**/data/**",
         "functions/src/**",
+        "design/features/**",
         "docs/**"
       ],
       "instruction": "Every user-visible action must declare its scope key and cardinality: not allowed, singleton, unbounded, or domain-bounded. Singleton actions must render their resulting state instead of duplicate CTAs and be enforced server-side. Unbounded actions must have a UI that supports zero, one, and many items. Domain bounds must be real product constraints, not UI shortcuts.",
@@ -1385,6 +1504,11 @@
         }
       ],
       "enforcement": [
+        {
+          "tool": "design:feature-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/design_parity/README.md#feature-contract-compiler"
+        },
         {
           "stage": "manual",
           "docAnchor": "docs/audit_registry/rules.json"
@@ -1508,7 +1632,7 @@
         "lib/core/widgets/**",
         "test/**/*.dart"
       ],
-      "instruction": "Do not add new raw Center(Text(...)) full-screen errors or reintroduce CatchErrorText-style compatibility wrappers. Route app-facing data-load failures through CatchErrorState, CatchErrorScaffold, CatchSliverErrorState, or CatchInlineErrorState with appErrorMessage/appErrorTitle mapped copy and optional retry. Keep CatchFrameworkErrorView for Flutter framework crashes only, ErrorBanner for inline mutation/form failures, and showCatchErrorSnackBar for transient action failures.",
+      "instruction": "Do not add new raw Center(Text(...)) full-screen errors or reintroduce CatchErrorText-style compatibility wrappers. Route app-facing data-load failures through CatchErrorState, CatchErrorScaffold, CatchSliverErrorState, or CatchInlineErrorState with appErrorMessage/appErrorTitle mapped copy. Every full-screen or sliver error must expose onRetry or a truthful secondary action such as CatchErrorBackAction; inline errors may inherit recovery from their surrounding section. Keep CatchFrameworkErrorView for Flutter framework crashes only, ErrorBanner for inline mutation/form failures, and showCatchErrorSnackBar for transient action failures.",
       "sunset_when": [
         "A canonical app error primitive covers full-screen, sliver, and inline contexts",
         "Existing AsyncValue error branches have migrated away from raw centered text except where explicitly justified"
@@ -1795,7 +1919,7 @@
       ]
     },
     "ERROR-UI-002": {
-      "title": "Data-load error branches must use a Catch error primitive with retry, never an empty-state or bespoke card",
+      "title": "Data-load errors must use a Catch primitive and blocking states must expose recovery",
       "status": "active",
       "kind": "scar",
       "introduced_in": {
@@ -1806,7 +1930,7 @@
         "lib/**/presentation/**",
         "lib/core/widgets/**"
       ],
-      "instruction": "AsyncValue/stream error branches must render CatchErrorState/CatchSliverErrorState/CatchInlineErrorState.fromError (mapped copy + onRetry that invalidates the failing provider). Reserve CatchEmptyState for genuinely-empty success states; never route an error into an empty-state or a hand-rolled card that discards the error object.",
+      "instruction": "AsyncValue/stream error branches must render CatchErrorState/CatchSliverErrorState/CatchInlineErrorState.fromError with mapped copy. Provider failures use onRetry that invalidates the failing provider; terminal full-screen and sliver route errors use a truthful secondary action such as CatchErrorBackAction. Reserve CatchEmptyState for genuinely-empty success states; never route an error into an empty-state or a hand-rolled card that discards the error object.",
       "sunset_when": [
         "A catch_ui_lints diagnostic flags CatchEmptyState/bespoke cards inside error branches",
         "No feature error branch renders raw/empty surfaces for three passes"
@@ -1818,8 +1942,9 @@
       ],
       "enforcement": [
         {
-          "stage": "manual",
-          "docAnchor": "docs/audit_registry/rules.json"
+          "tool": "lint:catch-ui-plugin-smoke",
+          "stage": "analyzer-warning",
+          "docAnchor": "docs/app_architecture.md#error-handling-contract"
         }
       ]
     },
@@ -2212,7 +2337,7 @@
       "sunset_signals": [
         {
           "type": "tool-exists",
-          "tool": "scanner:no-raw-network-image"
+          "tool": "lint:catch-ui-plugin-smoke"
         }
       ],
       "sunset_review": {
@@ -2222,8 +2347,8 @@
       },
       "enforcement": [
         {
-          "tool": "scanner:no-raw-network-image",
-          "stage": "scanner-gate",
+          "tool": "lint:catch-ui-plugin-smoke",
+          "stage": "analyzer-warning",
           "docAnchor": "docs/app_architecture.md#widget-ownership"
         }
       ]
@@ -2876,18 +3001,20 @@
       },
       "applies_to": [
         "operations/**",
+        "contracts/admin/**",
         "contracts/operations/**",
         "functions/src/operations/**",
         "functions/scripts/operations/**",
         "functions/src/admin/**",
         "admin/src/features/intake/operations/**",
+        "admin/src/features/operations/**",
         "tool/host_discovery/**",
         "tool/marketing/event_guide/**",
         "tool/organizer_intake/**",
         "tool/tools_manifest.json",
         "tool/remote_ops_manifest.json"
       ],
-      "instruction": "Resumable runs, work items, leases, budgets, decisions, receipts, and learning state belong in operations/. Legacy tool folders remain compatibility producers. Every workflow manifest stays bound to its executable commands, ordered states, sources, capabilities, and capacity. Shadow mode fails closed. The admin projection crosses into Firestore only through the dry-run-first trusted importer, and publication requires separately authorized execution.",
+      "instruction": "Resumable runs, work items, leases, budgets, decisions, receipts, and learning state belong in operations/. Legacy tool folders remain compatibility producers. Every workflow manifest stays bound to its executable commands, ordered states, sources, capabilities, and capacity. Ordinary admin actions share one catalog across GUI and CLI; strict schemas, role-gated callables, dry-run mutation defaults, confirmations, and hash-only receipts must not drift. Shadow mode fails closed. The admin projection crosses into Firestore only through the dry-run-first trusted importer, and publication requires separately authorized execution.",
       "sunset_when": [
         "A stronger package-boundary mechanism enforces equivalent placement and authority rules"
       ],
@@ -2914,6 +3041,21 @@
           "docAnchor": "docs/operations_platform.md#adding-another-workflow"
         },
         {
+          "tool": "operations:admin-action-catalog",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/operations_platform.md#admin-action-command-surface"
+        },
+        {
+          "tool": "admin:action-catalog-generate",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/operations_platform.md#admin-action-command-surface"
+        },
+        {
+          "tool": "operations:admin-cli",
+          "stage": "manual",
+          "docAnchor": "docs/operations_platform.md#admin-action-command-surface"
+        },
+        {
           "tool": "operations:import-admin-projection",
           "stage": "manual",
           "docAnchor": "docs/operations_platform.md#admin-projection-bridge"
@@ -2921,6 +3063,90 @@
         {
           "stage": "manual",
           "docAnchor": "docs/operations_platform.md#activation-checklist"
+        }
+      ]
+    },
+    "ORGANIZER-AUTHORITY-001": {
+      "title": "Organizer is the canonical entity and club is a subtype",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "clubs_to_organizers_migration",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "contracts/**",
+        "functions/src/**",
+        "lib/**",
+        "website/src/**",
+        "admin/src/**",
+        "firestore.rules",
+        "storage.rules",
+        "firestore.indexes.json"
+      ],
+      "instruction": "Use organizers, organizerId, organizer relationships, organizer callables, organizer media paths, and organizer product copy as the canonical authority. Club is allowed as organizerType club, real-world content, or an explicitly documented released-client compatibility projection only.",
+      "sunset_when": [
+        "Organizer is replaced by a separately approved canonical entity model"
+      ],
+      "sunset_signals": [
+        {
+          "type": "tool-exists",
+          "tool": "contracts:organizer-nomenclature"
+        }
+      ],
+      "sunset_review": {
+        "date": "2026-07-20",
+        "decision": "keep",
+        "note": "The local cutover is implemented but remote parity and legacy retirement are still pending."
+      },
+      "enforcement": [
+        {
+          "tool": "contracts:organizer-nomenclature",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/migrations/clubs_to_organizers.md#authority-and-compatibility"
+        }
+      ]
+    },
+    "PUBLIC-SURFACE-BEHAVIOR-001": {
+      "title": "Keep public viewer and listing authority behavior explicit across app and web",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "web_surface_architecture",
+        "version": "0.8.1"
+      },
+      "applies_to": [
+        "design/public_surface_behavior.json",
+        "design/public_surface_behavior.schema.json",
+        "design/screens/catch.screens.json",
+        "contracts/firestore/organizers.schema.json",
+        "contracts/public/website_host_listing_projection.schema.json",
+        "lib/routing/**",
+        "lib/explore/**",
+        "lib/clubs/**",
+        "lib/events/**",
+        "lib/organizers/**",
+        "website/src/features/claims/**",
+        "website/src/features/organizers/**",
+        "website/src/features/reviews/**",
+        "website/scripts/**",
+        "test/design/**",
+        "tool/design/check_public_surface_behavior.mjs"
+      ],
+      "instruction": "Treat design/public_surface_behavior.json as the executable decision table for public app and marketing surfaces. Keep viewer-session resolution, app role, profile readiness, viewer relationship, app and web publication, organizer ownership/claim/verification, host/contact identity, event supply/lifecycle/availability/payment, location, independent claim/review capabilities, and their runtimes explicit. Every consumer route must have exactly one matrix owner, every configuration must be verified by the declared app or website harness, and excluded dimension values require a rationale. Public actions fail closed when relationship or runtime authority is unresolved.",
+      "sunset_when": [
+        "Never; cross-surface public behavior remains a permanent product and architecture contract"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "design:public-surface-behavior",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/web_surface_architecture.md#public-viewer-and-listing-authority-matrix"
         }
       ]
     },
@@ -2963,8 +3189,50 @@
           "docAnchor": "docs/web_surface_architecture.md#current-stack"
         }
       ]
+    },
+    "PENDING-SNAPSHOT-001": {
+      "title": "Protect the submitted request snapshot while an operation is pending",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.5.5"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "website/src/features/**",
+        "admin/src/features/**",
+        "design/features/**",
+        "design/screens/catch.screens.json",
+        "test/**"
+      ],
+      "instruction": "Every pending user operation must declare one integrity policy. Frozen snapshots disable request-defining inputs, conflicting actions, mutation-reset callbacks, and unsafe route exits until settlement. Versioned snapshots require immutable generations plus stale-result rejection or cancellation and tests. Independently keyed concurrency requires distinct typed scope keys and separate pending/error surfaces. A loading button alone is not sufficient; controllers must also deduplicate duplicate dispatches or use an equivalent idempotency boundary.",
+      "sunset_when": [
+        "Never; pending request integrity remains a permanent cross-runtime contract"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "design:feature-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/design_parity/README.md#feature-contract-compiler"
+        },
+        {
+          "tool": "web:admin-pending-operations",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/web_surface_architecture.md#cross-surface-feature-identity"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/app_architecture.md#exhibit-arch-pending-snapshot-001-pending-request-snapshot-integrity"
+        }
+      ]
     }
   },
-  "version": "2.7.20",
-  "updated": "2026-07-19"
+  "version": "2.8.6",
+  "updated": "2026-07-24"
 }

@@ -5,6 +5,9 @@ export const staticMetaKeys = [
   "host",
   "organizers",
   "claim",
+  "privacy",
+  "terms",
+  "help",
   "not_found",
 ] as const;
 
@@ -15,6 +18,18 @@ const listingLabelKeys = [
   "sourcesHeading",
   "lastVerifiedPrefix",
   "notRecorded",
+  "homeBreadcrumb",
+  "organizersBreadcrumb",
+] as const;
+const eventLabelKeys = [
+  "eventEyebrow",
+  "hostedByPrefix",
+  "scheduleHeading",
+  "locationLabel",
+  "priceLabel",
+  "sourceLabel",
+  "reviewsHeading",
+  "lastReviewedPrefix",
   "homeBreadcrumb",
   "organizersBreadcrumb",
 ] as const;
@@ -60,6 +75,56 @@ export function validateWebsiteMeta(value: unknown) {
         requiredString(
           `listing.staticLabels.${key}`,
           value.listing.staticLabels[key],
+          errors
+        );
+      }
+    }
+  }
+  if (!isRecord(value.event)) {
+    errors.push("event must be an object");
+  } else {
+    assertExactKeys(
+      "event",
+      value.event,
+      [
+        "titleTemplate",
+        "catchTwitterTemplate",
+        "externalTwitterTemplate",
+        "staticLabels",
+      ],
+      errors
+    );
+    validateTemplateTokens(
+      "event.titleTemplate",
+      value.event.titleTemplate,
+      ["title", "city"],
+      errors
+    );
+    validateTemplateTokens(
+      "event.catchTwitterTemplate",
+      value.event.catchTwitterTemplate,
+      ["title", "organizer"],
+      errors
+    );
+    validateTemplateTokens(
+      "event.externalTwitterTemplate",
+      value.event.externalTwitterTemplate,
+      ["title", "source"],
+      errors
+    );
+    if (!isRecord(value.event.staticLabels)) {
+      errors.push("event.staticLabels must be an object");
+    } else {
+      assertExactKeys(
+        "event.staticLabels",
+        value.event.staticLabels,
+        eventLabelKeys,
+        errors
+      );
+      for (const key of eventLabelKeys) {
+        requiredString(
+          `event.staticLabels.${key}`,
+          value.event.staticLabels[key],
           errors
         );
       }
@@ -130,6 +195,20 @@ function assertAllowedKeys(
 function requiredString(label: string, value: unknown, errors: string[]) {
   if (typeof value !== "string" || value.trim().length === 0) {
     errors.push(`${label} must be a non-empty string`);
+  }
+}
+
+function validateTemplateTokens(
+  label: string,
+  value: unknown,
+  tokens: readonly string[],
+  errors: string[]
+) {
+  requiredString(label, value, errors);
+  for (const token of tokens) {
+    if (!String(value ?? "").includes(`{${token}}`)) {
+      errors.push(`${label} must contain {${token}}`);
+    }
   }
 }
 

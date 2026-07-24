@@ -1,10 +1,10 @@
 import {websiteCopy} from "@content/generated";
-import type {ClubClaimRole} from "../../firebase";
+import type {OrganizerClaimRole} from "../../firebase";
 import type {HostListing} from "../organizers/types";
 
 export type ClaimFlowStep = "listing" | "role" | "verify" | "submitted";
 export type ClaimVerificationMethodId = "publicProof" | "email" | "phone";
-export type ClaimRole = ClubClaimRole;
+export type ClaimRole = OrganizerClaimRole;
 
 export interface ClaimVerificationMethod {
   id: ClaimVerificationMethodId;
@@ -12,7 +12,10 @@ export interface ClaimVerificationMethod {
   body: string;
 }
 
-export const claimRoleOptions: Array<{value: ClubClaimRole; label: string}> = [
+export const claimRoleOptions: Array<{
+  value: OrganizerClaimRole;
+  label: string;
+}> = [
   {value: "owner", label: websiteCopy["claimmodel_0013"]},
   {value: "founder", label: websiteCopy["claimmodel_0005"]},
   {value: "manager", label: websiteCopy["claimmodel_0009"]},

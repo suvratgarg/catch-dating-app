@@ -13,6 +13,7 @@ void main() {
       expect(state.countryCode, '+61');
       expect(state.shouldAutofocus, true);
       expect(state.sendButtonLoading, true);
+      expect(state.requestControlsEnabled, false);
     });
 
     test('does not autofocus outside the phone step', () {
@@ -23,6 +24,7 @@ void main() {
 
       expect(state.shouldAutofocus, false);
       expect(state.sendButtonLoading, false);
+      expect(state.requestControlsEnabled, true);
     });
   });
 

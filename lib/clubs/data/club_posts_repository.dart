@@ -3,7 +3,7 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
-    show CreateClubPostCallableRequest;
+    show CreateOrganizerPostCallableRequest;
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -15,7 +15,7 @@ class ClubPostsRepository {
   const ClubPostsRepository(this._db, this._functions);
 
   static const weeklyQuota = 3;
-  static const _clubsCollectionPath = 'clubs';
+  static const _clubsCollectionPath = 'organizers';
   static const _postsCollectionPath = 'posts';
 
   final FirebaseFirestore _db;
@@ -48,7 +48,7 @@ class ClubPostsRepository {
           }),
       context: const BackendErrorContext(
         service: BackendService.firestore,
-        action: 'watch club post quota',
+        action: 'watch organizer post quota',
         resource: _clubsCollectionPath,
       ),
     );
@@ -62,10 +62,10 @@ class ClubPostsRepository {
   }) => withBackendErrorContext(
     () async {
       final result = await _functions
-          .httpsCallable('createClubPost')
+          .httpsCallable('createOrganizerPost')
           .call<Object?>(
-            CreateClubPostCallableRequest(
-              clubId: clubId,
+            CreateOrganizerPostCallableRequest(
+              organizerId: clubId,
               text: text,
               eventId: eventId,
               photoPath: photoPath,
@@ -75,7 +75,7 @@ class ClubPostsRepository {
     },
     context: const BackendErrorContext(
       service: BackendService.functions,
-      action: 'create club post',
+      action: 'create organizer post',
       resource: _clubsCollectionPath,
     ),
   );

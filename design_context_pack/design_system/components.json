@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-07-19",
+  "updated": "2026-07-21",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in lib/core/widgets/catch_*.dart own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -84,6 +84,17 @@
   "components": [
     {
       "id": "catch.badge",
+      "enforcement": {
+        "code": "catch_no_raw_material_control",
+        "vehicle": "plugin",
+        "replaces": [
+          "Badge"
+        ],
+        "replacement": "CatchBadge",
+        "steeringGroup": "control",
+        "steeringCode": "catch_no_raw_material_control",
+        "probeSeed": "Badge(label: const Text('1'))"
+      },
       "name": "CatchBadge",
       "status": "active",
       "kind": "primitive",
@@ -290,6 +301,11 @@
     },
     {
       "id": "catch.ui_label",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchSectionLabel",
       "status": "active",
       "kind": "primitive",
@@ -395,6 +411,25 @@
     },
     {
       "id": "catch.button",
+      "enforcement": {
+        "code": "catch_no_raw_button_control",
+        "codes": [
+          "catch_no_allow_debt"
+        ],
+        "vehicle": "plugin",
+        "replaces": [
+          "CupertinoButton",
+          "ElevatedButton",
+          "FilledButton",
+          "FloatingActionButton",
+          "OutlinedButton",
+          "TextButton"
+        ],
+        "replacement": "CatchButton or CatchTextButton",
+        "steeringGroup": "button",
+        "steeringCode": "catch_no_raw_button_control",
+        "probeSeed": "ElevatedButton(onPressed: null, child: const Text('x'))"
+      },
       "name": "CatchButton",
       "status": "active",
       "kind": "primitive",
@@ -619,6 +654,22 @@
     },
     {
       "id": "catch.chip",
+      "enforcement": {
+        "code": "catch_no_raw_material_control",
+        "vehicle": "plugin",
+        "replaces": [
+          "ActionChip",
+          "Chip",
+          "ChoiceChip",
+          "FilterChip",
+          "InputChip",
+          "RawChip"
+        ],
+        "replacement": "CatchChip",
+        "steeringGroup": "control",
+        "steeringCode": "catch_no_raw_material_control",
+        "probeSeed": "Chip(label: const Text('x'))"
+      },
       "name": "CatchChip",
       "status": "active",
       "kind": "primitive",
@@ -857,6 +908,11 @@
     },
     {
       "id": "catch.empty_state",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchEmptyState",
       "status": "active",
       "kind": "composite",
@@ -1049,6 +1105,14 @@
     },
     {
       "id": "catch.error_state",
+      "enforcement": {
+        "code": "catch_no_raw_error_surface",
+        "vehicle": "plugin",
+        "states": [
+          "error"
+        ],
+        "probeSeed": "Center(child: Text('Unable to load'))"
+      },
       "name": "CatchErrorState",
       "status": "active",
       "kind": "composite",
@@ -1339,6 +1403,11 @@
     },
     {
       "id": "catch.error_banner",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchErrorBanner",
       "status": "active",
       "kind": "composite",
@@ -1501,6 +1570,11 @@
     },
     {
       "id": "catch.notice",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchNotice",
       "status": "active",
       "kind": "composite",
@@ -1647,6 +1721,30 @@
     },
     {
       "id": "catch.field",
+      "enforcement": {
+        "code": "catch_use_named_catch_field_constructor",
+        "codes": [
+          "catch_field_requires_section_context",
+          "catch_no_tokens_prop_drilling"
+        ],
+        "vehicle": "plugin",
+        "replaces": [
+          "TextField",
+          "TextFormField"
+        ],
+        "replacement": "CatchField.input",
+        "steeringGroup": "button",
+        "steeringCode": "catch_no_raw_button_control",
+        "placement": {
+          "allowedParents": [
+            "CatchSection",
+            "CatchFieldLanes",
+            "CatchSectionList"
+          ],
+          "slot": "children"
+        },
+        "probeSeed": "TextField()"
+      },
       "name": "CatchField",
       "status": "active",
       "kind": "composite",
@@ -2570,6 +2668,22 @@
     },
     {
       "id": "catch.section",
+      "enforcement": {
+        "code": "catch_use_named_catch_section_constructor",
+        "codes": [
+          "catch_use_section_list",
+          "catch_no_nested_rounded_rectangles"
+        ],
+        "vehicle": "plugin",
+        "placement": {
+          "allowedParents": [
+            "CatchSectionList",
+            "CatchDetailSliverSectionList"
+          ],
+          "slot": "children"
+        },
+        "probeSeed": "CatchSection(child: const SizedBox())"
+      },
       "name": "CatchSection",
       "status": "active",
       "kind": "composite",
@@ -3052,6 +3166,11 @@
     },
     {
       "id": "catch.skeleton",
+      "enforcement": {
+        "code": "catch_no_brittle_pump_timing",
+        "vehicle": "plugin",
+        "probeSeed": "tester.pumpAndSettle()"
+      },
       "name": "CatchSkeleton",
       "status": "active",
       "kind": "pattern",
@@ -3259,6 +3378,11 @@
     },
     {
       "id": "catch.loading_indicator",
+      "enforcement": {
+        "code": "catch_no_raw_motion",
+        "vehicle": "plugin",
+        "probeSeed": "Duration(milliseconds: 175)"
+      },
       "name": "CatchLoadingIndicator",
       "status": "active",
       "kind": "primitive",
@@ -3340,6 +3464,24 @@
     },
     {
       "id": "catch.async_value",
+      "enforcement": {
+        "code": "catch_async_requires_state_surface",
+        "codes": [
+          "catch_async_requires_retry",
+          "catch_error_state_requires_action",
+          "catch_mutation_pending_requires_error",
+          "catch_no_async_flush_hack",
+          "catch_no_raw_error_surface"
+        ],
+        "vehicle": "plugin",
+        "states": [
+          "loading",
+          "error",
+          "empty",
+          "data"
+        ],
+        "probeSeed": "asyncValue.requireValue"
+      },
       "name": "CatchAsyncValueView",
       "status": "active",
       "kind": "pattern",
@@ -3503,6 +3645,11 @@
     },
     {
       "id": "catch.startup_loading_screen",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchStartupLoadingScreen",
       "status": "active",
       "kind": "composite",
@@ -3579,6 +3726,19 @@
     },
     {
       "id": "catch.typography",
+      "enforcement": {
+        "code": "catch_text_requires_style",
+        "codes": [
+          "catch_no_raw_color",
+          "catch_no_raw_text_style",
+          "catch_no_raw_font_drift",
+          "catch_no_direct_font_builder",
+          "catch_no_raw_letter_spacing",
+          "catch_no_low_level_typography_role"
+        ],
+        "vehicle": "plugin",
+        "probeSeed": "Text('unstyled')"
+      },
       "name": "CatchKicker",
       "status": "active",
       "kind": "primitive",
@@ -3715,6 +3875,11 @@
     },
     {
       "id": "catch.mini_bar_chart",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchMiniBarChart",
       "status": "active",
       "kind": "primitive",
@@ -3828,6 +3993,11 @@
     },
     {
       "id": "catch.metric_strip",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchMetricStrip",
       "status": "active",
       "kind": "primitive",
@@ -4087,6 +4257,11 @@
     },
     {
       "id": "catch.sheet",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchBottomSheetScaffold",
       "status": "active",
       "kind": "composite",
@@ -4352,6 +4527,15 @@
     },
     {
       "id": "catch.icon_button",
+      "enforcement": {
+        "code": "catch_icon_button_requires_tooltip",
+        "codes": [
+          "catch_no_raw_icon_source",
+          "catch_no_raw_icon_size"
+        ],
+        "vehicle": "plugin",
+        "probeSeed": "IconButton(onPressed: () {}, icon: const Icon(Icons.add))"
+      },
       "name": "CatchIconButton",
       "status": "active",
       "kind": "primitive",
@@ -4495,6 +4679,18 @@
     },
     {
       "id": "catch.menu",
+      "enforcement": {
+        "code": "catch_no_raw_button_control",
+        "vehicle": "plugin",
+        "replaces": [
+          "DropdownButton",
+          "PopupMenuButton"
+        ],
+        "replacement": "CatchMenu",
+        "steeringGroup": "button",
+        "steeringCode": "catch_no_raw_button_control",
+        "probeSeed": "PopupMenuButton<void>(itemBuilder: (_) => const [])"
+      },
       "name": "CatchMenu",
       "status": "active",
       "kind": "composite",
@@ -4649,6 +4845,11 @@
     },
     {
       "id": "catch.icon_tile",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchIconTile",
       "status": "active",
       "kind": "primitive",
@@ -4771,6 +4972,16 @@
     },
     {
       "id": "catch.control_shell",
+      "enforcement": {
+        "code": "catch_no_raw_radius",
+        "codes": [
+          "catch_no_raw_alpha",
+          "catch_no_raw_shadow",
+          "catch_no_raw_stroke_width"
+        ],
+        "vehicle": "plugin",
+        "probeSeed": "BorderRadius.circular(12)"
+      },
       "name": "CatchControlShell",
       "status": "active",
       "kind": "primitive",
@@ -4941,6 +5152,11 @@
     },
     {
       "id": "catch.number_stepper",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchNumberStepper",
       "status": "active",
       "kind": "primitive",
@@ -5082,6 +5298,11 @@
     },
     {
       "id": "catch.option_card",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchOptionCard",
       "status": "active",
       "kind": "primitive",
@@ -5188,6 +5409,20 @@
     },
     {
       "id": "catch.surface",
+      "enforcement": {
+        "code": "catch_no_raw_surface_shell",
+        "codes": [
+          "catch_no_nested_rounded_rectangles"
+        ],
+        "vehicle": "plugin",
+        "replaces": [
+          "Card"
+        ],
+        "replacement": "CatchSurface or CatchSectionCard",
+        "steeringGroup": "control",
+        "steeringCode": "catch_no_raw_material_control",
+        "probeSeed": "Card(child: const SizedBox())"
+      },
       "name": "CatchSurface",
       "status": "active",
       "kind": "primitive",
@@ -5403,6 +5638,34 @@
     },
     {
       "id": "catch.top_bar",
+      "enforcement": {
+        "code": "catch_top_bar_requires_action_group",
+        "codes": [
+          "catch_no_raw_material_control",
+          "catch_screen_top_bar_conformance"
+        ],
+        "vehicle": "plugin",
+        "replaces": [
+          "AppBar",
+          "CupertinoNavigationBar",
+          "SliverAppBar"
+        ],
+        "replacementMap": {
+          "AppBar": "CatchTopBar or CatchScreenTopBar",
+          "CupertinoNavigationBar": "CatchTopBar or CatchScreenTopBar",
+          "SliverAppBar": "a registered media-hero sliver or CatchTopBar"
+        },
+        "steeringGroup": "control",
+        "steeringCode": "catch_no_raw_material_control",
+        "placement": {
+          "allowedParents": [
+            "CatchScreenBody",
+            "CatchTabbedScreenScaffold"
+          ],
+          "slot": "topBar"
+        },
+        "probeSeed": "AppBar()"
+      },
       "name": "CatchTopBar",
       "status": "active",
       "kind": "composite",
@@ -5732,6 +5995,11 @@
     },
     {
       "id": "catch.privacy_badge",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchPrivacyBadge",
       "status": "active",
       "kind": "primitive",
@@ -5824,6 +6092,11 @@
     },
     {
       "id": "catch.journey_steps",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchJourneySteps",
       "status": "active",
       "kind": "composite",
@@ -5936,6 +6209,21 @@
     },
     {
       "id": "catch.screen_body",
+      "enforcement": {
+        "code": "catch_prefer_semantic_insets",
+        "codes": [
+          "catch_no_raw_ui_spacing",
+          "catch_no_token_arithmetic",
+          "catch_no_raw_content_dimension",
+          "catch_no_local_design_constant",
+          "catch_no_legacy_spacing_token",
+          "catch_screen_gutter_uses_semantic_insets",
+          "catch_no_shell_local_measurement",
+          "catch_screen_registry_conformance"
+        ],
+        "vehicle": "plugin",
+        "probeSeed": "Padding(padding: EdgeInsets.all(CatchSpacing.s4), child: const SizedBox())"
+      },
       "name": "CatchScreenBody",
       "status": "active",
       "kind": "pattern",
@@ -6120,6 +6408,15 @@
     },
     {
       "id": "catch.section_stack",
+      "enforcement": {
+        "code": "catch_section_list_requires_empty_policy",
+        "vehicle": "api",
+        "states": [
+          "empty",
+          "data"
+        ],
+        "probeSeed": "CatchSectionList(children: const <Widget>[])"
+      },
       "name": "CatchSectionStack",
       "status": "active",
       "kind": "pattern",
@@ -6274,6 +6571,11 @@
     },
     {
       "id": "catch.roster_tiles",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchRosterTiles",
       "status": "active",
       "kind": "composite",
@@ -6376,6 +6678,11 @@
     },
     {
       "id": "catch.roster_row",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchRosterRow",
       "status": "active",
       "kind": "composite",
@@ -6523,6 +6830,11 @@
     },
     {
       "id": "catch.roster_table",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchRosterTable",
       "status": "active",
       "kind": "composite",
@@ -6649,6 +6961,11 @@
     },
     {
       "id": "catch.activity_art",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchActivityArt",
       "status": "active",
       "kind": "primitive",
@@ -6791,6 +7108,14 @@
     },
     {
       "id": "catch.network_image",
+      "enforcement": {
+        "code": "catch_no_raw_network_image",
+        "codes": [
+          "catch_no_raw_asset_path"
+        ],
+        "vehicle": "plugin",
+        "probeSeed": "Image.network('https://example.test/image.png')"
+      },
       "name": "CatchNetworkImage",
       "status": "active",
       "kind": "primitive",
@@ -6937,6 +7262,11 @@
     },
     {
       "id": "catch.distance_ring",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchDistanceRing",
       "status": "active",
       "kind": "primitive",
@@ -7052,6 +7382,11 @@
     },
     {
       "id": "catch.code_input",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchCodeInput",
       "status": "active",
       "kind": "primitive",
@@ -7248,6 +7583,11 @@
     },
     {
       "id": "catch.option_group",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchOptionGroup",
       "status": "active",
       "kind": "composite",
@@ -7407,6 +7747,11 @@
     },
     {
       "id": "catch.tab_rail",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchTabRail",
       "status": "active",
       "kind": "composite",
@@ -7531,6 +7876,11 @@
     },
     {
       "id": "catch.search_field",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchSearchField",
       "status": "active",
       "kind": "primitive",
@@ -7688,6 +8038,18 @@
     },
     {
       "id": "catch.range_slider",
+      "enforcement": {
+        "code": "catch_no_raw_button_control",
+        "vehicle": "plugin",
+        "replaces": [
+          "RangeSlider",
+          "Slider"
+        ],
+        "replacement": "CatchRangeSlider",
+        "steeringGroup": "button",
+        "steeringCode": "catch_no_raw_button_control",
+        "probeSeed": "Slider(value: 0.5, onChanged: (_) {})"
+      },
       "name": "CatchRangeSlider",
       "status": "active",
       "kind": "primitive",
@@ -7816,6 +8178,19 @@
     },
     {
       "id": "catch.toggle",
+      "enforcement": {
+        "code": "catch_no_raw_button_control",
+        "vehicle": "plugin",
+        "replaces": [
+          "Radio",
+          "SegmentedButton",
+          "Switch"
+        ],
+        "replacement": "CatchToggle or CatchOptionGroup",
+        "steeringGroup": "button",
+        "steeringCode": "catch_no_raw_button_control",
+        "probeSeed": "Switch(value: false, onChanged: (_) {})"
+      },
       "name": "CatchToggle",
       "status": "active",
       "kind": "primitive",
@@ -7916,6 +8291,11 @@
     },
     {
       "id": "catch.status_bar",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchStatusBar",
       "status": "active",
       "kind": "pattern",
@@ -8017,6 +8397,11 @@
     },
     {
       "id": "catch.step_header",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchStepHeader",
       "status": "active",
       "kind": "composite",
@@ -8189,6 +8574,11 @@
     },
     {
       "id": "catch.tab_bar",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchTabBar",
       "status": "active",
       "kind": "composite",
@@ -8333,6 +8723,11 @@
     },
     {
       "id": "catch.bottom_dock",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchBottomDock",
       "status": "active",
       "kind": "composite",
@@ -8437,6 +8832,11 @@
     },
     {
       "id": "catch.confirm_dialog",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchConfirmDialog",
       "status": "active",
       "kind": "composite",
@@ -8538,6 +8938,11 @@
     },
     {
       "id": "catch.form_dialog",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchFormDialog",
       "status": "active",
       "kind": "composite",
@@ -8657,6 +9062,11 @@
     },
     {
       "id": "catch.count_pill",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchCountPill",
       "status": "active",
       "kind": "primitive",
@@ -8778,6 +9188,11 @@
     },
     {
       "id": "catch.page_dots",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchPageDots",
       "status": "active",
       "kind": "primitive",
@@ -8894,6 +9309,11 @@
     },
     {
       "id": "catch.club_dock",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "ClubDetailDock",
       "status": "active",
       "kind": "composite",
@@ -9055,6 +9475,11 @@
     },
     {
       "id": "catch.cover_story",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchCoverStory",
       "status": "active",
       "kind": "composite",
@@ -9225,6 +9650,11 @@
     },
     {
       "id": "catch.person_avatar",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchPersonAvatar",
       "status": "active",
       "kind": "primitive",
@@ -9520,6 +9950,11 @@
     },
     {
       "id": "catch.row_press_surface",
+      "enforcement": {
+        "code": "catch_no_positional_widget_finder",
+        "vehicle": "plugin",
+        "probeSeed": "find.text('x').first"
+      },
       "name": "CatchRowPressSurface",
       "status": "active",
       "kind": "primitive",
@@ -9613,6 +10048,11 @@
     },
     {
       "id": "catch.person_row",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchPersonRow",
       "status": "active",
       "kind": "composite",
@@ -9812,6 +10252,11 @@
     },
     {
       "id": "catch.event_card",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchEventCard",
       "status": "active",
       "kind": "composite",
@@ -10177,6 +10622,11 @@
     },
     {
       "id": "catch.graded_image",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchGradedImage",
       "status": "active",
       "kind": "primitive",
@@ -10273,6 +10723,11 @@
     },
     {
       "id": "catch.detail_media",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchDetailHeroBackdrop",
       "status": "active",
       "kind": "composite",
@@ -10405,6 +10860,11 @@
     },
     {
       "id": "catch.activity_map_pin",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchActivityMapPin",
       "status": "active",
       "kind": "primitive",
@@ -10532,6 +10992,14 @@
     },
     {
       "id": "catch.event_detail_sections",
+      "enforcement": {
+        "code": "catch_event_detail_prefers_photo_thumbnail",
+        "codes": [
+          "catch_no_widget_returning_method"
+        ],
+        "vehicle": "plugin",
+        "probeSeed": "EventActivityArtwork(activityType: 'sport')"
+      },
       "name": "EventDetailSections",
       "status": "active",
       "kind": "screen-contract",
@@ -10925,6 +11393,11 @@
     },
     {
       "id": "catch.notification_row",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "NotificationRow",
       "status": "active",
       "kind": "composite",
@@ -11066,6 +11539,14 @@
     },
     {
       "id": "catch.chat_composer",
+      "enforcement": {
+        "code": "catch_no_presentation_platform_import",
+        "codes": [
+          "catch_no_presentation_repository_reach"
+        ],
+        "vehicle": "plugin",
+        "probeSeed": "ref.watch(exampleRepositoryProvider)"
+      },
       "name": "ChatInputBar",
       "status": "active",
       "kind": "composite",
@@ -11219,6 +11700,21 @@
     },
     {
       "id": "catch.tabbed_screen",
+      "enforcement": {
+        "code": "catch_shell_owns_tab_scaffold",
+        "codes": [
+          "catch_no_raw_breakpoint",
+          "catch_screen_nested_scaffold"
+        ],
+        "vehicle": "checker",
+        "states": [
+          "loading",
+          "error",
+          "empty",
+          "data"
+        ],
+        "probeSeed": "Scaffold(bottomNavigationBar: const SizedBox())"
+      },
       "name": "CatchTabbedScreenScaffold",
       "status": "active",
       "kind": "pattern",
@@ -11425,6 +11921,11 @@
     },
     {
       "id": "catch.bottom_action",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchBottomAction",
       "status": "active",
       "kind": "composite",
@@ -11613,6 +12114,11 @@
     },
     {
       "id": "catch.host_row",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchHostRow",
       "status": "active",
       "kind": "composite",
@@ -11775,6 +12281,11 @@
     },
     {
       "id": "catch.map_preview",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchMapPreview",
       "status": "active",
       "kind": "composite",
@@ -11893,6 +12404,11 @@
     },
     {
       "id": "catch.meta_row",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchMetaRow",
       "status": "active",
       "kind": "primitive",
@@ -11993,6 +12509,11 @@
     },
     {
       "id": "catch.index_row",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchIndexRow",
       "status": "active",
       "kind": "primitive",
@@ -12117,6 +12638,11 @@
     },
     {
       "id": "catch.club_cover",
+      "waiver": {
+        "reason": "No distinct steering or placement rule is required for this canonical component in enforcement v1.",
+        "owner": "design_system",
+        "expires": "2026-09-30"
+      },
       "name": "CatchClubCover",
       "status": "active",
       "kind": "primitive",

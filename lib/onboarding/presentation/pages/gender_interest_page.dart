@@ -34,6 +34,7 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
   }
 
   void _submit() {
+    if (ref.read(OnboardingController.saveProfileMutation).isPending) return;
     final state = _stateFor(isSaving: false, l10n: context.l10n);
     if (!_formKey.currentState!.validate()) {
       return;
@@ -82,11 +83,17 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
       state: state,
       callbacks: OnboardingGenderInterestCallbacks(
         onGenderChanged: (next) {
-          OnboardingController.saveProfileMutation.reset(ref);
+          if (mutation.isPending) return;
+          ref
+              .read(onboardingControllerProvider.notifier)
+              .clearSaveProfileErrorIfIdle();
           setState(() => _gender = next.isEmpty ? null : next.first);
         },
         onInterestedInChanged: (next) {
-          OnboardingController.saveProfileMutation.reset(ref);
+          if (mutation.isPending) return;
+          ref
+              .read(onboardingControllerProvider.notifier)
+              .clearSaveProfileErrorIfIdle();
           setState(() => _interestedIn = next);
         },
         onContinue: _submit,
@@ -114,13 +121,14 @@ class OnboardingGenderInterestStep extends StatelessWidget {
       child: OnboardingStepLayout(
         footer: CatchButton(
           label: context.l10n.onboardingGenderInterestPageLabelContinue,
-          onPressed: callbacks.onContinue,
+          onPressed: state.canSubmit ? callbacks.onContinue : null,
           isLoading: state.isSaving,
           fullWidth: true,
           size: CatchButtonSize.lg,
         ),
         children: [
           CatchSectionList(
+            emptyStateOmitted: true,
             gap: CatchSpacing.s4,
             children: [
               CatchSection.fieldRows(
@@ -132,14 +140,20 @@ class OnboardingGenderInterestStep extends StatelessWidget {
                     builder: (field) => CatchField.choices<Gender>(
                       key: OnboardingFormKeys.gender,
                       title: context.l10n.onboardingGenderInterestPageLabelIAmA,
+                      contract: CatchContractConstraints
+                          .onboardingDraftDocumentGender,
+                      contractValue: (gender) => gender.name,
                       body: _orderedGenderLabels(state.selectedGender),
                       values: Gender.values,
                       itemLabel: (gender) => gender.label,
                       selected: state.selectedGender,
-                      onSelectionChanged: (selection) {
-                        callbacks.onGenderChanged(selection);
-                        field.didChange(selection);
-                      },
+                      onSelectionChanged: state.requestControlsEnabled
+                          ? (selection) {
+                              callbacks.onGenderChanged(selection);
+                              field.didChange(selection);
+                            }
+                          : null,
+                      enabled: state.requestControlsEnabled,
                       initiallyOpen: true,
                       error: field.errorText,
                     ),
@@ -151,15 +165,21 @@ class OnboardingGenderInterestStep extends StatelessWidget {
                       key: OnboardingFormKeys.interestedIn,
                       title:
                           context.l10n.onboardingGenderInterestPageLabelShowMe,
+                      contract: CatchContractConstraints
+                          .onboardingDraftDocumentInterestedInGenders,
+                      contractValue: (gender) => gender.name,
                       body: _orderedGenderLabels(state.interestedIn),
                       values: Gender.values,
                       itemLabel: (gender) => gender.label,
                       selected: state.interestedIn,
-                      onSelectionChanged: (selection) {
-                        callbacks.onInterestedInChanged(selection);
-                        field.didChange(selection);
-                      },
+                      onSelectionChanged: state.requestControlsEnabled
+                          ? (selection) {
+                              callbacks.onInterestedInChanged(selection);
+                              field.didChange(selection);
+                            }
+                          : null,
                       multi: true,
+                      enabled: state.requestControlsEnabled,
                       initiallyOpen: true,
                       error: field.errorText,
                     ),

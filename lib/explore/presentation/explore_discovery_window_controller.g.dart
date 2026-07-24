@@ -71,7 +71,7 @@ final class ExploreDiscoveryWindowProvider
 }
 
 String _$exploreDiscoveryWindowHash() =>
-    r'e62ac83889f313f1d910fc14c12b8b29050ae11d';
+    r'a5c574d9cae9145568ac340de23f19c50381d7ac';
 
 /// Cursor-accumulated internal + external discovery window for Explore.
 ///

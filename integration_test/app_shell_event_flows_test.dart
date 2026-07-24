@@ -3,16 +3,15 @@ import 'package:catch_dating_app/events/presentation/event_action_keys.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_keys.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 
 import '../test/clubs/clubs_test_helpers.dart' as club_helpers;
 import '../test/events/events_test_helpers.dart' as event_helpers;
 import '../test/support/profile_readiness_fixtures.dart';
-import '../test/test_pump_helpers.dart';
+import 'support/app_shell_test_binding.dart';
 import 'support/app_shell_test_harness.dart';
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  ensureAppShellTestBinding();
 
   testWidgets('event detail books a free event and shows confirmation', (
     tester,
@@ -49,7 +48,7 @@ void main() {
 
     await pumpUntilFound(tester, find.byKey(EventActionKeys.bookButton));
     await tester.tap(find.byKey(EventActionKeys.bookButton));
-    await flushTestEventQueue();
+    await flushAppShellCallbacks(tester);
     await pumpMutationUi(tester);
 
     expect(paymentRepository.bookFreeEventCalled, isTrue);
@@ -105,7 +104,7 @@ void main() {
 
       await pumpUntilFound(tester, find.byKey(EventActionKeys.bookButton));
       await tester.tap(find.byKey(EventActionKeys.bookButton));
-      await flushTestEventQueue();
+      await flushAppShellCallbacks(tester);
       await pumpMutationUi(tester);
 
       expect(paymentRepository.processPaymentCalled, isTrue);
@@ -149,7 +148,7 @@ void main() {
 
     await openEventDetail(tester, club: club, event: run, settle: false);
     await tester.tap(find.byKey(EventActionKeys.cancelBookingButton));
-    await flushTestEventQueue();
+    await flushAppShellCallbacks(tester);
     await pumpMutationUi(tester);
 
     expect(eventRepository.cancelledEventId, run.id);
@@ -188,7 +187,7 @@ void main() {
     await openEventDetail(tester, club: club, event: run);
 
     await tester.tap(find.byKey(EventActionKeys.joinWaitlistButton));
-    await flushTestEventQueue();
+    await flushAppShellCallbacks(tester);
     await pumpMutationUi(tester);
 
     expect(eventRepository.joinedWaitlistEventId, run.id);

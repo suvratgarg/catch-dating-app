@@ -92,8 +92,30 @@
     },
     "publicApi": {
       "state": "disabled",
-      "reason": "Claiming is not available for this organizer yet.",
+      "reason": "Claiming is not available until target readiness is verified against Firestore.",
       "claimTargetSyncStatus": "write_needed"
+    },
+    "authority": {
+      "ownershipState": "programmatic",
+      "claimState": "unclaimed",
+      "provenanceOrigin": "import",
+      "sourceConfidence": "high",
+      "verificationStatus": "sourceBacked",
+      "appVisibility": "hidden",
+      "publishStatus": "published",
+      "indexStatus": "indexed"
+    },
+    "capabilities": {
+      "claimRequest": {
+        "state": "disabled",
+        "reason": "Claiming is not available until target readiness is verified against Firestore."
+      },
+      "publicReviews": {
+        "targetState": "disabled",
+        "readState": "disabled",
+        "writeState": "disabled",
+        "reason": "Public reviews are unavailable until canonical target readiness is verified."
+      }
     },
     "lastVerifiedAt": "2026-06-18",
     "searchText": "after fly eventorganizer indore indore social runs run-and-rave fitness/wellness community music social indore luma luma was reviewed as an organizer-intake surface with high confidence. instagram instagram was reviewed as an organizer-intake surface with high confidence."
@@ -197,8 +219,30 @@
     },
     "publicApi": {
       "state": "disabled",
-      "reason": "Claiming is not available for this organizer yet.",
+      "reason": "Claiming is not available until target readiness is verified against Firestore.",
       "claimTargetSyncStatus": "write_needed"
+    },
+    "authority": {
+      "ownershipState": "programmatic",
+      "claimState": "unclaimed",
+      "provenanceOrigin": "import",
+      "sourceConfidence": "high",
+      "verificationStatus": "sourceBacked",
+      "appVisibility": "hidden",
+      "publishStatus": "published",
+      "indexStatus": "indexed"
+    },
+    "capabilities": {
+      "claimRequest": {
+        "state": "disabled",
+        "reason": "Claiming is not available until target readiness is verified against Firestore."
+      },
+      "publicReviews": {
+        "targetState": "disabled",
+        "readState": "disabled",
+        "writeState": "disabled",
+        "reason": "Public reviews are unavailable until canonical target readiness is verified."
+      }
     },
     "lastVerifiedAt": "2026-06-18",
     "searchText": "bhag club brand delhi ncr delhi-ncr running community training programs social runs delhi ncr official website official website was reviewed as an organizer-intake surface with high confidence. instagram instagram was reviewed as an organizer-intake surface with high confidence. luma luma was reviewed as an organizer-intake surface with high confidence."
@@ -278,8 +322,10 @@
         "timeline": "upcoming",
         "startTime": "2026-06-07T20:00:00.000Z",
         "endTime": "2026-06-07T22:00:00.000Z",
+        "timezone": "America/New_York",
         "date": "Jun 7, 2026, 4:00 PM-6:00 PM",
         "location": "Cervo's private table",
+        "locationDetails": "Ask for the Catch table near the back banquette.",
         "summary": "A hosted long-table dinner with arrivals, prompts, and a warm close.",
         "capacityLimit": 20,
         "bookedCount": 0,
@@ -296,8 +342,10 @@
         "timeline": "past",
         "startTime": "2026-05-31T08:30:00.000Z",
         "endTime": "2026-05-31T10:30:00.000Z",
+        "timezone": "America/New_York",
         "date": "May 31, 2026, 4:30 AM-6:30 AM",
         "location": "Cervo's private table",
+        "locationDetails": "Ask for the Catch table near the back banquette.",
         "summary": "A hosted mixer with live rotations, compatibility questions, and host-facing reveal controls.",
         "capacityLimit": 20,
         "bookedCount": 17,
@@ -314,8 +362,10 @@
         "timeline": "past",
         "startTime": "2026-05-30T20:00:00.000Z",
         "endTime": "2026-05-30T22:00:00.000Z",
+        "timezone": "America/New_York",
         "date": "May 30, 2026, 4:00 PM-6:00 PM",
         "location": "Cervo's private table",
+        "locationDetails": "Ask for the Catch table near the back banquette.",
         "summary": "A completed hosted mixer with enough feedback and matches for the sales report.",
         "capacityLimit": 20,
         "bookedCount": 17,
@@ -383,6 +433,7 @@
     "reviews": [
       {
         "id": "club-sales-sunday-table-verified-review-1",
+        "eventId": "event-host-post-report",
         "reviewerName": "Maya S.",
         "rating": 5,
         "comment": "The host kept the dinner moving without making it feel forced. Easy arrivals, good prompts, and useful follow-up after.",
@@ -394,6 +445,7 @@
       },
       {
         "id": "club-sales-sunday-table-verified-review-2",
+        "eventId": "event-host-post-report",
         "reviewerName": "Daniel K.",
         "rating": 5,
         "comment": "The rotations made it simple to meet more people than I would have on my own, and the post-event catch window felt private.",
@@ -405,6 +457,7 @@
       },
       {
         "id": "club-sales-sunday-table-verified-review-3",
+        "eventId": "event-host-post-report",
         "reviewerName": "Anonymous attendee",
         "rating": 4,
         "comment": "Good crowd and clear structure. I liked that the host could adjust the live flow when the group changed.",
@@ -437,6 +490,28 @@
       "state": "disabled",
       "reason": "Catch demo listings use static fixture data and do not call public organizer APIs.",
       "claimTargetSyncStatus": "static_fixture"
+    },
+    "authority": {
+      "ownershipState": "userCreated",
+      "claimState": "verified",
+      "provenanceOrigin": "userCreated",
+      "sourceConfidence": "ownerVerified",
+      "verificationStatus": "ownerVerified",
+      "appVisibility": "discoverable",
+      "publishStatus": "published",
+      "indexStatus": "noindex"
+    },
+    "capabilities": {
+      "claimRequest": {
+        "state": "disabled",
+        "reason": "This organizer is owner verified."
+      },
+      "publicReviews": {
+        "targetState": "disabled",
+        "readState": "disabled",
+        "writeState": "disabled",
+        "reason": "Public reviews require a published, index-ready organizer page."
+      }
     },
     "lastVerifiedAt": "2026-05-31",
     "searchText": "sunday table club new york west village rohan mehta dinner singles mixer hosted hosted long-table dinner dinner hosted singles mixer singlesmixer hosted singles mixer singlesmixer"

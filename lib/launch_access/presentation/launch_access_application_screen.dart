@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -70,11 +71,14 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
                     final applicationAsync = ref.watch(
                       watchLaunchAccessApplicationProvider(uid),
                     );
-                    return applicationAsync.when(
-                      loading: () => const LaunchAccessLoadingBody(),
-                      error: (error, _) =>
-                          Center(child: CatchErrorBanner.fromError(error)),
-                      data: (application) {
+                    return CatchAsyncValueView<LaunchAccessApplication?>(
+                      value: applicationAsync,
+                      loadingBuilder: (_) => const LaunchAccessLoadingBody(),
+                      errorContext: AppErrorContext.auth,
+                      onRetry: () => ref.invalidate(
+                        watchLaunchAccessApplicationProvider(uid),
+                      ),
+                      builder: (context, application) {
                         if (application != null &&
                             !application.status.canEditApplication) {
                           return Center(
@@ -289,6 +293,8 @@ class _LaunchAccessApplicationFormState
               title: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenTitleCity,
+              contract: CatchContractConstraints.accessApplicationDocumentCity,
+              contractValue: (city) => city.effectiveMarketId,
               values: selectableCities,
               value: selectedCity,
               itemLabel: (city) => city.label,
@@ -310,6 +316,8 @@ class _LaunchAccessApplicationFormState
               label: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenLabelJoiningAs,
+              contract: CatchContractConstraints.accessApplicationDocumentRole,
+              contractValue: (value) => value.name,
               values: LaunchAccessRole.values,
               selected: {draft.role},
               multiSelect: false,
@@ -325,6 +333,9 @@ class _LaunchAccessApplicationFormState
               label: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenLabelEventsYouWouldShow,
+              contract:
+                  CatchContractConstraints.accessApplicationDocumentEventTypes,
+              contractValue: (value) => value.name,
               values: LaunchAccessEventType.values,
               selected: draft.eventTypes,
               multiSelect: true,
@@ -343,6 +354,9 @@ class _LaunchAccessApplicationFormState
               label: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenLabelBestTimes,
+              contract: CatchContractConstraints
+                  .accessApplicationDocumentAvailabilityWindows,
+              contractValue: (value) => value.name,
               values: LaunchAccessAvailabilityWindow.values,
               selected: draft.availabilityWindows,
               multiSelect: true,
@@ -361,6 +375,8 @@ class _LaunchAccessApplicationFormState
               title: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenTitleIMightHost,
+              contract:
+                  CatchContractConstraints.accessApplicationDocumentWantsToHost,
               body: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenBodyUsefulIfYouAlready,
@@ -377,6 +393,8 @@ class _LaunchAccessApplicationFormState
               title: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenTitleInviteCode,
+              contract:
+                  CatchContractConstraints.accessApplicationDocumentInviteCode,
               isOptional: true,
               controller: _inviteCodeController,
               textCapitalization: TextCapitalization.characters,
@@ -393,6 +411,8 @@ class _LaunchAccessApplicationFormState
               title: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenTitleInstagram,
+              contract: CatchContractConstraints
+                  .accessApplicationDocumentInstagramHandle,
               isOptional: true,
               controller: _instagramController,
               prefixText: '@',
@@ -409,6 +429,8 @@ class _LaunchAccessApplicationFormState
               title: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenTitleWhoReferredYou,
+              contract: CatchContractConstraints
+                  .accessApplicationDocumentReferralSource,
               isOptional: true,
               controller: _referralController,
               textCapitalization: TextCapitalization.words,
@@ -424,6 +446,8 @@ class _LaunchAccessApplicationFormState
               title: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenTitleWhyDoYouWant,
+              contract:
+                  CatchContractConstraints.accessApplicationDocumentWhyCatch,
               controller: _whyController,
               maxLines: 4,
               minLines: 3,

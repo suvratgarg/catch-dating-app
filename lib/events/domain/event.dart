@@ -60,12 +60,18 @@ enum EventSignUpStatus {
   ineligible,
 }
 
+Object? _readOrganizerId(Map<dynamic, dynamic> json, String key) =>
+    json[key] ?? json['clubId'];
+
+const _legacyUnattributedCohortId = 'legacyUnattributed';
+
 @freezed
 abstract class Event with _$Event {
   const Event._();
 
   const factory Event({
     @JsonKey(includeToJson: false) required String id,
+    @JsonKey(name: 'organizerId', readValue: _readOrganizerId)
     required String clubId,
     @TimestampConverter() required DateTime startTime,
     @TimestampConverter() required DateTime endTime,
@@ -101,6 +107,8 @@ abstract class Event with _$Event {
     // pricing quotes without reading the whole waitlist on every client view.
     @Default({}) Map<String, int> waitlistedCohortCounts,
   }) = _Event;
+
+  String get organizerId => clubId;
 
   factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
 
@@ -151,7 +159,7 @@ abstract class Event with _$Event {
     final nonBinaryOrOther =
         (genderCounts[Gender.nonBinary.name] ?? 0) +
         (genderCounts[Gender.other.name] ?? 0);
-    return {
+    final legacyGenderCohorts = {
       if ((genderCounts[Gender.man.name] ?? 0) > 0)
         EventCohortIds.menInterestedInWomen: genderCounts[Gender.man.name]!,
       if ((genderCounts[Gender.woman.name] ?? 0) > 0)
@@ -159,6 +167,15 @@ abstract class Event with _$Event {
       if (nonBinaryOrOther > 0)
         EventCohortIds.nonBinaryOrOther: nonBinaryOrOther,
     };
+    if (legacyGenderCohorts.isNotEmpty) return legacyGenderCohorts;
+
+    // Older event documents projected only an aggregate bookedCount. Preserve
+    // that total for global capacity and waitlist decisions without assigning
+    // it to a real cohort whose cap or pricing rule it could distort.
+    final legacyBookedCount = bookedCount ?? 0;
+    return legacyBookedCount > 0
+        ? {_legacyUnattributedCohortId: legacyBookedCount}
+        : const {};
   }
 
   Map<String, int> get effectiveWaitlistedCohortCounts =>

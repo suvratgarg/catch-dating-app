@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-19",
+  "updated": "2026-07-22",
   "sourceOfTruth": {
     "componentContracts": "design/components/catch.components.json",
     "classification": "docs/audit_registry/widget_classification.json",
@@ -15,21 +15,21 @@
     "concepts": 63,
     "conceptDelta": -1,
     "publicContractClasses": 198,
-    "productionWidgetAndStateClasses": 1094,
+    "productionWidgetAndStateClasses": 1100,
     "members": 118,
     "membersPerConcept": 1.87,
     "unclassifiedContractEntries": 0,
     "unclassifiedProductionEntries": 0,
-    "unresolvedCollisionFamilies": 0,
+    "unresolvedCollisionFamilies": 2,
     "ownerReviewQueueSize": 3
   },
   "ledgerCoverage": {
-    "normalizedMemberSetCoveredClusters": 43,
+    "normalizedMemberSetCoveredClusters": 41,
     "totalClusters": 43,
-    "unresolvedClusters": 0,
-    "rankedPairsCovered": 145,
+    "unresolvedClusters": 2,
+    "rankedPairsCovered": 144,
     "totalRankedPairs": 200,
-    "unresolvedRankedPairs": 55,
+    "unresolvedRankedPairs": 56,
     "decisionsIndexed": 315
   },
   "widgetbookEvidence": {
@@ -48,12 +48,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "efc8791cff04beee5d5545af6c8670d082d18f05bb7a628acd8278f4f9462d51",
-    "contractDigest": "efc8791cff04beee5d5545af6c8670d082d18f05bb7a628acd8278f4f9462d51"
+    "digest": "98807e76fc77e202fe3280ad8d35a848784f9f3b1015b17dcfd6b8397c47a3b4",
+    "contractDigest": "98807e76fc77e202fe3280ad8d35a848784f9f3b1015b17dcfd6b8397c47a3b4"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "b787fa99f262f2bfe7f6327ffc3ea60085d146ea95dd4810d81d915eb89b602c",
+    "handoffRequestDigest": "bae38cc9704320b5195ab5267eea5daaadd2178b5da6afcd85b378c10d01ec08",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -274,8 +274,8 @@
   "completionAudit": [
     {
       "requirement": "1. Reconcile the existing decision ledger",
-      "status": "proven",
-      "evidence": "43/43 exact normalized-member-set cluster decisions"
+      "status": "pending",
+      "evidence": "41/43 exact normalized-member-set cluster decisions"
     },
     {
       "requirement": "2. Prove all four vertical-slice outcomes",
@@ -300,7 +300,7 @@
     {
       "requirement": "6. Report concept and class counts separately",
       "status": "proven",
-      "evidence": "63 concepts, 198 contracted public classes, 1094 production widget/state classes"
+      "evidence": "63 concepts, 198 contracted public classes, 1100 production widget/state classes"
     },
     {
       "requirement": "7. Complete live Figma/Claude Badge + Field round trip",
@@ -310,7 +310,7 @@
     {
       "requirement": "8. Reduce remaining work to a bounded queue",
       "status": "proven",
-      "evidence": "3 generated owner/live gates and 55 advisory ranked-pair candidates"
+      "evidence": "3 generated owner/live gates and 56 advisory ranked-pair candidates"
     }
   ]
 }

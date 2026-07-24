@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -396,6 +398,159 @@ void main() {
       expect(
         openedUri.toString(),
         'https://www.google.com/maps/dir/?api=1&destination=22.7196%2C75.8577&travelmode=walking',
+      );
+    });
+
+    testWidgets('event location route reports a false directions result', (
+      tester,
+    ) async {
+      final event = buildEvent(
+        id: 'directions-false',
+        meetingPoint: 'Race Course Road main gate',
+        startingPointLat: 22.7196,
+        startingPointLng: 75.8577,
+      );
+
+      await pumpEventsTestApp(
+        tester,
+        EventLocationMapRouteScreen(
+          eventId: event.id,
+          enableNetworkTiles: false,
+        ),
+        overrides: [
+          eventDetailViewModelProvider(event.id).overrideWithValue(
+            AsyncData<EventDetailViewModel?>(
+              EventDetailViewModel(
+                event: event,
+                userProfile: null,
+                reviews: const [],
+                isAuthenticated: false,
+                isHost: false,
+                isSaved: false,
+                participation: null,
+              ),
+            ),
+          ),
+          externalUrlLauncherProvider.overrideWithValue(
+            (uri, {mode = LaunchMode.platformDefault}) async => false,
+          ),
+        ],
+      );
+
+      await tester.tap(find.text('Get directions'));
+      await tester.pump();
+
+      expect(
+        find.text('Could not open directions. Please try again.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets(
+      'event location route guards duplicate directions taps while pending',
+      (tester) async {
+        final launchResult = Completer<bool>();
+        var launchCallCount = 0;
+        final event = buildEvent(
+          id: 'directions-pending',
+          meetingPoint: 'Race Course Road main gate',
+          startingPointLat: 22.7196,
+          startingPointLng: 75.8577,
+        );
+
+        await pumpEventsTestApp(
+          tester,
+          EventLocationMapRouteScreen(
+            eventId: event.id,
+            enableNetworkTiles: false,
+          ),
+          overrides: [
+            eventDetailViewModelProvider(event.id).overrideWithValue(
+              AsyncData<EventDetailViewModel?>(
+                EventDetailViewModel(
+                  event: event,
+                  userProfile: null,
+                  reviews: const [],
+                  isAuthenticated: false,
+                  isHost: false,
+                  isSaved: false,
+                  participation: null,
+                ),
+              ),
+            ),
+            externalUrlLauncherProvider.overrideWithValue((
+              uri, {
+              mode = LaunchMode.platformDefault,
+            }) {
+              launchCallCount += 1;
+              return launchResult.future;
+            }),
+          ],
+        );
+
+        await tester.tap(find.byType(CatchButton));
+        await tester.pump();
+        expect(
+          tester.widget<CatchButton>(find.byType(CatchButton)).isLoading,
+          isTrue,
+        );
+
+        await tester.tap(find.byType(CatchButton));
+        await tester.pump();
+        expect(launchCallCount, 1);
+
+        launchResult.complete(true);
+        await tester.pump();
+        expect(
+          tester.widget<CatchButton>(find.byType(CatchButton)).isLoading,
+          isFalse,
+        );
+      },
+    );
+
+    testWidgets('event location route reports a thrown directions failure', (
+      tester,
+    ) async {
+      final event = buildEvent(
+        id: 'directions-error',
+        meetingPoint: 'Race Course Road main gate',
+        startingPointLat: 22.7196,
+        startingPointLng: 75.8577,
+      );
+
+      await pumpEventsTestApp(
+        tester,
+        EventLocationMapRouteScreen(
+          eventId: event.id,
+          enableNetworkTiles: false,
+        ),
+        overrides: [
+          eventDetailViewModelProvider(event.id).overrideWithValue(
+            AsyncData<EventDetailViewModel?>(
+              EventDetailViewModel(
+                event: event,
+                userProfile: null,
+                reviews: const [],
+                isAuthenticated: false,
+                isHost: false,
+                isSaved: false,
+                participation: null,
+              ),
+            ),
+          ),
+          externalUrlLauncherProvider.overrideWithValue(
+            (uri, {mode = LaunchMode.platformDefault}) async =>
+                throw StateError('launcher unavailable'),
+          ),
+        ],
+      );
+
+      await tester.tap(find.text('Get directions'));
+      await tester.pump();
+
+      expect(
+        find.text('Could not open directions. Please try again.'),
+        findsOneWidget,
       );
     });
 

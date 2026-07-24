@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/storage/organizer_logo_images.schema.json",
+  "title": "OrganizerLogoImagesStoragePath",
+  "description": "Original organizer logos stored at organizers/{organizerId}/logo/{fileName}.",
+  "type": "object",
+  "x-storage-rules-match": "match /organizers/{organizerId}/logo/{fileName}",
+  "x-storage-read": "public",
+  "x-storage-write": "organizer owner or manager",
+  "x-storage-content-type-pattern": "image/.*",
+  "x-storage-file-name-pattern": "[0-9]+\\.(jpg|jpeg|png)",
+  "x-storage-max-bytes": 8388608,
+  "x-storage-rules-test-file": "functions/test/storage.rules.test.cjs",
+  "x-storage-related-collection": "organizers",
+  "x-storage-known-consumers": ["lib/organizers/data/organizers_repository.dart"],
+  "properties": {
+    "organizerId": {"type": "string", "description": "Organizer document id; path segment."},
+    "fileName": {"type": "string", "description": "Required pattern: {timestamp}.{ext}."}
+  }
+}

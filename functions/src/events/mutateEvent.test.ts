@@ -269,6 +269,7 @@ function club(overrides: FakeData = {}): FakeData {
 
 function event(overrides: FakeData = {}): FakeData {
   return {
+    organizerId: "club-1",
     clubId: "club-1",
     startTime: ts("2026-05-02T01:30:00.000Z"),
     endTime: ts("2026-05-02T02:30:00.000Z"),
@@ -303,6 +304,7 @@ function event(overrides: FakeData = {}): FakeData {
 function payload(overrides: FakeData = {}): FakeData {
   return {
     eventId: "event-1",
+    organizerId: "club-1",
     clubId: "club-1",
     startTimeMillis: Date.parse("2026-05-02T01:30:00.000Z"),
     endTimeMillis: Date.parse("2026-05-02T02:30:00.000Z"),
@@ -349,6 +351,7 @@ test("createEventHandler creates a server-owned event for the club host",
     assert.deepEqual(h.rateLimitCalls, ["host-1:createEvent"]);
     assert.deepEqual(h.firestore.get("events/event-1"), {
       clubId: "club-1",
+      organizerId: "club-1",
       startTime: ts("2026-05-02T01:30:00.000Z"),
       endTime: ts("2026-05-02T02:30:00.000Z"),
       meetingPoint: "Carter Road",
@@ -801,24 +804,25 @@ test("createEventHandler notifies active club members about a new event",
     await createEventHandler(request("host-1", payload()), h.deps);
 
     const runner1Notification = h.firestore.get(
-      "notifications/runner-1/items/clubUpdate_event-1"
+      "notifications/runner-1/items/organizerUpdate_event-1"
     );
     const runner2Notification = h.firestore.get(
-      "notifications/runner-2/items/clubUpdate_event-1"
+      "notifications/runner-2/items/organizerUpdate_event-1"
     );
     const hostNotification = h.firestore.get(
-      "notifications/host-1/items/clubUpdate_event-1"
+      "notifications/host-1/items/organizerUpdate_event-1"
     );
     const leftMemberNotification = h.firestore.get(
-      "notifications/runner-3/items/clubUpdate_event-1"
+      "notifications/runner-3/items/organizerUpdate_event-1"
     );
 
     assert.equal(runner1Notification?.uid, "runner-1");
-    assert.equal(runner1Notification?.type, "clubUpdate");
+    assert.equal(runner1Notification?.type, "organizerUpdate");
     assert.equal(runner1Notification?.title, "Indore Striders posted an event");
     assert.equal(runner1Notification?.body, "5 km from Carter Road.");
     assert.equal(runner1Notification?.eventId, "event-1");
     assert.equal(runner1Notification?.clubId, "club-1");
+    assert.equal(runner1Notification?.organizerId, "club-1");
     assert.equal(runner1Notification?.readAt, null);
     assert.equal(runner2Notification?.uid, "runner-2");
     assert.equal(hostNotification, undefined);
@@ -827,9 +831,10 @@ test("createEventHandler notifies active club members about a new event",
       token: "token-1",
       title: "Indore Striders posted an event",
       body: "5 km from Carter Road.",
-      type: "clubUpdate",
+      type: "organizerUpdate",
       eventId: "event-1",
       clubId: "club-1",
+      organizerId: "club-1",
     }]);
   }
 );
@@ -1004,6 +1009,7 @@ test("updateEventHandler notifies participants for location changes",
       type: "eventUpdated",
       eventId: "event-1",
       clubId: "club-1",
+      organizerId: "club-1",
     }]);
   }
 );
@@ -1133,6 +1139,7 @@ test("cancelEventHandler marks the event cancelled and notifies participants",
       type: "eventCancelled",
       eventId: "event-1",
       clubId: "club-1",
+      organizerId: "club-1",
     }]);
 
     await cancelEventHandler(

@@ -73,6 +73,7 @@ export function ClaimFlowWorkspace({
   ...props
 }: FormHTMLAttributes<HTMLFormElement> & {
   children: ReactNode;
+  pending?: boolean;
 }) {
   return (
     <Form {...props} className={classNames("claim-flow__workspace", className)}>

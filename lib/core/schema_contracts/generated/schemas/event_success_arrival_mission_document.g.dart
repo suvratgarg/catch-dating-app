@@ -49,6 +49,12 @@ const schemaEventSuccessArrivalMissionDocumentSchema = <String, Object?>{
       'maxLength': 180,
       'x-catch-ownership': 'callable-owned',
     },
+    'organizerId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
+    },
     'observerUid': <String, Object?>{
       'type': 'string',
       'minLength': 1,

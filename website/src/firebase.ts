@@ -1,14 +1,14 @@
 import type {FirebaseApp} from "firebase/app";
 import type {Auth, User} from "firebase/auth";
 import type {Functions} from "firebase/functions";
-import type {CreatePublicClubReviewCallablePayload} from "../../functions/src/shared/generated/createPublicClubReviewCallablePayload";
-import type {CreatePublicClubReviewCallableResponse} from "../../functions/src/shared/generated/createPublicClubReviewCallableResponse";
-import type {ListPublicClubReviewsCallablePayload} from "../../functions/src/shared/generated/listPublicClubReviewsCallablePayload";
-import type {ListPublicClubReviewsCallableResponse} from "../../functions/src/shared/generated/listPublicClubReviewsCallableResponse";
+import type {CreatePublicOrganizerReviewCallablePayload} from "../../functions/src/shared/generated/createPublicOrganizerReviewCallablePayload";
+import type {CreatePublicOrganizerReviewCallableResponse} from "../../functions/src/shared/generated/createPublicOrganizerReviewCallableResponse";
+import type {ListPublicOrganizerReviewsCallablePayload} from "../../functions/src/shared/generated/listPublicOrganizerReviewsCallablePayload";
+import type {ListPublicOrganizerReviewsCallableResponse} from "../../functions/src/shared/generated/listPublicOrganizerReviewsCallableResponse";
 import type {RecordOrganizerAnalyticsEventCallablePayload} from "../../functions/src/shared/generated/recordOrganizerAnalyticsEventCallablePayload";
 import type {RecordOrganizerAnalyticsEventCallableResponse} from "../../functions/src/shared/generated/recordOrganizerAnalyticsEventCallableResponse";
-import type {RequestClubClaimCallablePayload} from "../../functions/src/shared/generated/requestClubClaimCallablePayload";
-import type {RequestClubClaimCallableResponse} from "../../functions/src/shared/generated/requestClubClaimCallableResponse";
+import type {RequestOrganizerClaimCallablePayload} from "../../functions/src/shared/generated/requestOrganizerClaimCallablePayload";
+import type {RequestOrganizerClaimCallableResponse} from "../../functions/src/shared/generated/requestOrganizerClaimCallableResponse";
 import {
   appCheckSiteKey,
   claimFirebaseConfigured,
@@ -17,19 +17,21 @@ import {
   publicReviewsFirebaseConfigured,
 } from "./firebaseConfig";
 
-export type RequestClubClaimPayload = RequestClubClaimCallablePayload;
-export type ClubClaimRole = RequestClubClaimPayload["requesterRole"];
-export type RequestClubClaimResponse = RequestClubClaimCallableResponse;
-export type PublicClubReview = CreatePublicClubReviewCallableResponse["review"];
+export type RequestOrganizerClaimPayload = RequestOrganizerClaimCallablePayload;
+export type OrganizerClaimRole = RequestOrganizerClaimPayload["requesterRole"];
+export type RequestOrganizerClaimResponse = RequestOrganizerClaimCallableResponse;
+export type PublicOrganizerReview =
+  CreatePublicOrganizerReviewCallableResponse["review"];
 
-export type CreatePublicClubReviewPayload =
-  CreatePublicClubReviewCallablePayload;
-export type CreatePublicClubReviewResponse =
-  CreatePublicClubReviewCallableResponse;
+export type CreatePublicOrganizerReviewPayload =
+  CreatePublicOrganizerReviewCallablePayload;
+export type CreatePublicOrganizerReviewResponse =
+  CreatePublicOrganizerReviewCallableResponse;
 
-export type ListPublicClubReviewsPayload = ListPublicClubReviewsCallablePayload;
-export type ListPublicClubReviewsResponse =
-  ListPublicClubReviewsCallableResponse;
+export type ListPublicOrganizerReviewsPayload =
+  ListPublicOrganizerReviewsCallablePayload;
+export type ListPublicOrganizerReviewsResponse =
+  ListPublicOrganizerReviewsCallableResponse;
 
 export type RecordOrganizerAnalyticsEventPayload =
   RecordOrganizerAnalyticsEventCallablePayload;
@@ -92,50 +94,50 @@ export async function signOutClaimUser() {
   await signOut(runtime.auth);
 }
 
-export async function requestClubClaim(
-  payload: RequestClubClaimPayload
-): Promise<RequestClubClaimResponse> {
+export async function requestOrganizerClaim(
+  payload: RequestOrganizerClaimPayload
+): Promise<RequestOrganizerClaimResponse> {
   const runtime = await getFirebaseRuntime();
   if (!runtime || !claimFirebaseConfigured) {
     throw new Error("Claim requests are not configured for this build.");
   }
   const {httpsCallable} = await import("firebase/functions");
   const callable = httpsCallable<
-    RequestClubClaimPayload,
-    RequestClubClaimResponse
-  >(runtime.functions, "requestClubClaim");
+    RequestOrganizerClaimPayload,
+    RequestOrganizerClaimResponse
+  >(runtime.functions, "requestOrganizerClaim");
   const result = await callable(payload);
   return result.data;
 }
 
-export async function createPublicClubReview(
-  payload: CreatePublicClubReviewPayload
-): Promise<CreatePublicClubReviewResponse> {
+export async function createPublicOrganizerReview(
+  payload: CreatePublicOrganizerReviewPayload
+): Promise<CreatePublicOrganizerReviewResponse> {
   const runtime = await getFirebaseRuntime();
   if (!runtime || !publicReviewsFirebaseConfigured) {
     throw new Error("Public review writes are not configured for this build.");
   }
   const {httpsCallable} = await import("firebase/functions");
   const callable = httpsCallable<
-    CreatePublicClubReviewPayload,
-    CreatePublicClubReviewResponse
-  >(runtime.functions, "createPublicClubReview");
+    CreatePublicOrganizerReviewPayload,
+    CreatePublicOrganizerReviewResponse
+  >(runtime.functions, "createPublicOrganizerReview");
   const result = await callable(payload);
   return result.data;
 }
 
-export async function listPublicClubReviews(
-  payload: ListPublicClubReviewsPayload
-): Promise<ListPublicClubReviewsResponse> {
+export async function listPublicOrganizerReviews(
+  payload: ListPublicOrganizerReviewsPayload
+): Promise<ListPublicOrganizerReviewsResponse> {
   const runtime = await getFirebaseRuntime();
   if (!runtime || !publicReviewsFirebaseConfigured) {
     return {reviews: []};
   }
   const {httpsCallable} = await import("firebase/functions");
   const callable = httpsCallable<
-    ListPublicClubReviewsPayload,
-    ListPublicClubReviewsResponse
-  >(runtime.functions, "listPublicClubReviews");
+    ListPublicOrganizerReviewsPayload,
+    ListPublicOrganizerReviewsResponse
+  >(runtime.functions, "listPublicOrganizerReviews");
   const result = await callable(payload);
   return result.data;
 }

@@ -161,11 +161,13 @@ class CatchGradedImage extends StatelessWidget {
 
   static Color _multiplyTintColor(Color color) {
     final strength = color.a.clamp(0.0, 1.0).toDouble();
+    // color-sweep:allow: theme-independent art blend endpoint is absolute white.
     return Color.lerp(Colors.white, color.withValues(alpha: 1), strength)!;
   }
 
   static Color _screenTintColor(Color color) {
     final strength = color.a.clamp(0.0, 1.0).toDouble();
+    // color-sweep:allow: theme-independent art blend endpoint is absolute black.
     return Color.lerp(Colors.black, color.withValues(alpha: 1), strength)!;
   }
 }

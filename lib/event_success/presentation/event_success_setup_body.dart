@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
@@ -99,6 +100,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
         draft.structureConfig.unitKind != EventSuccessUnitKind.wholeGroup;
 
     return CatchSectionList(
+      emptyStateOmitted: true,
       children: [
         CatchSection.fieldRows(
           first: true,
@@ -124,6 +126,8 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               title: context
                   .l10n
                   .eventSuccessEventSuccessSetupBodyTitleYourGoalForTheEvent,
+              contract:
+                  CatchContractConstraints.eventSuccessPlanDocumentHostGoal,
               controller: _hostGoalController,
               open: _hostGoalOpen,
               onOpenChanged: (open) =>
@@ -132,7 +136,6 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               onSubmit: _submitHostGoal,
               enabled: widget.editable,
               inputHint: draft.hostGoal,
-              inputFormatters: [LengthLimitingTextInputFormatter(300)],
               minLines: 2,
               maxLines: 4,
               textInputAction: TextInputAction.newline,
@@ -147,6 +150,8 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               title: context
                   .l10n
                   .eventSuccessEventSuccessSetupBodyTitleMessageToAttendees,
+              contract: CatchContractConstraints
+                  .eventSuccessPlanDocumentAttendeePrompt,
               controller: _attendeePromptController,
               open: _attendeePromptOpen,
               onOpenChanged: (open) =>
@@ -165,8 +170,8 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                         widget.attendeePrompt,
                       ),
                     ),
+                style: CatchTextStyles.supporting(context),
               ),
-              inputFormatters: [LengthLimitingTextInputFormatter(300)],
               minLines: 2,
               maxLines: 4,
               textInputAction: TextInputAction.newline,
@@ -293,6 +298,9 @@ class EventSuccessModuleRows extends StatelessWidget {
             title: context
                 .l10n
                 .eventSuccessEventSuccessSetupBodyTextMatchClueQuestions,
+            contract: CatchContractConstraints
+                .mobileFormStateEventSuccessQuestionnaireMode,
+            contractValue: (value) => value.name,
             values: _QuestionnaireMode.values,
             itemTitle: (mode) => switch (mode) {
               _QuestionnaireMode.off =>
@@ -326,6 +334,8 @@ class EventSuccessModuleRows extends StatelessWidget {
           CatchField.toggle(
             key: ValueKey('eventSuccessModule-${module.id}'),
             title: module.title,
+            contract: CatchContractConstraints
+                .mobileFormStateEventSuccessModuleSelected,
             body: _recommendation.reason,
             badgeLabel: _recommendationBadgeLabel(_recommendation),
             bodyMaxLines: 3,
@@ -351,6 +361,9 @@ class EventSuccessModuleRows extends StatelessWidget {
               title: context
                   .l10n
                   .eventSuccessEventSuccessSetupBodyLabelSwitchPartnersEvery,
+              contract: CatchContractConstraints
+                  .eventSuccessPlanDocumentStructureConfigRotationIntervalMinutes,
+              contractValue: (value) => value?.toString() ?? '',
               values: const <int?>[null, 10, 15, 20, 30],
               itemLabel: (value) => switch (value) {
                 null =>
@@ -381,6 +394,9 @@ class EventSuccessModuleRows extends StatelessWidget {
               title: context
                   .l10n
                   .eventSuccessEventSuccessSetupBodyLabelRevealCountdown,
+              contract: CatchContractConstraints
+                  .eventSuccessPlanDocumentStructureConfigRevealCountdownSeconds,
+              contractValue: (value) => value.toString(),
               values: const [0, 5, 10, 15],
               itemLabel: (value) => switch (value) {
                 0 => context.l10n.eventSuccessEventSuccessSetupBodyLabelOff,

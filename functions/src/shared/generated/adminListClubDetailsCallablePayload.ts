@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Callable payload accepted by adminListClubDetails. This lists canonical organizer profile rows from clubs/{clubId} for the admin publishing workspace.
+ * Deprecated compatibility callable payload accepted by adminListClubDetails. The handler reads canonical organizer profile rows from organizers/{organizerId}; new clients use adminListOrganizerDetails.
  */
 export interface AdminListClubDetailsCallablePayload {
   query?: string | null;

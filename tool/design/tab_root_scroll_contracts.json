@@ -42,7 +42,7 @@
   ],
   "branches": [
     {
-      "branchKey": "_dashboardShellKey",
+      "branchKey": "keys.dashboard",
       "routeName": "Routes.dashboardScreen.name",
       "owners": [
         {
@@ -76,7 +76,7 @@
       ]
     },
     {
-      "branchKey": "_exploreShellKey",
+      "branchKey": "keys.explore",
       "routeName": "Routes.exploreScreen.name",
       "owners": [
         {
@@ -88,7 +88,7 @@
       ]
     },
     {
-      "branchKey": "_chatsShellKey",
+      "branchKey": "keys.chats",
       "routeName": "Routes.matchesListScreen.name",
       "owners": [
         {
@@ -101,7 +101,7 @@
       ]
     },
     {
-      "branchKey": "_profileShellKey",
+      "branchKey": "keys.profile",
       "routeName": "Routes.profileScreen.name",
       "owners": [
         {
@@ -138,7 +138,7 @@
       ]
     },
     {
-      "branchKey": "_hostTodayShellKey",
+      "branchKey": "keys.hostToday",
       "routeName": "Routes.hostHomeScreen.name",
       "owners": [
         {
@@ -151,7 +151,7 @@
       ]
     },
     {
-      "branchKey": "_hostEventsShellKey",
+      "branchKey": "keys.hostEvents",
       "routeName": "Routes.hostEventsScreen.name",
       "owners": [
         {
@@ -164,7 +164,7 @@
       ]
     },
     {
-      "branchKey": "_hostInboxShellKey",
+      "branchKey": "keys.hostInbox",
       "routeName": "Routes.hostInboxScreen.name",
       "owners": [
         {
@@ -177,7 +177,7 @@
       ]
     },
     {
-      "branchKey": "_hostOrganizerShellKey",
+      "branchKey": "keys.hostOrganizer",
       "routeName": "Routes.hostOrganizerScreen.name",
       "owners": [
         {

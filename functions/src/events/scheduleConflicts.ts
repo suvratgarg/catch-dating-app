@@ -9,10 +9,11 @@ import {
 
 const MINUTE_MS = 60 * 1000;
 const CLUB_LOCK_COLLECTION = "clubScheduleLocks";
+const ORGANIZER_LOCK_COLLECTION = "organizerScheduleLocks";
 const USER_LOCK_COLLECTION = "userEventScheduleLocks";
 const USER_SCHEDULE_STATUSES = ["signedUp", "waitlisted", "attended"];
 
-type LockOwner = "club" | "user";
+type LockOwner = "club" | "organizer" | "user";
 
 interface ScheduleWindow {
   startTimeMillis: number;
@@ -21,6 +22,7 @@ interface ScheduleWindow {
 
 interface ClaimClubScheduleParams extends ScheduleWindow {
   clubId: string;
+  organizerId?: string;
   eventId: string;
 }
 
@@ -44,6 +46,7 @@ interface ScheduleLockDocument {
   slot: number;
   eventId: string;
   clubId?: string;
+  organizerId?: string;
   uid?: string;
   startTimeMillis: number;
   endTimeMillis: number;
@@ -90,15 +93,16 @@ export async function claimClubScheduleInTransaction(
   await claimLocksInTransaction(
     tx,
     db,
-    clubLockRefs(db, params.clubId, params),
+    clubLockRefs(db, params.clubId, params, params.organizerId !== undefined),
     params.eventId,
     "This club already has an event during that time.",
     (slot) => ({
-      ownerType: "club",
+      ownerType: params.organizerId ? "organizer" : "club",
       ownerId: params.clubId,
       slot,
       eventId: params.eventId,
       clubId: params.clubId,
+      organizerId: params.organizerId ?? params.clubId,
       startTimeMillis: params.startTimeMillis,
       endTimeMillis: params.endTimeMillis,
     })
@@ -119,7 +123,12 @@ export async function replaceClubScheduleInTransaction(
   assertValidEventTimeRange(params.startTimeMillis, params.endTimeMillis);
   await assertNoClubConflictByEventsQuery(tx, db, params);
 
-  const nextRefs = clubLockRefs(db, params.clubId, params);
+  const nextRefs = clubLockRefs(
+    db,
+    params.clubId,
+    params,
+    params.organizerId !== undefined
+  );
   await claimLocksInTransaction(
     tx,
     db,
@@ -127,11 +136,12 @@ export async function replaceClubScheduleInTransaction(
     params.eventId,
     "This club already has an event during that time.",
     (slot) => ({
-      ownerType: "club",
+      ownerType: params.organizerId ? "organizer" : "club",
       ownerId: params.clubId,
       slot,
       eventId: params.eventId,
       clubId: params.clubId,
+      organizerId: params.organizerId ?? params.clubId,
       startTimeMillis: params.startTimeMillis,
       endTimeMillis: params.endTimeMillis,
     })
@@ -141,7 +151,7 @@ export async function replaceClubScheduleInTransaction(
   for (const {ref, slot} of clubLockRefs(db, params.clubId, {
     startTimeMillis: params.previousStartTimeMillis,
     endTimeMillis: params.previousEndTimeMillis,
-  })) {
+  }, params.organizerId !== undefined)) {
     if (!nextSlots.has(slot)) {
       tx.delete(ref);
     }
@@ -159,7 +169,12 @@ export function releaseClubScheduleInTransaction(
   db: FirebaseFirestore.Firestore,
   params: ClaimClubScheduleParams
 ) {
-  for (const {ref} of clubLockRefs(db, params.clubId, params)) {
+  for (const {ref} of clubLockRefs(
+    db,
+    params.clubId,
+    params,
+    params.organizerId !== undefined
+  )) {
     tx.delete(ref);
   }
 }
@@ -189,6 +204,7 @@ export async function claimUserEventScheduleInTransaction(
       slot,
       eventId: params.eventId,
       clubId: params.clubId,
+      organizerId: params.organizerId ?? params.clubId,
       uid: params.uid,
       startTimeMillis: params.startTimeMillis,
       endTimeMillis: params.endTimeMillis,
@@ -276,11 +292,13 @@ function scheduleSlots(params: ScheduleWindow): number[] {
 function clubLockRefs(
   db: FirebaseFirestore.Firestore,
   clubId: string,
-  params: ScheduleWindow
+  params: ScheduleWindow,
+  canonicalOrganizer = false
 ) {
   return scheduleSlots(params).map((slot) => ({
     slot,
-    ref: db.collection(CLUB_LOCK_COLLECTION)
+    ref: db.collection(canonicalOrganizer ?
+      ORGANIZER_LOCK_COLLECTION : CLUB_LOCK_COLLECTION)
       .doc(`${clubId}_${slot}`),
   }));
 }

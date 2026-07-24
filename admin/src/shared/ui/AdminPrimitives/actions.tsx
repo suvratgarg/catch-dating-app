@@ -12,6 +12,7 @@ import type {
 } from "react";
 import {ToggleButtonControl, ToggleGroupControl} from "@catch/web-ui";
 import {CheckCircle2, FileWarning, Lock, RefreshCw} from "lucide-react";
+import {useAdminOperationPending} from "../../pendingOperation";
 
 import {
   classNames,
@@ -74,6 +75,8 @@ export function AdminLinkButton({
   className = "",
   icon,
   label,
+  onClick,
+  tabIndex,
   variant = "ghost",
   ...props
 }: {
@@ -83,16 +86,28 @@ export function AdminLinkButton({
   label?: string;
   variant?: "ghost" | "icon";
 } & AnchorHTMLAttributes<HTMLAnchorElement>) {
+  const operationPending = useAdminOperationPending();
   const classes = [
     variant === "icon" ? "icon-button" : "ghost-button",
     className,
   ].filter(Boolean).join(" ");
   return (
     <a
+      {...props}
+      aria-disabled={operationPending || undefined}
       aria-label={label}
       className={classes}
+      data-pending-operation-blocked={operationPending || undefined}
+      onClick={(event) => {
+        if (operationPending) {
+          event.preventDefault();
+          event.stopPropagation();
+          return;
+        }
+        onClick?.(event);
+      }}
+      tabIndex={operationPending ? -1 : tabIndex}
       title={props.title ?? label}
-      {...props}
     >
       {icon}
       {children}
@@ -132,12 +147,14 @@ export function AdminNavButton({
   label: string;
   selected: boolean;
 } & ButtonHTMLAttributes<HTMLButtonElement>) {
+  const operationPending = useAdminOperationPending();
   return (
     <button
       aria-label={label}
       className={`nav-item ${selected ? "selected" : ""}`}
-      type={type}
       {...props}
+      disabled={operationPending || props.disabled}
+      type={type}
     >
       {icon}
       <span className="nav-item-label">{label}</span>

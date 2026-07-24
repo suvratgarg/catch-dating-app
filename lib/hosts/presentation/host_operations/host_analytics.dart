@@ -71,6 +71,7 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
     final analyticsAsync = ref.watch(hostAnalyticsProvider(query));
     return CatchAsyncValueView<HostAnalyticsReport>(
       value: analyticsAsync,
+      onRetry: () => ref.invalidate(hostAnalyticsProvider(query)),
       loadingBuilder: (_) => const HostAnalyticsReportSkeleton(),
       errorBuilder: (_, error, _) => CatchErrorState.fromError(
         error,
@@ -342,6 +343,13 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
         CatchSection.divided(
           title: context.l10n.hostsHostAnalyticsLabelPerformancePeriod,
           child: CatchOptionGroup<HostClubInsightsRangePreset>(
+            contract: CatchContractConstraints
+                .hostAnalyticsQueryCallablePayloadRangePreset,
+            contractValue: (preset) => switch (preset) {
+              HostClubInsightsRangePreset.thirtyDays => '30d',
+              HostClubInsightsRangePreset.ninetyDays => '90d',
+              HostClubInsightsRangePreset.twelveMonths => '12m',
+            },
             selected: widget.rangePreset,
             onChanged: widget.onRangeChanged,
             options: [
@@ -382,6 +390,9 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
               CatchField.control(
                 key: const ValueKey('host-analytics-more-metrics'),
                 title: context.l10n.hostsHostAnalyticsLabelMoreMetrics,
+                contractExemption:
+                    'Disclosure-only analytics layout; no editable value is '
+                    'submitted or persisted.',
                 body: context.l10n.hostsHostAnalyticsBodyCheckoutChatsAndSaves,
                 open: _moreMetricsOpen,
                 onOpenChanged: (open) {

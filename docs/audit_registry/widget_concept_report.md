@@ -1,7 +1,7 @@
 ---
 doc_id: widget_concept_report
 version: 2.0.0
-updated: 2026-07-19
+updated: 2026-07-22
 owner: widget_consolidation
 status: generated
 generated_by: tool/design/build_widget_concept_report.mjs
@@ -23,11 +23,11 @@ design-sync manifest. Do not edit it by hand. The machine-readable companion is
 | Contracted public widget classes | — | 198 | Primaries and members are counted separately from concepts. |
 | Member APIs | — | 118 (1.87 per concept) | Public seams do not inflate concept count. |
 | Unclassified contracted entries | — | 0 | Must remain zero. |
-| Production widget/state classes | — | 1094 | Exhaustive generated inventory. |
+| Production widget/state classes | — | 1100 | Exhaustive generated inventory. |
 | Instantiated concept primaries | — | 62 | One contracted primary is not a runtime Widget declaration. |
 | Public member widget classes | — | 116 | Role is inherited from the component contract. |
-| Public composition widget classes | — | 514 | Excluded from concept count. |
-| Public screen widget classes | — | 268 | Excluded from concept count. |
+| Public composition widget classes | — | 517 | Excluded from concept count. |
+| Public screen widget classes | — | 267 | Excluded from concept count. |
 | Unclassified public widgets | — | 0 | Must remain zero. |
 | Widgetbook-complete concept primaries | — | 62/62 | Evidence is role-derived. |
 | Widgetbook-covered member classes | — | 116/116 | Reviewed directly or under the parent family. |
@@ -40,10 +40,10 @@ design-sync manifest. Do not edit it by hand. The machine-readable companion is
 | Derived contracted collision groups | 32 |
 | Production collision groups | 32 |
 | Structural similarity clusters | 43 |
-| Clusters with exact normalized-member-set decisions | 43/43 |
-| Unresolved collision families | 0 |
-| Ranked pairs covered by a ledger decision | 145/200 |
-| Unresolved ranked pairs | 55 |
+| Clusters with exact normalized-member-set decisions | 41/43 |
+| Unresolved collision families | 2 |
+| Ranked pairs covered by a ledger decision | 144/200 |
+| Unresolved ranked pairs | 56 |
 | Ledger decisions indexed | 315 |
 
 Similarity is discovery evidence only. A collision or unresolved pair is a
@@ -105,14 +105,14 @@ publish snapshot, plan tier, and generated mappings satisfy the prerequisites.
 
 | Requirement | Status | Authoritative evidence |
 |---|---|---|
-| 1. Reconcile the existing decision ledger | proven | 43/43 exact normalized-member-set cluster decisions |
+| 1. Reconcile the existing decision ledger | pending | 41/43 exact normalized-member-set cluster decisions |
 | 2. Prove all four vertical-slice outcomes | proven | Generated per-family deltas plus role-derived Widgetbook evidence cover member, separation, composition/recipe, and decompression cases |
 | 3. Resolve owner-gated semantic decisions | proven | 0 unresolved semantic owner question(s) |
 | 4. Verify accepted changes and stamp receipts | proven | Focused checks and audit receipt widget-concept-owner-decisions-2026-07-19 are recorded |
 | 5. Give every cataloged entry exactly one governed role | proven | 0 unclassified contracts and 0 unclassified production entries |
-| 6. Report concept and class counts separately | proven | 63 concepts, 198 contracted public classes, 1094 production widget/state classes |
+| 6. Report concept and class counts separately | proven | 63 concepts, 198 contracted public classes, 1100 production widget/state classes |
 | 7. Complete live Figma/Claude Badge + Field round trip | pending | awaiting-figma-file-approval; Code Connect blocked-plan-tier; Claude context current; Claude Design receipt missing |
-| 8. Reduce remaining work to a bounded queue | proven | 3 generated owner/live gates and 55 advisory ranked-pair candidates |
+| 8. Reduce remaining work to a bounded queue | proven | 3 generated owner/live gates and 56 advisory ranked-pair candidates |
 
 The proposal is not complete while any row is `pending`. The local semantic
 implementation and the live, published Badge + Field evidence are independent

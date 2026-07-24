@@ -8,14 +8,14 @@ the Mermaid file is the aggregated feature and shared-layer map.
 
 | Measure | Count |
 |---|---:|
-| Scanned TypeScript modules | 286 |
-| Dependency leaf nodes | 22 |
-| Module edges | 1066 |
-| Dynamic imports | 26 |
-| Re-exports | 63 |
-| Feature/shared groups | 30 |
-| Aggregated feature dependencies | 86 |
-| External packages | 12 |
+| Scanned TypeScript modules | 335 |
+| Dependency leaf nodes | 23 |
+| Module edges | 1236 |
+| Dynamic imports | 29 |
+| Re-exports | 65 |
+| Feature/shared groups | 33 |
+| Aggregated feature dependencies | 100 |
+| External packages | 14 |
 | Unresolved repo-local imports | 0 |
 | Direct website/admin violations | 0 |
 | Runtime module cycles | 6 |

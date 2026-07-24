@@ -17,12 +17,20 @@ export const inMarket = {
       status: "live",
     },
     {
+      id: "in-indore",
+      slug: "indore",
+      label: "Indore",
+      aliases: [],
+      timezone: "Asia/Kolkata",
+      status: "live",
+    },
+    {
       id: "in-delhi",
       slug: "delhi",
       label: "Delhi",
       aliases: ["Delhi NCR", "New Delhi"],
       timezone: "Asia/Kolkata",
-      status: "live",
+      status: "waitlist",
     },
     {
       id: "in-bangalore",
@@ -30,7 +38,7 @@ export const inMarket = {
       label: "Bangalore",
       aliases: ["Bengaluru"],
       timezone: "Asia/Kolkata",
-      status: "live",
+      status: "waitlist",
     },
     {
       id: "in-pune",
@@ -38,7 +46,7 @@ export const inMarket = {
       label: "Pune",
       aliases: [],
       timezone: "Asia/Kolkata",
-      status: "live",
+      status: "waitlist",
     },
     {
       id: "in-hyderabad",
@@ -46,7 +54,7 @@ export const inMarket = {
       label: "Hyderabad",
       aliases: [],
       timezone: "Asia/Kolkata",
-      status: "live",
+      status: "waitlist",
     },
   ],
   featuredCityId: "in-mumbai",

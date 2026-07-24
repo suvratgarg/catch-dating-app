@@ -74,6 +74,10 @@ jobs:
         if: ${{ inputs.surface == 'marketing' }}
         run: npm --workspace catch-marketing run check:organizer-listings
 
+      - name: Check public surface behavior matrix
+        if: ${{ inputs.surface == 'marketing' }}
+        run: npm run design:public-surfaces:check
+
       - name: Check organizer promotion bridge
         if: ${{ inputs.surface == 'marketing' }}
         run: node tool/organizer_intake/check_promotion_bridge.mjs

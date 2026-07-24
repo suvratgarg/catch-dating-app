@@ -1,9 +1,12 @@
 import {websiteCopy} from "@content/generated";
-import {type FormEvent, useState} from "react";
+import {organizerListingCopy} from "@content/organizer";
+import {type FormEvent, useRef, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
 import {claimFirebaseConfigured} from "../../firebaseConfig";
 import type {FormStatus} from "../../shared/forms/types";
-import {isPublicApiEnabled} from "../organizers/selectors";
+import {usePendingRequestRegistration} from "../../shared/pendingRequest";
+import {organizerPolicyForListing} from "../organizers/organizerPolicy";
+import {listingClaimPresentationFor} from "../organizers/listingPresentation";
 import type {HostListing} from "../organizers/types";
 import {
   claimContactValidationMessage,
@@ -17,17 +20,25 @@ import {
 } from "./useClaimRequestMutation";
 
 export function useListingClaimController(listing: HostListing) {
-  const publicApiEnabled = isPublicApiEnabled(listing);
+  const policy = organizerPolicyForListing(listing);
+  const publicApiEnabled = policy.canRequestClaim;
+  const presentation = listingClaimPresentationFor({
+    canRequestClaim: policy.canRequestClaim,
+    isPubliclyReadable: policy.isPubliclyReadable,
+    runtimeAvailable: claimFirebaseConfigured,
+  });
   const [status, setStatus] = useState<FormStatus>({
     message: "",
     tone: "",
   });
 
   const claimRequestMutation = useClaimRequestMutation(listing.id);
+  const submissionInFlight = useRef<Promise<unknown> | null>(null);
+  usePendingRequestRegistration(claimRequestMutation.isPending);
   const {
     authReady,
-    handleSignIn,
-    handleSignOut,
+    handleSignIn: handleAuthSignIn,
+    handleSignOut: handleAuthSignOut,
     isSigningIn,
     user,
   } = useClaimAuthController({
@@ -36,11 +47,29 @@ export function useListingClaimController(listing: HostListing) {
     setStatus,
   });
 
+  async function handleSignIn() {
+    if (submissionInFlight.current) return;
+    await handleAuthSignIn();
+  }
+
+  async function handleSignOut() {
+    if (submissionInFlight.current) return;
+    await handleAuthSignOut();
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submissionInFlight.current) return;
     if (!publicApiEnabled) {
       setStatus({
-        message: listing.publicApi.reason,
+        message: policy.claimRequestReason,
+        tone: "is-error",
+      });
+      return;
+    }
+    if (!claimFirebaseConfigured) {
+      setStatus({
+        message: organizerListingCopy.claims.runtimeUnavailable,
         tone: "is-error",
       });
       return;
@@ -82,16 +111,18 @@ export function useListingClaimController(listing: HostListing) {
       proof_count: proofUrls.length,
     });
 
+    const request = claimRequestMutation.mutateAsync({
+      organizerId: listing.id,
+      requesterName,
+      requesterRole,
+      businessEmail,
+      businessPhone,
+      proofUrls,
+      message,
+    });
+    submissionInFlight.current = request;
     try {
-      await claimRequestMutation.mutateAsync({
-        clubId: listing.id,
-        requesterName,
-        requesterRole,
-        businessEmail,
-        businessPhone,
-        proofUrls,
-        message,
-      });
+      await request;
       form.reset();
       setStatus({
         message: websiteCopy["uselistingclaimcontroller_0106"],
@@ -113,6 +144,10 @@ export function useListingClaimController(listing: HostListing) {
       trackMarketingEvent("listing_claim_submit_error", {
         club_id: listing.id,
       });
+    } finally {
+      if (submissionInFlight.current === request) {
+        submissionInFlight.current = null;
+      }
     }
   }
 
@@ -123,9 +158,10 @@ export function useListingClaimController(listing: HostListing) {
     handleSubmit,
     isConfigured: claimFirebaseConfigured && publicApiEnabled,
     notConfiguredReason: publicApiEnabled ?
-      "Claim submission needs the website Firebase/App Check config." :
-      listing.publicApi.reason,
+      organizerListingCopy.claims.runtimeUnavailable :
+      policy.claimRequestReason,
     publicApiEnabled,
+    presentation,
     isSigningIn,
     isSubmitting: claimRequestMutation.isPending,
     status,

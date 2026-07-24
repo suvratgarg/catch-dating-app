@@ -24,6 +24,7 @@ const schemaReviewDocumentSchema = <String, Object?>{
     'demoOpsCommand',
   ],
   'required': <Object?>[
+    'organizerId',
     'clubId',
     'reviewerUserId',
     'reviewerName',
@@ -33,6 +34,13 @@ const schemaReviewDocumentSchema = <String, Object?>{
   ],
   'properties': <String, Object?>{
     'clubId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'description': 'Deprecated organizer id alias retained while released clients migrate.',
+      'x-catch-ownership': 'callable-owned',
+    },
+    'organizerId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,

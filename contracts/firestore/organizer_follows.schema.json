@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_follows.schema.json",
+  "title": "OrganizerFollowDocument",
+  "description": "Canonical consumer follow edge stored at organizerFollows/{organizerId_uid}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerFollows",
+  "x-firestore-path": "organizerFollows/{followId}",
+  "x-document-id-field": "id",
+  "x-owner": "organizer follow callables; parent followerCount is trigger-owned",
+  "required": ["organizerId", "uid", "status", "pushNotificationsEnabled", "followedAt", "unfollowedAt"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "status": {"type": "string", "enum": ["active", "inactive"], "x-catch-ownership": "callable-owned"},
+    "pushNotificationsEnabled": {"type": "boolean", "x-catch-ownership": "callable-owned"},
+    "followedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "callable-owned"},
+    "unfollowedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp", "x-catch-ownership": "callable-owned"}
+  }
+}

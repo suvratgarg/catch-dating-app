@@ -3,7 +3,6 @@ import {onCall, CallableRequest, HttpsError} from
 import * as admin from "firebase-admin";
 import {
   BlockDocument,
-  ClubDocument,
   EventDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -21,7 +20,11 @@ import {validateCallableWithAjv, requireDoc} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
-import {isClubHost} from "../shared/clubHosts";
+import {
+  eventOrganizerRef,
+  isEventOrganizerManager,
+  requireEventOrganizer,
+} from "../shared/eventOrganizers";
 import {
   AssignmentParticipant,
   assignmentPairKey,
@@ -144,6 +147,7 @@ interface GeneratedGroupRotationSlot {
 interface GeneratedAssignment {
   eventId: string;
   clubId: string;
+  organizerId: string;
   uid: string;
   moduleId: string;
   label: string;
@@ -235,17 +239,11 @@ export async function generateEventSuccessPodsHandler(
       "This event has been cancelled.");
   }
 
-  const clubSnap = await db.collection("clubs").doc(event.clubId).get();
-  if (!clubSnap.exists) {
-    throw new HttpsError("not-found", "Club not found.");
-  }
-  const club = requireDoc<ClubDocument>(
-    clubSnap,
-    "ClubDocument"
-  );
-  if (!isClubHost(club, uid)) {
+  const organizerSnap = await eventOrganizerRef(db, event).get();
+  const organizer = requireEventOrganizer(organizerSnap, event);
+  if (!isEventOrganizerManager(organizer, event, uid)) {
     throw new HttpsError("permission-denied",
-      "Only the club host can generate event pods.");
+      "Only an organizer manager can generate event pods.");
   }
 
   const plan = requireDoc<EventSuccessPlanDocument>(
@@ -314,6 +312,8 @@ export async function generateEventSuccessPodsHandler(
   const assignments = buildAssignments({
     eventId,
     clubId: event.clubId,
+
+    organizerId: event.organizerId ?? event.clubId,
     unitKind: topology.unitKind,
     groups: builtPods.groups,
     groupRounds: builtPods.groupRounds,
@@ -398,6 +398,8 @@ export async function overrideEventSuccessGroupsHandler(
   const assignments = buildAssignments({
     eventId: payload.eventId,
     clubId: event.clubId,
+
+    organizerId: event.organizerId ?? event.clubId,
     unitKind: topology.unitKind,
     groups: topology.rotationsEnabled ? [] : rounds[0].groups,
     groupRounds: topology.rotationsEnabled ? rounds : [],
@@ -470,17 +472,11 @@ async function loadGroupEventContext(
       "This event has been cancelled.");
   }
 
-  const clubSnap = await db.collection("clubs").doc(event.clubId).get();
-  if (!clubSnap.exists) {
-    throw new HttpsError("not-found", "Club not found.");
-  }
-  const club = requireDoc<ClubDocument>(
-    clubSnap,
-    "ClubDocument"
-  );
-  if (!isClubHost(club, uid)) {
+  const organizerSnap = await eventOrganizerRef(db, event).get();
+  const organizer = requireEventOrganizer(organizerSnap, event);
+  if (!isEventOrganizerManager(organizer, event, uid)) {
     throw new HttpsError("permission-denied",
-      "Only the club host can manage event groups.");
+      "Only an organizer manager can manage event groups.");
   }
 
   const plan = requireDoc<EventSuccessPlanDocument>(
@@ -924,6 +920,7 @@ function chunk<T>(values: T[], size: number): T[][] {
 function buildAssignments(params: {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   unitKind: EventSuccessUnitKind;
   groups: AssignmentGroup[];
   groupRounds: AssignmentGroupRound[];
@@ -940,6 +937,7 @@ function buildAssignments(params: {
     return buildGroupRotationAssignments({
       eventId: params.eventId,
       clubId: params.clubId,
+      organizerId: params.organizerId ?? params.clubId,
       unitKind: params.unitKind,
       groupRounds: params.groupRounds,
       rotationIntervalMinutes: params.rotationIntervalMinutes,
@@ -962,6 +960,7 @@ function buildAssignments(params: {
       assignments.set(docId, {
         eventId: params.eventId,
         clubId: params.clubId,
+        organizerId: params.organizerId ?? params.clubId,
         uid: participant.uid,
         moduleId: MICRO_PODS_MODULE_ID,
         label,
@@ -998,6 +997,7 @@ function buildAssignments(params: {
 function buildGroupRotationAssignments(params: {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   unitKind: EventSuccessUnitKind;
   groupRounds: AssignmentGroupRound[];
   rotationIntervalMinutes: number;
@@ -1077,6 +1077,7 @@ function buildGroupRotationAssignments(params: {
     assignments.set(docId, {
       eventId: params.eventId,
       clubId: params.clubId,
+      organizerId: params.organizerId ?? params.clubId,
       uid,
       moduleId: MICRO_PODS_MODULE_ID,
       label: `${unitSingularLabel(params.unitKind)} rotations`,

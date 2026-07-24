@@ -6,7 +6,7 @@ import {
 } from "../../../shared/ui/primitives";
 import {hostListings} from "../data";
 import {featuredOrganizerCardItemForListing} from "../featuredOrganizerCardItem";
-import {isVerifiedListing} from "../selectors";
+import {isPubliclyReadableListing, isVerifiedListing} from "../selectors";
 import type {HostListing} from "../types";
 
 export function RecommendedOrganizersSection({
@@ -17,7 +17,11 @@ export function RecommendedOrganizersSection({
   listings?: HostListing[];
 }) {
   const recommended = listings
-    .filter((listing) => listing.id !== current.id && isVerifiedListing(listing))
+    .filter((listing) =>
+      listing.id !== current.id &&
+      isPubliclyReadableListing(listing) &&
+      isVerifiedListing(listing)
+    )
     .slice(0, 3);
   if (!recommended.length) return null;
   const recommendedItems = recommended.map(featuredOrganizerCardItemForListing);

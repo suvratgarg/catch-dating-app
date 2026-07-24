@@ -59,11 +59,14 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
     }
 
     return CatchSectionList(
+      emptyStateOmitted: true,
       children: [
         CatchFieldInsetScope(
           flush: true,
           child: CatchField.toggle(
             title: title,
+            contract: CatchContractConstraints
+                .createClubCallablePayloadHostDefaultsEventSuccessEnabled,
             body: subtitle,
             bodyMaxLines: 5,
             value: normalized.enabled,

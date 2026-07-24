@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_synthetic_visual_fill.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/organizers/organizers.dart';
 import 'package:flutter/material.dart';
 
 class ExploreClubPolaroidCard extends StatelessWidget {
@@ -37,10 +38,21 @@ class ExploreClubPolaroidCard extends StatelessWidget {
       onTap: onTap,
       paddingKey: const ValueKey('explore-club-polaroid-padding'),
       media: CatchClubCover(club: club),
-      mediaOverlay: Positioned(
-        top: CatchSpacing.s3,
-        right: CatchSpacing.s3,
-        child: CatchBadge.solid(label: state.memberCountLabel),
+      mediaOverlay: Stack(
+        children: [
+          Positioned(
+            top: CatchSpacing.s3,
+            left: CatchSpacing.s3,
+            child: OrganizerAuthorityBadge(
+              state: club.organizerAuthority.trustState,
+            ),
+          ),
+          Positioned(
+            top: CatchSpacing.s3,
+            right: CatchSpacing.s3,
+            child: CatchBadge.solid(label: state.memberCountLabel),
+          ),
+        ],
       ),
       caption: state.caption,
       captionColor: t.ink3,
@@ -51,13 +63,16 @@ class ExploreClubPolaroidCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          ClubHostIdentityLine(
-            hostName: state.hostName,
-            hostAvatarUrl: state.hostAvatarUrl,
-            eyebrow: state.hostEyebrow,
-            avatarSize: 24,
-            trailing: CatchMonoLabel(state.ratingReviewLabel, color: t.ink3),
-          ),
+          if (state.hasHostIdentity)
+            ClubHostIdentityLine(
+              hostName: state.hostName,
+              hostAvatarUrl: state.hostAvatarUrl,
+              eyebrow: state.hostEyebrow,
+              avatarSize: 24,
+              trailing: CatchMonoLabel(state.ratingReviewLabel, color: t.ink3),
+            )
+          else
+            CatchMonoLabel(state.ratingReviewLabel, color: t.ink3),
           if (state.tags.isNotEmpty) ...[gapH8, ExploreClubTags(state: state)],
         ],
       ),
@@ -132,6 +147,10 @@ class ExploreFeedClubRow extends StatelessWidget {
                     context,
                     step: CatchDisplayStep.m,
                   ),
+                ),
+                gapH4,
+                OrganizerAuthorityBadge(
+                  state: club.organizerAuthority.trustState,
                 ),
                 gapH4,
                 Text(

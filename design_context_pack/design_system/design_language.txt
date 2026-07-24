@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.5.7
-updated: 2026-07-19
+version: 1.5.9
+updated: 2026-07-21
 owner: ui_elevation_initiative
 status: active — identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -245,6 +245,10 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   second CTA family.
 - Top-bar action grouping routes through `CatchTopBarActionGroup`; callers do
   not compose parallel header rows.
+- Pushed utility/list and identity chrome routes through
+  `CatchRouteScaffold`; it owns the page surface and shows a divider only when
+  vertical content has actually scrolled beneath the compact bar. Root tab
+  titles are scroll content rather than fixed app bars.
 - Section titles and trailing actions route through `CatchSection` or the
   reviewed contained/content owner. A feature-local header-plus-card shell is
   scanner-visible debt.
@@ -315,6 +319,14 @@ the link in the same change.
 Run `node tool/run.mjs check design:component-lexicon`. The checker remains a
 repo-level JavaScript gate, including for Flutter symbol existence; do not move
 this contract into the `catch_ui_lints` analyzer plugin.
+
+Every component contract also carries either an `enforcement` decision or an
+expiring `waiver`. Enforcement metadata is executable: it generates raw-widget
+steering tables and seeded probes for the Catch analyzer plugin, while a
+bidirectional coverage gate rejects catalog components without a decision and
+implemented `catch_*` diagnostics without a catalog owner. Screen composition
+is registered separately with shell, top-bar, and state policies and validated
+with analyzer resolution.
 
 Structural labels and status badges are separate semantic families. Use
 `catch.ui_label` (`CatchSectionLabel`, website `UiLabel`, admin

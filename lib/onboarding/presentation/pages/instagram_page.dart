@@ -109,6 +109,8 @@ class OnboardingInstagramStep extends StatelessWidget {
           child: CatchField.input(
             controller: controllers.handle,
             title: context.l10n.onboardingInstagramPageTitleHandle,
+            contract:
+                CatchContractConstraints.updateUserProfilePatchInstagramHandle,
             inputHint:
                 context.l10n.onboardingInstagramPagePlaceholderYourhandle,
             textInputAction: TextInputAction.done,

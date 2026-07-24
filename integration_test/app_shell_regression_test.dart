@@ -4,16 +4,15 @@ import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 
 import '../test/clubs/clubs_test_helpers.dart' as club_helpers;
 import '../test/events/events_test_helpers.dart' as event_helpers;
 import '../test/support/profile_readiness_fixtures.dart';
-import '../test/test_pump_helpers.dart';
+import 'support/app_shell_test_binding.dart';
 import 'support/app_shell_test_harness.dart';
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  ensureAppShellTestBinding();
 
   testWidgets('club and event detail routes preserve analytics names', (
     tester,
@@ -42,12 +41,12 @@ void main() {
     );
 
     await openClubDetail(tester, club);
-    await flushTestEventQueue();
-    await pumpFeatureUi(tester);
+    await flushAppShellCallbacks(tester);
+    await pumpAppShellFrames(tester);
 
     await openEventDetail(tester, club: club, event: event);
-    await flushTestEventQueue();
-    await pumpFeatureUi(tester);
+    await flushAppShellCallbacks(tester);
+    await pumpAppShellFrames(tester);
 
     expect(reporter.screenViews, contains(Routes.clubDetailScreen.name));
     expect(reporter.screenViews, contains(Routes.eventDetailScreen.name));
@@ -87,8 +86,8 @@ void main() {
     expect(find.byKey(AppShellKeys.navigationBar), findsOneWidget);
 
     await openSwipeDeck(tester, attendedRun);
-    await flushTestEventQueue();
-    await pumpFeatureUi(tester);
+    await flushAppShellCallbacks(tester);
+    await pumpAppShellFrames(tester);
 
     expect(find.byKey(SwipeKeys.passButton), findsOneWidget);
     expect(find.byKey(AppShellKeys.navigationBar), findsNothing);

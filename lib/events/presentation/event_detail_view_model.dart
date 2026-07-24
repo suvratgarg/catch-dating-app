@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -27,6 +29,7 @@ abstract class EventDetailViewModel with _$EventDetailViewModel {
     required bool isAuthenticated,
     required bool isHost,
     required bool isSaved,
+    @Default(false) bool isClubMember,
     required EventParticipation? participation,
   }) = _EventDetailViewModel;
 }
@@ -60,6 +63,9 @@ AsyncValue<EventDetailViewModel?> eventDetailViewModel(
   final participationAsync = uid == null
       ? const AsyncData<EventParticipation?>(null)
       : ref.watch(watchEventParticipationProvider(eventId, uid));
+  final membershipAsync = uid == null || event == null
+      ? const AsyncData<ClubMembership?>(null)
+      : ref.watch(watchClubMembershipProvider(event.clubId, uid));
 
   return buildEventDetailViewModel(
     eventAsync: eventAsync,
@@ -68,8 +74,13 @@ AsyncValue<EventDetailViewModel?> eventDetailViewModel(
     clubAsync: clubAsync,
     savedEventAsync: savedEventAsync,
     participationAsync: participationAsync,
+    membershipAsync: membershipAsync,
     currentUid: uid,
     isAuthenticated: isAuthenticated,
+    appRole: AppConfig.appRole,
+    authResolved: uidAsync.hasValue || uidAsync.hasError,
+    authError: uidAsync.hasError ? uidAsync.error : null,
+    authStackTrace: uidAsync.hasError ? uidAsync.stackTrace : null,
   );
 }
 
@@ -80,18 +91,36 @@ AsyncValue<EventDetailViewModel?> buildEventDetailViewModel({
   required AsyncValue<Club?> clubAsync,
   required AsyncValue<SavedEvent?> savedEventAsync,
   required AsyncValue<EventParticipation?> participationAsync,
+  AsyncValue<ClubMembership?> membershipAsync =
+      const AsyncData<ClubMembership?>(null),
   required String? currentUid,
   required bool isAuthenticated,
+  AppRole appRole = AppRole.consumer,
+  bool authResolved = true,
+  Object? authError,
+  StackTrace? authStackTrace,
 }) {
-  // Always block on event data (needed for all users).
-  if (eventAsync.isLoading) return const AsyncLoading();
+  // Do not transiently derive guest actions while Firebase auth is resolving.
+  // This is especially important for route-extra fallbacks and save/review
+  // controls whose policy differs for a signed-in viewer.
+  if (!authResolved) return const AsyncLoading();
+
+  if (authError != null) {
+    return AsyncError(authError, authStackTrace ?? StackTrace.current);
+  }
+
+  // Event and organizer authority are blocking for every viewer. Rendering a
+  // public event before its organizer resolves can leak a hidden listing and
+  // transiently show the wrong guest actions.
+  if (eventAsync.isLoading || clubAsync.isLoading) {
+    return const AsyncLoading();
+  }
   // For authenticated users, also block on reviews + user profile.
   if (isAuthenticated) {
     if (userProfileAsync.isLoading ||
         reviewsAsync.isLoading ||
         savedEventAsync.isLoading ||
-        participationAsync.isLoading ||
-        _requiresHostOwnershipResolution(clubAsync)) {
+        participationAsync.isLoading) {
       return const AsyncLoading();
     }
   }
@@ -101,6 +130,12 @@ AsyncValue<EventDetailViewModel?> buildEventDetailViewModel({
     return AsyncError(
       eventAsync.error!,
       eventAsync.stackTrace ?? StackTrace.current,
+    );
+  }
+  if (clubAsync.hasError) {
+    return AsyncError(
+      clubAsync.error!,
+      clubAsync.stackTrace ?? StackTrace.current,
     );
   }
 
@@ -118,31 +153,55 @@ AsyncValue<EventDetailViewModel?> buildEventDetailViewModel({
         reviewsAsync.stackTrace ?? StackTrace.current,
       );
     }
-    if (_requiresHostOwnershipErrorSurface(clubAsync)) {
+    if (savedEventAsync.hasError) {
       return AsyncError(
-        clubAsync.error!,
-        clubAsync.stackTrace ?? StackTrace.current,
+        savedEventAsync.error!,
+        savedEventAsync.stackTrace ?? StackTrace.current,
+      );
+    }
+    if (participationAsync.hasError) {
+      return AsyncError(
+        participationAsync.error!,
+        participationAsync.stackTrace ?? StackTrace.current,
       );
     }
   }
 
   final event = eventAsync.asData?.value;
   if (event == null) return const AsyncData(null);
+  final club = clubAsync.asData?.value;
+  if (club == null) return const AsyncData(null);
+  final isOwnedHostRoute =
+      isAuthenticated && currentUid != null && club.isHostedBy(currentUid);
+  if (appRole.isHost && !isOwnedHostRoute) {
+    return const AsyncData(null);
+  }
+  if (!appRole.isHost && !club.isPubliclyBrowseable) {
+    return const AsyncData(null);
+  }
+  if (isAuthenticated && !isOwnedHostRoute && membershipAsync.isLoading) {
+    return const AsyncLoading();
+  }
+  if (isAuthenticated && !isOwnedHostRoute && membershipAsync.hasError) {
+    return AsyncError(
+      membershipAsync.error!,
+      membershipAsync.stackTrace ?? StackTrace.current,
+    );
+  }
 
   final userProfile = isAuthenticated ? (userProfileAsync.asData?.value) : null;
   final reviews = isAuthenticated
       ? (reviewsAsync.asData?.value ?? const [])
       : const <Review>[];
-  final club = clubAsync.asData?.value;
   final participation = isAuthenticated
       ? participationAsync.asData?.value
       : null;
   final isHost =
-      AppConfig.appRole.isHost &&
+      isAuthenticated && currentUid != null && club.isHostedBy(currentUid);
+  final isSaved = isAuthenticated && savedEventAsync.requireValue != null;
+  final isClubMember =
       isAuthenticated &&
-      currentUid != null &&
-      club?.isHostedBy(currentUid) == true;
-  final isSaved = isAuthenticated && savedEventAsync.asData?.value != null;
+      membershipAsync.asData?.value?.status == ClubMembershipStatus.active;
 
   return AsyncData(
     EventDetailViewModel(
@@ -152,15 +211,8 @@ AsyncValue<EventDetailViewModel?> buildEventDetailViewModel({
       isAuthenticated: isAuthenticated,
       isHost: isHost,
       isSaved: isSaved,
+      isClubMember: isClubMember,
       participation: participation,
     ),
   );
-}
-
-bool _requiresHostOwnershipResolution(AsyncValue<Club?> clubAsync) {
-  return AppConfig.appRole.isHost && clubAsync.isLoading;
-}
-
-bool _requiresHostOwnershipErrorSurface(AsyncValue<Club?> clubAsync) {
-  return AppConfig.appRole.isHost && clubAsync.hasError;
 }

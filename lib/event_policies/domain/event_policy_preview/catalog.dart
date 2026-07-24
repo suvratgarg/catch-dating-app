@@ -342,9 +342,9 @@ class EventPolicyPreviewCatalog {
 
   static const membersOnlyEvent = EventPolicyPreviewScenario(
     id: 'members_only_event',
-    title: 'Members-only club event',
+    title: 'Followers-only organizer event',
     description:
-        'A club member event where non-members are blocked before capacity and pricing become actionable.',
+        'An organizer follower event where non-followers are blocked before capacity and pricing become actionable.',
     policy: EventPolicyBundle(
       admissionPolicy: EventAdmissionPolicy.membersOnly(
         capacityLimit: 20,
@@ -367,7 +367,7 @@ class EventPolicyPreviewCatalog {
       ),
       EventPolicyPreviewProbe(
         id: 'club_member',
-        label: 'Club member',
+        label: 'Organizer follower',
         attendee: EventPolicyPreviewAttendees.straightWoman,
         isClubMember: true,
       ),

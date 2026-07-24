@@ -29,6 +29,10 @@
         "email": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
         "imageUrl": {"$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"},
         "profileImageUrl": {"$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"},
+        "organizerType": {
+          "$ref": "../shared/event_common.schema.json#/definitions/organizerType"
+        },
+        "publicCategoryLabel": {"type": ["string", "null"], "maxLength": 120},
         "entityKind": {
           "type": "string",
           "enum": ["club", "venue", "eventOrganizer", "creatorCommunity", "brand"]

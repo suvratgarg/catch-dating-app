@@ -6,6 +6,8 @@ import 'package:analyzer/dart/ast/token.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/error/error.dart';
 
+import 'catch_ui_rules_tables.g.dart';
+
 const _eventDetailPathFragments = <String>[
   '/lib/events/presentation/widgets/event_detail_',
   '/lib/events/presentation/widgets/event_photo_header.dart',
@@ -32,46 +34,6 @@ const _spacingNamedArguments = <String>{
   'runSpacing',
   'spacing',
   'contentPadding',
-};
-
-const _rawControlConstructors = <String>{
-  'ActionChip',
-  'Badge',
-  'Card',
-  'Chip',
-  'ChoiceChip',
-  'FilterChip',
-  'InputChip',
-  'RawChip',
-};
-
-const _rawControlReplacements = <String, String>{
-  'ActionChip': 'CatchChip',
-  'Badge': 'CatchBadge',
-  'Card': 'CatchSurface or CatchSectionCard',
-  'Chip': 'CatchChip',
-  'ChoiceChip': 'CatchChip',
-  'FilterChip': 'CatchChip',
-  'InputChip': 'CatchChip',
-  'RawChip': 'CatchChip',
-};
-
-const _rawButtonControlConstructors = <String>{
-  'CupertinoButton',
-  'DropdownButton',
-  'ElevatedButton',
-  'FilledButton',
-  'FloatingActionButton',
-  'OutlinedButton',
-  'PopupMenuButton',
-  'Radio',
-  'RangeSlider',
-  'SegmentedButton',
-  'Slider',
-  'Switch',
-  'TextButton',
-  'TextField',
-  'TextFormField',
 };
 
 const _surfaceShellConstructors = <String>{
@@ -136,6 +98,30 @@ const _rawStrokeConstructors = <String>{
 };
 
 const _assetPathConstructors = <String>{'AssetImage', 'ExactAssetImage'};
+
+const _platformPackages = <String>{
+  'connectivity_plus',
+  'firebase_messaging',
+  'image_picker',
+  'share_plus',
+  'url_launcher',
+};
+
+const _lowLevelTypographyRoles = <String>{'bodyS', 'bodyM', 'titleS'};
+
+const _lowLevelTypographyOwnerPaths = <String>{
+  '/lib/core/widgets/catch_bottom_sheet.dart',
+  '/lib/core/widgets/catch_empty_state.dart',
+  '/lib/core/widgets/catch_search_field.dart',
+};
+
+final _legacySpacingNamePattern = RegExp(
+  r'^p(?:2|3|4|6|8|10|12|14|16|18|20|24|32|40|48|64)$',
+);
+
+final _screenGutterNamePattern = RegExp(
+  r'(?:Body|Page|Screen)[A-Za-z0-9_]*Padding$',
+);
 
 const _roundedAffordanceConstructors = <String>{
   'CatchBadge',
@@ -375,6 +361,126 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     severity: DiagnosticSeverity.INFO,
   );
 
+  static const noRawNetworkImage = LintCode(
+    'catch_no_raw_network_image',
+    'Use CatchNetworkImage instead of Image.network so caching, decode sizing, loading, and error behavior stay consistent.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
+  static const noPresentationPlatformImport = LintCode(
+    'catch_no_presentation_platform_import',
+    'Move platform-plugin access behind a controller, provider, service, or repository seam.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
+  static const noTokensPropDrilling = LintCode(
+    'catch_no_tokens_prop_drilling',
+    'Read CatchTokens at the rendering boundary instead of passing CatchTokens through widget constructors.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
+  static const noPresentationRepositoryReach = LintCode(
+    'catch_no_presentation_repository_reach',
+    'Read feature state through a controller/view-model provider instead of reaching from a widget into a repository provider.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
+  static const noLegacySpacingToken = LintCode(
+    'catch_no_legacy_spacing_token',
+    'Use CatchSpacing, CatchGaps, or a semantic CatchInsets/CatchLayout role instead of legacy Sizes.p* tokens.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
+  static const noLowLevelTypographyRole = LintCode(
+    'catch_no_low_level_typography_role',
+    'Use a semantic CatchTextStyles role owned by the surface instead of a low-level bodyS/bodyM/titleS role.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
+  static const screenGutterUsesSemanticInsets = LintCode(
+    'catch_screen_gutter_uses_semantic_insets',
+    'Use CatchInsets.pageBody* or a screen layout primitive instead of rebuilding a page gutter from CatchSpacing.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
+  static const textRequiresStyle = LintCode(
+    'catch_text_requires_style',
+    'App-facing Text must declare a CatchTextStyles role unless a sanctioned framework ancestor owns its typography.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
+  static const noBrittlePumpTiming = LintCode(
+    'catch_no_brittle_pump_timing',
+    'Use deterministic pump helpers instead of pumpAndSettle, fixed-duration pumps, or warnIfMissed: false.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
+  static const noPositionalWidgetFinder = LintCode(
+    'catch_no_positional_widget_finder',
+    'Use a semantic key or uniquely-scoped finder instead of .at/.first/.last positional selection.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
+  static const noAsyncFlushHack = LintCode(
+    'catch_no_async_flush_hack',
+    'Use the deterministic async flush helper instead of Future<void>.delayed(Duration.zero).',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
+  static const topBarRequiresActionGroup = LintCode(
+    'catch_top_bar_requires_action_group',
+    'Compose CatchTopBar actions through CatchTopBarActionGroup so the primitive owns action geometry.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
+  static const shellOwnsTabScaffold = LintCode(
+    'catch_shell_owns_tab_scaffold',
+    'Only app_shell.dart and host_app_shell.dart may instantiate the root tab scaffold or a Scaffold with bottom navigation.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
+  static const fieldRequiresSectionContext = LintCode(
+    'catch_field_requires_section_context',
+    'Place CatchField inside CatchSection, fieldRows, CatchFieldLanes, or a form-schema composition boundary.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
+  static const sectionListRequiresEmptyPolicy = LintCode(
+    'catch_section_list_requires_empty_policy',
+    'CatchSectionList must declare emptyBuilder or the explicit emptyStateOmitted opt-out.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
+  static const asyncRequiresStateSurface = LintCode(
+    'catch_async_requires_state_surface',
+    'Route presentation AsyncValue handling through CatchAsyncValueView or cover loading and error explicitly; do not force value/requireValue.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
+  static const asyncRequiresRetry = LintCode(
+    'catch_async_requires_retry',
+    'CatchAsyncValueView/CatchAsyncValueSliver must declare onRetry so both provider errors and initial-load timeouts have an actionable recovery path.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
+  static const errorStateRequiresAction = LintCode(
+    'catch_error_state_requires_action',
+    'Full-screen and sliver Catch error states must declare onRetry or secondaryAction so the user always has a recovery or exit path.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
+  static const noRawErrorSurface = LintCode(
+    'catch_no_raw_error_surface',
+    'Use CatchErrorState/CatchSliverErrorState/CatchInlineErrorState instead of a raw Center(Text(...)) failure surface.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
+  static const noShellLocalMeasurement = LintCode(
+    'catch_no_shell_local_measurement',
+    'Use CatchLayout roles or shell-provided layout context instead of feature-local MediaQuery size or LayoutBuilder decisions.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
   @override
   bool get canUseParsedResult => true;
 
@@ -411,6 +517,26 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     useNamedCatchFieldConstructor,
     useNamedCatchSectionConstructor,
     mutationPendingRequiresError,
+    noRawNetworkImage,
+    noPresentationPlatformImport,
+    noTokensPropDrilling,
+    noPresentationRepositoryReach,
+    noLegacySpacingToken,
+    noLowLevelTypographyRole,
+    screenGutterUsesSemanticInsets,
+    textRequiresStyle,
+    noBrittlePumpTiming,
+    noPositionalWidgetFinder,
+    noAsyncFlushHack,
+    topBarRequiresActionGroup,
+    shellOwnsTabScaffold,
+    fieldRequiresSectionContext,
+    sectionListRequiresEmptyPolicy,
+    asyncRequiresStateSurface,
+    asyncRequiresRetry,
+    errorStateRequiresAction,
+    noRawErrorSurface,
+    noShellLocalMeasurement,
   ];
 
   @override
@@ -419,6 +545,13 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     RuleContext context,
   ) {
     final path = _normalizedPath(context);
+    if (_isTestPath(path)) {
+      registry.addCompilationUnit(
+        this,
+        _CatchUiTestVisitor(this, source: context.definingUnit.content),
+      );
+      return;
+    }
     if (!_isAppPath(path)) return;
 
     final visitor = _CatchUiLayoutVisitor(
@@ -428,19 +561,23 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
       isEventDetailPath: _isEventDetailPath(path),
       isColorExemptPath: false,
       isFeaturePresentationPath: _isFeaturePresentationPath(path),
+      isPresentationPath: _isPresentationPath(path),
       isSizingScannerPath: _isSizingScannerPath(path),
       isUiSystemScannerPath: _isUiSystemScannerPath(path),
-      allowRawControlConstructors: _isCoreWidgetPrimitivePath(path),
+      allowRawControlConstructors:
+          _isCoreWidgetPrimitivePath(path) || _isRawChromeExceptionPath(path),
     );
     registry.addInstanceCreationExpression(this, visitor);
     registry.addNamedExpression(this, visitor);
     registry.addBinaryExpression(this, visitor);
     registry.addMethodDeclaration(this, visitor);
+    registry.addFunctionDeclaration(this, visitor);
     registry.addMethodInvocation(this, visitor);
     registry.addFunctionExpressionInvocation(this, visitor);
     registry.addPrefixedIdentifier(this, visitor);
     registry.addPropertyAccess(this, visitor);
     registry.addSimpleStringLiteral(this, visitor);
+    registry.addImportDirective(this, visitor);
     registry.addCompilationUnit(this, visitor);
     registry.addVariableDeclaration(this, visitor);
   }
@@ -456,6 +593,14 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
         !path.endsWith('.freezed.dart');
   }
 
+  bool _isTestPath(String path) {
+    return (path.contains('/test/') || path.contains('/integration_test/')) &&
+        (!path.contains('/tool/') ||
+            path.contains('/tool/catch_ui_lints_probe/')) &&
+        !path.endsWith('.g.dart') &&
+        !path.endsWith('.freezed.dart');
+  }
+
   bool _isEventDetailPath(String path) {
     return _eventDetailPathFragments.any(path.contains);
   }
@@ -464,6 +609,10 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     return path.contains('/lib/') &&
         path.contains('/presentation/') &&
         !path.contains('/lib/core/');
+  }
+
+  bool _isPresentationPath(String path) {
+    return path.contains('/lib/') && path.contains('/presentation/');
   }
 
   bool _isSizingScannerPath(String path) {
@@ -480,6 +629,15 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
   bool _isCoreWidgetPrimitivePath(String path) {
     return path.contains('/lib/core/widgets/');
   }
+
+  bool _isRawChromeExceptionPath(String path) {
+    return path.endsWith(
+          '/lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart',
+        ) ||
+        path.endsWith(
+          '/lib/events/presentation/widgets/event_detail_hero_app_bar.dart',
+        );
+  }
 }
 
 class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
@@ -490,6 +648,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     required this.isEventDetailPath,
     required this.isColorExemptPath,
     required this.isFeaturePresentationPath,
+    required this.isPresentationPath,
     required this.isSizingScannerPath,
     required this.isUiSystemScannerPath,
     required this.allowRawControlConstructors,
@@ -501,11 +660,13 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   final bool isEventDetailPath;
   final bool isColorExemptPath;
   final bool isFeaturePresentationPath;
+  final bool isPresentationPath;
   final bool isSizingScannerPath;
   final bool isUiSystemScannerPath;
   final bool allowRawControlConstructors;
   final List<int> _lineStarts;
   Set<String> _locallyShadowedTokenNames = const <String>{};
+  final Set<String> _watchedProviderVariables = <String>{};
 
   @override
   void visitCompilationUnit(CompilationUnit node) {
@@ -519,21 +680,58 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
         diagnosticCode: CatchUiLayoutRules.noAllowDebt,
       );
     }
+
+    if (isFeaturePresentationPath) {
+      final watchedVariablePattern = RegExp(
+        r'(?:final|var)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*ref\.watch\s*\([^;]+\)\s*;',
+      );
+      for (final declaration in watchedVariablePattern.allMatches(source)) {
+        final variable = declaration.group(1)!;
+        final forcedValuePattern = RegExp(
+          '${RegExp.escape(variable)}\\s*\\.(?:value\\s*!|requireValue)\\b',
+        );
+        for (final match in forcedValuePattern.allMatches(source)) {
+          rule.reportAtOffset(
+            match.start,
+            match.end - match.start,
+            diagnosticCode: CatchUiLayoutRules.asyncRequiresStateSurface,
+          );
+        }
+      }
+    }
   }
 
   @override
   void visitVariableDeclaration(VariableDeclaration node) {
-    if (!isFeaturePresentationPath) return;
-    if (!isSizingScannerPath) return;
-    if (_isInsideCustomPainter(node)) return;
-    if (!_isPrivateDesignConstant(node)) return;
+    if (isFeaturePresentationPath) {
+      final initializer = node.initializer;
+      if (initializer != null &&
+          RegExp(r'\bref\.watch\s*\(').hasMatch(initializer.toSource())) {
+        _watchedProviderVariables.add(node.name.lexeme);
+      }
+      if (initializer != null &&
+          _screenGutterNamePattern.hasMatch(node.name.lexeme) &&
+          _rebuildsScreenGutter(initializer)) {
+        _reportAtNode(node, CatchUiLayoutRules.screenGutterUsesSemanticInsets);
+      }
 
-    final initializer = node.initializer;
-    if (initializer == null) return;
-    if (_expressionUsesToken(initializer)) return;
-    if (!_expressionContainsRawDesignValue(initializer)) return;
+      final declarationList = node.parent;
+      final declaredType = declarationList is VariableDeclarationList
+          ? declarationList.type?.toSource().replaceAll(RegExp(r'\s+'), '')
+          : null;
+      if (declaredType == 'CatchTokens') {
+        _reportAtNode(node, CatchUiLayoutRules.noTokensPropDrilling);
+      }
 
-    _reportAtNode(node, CatchUiLayoutRules.noLocalDesignConstant);
+      if (isSizingScannerPath &&
+          !_isInsideCustomPainter(node) &&
+          _isPrivateDesignConstant(node) &&
+          initializer != null &&
+          !_expressionUsesToken(initializer) &&
+          _expressionContainsRawDesignValue(initializer)) {
+        _reportAtNode(node, CatchUiLayoutRules.noLocalDesignConstant);
+      }
+    }
   }
 
   @override
@@ -547,10 +745,71 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       _reportAtNode(node, CatchUiLayoutRules.useNamedCatchFieldConstructor);
     }
 
+    if (typeName == 'CatchField' &&
+        isFeaturePresentationPath &&
+        !_hasFieldCompositionAncestor(node)) {
+      _reportAtNode(node, CatchUiLayoutRules.fieldRequiresSectionContext);
+    }
+
     if (typeName == 'CatchSection' &&
         constructorName == null &&
         !_isCatchSectionImplementationPath) {
       _reportAtNode(node, CatchUiLayoutRules.useNamedCatchSectionConstructor);
+    }
+
+    if (typeName == 'CatchSectionList' &&
+        !_hasNamedArgument(node, 'emptyBuilder') &&
+        !_hasNamedArgument(node, 'emptyStateOmitted')) {
+      _reportAtNode(node, CatchUiLayoutRules.sectionListRequiresEmptyPolicy);
+    }
+
+    if (isFeaturePresentationPath &&
+        (typeName == 'CatchAsyncValueView' ||
+            typeName == 'CatchAsyncValueSliver') &&
+        !_hasNamedArgument(node, 'onRetry')) {
+      _reportAtNode(node, CatchUiLayoutRules.asyncRequiresRetry);
+    }
+
+    if (isFeaturePresentationPath &&
+        (typeName == 'CatchErrorState' ||
+            typeName == 'CatchErrorScaffold' ||
+            typeName == 'CatchSliverErrorState') &&
+        !_hasNamedArgument(node, 'onRetry') &&
+        !_hasNamedArgument(node, 'secondaryAction')) {
+      _reportAtNode(node, CatchUiLayoutRules.errorStateRequiresAction);
+    }
+
+    if (typeName == 'Image' &&
+        constructorName == 'network' &&
+        !_isCoreWidgetPrimitivePath) {
+      _reportAtNode(node, CatchUiLayoutRules.noRawNetworkImage);
+    }
+
+    if (typeName == 'CatchTopBar' && _topBarHasRawActionComposition(node)) {
+      _reportAtNode(node, CatchUiLayoutRules.topBarRequiresActionGroup);
+    }
+
+    if (!_isShellImplementationPath &&
+        (typeName == 'CatchAdaptiveTabScaffold' ||
+            (typeName == 'Scaffold' && _scaffoldOwnsTabNavigation(node)))) {
+      _reportAtNode(node, CatchUiLayoutRules.shellOwnsTabScaffold);
+    }
+
+    if (isFeaturePresentationPath && typeName == 'LayoutBuilder') {
+      _reportAtNode(node, CatchUiLayoutRules.noShellLocalMeasurement);
+    }
+
+    if (isUiSystemScannerPath &&
+        typeName == 'Text' &&
+        !_textOwnsStyle(node) &&
+        !_hasSanctionedAmbientTextAncestor(node)) {
+      _reportAtNode(node, CatchUiLayoutRules.textRequiresStyle);
+    }
+
+    if (isFeaturePresentationPath &&
+        typeName == 'Center' &&
+        _looksLikeRawErrorSurface(node)) {
+      _reportAtNode(node, CatchUiLayoutRules.noRawErrorSurface);
     }
 
     if (typeName == 'SizedBox') {
@@ -567,16 +826,18 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     }
 
     if (!allowRawControlConstructors &&
-        _rawControlConstructors.contains(typeName)) {
+        catchRawControlConstructors.contains(typeName)) {
       _reportAtNode(
         node,
         CatchUiLayoutRules.noRawMaterialControl,
-        arguments: [_rawControlReplacements[typeName] ?? 'a Catch primitive'],
+        arguments: [
+          catchRawControlReplacements[typeName] ?? 'a Catch primitive',
+        ],
       );
     }
 
     if (isUiSystemScannerPath &&
-        _rawButtonControlConstructors.contains(typeName) &&
+        catchRawButtonControlConstructors.contains(typeName) &&
         !_isAllowedPrimitiveRawButtonControl(typeName)) {
       _reportAtNode(node, CatchUiLayoutRules.noRawButtonControl);
     }
@@ -711,8 +972,23 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       }
       return;
     }
-    if (!name.startsWith('_') || name == 'build') return;
+    if (!name.startsWith('_')) return;
 
+    final returnType = node.returnType?.toSource().replaceAll(
+      RegExp(r'\s+'),
+      '',
+    );
+    if (returnType == 'Widget' ||
+        returnType == 'Widget?' ||
+        returnType == 'List<Widget>') {
+      _reportAtNode(node, CatchUiLayoutRules.noWidgetReturningMethod);
+    }
+  }
+
+  @override
+  void visitFunctionDeclaration(FunctionDeclaration node) {
+    if (!isFeaturePresentationPath) return;
+    if (!node.name.lexeme.startsWith('_')) return;
     final returnType = node.returnType?.toSource().replaceAll(
       RegExp(r'\s+'),
       '',
@@ -732,6 +1008,18 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     if (isCatchUiDirectFontBuilderInvocation(node)) {
       _reportAtNode(node, CatchUiLayoutRules.noDirectFontBuilder);
     }
+    if (isFeaturePresentationPath && _isRepositoryProviderReach(node)) {
+      _reportAtNode(node, CatchUiLayoutRules.noPresentationRepositoryReach);
+    }
+    if (_isLowLevelTypographyInvocation(node)) {
+      _reportAtNode(node, CatchUiLayoutRules.noLowLevelTypographyRole);
+    }
+    if (isFeaturePresentationPath && _isIncompleteAsyncWhen(node)) {
+      _reportAtNode(node, CatchUiLayoutRules.asyncRequiresStateSurface);
+    }
+    if (isFeaturePresentationPath && _isMediaQuerySizeRead(node)) {
+      _reportAtNode(node, CatchUiLayoutRules.noShellLocalMeasurement);
+    }
   }
 
   @override
@@ -743,6 +1031,11 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   @override
   void visitPrefixedIdentifier(PrefixedIdentifier node) {
+    if (node.prefix.name == 'Sizes' &&
+        _legacySpacingNamePattern.hasMatch(node.identifier.name)) {
+      _reportAtNode(node, CatchUiLayoutRules.noLegacySpacingToken);
+    }
+
     if (isUiSystemScannerPath && node.prefix.name == 'Icons') {
       _reportAtNode(node, CatchUiLayoutRules.noRawIconSource);
     }
@@ -758,8 +1051,22 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   @override
   void visitPropertyAccess(PropertyAccess node) {
+    if (isFeaturePresentationPath && node.propertyName.name == 'requireValue') {
+      _reportAtNode(node, CatchUiLayoutRules.asyncRequiresStateSurface);
+    }
     if (!isColorExemptPath && _isRawColorPropertyAccess(node)) {
       _reportAtNode(node, CatchUiLayoutRules.noRawColor);
+    }
+  }
+
+  @override
+  void visitImportDirective(ImportDirective node) {
+    if (!isPresentationPath || _isPlatformImportOwnerPath) return;
+    final uri = node.uri.stringValue;
+    if (uri == null || !uri.startsWith('package:')) return;
+    final packageName = uri.substring('package:'.length).split('/').first;
+    if (_platformPackages.contains(packageName)) {
+      _reportAtNode(node, CatchUiLayoutRules.noPresentationPlatformImport);
     }
   }
 
@@ -777,10 +1084,166 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   bool _isThemeIndependentArtAllow(int offset) {
     final isKnownArtPath =
-        path.endsWith('/lib/core/widgets/graded_image.dart') ||
-        path.endsWith('/lib/events/presentation/event_activity_visuals.dart');
+        path.endsWith('/lib/core/widgets/catch_graded_image.dart') ||
+        path.endsWith('/lib/core/widgets/event_activity_visuals.dart') ||
+        path.endsWith('/lib/events/presentation/widgets/event_pins_map.dart');
     return isKnownArtPath &&
         _lineForOffsetText(offset).contains('theme-independent art');
+  }
+
+  bool _rebuildsScreenGutter(Expression expression) {
+    final text = expression.toSource();
+    if (!text.contains('EdgeInsets')) return false;
+    final gutterRefs = RegExp(
+      r'CatchSpacing\.(?:s5|screenPx)',
+    ).allMatches(text).length;
+    return gutterRefs >= 2;
+  }
+
+  bool _hasFieldCompositionAncestor(InstanceCreationExpression node) {
+    if (_isCatchFieldImplementationPath) return true;
+    var current = node.parent;
+    while (current != null) {
+      if (current is NamedExpression &&
+          (current.name.label.name == 'fieldRows' ||
+              current.name.label.name == 'fields')) {
+        return true;
+      }
+      if (current is InstanceCreationExpression) {
+        final typeName = _constructorTypeName(current);
+        if (typeName == 'CatchSection' ||
+            typeName == 'CatchFieldLanes' ||
+            typeName.contains('FormSchema')) {
+          return true;
+        }
+      }
+      if (current is FunctionBody ||
+          current is MethodDeclaration ||
+          current is FunctionDeclaration ||
+          current is CompilationUnit) {
+        return false;
+      }
+      current = current.parent;
+    }
+    return false;
+  }
+
+  bool _topBarHasRawActionComposition(InstanceCreationExpression node) {
+    for (final argument in node.argumentList.arguments) {
+      if (argument is! NamedExpression) continue;
+      final name = argument.name.label.name;
+      if (name != 'actions' && name != 'leading') continue;
+      final text = argument.expression.toSource();
+      if (text.contains('CatchTopBarActionGroup')) continue;
+      if (RegExp(r'\b(?:Row|Wrap)\s*\(').hasMatch(text)) return true;
+    }
+    return false;
+  }
+
+  bool _scaffoldOwnsTabNavigation(InstanceCreationExpression node) {
+    final bottomNavigation = _namedArgument(node, 'bottomNavigationBar');
+    if (bottomNavigation == null) return false;
+    return RegExp(
+      r'\b(?:BottomNavigationBar|NavigationBar|CupertinoTabBar|CatchTabBar|CatchAdaptiveTabScaffold)\s*\(',
+    ).hasMatch(bottomNavigation.toSource());
+  }
+
+  bool _hasSanctionedAmbientTextAncestor(InstanceCreationExpression node) {
+    var current = node.parent;
+    while (current != null) {
+      if (current is InstanceCreationExpression) {
+        final typeName = _constructorTypeName(current);
+        if (typeName == 'SnackBar' ||
+            typeName == 'PopupMenuItem' ||
+            typeName == 'Badge' ||
+            typeName == 'AlertDialog' ||
+            typeName == 'CupertinoAlertDialog' ||
+            typeName == 'CupertinoDialogAction' ||
+            typeName == 'InputDecoration') {
+          return true;
+        }
+      }
+      if (current is Statement ||
+          current is FunctionBody ||
+          current is ClassDeclaration) {
+        return false;
+      }
+      current = current.parent;
+    }
+    return false;
+  }
+
+  bool _textOwnsStyle(InstanceCreationExpression node) {
+    if (_hasNamedArgument(node, 'style')) return true;
+    if (_constructorMemberName(node) != 'rich' ||
+        node.argumentList.arguments.isEmpty) {
+      return false;
+    }
+    return node.argumentList.arguments.first.toSource().contains('style:');
+  }
+
+  bool _looksLikeRawErrorSurface(InstanceCreationExpression node) {
+    final text = node.toSource();
+    return RegExp(
+      r'''\bText\s*\(\s*(?:const\s+)?['"][^'"]*(?:unable|not found|failed|error|try again|unavailable)''',
+      caseSensitive: false,
+    ).hasMatch(text);
+  }
+
+  bool _isRepositoryProviderReach(MethodInvocation node) {
+    if (_isPlatformImportOwnerPath) return false;
+    if (node.target?.toSource() != 'ref') return false;
+    if (node.methodName.name != 'watch' &&
+        node.methodName.name != 'read' &&
+        node.methodName.name != 'listen') {
+      return false;
+    }
+    return RegExp(
+      r'\b[A-Za-z_][A-Za-z0-9_]*RepositoryProvider\b',
+    ).hasMatch(node.argumentList.toSource());
+  }
+
+  bool _isLowLevelTypographyInvocation(MethodInvocation node) {
+    if (_lowLevelTypographyOwnerPaths.any(path.endsWith)) return false;
+    return node.target?.toSource() == 'CatchTextStyles' &&
+        _lowLevelTypographyRoles.contains(node.methodName.name);
+  }
+
+  bool _isIncompleteAsyncWhen(MethodInvocation node) {
+    if (node.methodName.name != 'when') return false;
+    final target = node.target;
+    final targetSource = target?.toSource();
+    if (targetSource == null) return false;
+    final isWatchedVariable =
+        target is SimpleIdentifier &&
+        _watchedProviderVariables.contains(target.name);
+    if (!isWatchedVariable && !targetSource.contains('ref.watch(')) {
+      return false;
+    }
+    final names = <String>{
+      for (final argument in node.argumentList.arguments)
+        if (argument is NamedExpression) argument.name.label.name,
+    };
+    return !names.contains('loading') || !names.contains('error');
+  }
+
+  bool _isMediaQuerySizeRead(MethodInvocation node) {
+    if (node.target?.toSource() != 'MediaQuery' ||
+        node.methodName.name != 'of') {
+      return false;
+    }
+    final parent = node.parent;
+    return parent is PropertyAccess && parent.propertyName.name == 'size';
+  }
+
+  bool get _isPlatformImportOwnerPath {
+    return path.endsWith('_controller.dart') ||
+        path.endsWith('_service.dart') ||
+        path.endsWith('_repository.dart') ||
+        path.endsWith('_provider.dart') ||
+        path.endsWith('_actions.dart') ||
+        path.endsWith('_lookup.dart') ||
+        path.endsWith('_view_model.dart');
   }
 
   bool _isPrivateDesignConstant(VariableDeclaration node) {
@@ -1096,7 +1559,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       return false;
     }
 
-    return false;
+    return true;
   }
 
   bool _hasRoundedRectangleDecoration(InstanceCreationExpression node) {
@@ -1477,6 +1940,15 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     return path.endsWith('/lib/core/widgets/catch_text_button.dart');
   }
 
+  bool get _isCoreWidgetPrimitivePath {
+    return path.contains('/lib/core/widgets/');
+  }
+
+  bool get _isShellImplementationPath {
+    return path.endsWith('/lib/core/presentation/app_shell.dart') ||
+        path.endsWith('/lib/core/presentation/host_app_shell.dart');
+  }
+
   int _lineForOffset(int offset) {
     var low = 0;
     var high = _lineStarts.length - 1;
@@ -1544,6 +2016,43 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       current = current.parent;
     }
     return false;
+  }
+}
+
+class _CatchUiTestVisitor extends SimpleAstVisitor<void> {
+  _CatchUiTestVisitor(this.rule, {required this.source});
+
+  final CatchUiLayoutRules rule;
+  final String source;
+
+  @override
+  void visitCompilationUnit(CompilationUnit node) {
+    _reportMatches(
+      RegExp(
+        r'pumpAndSettle\s*\(|pump\s*\(\s*const\s+Duration|warnIfMissed\s*:\s*false',
+      ),
+      CatchUiLayoutRules.noBrittlePumpTiming,
+    );
+    _reportMatches(
+      RegExp(
+        r'find\.[A-Za-z_][A-Za-z0-9_]*\s*\([^)]*\)\s*\.(?:at|first|last)\b|(?:Scrollable|ListView)\.first\b',
+      ),
+      CatchUiLayoutRules.noPositionalWidgetFinder,
+    );
+    _reportMatches(
+      RegExp(r'Future\s*<\s*void\s*>\s*\.delayed\s*\(\s*Duration\.zero\s*\)'),
+      CatchUiLayoutRules.noAsyncFlushHack,
+    );
+  }
+
+  void _reportMatches(RegExp pattern, LintCode diagnosticCode) {
+    for (final match in pattern.allMatches(source)) {
+      rule.reportAtOffset(
+        match.start,
+        match.end - match.start,
+        diagnosticCode: diagnosticCode,
+      );
+    }
   }
 }
 

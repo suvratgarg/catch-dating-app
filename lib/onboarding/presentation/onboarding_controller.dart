@@ -35,6 +35,7 @@ abstract class OnboardingData with _$OnboardingData {
     @Default(OnboardingStep.welcome) OnboardingStep step,
     @Default(false) bool phoneVerified,
     @Default(OnboardingProfileDraft()) OnboardingProfileDraft profileDraft,
+    @Default(false) bool operationPending,
   }) = _OnboardingData;
 
   String get phoneNumber => profileDraft.phoneNumber;
@@ -73,6 +74,9 @@ class OnboardingController extends _$OnboardingController {
 
   static final saveProfileMutation = Mutation<void>();
   static final completeMutation = Mutation<void>();
+
+  Future<void>? _saveProfileInFlight;
+  Future<void>? _completionInFlight;
 
   @override
   OnboardingData build() => const OnboardingData();
@@ -205,9 +209,13 @@ class OnboardingController extends _$OnboardingController {
     }
   }
 
-  void goToStep(OnboardingStep step) => state = state.copyWith(step: step);
+  void goToStep(OnboardingStep step) {
+    if (_hasPendingOperation) return;
+    state = state.copyWith(step: step);
+  }
 
   void goToStepAndSaveDraft(OnboardingStep step) {
+    if (_hasPendingOperation) return;
     state = state.copyWith(step: step);
     _saveDraft();
   }
@@ -236,6 +244,7 @@ class OnboardingController extends _$OnboardingController {
     required Gender gender,
     required List<Gender> interestedInGenders,
   }) {
+    if (_saveProfileInFlight != null) return;
     state = state.copyWith(
       profileDraft: state.profileDraft.copyWith(
         gender: gender,
@@ -251,6 +260,7 @@ class OnboardingController extends _$OnboardingController {
   }
 
   void setProfilePrompts(List<ProfilePromptAnswer> prompts) {
+    if (_completionInFlight != null) return;
     state = state.copyWith(
       profileDraft: state.profileDraft.copyWith(
         profilePrompts: normalizeProfilePromptAnswers(prompts),
@@ -289,7 +299,33 @@ class OnboardingController extends _$OnboardingController {
     _saveDraft();
   }
 
-  Future<void> saveProfile() async {
+  void clearSaveProfileErrorIfIdle() {
+    if (_saveProfileInFlight != null) return;
+    saveProfileMutation.reset(ref);
+  }
+
+  void clearCompleteErrorIfIdle() {
+    if (_completionInFlight != null) return;
+    completeMutation.reset(ref);
+  }
+
+  Future<void> saveProfile() {
+    final existingRequest = _saveProfileInFlight;
+    if (existingRequest != null) return existingRequest;
+
+    _setOperationPending(true);
+    late final Future<void> trackedRequest;
+    trackedRequest = _saveProfile().whenComplete(() {
+      if (identical(_saveProfileInFlight, trackedRequest)) {
+        _saveProfileInFlight = null;
+        _setOperationPending(false);
+      }
+    });
+    _saveProfileInFlight = trackedRequest;
+    return trackedRequest;
+  }
+
+  Future<void> _saveProfile() async {
     final uid = requireSignedInUid(ref, action: 'save profile');
     final draft = _requireProfileDraft();
     final verifiedPhoneNumber = _requireVerifiedAuthPhoneNumber();
@@ -321,6 +357,10 @@ class OnboardingController extends _$OnboardingController {
 
   Future<void> completeSocialProfile({
     required List<ProfilePromptAnswer> prompts,
+  }) => _trackCompletion(() => _completeSocialProfile(prompts: prompts));
+
+  Future<void> _completeSocialProfile({
+    required List<ProfilePromptAnswer> prompts,
   }) async {
     final userProfile = ref.read(watchUserProfileProvider).asData?.value;
     if (userProfile == null) {
@@ -344,6 +384,22 @@ class OnboardingController extends _$OnboardingController {
   }
 
   Future<void> completeRunPreferences({
+    required int paceMinSecsPerKm,
+    required int paceMaxSecsPerKm,
+    required List<PreferredDistance> preferredDistances,
+    required List<RunReason> runningReasons,
+    required List<PreferredRunTime> preferredRunTimes,
+  }) => _trackCompletion(
+    () => _completeRunPreferences(
+      paceMinSecsPerKm: paceMinSecsPerKm,
+      paceMaxSecsPerKm: paceMaxSecsPerKm,
+      preferredDistances: preferredDistances,
+      runningReasons: runningReasons,
+      preferredRunTimes: preferredRunTimes,
+    ),
+  );
+
+  Future<void> _completeRunPreferences({
     required int paceMinSecsPerKm,
     required int paceMaxSecsPerKm,
     required List<PreferredDistance> preferredDistances,
@@ -379,6 +435,30 @@ class OnboardingController extends _$OnboardingController {
         .read(appAnalyticsProvider)
         .logEvent(AnalyticsEvents.onboardingCompleted);
     ref.invalidateSelf();
+  }
+
+  bool get _hasPendingOperation =>
+      _saveProfileInFlight != null || _completionInFlight != null;
+
+  Future<void> _trackCompletion(Future<void> Function() operation) {
+    final existingRequest = _completionInFlight;
+    if (existingRequest != null) return existingRequest;
+
+    _setOperationPending(true);
+    late final Future<void> trackedRequest;
+    trackedRequest = operation().whenComplete(() {
+      if (identical(_completionInFlight, trackedRequest)) {
+        _completionInFlight = null;
+        _setOperationPending(false);
+      }
+    });
+    _completionInFlight = trackedRequest;
+    return trackedRequest;
+  }
+
+  void _setOperationPending(bool pending) {
+    if (!ref.mounted || state.operationPending == pending) return;
+    state = state.copyWith(operationPending: pending);
   }
 
   OnboardingProfileDraft _requireProfileDraft() {

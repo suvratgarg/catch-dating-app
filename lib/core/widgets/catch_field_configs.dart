@@ -8,6 +8,7 @@ sealed class _CatchFieldConfig extends CatchField {
   const _CatchFieldConfig({
     Key? key,
     required String? title,
+    CatchContractFieldConstraints? contract,
     String? body,
     Widget? action,
     CatchFieldEmphasis emphasis = CatchFieldEmphasis.body,
@@ -23,6 +24,7 @@ sealed class _CatchFieldConfig extends CatchField {
   }) : super._shared(
          key: key,
          title: title,
+         contract: contract,
          body: body,
          action: action,
          emphasis: emphasis,
@@ -297,6 +299,7 @@ final class _ToggleConfig extends _CatchFieldConfig {
     Key? key,
     String? title,
     String? body,
+    CatchContractFieldConstraints? contract,
     required this.value,
     required ValueChanged<bool>? onChanged,
     this.titleMaxLines = 1,
@@ -314,6 +317,7 @@ final class _ToggleConfig extends _CatchFieldConfig {
        super(
          key: key,
          title: title,
+         contract: contract,
          body: body,
          emphasis: emphasis,
          tone: tone,
@@ -336,6 +340,7 @@ final class _EditConfig extends _CatchFieldConfig {
   const _EditConfig.input({
     Key? key,
     required String title,
+    CatchContractFieldConstraints? contract,
     this.placeholder,
     this.emptyValueText,
     this.inputHint,
@@ -404,6 +409,7 @@ final class _EditConfig extends _CatchFieldConfig {
        super(
          key: key,
          title: title,
+         contract: contract,
          action: action,
          variant: variant,
          icon: icon,
@@ -416,6 +422,7 @@ final class _EditConfig extends _CatchFieldConfig {
   const _EditConfig.inputActions({
     Key? key,
     required String title,
+    CatchContractFieldConstraints? contract,
     required this.controller,
     required bool open,
     required ValueChanged<bool> onOpenChanged,
@@ -479,6 +486,7 @@ final class _EditConfig extends _CatchFieldConfig {
        super(
          key: key,
          title: title,
+         contract: contract,
          tone: tone,
          icon: icon,
          iconColor: iconColor,
@@ -543,6 +551,7 @@ final class _SelectConfig extends _CatchFieldConfig {
   const _SelectConfig.select({
     Key? key,
     required String title,
+    CatchContractFieldConstraints? contract,
     required this.values,
     required this.itemLabel,
     required this.value,
@@ -555,7 +564,7 @@ final class _SelectConfig extends _CatchFieldConfig {
     required this.helperText,
     required this.helperTone,
     required bool enabled,
-  }) : super(key: key, title: title, enabled: enabled);
+  }) : super(key: key, title: title, contract: contract, enabled: enabled);
 
   final List<Object?> values;
   final String Function(Object? item) itemLabel;
@@ -575,6 +584,8 @@ final class _ControlConfig extends _CatchFieldConfig {
     Key? key,
     required String title,
     String? body,
+    CatchContractFieldConstraints? contract,
+    this.contractExemption,
     required this.control,
     this.open,
     this.initiallyOpen = false,
@@ -601,6 +612,7 @@ final class _ControlConfig extends _CatchFieldConfig {
   }) : super(
          key: key,
          title: title,
+         contract: contract,
          body: body,
          emphasis: emphasis,
          tone: tone,
@@ -612,6 +624,7 @@ final class _ControlConfig extends _CatchFieldConfig {
        );
 
   final Widget control;
+  final String? contractExemption;
   final int titleMaxLines;
   final int bodyMaxLines;
   final bool? open;

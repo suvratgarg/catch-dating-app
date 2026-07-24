@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -84,6 +86,38 @@ void main() {
       expect(fakeEventRepository.updatedEvent, event);
       expect(fakeEventRepository.updatedEventIncludePolicy, isTrue);
       expect(fakeEventRepository.updatedEventInviteCode, 'VIP123');
+    });
+
+    test('updateHostedEvent deduplicates an active request snapshot', () async {
+      final pendingUpdate = Completer<void>();
+      final fakeEventRepository = FakeEventRepository()
+        ..updateEventCompleter = pendingUpdate;
+      final container = buildHostControllerContainer(
+        eventRepository: fakeEventRepository,
+      );
+      await primeUidProvider(container);
+      final controller = container.read(
+        hostEventBookingControllerProvider.notifier,
+      );
+      final event = buildEvent(id: 'event-12');
+
+      final first = controller.updateHostedEvent(
+        event: event,
+        includePolicy: true,
+        inviteCode: 'VIP123',
+      );
+      final duplicate = controller.updateHostedEvent(
+        event: event.copyWith(description: 'Stale overwrite'),
+      );
+
+      expect(identical(first, duplicate), isTrue);
+      expect(fakeEventRepository.updateEventCallCount, 1);
+      pendingUpdate.complete();
+      await Future.wait([first, duplicate]);
+
+      fakeEventRepository.updateEventCompleter = null;
+      await controller.updateHostedEvent(event: event);
+      expect(fakeEventRepository.updateEventCallCount, 2);
     });
 
     test('createWaitlistOffer delegates a single user offer', () async {

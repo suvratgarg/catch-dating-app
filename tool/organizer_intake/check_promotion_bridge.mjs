@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath, pathToFileURL} from "node:url";
+import {inMarket} from "../../website/src/content/markets/in.ts";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..", "..");
@@ -17,6 +18,12 @@ const defaults = {
   hostListings: path.join(repoRoot, "website", "src", "generated", "hostListings.json"),
   projectionPlan: path.join(scriptDir, "generated", "public_projection_plan.json"),
 };
+const liveMarketKeys = new Set(
+  inMarket.cities
+    .filter((city) => city.status === "live")
+    .flatMap((city) => [city.slug, city.label, ...city.aliases])
+    .map(normalizeMarketKey)
+);
 
 if (isMain()) {
   main();
@@ -38,6 +45,9 @@ export function checkPromotionBridge({
         entry.publicListing
     )
     .sort((a, b) => a.entityId.localeCompare(b.entityId));
+  const websiteEligibleEntries = approvedEntries.filter(
+    organizerIntakeProjectionHasLiveMarket
+  );
   const listingsByPath = new Map();
   const listingsById = new Map();
   for (const listing of hostListings) {
@@ -65,6 +75,9 @@ export function checkPromotionBridge({
   const approvedByEntity = new Map(
     approvedEntries.map((entry) => [entry.entityId, entry])
   );
+  const websiteEligibleByEntity = new Map(
+    websiteEligibleEntries.map((entry) => [entry.entityId, entry])
+  );
 
   for (const entry of approvedEntries) {
     const canonical = canonicalByEntity.get(entry.entityId);
@@ -74,18 +87,32 @@ export function checkPromotionBridge({
       checkCanonicalHostEntity({canonical, entry, errors});
     }
 
-    const listing = listingsByPath.get(entry.publicListing.path);
-    if (!listing) {
-      errors.push(`${entry.entityId}: missing website listing ${entry.publicListing.path}`);
-    } else {
-      checkWebsiteListing({entry, listing, errors, warnings});
-    }
+    if (websiteEligibleByEntity.has(entry.entityId)) {
+      const listing = listingsByPath.get(entry.publicListing.path);
+      if (!listing) {
+        errors.push(`${entry.entityId}: missing website listing ${entry.publicListing.path}`);
+      } else {
+        checkWebsiteListing({entry, listing, errors, warnings});
+      }
 
-    for (const legacyPath of entry.legacyPaths ?? []) {
-      if (listingsByPath.has(legacyPath)) {
-        errors.push(
-          `${entry.entityId}: legacy path still has a generated listing ${legacyPath}`
-        );
+      for (const legacyPath of entry.legacyPaths ?? []) {
+        if (listingsByPath.has(legacyPath)) {
+          errors.push(
+            `${entry.entityId}: legacy path still has a generated listing ${legacyPath}`
+          );
+        }
+      }
+    } else if (listingsByPath.has(entry.publicListing.path)) {
+      errors.push(
+        `${entry.entityId}: waitlist-market organizer leaked into website listings`
+      );
+    } else {
+      for (const legacyPath of entry.legacyPaths ?? []) {
+        if (listingsByPath.has(legacyPath)) {
+          errors.push(
+            `${entry.entityId}: waitlist-market legacy listing leaked at ${legacyPath}`
+          );
+        }
       }
     }
 
@@ -124,9 +151,11 @@ export function checkPromotionBridge({
   });
 
   for (const listing of hostListings.filter((item) => item.dataOrigin === "organizerIntake")) {
-    const entry = approvedByEntity.get(listing.id);
+    const entry = websiteEligibleByEntity.get(listing.id);
     if (!entry) {
-      errors.push(`${listing.id}: organizer-intake website listing without approved projection`);
+      errors.push(
+        `${listing.id}: organizer-intake website listing without pilot-eligible approved projection`
+      );
     } else if (entry.publicListing.path !== listing.path) {
       errors.push(
         `${listing.id}: organizer-intake listing path ${listing.path} does not match ` +
@@ -143,6 +172,9 @@ export function checkPromotionBridge({
     warnings,
     summary: {
       approvedProjections: approvedEntries.length,
+      pilotEligibleProjections: websiteEligibleEntries.length,
+      pilotSuppressedProjections:
+        approvedEntries.length - websiteEligibleEntries.length,
       canonicalHostEntities: canonicalHostEntities.entries?.length ?? 0,
       claimTargets: claimTargetPlan.targets?.length ?? 0,
       claimTargetSyncPreviewWrites:
@@ -153,6 +185,22 @@ export function checkPromotionBridge({
       websiteListings: hostListings.length,
     },
   };
+}
+
+function normalizeMarketKey(value) {
+  return String(value ?? "").toLowerCase().replace(/[^a-z0-9]+/gu, "");
+}
+
+function isLiveMarketValue(value) {
+  const key = normalizeMarketKey(value);
+  return key.length > 0 && liveMarketKeys.has(key);
+}
+
+function organizerIntakeProjectionHasLiveMarket(entry) {
+  return (entry?.publicListing?.markets ?? []).some((market) =>
+    isLiveMarketValue(market?.marketSlug) ||
+      isLiveMarketValue(market?.displayName)
+  );
 }
 
 function checkCanonicalHostEntity({canonical, entry, errors}) {

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-19T09:35:49.089Z",
+  "generatedAt": "2026-07-23T22:48:08.743Z",
   "sourceOfTruth": {
     "scope": "Generated inventory of Widgetbook use-case state cards. This does not replace component contracts; it finds variant matrices that need pruning.",
     "generator": "tool/design/generate_widget_variant_inventory.mjs"
@@ -7,9 +7,9 @@
   "summary": {
     "useCases": 864,
     "components": 813,
-    "stateCards": 1774,
-    "reviewCandidates": 43,
-    "oversizedUseCases": 43,
+    "stateCards": 1794,
+    "reviewCandidates": 44,
+    "oversizedUseCases": 44,
     "multiUseCaseComponents": 45
   },
   "reviewCandidates": [
@@ -1441,6 +1441,203 @@
       ]
     },
     {
+      "component": "HostEventManageRouteScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 14,
+      "paths": [
+        "[P1 product surfaces]/Host operations"
+      ],
+      "labels": [
+        "event not found",
+        "guests workspace",
+        "invite links error",
+        "invite links loading",
+        "invite links offline",
+        "live workspace",
+        "reduced motion",
+        "report workspace",
+        "route error",
+        "route loading",
+        "route offline",
+        "setup workspace",
+        "text scale 2.0",
+        "unauthorized host"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "hostEventManageRouteAndSectionStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Route and section states",
+          "functionName": "hostEventManageRouteAndSectionStates",
+          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
+          "path": "[P1 product surfaces]/Host operations",
+          "stateCardCount": 14,
+          "stateCards": [
+            {
+              "label": "route loading",
+              "normalizedLabel": "route loading"
+            },
+            {
+              "label": "route error",
+              "normalizedLabel": "route error"
+            },
+            {
+              "label": "route offline",
+              "normalizedLabel": "route offline"
+            },
+            {
+              "label": "event not found",
+              "normalizedLabel": "event not found"
+            },
+            {
+              "label": "unauthorized host",
+              "normalizedLabel": "unauthorized host"
+            },
+            {
+              "label": "setup workspace",
+              "normalizedLabel": "setup workspace"
+            },
+            {
+              "label": "guests workspace",
+              "normalizedLabel": "guests workspace"
+            },
+            {
+              "label": "live workspace",
+              "normalizedLabel": "live workspace"
+            },
+            {
+              "label": "report workspace",
+              "normalizedLabel": "report workspace"
+            },
+            {
+              "label": "invite links loading",
+              "normalizedLabel": "invite links loading"
+            },
+            {
+              "label": "invite links error",
+              "normalizedLabel": "invite links error"
+            },
+            {
+              "label": "invite links offline",
+              "normalizedLabel": "invite links offline"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            },
+            {
+              "label": "reduced motion",
+              "normalizedLabel": "reduced motion"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "EventRecapScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 13,
+      "paths": [
+        "[P1 product surfaces]/Catches"
+      ],
+      "labels": [
+        "checked-in roster",
+        "dark theme",
+        "empty roster",
+        "event missing",
+        "open catch window",
+        "partial profile fallback",
+        "profile lookup error",
+        "profile lookup loading",
+        "recap loading",
+        "reduced motion",
+        "selected vibe tile",
+        "text scale 2.0",
+        "view-model error"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "eventRecapScreenRouteStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Event recap route states",
+          "functionName": "eventRecapScreenRouteStates",
+          "file": "widgetbook/lib/catches/catches_use_cases.dart",
+          "path": "[P1 product surfaces]/Catches",
+          "stateCardCount": 13,
+          "stateCards": [
+            {
+              "label": "recap loading",
+              "normalizedLabel": "recap loading"
+            },
+            {
+              "label": "view-model error",
+              "normalizedLabel": "view model error"
+            },
+            {
+              "label": "checked-in roster",
+              "normalizedLabel": "checked in roster"
+            },
+            {
+              "label": "profile lookup loading",
+              "normalizedLabel": "profile lookup loading"
+            },
+            {
+              "label": "profile lookup error",
+              "normalizedLabel": "profile lookup error"
+            },
+            {
+              "label": "partial profile fallback",
+              "normalizedLabel": "partial profile fallback"
+            },
+            {
+              "label": "selected vibe tile",
+              "normalizedLabel": "selected vibe tile"
+            },
+            {
+              "label": "open catch window",
+              "normalizedLabel": "open catch window"
+            },
+            {
+              "label": "empty roster",
+              "normalizedLabel": "empty roster"
+            },
+            {
+              "label": "event missing",
+              "normalizedLabel": "event missing"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            },
+            {
+              "label": "reduced motion",
+              "normalizedLabel": "reduced motion"
+            },
+            {
+              "label": "dark theme",
+              "normalizedLabel": "dark theme"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "HostEventsScaffold",
       "useCaseCount": 1,
       "stateCardCount": 13,
@@ -2503,92 +2700,6 @@
       ]
     },
     {
-      "component": "EventRecapScreen",
-      "useCaseCount": 1,
-      "stateCardCount": 11,
-      "paths": [
-        "[P1 product surfaces]/Catches"
-      ],
-      "labels": [
-        "checked-in roster",
-        "dark theme",
-        "empty roster",
-        "event missing",
-        "open catch window",
-        "partial profile fallback",
-        "recap loading",
-        "reduced motion",
-        "selected vibe tile",
-        "text scale 2.0",
-        "view-model error"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "large-state-matrix"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "eventRecapScreenRouteStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Event recap route states",
-          "functionName": "eventRecapScreenRouteStates",
-          "file": "widgetbook/lib/catches/catches_use_cases.dart",
-          "path": "[P1 product surfaces]/Catches",
-          "stateCardCount": 11,
-          "stateCards": [
-            {
-              "label": "recap loading",
-              "normalizedLabel": "recap loading"
-            },
-            {
-              "label": "view-model error",
-              "normalizedLabel": "view model error"
-            },
-            {
-              "label": "checked-in roster",
-              "normalizedLabel": "checked in roster"
-            },
-            {
-              "label": "partial profile fallback",
-              "normalizedLabel": "partial profile fallback"
-            },
-            {
-              "label": "selected vibe tile",
-              "normalizedLabel": "selected vibe tile"
-            },
-            {
-              "label": "open catch window",
-              "normalizedLabel": "open catch window"
-            },
-            {
-              "label": "empty roster",
-              "normalizedLabel": "empty roster"
-            },
-            {
-              "label": "event missing",
-              "normalizedLabel": "event missing"
-            },
-            {
-              "label": "text scale 2.0",
-              "normalizedLabel": "text scale 2 0"
-            },
-            {
-              "label": "reduced motion",
-              "normalizedLabel": "reduced motion"
-            },
-            {
-              "label": "dark theme",
-              "normalizedLabel": "dark theme"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "CatchCountPill",
       "useCaseCount": 2,
       "stateCardCount": 10,
@@ -3083,6 +3194,87 @@
             {
               "label": "reduced motion",
               "normalizedLabel": "reduced motion"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "PaymentHistoryScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 10,
+      "paths": [
+        "[P3 utility surfaces]/Payment history"
+      ],
+      "labels": [
+        "empty history",
+        "event title missing",
+        "event titles error",
+        "event titles loading",
+        "payments error",
+        "payments loading",
+        "signed out",
+        "status variants",
+        "uid error",
+        "uid loading"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "paymentHistoryScreenStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Screen states",
+          "functionName": "paymentHistoryScreenStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Payment history",
+          "stateCardCount": 10,
+          "stateCards": [
+            {
+              "label": "uid loading",
+              "normalizedLabel": "uid loading"
+            },
+            {
+              "label": "uid error",
+              "normalizedLabel": "uid error"
+            },
+            {
+              "label": "signed out",
+              "normalizedLabel": "signed out"
+            },
+            {
+              "label": "payments loading",
+              "normalizedLabel": "payments loading"
+            },
+            {
+              "label": "payments error",
+              "normalizedLabel": "payments error"
+            },
+            {
+              "label": "empty history",
+              "normalizedLabel": "empty history"
+            },
+            {
+              "label": "status variants",
+              "normalizedLabel": "status variants"
+            },
+            {
+              "label": "event title missing",
+              "normalizedLabel": "event title missing"
+            },
+            {
+              "label": "event titles loading",
+              "normalizedLabel": "event titles loading"
+            },
+            {
+              "label": "event titles error",
+              "normalizedLabel": "event titles error"
             }
           ]
         }
@@ -3635,77 +3827,6 @@
             {
               "label": "dark theme",
               "normalizedLabel": "dark theme"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "PaymentHistoryScreen",
-      "useCaseCount": 1,
-      "stateCardCount": 8,
-      "paths": [
-        "[P3 utility surfaces]/Payment history"
-      ],
-      "labels": [
-        "empty history",
-        "event title missing",
-        "payments error",
-        "payments loading",
-        "signed out",
-        "status variants",
-        "uid error",
-        "uid loading"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "large-state-matrix"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "paymentHistoryScreenStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Screen states",
-          "functionName": "paymentHistoryScreenStates",
-          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
-          "path": "[P3 utility surfaces]/Payment history",
-          "stateCardCount": 8,
-          "stateCards": [
-            {
-              "label": "uid loading",
-              "normalizedLabel": "uid loading"
-            },
-            {
-              "label": "uid error",
-              "normalizedLabel": "uid error"
-            },
-            {
-              "label": "signed out",
-              "normalizedLabel": "signed out"
-            },
-            {
-              "label": "payments loading",
-              "normalizedLabel": "payments loading"
-            },
-            {
-              "label": "payments error",
-              "normalizedLabel": "payments error"
-            },
-            {
-              "label": "empty history",
-              "normalizedLabel": "empty history"
-            },
-            {
-              "label": "status variants",
-              "normalizedLabel": "status variants"
-            },
-            {
-              "label": "event title missing",
-              "normalizedLabel": "event title missing"
             }
           ]
         }
@@ -5640,6 +5761,203 @@
       ]
     },
     {
+      "component": "HostEventManageRouteScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 14,
+      "paths": [
+        "[P1 product surfaces]/Host operations"
+      ],
+      "labels": [
+        "event not found",
+        "guests workspace",
+        "invite links error",
+        "invite links loading",
+        "invite links offline",
+        "live workspace",
+        "reduced motion",
+        "report workspace",
+        "route error",
+        "route loading",
+        "route offline",
+        "setup workspace",
+        "text scale 2.0",
+        "unauthorized host"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "hostEventManageRouteAndSectionStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Route and section states",
+          "functionName": "hostEventManageRouteAndSectionStates",
+          "file": "widgetbook/lib/hosts/host_operations_use_cases.dart",
+          "path": "[P1 product surfaces]/Host operations",
+          "stateCardCount": 14,
+          "stateCards": [
+            {
+              "label": "route loading",
+              "normalizedLabel": "route loading"
+            },
+            {
+              "label": "route error",
+              "normalizedLabel": "route error"
+            },
+            {
+              "label": "route offline",
+              "normalizedLabel": "route offline"
+            },
+            {
+              "label": "event not found",
+              "normalizedLabel": "event not found"
+            },
+            {
+              "label": "unauthorized host",
+              "normalizedLabel": "unauthorized host"
+            },
+            {
+              "label": "setup workspace",
+              "normalizedLabel": "setup workspace"
+            },
+            {
+              "label": "guests workspace",
+              "normalizedLabel": "guests workspace"
+            },
+            {
+              "label": "live workspace",
+              "normalizedLabel": "live workspace"
+            },
+            {
+              "label": "report workspace",
+              "normalizedLabel": "report workspace"
+            },
+            {
+              "label": "invite links loading",
+              "normalizedLabel": "invite links loading"
+            },
+            {
+              "label": "invite links error",
+              "normalizedLabel": "invite links error"
+            },
+            {
+              "label": "invite links offline",
+              "normalizedLabel": "invite links offline"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            },
+            {
+              "label": "reduced motion",
+              "normalizedLabel": "reduced motion"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "EventRecapScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 13,
+      "paths": [
+        "[P1 product surfaces]/Catches"
+      ],
+      "labels": [
+        "checked-in roster",
+        "dark theme",
+        "empty roster",
+        "event missing",
+        "open catch window",
+        "partial profile fallback",
+        "profile lookup error",
+        "profile lookup loading",
+        "recap loading",
+        "reduced motion",
+        "selected vibe tile",
+        "text scale 2.0",
+        "view-model error"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "eventRecapScreenRouteStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Event recap route states",
+          "functionName": "eventRecapScreenRouteStates",
+          "file": "widgetbook/lib/catches/catches_use_cases.dart",
+          "path": "[P1 product surfaces]/Catches",
+          "stateCardCount": 13,
+          "stateCards": [
+            {
+              "label": "recap loading",
+              "normalizedLabel": "recap loading"
+            },
+            {
+              "label": "view-model error",
+              "normalizedLabel": "view model error"
+            },
+            {
+              "label": "checked-in roster",
+              "normalizedLabel": "checked in roster"
+            },
+            {
+              "label": "profile lookup loading",
+              "normalizedLabel": "profile lookup loading"
+            },
+            {
+              "label": "profile lookup error",
+              "normalizedLabel": "profile lookup error"
+            },
+            {
+              "label": "partial profile fallback",
+              "normalizedLabel": "partial profile fallback"
+            },
+            {
+              "label": "selected vibe tile",
+              "normalizedLabel": "selected vibe tile"
+            },
+            {
+              "label": "open catch window",
+              "normalizedLabel": "open catch window"
+            },
+            {
+              "label": "empty roster",
+              "normalizedLabel": "empty roster"
+            },
+            {
+              "label": "event missing",
+              "normalizedLabel": "event missing"
+            },
+            {
+              "label": "text scale 2.0",
+              "normalizedLabel": "text scale 2 0"
+            },
+            {
+              "label": "reduced motion",
+              "normalizedLabel": "reduced motion"
+            },
+            {
+              "label": "dark theme",
+              "normalizedLabel": "dark theme"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "HostEventsScaffold",
       "useCaseCount": 1,
       "stateCardCount": 13,
@@ -6702,92 +7020,6 @@
       ]
     },
     {
-      "component": "EventRecapScreen",
-      "useCaseCount": 1,
-      "stateCardCount": 11,
-      "paths": [
-        "[P1 product surfaces]/Catches"
-      ],
-      "labels": [
-        "checked-in roster",
-        "dark theme",
-        "empty roster",
-        "event missing",
-        "open catch window",
-        "partial profile fallback",
-        "recap loading",
-        "reduced motion",
-        "selected vibe tile",
-        "text scale 2.0",
-        "view-model error"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "large-state-matrix"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "eventRecapScreenRouteStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Event recap route states",
-          "functionName": "eventRecapScreenRouteStates",
-          "file": "widgetbook/lib/catches/catches_use_cases.dart",
-          "path": "[P1 product surfaces]/Catches",
-          "stateCardCount": 11,
-          "stateCards": [
-            {
-              "label": "recap loading",
-              "normalizedLabel": "recap loading"
-            },
-            {
-              "label": "view-model error",
-              "normalizedLabel": "view model error"
-            },
-            {
-              "label": "checked-in roster",
-              "normalizedLabel": "checked in roster"
-            },
-            {
-              "label": "partial profile fallback",
-              "normalizedLabel": "partial profile fallback"
-            },
-            {
-              "label": "selected vibe tile",
-              "normalizedLabel": "selected vibe tile"
-            },
-            {
-              "label": "open catch window",
-              "normalizedLabel": "open catch window"
-            },
-            {
-              "label": "empty roster",
-              "normalizedLabel": "empty roster"
-            },
-            {
-              "label": "event missing",
-              "normalizedLabel": "event missing"
-            },
-            {
-              "label": "text scale 2.0",
-              "normalizedLabel": "text scale 2 0"
-            },
-            {
-              "label": "reduced motion",
-              "normalizedLabel": "reduced motion"
-            },
-            {
-              "label": "dark theme",
-              "normalizedLabel": "dark theme"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "component": "CatchCountPill",
       "useCaseCount": 2,
       "stateCardCount": 10,
@@ -7282,6 +7514,87 @@
             {
               "label": "reduced motion",
               "normalizedLabel": "reduced motion"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "component": "PaymentHistoryScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 10,
+      "paths": [
+        "[P3 utility surfaces]/Payment history"
+      ],
+      "labels": [
+        "empty history",
+        "event title missing",
+        "event titles error",
+        "event titles loading",
+        "payments error",
+        "payments loading",
+        "signed out",
+        "status variants",
+        "uid error",
+        "uid loading"
+      ],
+      "review": {
+        "needsReview": true,
+        "reasons": [
+          "large-state-matrix"
+        ],
+        "duplicateLabels": [],
+        "oversizedUseCases": [
+          "paymentHistoryScreenStates"
+        ]
+      },
+      "useCases": [
+        {
+          "name": "Screen states",
+          "functionName": "paymentHistoryScreenStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Payment history",
+          "stateCardCount": 10,
+          "stateCards": [
+            {
+              "label": "uid loading",
+              "normalizedLabel": "uid loading"
+            },
+            {
+              "label": "uid error",
+              "normalizedLabel": "uid error"
+            },
+            {
+              "label": "signed out",
+              "normalizedLabel": "signed out"
+            },
+            {
+              "label": "payments loading",
+              "normalizedLabel": "payments loading"
+            },
+            {
+              "label": "payments error",
+              "normalizedLabel": "payments error"
+            },
+            {
+              "label": "empty history",
+              "normalizedLabel": "empty history"
+            },
+            {
+              "label": "status variants",
+              "normalizedLabel": "status variants"
+            },
+            {
+              "label": "event title missing",
+              "normalizedLabel": "event title missing"
+            },
+            {
+              "label": "event titles loading",
+              "normalizedLabel": "event titles loading"
+            },
+            {
+              "label": "event titles error",
+              "normalizedLabel": "event titles error"
             }
           ]
         }
@@ -7834,77 +8147,6 @@
             {
               "label": "dark theme",
               "normalizedLabel": "dark theme"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "PaymentHistoryScreen",
-      "useCaseCount": 1,
-      "stateCardCount": 8,
-      "paths": [
-        "[P3 utility surfaces]/Payment history"
-      ],
-      "labels": [
-        "empty history",
-        "event title missing",
-        "payments error",
-        "payments loading",
-        "signed out",
-        "status variants",
-        "uid error",
-        "uid loading"
-      ],
-      "review": {
-        "needsReview": true,
-        "reasons": [
-          "large-state-matrix"
-        ],
-        "duplicateLabels": [],
-        "oversizedUseCases": [
-          "paymentHistoryScreenStates"
-        ]
-      },
-      "useCases": [
-        {
-          "name": "Screen states",
-          "functionName": "paymentHistoryScreenStates",
-          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
-          "path": "[P3 utility surfaces]/Payment history",
-          "stateCardCount": 8,
-          "stateCards": [
-            {
-              "label": "uid loading",
-              "normalizedLabel": "uid loading"
-            },
-            {
-              "label": "uid error",
-              "normalizedLabel": "uid error"
-            },
-            {
-              "label": "signed out",
-              "normalizedLabel": "signed out"
-            },
-            {
-              "label": "payments loading",
-              "normalizedLabel": "payments loading"
-            },
-            {
-              "label": "payments error",
-              "normalizedLabel": "payments error"
-            },
-            {
-              "label": "empty history",
-              "normalizedLabel": "empty history"
-            },
-            {
-              "label": "status variants",
-              "normalizedLabel": "status variants"
-            },
-            {
-              "label": "event title missing",
-              "normalizedLabel": "event title missing"
             }
           ]
         }
@@ -10958,6 +11200,58 @@
       ]
     },
     {
+      "component": "ActivityScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 5,
+      "paths": [
+        "[P3 utility surfaces]/Notifications"
+      ],
+      "labels": [
+        "activity error",
+        "mark-all-read visible",
+        "signed out",
+        "uid error",
+        "uid loading"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Screen states",
+          "functionName": "activityScreenStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Notifications",
+          "stateCardCount": 5,
+          "stateCards": [
+            {
+              "label": "uid loading",
+              "normalizedLabel": "uid loading"
+            },
+            {
+              "label": "uid error",
+              "normalizedLabel": "uid error"
+            },
+            {
+              "label": "signed out",
+              "normalizedLabel": "signed out"
+            },
+            {
+              "label": "mark-all-read visible",
+              "normalizedLabel": "mark all read visible"
+            },
+            {
+              "label": "activity error",
+              "normalizedLabel": "activity error"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "CatchActivityArt",
       "useCaseCount": 1,
       "stateCardCount": 5,
@@ -12390,53 +12684,6 @@
             {
               "label": "activity-variants",
               "normalizedLabel": "activity variants"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "ActivityScreen",
-      "useCaseCount": 1,
-      "stateCardCount": 4,
-      "paths": [
-        "[P3 utility surfaces]/Notifications"
-      ],
-      "labels": [
-        "activity error",
-        "mark-all-read visible",
-        "signed out",
-        "uid loading"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Screen states",
-          "functionName": "activityScreenStates",
-          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
-          "path": "[P3 utility surfaces]/Notifications",
-          "stateCardCount": 4,
-          "stateCards": [
-            {
-              "label": "uid loading",
-              "normalizedLabel": "uid loading"
-            },
-            {
-              "label": "signed out",
-              "normalizedLabel": "signed out"
-            },
-            {
-              "label": "mark-all-read visible",
-              "normalizedLabel": "mark all read visible"
-            },
-            {
-              "label": "activity error",
-              "normalizedLabel": "activity error"
             }
           ]
         }
@@ -20025,6 +20272,43 @@
       ]
     },
     {
+      "component": "EventLocationMapScreen",
+      "useCaseCount": 1,
+      "stateCardCount": 2,
+      "paths": [
+        "[P3 utility surfaces]/Event location map"
+      ],
+      "labels": [
+        "directions pending",
+        "network tiles disabled"
+      ],
+      "review": {
+        "needsReview": false,
+        "reasons": [],
+        "duplicateLabels": [],
+        "oversizedUseCases": []
+      },
+      "useCases": [
+        {
+          "name": "Map states",
+          "functionName": "eventLocationMapScreenStates",
+          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "[P3 utility surfaces]/Event location map",
+          "stateCardCount": 2,
+          "stateCards": [
+            {
+              "label": "network tiles disabled",
+              "normalizedLabel": "network tiles disabled"
+            },
+            {
+              "label": "directions pending",
+              "normalizedLabel": "directions pending"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "component": "EventPolicyScenarioCard",
       "useCaseCount": 1,
       "stateCardCount": 2,
@@ -26531,38 +26815,6 @@
             {
               "label": "ticket and spotlight bodies",
               "normalizedLabel": "ticket and spotlight bodies"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "component": "EventLocationMapScreen",
-      "useCaseCount": 1,
-      "stateCardCount": 1,
-      "paths": [
-        "[P3 utility surfaces]/Event location map"
-      ],
-      "labels": [
-        "network tiles disabled"
-      ],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Map states",
-          "functionName": "eventLocationMapScreenStates",
-          "file": "widgetbook/lib/utility/p3_utility_use_cases.dart",
-          "path": "[P3 utility surfaces]/Event location map",
-          "stateCardCount": 1,
-          "stateCards": [
-            {
-              "label": "network tiles disabled",
-              "normalizedLabel": "network tiles disabled"
             }
           ]
         }
@@ -34594,31 +34846,6 @@
         {
           "name": "Route error",
           "functionName": "savedEventsErrorState",
-          "file": "widgetbook/lib/events/event_detail_use_cases.dart",
-          "path": "[Events]/Sections",
-          "stateCardCount": 0,
-          "stateCards": []
-        }
-      ]
-    },
-    {
-      "component": "SavedEventsHeaderSliver",
-      "useCaseCount": 1,
-      "stateCardCount": 0,
-      "paths": [
-        "[Events]/Sections"
-      ],
-      "labels": [],
-      "review": {
-        "needsReview": false,
-        "reasons": [],
-        "duplicateLabels": [],
-        "oversizedUseCases": []
-      },
-      "useCases": [
-        {
-          "name": "Header sliver",
-          "functionName": "savedEventsHeaderSliverState",
           "file": "widgetbook/lib/events/event_detail_use_cases.dart",
           "path": "[Events]/Sections",
           "stateCardCount": 0,

@@ -39,6 +39,11 @@ test("India market pack has stable, internally consistent city contracts", () =>
     (city) => city.label
   ), [
     "Mumbai",
+    "Indore",
+  ]);
+  assert.deepEqual(inMarket.cities.filter((city) => city.status === "waitlist").map(
+    (city) => city.label
+  ), [
     "Delhi",
     "Bangalore",
     "Pune",
@@ -46,6 +51,6 @@ test("India market pack has stable, internally consistent city contracts", () =>
   ]);
   assert.deepEqual(
     [...inMarket.cities.map((city) => city.label), inMarket.otherCityOptionLabel],
-    ["Mumbai", "Delhi", "Bangalore", "Pune", "Hyderabad", "Other"]
+    ["Mumbai", "Indore", "Delhi", "Bangalore", "Pune", "Hyderabad", "Other"]
   );
 });

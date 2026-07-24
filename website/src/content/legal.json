@@ -1,0 +1,216 @@
+{
+  "operator": {
+    "name": "Torana",
+    "supportEmail": "suvrat@catchdates.com",
+    "formalAddress": "65, Manish Puri, Indore, Madhya Pradesh, India 452018",
+    "governingCourts": "Indore, Madhya Pradesh",
+    "grievanceOfficer": "Suvrat Garg, Founder"
+  },
+  "ui": {
+    "homeLabel": "Home",
+    "organizersLabel": "Organizers",
+    "hostsLabel": "For hosts",
+    "contactLabel": "Contact",
+    "effectivePrefix": "Effective",
+    "contactPrompt": "Questions, corrections, or privacy requests?",
+    "footerBody": "Catch is operated by Torana."
+  },
+  "effectiveDate": "22 July 2026",
+  "pages": {
+    "privacy": {
+      "path": "/privacy/",
+      "eyebrow": "Legal",
+      "title": "Privacy policy",
+      "summary": "How Catch collects, uses, shares, protects, and responds to requests about personal data.",
+      "sections": [
+        {
+          "heading": "Who operates Catch",
+          "paragraphs": [
+            "Catch is operated by Torana (\"Catch\", \"we\", \"us\", or \"our\"). This policy applies when you use catchdates.com, a Catch application, an organizer or event page, a host tool, or our support channels."
+          ]
+        },
+        {
+          "heading": "Data we collect",
+          "paragraphs": [
+            "We collect information you provide, information created through your use of Catch, technical information needed to operate and secure the service, and factual organizer or event information from public sources."
+          ],
+          "bullets": [
+            "Account and profile information, including name, contact details, age confirmation, city, photos, prompts, preferences, reviews, messages, support requests, reports, and claim requests.",
+            "Event and interaction information, including registrations, waitlists, attendance, check-in, private catches, mutual matches, blocks, reports, host actions, saved organizers, and aggregate event outcomes.",
+            "Website and host-lead information, including name, email, city, role, organization, public website or social link, application answers, consent choice, and campaign attribution attached to a submission.",
+            "Device and reliability information, including app version, operating system, browser, diagnostic events, crash information, security signals, and approximate location. Precise location is used only where a feature needs it and device permission allows it.",
+            "Public-source listing information, such as organizer names, descriptions, public links, event dates and locations, source provenance, and freshness details. An unclaimed listing is not an endorsement or proof of a commercial relationship."
+          ]
+        },
+        {
+          "heading": "How we use data",
+          "paragraphs": [
+            "We use data to provide and secure Catch; operate accounts, discovery, attendance, matching, messaging, host, claim, review, and safety features; respond to support, privacy, correction, and takedown requests; prevent fraud and abuse; moderate content; measure reliability and consented usage; communicate about the service; comply with law; and establish, exercise, or defend legal claims.",
+            "Where consent is required, you may withdraw it through the relevant setting or by contacting us. Withdrawal does not invalidate earlier lawful processing, but it may prevent us from providing a feature that needs the data."
+          ]
+        },
+        {
+          "heading": "Public and private information",
+          "paragraphs": [
+            "Organizer and event pages, reviews, organizer responses, and content labelled public may be visible to anyone and indexed by search engines. Private catches are not shown to the other person unless interest becomes mutual. Hosts receive operational and aggregate information; they should not receive private dating choices unless a feature clearly says so."
+          ]
+        },
+        {
+          "heading": "Sharing, cookies, and external services",
+          "paragraphs": [
+            "We may share data with service providers supporting hosting, databases, authentication, storage, analytics, crash reporting, communications, moderation, maps, search, and security; with an organizer when you request an organizer-operated service; when required by law or needed to protect people; during a business reorganization; or at your direction. We do not sell personal data for money.",
+            "External event and ticket links lead to third parties whose policies apply. Non-essential website analytics and marketing tags load only after you accept them. Essential storage may support security, consent, saved organizers, forms, and site operation."
+          ]
+        },
+        {
+          "heading": "Retention and security",
+          "paragraphs": [
+            "We retain data only as long as reasonably needed for the purposes above, legal requirements, safety, dispute handling, fraud prevention, and backup recovery. Public-source listings may remain while accurate and relevant, subject to correction and takedown requests. Account deletion starts the product deletion workflow, but limited records may remain where law, safety, fraud prevention, or dispute resolution requires it.",
+            "We use access controls, encryption in transit, environment separation, service authentication, audit records, and monitoring intended to protect data. No system is perfectly secure; contact us promptly if you believe your account or data has been compromised."
+          ]
+        },
+        {
+          "heading": "Your choices and rights",
+          "paragraphs": [
+            "Subject to applicable law, you may request information about our processing, access or a summary of your data, correction, erasure, consent withdrawal, nomination where provided by law, or grievance redressal. You may also request that we correct, claim, or remove an organizer or event listing. We may verify identity and ask for information needed to locate the record.",
+            "Send requests to suvrat@catchdates.com. We aim to answer privacy grievances within 90 days and consumer-service complaints within one month where those timelines apply."
+          ]
+        },
+        {
+          "heading": "Age, transfers, and changes",
+          "paragraphs": [
+            "Catch is for adults aged 18 or older. We do not knowingly offer dating services to children. Contact us if you believe someone under 18 has provided data.",
+            "Providers may process data outside your state or country subject to their contracts and applicable restrictions. We may update this policy as the service or law changes and will post the updated effective date, with additional notice where required."
+          ]
+        },
+        {
+          "heading": "Contact and grievance officer",
+          "paragraphs": [
+            "Operator: Torana. Grievance officer: Suvrat Garg, Founder. Email: suvrat@catchdates.com. Address: 65, Manish Puri, Indore, Madhya Pradesh, India 452018."
+          ]
+        }
+      ]
+    },
+    "terms": {
+      "path": "/terms/",
+      "eyebrow": "Legal",
+      "title": "Terms of use",
+      "summary": "The rules for using Catch, its organizer directory, event pages, accounts, and related services.",
+      "sections": [
+        {
+          "heading": "Agreement and eligibility",
+          "paragraphs": [
+            "These terms are an agreement between you and Torana, operating Catch. By accessing Catch, creating an account, submitting a lead or claim, or using an organizer or event page, you agree to these terms and the Privacy Policy.",
+            "You must be at least 18 years old and legally able to enter this agreement. You must provide accurate information, keep your account secure, and tell us about unauthorized access. We may request age, identity, organizer-authority, or event information where needed for safety, claims, or legal compliance."
+          ]
+        },
+        {
+          "heading": "What Catch does",
+          "paragraphs": [
+            "Catch helps adults discover organizers and events, connect around real-world attendance, express private interest, match after mutual interest, and use related host and safety tools.",
+            "During the website-first pilot, many event actions lead to an organizer's site or another ticketing provider. Catch is not the organizer, venue, ticket seller, employer, agent, or insurer for an external event unless a page expressly says otherwise."
+          ]
+        },
+        {
+          "heading": "Public-source and unclaimed listings",
+          "paragraphs": [
+            "Some organizer and event pages are compiled from public sources. \"Unclaimed\" means the organizer has not verified control of that Catch page; it does not mean the organizer supplied, approved, or endorsed it. Source and freshness information is shown where available. Organizers and affected people may request a claim, correction, or takedown through Help."
+          ]
+        },
+        {
+          "heading": "Your conduct and content",
+          "paragraphs": [
+            "You must treat other people lawfully and respectfully. You may not impersonate someone; misrepresent age, identity, authority, or event facts; harass, threaten, stalk, discriminate against, exploit, or endanger anyone; expose private information; manipulate reviews or engagement; bypass security; interfere with the service; use unauthorized automation; or use Catch unlawfully.",
+            "You retain ownership of content you submit. You give Catch a worldwide, non-exclusive, royalty-free licence to host, reproduce, format, moderate, and display that content as needed to operate, protect, improve, and promote the relevant service, subject to the Privacy Policy and visibility controls. You confirm that you have the rights needed to submit it."
+          ]
+        },
+        {
+          "heading": "Events and safety",
+          "paragraphs": [
+            "Meeting people and attending events involve real-world risks. Review organizer, venue, transport, accessibility, and emergency information; use your judgment; and contact local emergency services if anyone is in immediate danger. Catch's verification, review, moderation, and safety features do not guarantee identity, conduct, compatibility, event quality, or safety.",
+            "Report concerns through Catch's report tools or Help. We may investigate, preserve relevant records, restrict accounts or listings, and cooperate with lawful authorities. Catch is not required to mediate private disputes between users or with an external organizer."
+          ]
+        },
+        {
+          "heading": "Payments and external services",
+          "paragraphs": [
+            "Paid-event functionality is not part of this website pilot. If Catch later offers payment or ticketing, the checkout will identify the seller, price, fees, refund terms, and additional terms before purchase. External services are controlled by third parties, and their terms, privacy, payment, refund, and availability rules apply."
+          ]
+        },
+        {
+          "heading": "Service changes and intellectual property",
+          "paragraphs": [
+            "We may change, test, pause, or discontinue features, markets, listings, or the service. We may suspend or terminate access where reasonably necessary for a breach, safety, fraud, legal compliance, or operational risk. You may stop using Catch and request account deletion at any time.",
+            "Catch's software, brand, designs, and original content are owned by Torana or its licensors. Except for rights expressly granted here, no rights are transferred to you."
+          ]
+        },
+        {
+          "heading": "Disclaimers and liability",
+          "paragraphs": [
+            "Catch is provided on an \"as available\" basis to the extent permitted by law. We do not guarantee uninterrupted operation, an event, attendance, a match, a relationship, an organizer outcome, or the accuracy of third-party content.",
+            "Nothing here excludes rights or liabilities that cannot lawfully be excluded, including applicable consumer rights. Subject to that rule, Catch is not responsible for indirect, incidental, special, or consequential loss, or for conduct, events, content, transactions, or services controlled by another user, organizer, venue, or third party."
+          ]
+        },
+        {
+          "heading": "Law, changes, and contact",
+          "paragraphs": [
+            "Indian law governs these terms. Subject to mandatory consumer jurisdiction, the courts at Indore, Madhya Pradesh have exclusive jurisdiction. We may update these terms prospectively by posting a new effective date and giving additional notice where required.",
+            "Legal notices and questions: Torana, 65, Manish Puri, Indore, Madhya Pradesh, India 452018; suvrat@catchdates.com."
+          ]
+        }
+      ]
+    },
+    "help": {
+      "path": "/help/",
+      "eyebrow": "Support",
+      "title": "Help and safety",
+      "summary": "Get account, privacy, listing, event, safety, or website help from Catch.",
+      "sections": [
+        {
+          "heading": "Contact support",
+          "paragraphs": [
+            "Email suvrat@catchdates.com. Include the relevant page URL, your account email or phone number if needed, what happened, and the outcome you need. Do not send passwords, one-time codes, payment credentials, government identifiers, or unnecessary sensitive details.",
+            "We aim to acknowledge and route requests promptly. Privacy grievances are targeted within 90 days and consumer-service complaints within one month where applicable."
+          ]
+        },
+        {
+          "heading": "Immediate safety",
+          "paragraphs": [
+            "If someone is in immediate danger, contact local emergency services first. Catch support is not an emergency service. Preserve relevant messages, event details, receipts, and screenshots; use block and report controls where available; and tell us the event, organizer, account, and approximate time."
+          ]
+        },
+        {
+          "heading": "Claim, correct, or remove a listing",
+          "paragraphs": [
+            "Use the claim action on the organizer page or email support with its URL. For an ownership claim, provide your role and a reasonable authority signal such as an organization email, website update, or message from a public social account.",
+            "For a correction or takedown, identify the inaccurate, outdated, private, infringing, unsafe, or unlawful content and the change requested. We may verify the request, preserve a decision receipt, and display a claim or freshness state during review."
+          ]
+        },
+        {
+          "heading": "Account and privacy requests",
+          "paragraphs": [
+            "Use account settings where available or email support to access, correct, or delete data, withdraw consent, or raise a grievance. Include the account identifier needed to locate the record. We may verify identity before disclosure or deletion. Limited safety, fraud, legal, dispute, and backup records may remain for their necessary retention period."
+          ]
+        },
+        {
+          "heading": "Event and registration problems",
+          "paragraphs": [
+            "Check whether the page labels the event as a Catch event or an external event. For an external event, contact its organizer or ticket provider about entry, schedule, cancellation, payment, or refunds. Send Catch the page URL if a date, venue, registration link, price, or organizer fact appears wrong. Paid events are not part of the current Catch website pilot."
+          ]
+        },
+        {
+          "heading": "Website troubleshooting",
+          "paragraphs": [
+            "Refresh the page, check your connection, and retry in a current browser. If a form fails, include the route, approximate time, browser or device, and visible error without sending secrets. Non-essential analytics are optional; declining them should not prevent essential site or support access."
+          ]
+        },
+        {
+          "heading": "Operator and grievance contact",
+          "paragraphs": [
+            "Operator: Torana. Grievance officer: Suvrat Garg, Founder. Email: suvrat@catchdates.com. Address: 65, Manish Puri, Indore, Madhya Pradesh, India 452018."
+          ]
+        }
+      ]
+    }
+  }
+}

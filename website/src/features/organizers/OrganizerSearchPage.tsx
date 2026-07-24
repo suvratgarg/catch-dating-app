@@ -1,14 +1,20 @@
 import {websiteCopy} from "@content/generated";
+import {siteFooterLegalLinks} from "@content/site";
 import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
 import {
   DirectoryClaimPressureStrip,
   OrganizerResultsSection,
   OrganizerSearchHeroSection,
 } from "./sections/OrganizerSearchSections";
+import type {HostListing} from "./types";
 import {useOrganizerDirectoryController} from "./useOrganizerDirectoryController";
 
-export function OrganizerSearchPage() {
-  const controller = useOrganizerDirectoryController();
+interface OrganizerSearchPageProps {
+  listings?: readonly HostListing[];
+}
+
+export function OrganizerSearchPage({listings}: OrganizerSearchPageProps = {}) {
+  const controller = useOrganizerDirectoryController(listings);
   const {
     appearanceContext,
     queryTerms,
@@ -58,6 +64,7 @@ export function OrganizerSearchPage() {
           {href: "/", label: websiteCopy["organizersearchpage_0350"]},
           {href: "/organizers/?q=run", label: websiteCopy["organizersearchpage_0351"]},
           {href: "/organizers/?q=dinner", label: websiteCopy["organizersearchpage_0348"]},
+          ...siteFooterLegalLinks,
         ]}
       />
     </>

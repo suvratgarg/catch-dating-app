@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/create_organizer_post_response.schema.json",
+  "title": "CreateOrganizerPostCallableResponse",
+  "description": "Callable response returned by createOrganizerPost.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["postId", "remainingWeeklyQuota"],
+  "properties": {
+    "postId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "remainingWeeklyQuota": {"type": "integer", "minimum": 0, "maximum": 3}
+  }
+}

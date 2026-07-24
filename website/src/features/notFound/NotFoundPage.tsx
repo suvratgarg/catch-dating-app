@@ -1,4 +1,5 @@
 import {websiteCopy} from "@content/generated";
+import {siteFooterLegalLinks} from "@content/site";
 import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
 import {ProcessStatusPanel} from "../../shared/ui/primitives";
 
@@ -51,6 +52,7 @@ export function NotFoundPage() {
           {href: "/organizers/", label: websiteCopy["notfoundpage_0339"]},
           {href: "/host/", label: websiteCopy["notfoundpage_0334"]},
           {href: "/claim/", label: websiteCopy["notfoundpage_0332"]},
+          ...siteFooterLegalLinks,
         ]}
       />
     </>

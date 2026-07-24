@@ -129,38 +129,38 @@ export const sampleOverview: AdminOverviewResponse = {
     ],
     clubClaimRequests: [
       {
-        id: "clubClaimRequests/club_claim_afterfly",
+        id: "organizerClaimRequests/club_claim_afterfly",
         title: "AFTER FLY owner",
         detail: "club afterfly - founder - hello@afterfly.in - 2 proof links",
         status: "pending",
         createdAt: "2026-06-01T01:48:00.000Z",
-        targetPath: "clubClaimRequests/club_claim_afterfly",
+        targetPath: "organizerClaimRequests/club_claim_afterfly",
       },
       {
-        id: "clubClaimRequests/club_claim_bhag",
+        id: "organizerClaimRequests/club_claim_bhag",
         title: "Bhag Club manager",
         detail: "club bhag - manager - no contact - 1 proof links",
         status: "pending",
         createdAt: "2026-05-31T20:14:00.000Z",
-        targetPath: "clubClaimRequests/club_claim_bhag",
+        targetPath: "organizerClaimRequests/club_claim_bhag",
       },
     ],
     clubIndexReviews: [
       {
-        id: "clubs/afterfly",
+        id: "organizers/afterfly",
         title: "AFTER FLY",
         detail: "/organizers/afterfly/ - medium - sourceBacked",
         status: "indexed",
         createdAt: "2026-06-01T12:00:00.000Z",
-        targetPath: "clubs/afterfly",
+        targetPath: "organizers/afterfly",
       },
       {
-        id: "clubs/bhag",
+        id: "organizers/bhag",
         title: "Bhag Run Club",
         detail: "/organizers/bhag/ - medium - sourceBacked",
         status: "indexed",
         createdAt: "2026-06-01T11:00:00.000Z",
-        targetPath: "clubs/bhag",
+        targetPath: "organizers/bhag",
       },
     ],
     paymentIssues: [
@@ -218,6 +218,7 @@ export const sampleHostAnalytics: HostAnalyticsResponse = {
     preset: "30d",
   },
   scope: {
+    organizerIds: ["afterfly", "bhag"],
     clubIds: ["afterfly", "bhag"],
     eventIds: ["afterfly-social-run-1", "bhag-sunday-run-1"],
     clubName: null,
@@ -941,6 +942,12 @@ function sampleOrganizer(config: {
     email: null,
     imageUrl: null,
     profileImageUrl: null,
+    organizerType: config.entityKind === "eventOrganizer" ?
+      "eventProducer" :
+      config.entityKind === "creatorCommunity" ?
+        "community" :
+        config.entityKind ?? "club",
+    publicCategoryLabel: config.displayCategory,
     entityKind: config.entityKind,
     entitySubtypes: config.entitySubtypes,
     displayCategory: config.displayCategory,

@@ -9,6 +9,7 @@
 final class HostAnalyticsQueryCallableRequest {
   const HostAnalyticsQueryCallableRequest({
     this.clubId,
+    this.organizerId,
     this.eventId,
     this.rangePreset,
     this.startDate,
@@ -18,6 +19,7 @@ final class HostAnalyticsQueryCallableRequest {
   });
 
   final String? clubId;
+  final String? organizerId;
   final String? eventId;
   final String? rangePreset;
   final String? startDate;
@@ -27,6 +29,7 @@ final class HostAnalyticsQueryCallableRequest {
 
   Map<String, Object?> toJson() => {
     'clubId': ?clubId,
+    'organizerId': ?organizerId,
     'eventId': ?eventId,
     'rangePreset': ?rangePreset,
     'startDate': ?startDate,

@@ -19,9 +19,8 @@ export function buildListingReviewSummary(
   const seedReviewKeys = new Set(seedReviews.map(reviewKey));
   const aggregateReviewCount = listing.metrics?.reviewCount;
   const aggregateRating = listing.metrics?.rating;
-  let supplementalRatingTotal = 0;
   let supplementalReviewCount = 0;
-  let visibleRatingTotal = 0;
+  let visibleVerifiedRatingTotal = 0;
   let visibleVerifiedCount = 0;
   let ownerResponseCount = 0;
   const publicReviews: PublicReviewCardModel[] = [];
@@ -30,12 +29,13 @@ export function buildListingReviewSummary(
   for (const review of reviews) {
     const key = reviewKey(review);
     const verified = isVerifiedReview(review);
-    visibleRatingTotal += review.rating;
     if (!seedReviewKeys.has(key)) {
       supplementalReviewCount += 1;
-      supplementalRatingTotal += review.rating;
     }
-    if (verified) visibleVerifiedCount += 1;
+    if (verified) {
+      visibleVerifiedCount += 1;
+      visibleVerifiedRatingTotal += review.rating;
+    }
     if (review.ownerResponse) ownerResponseCount += 1;
 
     const card = reviewCardForReview(review, verified, key);
@@ -49,19 +49,16 @@ export function buildListingReviewSummary(
   const displayReviewCount = aggregateReviewCount !== undefined ?
     aggregateReviewCount + supplementalReviewCount :
     reviews.length;
-  const visibleRatingAverage = reviews.length ?
-    visibleRatingTotal / reviews.length :
+  const visibleVerifiedRatingAverage = visibleVerifiedCount ?
+    visibleVerifiedRatingTotal / visibleVerifiedCount :
     0;
-  const displayRating = aggregateRating !== undefined && aggregateReviewCount ?
-    (
-      (aggregateRating * aggregateReviewCount + supplementalRatingTotal) /
-      displayReviewCount
-    ) :
-    visibleRatingAverage;
-  const verifiedCount = Math.max(
-    listing.listingVariant === "appCreatedClub" ? aggregateReviewCount ?? 0 : 0,
-    visibleVerifiedCount
-  );
+  // The canonical aggregate is verified-review-only. Public listing reviews
+  // may increase the published review count, but never move this score.
+  const displayRating = aggregateRating ?? visibleVerifiedRatingAverage;
+  const aggregateVerifiedCount = (
+    listing.metrics as (HostListing["metrics"] & {verifiedReviewCount?: number}) | undefined
+  )?.verifiedReviewCount;
+  const verifiedCount = aggregateVerifiedCount ?? visibleVerifiedCount;
 
   return {
     displayRating,

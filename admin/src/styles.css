@@ -226,6 +226,14 @@ button {
   container-type: inline-size;
 }
 
+.admin-pending-operation-boundary {
+  border: 0;
+  display: contents;
+  margin: 0;
+  min-inline-size: 0;
+  padding: 0;
+}
+
 .topbar {
   display: flex;
   align-items: center;
@@ -2021,6 +2029,11 @@ th {
   margin-top: 22px;
 }
 
+.signin-panel .field-control {
+  margin-top: 18px;
+  text-align: left;
+}
+
 .signin-actions {
   display: grid;
   gap: 10px;
@@ -2030,6 +2043,10 @@ th {
 .signin-actions .primary-button,
 .signin-actions .ghost-button {
   width: 100%;
+}
+
+.signin-actions .primary-button {
+  margin-top: 0;
 }
 
 .signin-meta {
@@ -3863,6 +3880,7 @@ th {
 
   .workbench-toolbar .search-control {
     max-width: none;
+    flex: 0 0 36px;
   }
 
   .roadmap-summary {

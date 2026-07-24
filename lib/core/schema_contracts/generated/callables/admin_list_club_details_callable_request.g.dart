@@ -5,7 +5,7 @@
 // Typed callable request DTO emitted from callables/admin_list_club_details_payload.schema.json.
 // Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
 
-/// Callable payload accepted by adminListClubDetails. This lists canonical organizer profile rows from clubs/{clubId} for the admin publishing workspace.
+/// Deprecated compatibility callable payload accepted by adminListClubDetails. The handler reads canonical organizer profile rows from organizers/{organizerId}; new clients use adminListOrganizerDetails.
 final class AdminListClubDetailsCallableRequest {
   const AdminListClubDetailsCallableRequest({
     this.query,

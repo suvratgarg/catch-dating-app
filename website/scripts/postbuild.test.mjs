@@ -49,6 +49,28 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
   assert.match(listingHtml, /"@type":"Organization"/);
   assert.match(listingHtml, /"@type":"BreadcrumbList"/);
 
+  const catchEventHtml = fs.readFileSync(
+    path.join(distRoot, "events", "afterfly-catch-event", "index.html"),
+    "utf8"
+  );
+  assert.match(catchEventHtml, /data-static-event-detail="true"/);
+  assert.match(catchEventHtml, /<h1>Afterfly Catch social run<\/h1>/);
+  assert.match(catchEventHtml, /"@type":"Event"/);
+  assert.match(catchEventHtml, /"@type":"Review"/);
+  assert.match(
+    catchEventHtml,
+    /canonical" href="https:\/\/example\.test\/events\/afterfly-catch-event\/"/
+  );
+  assert.doesNotMatch(catchEventHtml, /checkout|sign in|book now/iu);
+
+  const externalEventHtml = fs.readFileSync(
+    path.join(distRoot, "events", "afterfly-external-event", "index.html"),
+    "utf8"
+  );
+  assert.match(externalEventHtml, /Afterfly external social run/);
+  assert.match(externalEventHtml, /https:\/\/luma\.com\/afterfly-external/);
+  assert.match(externalEventHtml, /"sameAs":"https:\/\/luma\.com\/afterfly-external"/);
+
   const legacyHtml = fs.readFileSync(
     path.join(distRoot, "organizers", "indore", "afterfly-run-club", "index.html"),
     "utf8"
@@ -70,6 +92,20 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
   );
   assert.match(claimHtml, /<meta name="robots" content="noindex, follow" \/>/);
 
+  for (const [route, title] of [
+    ["privacy", "Privacy policy"],
+    ["terms", "Terms of use"],
+    ["help", "Help and safety"],
+  ]) {
+    const legalHtml = fs.readFileSync(path.join(distRoot, route, "index.html"), "utf8");
+    assert.match(legalHtml, new RegExp(`<h1>${title}<\\/h1>`));
+    assert.match(legalHtml, new RegExp(`data-static-legal-page="/${route}/"`));
+    assert.match(
+      legalHtml,
+      new RegExp(`canonical" href="https:\\/\\/example\\.test\\/${route}\\/"`)
+    );
+  }
+
   const notFoundHtml = fs.readFileSync(
     path.join(distRoot, "404.html"),
     "utf8"
@@ -87,6 +123,9 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
     ["host", path.join("host", "index.html")],
     ["organizers", path.join("organizers", "index.html")],
     ["claim", path.join("claim", "index.html")],
+    ["privacy", path.join("privacy", "index.html")],
+    ["terms", path.join("terms", "index.html")],
+    ["help", path.join("help", "index.html")],
     ["not_found", "404.html"],
   ]) {
     assertStaticRouteMeta(
@@ -99,7 +138,12 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
   const sitemap = fs.readFileSync(path.join(distRoot, "sitemap.xml"), "utf8");
   assert.match(sitemap, /<loc>https:\/\/example\.test\/<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/example\.test\/host\/<\/loc>/);
+  assert.match(sitemap, /<loc>https:\/\/example\.test\/privacy\/<\/loc>/);
+  assert.match(sitemap, /<loc>https:\/\/example\.test\/terms\/<\/loc>/);
+  assert.match(sitemap, /<loc>https:\/\/example\.test\/help\/<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/example\.test\/organizers\/afterfly\/<\/loc>/);
+  assert.match(sitemap, /<loc>https:\/\/example\.test\/events\/afterfly-catch-event\/<\/loc>/);
+  assert.match(sitemap, /<loc>https:\/\/example\.test\/events\/afterfly-external-event\/<\/loc>/);
   assert.match(
     sitemap,
     /<loc>https:\/\/example\.test\/organizers\/afterfly\/<\/loc><lastmod>2026-06-18<\/lastmod>/
@@ -109,6 +153,13 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
   assert.doesNotMatch(sitemap, /organizers\/$/);
   assert.doesNotMatch(sitemap, /afterfly-run-club/);
   assert.doesNotMatch(sitemap, /noindex-sample/);
+  assert.doesNotMatch(sitemap, /published-suppressed/);
+  assert.equal(
+    fs.existsSync(
+      path.join(distRoot, "organizers", "published-suppressed", "index.html")
+    ),
+    false
+  );
 
   const robots = fs.readFileSync(path.join(distRoot, "robots.txt"), "utf8");
   assert.match(robots, /User-agent: \*/);
@@ -220,6 +271,51 @@ function hostListings() {
         href: "https://example.test/afterfly",
         label: "Official website",
       }],
+      catchEvents: [{
+        id: "afterfly-catch-event",
+        role: "hostEventSetup",
+        title: "Afterfly Catch social run",
+        activityKind: "socialRun",
+        timeline: "upcoming",
+        startTime: "2026-08-01T01:30:00.000Z",
+        endTime: "2026-08-01T03:30:00.000Z",
+        date: "Aug 1, 2026, 7:00 AM-9:00 AM",
+        location: "Indore",
+        summary: "A Catch-managed social run.",
+        capacityLimit: 40,
+        bookedCount: 20,
+        checkedInCount: 0,
+        waitlistedCount: 0,
+        priceLabel: "Free",
+      }],
+      externalEvents: [{
+        id: "afterfly-external-event",
+        title: "Afterfly external social run",
+        activityKind: "socialRun",
+        availability: "read_only_external",
+        startTime: "2026-08-02T01:30:00.000Z",
+        endTime: "2026-08-02T03:30:00.000Z",
+        date: "Aug 2, 2026, 7:00 AM-9:00 AM",
+        location: "Indore",
+        summary: "A source-attributed external social run.",
+        priceLabel: "Free RSVP",
+        sourceLabel: "Luma",
+        sourceHref: "https://luma.com/afterfly-external",
+        externalLinkCount: 1,
+        dedupeKey: "afterfly-external-event",
+      }],
+      reviews: [{
+        id: "afterfly-event-review",
+        eventId: "afterfly-catch-event",
+        reviewerName: "Verified attendee",
+        rating: 5,
+        comment: "Clear pace groups and a welcoming finish.",
+        createdAt: "2026-07-20",
+        verificationStatus: "verified",
+        source: "catchEvent",
+        isAnonymous: false,
+        ownerResponse: null,
+      }],
     },
     {
       city: "Delhi",
@@ -231,6 +327,22 @@ function hostListings() {
       name: "Noindex Sample",
       path: "/organizers/noindex-sample/",
       sourceSummary: "Noindex source summary.",
+      sources: [],
+    },
+    {
+      authority: {
+        claimState: "suppressed",
+        publishStatus: "published",
+      },
+      city: "Delhi",
+      description: "A stale published record that must remain private.",
+      formats: [],
+      facts: [],
+      indexing: "index, follow",
+      legacyPaths: [],
+      name: "Published Suppressed",
+      path: "/organizers/published-suppressed/",
+      sourceSummary: "Suppressed listing.",
       sources: [],
     },
   ];

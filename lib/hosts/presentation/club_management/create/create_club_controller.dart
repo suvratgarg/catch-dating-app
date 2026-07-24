@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
@@ -52,6 +53,8 @@ final class NewClubPhotoInput extends ClubPhotoInput {
 class CreateClubController extends _$CreateClubController {
   static final submitMutation = Mutation<void>();
 
+  Future<void>? _submitInFlight;
+
   @override
   void build() {}
 
@@ -96,14 +99,54 @@ class CreateClubController extends _$CreateClubController {
     required String location,
     required String area,
     required String description,
+    OrganizerType organizerType = OrganizerType.club,
     List<ClubPhotoInput>? clubPhotoInputs,
     String? instagramHandle,
     String? phoneNumber,
     String? email,
     ClubHostDefaults hostDefaults = const ClubHostDefaults(),
     XFile? profileImage,
+  }) {
+    final existingRequest = _submitInFlight;
+    if (existingRequest != null) return existingRequest;
+
+    late final Future<void> trackedRequest;
+    trackedRequest =
+        _submit(
+          name: name,
+          location: location,
+          area: area,
+          description: description,
+          organizerType: organizerType,
+          clubPhotoInputs: clubPhotoInputs,
+          instagramHandle: instagramHandle,
+          phoneNumber: phoneNumber,
+          email: email,
+          hostDefaults: hostDefaults,
+          profileImage: profileImage,
+        ).whenComplete(() {
+          if (identical(_submitInFlight, trackedRequest)) {
+            _submitInFlight = null;
+          }
+        });
+    _submitInFlight = trackedRequest;
+    return trackedRequest;
+  }
+
+  Future<void> _submit({
+    required String name,
+    required String location,
+    required String area,
+    required String description,
+    required OrganizerType organizerType,
+    required List<ClubPhotoInput>? clubPhotoInputs,
+    required String? instagramHandle,
+    required String? phoneNumber,
+    required String? email,
+    required ClubHostDefaults hostDefaults,
+    required XFile? profileImage,
   }) async {
-    final uid = requireSignedInUid(ref, action: 'create a club');
+    final uid = requireSignedInUid(ref, action: 'create an organizer');
 
     final clubsRepo = ref.read(clubsRepositoryProvider);
     final selectedClubPhotoInputs = clubPhotoInputs ?? const <ClubPhotoInput>[];
@@ -117,6 +160,7 @@ class CreateClubController extends _$CreateClubController {
       description: description,
       location: location,
       area: area,
+      organizerType: organizerType,
       instagramHandle: instagramHandle,
       phoneNumber: phoneNumber,
       email: email,

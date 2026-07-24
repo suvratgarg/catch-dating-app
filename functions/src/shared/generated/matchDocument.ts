@@ -41,6 +41,7 @@ export interface MatchDocument {
   participantIds: string[];
   conversationType?: "match" | "clubHostInquiry";
   clubId?: string;
+  organizerId?: string;
   /**
    * Internal demo seed marker used for cleanup and diagnostics.
    */

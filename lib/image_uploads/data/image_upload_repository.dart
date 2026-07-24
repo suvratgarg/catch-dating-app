@@ -262,7 +262,7 @@ class ImageUploadRepository {
   }) {
     final millis = DateTime.now().millisecondsSinceEpoch;
     return uploadWithMetadata(
-      storagePath: 'clubs/$clubId/photos/${position}_$millis',
+      storagePath: 'organizers/$clubId/photos/${position}_$millis',
       image: image,
       purpose: ImageUploadPurpose.clubPhoto,
     );
@@ -289,7 +289,7 @@ class ImageUploadRepository {
   }) {
     final millis = DateTime.now().millisecondsSinceEpoch;
     return uploadWithMetadata(
-      storagePath: 'clubs/$clubId/logo/$millis',
+      storagePath: 'organizers/$clubId/logo/$millis',
       image: image,
       purpose: ImageUploadPurpose.clubLogo,
     );
@@ -516,10 +516,14 @@ class ImageUploadRepository {
         storagePath.contains('/hostedMedia/')) {
       return _hostedMediaContract;
     }
-    if (storagePath.startsWith('clubs/') && storagePath.contains('/photos/')) {
+    if ((storagePath.startsWith('organizers/') ||
+            storagePath.startsWith('clubs/')) &&
+        storagePath.contains('/photos/')) {
       return _clubPhotosContract;
     }
-    if (storagePath.startsWith('clubs/') && storagePath.contains('/logo/')) {
+    if ((storagePath.startsWith('organizers/') ||
+            storagePath.startsWith('clubs/')) &&
+        storagePath.contains('/logo/')) {
       return _clubLogoImagesContract;
     }
     if (storagePath.startsWith('events/') && storagePath.contains('/photos/')) {

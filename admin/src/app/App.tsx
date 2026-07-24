@@ -1,6 +1,7 @@
 import {
   lazy,
   Suspense,
+  type FormEvent,
   useCallback,
   useEffect,
   useMemo,
@@ -15,6 +16,7 @@ import {
   Activity,
   AlertTriangle,
   BarChart3,
+  Bot,
   CheckCircle2,
   CircleDollarSign,
   Database,
@@ -38,6 +40,7 @@ import {
   AdminButton,
   AdminEnvironmentStatus,
   AdminFeatureLoadingState,
+  AdminForm,
   AdminLoadingIcon,
   AdminNavButton,
   AdminNavGroup,
@@ -52,8 +55,16 @@ import {
   AdminTopbarActions,
   AdminWorkspace,
   StatusBanner,
+  TextField,
 } from "../shared/ui/AdminPrimitives";
-import {auth, signInWithGoogle, signOutAdmin} from "../shared/api/firebase";
+import {
+  auth,
+  confirmPhoneSignInCode,
+  requestPhoneSignInCode,
+  resetPhoneSignIn,
+  signInWithGoogle,
+  signOutAdmin,
+} from "../shared/api/firebase";
 import {dataMode} from "../shared/api/dataMode";
 import {
   AdminRoleClaim,
@@ -61,6 +72,7 @@ import {
   adminRoleClaimKeys,
 } from "../shared/types/adminTypes";
 import {AdminFeedbackProvider} from "../shared/feedback/AdminFeedbackContext";
+import {AdminPendingOperationProvider} from "../shared/pendingOperation";
 import type {OverviewQueueDestination} from
   "../features/overview/ui/OverviewScreen";
 
@@ -76,7 +88,10 @@ type AdminNavId =
   | "users"
   | "finance"
   | "quality"
+  | "operations"
   | "admin-roles";
+
+type PhoneSignInStage = "phone" | "code";
 
 const MarketingOpsScreen = lazy(() =>
   import("../features/marketing/ui/MarketingOpsScreen").then((module) => ({
@@ -145,6 +160,11 @@ const AdminRoleManagementScreen = lazy(() =>
     })
   )
 );
+const AdminActionExecutionsScreen = lazy(() =>
+  import("../features/operations/ui/AdminActionExecutionsScreen").then(
+    (module) => ({default: module.AdminActionExecutionsScreen})
+  )
+);
 
 interface AdminNavigationItem {
   id: AdminNavId;
@@ -186,6 +206,13 @@ const navigationGroups: Array<{
     ],
   },
   {
+    id: "automation",
+    label: "Automation",
+    items: [
+      {id: "operations", label: "Agent activity", icon: Bot},
+    ],
+  },
+  {
     id: "governance",
     label: "Governance",
     items: [
@@ -209,6 +236,7 @@ const navRoleMap: Record<AdminNavId, readonly AdminRoleClaim[]> = {
   users: ["adminOwner", "analyticsViewer"],
   finance: ["adminOwner", "analyticsViewer"],
   quality: ["adminOwner"],
+  operations: ["admin", "adminOwner", "support"],
   "admin-roles": ["adminOwner"],
 };
 
@@ -251,13 +279,16 @@ const adminSectionTitles: Record<AdminNavId, string> = {
   users: "Users",
   finance: "Finance",
   quality: "Data quality",
+  operations: "Agent activity",
   "admin-roles": "Admin roles",
 };
 
 export function App() {
   return (
     <BrowserRouter>
-      <AdminRouteApp />
+      <AdminPendingOperationProvider>
+        <AdminRouteApp />
+      </AdminPendingOperationProvider>
     </BrowserRouter>
   );
 }
@@ -273,6 +304,10 @@ function AdminRouteApp() {
   const [notice, setNotice] = useState<string | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
   const [isAuthActionPending, setIsAuthActionPending] = useState(false);
+  const [phoneCode, setPhoneCode] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneSignInStage, setPhoneSignInStage] =
+    useState<PhoneSignInStage>("phone");
   const [isRoleCheckPending, setIsRoleCheckPending] = useState(false);
   const [rolesResolved, setRolesResolved] = useState(mode === "sample");
   const [user, setUser] = useState<User | null>(null);
@@ -287,7 +322,13 @@ function AdminRouteApp() {
     }
     return onAuthStateChanged(auth, (nextUser) => {
       setUser(nextUser);
-      if (nextUser) setAuthError(null);
+      if (nextUser) {
+        resetPhoneSignIn();
+        setAuthError(null);
+        setPhoneCode("");
+        setPhoneNumber("");
+        setPhoneSignInStage("phone");
+      }
     });
   }, [mode]);
 
@@ -379,11 +420,71 @@ function AdminRouteApp() {
     }
   }, []);
 
+  const handleRequestPhoneCode = useCallback(async () => {
+    const normalizedPhoneNumber = normalizeAdminPhoneNumber(phoneNumber);
+    if (!normalizedPhoneNumber) {
+      setAuthError(
+        "Enter a valid phone number with country code, such as +91 90000 00000."
+      );
+      return;
+    }
+    setAuthError(null);
+    setIsAuthActionPending(true);
+    try {
+      await requestPhoneSignInCode(normalizedPhoneNumber);
+      setPhoneNumber(normalizedPhoneNumber);
+      setPhoneCode("");
+      setPhoneSignInStage("code");
+    } catch (phoneSignInError) {
+      setAuthError(
+        phoneSignInError instanceof Error ?
+          phoneSignInError.message :
+          "Unable to send the phone verification code."
+      );
+    } finally {
+      setIsAuthActionPending(false);
+    }
+  }, [phoneNumber]);
+
+  const handleVerifyPhoneCode = useCallback(async () => {
+    const normalizedCode = phoneCode.replace(/\s+/gu, "");
+    if (!/^\d{6}$/u.test(normalizedCode)) {
+      setAuthError("Enter the six-digit phone verification code.");
+      return;
+    }
+    setAuthError(null);
+    setIsAuthActionPending(true);
+    try {
+      await confirmPhoneSignInCode(normalizedCode);
+      setPhoneCode("");
+      setPhoneNumber("");
+      setPhoneSignInStage("phone");
+    } catch (phoneSignInError) {
+      setAuthError(
+        phoneSignInError instanceof Error ?
+          phoneSignInError.message :
+          "Unable to verify the phone code."
+      );
+    } finally {
+      setIsAuthActionPending(false);
+    }
+  }, [phoneCode]);
+
+  const handleResetPhoneSignIn = useCallback(() => {
+    resetPhoneSignIn();
+    setAuthError(null);
+    setPhoneCode("");
+    setPhoneSignInStage("phone");
+  }, []);
+
   const handleSignOut = useCallback(async () => {
     setAuthError(null);
     setIsAuthActionPending(true);
     try {
       await signOutAdmin();
+      setPhoneCode("");
+      setPhoneNumber("");
+      setPhoneSignInStage("phone");
       setNotice(null);
       setError(null);
     } catch (signOutError) {
@@ -474,7 +575,15 @@ function AdminRouteApp() {
       <SignInScreen
         error={authError}
         isSigningIn={isAuthActionPending}
+        phoneCode={phoneCode}
+        phoneNumber={phoneNumber}
+        phoneSignInStage={phoneSignInStage}
+        onPhoneCodeChange={setPhoneCode}
+        onPhoneNumberChange={setPhoneNumber}
+        onRequestPhoneCode={() => void handleRequestPhoneCode()}
+        onResetPhoneSignIn={handleResetPhoneSignIn}
         onSignIn={() => void handleSignIn()}
+        onVerifyPhoneCode={() => void handleVerifyPhoneCode()}
       />
     );
   }
@@ -753,6 +862,10 @@ function AdminRouteApp() {
               selectedTargetUid={adminRoleTargetUidForPath(location.pathname)}
             />
           </Suspense>
+        ) : currentNav === "operations" ? (
+          <Suspense fallback={<AdminFeatureLoadingState label="Loading Agent activity" />}>
+            <AdminActionExecutionsScreen onError={setError} />
+          </Suspense>
         ) : (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Overview" />}>
             <OverviewRouteScreen
@@ -1006,15 +1119,45 @@ function hasAnyAdminRole(
   return allowedRoles.some((role) => roles.includes(role));
 }
 
+function normalizeAdminPhoneNumber(value: string): string | null {
+  const normalized = value.replace(/[\s()-]+/gu, "");
+  return /^\+[1-9]\d{7,14}$/u.test(normalized) ? normalized : null;
+}
+
 function SignInScreen({
   error,
   isSigningIn,
+  onPhoneCodeChange,
+  onPhoneNumberChange,
+  onRequestPhoneCode,
+  onResetPhoneSignIn,
   onSignIn,
+  onVerifyPhoneCode,
+  phoneCode,
+  phoneNumber,
+  phoneSignInStage,
 }: {
   error: string | null;
   isSigningIn: boolean;
+  onPhoneCodeChange: (value: string) => void;
+  onPhoneNumberChange: (value: string) => void;
+  onRequestPhoneCode: () => void;
+  onResetPhoneSignIn: () => void;
   onSignIn: () => void;
+  onVerifyPhoneCode: () => void;
+  phoneCode: string;
+  phoneNumber: string;
+  phoneSignInStage: PhoneSignInStage;
 }) {
+  const handlePhoneSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (phoneSignInStage === "phone") {
+      onRequestPhoneCode();
+    } else {
+      onVerifyPhoneCode();
+    }
+  };
+
   return (
     <AdminSignInScreen>
       <AdminSignInPanel>
@@ -1029,13 +1172,65 @@ function SignInScreen({
             {error}
           </StatusBanner>
         )}
-        <AdminButton
-          disabled={isSigningIn}
-          onClick={onSignIn}
-          variant="primary"
-        >
-          {isSigningIn ? "Signing in" : "Sign in with Google"}
-        </AdminButton>
+        <AdminForm onSubmit={handlePhoneSubmit}>
+          {phoneSignInStage === "phone" ? (
+            <TextField
+              autoComplete="tel"
+              disabled={isSigningIn}
+              inputMode="tel"
+              label="Phone number"
+              name="phone"
+              onChange={onPhoneNumberChange}
+              placeholder="+91 90000 00000"
+              value={phoneNumber}
+            />
+          ) : (
+            <>
+              <AdminSignInMeta>
+                Verification code sent to {phoneNumber}.
+              </AdminSignInMeta>
+              <TextField
+                autoComplete="one-time-code"
+                disabled={isSigningIn}
+                inputMode="numeric"
+                label="Verification code"
+                maxLength={6}
+                name="verification-code"
+                onChange={onPhoneCodeChange}
+                placeholder="000000"
+                value={phoneCode}
+              />
+            </>
+          )}
+          <AdminSignInActions>
+            <AdminButton
+              disabled={isSigningIn}
+              type="submit"
+              variant="primary"
+            >
+              {phoneSignInStage === "phone" ?
+                (isSigningIn ? "Sending code" : "Send verification code") :
+                (isSigningIn ? "Verifying" : "Verify and sign in")}
+            </AdminButton>
+            {phoneSignInStage === "code" ? (
+              <AdminButton
+                disabled={isSigningIn}
+                onClick={onResetPhoneSignIn}
+              >
+                Use another phone
+              </AdminButton>
+            ) : null}
+          </AdminSignInActions>
+        </AdminForm>
+        <AdminSignInMeta>
+          Google sign-in remains available for separately claimed admin accounts.
+        </AdminSignInMeta>
+        <AdminSignInActions>
+          <AdminButton disabled={isSigningIn} onClick={onSignIn}>
+            Sign in with Google
+          </AdminButton>
+        </AdminSignInActions>
+        <div id="admin-phone-recaptcha" />
       </AdminSignInPanel>
     </AdminSignInScreen>
   );

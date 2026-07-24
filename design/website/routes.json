@@ -1,7 +1,7 @@
 {
   "$schema": "./website.routes.schema.json",
-  "version": 6,
-  "updated": "2026-07-12",
+  "version": 11,
+  "updated": "2026-07-24",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -27,7 +27,7 @@
       "staticOutput": "postbuild",
       "indexing": "index",
       "sitemap": "included",
-      "notes": "Primary member and public discovery entrypoint.",
+      "notes": "Primary member and public discovery entrypoint. Pilot launch metadata and runtime market content name Mumbai and Indore as the only live cities.",
       "review": {
         "priority": "p0",
         "status": "ready",
@@ -76,10 +76,10 @@
         "priority": "p0",
         "status": "ready",
         "viewports": ["desktop", "mobile"],
-        "states": ["default", "filtered", "empty-results", "saved-organizers"],
+        "states": ["default", "filtered", "empty-results"],
         "stateCoverage": {
           "storybook": ["default"],
-          "manual": ["filtered", "empty-results", "saved-organizers"]
+          "manual": ["filtered", "empty-results"]
         }
       }
     },
@@ -128,6 +128,63 @@
       }
     },
     {
+      "id": "privacy",
+      "kind": "static",
+      "path": "/privacy/",
+      "pageKey": "privacy",
+      "source": "website/src/features/legal/LegalPage.tsx",
+      "metaKey": "privacy",
+      "staticOutput": "postbuild",
+      "indexing": "index",
+      "sitemap": "included",
+      "notes": "Published privacy policy with confirmed operator, contact, grievance, data-use, rights, retention, safety, and public-source listing terms.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": ["desktop", "mobile"],
+        "states": ["published"],
+        "stateCoverage": {"storybook": ["published"], "manual": []}
+      }
+    },
+    {
+      "id": "terms",
+      "kind": "static",
+      "path": "/terms/",
+      "pageKey": "terms",
+      "source": "website/src/features/legal/LegalPage.tsx",
+      "metaKey": "terms",
+      "staticOutput": "postbuild",
+      "indexing": "index",
+      "sitemap": "included",
+      "notes": "Published terms for the website-first pilot, external events, public-source listings, accounts, conduct, safety, and governing law.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": ["desktop", "mobile"],
+        "states": ["published"],
+        "stateCoverage": {"storybook": ["published"], "manual": []}
+      }
+    },
+    {
+      "id": "help",
+      "kind": "static",
+      "path": "/help/",
+      "pageKey": "help",
+      "source": "website/src/features/legal/LegalPage.tsx",
+      "metaKey": "help",
+      "staticOutput": "postbuild",
+      "indexing": "index",
+      "sitemap": "included",
+      "notes": "Published account, privacy, listing, event, safety, website, correction, claim, and takedown support route.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": ["desktop", "mobile"],
+        "states": ["published"],
+        "stateCoverage": {"storybook": ["published"], "manual": []}
+      }
+    },
+    {
       "id": "not_found",
       "kind": "static",
       "path": "/404/",
@@ -160,7 +217,7 @@
       "staticOutput": "generated-postbuild",
       "indexing": "listing-controlled",
       "sitemap": "listing-controlled",
-      "notes": "Generated canonical organizer profile routes from website/src/generated/hostListings.json. Postbuild emits crawlable semantic profile content, Organization JSON-LD, canonical metadata, and lastVerifiedAt sitemap dates before React starts.",
+      "notes": "Generated canonical organizer profile routes from website/src/generated/hostListings.json. The deployable projection includes only organizers with at least one market whose status is live in the active market pack; waitlist-market records remain available to review tooling and Storybook but cannot enter static output, search, or sitemap. Postbuild emits crawlable semantic profile content, Organization JSON-LD, canonical metadata, and lastVerifiedAt sitemap dates before React starts.",
       "review": {
         "priority": "p0",
         "status": "ready",
@@ -191,6 +248,28 @@
         "stateCoverage": {
           "storybook": [],
           "manual": ["legacy-noindex", "canonical-preserved"]
+        }
+      }
+    },
+    {
+      "id": "event_detail_canonical",
+      "kind": "generatedFamily",
+      "pathPattern": "/events/:eventId/",
+      "pageKey": "event_detail",
+      "source": "website/src/features/events/EventDetailPage.tsx",
+      "metaFactory": "pageMetaForEvent",
+      "staticOutput": "generated-postbuild",
+      "indexing": "event-controlled",
+      "sitemap": "event-controlled",
+      "notes": "Generated read-only Event Detail routes derived from publicly readable organizer projections. Catch-native events hand off booking to the Catch app and external events hand off registration to the official source; the marketing website never adds booking, checkout, or sign-in controls. Static output includes semantic Event JSON-LD, organizer provenance, source freshness, and only event-scoped reviews whose eventId matches the route.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": ["desktop", "mobile"],
+        "states": ["catch-native", "external-source", "event-reviews", "missing-event"],
+        "stateCoverage": {
+          "storybook": ["catch-native", "external-source", "event-reviews"],
+          "manual": ["missing-event"]
         }
       }
     }

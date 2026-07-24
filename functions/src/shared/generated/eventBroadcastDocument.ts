@@ -8,6 +8,7 @@
 export interface EventBroadcastDocument {
   eventId: string;
   clubId: string;
+  organizerId?: string;
   actorUid: string;
   audience: "booked" | "prospective" | "everyone";
   title: string;

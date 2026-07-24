@@ -99,6 +99,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
         padding: CatchInsets.formStepBody,
         children: [
           CatchSectionList(
+            emptyStateOmitted: true,
             gap: 0,
             children: [
               CreateEventPhotoPicker(
@@ -112,6 +113,9 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                   CatchField.choices<ActivityKind>(
                     key: CreateEventFormKeys.activityType,
                     title: context.l10n.hostsEventDetailsStepLabelActivityType,
+                    contract: CatchContractConstraints
+                        .createEventCallablePayloadEventFormatActivityKind,
+                    contractValue: (value) => value.name,
                     body: widget.selectedActivityKind.label,
                     values: ActivityKind.eventCreationDefaults,
                     itemLabel: (activityKind) => activityKind.label,
@@ -131,6 +135,8 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                     CatchField.input(
                       key: CreateEventFormKeys.customActivityLabel,
                       title: context.l10n.hostsEventDetailsStepTitleFormatName,
+                      contract: CatchContractConstraints
+                          .createEventCallablePayloadEventFormatCustomActivityLabel,
                       controller: widget.customActivityLabelController,
                       inputHint: context
                           .l10n
@@ -163,6 +169,9 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                       title: context
                           .l10n
                           .hostsEventDetailsStepLabelFormatStructure,
+                      contract: CatchContractConstraints
+                          .createEventCallablePayloadEventFormatInteractionModel,
+                      contractValue: (value) => value.name,
                       body: widget.selectedInteractionModel.label,
                       values: EventInteractionModel.values,
                       itemLabel: (model) => model.label,
@@ -184,6 +193,8 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                     CatchField.input(
                       key: CreateEventFormKeys.distance,
                       title: context.l10n.hostsEventDetailsStepTitleDistanceKm,
+                      contract: CatchContractConstraints
+                          .createEventCallablePayloadDistanceKm,
                       controller: widget.distanceController,
                       inputHint: '10',
                       icon: CatchIcons.straightenOutlined,
@@ -227,6 +238,9 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                           : null,
                       builder: (field) => CatchField.choices<PaceLevel>(
                         title: context.l10n.hostsEventDetailsStepLabelPaceLevel,
+                        contract: CatchContractConstraints
+                            .createEventCallablePayloadPace,
+                        contractValue: (value) => value.name,
                         body: widget.selectedPace?.label,
                         values: PaceLevel.values,
                         itemLabel: (pace) => pace.label,
@@ -253,6 +267,8 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                   CatchField.input(
                     key: CreateEventFormKeys.description,
                     title: context.l10n.hostsEventDetailsStepTitleDescription,
+                    contract: CatchContractConstraints
+                        .createEventCallablePayloadDescription,
                     isOptional: true,
                     controller: widget.descriptionController,
                     inputHint: context

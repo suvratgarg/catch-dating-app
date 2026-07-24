@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-18",
+  "updated": "2026-07-24",
   "tools": [
     {
       "id": "tool:runner",
@@ -9,10 +9,27 @@
       "command": "node tool/run.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Lists, validates, and dispatches repo tools.",
+      "description": "Lists, validates, dispatches, and impact-selects repo tools while failing closed on empty filtered selections.",
+      "role": "gate",
+      "rules": [
+        "AGENT-HARNESS-001"
+      ],
       "checks": [
-        "node --check tool/run.mjs"
-      ]
+        "node --check tool/run.mjs",
+        "node --test tool/run.test.mjs"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/run.test.mjs",
+        "contains": [
+          "filtered checks fail when a category matches no tools",
+          "platform-specific tools run only on declared operating systems",
+          "impact routing reports the owning relationship and checks",
+          "impact routing includes field inventory for Flutter design consumers",
+          "impact routing fails closed for an unmapped changed path",
+          "impact routing includes untracked files"
+        ]
+      }
     },
     {
       "id": "meta:enforcement-integrity",
@@ -143,9 +160,10 @@
       "command": "node tool/agent/check_agent_readiness.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Validates the Catch agent harness, project-local skills, regression ledger, tool registration, and metrics parseability.",
+      "description": "Validates the Catch agent harness, project-local skills, regression ledger, tool registration, canonical test-inventory freshness, and metrics parseability.",
       "checks": [
         "node --check tool/agent/check_agent_readiness.mjs",
+        "node --test tool/agent/check_agent_readiness.test.mjs",
         "node tool/agent/check_agent_readiness.mjs"
       ],
       "role": "gate",
@@ -441,6 +459,7 @@
       "checks": [
         "bash -n tool/widget_cleanup_scan.sh",
         "node --test tool/lib/widget_cleanup_ratchet.test.mjs",
+        "node tool/design/check_ui_lint_promotion_parity.mjs",
         "bash tool/widget_cleanup_scan.sh --check"
       ],
       "role": "ratchet",
@@ -795,6 +814,28 @@
       }
     },
     {
+      "id": "web:admin-pending-operations",
+      "category": "lint",
+      "path": "tool/web/check_admin_pending_operations.mjs",
+      "command": "node tool/web/check_admin_pending_operations.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Enforces one exclusive Admin operation lease across every controller derived from frozen pending feature-contract cases, the shared workspace/navigation boundary, and immutable-snapshot regression proof.",
+      "checks": [
+        "node --check tool/web/check_admin_pending_operations.mjs",
+        "node tool/web/check_admin_pending_operations.mjs --self-test",
+        "node tool/web/check_admin_pending_operations.mjs --check --summary"
+      ],
+      "role": "gate",
+      "rules": [
+        "PENDING-SNAPSHOT-001"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/web/check_admin_pending_operations.mjs --self-test"
+      }
+    },
+    {
       "id": "web:admin-components",
       "category": "lint",
       "path": "tool/web/check_admin_components.mjs",
@@ -889,17 +930,24 @@
       "description": "Verifies Catch UI analysis_server_plugin diagnostics across seeded violation and clean allowance probes.",
       "checks": [
         "bash -n tool/check_catch_ui_lints.sh",
+        "node tool/design/build_lint_enforcement_tables.mjs --check",
+        "node tool/design/check_ui_lint_promotion_parity.mjs",
         "bash tool/check_catch_ui_lints.sh"
       ],
       "role": "gate",
       "rules": [
-        "UI-LINT-001"
+        "UI-LINT-001",
+        "ASYNC-LOADING-PRESENTATION-001",
+        "ERROR-UI-002",
+        "IMAGE-NETWORK-PRIMITIVE-001"
       ],
       "vacuityProof": {
         "type": "probe-harness",
         "path": "tool/check_catch_ui_lints.sh",
         "diagnostics": [
           "catch_no_allow_debt",
+          "catch_async_requires_retry",
+          "catch_error_state_requires_action",
           "catch_no_raw_content_dimension",
           "catch_no_local_design_constant"
         ]
@@ -916,9 +964,18 @@
       "checks": [
         "bash -n tool/check_catch_ui_lint_drift.sh",
         "bash tool/check_catch_ui_lint_drift.sh --self-test",
-        "bash tool/check_catch_ui_lint_drift.sh --count"
+        "node --test tool/design/check_ui_lint_drift_ratchet.test.mjs",
+        "bash tool/check_catch_ui_lint_drift.sh --check"
       ],
-      "role": "finder"
+      "role": "gate",
+      "baseline": "tool/audit/catch_ui_lint_drift_baseline.json",
+      "rules": [
+        "UI-LINT-001"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "bash tool/check_catch_ui_lint_drift.sh --self-test"
+      }
     },
     {
       "id": "scanner:sizing",
@@ -1012,27 +1069,145 @@
       ]
     },
     {
-      "id": "scanner:no-raw-network-image",
+      "id": "lint:catch-ui-drift-ratchet-engine",
       "category": "lint",
-      "path": "tool/check_no_raw_network_image.sh",
-      "command": "bash tool/check_no_raw_network_image.sh",
+      "path": "tool/design/check_ui_lint_drift_ratchet.mjs",
+      "command": "node --test tool/design/check_ui_lint_drift_ratchet.test.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Blocks raw Image.network widgets outside the shared CatchNetworkImage primitive.",
+      "description": "Parses Catch analyzer machine diagnostics and enforces exact, decrease-only coverage for every declared plugin code.",
       "checks": [
-        "bash -n tool/check_no_raw_network_image.sh",
-        "bash tool/check_no_raw_network_image.sh"
+        "node --check tool/design/check_ui_lint_drift_ratchet.mjs",
+        "node --test tool/design/check_ui_lint_drift_ratchet.test.mjs"
       ],
       "role": "gate",
+      "baseline": "tool/audit/catch_ui_lint_drift_baseline.json",
       "rules": [
-        "IMAGE-NETWORK-PRIMITIVE-001"
+        "UI-LINT-001"
       ],
       "vacuityProof": {
         "type": "test",
-        "path": "tool/check_no_raw_network_image.sh",
+        "path": "tool/design/check_ui_lint_drift_ratchet.test.mjs",
         "contains": [
-          "Image\\.network",
-          "exit 1"
+          "ratchet fails increases, missing codes, and stale codes"
+        ]
+      }
+    },
+    {
+      "id": "meta:ci-tool-category-coverage",
+      "category": "meta",
+      "path": "tool/ci/check_tool_category_coverage.mjs",
+      "command": "node tool/ci/check_tool_category_coverage.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Requires every active tool-manifest category to be scheduled by Tools CI and rejects unknown workflow categories.",
+      "checks": [
+        "node --check tool/ci/check_tool_category_coverage.mjs",
+        "node --test tool/ci/check_tool_category_coverage.test.mjs",
+        "node tool/ci/check_tool_category_coverage.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "AGENT-HARNESS-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/check_tool_category_coverage.test.mjs",
+        "contains": [
+          "coverage fails for both unknown workflow and missing active categories",
+          "coverage passes when every active category is declared exactly"
+        ]
+      }
+    },
+    {
+      "id": "design:lint-enforcement-generate",
+      "category": "design",
+      "path": "tool/design/build_lint_enforcement_tables.mjs",
+      "command": "node tool/design/build_lint_enforcement_tables.mjs --check",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Generates analyzer steering tables, contract expectations, and seeded steering probes from the component registry.",
+      "checks": [
+        "node --check tool/design/build_lint_enforcement_tables.mjs",
+        "node tool/design/build_lint_enforcement_tables.mjs --check"
+      ],
+      "role": "generator",
+      "rules": [
+        "UI-LINT-001"
+      ]
+    },
+    {
+      "id": "design:component-enforcement-coverage",
+      "category": "design",
+      "path": "tool/design/check_component_enforcement_coverage.mjs",
+      "command": "node tool/design/check_component_enforcement_coverage.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Requires every component to have enforcement or an unexpired waiver and every plugin/checker code to have a catalog owner.",
+      "checks": [
+        "node --test tool/design/check_component_enforcement_coverage.test.mjs",
+        "node tool/design/check_component_enforcement_coverage.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "UI-LINT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_component_enforcement_coverage.test.mjs",
+        "contains": [
+          "requires decisions, live waivers, ownership, and probes"
+        ]
+      }
+    },
+    {
+      "id": "design:ui-lint-promotion-parity",
+      "category": "design",
+      "path": "tool/design/check_ui_lint_promotion_parity.mjs",
+      "command": "node tool/design/check_ui_lint_promotion_parity.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Proves promoted regex scanner categories have seeded analyzer-plugin fixtures before retirement.",
+      "checks": [
+        "node --test tool/design/check_ui_lint_promotion_parity.test.mjs",
+        "node tool/design/check_ui_lint_promotion_parity.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "UI-LINT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_ui_lint_promotion_parity.test.mjs",
+        "contains": [
+          "rejects retired categories and missing seeded fixtures"
+        ]
+      }
+    },
+    {
+      "id": "architecture:ui-composition-contracts",
+      "category": "architecture",
+      "path": "tool/architecture/check_ui_composition_contracts.dart",
+      "command": "dart run tool/architecture/check_ui_composition_contracts.dart --check",
+      "safety": "local-build-test",
+      "status": "active",
+      "description": "Uses analyzer resolution to validate screen source, state, top-bar, and shell composition contracts with a nested-scaffold ratchet.",
+      "checks": [
+        "dart format --output=none --set-exit-if-changed tool/architecture/check_ui_composition_contracts.dart test/tool/ui_composition_contracts_test.dart",
+        "flutter test --concurrency=1 test/tool/ui_composition_contracts_test.dart",
+        "dart run tool/architecture/check_ui_composition_contracts.dart --check"
+      ],
+      "role": "gate",
+      "baseline": "tool/architecture/ui_composition_baseline.json",
+      "rules": [
+        "UI-LINT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "test/tool/ui_composition_contracts_test.dart",
+        "contains": [
+          "flags a nested scaffold on a shell-reachable screen",
+          "requires the registered top-bar expression"
         ]
       }
     },
@@ -1060,6 +1235,33 @@
       }
     },
     {
+      "id": "contracts:flutter-form-inventory",
+      "category": "contracts",
+      "path": "tool/contracts/generate_flutter_form_contract_inventory.mjs",
+      "command": "node tool/contracts/generate_flutter_form_contract_inventory.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Inventories every editable canonical Flutter form control and descriptor instance in both installable apps, rejecting missing generated contracts, serializers, endpoint bindings, or explicit exemptions.",
+      "checks": [
+        "node --check tool/contracts/generate_flutter_form_contract_inventory.mjs",
+        "node --test tool/contracts/generate_flutter_form_contract_inventory.test.mjs",
+        "node tool/contracts/generate_flutter_form_contract_inventory.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "FORM-CONTRACT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/contracts/generate_flutter_form_contract_inventory.test.mjs",
+        "contains": [
+          "known-bad missing binding is detected",
+          "range sliders require both generated endpoint bindings",
+          "inventory includes bound and unbound product callsites"
+        ]
+      }
+    },
+    {
       "id": "contracts:check-all",
       "category": "contracts",
       "path": "tool/check_data_contract.sh",
@@ -1079,11 +1281,53 @@
       "command": "bash tool/test_app_shell_integration.sh",
       "safety": "local-build-test",
       "status": "active",
-      "description": "Runs the split deterministic app-shell integration suites on a local Flutter desktop device.",
+      "description": "Runs all deterministic headless app-shell suites or a bounded native smoke/all scope on an explicitly selected Flutter device.",
       "checks": [
-        "bash -n tool/test_app_shell_integration.sh"
+        "bash -n tool/test_app_shell_integration.sh",
+        "bash tool/test_app_shell_integration.sh --self-test"
       ],
       "role": "finder"
+    },
+    {
+      "id": "test:flutter-coverage-report",
+      "category": "test",
+      "path": "tool/test/flutter_coverage_report.mjs",
+      "command": "node tool/test/flutter_coverage_report.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Turns Flutter LCOV into a visibility-only handwritten-code and feature-level report without imposing an aggregate percentage threshold.",
+      "checks": [
+        "node --check tool/test/flutter_coverage_report.mjs",
+        "node --test tool/test/flutter_coverage_report.test.mjs"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "test:flutter-test-size",
+      "category": "test",
+      "path": "tool/test/check_flutter_test_size.mjs",
+      "command": "node tool/test/check_flutter_test_size.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Keeps new and split Flutter test specs within 1,200 lines while ratcheting every reviewed oversized legacy spec against an exact baseline.",
+      "checks": [
+        "node --check tool/test/check_flutter_test_size.mjs",
+        "node --test tool/test/check_flutter_test_size.test.mjs",
+        "node tool/test/check_flutter_test_size.mjs --check"
+      ],
+      "role": "ratchet",
+      "rules": [
+        "FLUTTER-TEST-MAINTAINABILITY-001"
+      ],
+      "baseline": "tool/test/flutter_test_size_baseline.json",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/test/check_flutter_test_size.test.mjs",
+        "contains": [
+          "known-bad new oversized Flutter test spec fails closed",
+          "ratchet rejects growth and asks reductions to refresh the baseline"
+        ]
+      }
     },
     {
       "id": "contracts:generate-business-rules",
@@ -1758,7 +2002,7 @@
       "command": "bash tool/ci/check_toolchain_consistency.sh",
       "safety": "local",
       "status": "active",
-      "description": "Validates checked-in CI toolchain pins against package-level runtime declarations.",
+      "description": "Validates checked-in CI toolchain pins, package-level runtime declarations, and Apple-native workflow runner compatibility.",
       "checks": [
         "bash -n tool/ci/check_toolchain_consistency.sh",
         "bash tool/ci/check_toolchain_consistency.sh"
@@ -1811,7 +2055,7 @@
       "command": "node tool/env/check_web_hosting_env.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Requires explicit Vite Firebase/App Check env before web Hosting deploys and live store product URLs for production marketing deploys.",
+      "description": "Requires explicit Vite Firebase/App Check env before web Hosting deploys and enforces honest prelaunch or validated live store-link state for marketing deploys.",
       "checks": [
         "node --check tool/env/check_web_hosting_env.mjs",
         "node --test tool/env/check_web_hosting_env.test.mjs"
@@ -2990,7 +3234,7 @@
       "command": "node tool/marketing/check_website_routes.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Validates marketing website route contracts against React routes, validated metadata content, postbuild, generated organizer-listing sources, and Firebase Hosting 404 behavior.",
+      "description": "Validates marketing website route contracts against React routes, validated metadata content, postbuild, generated organizer-listing sources, active-market eligibility, and Firebase Hosting 404 behavior.",
       "checks": [
         "node --check tool/marketing/check_website_routes.mjs",
         "node --check tool/marketing/website_meta_contract.mjs",
@@ -3057,6 +3301,23 @@
         "dart analyze tool/marketing/frame_device_capture.dart",
         "node tool/marketing/export_app_screenshots.mjs --check",
         "node tool/marketing/export_app_screenshots.mjs --check-design-json"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "marketing:app-listing-prototypes",
+      "category": "marketing",
+      "path": "tool/store/generate_app_listing_screenshot_prototypes.swift",
+      "command": "swift tool/store/generate_app_listing_screenshot_prototypes.swift",
+      "safety": "local-writes-store-assets",
+      "status": "active",
+      "platforms": [
+        "darwin"
+      ],
+      "description": "Generates the six approved Catch and Catch Host iPhone 6.9-inch App Store listing prototypes from deterministic app captures.",
+      "checks": [
+        "swiftc -parse tool/store/generate_app_listing_screenshot_prototypes.swift",
+        "swift tool/store/generate_app_listing_screenshot_prototypes.swift --check"
       ],
       "role": "generator"
     },
@@ -3273,6 +3534,102 @@
         "dart run tool/design_tokens.dart --check"
       ],
       "role": "finder"
+    },
+    {
+      "id": "design:public-surface-behavior",
+      "category": "design",
+      "path": "tool/design/check_public_surface_behavior.mjs",
+      "command": "node tool/design/check_public_surface_behavior.mjs --strict",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Enforces the cross-surface viewer, listing-authority, route-ownership, capability, and action behavior matrix.",
+      "checks": [
+        "node --check tool/design/check_public_surface_behavior.mjs",
+        "node --test tool/design/check_public_surface_behavior.test.mjs",
+        "node tool/design/check_public_surface_behavior.mjs --strict"
+      ],
+      "role": "gate",
+      "rules": [
+        "PUBLIC-SURFACE-BEHAVIOR-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_public_surface_behavior.test.mjs",
+        "contains": [
+          "strict verification rejects unverified configurations and planned harnesses",
+          "rejects duplicate configuration tuples",
+          "rejects unclassified or multiply owned consumer routes"
+        ]
+      }
+    },
+    {
+      "id": "design:feature-coverage",
+      "category": "design",
+      "path": "tool/design/check_feature_coverage.mjs",
+      "command": "node tool/design/check_feature_coverage.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Fails when a registered Flutter screen, marketing route, or admin route component lacks exactly one contracted, grouped, planned, or excluded feature-contract decision.",
+      "checks": [
+        "node --check tool/design/check_feature_coverage.mjs",
+        "node --test tool/design/check_feature_coverage.test.mjs",
+        "node tool/design/check_feature_coverage.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "AGENT-HARNESS-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_feature_coverage.test.mjs",
+        "contains": [
+          "accepts one feature contract binding multiple runtime authorities",
+          "rejects missing, duplicate, and unknown authority decisions",
+          "rejects contracted decisions that do not bind their authority item",
+          "rejects missing or chained grouped primaries",
+          "fails when a registry adds an unclassified feature surface",
+          "rejects orphaned source contracts"
+        ]
+      }
+    },
+    {
+      "id": "design:feature-contracts",
+      "category": "design",
+      "path": "tool/design/build_feature_contracts.mjs",
+      "command": "node tool/design/build_feature_contracts.mjs --check",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Compiles reviewed multi-surface feature sources, including compact exact state matrices, stable annotated Flutter preview-builder ids, checked React route-state preview mappings, and explicitly disabled known implementation gaps, into deterministic state, action-cardinality, and evidence contracts while rejecting authority/runtime drift, enabled known-gap actions, and missing or duplicate authority-state coverage.",
+      "checks": [
+        "node --check tool/design/build_feature_contracts.mjs",
+        "node --test tool/design/build_feature_contracts.test.mjs",
+        "node tool/design/build_feature_contracts.mjs --check"
+      ],
+      "role": "gate",
+      "rules": [
+        "ACTION-CARDINALITY-001",
+        "PENDING-SNAPSHOT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/build_feature_contracts.test.mjs",
+        "contains": [
+          "projects known implementation gaps and rejects enabling them",
+          "requires debt metadata only for known implementation gaps",
+          "compiles compact state matrices without weakening exact authority coverage",
+          "rejects compact state overrides outside the declared inventory",
+          "compiles multiple runtime projections into one shared feature identity",
+          "maps route review states to explicitly registered React previews",
+          "rejects explicit React previews outside the selected route registry",
+          "supports read-only projections without synthetic actions or bindings",
+          "rejects duplicate and missing surface-state mappings",
+          "rejects missing capture, preview, and test evidence",
+          "allows explicit evidence debt and rejects stale exceptions",
+          "validates surface-state, route, and side-effect action outcomes",
+          "rejects unknown action owners, actions, and dimensions",
+          "rejects runtime and authority mismatches"
+        ]
+      }
     },
     {
       "id": "design:component-contracts",
@@ -3938,6 +4295,32 @@
       }
     },
     {
+      "id": "contracts:organizer-nomenclature",
+      "category": "contracts",
+      "path": "tool/check_organizer_nomenclature.mjs",
+      "command": "node tool/check_organizer_nomenclature.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Keeps organizers canonical across contracts, Flutter, React, Functions, routes, media, and product copy while club remains a subtype and compatibility projection.",
+      "checks": [
+        "node --check tool/check_organizer_nomenclature.mjs",
+        "node --test tool/check_organizer_nomenclature.test.mjs",
+        "node tool/check_organizer_nomenclature.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "ORGANIZER-AUTHORITY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/check_organizer_nomenclature.test.mjs",
+        "contains": [
+          "organizer nomenclature gate rejects legacy authority and generic copy",
+          "organizer nomenclature gate passes a canonical fixture"
+        ]
+      }
+    },
+    {
       "id": "audit:fn-readme-inventory",
       "category": "audit",
       "path": "tool/audit/check_fn_readme_inventory.mjs",
@@ -4131,14 +4514,14 @@
       "id": "web:admin-bundle-budget",
       "category": "test",
       "path": "admin/scripts/checkBundleBudget.mjs",
-      "command": "node admin/scripts/checkBundleBudget.mjs --check",
-      "safety": "local-readonly",
+      "command": "npm --workspace catch-admin run build",
+      "safety": "local-writes-build-artifacts",
       "status": "active",
-      "description": "Ratchets the Vite-manifest JavaScript entry and largest async chunk for the admin production build.",
+      "description": "Builds the admin production surface, then ratchets the generated Vite-manifest JavaScript entry and largest async chunk.",
       "checks": [
         "node --check admin/scripts/checkBundleBudget.mjs",
         "node admin/scripts/checkBundleBudget.mjs --self-test",
-        "node admin/scripts/checkBundleBudget.mjs --check"
+        "npm --workspace catch-admin run build"
       ],
       "role": "ratchet",
       "rules": [
@@ -4173,16 +4556,16 @@
     },
     {
       "id": "web:storybook-visuals",
-      "category": "test",
+      "category": "design",
       "path": "tool/web/check_storybook_visuals.mjs",
-      "command": "node tool/web/check_storybook_visuals.mjs --surface website --check",
-      "safety": "local",
+      "command": "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check",
+      "safety": "local-writes-build-artifacts",
       "status": "active",
-      "description": "Captures and compares current-platform desktop/mobile Storybook screenshots for registry-ready website, admin, and shared web-ui stories, retaining actual and diff artifacts on failure.",
+      "description": "Builds the marketing Storybook, then captures and compares current-platform desktop/mobile screenshots for registry-ready website and shared web-ui stories, retaining actual and diff artifacts on failure.",
       "checks": [
         "node --check tool/web/check_storybook_visuals.mjs",
         "node tool/web/check_storybook_visuals.mjs --self-test",
-        "node tool/web/check_storybook_visuals.mjs --surface website --check"
+        "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check"
       ],
       "role": "gate",
       "rules": [
@@ -4206,6 +4589,73 @@
         "node --check operations/src/cli/main.mjs",
         "node operations/src/cli/main.mjs help"
       ]
+    },
+    {
+      "id": "operations:admin-cli",
+      "category": "operations",
+      "path": "operations/src/admin-cli/main.mjs",
+      "command": "node operations/src/admin-cli/main.mjs",
+      "safety": "remote-read-write-apply-guarded",
+      "status": "active",
+      "role": "operator",
+      "rules": [
+        "OPERATIONS-PLATFORM-001"
+      ],
+      "description": "Invokes catalogued admin callables with strict requests, dry-run mutation defaults, exact action/target confirmations, App Check, and local plus remote hash-only receipts.",
+      "checks": [
+        "node --check operations/src/admin-cli/main.mjs",
+        "node operations/src/admin-cli/main.mjs loop --all",
+        "node --test operations/test/admin-cli.test.mjs"
+      ]
+    },
+    {
+      "id": "operations:admin-action-catalog",
+      "category": "operations",
+      "path": "operations/scripts/check-admin-action-catalog.mjs",
+      "command": "node operations/scripts/check-admin-action-catalog.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "role": "ratchet",
+      "rules": [
+        "OPERATIONS-PLATFORM-001"
+      ],
+      "description": "Keeps every admin API callable aligned with one strict catalog action, Functions export, workflow membership, role set, schema-valid example, and explicit mutation confirmation policy.",
+      "checks": [
+        "node --check operations/scripts/check-admin-action-catalog.mjs",
+        "node --test operations/test/admin-action-catalog.test.mjs",
+        "node operations/scripts/check-admin-action-catalog.mjs"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "operations/test/admin-action-catalog.test.mjs",
+        "contains": [
+          "catalog checker rejects GUI callable and workflow membership drift",
+          "catalog checker rejects mutations without explicit confirmation"
+        ]
+      }
+    },
+    {
+      "id": "admin:action-catalog-generate",
+      "category": "operations",
+      "path": "tool/admin/generate_admin_action_catalog.mjs",
+      "command": "node tool/admin/generate_admin_action_catalog.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "role": "generator",
+      "rules": [
+        "OPERATIONS-PLATFORM-001"
+      ],
+      "description": "Generates the typed admin-browser and Functions action-catalog views from contracts/admin/admin_action_catalog.json.",
+      "checks": [
+        "node --check tool/admin/generate_admin_action_catalog.mjs",
+        "node tool/admin/generate_admin_action_catalog.mjs --check",
+        "node tool/admin/generate_admin_action_catalog.mjs --self-test",
+        "node --test tool/admin/generate_admin_action_catalog.test.mjs"
+      ],
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node tool/admin/generate_admin_action_catalog.mjs --self-test"
+      }
     },
     {
       "id": "operations:import-admin-projection",
@@ -4358,6 +4808,34 @@
       "role": "generator"
     },
     {
+      "id": "data:migrate-clubs-to-organizers",
+      "category": "data",
+      "path": "tool/data/migrate_clubs_to_organizers.mjs",
+      "command": "node tool/data/migrate_clubs_to_organizers.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Copies legacy club data into canonical organizer authorities, splits team and follow edges, backfills organizerId references, and optionally copies organizer media without deleting legacy data.",
+      "checks": [
+        "node --check tool/data/migrate_clubs_to_organizers.mjs",
+        "node --test tool/data/migrate_clubs_to_organizers.test.mjs"
+      ],
+      "role": "generator",
+      "rules": [
+        "MIGRATION-CONTRACT-001",
+        "DENORMALIZED-DATA-001",
+        "STORAGE-CONTRACT-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/data/migrate_clubs_to_organizers.test.mjs",
+        "contains": [
+          "plan splits host/member edges and patches dependent references",
+          "plan blocks conflicting target authority instead of overwriting",
+          "plan is idempotent when canonical target and reference already match"
+        ]
+      }
+    },
+    {
       "id": "firebase:storage-rules-firestore-iam",
       "category": "firebase",
       "path": "tool/firebase/storage_rules_firestore_iam.mjs",
@@ -4506,8 +4984,9 @@
       "vacuityProof": {
         "type": "test",
         "path": "tool/design/check_tab_root_scroll_contracts.test.mjs",
-        "contains": [
-          "flags the known-bad tab root fixture when terminal padding is missing",
+      "contains": [
+        "accepts lifecycle-owned StatefulShellBranch key member access",
+        "flags the known-bad tab root fixture when terminal padding is missing",
           "flags a new StatefulShellBranch until it is registered",
           "flags a raw SliverFillRemaining empty state in presentation code"
         ]
@@ -4521,7 +5000,7 @@
       "safety": "local",
       "status": "active",
       "role": "gate",
-      "description": "Enforces manifest-backed repository-root ownership, Git expectations, protected cleanup boundaries, and portable Markdown links.",
+      "description": "Enforces manifest-backed repository ownership and impact relationships, Git expectations, protected cleanup boundaries, audit policies, and portable Markdown links.",
       "checks": [
         "node --test tool/check_repository_root_hygiene.test.mjs",
         "node tool/check_repository_root_hygiene.mjs"
@@ -4544,7 +5023,9 @@
       "role": "operator",
       "description": "Reports regenerable repository state and deletes only manifest-allowlisted paths after explicit apply and scope flags.",
       "checks": [
-        "node --check tool/repository_hygiene.mjs"
+        "node --check tool/repository_hygiene.mjs",
+        "node --test tool/repository_hygiene.test.mjs",
+        "node tool/repository_hygiene.mjs --json"
       ]
     },
     {

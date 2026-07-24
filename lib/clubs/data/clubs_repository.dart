@@ -8,13 +8,13 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show
-        AddClubHostCallableRequest,
-        ClubMembershipCallableRequest,
-        CreateClubCallableRequest,
-        RemoveClubHostCallableRequest,
-        SetClubNotificationPreferenceCallableRequest,
-        StartClubHostConversationCallableRequest,
-        TransferClubOwnershipCallableRequest;
+        AddOrganizerManagerCallableRequest,
+        CreateOrganizerCallableRequest,
+        OrganizerFollowCallableRequest,
+        RemoveOrganizerManagerCallableRequest,
+        SetOrganizerNotificationPreferenceCallableRequest,
+        StartOrganizerConversationCallableRequest,
+        TransferOrganizerOwnershipCallableRequest;
 import 'package:catch_dating_app/events/data/event_stream_utils.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,7 +26,7 @@ part 'clubs_repository.g.dart';
 class ClubsRepository {
   const ClubsRepository(this._db, this._functions);
 
-  static const _collectionPath = 'clubs';
+  static const _collectionPath = 'organizers';
 
   final FirebaseFirestore _db;
   final FirebaseFunctions _functions;
@@ -47,7 +47,7 @@ class ClubsRepository {
     () => _clubRef(id).snapshots().map((doc) => doc.exists ? doc.data() : null),
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'watch club',
+      action: 'watch organizer',
       resource: _collectionPath,
     ),
   );
@@ -59,7 +59,7 @@ class ClubsRepository {
     },
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'fetch club',
+      action: 'fetch organizer',
       resource: _collectionPath,
     ),
   );
@@ -76,7 +76,7 @@ class ClubsRepository {
             ),
         context: const BackendErrorContext(
           service: BackendService.firestore,
-          action: 'watch clubs by location',
+          action: 'watch organizers by location',
           resource: _collectionPath,
         ),
       );
@@ -93,7 +93,7 @@ class ClubsRepository {
             ),
         context: const BackendErrorContext(
           service: BackendService.firestore,
-          action: 'watch clubs by rating',
+          action: 'watch organizers by rating',
           resource: _collectionPath,
         ),
       );
@@ -111,7 +111,7 @@ class ClubsRepository {
         .map((snap) => snap.docs.map((d) => d.data()).toList()),
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'watch hosted clubs',
+      action: 'watch hosted organizers',
       resource: _collectionPath,
     ),
   );
@@ -129,7 +129,7 @@ class ClubsRepository {
         .map((snap) => snap.docs.map((d) => d.data()).toList()),
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'watch owned clubs',
+      action: 'watch owned organizers',
       resource: _collectionPath,
     ),
   );
@@ -154,13 +154,13 @@ class ClubsRepository {
     transform: discoverableOnly ? _appDiscoverableClubs : null,
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'watch clubs by ids',
+      action: 'watch organizers by ids',
       resource: _collectionPath,
     ),
   );
 
   static List<Club> _appDiscoverableClubs(Iterable<Club> clubs) =>
-      clubs.where((club) => club.isAppDiscoverable).toList(growable: false);
+      clubs.where((club) => club.isPubliclyBrowseable).toList(growable: false);
 
   // ── Write ──────────────────────────────────────────────────────────────────
 
@@ -172,6 +172,7 @@ class ClubsRepository {
     required String description,
     required String location,
     required String area,
+    OrganizerType organizerType = OrganizerType.club,
     String? imageUrl,
     String? profileImageUrl,
     String? instagramHandle,
@@ -181,72 +182,75 @@ class ClubsRepository {
   }) => withBackendErrorContext(
     () async {
       final result = await _functions
-          .httpsCallable('createClub')
+          .httpsCallable('createOrganizer')
           .call<Object?>(
-            CreateClubCallableRequest(
-              clubId: clubId,
+            CreateOrganizerCallableRequest(
+              organizerId: clubId,
               name: name,
               description: description,
               location: location,
               area: area,
+              organizerType: organizerType.name,
               imageUrl: imageUrl,
               profileImageUrl: profileImageUrl,
               instagramHandle: instagramHandle,
               phoneNumber: phoneNumber,
               email: email,
-              hostDefaults: hostDefaults,
+              hostDefaults: hostDefaults?.toJson(),
             ).toJson(),
           );
-      return CreateClubCallableResponse.fromCallableData(result.data).clubId;
+      return CreateOrganizerCallableResponse.fromCallableData(
+        result.data,
+      ).organizerId;
     },
     context: const BackendErrorContext(
       service: BackendService.functions,
-      action: 'create club',
+      action: 'create organizer',
       resource: _collectionPath,
     ),
   );
 
-  /// Updates only the fields present in [patch] via the `updateClub` callable.
+  /// Updates only fields present in [patch] via `updateOrganizer`.
   Future<void> updateClub({
     required String clubId,
     required UpdateClubPatch patch,
   }) => withBackendErrorContext(
     () => _functions
-        .httpsCallable('updateClub')
+        .httpsCallable('updateOrganizer')
         .call(patch.toCallableJson(clubId: clubId)),
     context: const BackendErrorContext(
       service: BackendService.functions,
-      action: 'update club',
+      action: 'update organizer',
       resource: _collectionPath,
     ),
   );
 
   // ── Members ────────────────────────────────────────────────────────────────
 
-  /// Adds the signed-in user to [clubId] via the `joinClub` callable.
+  /// Follows [clubId] through the canonical organizer relationship.
   ///
-  /// Membership touches both `clubs/{clubId}` and `users/{uid}`, so the
+  /// Following touches `organizerFollows` plus denormalized user state, so the
   /// server owns this mutation and Firestore rules can keep membership fields
   /// read-only to direct client writes.
   Future<void> joinClub(String clubId) => withBackendErrorContext(
     () => _functions
-        .httpsCallable('joinClub')
-        .call(ClubMembershipCallableRequest(clubId: clubId).toJson()),
+        .httpsCallable('followOrganizer')
+        .call(OrganizerFollowCallableRequest(organizerId: clubId).toJson()),
     context: const BackendErrorContext(
       service: BackendService.functions,
-      action: 'join club',
+      action: 'follow organizer',
       resource: _collectionPath,
     ),
   );
 
-  /// Removes the signed-in user from [clubId] via the `leaveClub` callable.
+  /// Unfollows [clubId] through the canonical organizer relationship.
   Future<void> leaveClub(String clubId) => withBackendErrorContext(
     () => _functions
-        .httpsCallable('leaveClub')
-        .call(ClubMembershipCallableRequest(clubId: clubId).toJson()),
+        .httpsCallable('unfollowOrganizer')
+        .call(OrganizerFollowCallableRequest(organizerId: clubId).toJson()),
     context: const BackendErrorContext(
       service: BackendService.functions,
-      action: 'leave club',
+      action: 'unfollow organizer',
       resource: _collectionPath,
     ),
   );
@@ -257,16 +261,16 @@ class ClubsRepository {
     required bool enabled,
   }) => withBackendErrorContext(
     () => _functions
-        .httpsCallable('setClubNotificationPreference')
+        .httpsCallable('setOrganizerNotificationPreference')
         .call(
-          SetClubNotificationPreferenceCallableRequest(
-            clubId: clubId,
+          SetOrganizerNotificationPreferenceCallableRequest(
+            organizerId: clubId,
             enabled: enabled,
           ).toJson(),
         ),
     context: const BackendErrorContext(
       service: BackendService.functions,
-      action: 'update club notifications',
+      action: 'update organizer notifications',
       resource: _collectionPath,
     ),
   );
@@ -277,17 +281,17 @@ class ClubsRepository {
     String? phoneNumber,
   }) => withBackendErrorContext(
     () => _functions
-        .httpsCallable('addClubHost')
+        .httpsCallable('addOrganizerManager')
         .call(
-          AddClubHostCallableRequest(
-            clubId: clubId,
+          AddOrganizerManagerCallableRequest(
+            organizerId: clubId,
             uid: uid,
             phoneNumber: phoneNumber,
           ).toJson(),
         ),
     context: const BackendErrorContext(
       service: BackendService.functions,
-      action: 'add club host',
+      action: 'add organizer manager',
       resource: _collectionPath,
     ),
   );
@@ -295,13 +299,16 @@ class ClubsRepository {
   Future<void> removeClubHost({required String clubId, required String uid}) =>
       withBackendErrorContext(
         () => _functions
-            .httpsCallable('removeClubHost')
+            .httpsCallable('removeOrganizerManager')
             .call(
-              RemoveClubHostCallableRequest(clubId: clubId, uid: uid).toJson(),
+              RemoveOrganizerManagerCallableRequest(
+                organizerId: clubId,
+                uid: uid,
+              ).toJson(),
             ),
         context: const BackendErrorContext(
           service: BackendService.functions,
-          action: 'remove club host',
+          action: 'remove organizer manager',
           resource: _collectionPath,
         ),
       );
@@ -311,69 +318,55 @@ class ClubsRepository {
     required String uid,
   }) => withBackendErrorContext(
     () => _functions
-        .httpsCallable('transferClubOwnership')
+        .httpsCallable('transferOrganizerOwnership')
         .call(
-          TransferClubOwnershipCallableRequest(
-            clubId: clubId,
+          TransferOrganizerOwnershipCallableRequest(
+            organizerId: clubId,
             uid: uid,
           ).toJson(),
         ),
     context: const BackendErrorContext(
       service: BackendService.functions,
-      action: 'transfer club ownership',
+      action: 'transfer organizer ownership',
       resource: _collectionPath,
     ),
   );
 
-  Future<String> startClubHostConversation({
-    required String clubId,
+  Future<String> startOrganizerConversation({
+    required String organizerId,
     required String hostUid,
     String? eventId,
   }) => withBackendErrorContext(
     () async {
-      final callable = _functions.httpsCallable('startClubHostConversation');
-      Future<HttpsCallableResult<dynamic>> call(String? scopedEventId) =>
-          callable.call(
-            StartClubHostConversationCallableRequest(
-              clubId: clubId,
-              hostUid: hostUid,
-              eventId: scopedEventId,
-            ).toJson(),
-          );
-
-      late HttpsCallableResult<dynamic> result;
-      try {
-        result = await call(eventId);
-      } on FirebaseFunctionsException catch (error) {
-        // Two-phase rollout compatibility: the previous callable rejects the
-        // newly optional eventId as an additional property. Retry only that
-        // exact schema diagnostic as a general inquiry; do not hide any new
-        // backend event/club authorization error.
-        if (eventId == null ||
-            !isLegacyHostConversationEventIdRejection(error)) {
-          rethrow;
-        }
-        result = await call(null);
-      }
+      final callable = _functions.httpsCallable('startOrganizerConversation');
+      final result = await callable.call(
+        StartOrganizerConversationCallableRequest(
+          organizerId: organizerId,
+          hostUid: hostUid,
+          eventId: eventId,
+        ).toJson(),
+      );
       return StartClubHostConversationCallableResponse.fromCallableData(
         result.data,
       ).matchId;
     },
     context: const BackendErrorContext(
       service: BackendService.functions,
-      action: 'start club host conversation',
+      action: 'start organizer host conversation',
       resource: _collectionPath,
     ),
   );
-}
 
-bool isLegacyHostConversationEventIdRejection(Object error) {
-  if (error is! FirebaseFunctionsException ||
-      error.code != 'invalid-argument') {
-    return false;
-  }
-  final message = error.message?.toLowerCase() ?? '';
-  return message.contains('eventid') && message.contains('additional propert');
+  @Deprecated('Use startOrganizerConversation with organizerId.')
+  Future<String> startClubHostConversation({
+    required String clubId,
+    required String hostUid,
+    String? eventId,
+  }) => startOrganizerConversation(
+    organizerId: clubId,
+    hostUid: hostUid,
+    eventId: eventId,
+  );
 }
 
 // keepalive: club repository is a shared Firestore/Functions facade reused by

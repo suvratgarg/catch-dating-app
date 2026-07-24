@@ -15,7 +15,7 @@
  * await checkRateLimit(
  *   admin.firestore(),
  *   request.auth!.uid,
- *   "createClub",
+ *   "createOrganizer",
  *   {maxRequests: 5, windowMs: 60 * 60 * 1000}  // 5 per hour
  * );
  * ```
@@ -91,6 +91,20 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   removeClubHost: {maxRequests: 20, windowMs: 60 * 1000},
   archiveClub: {maxRequests: 10, windowMs: 60 * 1000},
   deleteClub: {maxRequests: 10, windowMs: 60 * 1000},
+  followOrganizer: {maxRequests: 30, windowMs: 60 * 1000},
+  unfollowOrganizer: {maxRequests: 30, windowMs: 60 * 1000},
+  setOrganizerNotificationPreference: {
+    maxRequests: 30,
+    windowMs: 60 * 1000,
+  },
+  createOrganizerPost: {maxRequests: 10, windowMs: 60 * 1000},
+  startOrganizerConversation: {maxRequests: 5, windowMs: 60 * 1000},
+  addOrganizerManager: {maxRequests: 20, windowMs: 60 * 1000},
+  removeOrganizerManager: {maxRequests: 20, windowMs: 60 * 1000},
+  transferOrganizerOwnership: {maxRequests: 5, windowMs: 60 * 1000},
+  updateOrganizer: {maxRequests: 30, windowMs: 60 * 1000},
+  archiveOrganizer: {maxRequests: 10, windowMs: 60 * 1000},
+  deleteOrganizer: {maxRequests: 10, windowMs: 60 * 1000},
   // 30/min (host toggling attendance for a group)
   markEventAttendance: {maxRequests: 30, windowMs: 60 * 1000},
   // 5/min
@@ -109,9 +123,15 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   updateUserProfile: {maxRequests: 60, windowMs: 60 * 1000},
   // 3/hour
   createClub: {maxRequests: 3, windowMs: 60 * 60 * 1000},
+  createOrganizer: {maxRequests: 3, windowMs: 60 * 60 * 1000},
   requestAccountDeletion: {maxRequests: 3, windowMs: 60 * 60 * 1000},
   createPublicClubReview: {maxRequests: 5, windowMs: 60 * 60 * 1000},
+  createPublicOrganizerReview: {
+    maxRequests: 5,
+    windowMs: 60 * 60 * 1000,
+  },
   requestClubClaim: {maxRequests: 5, windowMs: 60 * 60 * 1000},
+  requestOrganizerClaim: {maxRequests: 5, windowMs: 60 * 60 * 1000},
   // Admin/internal callables. Generous limits — these are role-gated and
   // audit-logged, so the cap is defense-in-depth against a compromised admin
   // token or a runaway client, not a primary control.
@@ -129,6 +149,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   adminListClubClaimRequests: {maxRequests: 60, windowMs: 60 * 1000},
   adminGetClubClaimRequestDetails: {maxRequests: 60, windowMs: 60 * 1000},
   adminDecideClubClaim: {maxRequests: 30, windowMs: 60 * 1000},
+  adminDecideOrganizerClaim: {maxRequests: 30, windowMs: 60 * 1000},
   adminGetClubDetails: {maxRequests: 60, windowMs: 60 * 1000},
   adminListClubDetails: {maxRequests: 60, windowMs: 60 * 1000},
   adminSetClubIndexStatus: {maxRequests: 30, windowMs: 60 * 1000},
@@ -140,6 +161,8 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   adminPublishExternalEvent: {maxRequests: 10, windowMs: 60 * 1000},
   adminGetEventIntakeDashboard: {maxRequests: 60, windowMs: 60 * 1000},
   adminListIntakeOperations: {maxRequests: 120, windowMs: 60 * 1000},
+  adminListActionExecutions: {maxRequests: 60, windowMs: 60 * 1000},
+  adminRecordActionExecution: {maxRequests: 120, windowMs: 60 * 1000},
   adminDecideOrganizerIntake: {maxRequests: 30, windowMs: 60 * 1000},
   adminRecordOrganizerCuration: {maxRequests: 30, windowMs: 60 * 1000},
   adminRecordEventIntakeReviewDecision: {

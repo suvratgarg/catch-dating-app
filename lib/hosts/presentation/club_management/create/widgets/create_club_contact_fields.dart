@@ -34,6 +34,8 @@ class CreateClubContactFields extends StatelessWidget {
       children: [
         CatchField.input(
           title: context.l10n.hostsCreateClubContactFieldsTitleInstagramHandle,
+          contract:
+              CatchContractConstraints.createClubCallablePayloadInstagramHandle,
           controller: instagramController,
           isOptional: true,
           icon: CatchIcons.alternateEmailRounded,
@@ -44,6 +46,8 @@ class CreateClubContactFields extends StatelessWidget {
         ),
         CatchField.input(
           title: context.l10n.hostsCreateClubContactFieldsTitlePhoneNumber,
+          contract:
+              CatchContractConstraints.createClubCallablePayloadPhoneNumber,
           controller: phoneController,
           isOptional: true,
           icon: CatchIcons.callOutlined,
@@ -57,6 +61,7 @@ class CreateClubContactFields extends StatelessWidget {
         ),
         CatchField.input(
           title: context.l10n.hostsCreateClubContactFieldsTitleEmail,
+          contract: CatchContractConstraints.createClubCallablePayloadEmail,
           controller: emailController,
           isOptional: true,
           icon: CatchIcons.emailOutlined,

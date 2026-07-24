@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/events/data/event_repository.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_state.dart';
@@ -16,10 +15,7 @@ AsyncValue<PaymentHistoryViewModel> paymentHistoryViewModel(
 
   return switch (paymentsAsync) {
     AsyncData(:final value) => AsyncData(
-      buildPaymentHistoryViewModel(
-        payments: value,
-        events: _resolvedEventsForPayments(ref, value),
-      ),
+      _paymentHistoryWithEventTitles(ref, value),
     ),
     AsyncError(:final error, :final stackTrace) => AsyncError(
       error,
@@ -29,12 +25,33 @@ AsyncValue<PaymentHistoryViewModel> paymentHistoryViewModel(
   };
 }
 
-List<Event> _resolvedEventsForPayments(Ref ref, List<Payment> payments) {
+PaymentHistoryViewModel _paymentHistoryWithEventTitles(
+  Ref ref,
+  List<Payment> payments,
+) {
   final eventIds = {for (final payment in payments) payment.eventId};
-  if (eventIds.isEmpty) return const [];
+  if (eventIds.isEmpty) {
+    return buildPaymentHistoryViewModel(payments: payments, events: const []);
+  }
 
   final eventsAsync = ref.watch(
     watchEventsByIdsProvider(EventsByIdQuery(eventIds)),
   );
-  return eventsAsync.asData?.value ?? const [];
+  return switch (eventsAsync) {
+    AsyncData(:final value) => buildPaymentHistoryViewModel(
+      payments: payments,
+      events: value,
+    ),
+    AsyncError(:final error) => buildPaymentHistoryViewModel(
+      payments: payments,
+      events: const [],
+      eventTitleStatus: PaymentEventTitleStatus.error,
+      eventTitleError: error,
+    ),
+    _ => buildPaymentHistoryViewModel(
+      payments: payments,
+      events: const [],
+      eventTitleStatus: PaymentEventTitleStatus.loading,
+    ),
+  };
 }

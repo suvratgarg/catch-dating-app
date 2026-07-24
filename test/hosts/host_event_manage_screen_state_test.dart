@@ -159,7 +159,7 @@ void main() {
       accessState: CatchAsyncState.data(access),
       inviteLinksState: CatchAsyncState.data([inviteLink]),
       inviteLink:
-          'https://catchdates.com/clubs/${club.id}/events/${event.id}?invite=CATCH-DELHI',
+          'https://catchdates.com/organizers/${club.id}/events/${event.id}?invite=CATCH-DELHI',
       sharePending: false,
     );
     final loading = HostPrivateLinkActionState.resolve(
@@ -181,14 +181,14 @@ void main() {
       accessState: CatchAsyncState.data(access),
       inviteLinksState: CatchAsyncState.data([inviteLink]),
       inviteLink:
-          'https://catchdates.com/clubs/${club.id}/events/${event.id}?invite=CATCH-DELHI',
+          'https://catchdates.com/organizers/${club.id}/events/${event.id}?invite=CATCH-DELHI',
       sharePending: true,
     );
 
     expect(ready.inviteCode, 'CATCH-DELHI');
     expect(
       ready.inviteLink,
-      'https://catchdates.com/clubs/${club.id}/events/${event.id}?invite=CATCH-DELHI',
+      'https://catchdates.com/organizers/${club.id}/events/${event.id}?invite=CATCH-DELHI',
     );
     expect(ready.shareDetail, '1 invite link');
     expect(ready.canShare, isTrue);
@@ -479,13 +479,13 @@ void main() {
     final activeState = HostInviteLinkRowDisplayState.resolve(
       link: active,
       url:
-          'https://catchdates.com/clubs/${event.clubId}/events/${event.id}?invite=CATCH-DELHI&il=link-1',
+          'https://catchdates.com/organizers/${event.clubId}/events/${event.id}?invite=CATCH-DELHI&il=link-1',
       actionsDisabled: false,
     );
     final disabledState = HostInviteLinkRowDisplayState.resolve(
       link: disabled,
       url:
-          'https://catchdates.com/clubs/${event.clubId}/events/${event.id}?invite=CATCH-DELHI&il=link-1',
+          'https://catchdates.com/organizers/${event.clubId}/events/${event.id}?invite=CATCH-DELHI&il=link-1',
       actionsDisabled: true,
     );
 
@@ -493,7 +493,7 @@ void main() {
     expect(activeState.source, 'instagram');
     expect(
       activeState.url,
-      'https://catchdates.com/clubs/${event.clubId}/events/${event.id}?invite=CATCH-DELHI&il=link-1',
+      'https://catchdates.com/organizers/${event.clubId}/events/${event.id}?invite=CATCH-DELHI&il=link-1',
     );
     expect(
       activeState.stats,

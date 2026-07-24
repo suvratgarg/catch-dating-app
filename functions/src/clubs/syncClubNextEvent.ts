@@ -21,20 +21,20 @@ const defaultDeps: SyncClubNextEventDeps = {
  * @return {Promise<void>}
  */
 export async function refreshClubNextEvent(
-  clubId: string,
+  organizerId: string,
   deps: SyncClubNextEventDeps = defaultDeps
 ): Promise<void> {
   const db = deps.firestore();
-  const clubRef = db.collection("clubs").doc(clubId);
-  const clubSnap = await clubRef.get();
+  const organizerRef = db.collection("organizers").doc(organizerId);
+  const organizerSnap = await organizerRef.get();
 
-  if (!clubSnap.exists) {
+  if (!organizerSnap.exists) {
     return;
   }
 
   const nextEventSnap = await db
     .collection("events")
-    .where("clubId", "==", clubId)
+    .where("organizerId", "==", organizerId)
     .where("status", "==", "active")
     .where("startTime", ">=", deps.nowTimestamp())
     .orderBy("startTime", "asc")
@@ -42,12 +42,16 @@ export async function refreshClubNextEvent(
     .get();
 
   const nextEvent = nextEventSnap.docs[0]?.data() as EventDocument | undefined;
-  await clubRef.set({
+  const projection = {
     nextEventAt: nextEvent?.startTime ?? null,
     nextEventLabel: nextEvent ?
       nextEvent.meetingLocation?.name ?? nextEvent.meetingPoint :
       null,
-  }, {merge: true});
+  };
+  const batch = db.batch();
+  batch.set(organizerRef, projection, {merge: true});
+  batch.set(db.collection("clubs").doc(organizerId), projection, {merge: true});
+  await batch.commit();
 }
 
 /**
@@ -62,18 +66,18 @@ export async function syncClubNextEventHandler(
   after: EventDocument | undefined,
   deps: SyncClubNextEventDeps = defaultDeps
 ): Promise<void> {
-  const clubIds = new Set<string>();
+  const organizerIds = new Set<string>();
 
-  if (before?.clubId) {
-    clubIds.add(before.clubId);
+  if (before?.organizerId ?? before?.clubId) {
+    organizerIds.add(before.organizerId ?? before!.clubId);
   }
-  if (after?.clubId) {
-    clubIds.add(after.clubId);
+  if (after?.organizerId ?? after?.clubId) {
+    organizerIds.add(after.organizerId ?? after!.clubId);
   }
 
   await Promise.all(
-    Array.from(clubIds).map(
-      (clubId) => refreshClubNextEvent(clubId, deps)
+    Array.from(organizerIds).map(
+      (organizerId) => refreshClubNextEvent(organizerId, deps)
     )
   );
 }

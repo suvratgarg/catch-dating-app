@@ -1,6 +1,6 @@
 {
-  "version": "2.7.162",
-  "updated": "2026-07-19",
+  "version": "2.7.172",
+  "updated": "2026-07-23",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, uid-loading conflation follow-up, React component-governance follow-up including class-name boundary enforcement and exported website feature component registry coverage, admin feature export boundary, the retired website legacy site barrel/import boundary, UI label spans, empty-state variants, page shells, claim-flow route/root/auth-row shells, website Host Page route, Host Application flow, Host feature section, waitlist form shells, marketing section, marketing info-card, marketing loop-list, marketing consent banner, featured organizer card, app-download CTA group, organizer listing, organizer listing hero, organizer listing event section including event-action cards, organizer search section, organizer search result shells, PublicSearchBar ownership, public event-card shells, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin loading icon shells, admin toolbar shells/modifiers, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin marketing layout shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision/footer shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin roadmap lists, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
   "scanner_snapshot": {
@@ -44,6 +44,79 @@
     ]
   },
   "pending": [
+    {
+      "id": "PROD-FUNCTION-TRIGGER-TYPE-DRIFT-001",
+      "title": "Reconcile production event trigger types before the next full Functions rollout",
+      "status": "active",
+      "owner": "agent",
+      "area": "functions,release,production",
+      "priority": "high",
+      "summary": "The 2026-07-22 production organizer rollout safely stopped two broad deploy attempts because live onEventInviteLinkWritten and onEventWaitlistOfferWritten are HTTPS functions while current source exports background Firestore triggers under the same names. Organizer-owned functions were deployed with an exact allowlist; the mismatched live functions were not replaced or deleted.",
+      "acceptance": [
+        "inventory the live trigger type, region, runtime, and consumers for both function names",
+        "choose a no-downtime rename or explicitly approved replacement sequence rather than forcing an in-place type change",
+        "exercise invite-link and waitlist-offer behavior in staging before production",
+        "prove a full manifest-driven Functions deploy plan no longer stops on trigger-type drift",
+        "retain rollback evidence for any live function replacement"
+      ],
+      "paths": [
+        "functions/src/index.ts",
+        "functions/src/events",
+        "tool/deploy_firebase_targets.sh",
+        "docs/release_operations.md"
+      ],
+      "source": "2026-07-22-organizer-production-rollout"
+    },
+    {
+      "id": "WEB-ORGANIZER-CLAIM-TARGET-001",
+      "title": "Cut organizer intake claim targets over to canonical organizer documents",
+      "status": "active",
+      "owner": "agent",
+      "area": "website,organizers,claims,intake,data-contracts",
+      "priority": "high",
+      "summary": "The public listing policy now fails closed unless a published listing carries an enabled claim capability backed by a canonical organizers/{id} promotion receipt. The organizer intake promotion and sync pipeline still emits clubs/{id} claim targets, while the canonical claim callable operates on organizers/{id}; those legacy receipts therefore cannot safely enable website claim submission.",
+      "acceptance": [
+        "make organizer intake and promotion execution produce a canonical organizers/{id} claim target while retaining any released-client clubs/{id} projection only as explicit compatibility output",
+        "make the promotion receipt, generated website projection, and claim callable agree on the same organizers/{id} target",
+        "cover enabled canonical and disabled legacy/missing receipt cases in generator and public-surface behavior tests",
+        "prove a staging website claim succeeds through Firebase Auth and App Check against the canonical organizer target",
+        "keep every clubs/{id}-only receipt fail-closed for website claim capability"
+      ],
+      "paths": [
+        "tool/organizer_intake/organizer_intake.mjs",
+        "tool/organizer_intake/sync_claim_targets_to_firestore.mjs",
+        "tool/organizer_intake/generated/public_projection_plan.json",
+        "functions/src/organizers/organizerClaims.ts",
+        "website/scripts/generateOrganizerListings.mjs",
+        "design/public_surface_behavior.json"
+      ],
+      "source": "2026-07-21-public-surface-behavior-matrix"
+    },
+    {
+      "id": "WEB-ORGANIZER-REVIEW-TARGET-001",
+      "title": "Verify canonical organizer targets before enabling public reviews",
+      "status": "active",
+      "owner": "agent",
+      "area": "website,organizers,reviews,intake,data-contracts",
+      "priority": "high",
+      "summary": "The generated website projection now carries a review target capability that fails closed independently from claim, review-read, review-write, and runtime capability. Current production organizer-intake readiness reports the canonical targets as write-needed, so generated listings truthfully keep public review reads and writes disabled until a read-only receipt confirms an organizers/{id} or compatibility clubs/{id} document accepted by the callable.",
+      "acceptance": [
+        "produce a current read-only readiness receipt that proves each published listing has an organizers/{id} or explicitly supported clubs/{id} review target",
+        "keep claim target readiness independent so a clubs/{id}-only target may enable reviews without enabling canonical organizer claims",
+        "make generated target, read, and write capabilities agree with the receipt and projection schema invariants",
+        "prove staging review list and moderated submit callables succeed for every enabled target kind",
+        "retain fail-closed runtime, static-route, and matrix coverage for missing, stale, or contradictory target evidence"
+      ],
+      "paths": [
+        "tool/organizer_intake/sync_claim_targets_to_firestore.mjs",
+        "tool/organizer_intake/generated/organizer_claim_target_sync_preview.json",
+        "functions/src/reviews/mutateReview.ts",
+        "website/scripts/generateOrganizerListings.mjs",
+        "website/src/features/organizers/organizerPolicy.ts",
+        "design/public_surface_behavior.json"
+      ],
+      "source": "2026-07-21-public-surface-behavior-matrix-final-review"
+    },
     {
       "id": "HOST-SHELL-TERMINAL-001",
       "title": "Classify and migrate shell-aware terminal spacing across Host routes",
@@ -241,9 +314,60 @@
         "docs/demo_data_seeding.md"
       ],
       "source": "deep_semantic_audit_2026-06"
+    },
+    {
+      "id": "DOC-FEATURE-CONTRACT-RETIREMENT-001",
+      "title": "Retire completed feature-contract and implementation handoffs",
+      "status": "active",
+      "owner": "agent",
+      "area": "docs,feature-contracts,lifecycle",
+      "priority": "low",
+      "summary": "The repository-wide lifecycle audit classified 11 of 99 Markdown documents as retirement-ready. Four feature inventories or remediation handoffs are superseded by exhaustive compiled feature contracts plus their screen, component, architecture, and evidence owners; seven additional completed or resolved work orders now have executable replacement owners. Identification is complete, but deletion must rewrite every inbound reference and preserve any unique debt first.",
+      "acceptance": [
+        "rewrite every non-historical inbound reference to the durable replacement named in docs/README.md",
+        "migrate any remaining unique debt or deferred owner decision before deleting a candidate",
+        "delete the 11 retirement-ready files together with stale doc-version, summary, index, code-comment, and tracker references",
+        "prove no live references remain and run docs, feature-contract, manifest, enforcement-integrity, and readiness gates"
+      ],
+      "paths": [
+        "docs/design_parity/event_detail_composition_tracker.md",
+        "docs/design_parity/event_club_profile_parity_handoff.md",
+        "docs/plans/explore_screen_quality_pass_spec.md",
+        "docs/plans/explore_findings_remediation_spec.md",
+        "docs/design_parity/adaptive_tab_bar_spec.md",
+        "docs/design_parity/fable_ui_issue_handoff.md",
+        "docs/audit_registry/host_consumer_ui_reconciliation_findings_2026-07-18.md",
+        "docs/plans/catch_ui_enforcement_system_spec.md",
+        "docs/plans/repository_root_hygiene_spec.md",
+        "docs/plans/web_platform_hardening_spec.md",
+        "docs/plans/catch_system_stretch_spec.md"
+      ],
+      "source": "2026-07-23-feature-contract-doc-retirement-audit"
     }
   ],
-  "next_up": [],
+  "next_up": [
+    {
+      "id": "HOST-V2-EVENTS-VISUAL-DRIFT-001",
+      "title": "Restore Host Events to the canonical visual threshold",
+      "status": "active",
+      "owner": "agent",
+      "area": "host,events,design-parity",
+      "priority": "medium",
+      "summary": "The functional Host Events workspace remains complete, but the integrated sliver, option-group, and app-shell consolidation moved its deterministic reference result from 15.24% mismatch / 15.20 meanDelta to 14.74% mismatch / 18.63 meanDelta. The mismatch ratio improved while mean delta crossed the unchanged canonical limit of 18. An 18% / 19 regression ceiling keeps CI sensitive without falsely claiming canonical parity.",
+      "acceptance": [
+        "host_home_events_list meets both canonical thresholds without regressionThresholds",
+        "the deterministic full-shell capture preserves lifecycle filters, New and policy-gated Repeat actions, month grouping, fill progress, and route-safe event management",
+        "remove HOST-V2-EVENTS-VISUAL-DRIFT-001 from the reference manifest after strict comparison passes"
+      ],
+      "paths": [
+        "lib/hosts/presentation/host_operations/host_events_list.dart",
+        "lib/hosts/presentation/host_operations/host_events_scaffold.dart",
+        "design/reference_screens/manifest.json",
+        "test/ui_captures/catalog/screen_capture_catalog.dart"
+      ],
+      "source": "2026-07-22-organizer-ci-visual-follow-up"
+    }
+  ],
   "completed": [
     {
       "id": "EXPLORE-PRODUCT-DECISIONS-2026-07-10-DONE",

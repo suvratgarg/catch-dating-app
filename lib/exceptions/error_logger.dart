@@ -65,15 +65,41 @@ final class FirebaseCrashReporter implements CrashReporter {
 
 enum LogLevel { fatal, error, warn, info, debug }
 
+typedef ErrorLogSink = void Function(String message);
+
+void _discardErrorLogLine(String _) {}
+
 // ── ErrorLogger ───────────────────────────────────────────────────────────────
 
 class ErrorLogger {
-  ErrorLogger({CrashReporter? crashReporter, bool? shouldReportErrors})
-    : _crashReporter = crashReporter ?? _defaultCrashReporter,
-      _shouldReportErrors = shouldReportErrors ?? _defaultShouldReportErrors;
+  ErrorLogger({
+    CrashReporter? crashReporter,
+    bool? shouldReportErrors,
+    ErrorLogSink? consoleSink,
+  }) : _crashReporter = crashReporter ?? _defaultCrashReporter,
+       _shouldReportErrors = shouldReportErrors ?? _defaultShouldReportErrors,
+       _consoleSink = consoleSink ?? debugPrint;
+
+  /// Keeps expected failures observable through an optional [crashReporter]
+  /// without writing expected stack traces into deterministic test/capture logs.
+  ErrorLogger.silent({
+    CrashReporter? crashReporter,
+    bool shouldReportErrors = false,
+  }) : this._configured(
+         crashReporter,
+         shouldReportErrors,
+         _discardErrorLogLine,
+       );
+
+  ErrorLogger._configured(
+    this._crashReporter,
+    this._shouldReportErrors,
+    this._consoleSink,
+  );
 
   final CrashReporter? _crashReporter;
   final bool _shouldReportErrors;
+  final ErrorLogSink _consoleSink;
 
   static CrashReporter get _defaultCrashReporter {
     if (kIsWeb) return ConsoleCrashReporter();
@@ -137,9 +163,9 @@ class ErrorLogger {
     final timestamp = DateTime.now().toIso8601String();
     final prefix = level.name.toUpperCase();
     final ctx = context != null ? ' ${_formatContext(context)}' : '';
-    debugPrint('[$prefix][$timestamp]$ctx $message');
-    if (error != null) debugPrint('  error=$error');
-    if (stackTrace != null) debugPrint('  $stackTrace');
+    _consoleSink('[$prefix][$timestamp]$ctx $message');
+    if (error != null) _consoleSink('  error=$error');
+    if (stackTrace != null) _consoleSink('  $stackTrace');
 
     if ((level == LogLevel.fatal || level == LogLevel.error) && _canReport) {
       unawaited(

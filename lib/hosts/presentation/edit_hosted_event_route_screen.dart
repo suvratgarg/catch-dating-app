@@ -26,11 +26,10 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
     );
 
     return switch (state.status) {
-      HostEventEditRouteStatus.loading => Scaffold(
-        backgroundColor: CatchTokens.of(context).bg,
-        appBar: CatchTopBar(
+      HostEventEditRouteStatus.loading => CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.hostsEditHostedEventRouteScreenTitleEditEvent,
-          border: true,
+          divider: scrolledUnder,
         ),
         body: const SafeArea(child: HostRouteLoadingBody(showTabRail: true)),
       ),
@@ -47,6 +46,7 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
         message: context
             .l10n
             .hostsEditHostedEventRouteScreenMessageThisHostedEventIs,
+        secondaryAction: const CatchErrorBackAction(),
       ),
       HostEventEditRouteStatus.unauthorized => CatchErrorScaffold(
         title:
@@ -54,6 +54,7 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
         message:
             context.l10n.hostsEditHostedEventRouteScreenMessageYouCanEditOnly,
         icon: CatchIcons.blockRounded,
+        secondaryAction: const CatchErrorBackAction(),
       ),
       HostEventEditRouteStatus.ready => EditHostedEventScreen(
         club: state.club!,
@@ -64,9 +65,5 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
 }
 
 CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
-  return value.when(
-    data: CatchAsyncState<T>.data,
-    loading: () => const CatchAsyncState.loading(),
-    error: (error, stackTrace) => CatchAsyncState<T>.error(error),
-  );
+  return catchAsyncStateFromAsyncValue(value);
 }

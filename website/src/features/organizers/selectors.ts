@@ -1,4 +1,5 @@
 import type {HostListing, HostListingCatchEvent, HostListingExternalEvent} from "./types";
+import {organizerPolicyForListing} from "./organizerPolicy";
 
 export type OrganizerStatusFilter = "all" | "verified" | "claimed" | "unclaimed";
 export type OrganizerSort = "relevance" | "reviews" | "rating" | "upcoming" | "confidence";
@@ -94,6 +95,7 @@ export function organizerAppearanceContext(filters: OrganizerDirectoryFilters) {
 export function organizerDirectorySearchText(listing: HostListing) {
   const cached = organizerSearchTextCache.get(listing.id);
   if (cached) return cached;
+  const policy = organizerPolicyForListing(listing);
   const text = [
     listing.searchText,
     listing.name,
@@ -101,14 +103,14 @@ export function organizerDirectorySearchText(listing: HostListing) {
     listing.region,
     listing.country,
     listing.category,
-    listing.status,
+    policy.badge.label,
     listing.headline,
     listing.description,
     listing.sourceSummary,
     listing.host?.name,
     listing.host?.role,
     ...(listing.formats ?? []),
-    ...listing.facts.map((fact) => `${fact.label} ${fact.value}`),
+    ...publicFactsForListing(listing).map((fact) => `${fact.label} ${fact.value}`),
     ...listing.sources.map((source) => `${source.label} ${source.detail} ${source.type}`),
     ...(listing.eventEvidence ?? []).flatMap((event) => [
       event.title,
@@ -190,12 +192,31 @@ export function hasAnyEventSignal(listing: HostListing) {
 }
 
 export function isVerifiedListing(listing: HostListing) {
-  return listing.listingVariant === "appCreatedClub" ||
-    listing.sourceConfidence === "first_party";
+  const policy = organizerPolicyForListing(listing);
+  return ["firstParty", "ownerVerified"].includes(policy.trustState);
+}
+
+export function isPubliclyReadableListing(listing: HostListing) {
+  return organizerPolicyForListing(listing).isPubliclyReadable;
 }
 
 export function isUnclaimedListing(listing: HostListing) {
-  return listing.status.toLowerCase() === "unclaimed";
+  return organizerPolicyForListing(listing).claimState === "unclaimed";
+}
+
+export function isClaimedListing(listing: HostListing) {
+  const policy = organizerPolicyForListing(listing);
+  return ["claimed", "verified"].includes(policy.claimState) ||
+    ["claimed", "transferred", "userCreated"].includes(policy.ownershipState);
+}
+
+export function publicFactsForListing(listing: HostListing) {
+  if (organizerPolicyForListing(listing).canReadPublicReviews) {
+    return listing.facts;
+  }
+  return listing.facts.filter((fact) =>
+    !/(?:rating|review)/iu.test(`${fact.label} ${fact.value}`)
+  );
 }
 
 export function isPublicApiEnabled(listing: HostListing) {
@@ -203,7 +224,7 @@ export function isPublicApiEnabled(listing: HostListing) {
 }
 
 export function isClaimSubmissionEnabledListing(listing: HostListing) {
-  return isUnclaimedListing(listing) && isPublicApiEnabled(listing);
+  return organizerPolicyForListing(listing).canRequestClaim;
 }
 
 export function hasUpcomingCatchEvent(listing: HostListing) {
@@ -211,11 +232,15 @@ export function hasUpcomingCatchEvent(listing: HostListing) {
 }
 
 export function listingProfileStrength(listing: HostListing) {
+  const canReadPublicReviews =
+    organizerPolicyForListing(listing).canReadPublicReviews;
   if (isVerifiedListing(listing)) {
     let value = 72;
     if (listing.catchEvents?.length) value += 8;
     if (listing.eventSuccessSummary) value += 8;
-    if ((listing.metrics?.reviewCount ?? 0) > 0) value += 7;
+    if (canReadPublicReviews && (listing.metrics?.reviewCount ?? 0) > 0) {
+      value += 7;
+    }
     if (listing.host) value += 5;
     return Math.min(value, 96);
   }
@@ -229,10 +254,18 @@ export function listingProfileStrength(listing: HostListing) {
 
 export function compareListings(a: HostListing, b: HostListing, sort: OrganizerSort) {
   if (sort === "reviews") {
-    return (b.metrics?.reviewCount ?? 0) - (a.metrics?.reviewCount ?? 0);
+    const aCount = organizerPolicyForListing(a).canReadPublicReviews ?
+      a.metrics?.reviewCount ?? 0 : 0;
+    const bCount = organizerPolicyForListing(b).canReadPublicReviews ?
+      b.metrics?.reviewCount ?? 0 : 0;
+    return bCount - aCount;
   }
   if (sort === "rating") {
-    return (b.metrics?.rating ?? 0) - (a.metrics?.rating ?? 0);
+    const aRating = organizerPolicyForListing(a).canReadPublicReviews ?
+      a.metrics?.rating ?? 0 : 0;
+    const bRating = organizerPolicyForListing(b).canReadPublicReviews ?
+      b.metrics?.rating ?? 0 : 0;
+    return bRating - aRating;
   }
   if (sort === "upcoming") {
     return Number(hasUpcomingCatchEvent(b)) - Number(hasUpcomingCatchEvent(a));

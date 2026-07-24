@@ -66,6 +66,8 @@ class OnboardingProfilePromptsState {
 
   bool get canSubmit => canContinue && !isCompleting;
 
+  bool get requestControlsEnabled => !isCompleting;
+
   String get progressLabel =>
       '$answeredCount / $maxProfilePromptAnswers prompts answered';
 

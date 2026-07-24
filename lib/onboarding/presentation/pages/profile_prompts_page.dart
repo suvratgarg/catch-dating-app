@@ -88,6 +88,7 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
   }
 
   void _continue() {
+    if (ref.read(OnboardingController.completeMutation).isPending) return;
     final intent = _stateFor(isCompleting: false).submitIntent();
     if (intent == null) return;
     OnboardingController.completeMutation.run(ref, (tx) async {
@@ -120,6 +121,8 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
   }
 
   void _selectPrompt(int index, String promptId) {
+    if (ref.read(OnboardingController.completeMutation).isPending) return;
+    ref.read(onboardingControllerProvider.notifier).clearCompleteErrorIfIdle();
     setState(() => _selectedPromptIds[index] = promptId);
   }
 }
@@ -159,6 +162,7 @@ class OnboardingProfilePromptsStep extends StatelessWidget {
       ),
       children: [
         CatchSectionList(
+          emptyStateOmitted: true,
           gap: CatchSpacing.s3,
           children: [
             for (var index = 0; index < maxProfilePromptAnswers; index += 1)
@@ -168,6 +172,7 @@ class OnboardingProfilePromptsStep extends StatelessWidget {
                 controller: controllers.answers[index],
                 availablePromptIds: state.availablePromptIds(index),
                 selectedPromptId: state.selectedPromptIdForSlot(index),
+                enabled: state.requestControlsEnabled,
                 onPromptChanged: (promptId) {
                   callbacks.onPromptChanged(index, promptId);
                 },
@@ -192,6 +197,7 @@ class PromptField extends StatelessWidget {
     required this.availablePromptIds,
     required this.selectedPromptId,
     required this.onPromptChanged,
+    this.enabled = true,
   });
 
   final int index;
@@ -200,6 +206,7 @@ class PromptField extends StatelessWidget {
   final List<String> availablePromptIds;
   final String selectedPromptId;
   final ValueChanged<String> onPromptChanged;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -210,19 +217,26 @@ class PromptField extends StatelessWidget {
           key: ValueKey('onboarding-prompt-question-$index'),
           icon: CatchIcons.formatQuoteRounded,
           title: context.l10n.onboardingProfilePromptsPageTitleProfilePrompt,
+          contract: CatchContractConstraints.profilePromptAnswerPromptId,
+          contractValue: (value) => value,
           body: definition.title,
           values: availablePromptIds,
           itemLabel: (promptId) => profilePromptDefinition(promptId).title,
           selected: {selectedPromptId},
-          onSelectionChanged: (selection) {
-            if (selection.isEmpty) return;
-            onPromptChanged(selection.single);
-          },
+          onSelectionChanged: enabled
+              ? (selection) {
+                  if (selection.isEmpty) return;
+                  onPromptChanged(selection.single);
+                }
+              : null,
+          enabled: enabled,
         ),
         CatchField.input(
           key: ValueKey('onboarding-prompt-answer-$index'),
           title: context.l10n.onboardingProfilePromptsPageTitleAnswer,
+          contract: CatchContractConstraints.profilePromptAnswerAnswer,
           controller: controller,
+          enabled: enabled,
           inputHint: definition.placeholder,
           helperText: context.l10n
               .onboardingProfilePromptsPageHelpertextLengthMaximumprofilepromptanswerlength(

@@ -6,7 +6,7 @@ import {repoRoot} from "../lib/repo_paths.mjs";
 
 const defaultManifestPath = "tool/design/tab_root_scroll_contracts.json";
 const branchKeyPattern =
-  /StatefulShellBranch\s*\(\s*navigatorKey\s*:\s*([A-Za-z_$][\w$]*)/gu;
+  /StatefulShellBranch\s*\(\s*navigatorKey\s*:\s*([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)/gu;
 
 const isCliEntrypoint =
   process.argv[1] != null &&

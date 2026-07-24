@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.656
-updated: 2026-07-19
+version: 2.5.660
+updated: 2026-07-23
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,31 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.659
+
+- Added `CatchErrorBackAction` and analyzer enforcement that every blocking
+  error state exposes Retry or a deliberate alternate action.
+- Extended `CatchRouteScaffold` adoption to Host team and organizer settings
+  spokes; Host step flows retain `CatchStepHeader` during loading.
+
+### 2.5.658
+
+- Added `CatchRouteScaffold` as the shared Consumer/Host pushed-route surface
+  and scroll-under divider owner.
+- `CatchAsyncValueView` and `CatchAsyncValueSliver` now enforce the shared
+  initial-load deadline and explicit recovery callback contract.
+- Chats keeps its root title/search block in scroll content; only an explicitly
+  supplied filter rail may remain pinned.
+
+### 2.5.657
+
+- Made `CatchSectionList` collection-state ownership explicit: callers provide
+  `emptyBuilder` or the named `emptyStateOmitted: true` opt-out.
+- Added generated component-enforcement ownership for all 69 catalog entries,
+  analyzer steering tables/probes, and bidirectional plugin/checker coverage.
+- Registered shell, top-bar, and state policy for all 32 screen contracts and
+  added the resolved cross-file composition ratchet.
 
 ### 2.5.656
 
@@ -138,7 +163,9 @@ a feature section here only when auditing that feature's widget surface.
   context-aware builders. Use content-shaped skeletons for page or section
   loads, `CatchLoadingIndicator` for inline waits,
   `CatchErrorState.fromError` with the narrowest `AppErrorContext` for failures,
-  and `CatchAsyncValueView` as the default three-state composer.
+  and `CatchAsyncValueView` as the default three-state composer. Their initial
+  skeletons have a shared 12-second presentation deadline and every call site
+  supplies a provider-invalidating retry callback.
 - The Host Insights time-window control remains a justified
   `CatchField.control`: it is a composite analytics grid containing coordinated
   period selection and report content, not a plain selector. Plain single- or
@@ -736,8 +763,8 @@ a feature section here only when auditing that feature's widget surface.
 - Retired the dropped-direction Explore map peek rail, selected-pin lead,
   compact event row family, and alternate event-card constructors from the live
   catalog. Event discovery now keeps recommendation cards on the single ticket
-  card contract, while the map-selection follow-up is tracked in
-  `event_club_profile_parity_handoff.md` as a DateTicket implementation.
+  card contract; the completed map-selection implementation is now bound by
+  `design/features/explore.feature.json` and its registered evidence.
 - Removed the retired event-card states from Widgetbook primitive/catalog
   coverage so the component contract no longer advertises constructors that do
   not exist in `CatchEventCard`.
@@ -3931,7 +3958,7 @@ a feature section here only when auditing that feature's widget surface.
 ### 2.5.213
 
 - Host Inbox now exposes the handoff `All` / `Unread · n` `OptionGroup` below
-  the pinned chats browse header. `ChatsListScreen` owns only the transient
+  the chats browse header. `ChatsListScreen` owns only the transient
   host filter state, while `ChatsList` applies the unread filter to the
   existing `ChatsListViewModel` and shows the host-specific no-unread empty
   state when needed.
@@ -5032,12 +5059,12 @@ a feature section here only when auditing that feature's widget surface.
   in-app keyboard-hide button; search dismissal uses the field's platform Done
   action, clear button, and focus loss.
 - Explore and Chats search fields both request `TextInputAction.done`, so the
-  platform keyboard owns the dismissal affordance while the pinned browse row
+  platform keyboard owns the dismissal affordance while the browse row
   stays visually consistent across tabs.
 
 ### 2.5.100
 
-- Chats now composes the shared browse-search behavior in the pinned sliver
+- Chats now composes the shared browse-search behavior in the root-title sliver
   slot. The header owns title/subtitle plus a top-right search action; search
   expands into the full row with the same animated behavior as Explore.
 - Removed the chat-count badge from the Chats header. Conversation counts stay
@@ -6512,6 +6539,7 @@ Widgetbook callers.
 | `CatchRangeSlider` | `lib/core/widgets/catch_range_slider.dart:7` | Canonical range slider. Wraps `RangeSlider` in the shared tickless slider theme so age/pace sliders keep discrete values without rendering dashed tick marks. Supports optional min/max endpoint labels for fixed slider bounds and an `onChangeEnd` commit seam for persistence that must not fire on every drag frame. |
 | `CatchScreenHeaderTitle` | `lib/core/widgets/catch_top_bar.dart:22` | Shared root-screen title stack for `ARCH-SCREEN-CHROME-001`. Uses `CatchTextStyles.headline` for the root title, optional mono eyebrow, optional supporting subtitle, leading slot, action slot, and optional material/padding wrapper so sliver headers, app bars, tests, and Widgetbook states do not hand-roll Home/Explore/Chats/Profile title rows. |
 | `CatchScreenTopBar` | `lib/core/widgets/catch_top_bar.dart:120` | Root-screen app-bar wrapper over `CatchTopBar`. Keeps `CatchScreenHeaderTitle` typography while preserving top-bar safe-area, padding, action, leading, bottom, and expanding-search configuration for Activity, Settings, Chats, and Explore chrome. |
+| `CatchRouteScaffold` | `lib/core/widgets/catch_route_scaffold.dart` | Canonical pushed-route shell for utility/list and identity screens. Owns the shared page surface and drives the compact top-bar divider from vertical scroll-under state, so callers cannot choose conflicting fixed borders or surfaces. |
 | `CatchTopBar` | `lib/core/widgets/catch_top_bar.dart:232` | Handoff `AppBar`: compact or large route header with shared title/subtitle/kicker text roles, `CatchTopBar.identity` conversation/profile title rows with avatar and optional identity tap, back/close/none leading modes, surface/divider/gutter ownership, configurable content padding and safe-area ownership for app bars or pinned sliver slots, constrained text/icon/trailing actions, optional tab bottom, and controlled or uncontrolled `CatchSearchField` expanding mode composition. Search uses a persistent right-aligned lane: the same app-bar search widget receives the full row width in collapsed and expanded states, while title/trailing chrome fades and ignores input under the morphing pill instead of branch-remounting. Implements `PreferredSizeWidget` for use as a Flutter `appBar`; root screen titles should use `CatchScreenTopBar` while compact/detail route chrome keeps `CatchTopBar(title: ...)`. |
 | `CatchTopBarTabBar` | `lib/core/widgets/catch_top_bar.dart:809` | Adaptive top-tab primitive for use inside `CatchTopBar.bottom` or sticky sliver headers. Uses Material `TabBar` with primary indicator on Android/non-iOS platforms and `CupertinoSlidingSegmentedControl` on iOS. Implements `PreferredSizeWidget` and accepts an optional explicit `TabController` for sliver-native tab rows that are not inside a `DefaultTabController`. |
 | `showCatchAdaptiveDialog<T>` | `lib/core/widgets/catch_adaptive_dialog.dart:24` | Shared platform-adaptive confirmation/dialog helper. Renders `CupertinoAlertDialog` on iOS and the handoff `CatchConfirmDialog` card on Material platforms, with typed action values plus default/destructive action metadata. |
@@ -6539,14 +6567,15 @@ Widgetbook callers.
 | `CatchFrameworkErrorDebugDetails` | `lib/core/widgets/catch_framework_error_view.dart:86` | Direct debug disclosure renderer used by `CatchFrameworkErrorView`. Owns collapsed/expanded state, tokenized developer-detail chrome, and mono debug text while keeping framework-crash recovery separate from app-facing error surfaces. |
 | `CatchErrorIcon` | `lib/core/widgets/catch_error_icon.dart:7` | Shared branded error medallion used by framework and app-facing error surfaces. Treat as an atom composed by error surfaces, not a separate product component to review in Widgetbook. |
 | `CatchErrorState` | `lib/core/widgets/catch_error_state.dart:13` | Canonical branded app-facing error content. Supports full-screen, inline, and compact modes, mapped title/message copy, optional retry, and optional secondary action while composing the shared public `CatchErrorBody`. Widgetbook groups this family as the single "Error surfaces" review point. |
+| `CatchErrorBackAction` | `lib/core/widgets/catch_error_state.dart` | Canonical alternate action for terminal route errors where retry is not truthful. Uses the secondary button treatment and either invokes a caller-owned destination or safely pops the current route. |
 | `CatchErrorBody` | `lib/core/widgets/catch_error_state.dart:82` | Direct branded error-body renderer used by error placement adapters. Owns icon sizing, title/message typography, retry and secondary-action layout, inline/compact surface wrapping, and full-screen centering. |
 | `CatchErrorScaffold` | `lib/core/widgets/catch_error_state.dart:247` | Full-screen/root-tab placement adapter for load failures. Keeps framework crashes separate from app data-load failures while reusing `CatchErrorBody`. |
 | `CatchStateViewport` | `lib/core/widgets/catch_empty_state.dart` | Canonical box-layout placement for terminal empty/error content inside an app shell. Subtracts the floating bottom obstruction from the visible optical center and is used by Profile's unavailable/error branches; feature screens must not recreate this with local spacers or bottom padding. |
 | `CatchSliverStateViewport` / `CatchSliverEmptyState` | `lib/core/widgets/catch_empty_state.dart` | Canonical sliver placement for terminal empty/error content. The viewport preserves a tight remaining region for responsive child overflow and delegates floating-shell optical-center correction to `CatchStateViewport`; `CatchSliverEmptyState` supplies the standard cardless empty renderer. Presentation code must not recreate this with raw `SliverFillRemaining`. |
 | `CatchSliverErrorState` | `lib/core/widgets/catch_error_state.dart:341` | Sliver-native placement adapter for branded load failures. Reuses `CatchSliverStateViewport`, supports retry callbacks for provider invalidation, and therefore shares the same shell-aware optical center as empty states. |
 | `CatchInlineErrorState` | `lib/core/widgets/catch_error_state.dart:437` | Section/card placement adapter for branded load failures. Reuses `CatchErrorBody` in inline or compact mode when the rest of the screen remains usable. |
-| `CatchAsyncValueView<T>` | `lib/core/widgets/catch_async_value_view.dart:26` | Primary `catch.async_value` concept for handling `AsyncValue` states in route and section bodies. Requires the context-aware `builder` callback and supports optional context-aware `loadingBuilder`/`errorBuilder` callbacks, Riverpod skip flags, branded `CatchErrorState.fromError` defaults, and retry callbacks for provider invalidation. Empty success states stay in the data builder. |
-| `CatchAsyncValueSliver<T>` | `lib/core/widgets/catch_async_value_view.dart:71` | Sliver equivalent of `CatchAsyncValueView`. Supports sliver-native data, loading, and error builders plus branded `CatchSliverErrorState.fromError` defaults for scroll-owned surfaces. |
+| `CatchAsyncValueView<T>` | `lib/core/widgets/catch_async_value_view.dart:30` | Primary `catch.async_value` concept for handling `AsyncValue` states in route and section bodies. Requires the context-aware `builder`, applies the shared 12-second initial-load deadline, gives known errors precedence over loading flags, and requires an `onRetry` provider invalidation at presentation call sites. Empty success states stay in the data builder. |
+| `CatchAsyncValueSliver<T>` | `lib/core/widgets/catch_async_value_view.dart:151` | Sliver equivalent of `CatchAsyncValueView`, with the same initial-load deadline and retry contract plus sliver-native data, loading, and error builders. |
 | `CatchAsyncScreenLoading` | `lib/core/widgets/catch_async_value_view.dart:133` | Route/body loading placement helper that wraps `CatchSkeletonList` in `CatchScreenBody` so async screen loading states use the shared gutter and scroll safely on compact surfaces. |
 | `CatchAsyncSliverLoading` | `lib/core/widgets/catch_async_value_view.dart:157` | Sliver loading placement helper that wraps `CatchSkeletonList` in `CatchSliverPageBody` for `CustomScrollView` screens. |
 | `CatchFormFieldLabel` | `lib/core/widgets/catch_form_field_label.dart:6` | Styled form field label with an optional badge (e.g., "Optional") and an inline `Label · Optional` renderer used by the Field handoff. The semantic label always includes optional status; the badge form can collapse at large text scale so narrow forms can ellipsize the label without overflow. |
@@ -6873,7 +6902,7 @@ Widgetbook callers.
 |---|---|---|
 | `ChatsListScreen` | `lib/chats/presentation/inbox/chat_inbox_screen.dart:16` | Consumer Chats route shell. Builds the shared consumer list display state and retains a legacy direct Host branch only as supporting migration coverage; `/host/inbox` no longer routes here. |
 | `HostInboxScreen` | `lib/hosts/presentation/inbox/host_inbox_screen.dart:37` | Host-owned Inbox route. Resolves explicit Event or General scope, composes Booked/Prospective segments from `HostInboxViewModel`, keeps roster-backed broadcast counts independent from personal inquiry thread counts, routes rows to Host Chat, and opens the authorized broadcast composer. |
-| `ChatsBrowseHeader` | `lib/chats/presentation/inbox/widgets/chats_sliver_header.dart:15` | Stateful shared title/search content for Chats and Host Inbox. Consumer Chats keeps it in pinned browse chrome; Host-v2 embeds its compact title-only variant directly above event scope. It owns only local search-open focus state; Host event scope and Booked/Prospective controls live in `HostInboxScreen`. |
+| `ChatsBrowseHeader` | `lib/chats/presentation/inbox/widgets/chats_sliver_header.dart:15` | Stateful shared title/search content for Chats and Host Inbox. Consumer Chats keeps it in scroll-owned root title content; Host-v2 embeds its compact title-only variant directly above event scope. It owns only local search-open focus state; Host event scope and Booked/Prospective controls live in `HostInboxScreen`. |
 
 ### ConsumerWidget
 

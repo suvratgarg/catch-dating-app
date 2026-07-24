@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -13,13 +14,13 @@ import 'package:catch_dating_app/events/presentation/event_location_map_body_scr
 import 'package:catch_dating_app/events/presentation/event_location_map_state.dart';
 import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/widgets/map_overlay_controls.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 
 export 'package:catch_dating_app/events/presentation/event_location_map_body_screen.dart';
 
-class EventLocationMapRouteScreen extends ConsumerWidget {
+class EventLocationMapRouteScreen extends ConsumerStatefulWidget {
   const EventLocationMapRouteScreen({
     super.key,
     required this.eventId,
@@ -30,11 +31,47 @@ class EventLocationMapRouteScreen extends ConsumerWidget {
   final bool enableNetworkTiles;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<EventLocationMapRouteScreen> createState() =>
+      _EventLocationMapRouteScreenState();
+}
+
+class _EventLocationMapRouteScreenState
+    extends ConsumerState<EventLocationMapRouteScreen> {
+  bool _directionsPending = false;
+
+  Future<void> _openDirections(Uri directionsUri) async {
+    if (_directionsPending) return;
+
+    setState(() => _directionsPending = true);
+    var opened = false;
+    try {
+      opened = await ref
+          .read(externalLinkControllerProvider)
+          .openExternal(directionsUri);
+    } catch (_) {
+      // A single route-owned failure message covers launcher exceptions and
+      // false platform results without claiming that another app opened.
+    } finally {
+      if (mounted) {
+        setState(() => _directionsPending = false);
+      }
+    }
+
+    if (!mounted || opened) return;
+    showCatchSnackBar(
+      context,
+      context.l10n.eventsEventLocationMapDirectionsOpenFailed,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final eventId = widget.eventId;
     final vmAsync = ref.watch(eventDetailViewModelProvider(eventId));
 
     return CatchAsyncValueView<EventDetailViewModel?>(
       value: vmAsync,
+      onRetry: () => ref.invalidate(eventDetailViewModelProvider(eventId)),
       loadingBuilder: (_) =>
           const ChromelessMapScaffold(child: EventLocationMapLoadingBody()),
       errorBuilder: (_, error, _) => ChromelessMapScaffold(
@@ -53,23 +90,22 @@ class EventLocationMapRouteScreen extends ConsumerWidget {
                   context.l10n.eventsEventLocationMapScreenTitleEventNotFound,
               message:
                   context.l10n.eventsEventLocationMapScreenMessageThisEventIsNo,
+              secondaryAction: const CatchErrorBackAction(),
             ),
           );
         }
         final state = EventLocationMapState.fromEvent(
           event,
-          enableNetworkTiles: enableNetworkTiles,
+          enableNetworkTiles: widget.enableNetworkTiles,
         );
 
         return ChromelessMapScaffold(
           safeArea: false,
           child: EventLocationMapScreen(
             state: state,
-            onGetDirections: () => unawaited(
-              ref
-                  .read(externalLinkControllerProvider)
-                  .openExternal(state.directionsUri),
-            ),
+            directionsPending: _directionsPending,
+            onGetDirections: () =>
+                unawaited(_openDirections(state.directionsUri)),
           ),
         );
       },

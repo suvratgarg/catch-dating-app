@@ -334,7 +334,7 @@ export function AdminIntakePublicationBoundaryPanel({
           label="Not here"
           value={isEvents ?
             "events/{id}, externalEvents/{id}, bookings, payments, waitlists" :
-            "unchecked canonical clubs/{id} publication, route indexing, claim ownership transfer"}
+            "unchecked canonical organizers/{id} publication, route indexing, claim ownership transfer"}
         />
       </QualityList>
       <AdminTagList>

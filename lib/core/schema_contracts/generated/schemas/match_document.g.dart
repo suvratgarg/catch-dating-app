@@ -206,6 +206,12 @@ const schemaMatchDocumentSchema = <String, Object?>{
       'maxLength': 180,
       'x-catch-ownership': 'trigger-owned',
     },
+    'organizerId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'x-catch-ownership': 'trigger-owned',
+    },
     'synthetic': <String, Object?>{
       'type': 'boolean',
       'description': 'Internal demo seed marker used for cleanup and diagnostics.',

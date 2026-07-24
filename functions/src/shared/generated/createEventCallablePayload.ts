@@ -9,7 +9,11 @@ import {UploadedPhoto} from "./uploadedPhoto";
  */
 export interface CreateEventCallablePayload {
   eventId?: string;
-  clubId: string;
+  organizerId: string;
+  /**
+   * Deprecated compatibility alias for organizerId.
+   */
+  clubId?: string;
   startTimeMillis: number;
   endTimeMillis: number;
   meetingPoint: string;

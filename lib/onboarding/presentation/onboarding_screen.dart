@@ -92,6 +92,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (_, _) {
+        if (flowState.operationPending) return;
         final previousStep = flowState.previousStep;
         if (previousStep != null) {
           ref
@@ -108,7 +109,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     if (flowState.topBar case final topBarState?) ...[
                       OnboardingTopBar(
                         state: topBarState,
-                        onBack: flowState.previousStep == null
+                        onBack:
+                            flowState.operationPending ||
+                                flowState.previousStep == null
                             ? null
                             : () => ref
                                   .read(onboardingControllerProvider.notifier)

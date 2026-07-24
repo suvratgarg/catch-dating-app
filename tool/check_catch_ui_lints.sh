@@ -5,6 +5,11 @@ probe_root="tool/catch_ui_lints_probe"
 probe_path="$probe_root/lib/events/presentation/widgets/event_detail_lint_probe.dart"
 probe_output=""
 probe_status=0
+dart_bin="${DART_BIN:-dart}"
+generated_probe_path="packages/catch_ui_lints/probes/catch_ui_lint_probes.dart"
+generated_expectations_path="tool/design/generated/enforcement_expectations.json"
+
+node tool/design/build_lint_enforcement_tables.mjs --check
 
 cleanup() {
   rm -rf "$probe_root"
@@ -20,12 +25,17 @@ run_analyze_probe() {
   cat >"$probe_path"
 
   set +e
-  probe_output="$(dart analyze "$probe_path" 2>&1)"
+  probe_output="$("$dart_bin" analyze "$probe_path" 2>&1)"
   probe_status=$?
   set -e
 
   if [[ -z "$probe_output" ]]; then
     echo "Catch UI lint probe '$name' produced no analyzer output." >&2
+    exit 1
+  fi
+  if [[ "$probe_output" == *"An error occurred while executing an analyzer plugin"* ]]; then
+    echo "Catch UI lint probe '$name' could not load the analyzer plugin." >&2
+    echo "$probe_output" >&2
     exit 1
   fi
 }
@@ -62,17 +72,38 @@ run_analyze_probe "seeded violation corpus" <<'DART'
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart' as spacing;
+import 'package:catch_dating_app/core/theme/catch_fonts.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // sizing:allow: seeded allow debt
 
 const double _probeCardHeight = 120;
+const _probeScreenPadding = EdgeInsets.fromLTRB(
+  CatchSpacing.screenPx,
+  CatchSpacing.s4,
+  CatchSpacing.screenPx,
+  CatchSpacing.s6,
+);
+
+abstract final class Sizes {
+  static const double p12 = 12;
+}
+
+final eventRepositoryProvider = Provider<int>((ref) => 1);
+final eventAsyncProvider = FutureProvider<int>((ref) async => 1);
 
 class CatchUiLintProbe extends StatelessWidget {
   const CatchUiLintProbe({super.key});
@@ -80,6 +111,7 @@ class CatchUiLintProbe extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final style = GoogleFonts.getFont('Roboto');
+    final rawVoice = CatchFonts.voice(fontSize: 16, height: 1.2);
     return Column(
       children: [
         const _ProbeSection(),
@@ -89,6 +121,7 @@ class CatchUiLintProbe extends StatelessWidget {
         const Icon(Icons.add, size: 24),
         const SizedBox(height: CatchSpacing.s3 + 2),
         const SizedBox(height: spacing.CatchSpacing.s3 + 2),
+        const SizedBox(height: Sizes.p12),
         const Padding(
           padding: EdgeInsets.fromLTRB(
             CatchSpacing.s5,
@@ -122,10 +155,32 @@ class CatchUiLintProbe extends StatelessWidget {
         ),
         const Text(
           'raw',
-          style: TextStyle(fontFamily: 'Archivo', fontSize: 18),
+          style: TextStyle(
+            fontFamily: 'Archivo',
+            fontSize: 18,
+            letterSpacing: 1,
+          ),
         ),
         Text('raw', style: GoogleFonts.roboto(fontSize: 18)),
         Text('raw', style: style),
+        Text('raw', style: rawVoice),
+        Text('raw', style: CatchTextStyles.bodyM(context)),
+        Image.network('https://example.com/probe.png'),
+        const Padding(
+          padding: _probeScreenPadding,
+          child: SizedBox.shrink(),
+        ),
+        CatchTopBar(
+          title: 'Probe',
+          actions: const [Row(children: [SizedBox.shrink()])],
+        ),
+        const CatchSectionList(children: [SizedBox.shrink()]),
+        const CatchField.read(title: 'Outside section'),
+        const Center(child: Text('Failed to load')),
+        Scaffold(
+          bottomNavigationBar: const NavigationBar(destinations: []),
+          body: const SizedBox.shrink(),
+        ),
         Opacity(opacity: 0.5, child: const SizedBox.shrink()),
         AnimatedOpacity(
           opacity: 0.5,
@@ -160,11 +215,37 @@ class CatchUiLintProbe extends StatelessWidget {
         ),
         const CatchField(title: 'Legacy field'),
         _buildHeader(),
+        const _ProviderProbe(),
       ],
     );
   }
 
   Widget _buildHeader() => const SizedBox.shrink();
+}
+
+class _ProviderProbe extends ConsumerWidget {
+  const _ProviderProbe();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final CatchTokens tokens = CatchTokens.of(context);
+    final repositoryValue = ref.watch(eventRepositoryProvider);
+    final asyncValue = ref.watch(eventAsyncProvider);
+    return Column(
+      children: [
+        Text(
+          '${asyncValue.when(data: (value) => value, loading: () => 0)}'
+          '$repositoryValue',
+          style: CatchTextStyles.supporting(context, color: tokens.ink),
+        ),
+        CatchAsyncValueView<int>(
+          value: asyncValue,
+          builder: (_, value) => Text('$value'),
+        ),
+        const CatchErrorState(title: 'Unavailable', message: 'Try elsewhere.'),
+      ],
+    );
+  }
 }
 
 class _ProbeSection extends StatelessWidget {
@@ -195,6 +276,8 @@ expect_code_count "seeded violation corpus" "catch_no_widget_returning_method" 1
 expect_code_count "seeded violation corpus" "catch_no_raw_color" 5
 expect_code_count "seeded violation corpus" "catch_no_raw_text_style" 1
 expect_code_count "seeded violation corpus" "catch_no_raw_font_drift" 3
+expect_code_count "seeded violation corpus" "catch_no_direct_font_builder" 1
+expect_code_count "seeded violation corpus" "catch_no_raw_letter_spacing" 1
 expect_code_count "seeded violation corpus" "catch_no_raw_radius" 1
 expect_code_count "seeded violation corpus" "catch_no_raw_content_dimension" 1
 expect_code_count "seeded violation corpus" "catch_no_local_design_constant" 1
@@ -224,18 +307,73 @@ expect_code_count \
   "seeded violation corpus" \
   "catch_use_named_catch_section_constructor" \
   1
+expect_code_count "seeded violation corpus" "catch_no_raw_network_image" 1
+expect_code_count \
+  "seeded violation corpus" \
+  "catch_no_presentation_platform_import" \
+  1
+expect_code_count "seeded violation corpus" "catch_no_tokens_prop_drilling" 1
+expect_code_count \
+  "seeded violation corpus" \
+  "catch_no_presentation_repository_reach" \
+  1
+expect_code_count "seeded violation corpus" "catch_no_legacy_spacing_token" 1
+expect_code_count \
+  "seeded violation corpus" \
+  "catch_no_low_level_typography_role" \
+  1
+expect_code_count \
+  "seeded violation corpus" \
+  "catch_screen_gutter_uses_semantic_insets" \
+  1
+expect_code_count "seeded violation corpus" "catch_text_requires_style" 1
+expect_code_count \
+  "seeded violation corpus" \
+  "catch_top_bar_requires_action_group" \
+  1
+expect_code_count "seeded violation corpus" "catch_shell_owns_tab_scaffold" 1
+expect_code_count \
+  "seeded violation corpus" \
+  "catch_field_requires_section_context" \
+  1
+expect_code_count \
+  "seeded violation corpus" \
+  "catch_section_list_requires_empty_policy" \
+  1
+expect_code_count \
+  "seeded violation corpus" \
+  "catch_async_requires_state_surface" \
+  1
+expect_code_count \
+  "seeded violation corpus" \
+  "catch_async_requires_retry" \
+  1
+expect_code_count \
+  "seeded violation corpus" \
+  "catch_error_state_requires_action" \
+  1
+expect_code_count "seeded violation corpus" "catch_no_raw_error_surface" 1
+expect_code_count \
+  "seeded violation corpus" \
+  "catch_no_shell_local_measurement" \
+  1
+
+run_analyze_probe "generated steering corpus" <"$generated_probe_path"
+while IFS=$'\t' read -r code minimum; do
+  expect_code_count "generated steering corpus" "$code" "$minimum"
+done < <(
+  node -e '
+    const expectations = require(`./tool/design/generated/enforcement_expectations.json`);
+    for (const [code, minimum] of Object.entries(expectations.generatedProbeMinimums)) {
+      process.stdout.write(`${code}\t${minimum}\n`);
+    }
+  '
+)
 
 run_analyze_probe "transparent and token-backed clean cases" <<'DART'
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
-
-const _probeSemanticBodyPadding = EdgeInsets.fromLTRB(
-  CatchSpacing.s5,
-  CatchSpacing.s4,
-  CatchSpacing.s5,
-  CatchSpacing.s6,
-);
 
 class CatchUiLintProbe extends StatelessWidget {
   const CatchUiLintProbe({super.key});
@@ -250,10 +388,6 @@ class CatchUiLintProbe extends StatelessWidget {
           padding: CatchInsets.pageBody,
           child: SizedBox.shrink(),
         ),
-        Padding(
-          padding: _probeSemanticBodyPadding,
-          child: SizedBox.shrink(),
-        ),
         CatchSurface.tinted(child: SizedBox.shrink()),
       ],
     );
@@ -264,21 +398,6 @@ DART
 if [[ $probe_status -ne 0 || "$probe_output" == *"catch_"* ]]; then
   echo "Catch UI lint clean probe emitted an unexpected diagnostic." >&2
   echo "$probe_output" >&2
-  exit 1
-fi
-
-screen_gutter_output="$(
-  rg -n -U \
-    '(?s)const\s+[A-Za-z0-9_]*(?:Body|Page|Screen)[A-Za-z0-9_]*Padding\s*=\s*EdgeInsets\.fromLTRB\(\s*CatchSpacing\.(?:s5|screenPx),.*?CatchSpacing\.(?:s5|screenPx),' \
-    lib \
-    --glob '**/presentation/**/*.dart' \
-    2>/dev/null || true
-)"
-
-if [[ -n "$screen_gutter_output" ]]; then
-  echo "catch_screen_gutter_uses_semantic_insets found presentation screen/body padding constants that rebuild the page gutter." >&2
-  echo "Use CatchInsets.pageBody* / CatchInsets.form* roles or CatchScreenBody instead of feature-local page gutter constants." >&2
-  echo "$screen_gutter_output" >&2
   exit 1
 fi
 
@@ -315,6 +434,7 @@ expect_code_count \
   1
 
 run_analyze_probe "mutation pending per-mutation clean case" <<'DART'
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -336,10 +456,15 @@ class CatchUiMutationProbe extends ConsumerWidget {
     final deleteMutation = ref.watch(
       EventDetailMutationProbeController.deleteMutation,
     );
-    if (saveMutation.hasError) return const Text('Failed');
+    if (saveMutation.hasError) {
+      return Text('Failed', style: CatchTextStyles.supporting(context));
+    }
     return CatchMutationErrorListener(
       mutation: EventDetailMutationProbeController.deleteMutation,
-      child: Text(deleteMutation.isPending ? 'Deleting' : 'Ready'),
+      child: Text(
+        deleteMutation.isPending ? 'Deleting' : 'Ready',
+        style: CatchTextStyles.supporting(context),
+      ),
     );
   }
 }
@@ -350,3 +475,31 @@ if [[ $probe_status -ne 0 || "$probe_output" == *"catch_"* ]]; then
   echo "$probe_output" >&2
   exit 1
 fi
+
+probe_path="$probe_root/test/catch_ui_test_lint_probe_test.dart"
+run_analyze_probe "test reliability seeded violations" <<'DART'
+import 'package:flutter_test/flutter_test.dart';
+
+Future<void> main() async {
+  testWidgets('seed test reliability diagnostics', (tester) async {
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 200));
+    await tester.tap(find.text('Save'), warnIfMissed: false);
+    find.text('Save').first;
+    await Future<void>.delayed(Duration.zero);
+  });
+}
+DART
+
+expect_code_count \
+  "test reliability seeded violations" \
+  "catch_no_brittle_pump_timing" \
+  3
+expect_code_count \
+  "test reliability seeded violations" \
+  "catch_no_positional_widget_finder" \
+  1
+expect_code_count \
+  "test reliability seeded violations" \
+  "catch_no_async_flush_hack" \
+  1

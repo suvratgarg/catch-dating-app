@@ -8,7 +8,7 @@ vi.mock("firebase/functions", () => ({httpsCallable}));
 vi.mock("./firebaseFunctions", () => ({functions}));
 
 import {loadHostAnalytics, loadOverview} from "./adminApi";
-import {sampleHostAnalytics} from "./sampleData";
+import {sampleHostAnalytics, sampleOverview} from "./sampleData";
 
 describe("adminApi live callable boundary", () => {
   beforeEach(() => {
@@ -16,12 +16,9 @@ describe("adminApi live callable boundary", () => {
   });
 
   it("maps overview reads to the expected callable and payload", async () => {
-    callable.mockResolvedValue({data: {generatedAt: "2026-07-12", metrics: []}});
+    callable.mockResolvedValue({data: sampleOverview});
 
-    await expect(loadOverview()).resolves.toEqual({
-      generatedAt: "2026-07-12",
-      metrics: [],
-    });
+    await expect(loadOverview()).resolves.toEqual(sampleOverview);
     expect(httpsCallable).toHaveBeenCalledWith(functions, "adminGetOverview");
     expect(callable).toHaveBeenCalledWith({});
   });

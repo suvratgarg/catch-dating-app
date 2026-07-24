@@ -8,8 +8,15 @@ import {
   readWebsiteMeta,
   validateWebsiteMeta,
 } from "./website_meta_contract.mjs";
+import {inMarket} from "../../website/src/content/markets/in.ts";
 
 const args = parseArgs(process.argv.slice(2));
+const liveMarketKeys = new Set(
+  inMarket.cities
+    .filter((city) => city.status === "live")
+    .flatMap((city) => [city.slug, city.label, ...city.aliases])
+    .map(normalizeMarketKey)
+);
 
 if (args.help) {
   printHelp();
@@ -142,9 +149,13 @@ function validateRoutes(routes, storyDeclarations) {
     "host",
     "organizer_search",
     "claim",
+    "privacy",
+    "terms",
+    "help",
     "not_found",
     "organizer_listing_canonical",
     "organizer_listing_legacy",
+    "event_detail_canonical",
   ]);
 
   for (const route of routes) {
@@ -177,8 +188,18 @@ function validateRoute(route, storyDeclarations) {
   const label = route.id ?? "<missing-id>";
   const allowedKinds = new Set(["static", "clientDynamic", "generatedFamily"]);
   const allowedOutputs = new Set(["postbuild", "generated-postbuild", "spa-rewrite"]);
-  const allowedIndexing = new Set(["index", "noindex-follow", "listing-controlled"]);
-  const allowedSitemap = new Set(["included", "excluded", "listing-controlled"]);
+  const allowedIndexing = new Set([
+    "index",
+    "noindex-follow",
+    "listing-controlled",
+    "event-controlled",
+  ]);
+  const allowedSitemap = new Set([
+    "included",
+    "excluded",
+    "listing-controlled",
+    "event-controlled",
+  ]);
 
   if (!route.id) errors.push("route missing id.");
   if (!allowedKinds.has(route.kind)) errors.push(`${label}: invalid kind ${route.kind}.`);
@@ -249,7 +270,18 @@ function marketingNotFoundHostingErrors(config) {
 }
 
 function validatePageKey(route) {
-  const allowedPageKeys = new Set(["home", "host", "organizers", "listing", "claim", "not_found"]);
+  const allowedPageKeys = new Set([
+    "home",
+    "host",
+    "organizers",
+    "listing",
+    "event_detail",
+    "claim",
+    "privacy",
+    "terms",
+    "help",
+    "not_found",
+  ]);
   if (!allowedPageKeys.has(route.pageKey)) {
     errors.push(`${route.id}: invalid pageKey ${route.pageKey}.`);
     return;
@@ -260,10 +292,22 @@ function validatePageKey(route) {
     }
     return;
   }
+  if (route.pageKey === "event_detail") {
+    if (!appRoutingSource.includes("getEventDetailForPath")) {
+      errors.push(`${route.id}: App.tsx must resolve generated event routes first.`);
+    }
+    if (!appRoutingSource.includes("marketingRoutePaths.event_detail")) {
+      errors.push(`${route.id}: App.tsx must render the event detail route.`);
+    }
+    return;
+  }
 
   const routePath = route.path ?? route.pathPattern ?? "";
   const expectedChecks = {
     claim: "pathname.startsWith(\"/claim\")",
+    privacy: "pathname.startsWith(\"/privacy\")",
+    terms: "pathname.startsWith(\"/terms\")",
+    help: "pathname.startsWith(\"/help\")",
     host: "pathname.startsWith(\"/host\")",
     organizers: "pathname.startsWith(\"/organizers\")",
   };
@@ -407,6 +451,17 @@ function validateStaticOutput(route) {
         errors.push("organizer_listing_legacy: postbuild must force noindex, follow.");
       }
     }
+    if (route.id === "event_detail_canonical") {
+      if (!postbuildSource.includes("for (const event of publicEvents)")) {
+        errors.push("event_detail_canonical: postbuild must iterate publicEvents.");
+      }
+      if (!postbuildSource.includes("writeRoute(event.path")) {
+        errors.push("event_detail_canonical: postbuild must emit event.path.");
+      }
+      if (!postbuildSource.includes("buildEventStructuredData")) {
+        errors.push("event_detail_canonical: postbuild must emit Event structured data.");
+      }
+    }
   }
   if (route.staticOutput === "spa-rewrite" && route.sitemap !== "excluded") {
     errors.push(`${route.id}: SPA rewrite routes must be excluded from sitemap until static output exists.`);
@@ -495,6 +550,12 @@ function validateGeneratedListingFamilies(routes, listings) {
   const paths = new Set();
   for (const listing of listings) {
     if (!listing?.id) errors.push("host listing missing id.");
+    if (!listingMatchesLiveMarket(listing)) {
+      errors.push(
+        `${listing?.id ?? "unknown"}: organizer listing market ` +
+        `${listing?.citySlug ?? listing?.city ?? "missing"} is not live in the active market pack.`
+      );
+    }
     if (!listing?.path) {
       errors.push(`${listing?.id ?? "unknown"}: listing missing canonical path.`);
       continue;
@@ -520,6 +581,16 @@ function validateGeneratedListingFamilies(routes, listings) {
       paths.add(normalizedLegacyPath);
     }
   }
+}
+
+function normalizeMarketKey(value) {
+  return String(value ?? "").toLowerCase().replace(/[^a-z0-9]+/gu, "");
+}
+
+function listingMatchesLiveMarket(listing) {
+  return [listing?.citySlug, listing?.city]
+    .map(normalizeMarketKey)
+    .some((key) => key.length > 0 && liveMarketKeys.has(key));
 }
 
 function validateStoryRouteDeclarations(declarations, routeById) {
@@ -744,6 +815,8 @@ coverage declarations.
 }
 
 function runSelfTest() {
+  assert.equal(listingMatchesLiveMarket({city: "Indore", citySlug: "indore"}), true);
+  assert.equal(listingMatchesLiveMarket({city: "Delhi NCR", citySlug: "delhi-ncr"}), false);
   const storyPath = fromRepo("website/src/stories/Example.stories.tsx");
   const declarations = storyRouteDeclarations(`
 const searchStates = ["default", "filtered"] as const;
@@ -783,7 +856,16 @@ export const OrganizerSearch = {
   const validMeta = {
     $schema: "./meta.schema.json",
     routes: Object.fromEntries(
-      ["home", "host", "organizers", "claim", "not_found"].map((key) => [
+      [
+        "home",
+        "host",
+        "organizers",
+        "claim",
+        "privacy",
+        "terms",
+        "help",
+        "not_found",
+      ].map((key) => [
         key,
         {
           title: `${key} title`,
@@ -802,6 +884,24 @@ export const OrganizerSearch = {
         sourcesHeading: "Public sources",
         lastVerifiedPrefix: "Last verified",
         notRecorded: "not recorded",
+        homeBreadcrumb: "Catch",
+        organizersBreadcrumb: "Organizers",
+      },
+    },
+    event: {
+      titleTemplate: "{title} | {city} | Catch",
+      catchTwitterTemplate: "{title} by {organizer}. Booking stays in the Catch app.",
+      externalTwitterTemplate:
+        "{title} from {source}. Registration stays on the official source.",
+      staticLabels: {
+        eventEyebrow: "Event details",
+        hostedByPrefix: "Hosted by",
+        scheduleHeading: "Schedule and location",
+        locationLabel: "Location",
+        priceLabel: "Price",
+        sourceLabel: "Source",
+        reviewsHeading: "Event reviews",
+        lastReviewedPrefix: "Listing sources last reviewed",
         homeBreadcrumb: "Catch",
         organizersBreadcrumb: "Organizers",
       },

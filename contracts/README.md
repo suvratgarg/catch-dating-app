@@ -1,6 +1,6 @@
 ---
 doc_id: schema_contracts
-version: 0.2.9
+version: 0.2.10
 updated: 2026-07-14
 owner: data_contracts
 status: active
@@ -105,6 +105,8 @@ Schema:
 - `callables/`: callable Function request payload schemas.
 - `callable_responses/`: callable Function response payload schemas decoded by
   typed Flutter response objects.
+- `http/`: versioned request and response schemas for non-callable public HTTP
+  endpoints shared by browser clients and Functions.
 - `operations/`: portable run, work-item, receipt, decision, lease,
   publication-plan, learning, and enforced workflow-manifest schemas for
   durable business workflows. Run/work-item validators are generated into the
@@ -143,6 +145,8 @@ The current contract layer covers:
 - durable operations contracts with valid/invalid lifecycle fixtures;
 - callable request payloads for profile, event, club, review, safety, payment,
   and Places operations;
+- public Marketing waitlist and Host-application HTTP request/response
+  contracts, including generated website and Functions types;
 - profile patch payloads backed by typed Dart patch classes;
 - selected callable response payloads that the Flutter app decodes into typed
   client response objects;

@@ -1,10 +1,14 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {MemoryRouter} from "react-router";
+import {useRevealAnimations} from "../app/usePageLifecycle";
 import {ClaimPage} from "../features/claims/ClaimPage";
 import {emptyClaimRouteState} from "../features/claims/claimRouting";
 import {HomePage} from "../features/home/HomePage";
 import {HostPage} from "../features/host/HostPage";
+import {EventDetailPage} from "../features/events/EventDetailPage";
 import {NotFoundPage} from "../features/notFound/NotFoundPage";
+import {LegalPage} from "../features/legal/LegalPage";
+import {publishedLegalContent} from "../content/legal";
 import {hostListings} from "./fixtures/hostListings";
 import {HostListingPage} from "../features/organizers/HostListingPage";
 import {OrganizerSearchPage} from "../features/organizers/OrganizerSearchPage";
@@ -12,6 +16,11 @@ import type {HostListing} from "../features/organizers/types";
 import {WebsiteQueryProvider} from "../shared/query/queryClient";
 import {PageShell} from "../shared/site";
 import {captures} from "./fixtures/marketingCaptures";
+import {
+  catchEventDetailFixture,
+  externalEventDetailFixture,
+} from "./fixtures/eventDetails";
+import type {EventDetailRecord} from "../features/events/eventDetailModel";
 
 const generatedOrganizerListing = requireListing("afterfly");
 
@@ -155,6 +164,62 @@ export const NotFound: Story = {
   ),
 };
 
+export const Privacy: Story = {
+  name: "/privacy/",
+  parameters: {
+    catchRoute: {
+      id: "privacy",
+      path: "/privacy/",
+      reviewStates: ["published"],
+      stateCoverage: {storybook: ["published"], manual: []},
+    },
+    catchComponent: {
+      id: "route_legal",
+      routeIds: ["privacy", "terms", "help"],
+      states: ["privacy", "terms", "help"],
+    },
+  },
+  render: () => <LegalStoryPage pageKey="privacy" />,
+};
+
+export const Terms: Story = {
+  name: "/terms/",
+  parameters: {
+    catchRoute: {
+      id: "terms",
+      path: "/terms/",
+      reviewStates: ["published"],
+      stateCoverage: {storybook: ["published"], manual: []},
+    },
+  },
+  render: () => <LegalStoryPage pageKey="terms" />,
+};
+
+export const Help: Story = {
+  name: "/help/",
+  parameters: {
+    catchRoute: {
+      id: "help",
+      path: "/help/",
+      reviewStates: ["published"],
+      stateCoverage: {storybook: ["published"], manual: []},
+    },
+  },
+  render: () => <LegalStoryPage pageKey="help" />,
+};
+
+export const LegalDocumentShell: Story = {
+  name: "Legal document shell",
+  parameters: {
+    catchComponent: {
+      id: "shared_legal_document_shell",
+      routeIds: ["privacy", "terms", "help"],
+      states: ["document", "sections", "contact"],
+    },
+  },
+  render: () => <LegalStoryPage pageKey="privacy" />,
+};
+
 export const OrganizerSearch: Story = {
   name: "/organizers/",
   parameters: {
@@ -162,21 +227,21 @@ export const OrganizerSearch: Story = {
     catchRoute: {
       id: "organizer_search",
       path: "/organizers/",
-      reviewStates: ["default", "filtered", "empty-results", "saved-organizers"],
+      reviewStates: ["default", "filtered", "empty-results"],
       stateCoverage: {
         storybook: ["default"],
-        manual: ["filtered", "empty-results", "saved-organizers"],
+        manual: ["filtered", "empty-results"],
       },
     },
     catchComponent: {
       id: "route_organizer_search",
       routeIds: ["organizer_search"],
-      states: ["default", "filtered", "empty-results", "saved-organizers"],
+      states: ["default", "filtered", "empty-results"],
     },
   },
   render: () => (
     <MemoryRouter initialEntries={["/organizers/"]}>
-      <OrganizerSearchPage />
+      <OrganizerSearchPage listings={hostListings} />
     </MemoryRouter>
   ),
 };
@@ -219,10 +284,63 @@ export const OrganizerListing: Story = {
   ),
 };
 
+export const EventDetailCatch: Story = {
+  name: "/events/:eventId/ · Catch",
+  parameters: {
+    catchRoute: {
+      id: "event_detail_canonical",
+      path: catchEventDetailFixture.path,
+      reviewStates: [
+        "catch-native",
+        "external-source",
+        "event-reviews",
+        "missing-event",
+      ],
+      stateCoverage: {
+        storybook: ["catch-native", "external-source", "event-reviews"],
+        manual: ["missing-event"],
+      },
+    },
+    catchComponent: {
+      id: "route_event_detail",
+      routeIds: ["event_detail_canonical"],
+      states: [
+        "catch-native",
+        "external-source",
+        "event-reviews",
+        "desktop-ticket-rail",
+        "mobile-single-column",
+      ],
+    },
+  },
+  render: () => <EventDetailRouteStory event={catchEventDetailFixture} />,
+};
+
+export const EventDetailExternal: Story = {
+  name: "/events/:eventId/ · external",
+  render: () => <EventDetailRouteStory event={externalEventDetailFixture} />,
+};
+
+function EventDetailRouteStory({event}: {event: EventDetailRecord}) {
+  useRevealAnimations("event_detail", event.eventId);
+  return <EventDetailPage event={event} />;
+}
+
 function requireListing(id: string): HostListing {
   const listing = hostListings.find((item) => item.id === id);
   if (!listing) {
     throw new Error(`Missing generated organizer listing fixture: ${id}`);
   }
   return listing;
+}
+
+function LegalStoryPage({pageKey}: {pageKey: "privacy" | "terms" | "help"}) {
+  return (
+    <PageShell pageClassName="legal-page">
+      <LegalPage
+        page={publishedLegalContent.pages[pageKey]}
+        effectiveDate={publishedLegalContent.effectiveDate}
+      />
+    </PageShell>
+  );
 }

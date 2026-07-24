@@ -316,7 +316,7 @@ class ClubMembershipDock extends ConsumerWidget {
       onSignIn: () => context.go(
         Uri(
           path: Routes.authScreen.path,
-          queryParameters: {'from': '/clubs/${club.id}'},
+          queryParameters: {'from': '/organizers/${club.id}'},
         ).toString(),
       ),
       onJoin: () => ClubMembershipController.joinMutation.run(

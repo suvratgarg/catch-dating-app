@@ -25,6 +25,8 @@ class ProfileInlineSingleChoiceEntryEditor<T extends Labelled>
     required this.values,
     required this.currentValue,
     required this.fieldName,
+    required this.contract,
+    required this.contractValue,
     required this.isExpanded,
     required this.onTap,
     required this.onSaved,
@@ -41,6 +43,8 @@ class ProfileInlineSingleChoiceEntryEditor<T extends Labelled>
   final List<T> values;
   final T? currentValue;
   final String fieldName;
+  final CatchContractFieldConstraints contract;
+  final String Function(T value) contractValue;
   final bool isExpanded;
   final bool isAddAffordance;
   final bool allowEmptySelection;
@@ -115,6 +119,8 @@ class _ProfileInlineSingleChoiceEntryEditorState<T extends Labelled>
     return CatchField.choices<T>(
       icon: widget.icon,
       title: widget.label,
+      contract: widget.contract,
+      contractValue: widget.contractValue,
       emptyValueText: widget.emptyValueText,
       addable: widget.isAddAffordance,
       isOptional: widget.showOptionalLabel,
@@ -167,6 +173,8 @@ class ProfileInlineMultiChoiceEntryEditor<T extends Labelled>
     required this.values,
     required this.currentValues,
     required this.fieldName,
+    required this.contract,
+    required this.contractValue,
     required this.isExpanded,
     required this.onTap,
     required this.onSaved,
@@ -184,6 +192,8 @@ class ProfileInlineMultiChoiceEntryEditor<T extends Labelled>
   final List<T> values;
   final List<T> currentValues;
   final String fieldName;
+  final CatchContractFieldConstraints contract;
+  final String Function(T value) contractValue;
   final bool isExpanded;
   final bool isAddAffordance;
   final bool allowEmptySelection;
@@ -270,6 +280,8 @@ class _ProfileInlineMultiChoiceEntryEditorState<T extends Labelled>
     return CatchField.choices<T>(
       icon: widget.icon,
       title: widget.label,
+      contract: widget.contract,
+      contractValue: widget.contractValue,
       emptyValueText: widget.emptyValueText,
       addable: widget.isAddAffordance,
       isOptional: widget.showOptionalLabel,

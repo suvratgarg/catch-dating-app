@@ -5,8 +5,11 @@
   "description": "Public website analytics event for host-visible organizer metrics. The callable validates organizer scope and writes a raw, aggregate-safe event to BigQuery.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["clubId", "eventName", "pagePath"],
+  "required": ["organizerId", "eventName", "pagePath"],
   "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
     "clubId": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId"
     },

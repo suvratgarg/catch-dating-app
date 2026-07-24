@@ -3,8 +3,8 @@
   "generatedBy": "tool/ui_capture/check_route_inventory.mjs",
   "source": {
     "path": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "9d4b45fbe20875efa7b6d005178e44419ae0f148a1b488767bbc86df47cebfe7",
-    "routeContractSha256": "628a4ffff525f62fcdd8dee72ad212c5278e53f29d8351ebb2fdb8a49fff49cf",
+    "normalizedFileSha256": "5c710f94569d36a5ee88dabe8ae2487bf5b3a67d4bde28718cd9e230f070caf1",
+    "routeContractSha256": "11c1df5ff9e32b451baad7075a19d305ee06cd21a1c85a46827ffdb7e55b3161",
     "goRouteCount": 53,
     "shellBranchCount": 8,
     "enumRouteCount": 52,
@@ -79,14 +79,14 @@
     },
     {
       "id": "calendarEventDetailScreen",
-      "path": "/calendar/clubs/:clubId/events/:eventId",
+      "path": "/calendar/organizers/:clubId/events/:eventId",
       "pathParameters": [
         "clubId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/calendar/clubs/:clubId/events/:eventId",
+      "runtimePath": "/calendar/organizers/:clubId/events/:eventId",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.calendarEventDetailScreen.path",
       "runtimePathMatchesEnum": true,
@@ -106,14 +106,14 @@
     },
     {
       "id": "savedEventDetailScreen",
-      "path": "/saved-events/clubs/:clubId/events/:eventId",
+      "path": "/saved-events/organizers/:clubId/events/:eventId",
       "pathParameters": [
         "clubId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/saved-events/clubs/:clubId/events/:eventId",
+      "runtimePath": "/saved-events/organizers/:clubId/events/:eventId",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.savedEventDetailScreen.path",
       "runtimePathMatchesEnum": true,
@@ -133,14 +133,14 @@
     },
     {
       "id": "dashboardEventDetailScreen",
-      "path": "/dashboard/clubs/:clubId/events/:eventId",
+      "path": "/dashboard/organizers/:clubId/events/:eventId",
       "pathParameters": [
         "clubId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/dashboard/clubs/:clubId/events/:eventId",
+      "runtimePath": "/dashboard/organizers/:clubId/events/:eventId",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.dashboardEventDetailScreen.path",
       "runtimePathMatchesEnum": true,
@@ -186,11 +186,11 @@
     },
     {
       "id": "exploreScreen",
-      "path": "/clubs",
+      "path": "/organizers",
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
-      "runtimePath": "/clubs",
+      "runtimePath": "/organizers",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.exploreScreen.path",
       "runtimePathMatchesEnum": true,
@@ -198,11 +198,11 @@
     },
     {
       "id": "exploreMapScreen",
-      "path": "/clubs/map",
+      "path": "/organizers/map",
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
-      "runtimePath": "/clubs/map",
+      "runtimePath": "/organizers/map",
       "runtimeParentId": "exploreScreen",
       "runtimePathExpression": "'map'",
       "runtimePathMatchesEnum": true,
@@ -210,13 +210,13 @@
     },
     {
       "id": "clubDetailScreen",
-      "path": "/clubs/:clubId",
+      "path": "/organizers/:clubId",
       "pathParameters": [
         "clubId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/clubs/:clubId",
+      "runtimePath": "/organizers/:clubId",
       "runtimeParentId": "exploreScreen",
       "runtimePathExpression": "':clubId'",
       "runtimePathMatchesEnum": true,
@@ -224,14 +224,14 @@
     },
     {
       "id": "eventDetailScreen",
-      "path": "/clubs/:clubId/events/:eventId",
+      "path": "/organizers/:clubId/events/:eventId",
       "pathParameters": [
         "clubId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/clubs/:clubId/events/:eventId",
+      "runtimePath": "/organizers/:clubId/events/:eventId",
       "runtimeParentId": "clubDetailScreen",
       "runtimePathExpression": "'events/:eventId'",
       "runtimePathMatchesEnum": true,
@@ -239,14 +239,14 @@
     },
     {
       "id": "eventSuccessCompanionScreen",
-      "path": "/clubs/:clubId/events/:eventId/companion",
+      "path": "/organizers/:clubId/events/:eventId/companion",
       "pathParameters": [
         "clubId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/clubs/:clubId/events/:eventId/companion",
+      "runtimePath": "/organizers/:clubId/events/:eventId/companion",
       "runtimeParentId": "eventDetailScreen",
       "runtimePathExpression": "'companion'",
       "runtimePathMatchesEnum": true,
@@ -430,11 +430,11 @@
     },
     {
       "id": "hostClubsScreen",
-      "path": "/host/clubs",
+      "path": "/host/organizers",
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
-      "runtimePath": "/host/clubs",
+      "runtimePath": "/host/organizers",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostClubsScreen.path",
       "runtimePathMatchesEnum": true,
@@ -442,11 +442,11 @@
     },
     {
       "id": "hostClubEventDefaultsScreen",
-      "path": "/host/clubs/event-defaults",
+      "path": "/host/organizers/event-defaults",
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
-      "runtimePath": "/host/clubs/event-defaults",
+      "runtimePath": "/host/organizers/event-defaults",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostClubEventDefaultsScreen.path",
       "runtimePathMatchesEnum": true,
@@ -454,11 +454,11 @@
     },
     {
       "id": "hostClubLiveGuideScreen",
-      "path": "/host/clubs/live-guide",
+      "path": "/host/organizers/live-guide",
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
-      "runtimePath": "/host/clubs/live-guide",
+      "runtimePath": "/host/organizers/live-guide",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostClubLiveGuideScreen.path",
       "runtimePathMatchesEnum": true,
@@ -466,11 +466,11 @@
     },
     {
       "id": "hostClubTeamScreen",
-      "path": "/host/clubs/team",
+      "path": "/host/organizers/team",
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
-      "runtimePath": "/host/clubs/team",
+      "runtimePath": "/host/organizers/team",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostClubTeamScreen.path",
       "runtimePathMatchesEnum": true,
@@ -478,11 +478,11 @@
     },
     {
       "id": "hostClubPaymentsScreen",
-      "path": "/host/clubs/payments",
+      "path": "/host/organizers/payments",
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
-      "runtimePath": "/host/clubs/payments",
+      "runtimePath": "/host/organizers/payments",
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostClubPaymentsScreen.path",
       "runtimePathMatchesEnum": true,
@@ -490,13 +490,13 @@
     },
     {
       "id": "hostClubDetailScreen",
-      "path": "/host/clubs/:clubId",
+      "path": "/host/organizers/:clubId",
       "pathParameters": [
         "clubId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/clubs/:clubId",
+      "runtimePath": "/host/organizers/:clubId",
       "runtimeParentId": "hostClubsScreen",
       "runtimePathExpression": "':clubId'",
       "runtimePathMatchesEnum": true,
@@ -504,25 +504,25 @@
     },
     {
       "id": "hostCreateClubScreen",
-      "path": "/host/clubs/create-club",
+      "path": "/host/organizers/create-organizer",
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
-      "runtimePath": "/host/clubs/create-club",
+      "runtimePath": "/host/organizers/create-organizer",
       "runtimeParentId": "hostClubsScreen",
-      "runtimePathExpression": "'create-club'",
+      "runtimePathExpression": "'create-organizer'",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
     {
       "id": "hostEditClubScreen",
-      "path": "/host/clubs/:clubId/edit",
+      "path": "/host/organizers/:clubId/edit",
       "pathParameters": [
         "clubId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/clubs/:clubId/edit",
+      "runtimePath": "/host/organizers/:clubId/edit",
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'edit'",
       "runtimePathMatchesEnum": true,
@@ -530,13 +530,13 @@
     },
     {
       "id": "hostCreateEventScreen",
-      "path": "/host/clubs/:clubId/create-event",
+      "path": "/host/organizers/:clubId/create-event",
       "pathParameters": [
         "clubId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/clubs/:clubId/create-event",
+      "runtimePath": "/host/organizers/:clubId/create-event",
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'create-event'",
       "runtimePathMatchesEnum": true,
@@ -544,14 +544,14 @@
     },
     {
       "id": "hostAppEventDetailScreen",
-      "path": "/host/clubs/:clubId/events/:eventId",
+      "path": "/host/organizers/:clubId/events/:eventId",
       "pathParameters": [
         "clubId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/clubs/:clubId/events/:eventId",
+      "runtimePath": "/host/organizers/:clubId/events/:eventId",
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'events/:eventId'",
       "runtimePathMatchesEnum": true,
@@ -559,14 +559,14 @@
     },
     {
       "id": "hostAppEventManageScreen",
-      "path": "/host/clubs/:clubId/events/:eventId/manage",
+      "path": "/host/organizers/:clubId/events/:eventId/manage",
       "pathParameters": [
         "clubId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/clubs/:clubId/events/:eventId/manage",
+      "runtimePath": "/host/organizers/:clubId/events/:eventId/manage",
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'events/:eventId/manage'",
       "runtimePathMatchesEnum": true,
@@ -574,14 +574,14 @@
     },
     {
       "id": "hostAppEditEventScreen",
-      "path": "/host/clubs/:clubId/events/:eventId/edit",
+      "path": "/host/organizers/:clubId/events/:eventId/edit",
       "pathParameters": [
         "clubId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/clubs/:clubId/events/:eventId/edit",
+      "runtimePath": "/host/organizers/:clubId/events/:eventId/edit",
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'events/:eventId/edit'",
       "runtimePathMatchesEnum": true,
@@ -589,14 +589,14 @@
     },
     {
       "id": "hostAppAttendanceSheet",
-      "path": "/host/clubs/:clubId/events/:eventId/attendance",
+      "path": "/host/organizers/:clubId/events/:eventId/attendance",
       "pathParameters": [
         "clubId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/clubs/:clubId/events/:eventId/attendance",
+      "runtimePath": "/host/organizers/:clubId/events/:eventId/attendance",
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'events/:eventId/attendance'",
       "runtimePathMatchesEnum": true,
@@ -604,14 +604,14 @@
     },
     {
       "id": "hostAppEventSuccessScreen",
-      "path": "/host/clubs/:clubId/events/:eventId/success",
+      "path": "/host/organizers/:clubId/events/:eventId/success",
       "pathParameters": [
         "clubId",
         "eventId"
       ],
       "requiresFixture": true,
       "gated": false,
-      "runtimePath": "/host/clubs/:clubId/events/:eventId/success",
+      "runtimePath": "/host/organizers/:clubId/events/:eventId/success",
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'events/:eventId/success'",
       "runtimePathMatchesEnum": true,

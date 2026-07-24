@@ -6,7 +6,8 @@
  * Public website analytics event for host-visible organizer metrics. The callable validates organizer scope and writes a raw, aggregate-safe event to BigQuery.
  */
 export interface RecordOrganizerAnalyticsEventCallablePayload {
-  clubId: string;
+  organizerId: string;
+  clubId?: string;
   eventId?: string | null;
   eventName:
     | "listingView"

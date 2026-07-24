@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -114,6 +115,11 @@ class _HostEventParticipantsPanelState
 
     return CatchAsyncValueView<AttendanceSheetViewModel?>(
       value: attendanceAsync,
+      onRetry: () {
+        ref.invalidate(watchEventProvider(eventId));
+        ref.invalidate(watchEventParticipationsForEventProvider(eventId));
+        ref.invalidate(attendanceSheetViewModelProvider(eventId));
+      },
       loadingBuilder: (_) => const CatchSkeletonRows(
         count: 4,
         titleWidth: CatchLayout.skeletonTextSectionWidth,
@@ -444,11 +450,7 @@ class _HostEventParticipantsPanelState
 }
 
 CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
-  return value.when(
-    data: CatchAsyncState<T>.data,
-    loading: () => const CatchAsyncState.loading(),
-    error: (error, stackTrace) => CatchAsyncState<T>.error(error),
-  );
+  return catchAsyncStateFromAsyncValue(value);
 }
 
 Object _waitlistOfferMutationKey(String eventId, List<String> userIds) {
@@ -712,6 +714,9 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
                 CatchField.control(
                   title:
                       context.l10n.hostsHostEventAttendancePanelTitleCheckInQr,
+                  contractExemption:
+                      'Disclosure-only QR presentation; no editable value is '
+                      'submitted or persisted.',
                   body: context.l10n.hostsHostEventAttendancePanelBodyCheckInQr,
                   icon: CatchIcons.qrCode2Rounded,
                   control: HostEventCheckInQrPanel(event: viewModel.event),
@@ -1112,6 +1117,7 @@ class HostRosterSearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchSearchField(
       key: ValueKey('hostRosterSearch-$label'),
+      contract: CatchContractConstraints.mobileFormStateHostRosterSearchQuery,
       value: value,
       placeholder: label,
       semanticLabel: label,
@@ -1164,6 +1170,9 @@ class HostRosterFilterHeader extends StatelessWidget {
           if (canFilter) ...[
             gapH12,
             CatchOptionGroup<HostRosterFilter>(
+              contract:
+                  CatchContractConstraints.mobileFormStateHostRosterFilter,
+              contractValue: (filter) => filter.name,
               options: [
                 for (final spec in filters)
                   CatchOption(value: spec.filter, label: spec.label),

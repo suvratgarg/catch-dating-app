@@ -29,6 +29,8 @@ import type {
 import {
   AdminAssignSafetyTriageItemPayload,
   AdminAssignSafetyTriageItemResponse,
+  AdminListActionExecutionsPayload,
+  AdminListActionExecutionsResponse,
   AdminCreateMarketingContentDraftPayload,
   AdminCreateMarketingContentDraftResponse,
   AdminGetAdminUserRolesPayload,
@@ -105,6 +107,67 @@ import {
 } from "../types/adminTypes";
 
 const sampleGeneratedAt = "2026-06-25T08:30:00.000Z";
+const sampleActionExecutions: AdminListActionExecutionsResponse = {
+  schemaVersion: 1,
+  generatedAt: sampleGeneratedAt,
+  rows: [
+    {
+      schemaVersion: 1,
+      executionId: "44ee2154-f136-4ff0-b903-7284732bb197",
+      actionId: "events.list",
+      callable: "adminListEventDetails",
+      actorUid: "agent-release-audit",
+      actorRoles: ["admin"],
+      status: "succeeded",
+      requestHash: "a".repeat(64),
+      responseHash: "b".repeat(64),
+      target: null,
+      errorCode: null,
+      errorMessage: null,
+      cliVersion: "1.0.0",
+      startedAt: "2026-06-25T08:29:42.000Z",
+      finishedAt: "2026-06-25T08:29:43.000Z",
+      updatedAt: "2026-06-25T08:29:43.000Z",
+    },
+    {
+      schemaVersion: 1,
+      executionId: "4e480261-b750-4519-89f5-e8c75976aad8",
+      actionId: "organizers.update",
+      callable: "adminUpdateOrganizerDetails",
+      actorUid: "agent-organizer-review",
+      actorRoles: ["support"],
+      status: "started",
+      requestHash: "c".repeat(64),
+      responseHash: null,
+      target: "afterfly",
+      errorCode: null,
+      errorMessage: null,
+      cliVersion: "1.0.0",
+      startedAt: "2026-06-25T08:27:10.000Z",
+      finishedAt: null,
+      updatedAt: "2026-06-25T08:27:10.000Z",
+    },
+    {
+      schemaVersion: 1,
+      executionId: "d84258b1-a59e-4a03-9001-ab1cfd94f189",
+      actionId: "access.decide",
+      callable: "adminDecideAccessApplication",
+      actorUid: "agent-access-review",
+      actorRoles: ["support"],
+      status: "failed",
+      requestHash: "d".repeat(64),
+      responseHash: null,
+      target: "sample-applicant",
+      errorCode: "failed-precondition",
+      errorMessage: "Application state changed after the review was prepared.",
+      cliVersion: "1.0.0",
+      startedAt: "2026-06-25T08:20:00.000Z",
+      finishedAt: "2026-06-25T08:20:01.000Z",
+      updatedAt: "2026-06-25T08:20:01.000Z",
+    },
+  ],
+  nextCursor: null,
+};
 
 function shouldValidateAdminCallableResponses() {
   return import.meta.env.DEV ||
@@ -709,7 +772,12 @@ function sampleSafetyEvidence({
       sampleUserPath(secondaryUserId), false),
     safetyEvidence("Event", eventId, eventId ? `events/${eventId}` : null,
       false),
-    safetyEvidence("Club", clubId, clubId ? `clubs/${clubId}` : null, false),
+    safetyEvidence(
+      "Organizer",
+      clubId,
+      clubId ? `organizers/${clubId}` : null,
+      false
+    ),
     safetyEvidence("Source", source, null, false),
     safetyEvidence("Context", contextId, contextId, false),
     safetyEvidence("Queue detail", `${title} - ${detail}`, null, true),
@@ -811,6 +879,25 @@ export async function listIntakeOperations(
     AdminListIntakeOperationsPayload,
     AdminListIntakeOperationsResponse
   >(functions, "adminListIntakeOperations");
+  const result = await callable(payload);
+  return result.data;
+}
+
+export async function listActionExecutions(
+  payload: AdminListActionExecutionsPayload = {}
+): Promise<AdminListActionExecutionsResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 140));
+    return {
+      ...sampleActionExecutions,
+      rows: sampleActionExecutions.rows.slice(0, payload.limit ?? 50),
+    };
+  }
+
+  const callable = httpsCallable<
+    AdminListActionExecutionsPayload,
+    AdminListActionExecutionsResponse
+  >(functions, "adminListActionExecutions");
   const result = await callable(payload);
   return result.data;
 }
@@ -1429,11 +1516,14 @@ export async function loadClubDetails(
   }
 
   const callable = httpsCallable<
-    AdminGetClubDetailsPayload,
-    AdminGetClubDetailsResponse
-  >(functions, "adminGetClubDetails");
-  const result = await callable(payload);
-  return result.data;
+    {organizerId: string},
+    {organizer: Omit<AdminGetClubDetailsResponse["club"], "clubId"> & {
+      organizerId: string;
+    }}
+  >(functions, "adminGetOrganizerDetails");
+  const result = await callable({organizerId: payload.clubId});
+  const {organizerId, ...organizer} = result.data.organizer;
+  return {club: {...organizer, clubId: organizerId}};
 }
 
 export async function listClubDetails(
@@ -1454,10 +1544,19 @@ export async function listClubDetails(
 
   const callable = httpsCallable<
     AdminListClubDetailsPayload,
-    AdminListClubDetailsResponse
-  >(functions, "adminListClubDetails");
+    {
+      generatedAt: string;
+      rows: Array<Omit<AdminClubListRow, "clubId"> & {organizerId: string}>;
+    }
+  >(functions, "adminListOrganizerDetails");
   const result = await callable(payload);
-  return result.data;
+  return {
+    generatedAt: result.data.generatedAt,
+    rows: result.data.rows.map(({organizerId, ...row}) => ({
+      ...row,
+      clubId: organizerId,
+    })),
+  };
 }
 
 export async function saveClubDetails(
@@ -1474,11 +1573,15 @@ export async function saveClubDetails(
   }
 
   const callable = httpsCallable<
-    AdminUpdateClubDetailsPayload,
-    AdminUpdateClubDetailsResponse
-  >(functions, "adminUpdateClubDetails");
-  const result = await callable(payload);
-  return result.data;
+    Omit<AdminUpdateClubDetailsPayload, "clubId"> & {organizerId: string},
+    {organizerId: string; updatedFieldCount: number}
+  >(functions, "adminUpdateOrganizerDetails");
+  const {clubId, ...fields} = payload;
+  const result = await callable({...fields, organizerId: clubId});
+  return {
+    clubId: result.data.organizerId,
+    updatedFieldCount: result.data.updatedFieldCount,
+  };
 }
 
 export async function loadEventDetails(
@@ -1641,6 +1744,8 @@ function sampleClubListRow(club: AdminGetClubDetailsResponse["club"]):
   return {
     clubId: club.clubId,
     name: club.name,
+    organizerType: club.organizerType,
+    publicCategoryLabel: club.publicCategoryLabel,
     displayCategory: club.displayCategory,
     cityName: club.cityName ?? club.area,
     citySlug: club.location ?? club.publicPage.citySlug,

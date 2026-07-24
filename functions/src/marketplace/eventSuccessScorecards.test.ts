@@ -60,6 +60,7 @@ test("buildEventSuccessScorecard computes event aggregates", () => {
   assert.deepEqual(scorecard, {
     eventId: "event-1",
     clubId: "club-1",
+    organizerId: "club-1",
     bookedCount: 10,
     checkedInCount: 8,
     feedbackCount: 2,
@@ -327,6 +328,7 @@ test(
     assert.deepEqual(writes["eventSuccessScorecards/event-1"], {
       eventId: "event-1",
       clubId: "club-1",
+      organizerId: "club-1",
       bookedCount: 4,
       checkedInCount: 3,
       feedbackCount: 0,

@@ -103,6 +103,6 @@ export const OrganizerResultsEmpty: Story = {
 };
 
 function OrganizerSearchHeroFrame() {
-  const controller = useOrganizerDirectoryController();
+  const controller = useOrganizerDirectoryController(hostListings);
   return <OrganizerSearchHeroSection controller={controller} />;
 }

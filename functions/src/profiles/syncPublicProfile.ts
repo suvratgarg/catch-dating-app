@@ -130,13 +130,24 @@ export async function syncHostedClubHostProfile(
   deps: SyncPublicProfileDeps = defaultDeps
 ): Promise<void> {
   const db = deps.firestore();
-  const [legacyHostedSnap, hostedByProjectionSnap] = await Promise.all([
+  const [
+    canonicalOwnerSnap,
+    canonicalTeamSnap,
+    legacyHostedSnap,
+    legacyHostedByProjectionSnap,
+  ] = await Promise.all([
+    db.collection("organizers").where("ownerUserId", "==", userId).get(),
+    db.collection("organizers")
+      .where("hostUserIds", "array-contains", userId)
+      .get(),
     db.collection("clubs").where("hostUserId", "==", userId).get(),
     db.collection("clubs").where("hostUserIds", "array-contains", userId).get(),
   ]);
   const docsByPath = new Map<string, FirebaseFirestore.QueryDocumentSnapshot>();
+  for (const doc of canonicalOwnerSnap.docs) docsByPath.set(doc.ref.path, doc);
+  for (const doc of canonicalTeamSnap.docs) docsByPath.set(doc.ref.path, doc);
   for (const doc of legacyHostedSnap.docs) docsByPath.set(doc.ref.path, doc);
-  for (const doc of hostedByProjectionSnap.docs) {
+  for (const doc of legacyHostedByProjectionSnap.docs) {
     docsByPath.set(doc.ref.path, doc);
   }
   if (docsByPath.size === 0) return;

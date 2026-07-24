@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.4.41
-updated: 2026-07-19
+version: 1.5.13
+updated: 2026-07-24
 owner: recursive_audit_loop
 status: active
 ---
@@ -35,7 +35,7 @@ This spec consolidates and normalizes guidance from:
   widget catalog, and private-helper remediation.
 - `docs/audit_registry/rules.json`: active enforceable rules such as
   `ASYNC-UI-001`, `CONTROLLER-BOUNDARY-001`, `PROVIDER-SEAM-001`,
-  `ERROR-UI-001`, `MUTATION-ERROR-SURFACE-001`,
+  `ERROR-UI-001`, `MUTATION-ERROR-SURFACE-001`, `PENDING-SNAPSHOT-001`,
   `EXTERNAL-SIDE-EFFECT-001`, `UI-LINT-001`, and
   `WIDGET-CATALOG-001`.
 
@@ -43,6 +43,29 @@ This spec consolidates and normalizes guidance from:
 
 This section is intentionally explicit so architecture decisions stay in one
 place.
+
+### Organizer Domain Cutover
+
+The consumer and Hosts apps treat `Organizer` as the product entity and `club`
+as one organizer subtype. Primary repository reads use `organizers`,
+`organizerFollows`, and organizer-named callables; events carry
+`organizerId`; organizer media uploads use `organizers/{id}`; public/detail and
+Hosts routes use `/organizers` and `/host/organizers`. `/host/clubs` is a
+redirect-only compatibility route. Current Flutter repositories never fall
+back to the legacy `clubs` collection; a canonical read failure remains visible
+and recoverable through the shared async error policy.
+
+The Hosts owner can edit the required `organizerType` field using the closed
+taxonomy `club`, `community`, `individual`, `eventProducer`, `venue`, and
+`brand`. Managers do not own this classification change. Generic visible copy
+must say organizer/follow rather than club/join; “Club” remains valid only as
+the label for the `club` subtype or as specific real-world content.
+
+`lib/organizers/` is the canonical import surface. Existing `Club` Dart model,
+repository, provider, and `lib/clubs/` filenames are transitional aliases for
+binary/source compatibility and may not justify new club-specific persistence,
+routes, or copy. Their removal follows the remote parity and released-client
+window in `docs/migrations/clubs_to_organizers.md`.
 
 1. Keep the canonical feature folder shape as `domain`, `data`, and
    `presentation`. Do not rename `data` to `repositories`.
@@ -140,6 +163,11 @@ display adapters by naming convention. They may depend on domain/core/value
 types and `CatchAsyncState`, but they must not import Riverpod, declare
 providers, or call `ref.watch/read/listen`; provider-owned composition belongs
 in a neighboring `_view_model.dart`, `_controller.dart`, or route screen.
+When a route edge translates Riverpod `AsyncValue` into `CatchAsyncState`, it
+must use `catchAsyncStateFromAsyncValue` from
+`lib/core/presentation/catch_async_value_adapter.dart`. That adapter gives a
+known error precedence over refresh loading, then preserves credible data, and
+uses loading only when neither exists.
 
 Allowed exceptions:
 
@@ -150,6 +178,24 @@ Allowed exceptions:
 - `lib/firebase_options_*.dart` and generated config files.
 - Intentional in-development feature folders documented by audit rules, such
   as `event_policies` and `event_success`.
+
+### Exhibit ARCH-ROUTER-LIFECYCLE-001: App Router And Integration-Test Lifecycle
+
+`goRouterProvider` owns both its `GoRouter` disposal and a fresh set of
+`GlobalKey<NavigatorState>` instances for that provider-container lifecycle.
+Navigator keys must not be file-level singletons: a disposed app/test container
+must be able to mount a new router without retaining navigation state.
+
+App-shell integration suites use keyed `ProviderScope` roots, bounded frame
+advancement, and deterministic repository/provider overrides. They run through
+the wrappers in `test/integration/` for the complete headless CI pass; the
+original `integration_test/` files provide a bounded hosted native smoke and
+remain the explicit entrypoints for a full selected-device pass. Do not use
+`pumpAndSettle` or process event-queue drains while the mounted app owns timers.
+Do not add an asynchronous localization delegate when the requested behavior is
+already the component's nonlocalized fallback.
+
+<!-- exhibit-freshness: ARCH-ROUTER-LIFECYCLE-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
 
 Do not create parallel top-level folders such as `services`, `repositories`,
 `view_models`, or `widgets` for feature-owned code. If code is genuinely shared,
@@ -211,8 +257,8 @@ Explore social proof must not create profile reads per event row. The discovery
 ticket may render `signedUpCount` through veiled activity avatars using the
 shared Event Detail privacy contract. Identified people, mutuals, or Cross Paths
 require an explicit consent-safe relationship source and batched provider seam;
-without one, keep the proposal retired. Club cards may reuse already-loaded
-club host and aggregate rating data through shared club identity atoms.
+without one, keep the proposal retired. Organizer cards may reuse already-loaded
+organizer-manager and aggregate rating data through shared identity atoms.
 
 ## Dependency Direction
 
@@ -680,7 +726,9 @@ node tool/design/check_component_contracts.mjs
 Catch-owned UI rules use the local analyzer plugin package
 `packages/catch_ui_lints`. Do not add new `custom_lint` rules. Deterministic
 UI invariants should be implemented as `analysis_server_plugin` diagnostics so
-the IDE, `dart analyze`, and `flutter analyze` see the same signal.
+the IDE and repository-root `dart analyze` can surface the same signal. In the
+current toolchain, `flutter analyze` and `dart analyze lib` do not load the
+Catch plugin; they remain useful generic checks but are not Catch lint proof.
 
 The current lint scope is all handwritten `lib/**` Dart except
 `lib/core/theme/**`, generated code, and schema-generated contracts. Theme files
@@ -696,18 +744,40 @@ design constants/icon source/icon size/alpha/shadow/motion/breakpoint/surface
 shell/stroke/asset path, icon-button tooltip requirements, allow-debt blocking,
 and widget-returning method blocking.
 
+Placement rules additionally cover top-bar action ownership, shell-owned tab
+scaffolds, field/section context, explicit collection empty-state policy,
+AsyncValue loading/error coverage, raw error surfaces, and feature-local shell
+measurement. These rules begin as INFO findings behind a decrease-only drift
+ratchet. `CatchSectionList` makes the empty-state decision explicit in its API:
+callers provide `emptyBuilder` or name the deliberate
+`emptyStateOmitted: true` opt-out.
+
+Cross-file rules use
+`tool/architecture/check_ui_composition_contracts.dart`, which resolves every
+registered source before checking its symbol, state policy, top-bar contract,
+and shell-owned Scaffold boundary. Component enforcement metadata generates
+the plugin steering tables and probe corpus; the bidirectional coverage gate
+requires every primitive to have enforcement or an unexpired waiver and every
+implemented `catch_*` code to have a catalog owner.
+
 Verification commands:
 
 ```sh
 bash tool/check_catch_ui_lints.sh
-bash tool/check_catch_ui_lint_drift.sh --count
+bash tool/check_catch_ui_lint_drift.sh --check
 bash tool/check_catch_ui_lint_drift.sh --all --json /private/tmp/catch-ui-lint-drift.json
+node tool/design/build_lint_enforcement_tables.mjs --check
+node tool/design/check_component_enforcement_coverage.mjs
+dart run tool/architecture/check_ui_composition_contracts.dart --check
 bash tool/check_sizing.sh --count
 bash tool/check_ui_local_constant_wrappers.sh --summary
 bash tool/check_ui_system_raw_values.sh --count
 bash tool/check_ui_allow_debt.sh --summary
 flutter analyze --no-fatal-infos
 ```
+
+The final command is intentionally listed as the generic analyzer complement,
+not as proof that the Catch analyzer plugin loaded.
 
 ## Async State Boundary Taxonomy
 
@@ -732,6 +802,22 @@ Use `CatchAsyncValueView` for simple body screens with one async value.
 
 Use `CatchAsyncValueSliver` for simple sliver surfaces.
 
+Both primitives apply `InitialLoadPolicy.standard` (12 seconds) to the first
+user-visible resolution. When the deadline expires, the skeleton becomes a
+branded timeout state. Every presentation call site must supply `onRetry`; the
+`catch_async_requires_retry` analyzer diagnostic enforces that contract. The
+deadline is a presentation/provider-boundary policy only: never apply an idle
+timeout to a long-lived Firestore stream after its first value.
+
+Every full-screen or sliver error must also leave the user a truthful next
+step. Use `onRetry` when the failed operation is safe to rerun. For terminal
+route conditions such as a deleted resource, invalid route argument, or lost
+authorization, supply `secondaryAction: CatchErrorBackAction()` (or another
+explicit destination action) instead. Inline errors may inherit recovery from
+their surrounding section. The `catch_error_state_requires_action` analyzer
+diagnostic rejects actionless full-screen and sliver error surfaces in feature
+presentation code.
+
 Use a feature-owned typed UI state when a screen has richer behavior, such as:
 
 - partial secondary failures;
@@ -747,6 +833,15 @@ The typed state should still expose explicit loading/error/data semantics. Do
 not hide `AsyncError` by calling `requireValue` or by converting failures into
 empty states.
 
+When one screen composes a secondary async dependency, loading, failure,
+resolved absence, and resolved partial data remain separate product truths.
+Translate the dependency to a typed state before applying fallbacks; never use
+`async.asData?.value ?? emptyValue` when that would make an unresolved or failed
+lookup look like a successful empty result. Optional enrichment may keep the
+primary content alive with a section skeleton or inline retry, while
+comprehension-critical enrichment may gate its section, but only a successfully
+resolved missing record may use missing-resource copy or a domain fallback.
+
 ## Error Handling Contract
 
 This section is the current error architecture contract. Historical migration
@@ -761,7 +856,10 @@ delivery channels:
 - `CatchErrorState` owns app-facing branded error content through one resolved
   descriptor and one shared body renderer.
 - `CatchErrorScaffold`, `CatchSliverErrorState`, and `CatchInlineErrorState`
-  are placement adapters for root, sliver, and section errors.
+  are placement adapters for root, sliver, and section errors. Every adapter
+  supports the same primary retry and optional secondary-action contract.
+- `CatchErrorBackAction` is the canonical route-exit action when retry would
+  be dishonest or impossible.
 - `CatchErrorBanner` is the persistent inline mutation/form error channel.
 - `CatchMutationErrorBanner` is the persistent Riverpod mutation adapter.
 - `CatchMutationErrorListener` and `CatchMutationErrorListeners` are transient
@@ -772,6 +870,10 @@ delivery channels:
 
 Do not reintroduce `CatchErrorText`, raw `Center(Text(error.toString()))`,
 raw vendor messages, or bespoke error cards that discard retry/error context.
+An explicit caller retry callback is authoritative and must not be suppressed
+by exception metadata. Firestore `permission-denied` is an operational backend
+failure unless a domain/callable boundary has explicitly classified it as a
+user authorization decision.
 
 ### Failure Channels
 
@@ -994,6 +1096,13 @@ Use stable, low-cardinality keys: `app_env`, `app_version`, platform, Firebase
 project alias, `error_family`, stable code, severity, retryable, expected,
 service, feature, action, resource, and presentation context. Do not log PII.
 
+`ErrorLogger` owns a replaceable console sink. Production construction keeps the
+normal debug console and Crashlytics path. Expected-error tests and deterministic
+captures may use `ErrorLogger.silent(...)` or inject a recording `consoleSink`
+so asserted failures do not flood the runner with stack traces. Silencing the
+console must never disable an explicitly supplied crash reporter or turn an
+unexpected production failure into a swallowed error.
+
 ### Privacy And Safety
 
 - Never show raw `FirebaseException.message`, stack traces, callable details, or
@@ -1090,6 +1199,109 @@ rendered multiple times on one surface must key mutation state per target with
 equality, not concatenated strings. Use
 `lib/hosts/presentation/host_event_booking_controller.dart` as the reference
 implementation.
+
+### Exhibit ARCH-PENDING-SNAPSHOT-001: Pending Request Snapshot Integrity
+
+<!-- exhibit-freshness: ARCH-PENDING-SNAPSHOT-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+
+Reference files:
+
+- `lib/auth/presentation/auth_controller.dart`
+- `lib/auth/presentation/auth_presentation_state.dart`
+- `lib/auth/presentation/phone_page.dart`
+- `test/auth/presentation/auth_controller_test.dart`
+- `test/auth/presentation/auth_screen_test.dart`
+
+An in-flight request owns the exact input snapshot that was submitted. A
+loading button is feedback, not request integrity. Every control that can
+change, dismiss, invalidate, or overlap that snapshot must follow one explicit
+policy until the request settles:
+
+| Policy | Product behavior | Required proof |
+|---|---|---|
+| Frozen snapshot | Disable request-defining fields, conflicting actions, mutation-reset callbacks, and unsafe route exits. This is the default for one form submission or route-level action. | Widget or integration coverage proves the controls cannot change the request and a duplicate trigger does not start a second operation. |
+| Versioned snapshot | Keep editing available, but attach an immutable generation/version to the submitted request and ignore or cancel stale results. The UI must explain whether edits are queued or belong to a later submit. | Controller tests prove stale success and failure cannot overwrite the current draft or advance the current flow. |
+| Independently keyed concurrency | Permit parallel work only when each operation has a distinct typed scope key and its own pending/error surface. | Tests prove one key cannot disable, overwrite, clear, or surface failure for a sibling key. |
+
+Do not let an input callback call `Mutation.reset` while its operation is
+pending. A controller-level in-flight future or idempotency key must
+deduplicate duplicate dispatches as defense in depth; disabling the widget
+alone is insufficient because keyboard submission, delayed callbacks, and
+programmatic callers can bypass it. Flow reset or cancellation must invalidate
+the current generation so late external callbacks become no-ops.
+
+Phone Authentication is the reference frozen-snapshot implementation. The
+phone field and country selector derive their enabled state from the send
+mutation, while the controller returns the same future for duplicate sends and
+checks a flow generation before accepting Firebase callbacks:
+
+```dart
+Future<void> sendOtp(String phoneNumber, String countryCode) {
+  final existingRequest = _sendOtpInFlight;
+  if (existingRequest != null) return existingRequest;
+
+  late final Future<void> trackedRequest;
+  trackedRequest = _sendOtp(phoneNumber, countryCode).whenComplete(() {
+    if (identical(_sendOtpInFlight, trackedRequest)) {
+      _sendOtpInFlight = null;
+    }
+  });
+  _sendOtpInFlight = trackedRequest;
+  return trackedRequest;
+}
+
+void setCountryCode(String code) {
+  if (_sendOtpInFlight != null) return;
+  state = state.copyWith(countryCode: code);
+  sendOtpMutation.reset(ref);
+}
+```
+
+Member Onboarding and Matching Preferences are promoted frozen-snapshot
+adopters. Onboarding freezes backward navigation and the active step's
+request-defining controls across identity, prompts, and running preferences;
+its controller deduplicates both profile-save and completion operations.
+Matching Preferences freezes route dismissal, reset, age, gender, and apply
+controls while its controller deduplicates the save. Their focused tests prove
+the route, presentation state, and controller layers together.
+
+Host Organizer Create and Host Event Edit are also promoted frozen-snapshot
+adopters. Organizer creation freezes route dismissal, step movement, media,
+form/default decisions, and footer actions across submit, draft-save, and
+initial draft-restore operations. Event editing freezes route dismissal and
+the complete schedule, location, pace, policy, and text-field form during
+save. Their action controllers return the active future to duplicate callers,
+so widget disabling and controller behavior enforce the same request snapshot.
+
+Reviews and Account Settings extend the reference beyond single-submit forms.
+The review sheet freezes rating, comment, both write actions, and dismissal
+during submit or delete, while its controller returns one active write future.
+Account Settings treats preference, unblock, delete, and sign-out as one
+surface-exclusive operation domain: any pending mutation disables every
+settings action and route exit, confirmation callbacks recheck the shared
+pending state, and the settings controller deduplicates overlapping writes.
+External platform effects follow the same contract even when they do not write
+backend data. Await the platform result, expose progress on the initiating
+control, enforce the declared singleton or keyed concurrency policy, and make
+both `false` and thrown outcomes visible before restoring the action. Account
+Settings extends its surface-exclusive domain to host/legal/support links;
+Event Location Map keeps back navigation available but makes the directions
+launch itself singleton. Starting and discarding a platform Future is not a
+successful action outcome.
+
+The Admin console uses the same whole-surface exclusive policy for operator
+writes and submitted analytics queries. A synchronous provider-level lease is
+acquired before dispatch, so controllers in different workspaces cannot start
+overlapping operations in the same tick. While held, the workspace fieldset,
+Admin navigation, shared links, and browser unload are blocked; each controller
+submits an immutable payload and releases the lease in `finally`. This
+intentionally favors an unambiguous audited operation over parallel Admin
+throughput.
+
+Every adopting feature must declare the chosen policy in its feature contract.
+If the implementation is not yet safe, the pending-state action matrix must
+describe the unsafe controls honestly and retain stable debt instead of
+claiming a frozen form.
 
 ### Action Controller
 
@@ -1584,12 +1796,12 @@ Rules:
   graph wiring. Feature widgets should not infer role from bundle ids,
   Firebase project ids, or platform flavor strings.
 - Consumer routing must not mount host create/edit/manage screens. Consumer
-  surfaces may show host identity and public event/club information, but not
+  surfaces may show host identity and public event/organizer information, but not
   host-management affordances.
 - Host routing may show attendee, booking, roster, and operational state needed
   to run events, but it must not become a dating browse or match surface.
 - Host identity is professional and separate from dating identity:
-  `hostProfiles/{uid}` and club host snapshots own host display names, logos,
+  `hostProfiles/{uid}` and organizer-manager snapshots own host display names, logos,
   roles, verification, and operational permissions. Dating `users/{uid}` /
   `publicProfiles/{uid}` must not be the source of truth for host display.
 - The same auth user may have both a consumer dating profile and a host profile,
@@ -1725,6 +1937,21 @@ Rules:
 - Legacy/deep-link aliases should delegate to canonical screens rather than
   duplicate product behavior.
 
+### Public route decision contract
+
+Public-route visibility and action eligibility are governed by
+`design/public_surface_behavior.json` and the canonical explanation in
+`docs/web_surface_architecture.md#public-viewer-and-listing-authority-matrix`.
+Do not reduce the decision to `uid != null` or a crawled/claimed boolean. Auth
+resolution, app role, profile readiness, viewer relationship, organizer
+visibility, effective lifecycle availability, and authority, event
+availability, and capability/runtime evidence remain separate inputs. Every
+consumer route in `go_router.dart` must have
+exactly one matrix owner; a route hidden from guest tab chrome still needs an
+explicit guest and profile-readiness redirect. Run
+`node tool/run.mjs check design:public-surface-behavior` whenever a covered
+route, decision helper, action, or source enum changes.
+
 ## Testing Expectations
 
 Test at the boundary that owns the behavior:
@@ -1744,6 +1971,20 @@ Test at the boundary that owns the behavior:
 Brittle tests are design feedback. If a test needs private finders, timing
 hacks, or duplicate-text counts, inspect whether the production seam should be
 more explicit.
+
+Flutter LCOV is a visibility artifact, not an aggregate percentage gate.
+`tool/test/flutter_coverage_report.mjs` reports observed handwritten lines by
+top-level feature and explicitly excludes generated/config code from its
+headline. Files never loaded by the test process are not represented, so use
+the report to choose risk-based additions rather than to claim repository-wide
+completeness.
+
+New or split Flutter test specs stay at or below 1,200 lines. Reviewed legacy
+specs above the ceiling are exact, decrease-only debt in
+`tool/test/flutter_test_size_baseline.json`; reductions refresh the baseline,
+growth fails. Split by coherent behavior group and keep shared fixtures in the
+same Dart test library when that avoids duplication without hiding source-level
+failure locations.
 
 ## Enforcement And Overrides
 
@@ -1766,6 +2007,29 @@ and identity routes use `CatchTopBar.identity`. A canonical call elsewhere in
 the file cannot bless helper-owned or raw chrome inside the actual `appBar`
 value.
 
+Pushed utility/list and identity routes use `CatchRouteScaffold`. It owns the
+page background and derives the top-bar divider from real vertical scroll
+notifications: no divider at rest, divider only while content is scrolled
+under the pinned compact bar. Root tab titles remain sliver content and scroll
+away; only deliberately declared search/filter/tab controls may pin.
+
+### Exhibit ARCH-ROUTE-CHROME-001: Pushed Route Chrome
+
+<!-- exhibit-freshness: ARCH-ROUTE-CHROME-001 source=docs/audit_registry/architecture_pattern_adoption.json owner=recursive_audit_loop -->
+
+`CatchRouteScaffold` is the reference boundary for pushed Consumer and Host
+routes. The route supplies a `CatchTopBar` builder and body; the shell alone
+owns surface color and the scroll-under divider. Loading, empty, error, and
+content branches retain the same title voice and back behavior instead of
+building competing scaffolds.
+
+The adopters are Saved Events, Review History, Payment History, Settings, Chat
+Detail, Host Event Manage, Host Event Edit, Host team, every Host organizer
+settings spoke, and Host route loading. Host create-organizer and create-event
+flows remain step-header routes, and event detail remains the declared media
+hero exception. When another pushed list or form is touched, migrate it to
+this boundary rather than copying `Scaffold(backgroundColor:, appBar:)` flags.
+
 Pushed routes that must always expose an exit declare `leading: "back"` in
 the same manifest entry. The gate then requires an explicit
 `CatchTopBarLeading.back` (or `showBackButton: true`) configuration, so a
@@ -1786,6 +2050,8 @@ workspace, or temporary legacy role by symbol and owner. Role-to-owner policy
 is enforced; raw Material app bars cannot be relabeled as workspace or hero
 exceptions. Legacy entries are visible migration debt, not generic
 exceptions.
+The same gate consumes `tool/design/tab_root_scroll_contracts.json` and must
+report every consumer and Host tab-root branch; a zero-root pass is invalid.
 
 Full-screen editors that must cover persistent shell navigation declare their
 launcher in the same contract and push through
@@ -2316,6 +2582,12 @@ instead of reading repositories or recomputing product policy. In this exhibit,
 `CalendarHomeState` owns the screen-level selected-date/header/view inputs and
 `CalendarEventSummary` owns the merged event list.
 
+Riverpod translation remains at that route edge. Use
+`catchAsyncStateFromAsyncValue` rather than `AsyncValue.when`: refresh-time
+`AsyncError` can also report `isLoading`, so the shared adapter intentionally
+selects error, then available data, then loading. `CatchAsyncState` itself stays
+provider-free.
+
 This is a narrow state-boundary exhibit. The first full route/controller
 migration still needs its own reference exhibit before a broad rollout.
 `CalendarHomeState` is the reference route-edge state object; it composes the
@@ -2416,6 +2688,8 @@ Reference files:
 - `test/core/forms/catch_form_descriptors_test.dart`
 - `test/core/forms/contract_alignment_test.dart`
 - `test/profile/self_profile_edit_tab_state_test.dart`
+- `docs/audit_registry/flutter_form_contract_inventory.json`
+- `tool/contracts/generate_flutter_form_contract_inventory.mjs`
 
 Use this pattern when multiple form surfaces need the same row mapping,
 single-expanded-field behavior, and per-field patch save loop. Feature state
@@ -2425,10 +2699,19 @@ wiring, pending/error presentation, and one `Future<bool> Function(P)` save
 delegate. Product-specific controls use `CatchFormCustomRow<P>` and the
 provided scope instead of adding feature policy to core.
 
-The consumer Profile About You section remains the reference prototype. Host
-Club Identity and Contact are the first promoted adopter: both sections use
-typed `UpdateClubPatch` descriptors, schema-derived field constraints, and one
-save delegate. Running/Lifestyle and onboarding remain tracker candidates.
+The consumer Profile About You section remains the descriptor reference
+prototype. Host Club Identity and Contact are the first promoted descriptor
+adopter: both sections use typed `UpdateClubPatch` descriptors and one save
+delegate. Running/Lifestyle retain their existing self-profile descriptors, and
+onboarding retains its step-specific composition.
+
+Schema-derived configuration is broader than descriptor adoption. Every
+editable canonical control and descriptor instance in both installable apps
+binds a generated field contract, including text fields, choices, option
+groups/cards, chips, toggles, steppers, range sliders, OTP entry, and direct or
+top-bar search. The generated Flutter form-contract inventory is the exhaustive
+boundary; descriptor migration may continue incrementally without reopening
+contract drift.
 
 ```dart
 CatchFormRowList<UpdateUserProfilePatch>(

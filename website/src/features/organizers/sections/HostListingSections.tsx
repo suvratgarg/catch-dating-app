@@ -14,6 +14,7 @@ import {ListingHeroSection} from "./ListingHeroSection";
 import {ListingReviewsSection} from "./ListingReviewsSection";
 import {ListingSourcesSection} from "./ListingSourcesSection";
 import {RecommendedOrganizersSection} from "./RecommendedOrganizersSection";
+import {organizerPolicyForListing} from "../organizerPolicy";
 
 export function HostListingSections({
   claimController,
@@ -32,11 +33,13 @@ export function HostListingSections({
     isSaved,
     shareStatus,
   } = controller;
+  const canRequestClaim = organizerPolicyForListing(listing).canRequestClaim;
 
   return (
     <>
       <ListingHeroSection
         claimHref={claimHref}
+        canRequestClaim={canRequestClaim}
         isAppCreated={isAppCreated}
         isSaved={isSaved}
         listing={listing}
@@ -76,10 +79,12 @@ export function HostListingSections({
       {!isAppCreated ? (
         <>
           <ListingSourcesSection listing={listing} />
-          <ListingMissingEvidenceSection
-            claimController={claimController}
-            listing={listing}
-          />
+          {claimController.presentation.panel !== "hidden" ? (
+            <ListingMissingEvidenceSection
+              claimController={claimController}
+              listing={listing}
+            />
+          ) : null}
           <RecommendedOrganizersSection current={listing} />
         </>
       ) : null}

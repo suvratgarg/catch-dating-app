@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_draft.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
@@ -115,9 +116,10 @@ class HostClubCreateFieldDisplayState {
 
   factory HostClubCreateFieldDisplayState.resolve({
     required String? selectedCityName,
+    bool detailsEnabled = true,
   }) {
     return HostClubCreateFieldDisplayState(
-      detailsEnabled: true,
+      detailsEnabled: detailsEnabled,
       selectedCity: cityOptionByName(selectedCityName),
       rawCityName: selectedCityName,
       currencyCode: currencyCodeForCityName(selectedCityName),
@@ -136,6 +138,7 @@ class HostClubCreateDraftRequest {
     required this.name,
     required this.area,
     required this.description,
+    required this.organizerType,
     required this.location,
     required this.instagramHandle,
     required this.phoneNumber,
@@ -147,6 +150,7 @@ class HostClubCreateDraftRequest {
     required String name,
     required String area,
     required String description,
+    OrganizerType organizerType = OrganizerType.club,
     required String? selectedCity,
     required String instagramHandle,
     required String phoneNumber,
@@ -157,6 +161,7 @@ class HostClubCreateDraftRequest {
       name: _trimmedTextOrNull(name),
       area: _trimmedTextOrNull(area),
       description: _trimmedTextOrNull(description),
+      organizerType: organizerType,
       location: selectedCity,
       instagramHandle: _trimmedTextOrNull(instagramHandle),
       phoneNumber: _trimmedTextOrNull(phoneNumber),
@@ -168,6 +173,7 @@ class HostClubCreateDraftRequest {
   final String? name;
   final String? area;
   final String? description;
+  final OrganizerType organizerType;
   final String? location;
   final String? instagramHandle;
   final String? phoneNumber;
@@ -180,6 +186,7 @@ class HostClubCreateDraftRequest {
       name: name,
       area: area,
       description: description,
+      organizerType: organizerType,
       location: location,
       instagramHandle: instagramHandle,
       phoneNumber: phoneNumber,
@@ -196,6 +203,7 @@ class HostClubCreateSubmitRequest {
     required this.location,
     required this.area,
     required this.description,
+    required this.organizerType,
     required this.clubPhotoInputs,
     required this.profileImage,
     required this.instagramHandle,
@@ -209,6 +217,7 @@ class HostClubCreateSubmitRequest {
     required String? selectedCity,
     required String area,
     required String description,
+    OrganizerType organizerType = OrganizerType.club,
     required List<ClubPhotoInput>? clubPhotoInputs,
     required PickedClubProfileImage? profileImage,
     required String instagramHandle,
@@ -225,6 +234,7 @@ class HostClubCreateSubmitRequest {
       location: location,
       area: area.trim(),
       description: description.trim(),
+      organizerType: organizerType,
       clubPhotoInputs: clubPhotoInputs,
       profileImage: profileImage,
       instagramHandle: _trimmedTextOrNull(instagramHandle),
@@ -238,6 +248,7 @@ class HostClubCreateSubmitRequest {
   final String location;
   final String area;
   final String description;
+  final OrganizerType organizerType;
   final List<ClubPhotoInput>? clubPhotoInputs;
   final PickedClubProfileImage? profileImage;
   final String? instagramHandle;
@@ -274,6 +285,7 @@ class HostClubCreateState {
   bool get canSaveDraft => footer.canSaveDraft;
   String get lastStepLabel => footer.lastStepLabel;
   bool get isLoading => footer.isLoading;
+  bool get requestControlsEnabled => !isLoading;
 
   factory HostClubCreateState.resolve({
     required int currentStep,
@@ -297,17 +309,19 @@ class HostClubCreateState {
         ? 0
         : currentStep.clamp(0, totalSteps - 1).toInt();
     final isLastStep = totalSteps == 0 || clampedStep == totalSteps - 1;
-    final isLoading = submitPending || saveDraftPending;
+    final isLoading = submitPending || saveDraftPending || draftLoadPending;
     final footer = HostClubCreateFooterState(
       isLastStep: isLastStep,
       isLoading: isLoading,
       primaryEnabled: !isLoading,
-      primaryLabel: isLastStep ? 'Create club' : 'Next',
-      lastStepLabel: 'Create club',
+      primaryLabel: isLastStep ? 'Create organizer' : 'Next',
+      lastStepLabel: 'Create organizer',
       primaryIntent: isLastStep
           ? HostClubCreatePrimaryIntent.submit
           : HostClubCreatePrimaryIntent.nextStep,
-      saveDraftIntent: HostClubCreateSaveDraftIntent.saveDraft,
+      saveDraftIntent: isLoading
+          ? null
+          : HostClubCreateSaveDraftIntent.saveDraft,
     );
     return HostClubCreateState(
       currentStep: clampedStep,
@@ -315,12 +329,13 @@ class HostClubCreateState {
       title: totalSteps == 0 ? '' : formTitleForStep(activeSteps, clampedStep),
       footer: footer,
       media: HostClubCreateMediaState.resolve(
-        enabled: !submitPending,
+        enabled: !isLoading,
         clubPhotoPreviews: clubPhotoPreviews,
         profileImage: profileImage,
       ),
       fields: HostClubCreateFieldDisplayState.resolve(
         selectedCityName: selectedCity,
+        detailsEnabled: !isLoading,
       ),
       draftRestore: HostClubCreateDraftRestoreState.resolve(
         enabled: draftRestoreEnabled,

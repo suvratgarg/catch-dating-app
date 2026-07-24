@@ -55,6 +55,12 @@ const schemaEventSuccessScorecardDocumentSchema = <String, Object?>{
       'maxLength': 180,
       'x-catch-ownership': 'trigger-owned',
     },
+    'organizerId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'x-catch-ownership': 'trigger-owned',
+    },
     'bookedCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,

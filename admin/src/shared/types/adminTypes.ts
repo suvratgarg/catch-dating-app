@@ -14,29 +14,7 @@ export interface AdminQueueItem {
   targetPath: string;
 }
 
-export interface AdminOverviewResponse {
-  generatedAt: string;
-  timezone: "UTC";
-  metrics: AdminOverviewMetric[];
-  queues: {
-    safetyReports: AdminQueueItem[];
-    moderationFlags: AdminQueueItem[];
-    eventSafetyReports: AdminQueueItem[];
-    accessApplications: AdminQueueItem[];
-    clubClaimRequests: AdminQueueItem[];
-    clubIndexReviews: AdminQueueItem[];
-    paymentIssues: AdminQueueItem[];
-  };
-  dataQuality: Array<{
-    id: string;
-    label: string;
-    state: "ok" | "warning" | "blocked";
-    detail: string;
-    owner: string;
-    runbook: string;
-    nextAction: string;
-  }>;
-}
+export type AdminOverviewResponse = AdminGetOverviewCallableResponse;
 
 export type AdminSafetyTriageKind =
   | "report"
@@ -123,30 +101,21 @@ export interface AdminGetSafetyTriageDetailsResponse {
 
 export type AdminSafetyTriageDecision = "review" | "dismiss";
 
-export interface AdminDecideSafetyTriageItemPayload {
-  targetPath: string;
-  decision: AdminSafetyTriageDecision;
-  note: string;
-}
+export type AdminDecideSafetyTriageItemPayload =
+  AdminDecideSafetyTriageItemCallablePayload;
 
-export interface AdminDecideSafetyTriageItemResponse {
-  targetPath: string;
-  decision: AdminSafetyTriageDecision;
-  status: "reviewed" | "dismissed";
-}
+export type AdminDecideSafetyTriageItemResponse =
+  AdminDecideSafetyTriageItemCallableResponse;
 
-export interface AdminAssignSafetyTriageItemPayload {
-  targetPath: string;
-  assigneeUid: string | null;
-  note: string;
-}
+export type AdminAssignSafetyTriageItemPayload =
+  AdminAssignSafetyTriageItemCallablePayload;
 
-export interface AdminAssignSafetyTriageItemResponse {
-  targetPath: string;
-  assignment: AdminSafetyTriageAssignment;
-}
+export type AdminAssignSafetyTriageItemResponse =
+  AdminAssignSafetyTriageItemCallableResponse;
 
 export interface HostAnalyticsQueryPayload {
+  organizerId?: string | null;
+  /** @deprecated Use organizerId. */
   clubId?: string | null;
   eventId?: string | null;
   rangePreset?: "7d" | "30d" | "90d" | "month" | "custom";
@@ -172,6 +141,8 @@ export interface HostAnalyticsTrendPoint {
 
 export interface HostAnalyticsEventRow {
   eventId: string;
+  organizerId?: string;
+  /** @deprecated Use organizerId. */
   clubId: string;
   title: string;
   startTime: string;
@@ -208,8 +179,12 @@ export interface HostAnalyticsResponse {
     preset?: string | null;
   };
   scope: {
+    organizerIds: string[];
+    /** @deprecated Use organizerIds. */
     clubIds: string[];
     eventIds: string[];
+    organizerName?: string | null;
+    /** @deprecated Use organizerName. */
     clubName?: string | null;
     eventTitle?: string | null;
   };
@@ -339,6 +314,43 @@ export const adminRoleClaimKeys = [
 
 export type AdminRoleClaim = typeof adminRoleClaimKeys[number];
 
+export type AdminActionExecutionStatus =
+  | "started"
+  | "succeeded"
+  | "failed"
+  | "indeterminate";
+
+export interface AdminActionExecutionRecord {
+  schemaVersion: 1;
+  executionId: string;
+  actionId: string;
+  callable: string;
+  actorUid: string;
+  actorRoles: AdminRoleClaim[];
+  status: AdminActionExecutionStatus;
+  requestHash: string;
+  responseHash: string | null;
+  target: string | null;
+  errorCode: string | null;
+  errorMessage: string | null;
+  cliVersion: string | null;
+  startedAt: string;
+  finishedAt: string | null;
+  updatedAt: string;
+}
+
+export interface AdminListActionExecutionsPayload {
+  limit?: number;
+  cursor?: string | null;
+}
+
+export interface AdminListActionExecutionsResponse {
+  schemaVersion: 1;
+  generatedAt: string;
+  rows: AdminActionExecutionRecord[];
+  nextCursor: string | null;
+}
+
 export interface AdminUserRoleRecord {
   targetUid: string;
   email: string | null;
@@ -373,17 +385,11 @@ export interface AdminListAdminRoleAssignmentsResponse {
   source: "adminRoleAssignments";
 }
 
-export interface AdminSetAdminUserRolesPayload {
-  targetUid: string;
-  roles: AdminRoleClaim[];
-  note: string;
-}
+export type AdminSetAdminUserRolesPayload =
+  AdminSetAdminUserRolesCallablePayload;
 
-export interface AdminSetAdminUserRolesResponse {
-  user: AdminUserRoleRecord;
-  beforeRoles: AdminRoleClaim[];
-  afterRoles: AdminRoleClaim[];
-}
+export type AdminSetAdminUserRolesResponse =
+  AdminSetAdminUserRolesCallableResponse;
 
 export type AccessApplicationDecision = "approve" | "deny";
 export type ClubClaimDecision = "approve" | "reject";
@@ -399,6 +405,13 @@ export type OrganizerEntityKind =
   | "venue"
   | "eventOrganizer"
   | "creatorCommunity"
+  | "brand";
+export type OrganizerType =
+  | "club"
+  | "community"
+  | "individual"
+  | "eventProducer"
+  | "venue"
   | "brand";
 export type OrganizerAppVisibility = "discoverable" | "hidden";
 export type OrganizerPublishStatus =
@@ -475,18 +488,11 @@ export interface OrganizerCurationSurface {
   notes: string;
 }
 
-export interface AdminDecideAccessApplicationPayload {
-  applicationUid: string;
-  decision: AccessApplicationDecision;
-  note: string;
-  cohortId?: string | null;
-}
+export type AdminDecideAccessApplicationPayload =
+  AdminDecideAccessApplicationCallablePayload;
 
-export interface AdminDecideAccessApplicationResponse {
-  applicationUid: string;
-  decision: AccessApplicationDecision;
-  status: "approvedForProfile" | "notSelectedYet";
-}
+export type AdminDecideAccessApplicationResponse =
+  AdminDecideAccessApplicationCallableResponse;
 
 export interface AdminGetAccessApplicationDetailsPayload {
   applicationUid: string;
@@ -740,6 +746,8 @@ export interface AdminClubDetails {
   email: string | null;
   imageUrl: string | null;
   profileImageUrl: string | null;
+  organizerType: OrganizerType;
+  publicCategoryLabel: string | null;
   entityKind: OrganizerEntityKind | null;
   entitySubtypes: string[];
   displayCategory: string | null;
@@ -786,6 +794,8 @@ export interface AdminGetClubDetailsResponse {
 export interface AdminClubListRow {
   clubId: string;
   name: string;
+  organizerType: OrganizerType;
+  publicCategoryLabel: string | null;
   displayCategory: string | null;
   cityName: string | null;
   citySlug: string | null;
@@ -832,6 +842,8 @@ export interface AdminUpdateClubDetailsPayload {
     email?: string | null;
     imageUrl?: string | null;
     profileImageUrl?: string | null;
+    organizerType?: OrganizerType;
+    publicCategoryLabel?: string | null;
     entityKind?: OrganizerEntityKind;
     entitySubtypes?: string[];
     displayCategory?: string | null;
@@ -1669,13 +1681,8 @@ export interface AdminGetEventIntakeDashboardResponse {
   bridge: EventIntakeBridge;
 }
 
-export interface AdminCreateMarketingContentDraftPayload {
-  draftType: MarketingContentDraftType;
-  cityId?: string | null;
-  weekStart?: string | null;
-  sourceRecommendationSetId?: string | null;
-  title?: string | null;
-}
+export type AdminCreateMarketingContentDraftPayload =
+  AdminCreateMarketingContentDraftCallablePayload;
 
 export interface AdminCreateMarketingContentDraftResponse {
   draft: MarketingContentDraft;
@@ -1722,28 +1729,32 @@ export interface AdminRecordEventIntakeReviewDecisionResponse {
   decisionPath: string;
 }
 
-export interface AdminRecordMarketingReviewDecisionPayload {
-  targetType: MarketingOpsTargetType;
-  targetId: string;
-  decision: MarketingOpsDecision;
-  runId?: string | null;
-  note: string;
-  edits?: Record<string, unknown>;
-  checklist?: {
-    sourceReviewed?: boolean;
-    dateReviewed?: boolean;
-    venueReviewed?: boolean;
-    copyReviewed?: boolean;
-    rightsReviewed?: boolean;
-    noCatchHostingImplied?: boolean;
-  };
-}
+export type AdminRecordMarketingReviewDecisionPayload =
+  AdminRecordMarketingReviewDecisionCallablePayload;
 
-export interface AdminRecordMarketingReviewDecisionResponse {
-  decisionId: string;
-  targetType: MarketingOpsTargetType;
-  targetId: string;
-  decision: MarketingOpsDecision;
-  decisionStatus: "approved" | "needs_changes" | "held" | "rejected" | "export_ready";
-  decisionPath: string;
-}
+export type AdminRecordMarketingReviewDecisionResponse =
+  AdminRecordMarketingReviewDecisionCallableResponse;
+import type {AdminGetOverviewCallableResponse} from
+  "../../generated/contracts/adminGetOverviewCallableResponse";
+import type {AdminDecideAccessApplicationCallablePayload} from
+  "../../generated/contracts/adminDecideAccessApplicationCallablePayload";
+import type {AdminDecideAccessApplicationCallableResponse} from
+  "../../generated/contracts/adminDecideAccessApplicationCallableResponse";
+import type {AdminSetAdminUserRolesCallablePayload} from
+  "../../generated/contracts/adminSetAdminUserRolesCallablePayload";
+import type {AdminSetAdminUserRolesCallableResponse} from
+  "../../generated/contracts/adminSetAdminUserRolesCallableResponse";
+import type {AdminDecideSafetyTriageItemCallablePayload} from
+  "../../generated/contracts/adminDecideSafetyTriageItemCallablePayload";
+import type {AdminDecideSafetyTriageItemCallableResponse} from
+  "../../generated/contracts/adminDecideSafetyTriageItemCallableResponse";
+import type {AdminAssignSafetyTriageItemCallablePayload} from
+  "../../generated/contracts/adminAssignSafetyTriageItemCallablePayload";
+import type {AdminAssignSafetyTriageItemCallableResponse} from
+  "../../generated/contracts/adminAssignSafetyTriageItemCallableResponse";
+import type {AdminCreateMarketingContentDraftCallablePayload} from
+  "../../generated/contracts/adminCreateMarketingContentDraftCallablePayload";
+import type {AdminRecordMarketingReviewDecisionCallablePayload} from
+  "../../generated/contracts/adminRecordMarketingReviewDecisionCallablePayload";
+import type {AdminRecordMarketingReviewDecisionCallableResponse} from
+  "../../generated/contracts/adminRecordMarketingReviewDecisionCallableResponse";

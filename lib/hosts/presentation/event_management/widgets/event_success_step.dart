@@ -32,6 +32,7 @@ class EventSuccessStep extends StatelessWidget {
       padding: CatchInsets.formStepBodyRelaxed,
       children: [
         CatchSectionList(
+          emptyStateOmitted: true,
           children: [
             CatchSection.plain(
               child: Text(

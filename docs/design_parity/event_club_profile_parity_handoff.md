@@ -1,9 +1,9 @@
 ---
 doc_id: event_club_profile_parity_handoff
 version: 1.0.1
-updated: 2026-07-10
+updated: 2026-07-23
 owner: design_parity_review
-status: implemented
+status: retirement_ready
 supersedes: explore_map_view_spec, club_design_parity_spec, profile_design_parity_spec
 ---
 

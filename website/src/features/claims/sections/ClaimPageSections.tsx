@@ -32,6 +32,7 @@ import {
 import {claimUnlocks} from "@content/marketing";
 import {ActivityMark, StatusBadge} from "../../organizers/OrganizerIdentity";
 import {activityForListing} from "../../organizers/publicDiscovery";
+import {organizerPolicyForListing} from "../../organizers/organizerPolicy";
 import type {HostListing} from "../../organizers/types";
 import type {ClaimUrlState} from "../claimRouting";
 import {
@@ -52,6 +53,7 @@ function trackProcessStatusAction(action: ProcessStatusAction) {
 }
 
 export function ClaimHeroSection({listing}: {listing: HostListing | null}) {
+  const policy = listing ? organizerPolicyForListing(listing) : null;
   return (
     <ClaimFlowHero
       eyebrow={websiteCopy["claimpagesections_0049"]}
@@ -59,7 +61,7 @@ export function ClaimHeroSection({listing}: {listing: HostListing | null}) {
       body={websiteCopy["claimpagesections_0056"]}
       summaryTitle={listing?.name ?? "No listing selected"}
       summaryBody={listing ?
-        `${listing.category} · ${listing.city} · ${listing.sourceConfidence.replaceAll("_", " ")}` :
+        `${listing.category} · ${listing.city} · ${policy?.badge.label}` :
         "Search the source-backed organizer directory first."}
     />
   );
@@ -71,6 +73,7 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
     businessEmail,
     businessPhone,
     canContinueRole,
+    claimRuntimeAvailable,
     currentStepIndex,
     handleClaimSubmit,
     handleSignIn,
@@ -102,7 +105,10 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
   } = controller;
 
   return (
-    <ClaimFlowWorkspace onSubmit={handleClaimSubmit}>
+    <ClaimFlowWorkspace
+      onSubmit={handleClaimSubmit}
+      pending={isSubmitting}
+    >
       <StepRail
         currentIndex={currentStepIndex}
         getDisabled={(_item, index) => index > currentStepIndex}
@@ -290,7 +296,7 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
                 ) : (
                   <Button
                     variant="ghost"
-                    disabled={!authReady || isSigningIn}
+                    disabled={!claimRuntimeAvailable || !authReady || isSigningIn}
                     onClick={() => void handleSignIn()}
                     type="button"
                   >
@@ -299,7 +305,9 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
                 )
               }
             >
-              {user ? (
+              {!claimRuntimeAvailable ? (
+                "Claim submission is unavailable in this website build."
+              ) : user ? (
                 `Signed in as ${user.displayName || user.email || "Catch user"}`
               ) : authReady ? (
                 "Sign in with Google to submit the claim."
@@ -310,7 +318,10 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
 
             <ActionGroup>
               <Button variant="ghost" type="button" onClick={() => setStep("role")}>{websiteCopy["claimpagesections_0037"]}</Button>
-              <Button disabled={isSubmitting || !user} type="submit">
+              <Button
+                disabled={!claimRuntimeAvailable || isSubmitting || !user}
+                type="submit"
+              >
                 {isSubmitting ? "Submitting..." : "Submit claim"}
               </Button>
             </ActionGroup>

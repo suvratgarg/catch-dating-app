@@ -29,12 +29,15 @@ class ClubDetailsStep extends StatelessWidget {
       child: SingleChildScrollView(
         padding: CatchInsets.formStepBody,
         child: CatchSectionList(
+          emptyStateOmitted: true,
           gap: 0,
           children: [
             CatchSection.fieldRows(
               first: true,
               child: CatchField.input(
                 title: context.l10n.hostsClubDetailsStepTitleDescription,
+                contract: CatchContractConstraints
+                    .createClubCallablePayloadDescription,
                 controller: descriptionController,
                 icon: CatchIcons.editNoteOutlined,
                 maxLines: 4,

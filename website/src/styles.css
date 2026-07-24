@@ -3,6 +3,7 @@
 @import "./styles/site-shell.css";
 @import "./styles/home.css";
 @import "./styles/organizers.css";
+@import "./styles/event-detail.css";
 @import "./styles/site-footer.css";
 @import "./styles/host-foundation.css";
 @import "./styles/reveal.css";
@@ -10,3 +11,4 @@
 @import "./styles/organizer-public.css";
 @import "./styles/host.css";
 @import "./styles/flows.css";
+@import "./styles/legal.css";

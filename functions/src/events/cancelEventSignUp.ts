@@ -61,6 +61,7 @@ interface PromotionPush {
   body: string;
   eventId: string;
   clubId: string;
+  organizerId?: string;
 }
 
 interface CancelEventSignUpDeps {
@@ -286,6 +287,8 @@ export async function cancelEventSignUpHandler(
           uid: waitlistUserId,
           eventId,
           clubId: event.clubId,
+
+          organizerId: event.organizerId ?? event.clubId,
           startTimeMillis: event.startTime.toMillis(),
           endTimeMillis: event.endTime.toMillis(),
         });
@@ -314,6 +317,8 @@ export async function cancelEventSignUpHandler(
         exists: true,
         eventId,
         clubId: event.clubId,
+
+        organizerId: event.organizerId ?? event.clubId,
         uid: waitlistUserId,
         status: "signedUp",
         genderAtSignup: wGender,
@@ -330,6 +335,8 @@ export async function cancelEventSignUpHandler(
       promotedOfferPatch = {
         eventId,
         clubId: event.clubId,
+
+        organizerId: event.organizerId ?? event.clubId,
         uid: waitlistUserId,
         cohortAtOffer: wCohort,
         status: "accepted",
@@ -380,6 +387,8 @@ export async function cancelEventSignUpHandler(
       exists: participationSnap.exists,
       eventId,
       clubId: event.clubId,
+
+      organizerId: event.organizerId ?? event.clubId,
       uid: userId,
       status: "cancelled",
       genderAtSignup: cancellerGender,
@@ -409,6 +418,8 @@ export async function cancelEventSignUpHandler(
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         eventId,
         clubId: event.clubId,
+
+        organizerId: event.organizerId ?? event.clubId,
       });
       if (promotedNotification.token) {
         promotionPushes.push({
@@ -417,6 +428,8 @@ export async function cancelEventSignUpHandler(
           body: promotedNotification.body,
           eventId,
           clubId: event.clubId,
+
+          organizerId: event.organizerId ?? event.clubId,
         });
       }
     }

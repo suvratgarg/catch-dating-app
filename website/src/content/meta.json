@@ -3,9 +3,9 @@
   "routes": {
     "home": {
       "title": "Catch | The event before the match",
-      "description": "Catch turns curated singles events into real dating context. Choose a hosted event, show up, catch privately, and match with people you actually met.",
+      "description": "Catch turns curated singles events in Mumbai and Indore into real dating context. Choose a hosted event, show up, catch privately, and match with people you actually met.",
       "canonicalPath": "/",
-      "twitterDescription": "Curated singles events become real dating context."
+      "twitterDescription": "Curated singles events in Mumbai and Indore become real dating context."
     },
     "host": {
       "title": "Host singles events on Catch | 0% platform fee for founding hosts",
@@ -27,6 +27,24 @@
       "twitterDescription": "Claim an organizer profile and unlock Catch host tools.",
       "robots": "noindex, follow"
     },
+    "privacy": {
+      "title": "Privacy policy | Catch",
+      "description": "Learn how Torana, operating Catch, collects, uses, shares, protects, and responds to requests about personal data.",
+      "canonicalPath": "/privacy/",
+      "twitterDescription": "How Catch handles personal data, privacy choices, and requests."
+    },
+    "terms": {
+      "title": "Terms of use | Catch",
+      "description": "Read the rules for using Catch, organizer listings, event pages, accounts, host tools, and related services.",
+      "canonicalPath": "/terms/",
+      "twitterDescription": "The rules for using Catch and its public organizer and event services."
+    },
+    "help": {
+      "title": "Help and safety | Catch",
+      "description": "Get Catch account, privacy, listing, event, safety, and website support, including correction, claim, and takedown help.",
+      "canonicalPath": "/help/",
+      "twitterDescription": "Get account, listing, event, privacy, website, and safety help from Catch."
+    },
     "not_found": {
       "title": "Page not found | Catch",
       "description": "This Catch page does not exist. Search organizer profiles, browse the member site, or explore host tools.",
@@ -44,6 +62,23 @@
       "sourcesHeading": "Public sources",
       "lastVerifiedPrefix": "Last verified",
       "notRecorded": "not recorded",
+      "homeBreadcrumb": "Catch",
+      "organizersBreadcrumb": "Organizers"
+    }
+  },
+  "event": {
+    "titleTemplate": "{title} | {city} | Catch",
+    "catchTwitterTemplate": "{title} by {organizer}. Booking stays in the Catch app.",
+    "externalTwitterTemplate": "{title} from {source}. Registration stays on the official source.",
+    "staticLabels": {
+      "eventEyebrow": "Event details",
+      "hostedByPrefix": "Hosted by",
+      "scheduleHeading": "Schedule and location",
+      "locationLabel": "Location",
+      "priceLabel": "Price",
+      "sourceLabel": "Source",
+      "reviewsHeading": "Event reviews",
+      "lastReviewedPrefix": "Listing sources last reviewed",
       "homeBreadcrumb": "Catch",
       "organizersBreadcrumb": "Organizers"
     }

@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.7.152
-updated: 2026-07-19
+version: 0.9.2
+updated: 2026-07-24
 owner: web_platform
 status: active
 ---
@@ -23,6 +23,142 @@ Keep the Flutter web app separate from the public website. The Flutter web app i
 the consumer app surface and should continue sharing mobile app code. The
 marketing and admin surfaces are web-native products and should use the same
 React + TypeScript stack where practical.
+
+## Cross-Surface Feature Identity
+
+`design/features/feature_coverage.json` is the exhaustive migration boundary
+across the Flutter screen registry, marketing route registry, and route-kind
+entries in the admin component registry. It can assign one semantic feature id
+to multiple runtime projections when the user outcome is genuinely shared—for
+example organizer discovery or organizer detail. It does not make Flutter and
+React share a UI runtime: each projection keeps its own screen/route authority,
+components, action symbols, evidence, and implementation tests.
+
+`feature.explore` is the first compiled cross-runtime contract: its consumer
+projection binds `screen.explore.discovery`, while its marketing projection
+binds the `organizer_search` route and the URL-owned
+`useOrganizerDirectoryController`. The projections share feature identity and
+product intent, not UI code or state vocabulary.
+
+The marketing migration now compiles every stateful public route. Marketing
+Home and Host Acquisition remain website-only identities because conversion
+and acquisition are different user goals from consumer or Host app operation.
+Organizer Claim owns both `/claim/` and the dynamic lookup projection because
+they use the same controller and outcome but retain different exact route-state
+inventories. The legacy organizer listing remains grouped under canonical
+Organizer Detail because it adds static canonical/noindex behavior, not another
+interactive workflow. Static legal/support and 404 routes remain explicit
+exclusions rather than synthetic zero-action product features.
+
+The Admin migration compiles all 14 registered route authorities across 12
+feature identities. Access Review, Role Management, Data Quality, Event
+Publishing, Finance Operations, Growth KPI, Marketing Operations, Organizer
+Publishing, Safety Triage, and User Analytics each use one route projection.
+Intake and Overview each use two because Organizer Intake and the live Overview
+controller wrapper own independently reviewable states and actions. No Admin
+authority remains planned or grouped.
+
+Marketing Home and Host Acquisition now share the versioned
+`contracts/http/join_waitlist_{request,response}.schema.json` boundary with the
+Function. The schema generator emits website and Functions types plus runtime
+schema projections; browser responses and Functions requests/responses are
+validated, including the legacy `runner` role compatibility case. Pending
+request snapshots remain a separate, closed concern for Marketing: waitlist,
+Host application, and Claim use the frozen-snapshot policy from
+`ARCH-PENDING-SNAPSHOT-001`, including request-defining controls, steps, auth,
+sibling forms, shared route links, and browser exit.
+
+Admin applies a whole-console frozen-snapshot policy to operator writes and
+submitted analytics queries. `AdminPendingOperationProvider` grants one
+synchronous exclusive lease across all controllers; while held, the complete
+workspace, Admin navigation, shared links, and browser unload are blocked.
+Controllers capture their request payload before dispatch and release the lease
+in `finally`, so visible inputs cannot drift from the audited request and peer
+operations cannot overlap. The compiled Admin action matrices disable every
+surface action in those pending states. This deliberately trades small amounts
+of operator throughput for deterministic receipts and unambiguous recovery.
+
+Run `node tool/design/check_feature_coverage.mjs --check` after adding or
+removing any registered product surface. A planned decision is migration debt,
+not completed contract coverage; a grouped decision is a secondary route
+projection, not a shortcut for combining unrelated workflows.
+
+## Organizer Entity Boundary
+
+Both React surfaces use organizer nomenclature and canonical organizer
+callables. The marketing website claims, reviews, analytics, generated listing
+records, and public routes use `organizerId` and `/organizers/...`. The admin
+Organizers workspace invokes `adminGetOrganizerDetails`,
+`adminListOrganizerDetails`, and `adminUpdateOrganizerDetails` and presents
+`organizers/{id}` as the source collection.
+
+Internal `AdminClub*` adapter types may remain during the released-client
+window, but they are compatibility types only. React code must not add a new
+`clubs/{id}` authority, club-named callable, or product-facing generic club
+label. Retirement follows `docs/migrations/clubs_to_organizers.md`.
+
+## Public Viewer And Listing Authority Matrix
+
+`design/public_surface_behavior.json` is the executable decision table for
+public discovery, organizer detail, event detail, and the related route/action
+boundaries in the Flutter app and marketing website. Its schema is
+`design/public_surface_behavior.schema.json`. The matrix records deliberate
+configurations rather than generating a meaningless full Cartesian product;
+every declared dimension value must either appear in a configuration or be
+listed under that surface's `excludedDecisionValues` with a rationale.
+
+The decision inputs are independent unless the matrix says otherwise:
+
+| Variable group | Why it changes behavior |
+|---|---|
+| Viewer lifecycle | Auth may still be resolving, the viewer may be a guest, or a signed-in viewer may have an incomplete, booking-ready, or social-ready profile. Resolving auth never borrows guest actions. |
+| Runtime and relationship | Consumer and host apps have different preview authority; visitor, member, and host relationships suppress or enable different actions. Relationship reads fail closed while loading or on error. |
+| Organizer authority | App visibility, effective lifecycle availability, ownership, claim state, provenance verification, host identity, contact availability, and marketing publication are separate facts. Crawled, claimed, and owner-verified are not aliases; archived lifecycle state denies native public browsing even when visibility is stale. |
+| Event capability | Catch-native versus external supply, lifecycle, viewer-specific availability, location precision, and payment support independently affect navigation and booking. |
+| Website capability | Claim submission, canonical public-review target readiness, public-review reads, public-review writes, and their Firebase/App Check runtimes are separate capabilities. A review submission is moderated and never implies immediate publication. |
+
+The app matrix also owns every consumer route exactly once. Explore, Explore
+Map, public Organizer Detail, public Event Detail, and exact Event Location are
+guest-readable. Saved Events and the remaining account routes require a
+booking-ready profile; social routes and social actions require a social-ready
+profile; Event Success companion routes keep their own protected class; and
+onboarding owns the incomplete-profile resume path. The guest shell therefore
+shows only Explore navigation, but private deep links are still classified and
+guarded instead of relying on a hidden tab.
+
+The marketing website never infers capability from a badge or from login
+alone. Generated projections carry canonical authority plus independent claim,
+review-target, review-read, and review-write capabilities. Unpublished and
+claim-suppressed listings are absent from public outputs even if stale data says
+`published`; missing target, capability, or runtime evidence renders a truthful
+disabled/absent action. `WEB-ORGANIZER-CLAIM-TARGET-001` tracks the remaining
+producer cutover needed before a generated listing can safely enable a
+canonical claim target; legacy `clubs/{id}` receipts do not enable claims.
+`WEB-ORGANIZER-REVIEW-TARGET-001` tracks verified `organizers/{id}` or
+compatibility `clubs/{id}` target readiness before public review reads or
+writes can be enabled. The checked-in sync preview is advisory only: even an
+`in_sync` preview action cannot enable claim or review UI. Only a validated,
+read-only Firestore receipt bound to the current target plan can do that. The
+review callables evaluate both canonical and compatibility documents and accept
+the first eligible public target, so an ineligible canonical shadow cannot mask
+an eligible compatibility listing.
+
+Run the full non-vacuous gate with:
+
+```sh
+node tool/run.mjs check design:public-surface-behavior
+```
+
+The gate validates source enums, route ownership, tuple uniqueness, explicit
+exclusions, enabled-action witnesses, verified status, and exact proof-harness
+coverage. `test/design/public_surface_behavior_test.dart` executes every app
+row against production decision helpers, and
+`website/src/features/organizers/publicSurfaceBehavior.test.ts` executes every
+website row against the generated-listing policy and the same claim/review
+presentation adapters consumed by the rendered sections. The current contract
+contains 118 configurations across 15 surfaces, including source-aware
+read-only website event detail. Adding a configuration without both
+implementation and proof fails strict mode.
 
 ## Current Stack
 
@@ -199,7 +335,8 @@ local-data context, and sign-out live in the account disclosure.
 Operational directories and record review use URL-owned master-detail routes.
 Canonical list/workspace roots are `/overview`, `/safety`, `/access`, `/growth`,
 `/organizers`, `/organizers/claims`, `/events`, `/events/readiness`,
-`/events/external`, `/users`, `/finance`, `/quality`, and `/admin-roles`.
+`/events/external`, `/users`, `/finance`, `/quality`, `/operations`, and
+`/admin-roles`.
 
 Intake owns `/intake/organizers`, `/intake/events`, and `/intake/operations`.
 Marketing owns `/marketing` (default Posts), `/marketing/posts`,
@@ -272,6 +409,25 @@ compatibility artifact is regenerated. Reconciliation creates a separate
 immutable child run for expiry and stale-evidence changes rather than editing an
 already imported run.
 
+## Admin Agent Activity Monitor
+
+`/operations` is the read-only employee monitor for catalogued CLI/agent
+actions. `admin/src/features/operations/` uses the standard
+repository/controller/workspace split and reads only the bounded
+`adminListActionExecutions` callable. It filters the loaded page by action,
+status, actor, target, or error text and exposes explicit pagination. The table
+shows hash-bound metadata, including transport-ambiguous actions that need
+reconciliation, never request or response bodies. Manual actions
+remain in their owning routes; this route does not reproduce their mutation
+forms or authority decisions.
+
+`contracts/admin/admin_action_catalog.json` binds every admin API callable to a
+stable CLI action id, request schema, roles, workflow, GUI path, and
+confirmation policy. `tool/admin/generate_admin_action_catalog.mjs` produces
+the typed browser and Functions views; the operations parity checker rejects
+drift among the catalog, admin API, strict request validators, Functions
+exports, and workflow membership.
+
 ## Admin Callable Validation Boundary
 
 `admin/src/shared/api/adminApi.ts` owns the single live Firebase callable
@@ -286,6 +442,18 @@ committed typed registry under `admin/src/generated/validators/`. Callables
 without a dedicated JSON contract receive an explicit top-level object
 validator and remain listed separately from strict schema coverage; they must
 not disappear from the registry or be described as strictly validated.
+
+Each Admin feature surface binds its callable dependencies through
+`bindings.runtimeContracts`. Request and response directions are declared
+independently as `strict_schema` or `structural_object`, and the feature
+compiler compares those declarations with the generated registry. This rejects
+both overclaiming a structural validator as field-level proof and retaining a
+stale structural declaration after a strict schema lands.
+The highest-risk access decision, role mutation, safety assignment/decision,
+marketing draft/decision, and shared overview request/response directions now
+use dedicated strict schemas. Other callables remain explicitly structural
+where no field-level contract exists, so the registry still reports their
+weaker boundary honestly.
 
 Run `node tool/run.mjs check web:admin-callable-validators`. Admin
 `pretypecheck` runs the same drift check, so a callable or schema change cannot
@@ -358,11 +526,20 @@ pipeline:
   Storybook stories through a Playwright Chromium axe gate;
 - pushes to `main` that touch marketing-site inputs deploy only
   `hosting:marketing` to the production Firebase project;
+- the deploy job reads canonical organizer claim-target readiness from
+  production, materializes receipt-aware production and demo projections in
+  the ephemeral runner checkout, and verifies both before Firebase invokes the
+  normal predeploy build; committed receipt-free projections remain the stable
+  PR validation source rather than being mistaken for production readiness;
 - generated public routes are served as static files; only explicit host,
   claim, and API rewrites remain, so unknown paths use `dist/404.html` with an
   actual HTTP 404 instead of the root SPA shell;
 - the deploy job probes a unique unknown `catchdates.com` URL and fails unless
   the response status is 404;
+- the deploy job also probes every launch-critical route for HTTP 200,
+  route-specific canonical metadata, and required public content markers;
+- `.github/workflows/website-production-observability.yml` repeats those
+  launch-critical probes every 15 minutes and can be dispatched manually;
 - deployment uses the checked `prod` Firebase alias plus the repo's existing
   Google Cloud Workload Identity environment variables.
 
@@ -760,7 +937,7 @@ A future host dashboard still fits this architecture. Prefer:
 
 | Domain | Surface | Stack | Permission model |
 |---|---|---|---|
-| `hosts.catchdates.com` | Authenticated host portal for club/event management, scoped analytics, payout readiness, and event operations | React + TypeScript | Server-side Functions authorize host ownership per club/event |
+| `hosts.catchdates.com` | Authenticated host portal for organizer/event management, scoped analytics, payout readiness, and event operations | React + TypeScript | Server-side Functions authorize organizer ownership or management per organizer/event |
 
 Do not put host tools under `admin.catchdates.com`. Hosts are external operators,
 not internal admins. Keep `/host/` on `catchdates.com` as the public host
@@ -772,7 +949,7 @@ Host portal APIs should follow the same server-owned pattern as admin APIs:
 - the browser client never receives service-account credentials;
 - Functions validate Firebase Auth and host ownership;
 - mutations write audit or activity records where operationally useful;
-- analytics responses are scoped to clubs/events the signed-in host can manage.
+- analytics responses are scoped to organizers/events the signed-in host can manage.
 
 ## Why Subdomains Instead Of Paths
 

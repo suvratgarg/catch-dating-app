@@ -46,6 +46,7 @@ const attributionStorageKey = "catch_marketing_attribution_v1";
 const consentStorageKey = "catch_marketing_consent_v1";
 const trackedPageViews = new Set<string>();
 let gtmLoaded = false;
+let clientErrorMonitoringInstalled = false;
 
 const attributionKeys = [
   "utm_source",
@@ -75,7 +76,17 @@ function gtag(...args: unknown[]) {
 export function initializeMarketingAnalytics() {
   captureAttribution();
   installConsentDefaults();
+  installClientErrorMonitoring();
   maybeLoadGtm();
+}
+
+export function trackClientErrorSignal(errorSource: "window_error" | "unhandled_rejection") {
+  if (!getMarketingConsent()?.analytics) return false;
+  trackMarketingEvent("client_error", {
+    error_source: errorSource,
+    page_path: window.location.pathname,
+  });
+  return true;
 }
 
 export function getMarketingConsent(): MarketingConsent | null {
@@ -110,7 +121,7 @@ export function setMarketingConsent(choice: ConsentChoice) {
 }
 
 export function trackPageView(pageName: string) {
-  const pagePath = `${window.location.pathname}${window.location.search}`;
+  const pagePath = window.location.pathname;
   const pageKey = `${pageName}:${pagePath}`;
   if (trackedPageViews.has(pageKey)) return;
   trackedPageViews.add(pageKey);
@@ -127,9 +138,13 @@ export function trackMarketingEvent(
   eventName: string,
   parameters: Record<string, unknown> = {}
 ) {
+  const sanitizedParameters = {...parameters};
+  sanitizeAnalyticsUrlParameter(sanitizedParameters, "page_path");
+  sanitizeAnalyticsUrlParameter(sanitizedParameters, "page_location");
+
   dataLayer().push({
     event: eventName,
-    ...parameters,
+    ...sanitizedParameters,
     content_version: marketingContentVersion,
   });
 }
@@ -138,7 +153,7 @@ export function marketingCtaClickParameters(label: string, href: string) {
   return {
     cta_href: href,
     cta_label: label,
-    page_path: `${window.location.pathname}${window.location.search}`,
+    page_path: window.location.pathname,
   };
 }
 
@@ -160,7 +175,7 @@ export function waitlistAnalyticsPayload(
       consent: getMarketingConsent(),
       eventId,
       formVariant,
-      pagePath: `${window.location.pathname}${window.location.search}`,
+      pagePath: window.location.pathname,
       pageTitle: document.title,
       submittedAt: new Date().toISOString(),
     },
@@ -215,6 +230,17 @@ function maybeLoadGtm() {
   document.head.appendChild(script);
 }
 
+function installClientErrorMonitoring() {
+  if (clientErrorMonitoringInstalled) return;
+  clientErrorMonitoringInstalled = true;
+  window.addEventListener("error", () => {
+    trackClientErrorSignal("window_error");
+  });
+  window.addEventListener("unhandledrejection", () => {
+    trackClientErrorSignal("unhandled_rejection");
+  });
+}
+
 function captureAttribution() {
   const current = currentAttributionTouch();
   const stored = readAttribution();
@@ -257,6 +283,15 @@ function currentAttributionTouch(): AttributionTouch {
     referrer: document.referrer || null,
     values,
   };
+}
+
+function sanitizeAnalyticsUrlParameter(
+  parameters: Record<string, unknown>,
+  key: "page_path" | "page_location"
+) {
+  const value = parameters[key];
+  if (typeof value !== "string") return;
+  parameters[key] = value.split("?", 1)[0];
 }
 
 function readJson<T>(key: string): T | null {

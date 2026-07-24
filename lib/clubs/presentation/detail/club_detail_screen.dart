@@ -17,6 +17,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_mutation_error_listener.dart';
@@ -84,11 +85,15 @@ class ClubDetailScreen extends ConsumerWidget {
     );
     final screenState = HostClubDetailScreenState.fromState(
       viewModel: _catchAsyncState(vmAsync),
-      initialClub: initialClub,
+      initialClub: clubDetailInitialClubForRoute(
+        clubId: clubId,
+        initialClub: initialClub,
+      ),
       currentUid: currentUid,
       currentUserProfile: currentUserProfile,
       currentMembership: currentMembership,
       appRole: AppConfig.appRole,
+      authResolved: currentUidAsync.hasValue || currentUidAsync.hasError,
     );
 
     Widget wrapMutationListeners(Widget child) => CatchMutationErrorListeners(
@@ -192,6 +197,7 @@ class ClubDetailScreen extends ConsumerWidget {
           title: context.l10n.clubsClubDetailScreenTitleClubNotFound,
           message: context.l10n.clubsClubDetailScreenMessageThisClubIsNo,
           icon: CatchIcons.groupsOutlined,
+          secondaryAction: const CatchErrorBackAction(),
         ),
         HostClubDetailContent() => const SizedBox.shrink(),
       },
@@ -221,11 +227,7 @@ String _eventDetailRouteName(ClubDetailEventRouteTarget target) {
 }
 
 CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
-  return value.when(
-    data: CatchAsyncState<T>.data,
-    loading: () => const CatchAsyncState.loading(),
-    error: (error, stackTrace) => CatchAsyncState<T>.error(error),
-  );
+  return catchAsyncStateFromAsyncValue(value);
 }
 
 // ClubDetailLoadingBody and skeleton widget classes have been extracted to

@@ -61,6 +61,10 @@
       "$ref": "../shared/event_common.schema.json#/definitions/documentId",
       "x-catch-ownership": "callable-owned"
     },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
     "startTime": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
       "x-catch-ownership": "callable-owned"

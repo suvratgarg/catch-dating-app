@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.3.0
-updated: 2026-07-18
+version: 1.5.1
+updated: 2026-07-23
 owner: recursive_audit_loop
 status: active
 ---
@@ -35,9 +35,10 @@ Read this before changing:
 
 | Surface | Owner |
 |---|---|
-| Persisted document schemas, callable payload schemas, fixtures, catalogs | `contracts/` |
+| Persisted document, callable, and public HTTP schemas plus fixtures and catalogs | `contracts/` |
 | Storage path contracts (upload paths, content-type, size limits, owner) | `contracts/storage/` |
 | Generated TypeScript interfaces, Ajv validators, and Admin SDK Timestamp types | `functions/src/shared/generated/` |
+| Generated website and Admin browser contract types | `website/src/shared/contracts/generated/` and `admin/src/generated/contracts/` |
 | Generated Dart schema constants/registry | `lib/core/schema_contracts/generated/` |
 | Tool-side schema registry and validators | `tool/contracts/generated/` |
 | Firestore operation ownership metadata | `tool/contracts/firestore_contract.json` |
@@ -65,6 +66,40 @@ come from JSON Schema; the boundary is the timestamp representation:
 `tool/contracts/check_firestore_contract.mjs` cross-checks that the Admin SDK
 projection has the expected fields for every collection with a
 `typescriptInterface` entry.
+
+### Public HTTP And Admin Callable Boundaries
+
+The public `/api/join-waitlist` endpoint uses the versioned schemas under
+`contracts/http/` for both member waitlist and optional Host application
+payloads. The generator emits the same types into website and Functions code;
+Functions validates incoming requests and every JSON response, while the
+website validates response JSON before treating a submission as successful.
+
+High-risk Admin overview, access-decision, role, safety, and marketing mutation
+requests/responses use dedicated schemas under `contracts/callables/` and
+`contracts/callable_responses/`. The generator emits Functions and Admin types,
+and `admin/scripts/generateCallableValidators.mjs` compiles the same schema
+sources into the browser runtime validator registry.
+
+## Organizer Authority
+
+`organizers/{organizerId}` is the canonical organization entity. `club` is an
+organizer subtype, never a peer top-level entity. The required
+`organizerType` enum is `club`, `community`, `individual`, `eventProducer`,
+`venue`, or `brand`; missing legacy values default to `club`. The complete
+mapping, rollout, parity, and recovery procedure is owned by
+`docs/migrations/clubs_to_organizers.md` and
+`contracts/migrations/clubs_to_organizers.json`.
+
+New contracts use `organizerId`, `organizerTeamMemberships`,
+`organizerFollows`, `organizerClaimRequests`, `organizerScheduleLocks`, and
+`organizers/{organizerId}/posts`. The `clubs`, `clubMemberships`,
+`clubClaimRequests`, `clubScheduleLocks`, `clubId`, and club-media contracts are
+released-client compatibility projections only. They remain additive during
+the migration window and must not become the authority for new behavior.
+Production canonical parity completed on 2026-07-22, and current Flutter reads
+do not fall back to `clubs`; compatibility writes remain until the separate
+released-client retirement gate is approved.
 
 ### Required Event Meeting Location
 
@@ -225,17 +260,42 @@ decoders).
 
 The schema generator also emits
 `lib/core/schema_contracts/generated/field_constraints.g.dart`. It projects
-UI-relevant `minLength`, `maxLength`, `pattern`, enum, and numeric bounds from
-patch and Firestore document schemas into typed
-`CatchContractFieldConstraints` constants. `CatchForm*Row` descriptors bind
-those constants through `contract:`; call sites may narrow a bound explicitly,
-but may not relax the contract.
+UI-relevant requiredness, value and item types, string length, format, pattern,
+enum values, collection bounds, uniqueness, numeric bounds, and `multipleOf`
+steps from every registered schema into typed
+`CatchContractFieldConstraints` constants. The projection includes persisted
+documents, callable payloads, and `contracts/forms/mobile_form_state.schema.json`
+for editable presentation values that are deterministically transformed before
+they are stored.
 
-`test/core/forms/contract_alignment_test.dart` walks the consumer-profile and
-host-club descriptor factories and contains a seeded over-limit probe, so the
-gate proves both missing bindings and contradictory limits are detectable. Run
-it through `node tool/run.mjs check contracts:form-alignment`; contract CI also
-keeps the generated projection deterministic via the schema generator's
+`CatchContractFieldPolicy` applies those constants at runtime. Text controls
+derive validators, counters, and length formatters; choices filter values
+through an explicit typed-to-wire serializer; steppers and range sliders derive
+bounds and steps. Explicit UI values may narrow a contract for product policy
+but cannot relax it. Composite controls bind each independently stored endpoint.
+
+Every editable canonical control and descriptor instance under production
+`lib/` is covered by
+`docs/audit_registry/flutter_form_contract_inventory.json`. The source scanner
+recognizes `CatchField`, `CatchChipField`, selectable chips, option groups/cards,
+range sliders, toggles, OTP entry, direct and top-bar search fields,
+`CatchForm*Row`, and the retained self-profile descriptors. It fails when a
+control lacks its generated contract, a typed choice lacks its serializer, a
+range lacks either endpoint, or an exemption is not explicit. The current two
+exemptions are disclosure-only Host analytics controls, not editable form
+values.
+
+Run the exhaustive gate with:
+
+```sh
+node tool/run.mjs check contracts:flutter-form-inventory
+```
+
+`test/core/forms/contract_alignment_test.dart` additionally walks the
+consumer-profile and host-club descriptor factories and contains a seeded
+over-limit probe, so contradictory limits remain detectable. Run it through
+`node tool/run.mjs check contracts:form-alignment`. Contract CI runs both gates
+and keeps the generated schema projection deterministic with the generator's
 `--check` mode.
 
 ## Relationship Documents
@@ -244,18 +304,18 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 
 | Relationship | Source document |
 |---|---|
-| Club membership | `clubMemberships/{clubId_uid}` |
-| One hosted-club lock | `clubHostClaims/{uid}` |
+| Organizer owner/manager seat | `organizerTeamMemberships/{organizerId_uid}` |
+| Organizer follow | `organizerFollows/{organizerId_uid}` |
 | Event booking, waitlist, attendance, cancellation | `eventParticipations/{eventId_uid}` |
 | Saved events | `savedEvents/{uid_eventId}` |
 | Outgoing profile decisions | `profileDecisions/{uid}/outgoing/{targetId}` |
 | Match messages | `matches/{matchId}/messages/{messageId}` |
 | Notification timeline | `notifications/{uid}/items/{notificationId}` |
-| Club follower posts | `clubs/{clubId}/posts/{postId}` |
+| Organizer follower posts | `organizers/{organizerId}/posts/{postId}` |
 
 Retired relationship arrays must not be reintroduced into Flutter models,
 Functions writes, Firestore rules, active tooling, or tests. Parent entity docs
-keep only aggregate projections such as `memberCount`, `bookedCount`,
+keep only aggregate projections such as `followerCount`, `bookedCount`,
 `waitlistedCount`, `checkedInCount`, `genderCounts`, `rating`, `reviewCount`,
 and `nextEventAt`.
 
@@ -269,19 +329,25 @@ Each device push token lives at
 `environment`, `platform`, optional app version/build, `locale`, `timeZone`, and
 `updatedAt`. The client owns this device metadata and rules restrict writes to
 the authenticated user plus the known role/environment/platform vocabulary.
+Consumer clients attempt the legacy `fcmToken` and installation document as
+independent compatibility writes, so an older deployed rule set cannot prevent
+the other representation from being refreshed. Each failure is still logged
+with its own non-PII resource context.
 Notification producers select reviewed templates by stable message id and use
 the installation locale when the delivery path supports per-installation
 fan-out. English remains the bundled server fallback; notification prose must
 not be stored as an unversioned remote document.
 
-## Club Follower Posts
+## Organizer Follower Posts
 
-Organizer follower posts live under `clubs/{clubId}/posts/{postId}` and are
-created only by the `createClubPost` callable. Clients may read authenticated
-posts, but direct writes are denied. The callable verifies host authority,
-validates optional linked events against the same club, enforces the rolling
-three-posts-per-seven-days club quota, writes the canonical post, and fans out
-durable `clubUpdate` activity notifications to active followers.
+Organizer follower posts live under
+`organizers/{organizerId}/posts/{postId}` and are created only by the
+`createOrganizerPost` callable. Clients may read authenticated posts, but
+direct writes are denied. The callable verifies organizer-manager authority,
+validates optional linked events against the same organizer, enforces the
+rolling three-posts-per-seven-days quota, writes the canonical post, and fans
+out durable `organizerUpdate` activity notifications to active followers.
+`createClubPost` and the nested club post are compatibility shadows.
 
 ## Event Broadcast Receipts
 
@@ -371,6 +437,15 @@ creates a new lineage-bound run and new work-item ids rather than mutating the
 source snapshot, preserving immutable importer semantics across expiry and
 staleness sweeps.
 
+`adminActionExecutions/{executionId}` is the separate remote monitor record for
+one admin CLI invocation. It stores action/callable identity, actor roles,
+target label, request/response hashes, timestamps, and a bounded terminal
+error—not the request or response body. A role-gated callable creates the
+`started` receipt before the business callable runs and advances it to exactly
+one immutable `succeeded`, `failed`, or transport-ambiguous `indeterminate`
+outcome. Browser clients can inspect the bounded projection only through
+`adminListActionExecutions`; direct Firestore reads and writes remain denied.
+
 Runs must budget between 1 and 10,000 work items. Imported run metadata carries
 authoritative total, active, terminal, stage, and human-review aggregates; the
 admin read fails closed unless those totals reconcile. The canonical human
@@ -383,14 +458,15 @@ host locks:
 
 | Collection / field | Owner | Notes |
 |---|---|---|
-| `clubClaimRequests/{requestId}` | `requestClubClaim`, `adminDecideClubClaim` | Server-owned claim queue. Clients create and decide only through callables; direct Firestore reads/writes are denied. |
-| `clubs/{clubId}.claim` | claim callables and admin index-review callables | Public-page claim state, latest request id, review audit, and owner-facing status. |
-| `clubs/{clubId}.ownership` | claim callables, create/update club callables | `programmatic` before ownership, `claimed` after approval. |
-| `clubs/{clubId}.publicPage.indexReview` | `adminSetClubIndexStatus` | Audit evidence for source quality, media rights, cadence, and owner/contact verification before a page becomes indexable. |
+| `organizerClaimRequests/{requestId}` | `requestOrganizerClaim`, `adminDecideOrganizerClaim` | Server-owned claim queue. Clients create and decide only through callables; direct Firestore reads/writes are denied. |
+| `organizers/{organizerId}.claim` | organizer claim callables and admin index-review callables | Public-page claim state, latest request id, review audit, and owner-facing status. |
+| `organizers/{organizerId}.ownership` | organizer claim/create/update callables | `programmatic` before ownership, `claimed` after approval. |
+| `organizers/{organizerId}.publicPage.indexReview` | admin organizer indexing | Audit evidence for source quality, media rights, cadence, and owner/contact verification before a page becomes indexable. |
 | `reviews/{reviewId}.ownerResponse` | `setReviewResponse` | Server-owned owner response rendered by app and website review surfaces. |
 
-`clubHostClaims/{uid}` remains the one-hosted-club lock. It is not the public
-claim request queue.
+`organizerTeamMemberships` owns active owner and manager seats. Legacy
+`clubHostClaims` remains only long enough to support released club callables;
+it is not organizer claim authority.
 
 ## Event Discovery Projection
 
@@ -422,11 +498,12 @@ the direct event index. The repair is dry-run by default and requires
 `--allow-prod` when applying against prod.
 
 Admin organizer search uses a separate server-owned
-`clubs/{clubId}.adminSearch` projection for the admin Organizers canonical
-directory. It is not consumed by the app or website. `adminListClubDetails`
+`organizers/{organizerId}.adminSearch` projection for the admin Organizers
+canonical directory. It is not consumed by the app or website.
+`adminListOrganizerDetails`
 accepts either a single `citySlug` or a bounded `citySlugs` array for
-admin-only launch-city work queues such as Indore + Mumbai. Existing club docs
-can be repaired with `node tool/data/backfill_organizer_admin_search.mjs`; the
+admin-only launch-city work queues such as Indore + Mumbai. Existing organizer
+docs can be repaired with `node tool/data/backfill_organizer_admin_search.mjs`; the
 repair is dry-run by default and requires `--allow-prod` when applying against
 prod.
 
@@ -558,11 +635,12 @@ Verified in this consolidation pass from current code and registry state:
 - Relationship arrays have already been retired from active app surfaces.
 - `tool/data/validate_firestore_data.mjs` validates edge documents and parent
   aggregate drift instead of reconstructing from arrays.
-- `createEvent`, `updateEvent`, `cancelEvent`, `deleteEvent`, club mutations,
+- `createEvent`, `updateEvent`, `cancelEvent`, `deleteEvent`, organizer mutations,
   booking/waitlist/attendance, payments, reviews, safety actions, profile
   updates, Places, and event-success write paths are callable/trigger owned as
   documented in `docs/backend_operation_catalog.md`.
-- Contract schemas now cover private/public profiles, events, clubs,
+- Contract schemas now cover private/public profiles, events, organizers and
+  their explicit legacy club projections,
   relationship docs, social/payment/safety/operational docs, event-success
   documents, callable request payloads, selected responses, direct-write
   payloads, prompt catalogs, seed fixtures, and migration contracts.
@@ -572,34 +650,39 @@ Verified in this consolidation pass from current code and registry state:
   schema validation, Functions checks, rules tests, and focused Flutter
   contract tests.
 
-## Event Model Rename And Remote Cleanup
+## Historical Event Rename And Organizer Cutover
 
-Local naming has moved from run/run-club language to event/club language:
+The older run/run-club rename is complete. The current authority cutover moves
+the organization entity from `Club` to `Organizer`, with `club` retained as an
+`organizerType` value:
 
 | Old name | Current name |
 |---|---|
 | `Run` | `Event` |
-| `RunClub` | `Club` |
+| `RunClub` | `Organizer` with `organizerType: club` |
 | `RunParticipation` | `EventParticipation` |
 | `SavedRun` | `SavedEvent` |
 
-The local rename is complete across Dart feature folders, domain classes,
-repositories, routes, tests, Functions source folders, callable exports,
-generated schema types, Firestore rules, indexes, contract schemas, seed tools,
-repair tools, validation tools, and generated outputs.
+Organizer-named contracts, runtime collections, callables, routes, media paths,
+and product-facing copy are the current local authority. `Club`-named Dart
+types/folders and callable wrappers are compatibility adapters until the remote
+backfill and supported-client window are proven. They must not be used to
+introduce new club-only behavior.
 
-Remote data cleanup is intentionally not complete. Do not delete or reset
-Firestore data in dev, staging, or prod without a separate explicit
-destructive-action confirmation. Preserve user documents and club documents
-through any remote migration.
+Remote organizer backfill is complete in staging and production; legacy
+cleanup is intentionally not complete. Follow
+`docs/migrations/clubs_to_organizers.md`. Do not delete or reset Firestore data
+in dev, staging, or prod without a separate explicit destructive-action
+confirmation. Preserve user documents and both canonical organizer documents
+and legacy club projections through any remote migration.
 
 If remote cleanup is approved, first export or back up existing `users`,
 `publicProfiles`, and old `runClubs` documents for each Firebase environment.
-Then copy any host organizations worth preserving into `clubs`, reset
+Then copy any host organizations worth preserving into `organizers`, reset
 event-specific legacy collections and edges such as old `runs`,
 `runParticipations`, `savedRuns`, reviews, event schedule locks, event-derived
 profile decisions, and generated demo event documents, and re-run seed/host tooling against
-the new `events` and `clubs` collections.
+the canonical `events` and `organizers` collections.
 
 ## Open Watch Items
 
@@ -610,8 +693,8 @@ the new `events` and `clubs` collections.
 - `MIGRATION-VALIDATION-001`: before applying legacy migration scripts to
   shared beta data, add or keep seeded fixture tests for duplicates, missing
   docs, deleted users, legacy chats, and count mismatches.
-- `DELETE-METHODOLOGY-QUEUE`: core account/event/club deletion is
-  relationship-doc aware; broader historical event/club deletion still needs
+- `DELETE-METHODOLOGY-QUEUE`: core account/event/organizer deletion is
+  relationship-doc aware; broader historical event/organizer deletion still needs
   product policy before expanding beyond cancel/archive/delete-unused.
 - Retired storage rename from `swipes` to `profileDecisions`: keep legacy
   migration/backfill tooling available for validation and cleanup, but do not

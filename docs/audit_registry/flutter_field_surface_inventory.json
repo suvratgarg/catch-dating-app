@@ -3,11 +3,11 @@
   "generatedBy": "tool/design/generate_flutter_field_surface_inventory.mjs",
   "source": {
     "manifest": "docs/audit_registry/flutter_field_surface_adoption.json",
-    "manifestSha256": "56ceae1445f117cad56c0d09bc86cc50f1d8d8a995727d7123f25171f180507a",
+    "manifestSha256": "3557928e192754aea43616bd99b41ddaef91d848f7227abad3bad3952c7865cf",
     "routeInventory": "tool/ui_capture/route_inventory.json",
-    "routeInventorySha256": "06791556d5d634a08f5b60481c7c258a8ecbd0eb7828b63033a5fc020d16c03c",
+    "routeInventorySha256": "f92fe6fc7058c567b3603d9fa3ae46f122871a70ded3aa43eb17017b6470e245",
     "screenContracts": "design/screens/catch.screens.json",
-    "screenContractsSha256": "2faface104983bfc0e0952231564557657250d5dfb40a5d01c1c63871eee8d89"
+    "screenContractsSha256": "b9f6955dfdd6d1bea7299cc4f30a477541d18ff6ad773d2f2f1a5e69f87f3ed3"
   },
   "summary": {
     "candidateCount": 10,
@@ -128,12 +128,12 @@
           "expected": 6,
           "observed": 6,
           "lines": [
-            417,
-            472,
-            538,
-            1000,
-            1200,
-            1251
+            426,
+            486,
+            558,
+            1046,
+            1279,
+            1330
           ]
         },
         {
@@ -143,8 +143,8 @@
           "expected": 2,
           "observed": 2,
           "lines": [
-            1087,
-            1138
+            1149,
+            1206
           ]
         },
         {
@@ -154,9 +154,9 @@
           "expected": 3,
           "observed": 3,
           "lines": [
-            421,
-            432,
-            501
+            431,
+            442,
+            518
           ]
         },
         {
@@ -166,17 +166,17 @@
           "expected": 11,
           "observed": 11,
           "lines": [
-            475,
-            520,
-            544,
-            606,
-            1010,
-            1021,
-            1053,
-            1089,
-            1103,
-            1140,
-            1155
+            490,
+            538,
+            564,
+            635,
+            1056,
+            1069,
+            1111,
+            1151,
+            1167,
+            1208,
+            1225
           ]
         },
         {
@@ -186,7 +186,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            584
+            609
           ]
         },
         {
@@ -196,8 +196,8 @@
           "expected": 2,
           "observed": 2,
           "lines": [
-            1043,
-            1178
+            1093,
+            1254
           ]
         },
         {
@@ -207,7 +207,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            444
+            454
           ]
         },
         {
@@ -217,8 +217,8 @@
           "expected": 2,
           "observed": 2,
           "lines": [
-            1076,
-            1129
+            1136,
+            1195
           ]
         },
         {
@@ -228,14 +228,14 @@
           "expected": 8,
           "observed": 8,
           "lines": [
-            1121,
-            1203,
-            1211,
-            1219,
-            1229,
-            1234,
-            1254,
-            1259
+            1187,
+            1282,
+            1290,
+            1298,
+            1308,
+            1313,
+            1333,
+            1338
           ]
         }
       ]
@@ -285,7 +285,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            237
+            263
           ]
         }
       ]
@@ -304,7 +304,7 @@
       "routeIds": [
         "hostClubsScreen"
       ],
-      "semanticFieldCount": 7,
+      "semanticFieldCount": 8,
       "bindings": [
         {
           "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
@@ -328,7 +328,7 @@
         {
           "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
           "symbol": "CatchFormSingleChoiceRow",
-          "expected": 1
+          "expected": 2
         }
       ],
       "targetModes": [
@@ -342,7 +342,7 @@
       ],
       "verification": [
         "Host Club Identity and Contact sections render through two typed CatchFormRowList<UpdateClubPatch> instances",
-        "Contract alignment test covers all seven editable Host Club patch fields",
+        "Contract alignment test covers all eight editable Host Club patch fields, including organizer type",
         "Deleted HostInline editors leave zero production legacy call sites"
       ],
       "recommendation": "Completed: Host Club Identity and Contact editing now use typed form descriptors; the former HostInline editor file and hand-rolled choice chips are deleted.",
@@ -354,18 +354,19 @@
           "expected": 2,
           "observed": 2,
           "lines": [
-            286,
-            293
+            287,
+            294
           ]
         },
         {
           "file": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
           "kind": "call",
           "symbol": "CatchFormSingleChoiceRow",
-          "expected": 1,
-          "observed": 1,
+          "expected": 2,
+          "observed": 2,
           "lines": [
-            388
+            393,
+            416
           ]
         }
       ]
@@ -415,9 +416,9 @@
           "expected": 3,
           "observed": 3,
           "lines": [
-            480,
-            505,
-            529
+            477,
+            503,
+            528
           ]
         }
       ]
@@ -469,11 +470,11 @@
           "expected": 5,
           "observed": 5,
           "lines": [
-            270,
-            289,
-            296,
-            315,
-            338
+            275,
+            298,
+            308,
+            329,
+            355
           ]
         }
       ]
@@ -543,7 +544,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            112
+            114
           ]
         }
       ]
@@ -655,7 +656,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            153
+            152
           ]
         },
         {
@@ -665,7 +666,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            190
+            192
           ]
         },
         {
@@ -675,7 +676,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            201
+            206
           ]
         }
       ]
@@ -735,7 +736,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            97
+            96
           ]
         },
         {
@@ -808,9 +809,9 @@
           "expected": 3,
           "observed": 3,
           "lines": [
-            309,
-            324,
-            342
+            315,
+            332,
+            353
           ]
         },
         {
@@ -820,7 +821,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            288
+            292
           ]
         },
         {
@@ -830,7 +831,7 @@
           "expected": 1,
           "observed": 1,
           "lines": [
-            360
+            374
           ]
         },
         {
@@ -840,10 +841,10 @@
           "expected": 4,
           "observed": 4,
           "lines": [
-            376,
             392,
-            408,
-            423
+            410,
+            428,
+            445
           ]
         }
       ]

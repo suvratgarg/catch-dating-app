@@ -43,6 +43,8 @@ class FiltersPreferencesState {
   final bool resetEnabled;
   final bool applyEnabled;
 
+  bool get requestControlsEnabled => !content.saving;
+
   bool get isDirty {
     return content.ageRange.start.round() != savedAgeRange.start.round() ||
         content.ageRange.end.round() != savedAgeRange.end.round() ||

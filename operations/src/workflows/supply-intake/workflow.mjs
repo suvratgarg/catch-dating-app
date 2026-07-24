@@ -6,7 +6,11 @@ import {
   uniqueSorted,
 } from "../../platform/contracts.mjs";
 import {invariant} from "../../platform/errors.mjs";
-import {LegacyIntakeArtifactAdapter, stripArtifactData} from "./adapters/legacy-artifacts.mjs";
+import {
+  LegacyIntakeArtifactAdapter,
+  organizerPacketSupportsMarket,
+  stripArtifactData,
+} from "./adapters/legacy-artifacts.mjs";
 import {loadSourceProfiles} from "./sources/index.mjs";
 import {
   SUPPLY_INTAKE_ENTITY_KINDS,
@@ -19,6 +23,7 @@ import {
 export const MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN = MAX_WORK_ITEMS_PER_RUN;
 export const SUPPLY_INTAKE_WORKFLOW_ID = "supply-intake";
 export const SUPPLY_INTAKE_WORKFLOW_VERSION = "0.1.0";
+const SUPPLY_INTAKE_STALE_AFTER_HOURS = 168;
 
 export class SupplyIntakeWorkflow {
   constructor({
@@ -43,7 +48,12 @@ export class SupplyIntakeWorkflow {
     const generatedAt = new Date(now).toISOString();
     const profiles = await this.sourceProfilesLoader();
     const artifactSnapshotWithData = await this.adapter.snapshot({market});
-    const artifactSnapshot = stripArtifactData(artifactSnapshotWithData);
+    assertEventBridgeCompatibility(artifactSnapshotWithData, {
+      market,
+      generatedAt,
+      staleAfterHours: SUPPLY_INTAKE_STALE_AFTER_HOURS,
+    });
+    const artifactSnapshot = stripArtifactData(artifactSnapshotWithData, {market});
     const plannedItems = plannedWorkItemCount(artifactSnapshot, profiles.length);
     invariant(
       plannedItems <= MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN,
@@ -53,7 +63,7 @@ export class SupplyIntakeWorkflow {
     );
     const sourceProfiles = profiles.map(snapshotSourceProfile);
     const policy = {
-      staleAfterHours: 168,
+      staleAfterHours: SUPPLY_INTAKE_STALE_AFTER_HOURS,
       randomAuditBasisPoints: 10_000,
       autoPublicationEnabled: false,
       editorialSourcesDiscoveryOnly: true,
@@ -271,6 +281,7 @@ export class SupplyIntakeWorkflow {
     }
     const organizerArtifact = artifacts.organizerPublicationPackets;
     for (const packet of organizerArtifact?.data?.packets ?? []) {
+      if (!organizerPacketSupportsMarket(packet, plan.market)) continue;
       items.push(workItemForOrganizer(packet, {runId, now, market: plan.market, artifact: organizerArtifact}));
     }
     return dedupeItems(items).sort((left, right) => left.workItemId.localeCompare(right.workItemId));
@@ -348,6 +359,52 @@ function copyLifecycleSemantics(semantics) {
     publishedStatuses: [...semantics.publishedStatuses],
     expiredStatuses: [...semantics.expiredStatuses],
   };
+}
+
+function assertEventBridgeCompatibility(snapshot, {market, generatedAt, staleAfterHours}) {
+  const artifact = snapshot?.artifacts?.eventIntakeBridge;
+  invariant(
+    artifact?.status === "available" && artifact.data,
+    "ARTIFACT_NOT_FOUND",
+    `A reviewed Event Intake bridge is required for ${market}.`,
+    {market, artifactRef: artifact?.relativePath ?? null}
+  );
+  const bridge = artifact.data;
+  invariant(
+    bridge.city?.id === market,
+    "ARTIFACT_MARKET_MISMATCH",
+    `Event Intake bridge ${artifact.relativePath} does not match market ${market}.`,
+    {market, bridgeMarket: bridge.city?.id ?? null, artifactRef: artifact.relativePath}
+  );
+  const bridgeGeneratedAt = Date.parse(bridge.generatedAt ?? "");
+  const planGeneratedAt = Date.parse(generatedAt);
+  const maximumAgeMs = staleAfterHours * 60 * 60 * 1_000;
+  invariant(
+    Number.isFinite(bridgeGeneratedAt) &&
+      bridgeGeneratedAt <= planGeneratedAt &&
+      planGeneratedAt - bridgeGeneratedAt <= maximumAgeMs,
+    "ARTIFACT_STALE",
+    `Event Intake bridge ${artifact.relativePath} is outside the ${staleAfterHours}-hour freshness window.`,
+    {
+      market,
+      artifactRef: artifact.relativePath,
+      bridgeGeneratedAt: bridge.generatedAt ?? null,
+      planGeneratedAt: generatedAt,
+      staleAfterHours,
+    }
+  );
+  invariant(
+    /^\d{4}-\d{2}-\d{2}$/.test(bridge.weekEnd ?? "") &&
+      bridge.weekEnd >= generatedAt.slice(0, 10),
+    "ARTIFACT_STALE",
+    `Event Intake bridge ${artifact.relativePath} has an expired review window.`,
+    {
+      market,
+      artifactRef: artifact.relativePath,
+      bridgeWeekEnd: bridge.weekEnd ?? null,
+      planDate: generatedAt.slice(0, 10),
+    }
+  );
 }
 
 function plannedWorkItemCount(artifactSnapshot, sourceProfileCount) {

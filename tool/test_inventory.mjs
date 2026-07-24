@@ -40,8 +40,12 @@ export function buildInventory(files = trackedFiles()) {
   };
 }
 
+export function renderInventory(inventory = buildInventory()) {
+  return `${JSON.stringify(inventory, null, 2)}\n`;
+}
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const rendered = `${JSON.stringify(buildInventory(), null, 2)}\n`;
+  const rendered = renderInventory();
   if (process.argv.includes("--check")) {
     if (!fs.existsSync(outputPath) || fs.readFileSync(outputPath, "utf8") !== rendered) {
       console.error("Test inventory is stale. Run: node tool/test_inventory.mjs");

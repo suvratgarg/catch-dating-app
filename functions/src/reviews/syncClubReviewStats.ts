@@ -28,20 +28,20 @@ const defaultDeps: SyncClubReviewStatsDeps = {
  * @return {Promise<void>}
  */
 export async function refreshClubReviewStats(
-  clubId: string,
+  organizerId: string,
   deps: SyncClubReviewStatsDeps = defaultDeps
 ): Promise<void> {
   const db = deps.firestore();
-  const clubRef = db.collection("clubs").doc(clubId);
-  const clubSnap = await clubRef.get();
+  const organizerRef = db.collection("organizers").doc(organizerId);
+  const organizerSnap = await organizerRef.get();
 
-  if (!clubSnap.exists) {
+  if (!organizerSnap.exists) {
     return;
   }
 
   const publishedReviews = db
     .collection("reviews")
-    .where("clubId", "==", clubId)
+    .where("organizerId", "==", organizerId)
     .where("moderationStatus", "==", "published");
 
   const [publishedAgg, verifiedAgg] = await Promise.all([
@@ -59,11 +59,15 @@ export async function refreshClubReviewStats(
   const verifiedReviewCount = verifiedAgg.data().count;
   const averageRating = verifiedAgg.data().averageRating;
 
-  await clubRef.set({
+  const projection = {
     rating: verifiedReviewCount === 0 ? 0 : averageRating ?? 0,
     reviewCount,
     verifiedReviewCount,
-  }, {merge: true});
+  };
+  const batch = db.batch();
+  batch.set(organizerRef, projection, {merge: true});
+  batch.set(db.collection("clubs").doc(organizerId), projection, {merge: true});
+  await batch.commit();
 }
 
 /**
@@ -74,22 +78,22 @@ export async function refreshClubReviewStats(
  * @return {Promise<void>}
  */
 export async function syncClubReviewStatsHandler(
-  before: {clubId?: string} | undefined,
-  after: {clubId?: string} | undefined,
+  before: {organizerId?: string; clubId?: string} | undefined,
+  after: {organizerId?: string; clubId?: string} | undefined,
   deps: SyncClubReviewStatsDeps = defaultDeps
 ): Promise<void> {
-  const clubIds = new Set<string>();
+  const organizerIds = new Set<string>();
 
-  if (before?.clubId) {
-    clubIds.add(before.clubId);
+  if (before?.organizerId ?? before?.clubId) {
+    organizerIds.add(before.organizerId ?? before!.clubId!);
   }
-  if (after?.clubId) {
-    clubIds.add(after.clubId);
+  if (after?.organizerId ?? after?.clubId) {
+    organizerIds.add(after.organizerId ?? after!.clubId!);
   }
 
   await Promise.all(
-    Array.from(clubIds).map(
-      (clubId) => refreshClubReviewStats(clubId, deps)
+    Array.from(organizerIds).map(
+      (organizerId) => refreshClubReviewStats(organizerId, deps)
     )
   );
 }
@@ -97,8 +101,10 @@ export async function syncClubReviewStatsHandler(
 export const syncClubReviewStats = onDocumentWritten(
   "reviews/{reviewId}",
   async (event) => {
-    const before = event.data?.before.data() as {clubId?: string} | undefined;
-    const after = event.data?.after.data() as {clubId?: string} | undefined;
+    const before = event.data?.before.data() as
+      {organizerId?: string; clubId?: string} | undefined;
+    const after = event.data?.after.data() as
+      {organizerId?: string; clubId?: string} | undefined;
     await syncClubReviewStatsHandler(before, after);
   }
 );

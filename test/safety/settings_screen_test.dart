@@ -1,16 +1,22 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
+import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -39,6 +45,11 @@ void main() {
     expect(find.text('No blocked accounts'), findsOneWidget);
     expect(find.byKey(SettingsKeys.showOnMapSwitch), findsOneWidget);
     expect(find.byKey(SettingsKeys.weeklyDigestSwitch), findsOneWidget);
+    expect(find.text('Edit profile'), findsNothing);
+    expect(find.text('Privacy policy'), findsNothing);
+    expect(find.text('Terms'), findsNothing);
+    expect(find.text('1.0.1'), findsOneWidget);
+    expect(find.text('Catch 1.0.1 · made in Bombay'), findsOneWidget);
     expect(_topBarMaterial(tester).color, CatchTokens.editorialLight.bg);
   });
 
@@ -154,6 +165,72 @@ void main() {
     );
   });
 
+  testWidgets('pending settings write freezes the whole settings surface', (
+    tester,
+  ) async {
+    final pendingWrite = Completer<void>();
+    final container = _settingsContainer(
+      user: buildUser(),
+      blockedUsers: [
+        BlockedUser(
+          uid: 'blocked-1',
+          source: 'chat',
+          createdAt: DateTime(2026, 5),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await _pumpSettings(tester, container);
+    final write = SettingsController.savePreferenceMutation.run(
+      container,
+      (_) => pendingWrite.future,
+    );
+    await tester.pump();
+
+    final pendingTopBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
+    expect(pendingTopBar.leadingType, CatchTopBarLeading.back);
+    expect((pendingTopBar.leading! as CatchIconAction).onPressed, isNull);
+    expect(
+      tester
+          .widget<CatchField>(find.byKey(SettingsKeys.weeklyDigestSwitch))
+          .onToggle,
+      isNull,
+    );
+    expect(
+      tester
+          .widget<CatchField>(find.byKey(SettingsKeys.reviewHistoryRow))
+          .onTap,
+      isNull,
+    );
+    expect(
+      tester
+          .widget<CatchField>(find.byKey(SettingsKeys.deleteAccountRow))
+          .onTap,
+      isNull,
+    );
+    expect(
+      tester.widget<CatchField>(find.byKey(SettingsKeys.signOutRow)).onTap,
+      isNull,
+    );
+    expect(
+      tester
+          .widget<CatchButton>(
+            find.byKey(SettingsKeys.unblockButton('blocked-1')),
+          )
+          .onPressed,
+      isNull,
+    );
+    expect(
+      find.byWidgetPredicate((widget) => widget is PopScope && !widget.canPop),
+      findsOneWidget,
+    );
+
+    pendingWrite.complete();
+    await write;
+    await tester.pump();
+  });
+
   testWidgets('blocked account rows use profile data and unblock controller', (
     tester,
   ) async {
@@ -241,6 +318,77 @@ void main() {
     expect(launchMode, LaunchMode.externalApplication);
   });
 
+  testWidgets(
+    'pending host handoff freezes settings and false result is visible',
+    (tester) async {
+      final launchResult = Completer<bool>();
+      var launchCallCount = 0;
+      final container = _settingsContainer(
+        user: buildUser(),
+        blockedUsers: const [],
+        externalUrlLauncher: (uri, {mode = LaunchMode.platformDefault}) {
+          launchCallCount += 1;
+          return launchResult.future;
+        },
+      );
+      addTearDown(container.dispose);
+
+      await _pumpSettings(tester, container);
+      await tester.tap(find.byKey(SettingsKeys.hostAppRow));
+      await tester.pump();
+
+      expect(
+        find.descendant(
+          of: find.byKey(SettingsKeys.hostAppRow),
+          matching: find.byType(CatchLoadingIndicator),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        tester
+            .widget<CatchField>(find.byKey(SettingsKeys.reviewHistoryRow))
+            .onTap,
+        isNull,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is PopScope && !widget.canPop,
+        ),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.byKey(SettingsKeys.hostAppRow));
+      await tester.pump();
+      expect(launchCallCount, 1);
+
+      launchResult.complete(false);
+      await pumpFeatureUi(tester);
+      expect(
+        find.text('Could not open that link. Please try again.'),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets('host handoff reports a thrown launcher failure', (tester) async {
+    final container = _settingsContainer(
+      user: buildUser(),
+      blockedUsers: const [],
+      externalUrlLauncher: (uri, {mode = LaunchMode.platformDefault}) async =>
+          throw StateError('launcher unavailable'),
+    );
+    addTearDown(container.dispose);
+
+    await _pumpSettings(tester, container);
+    await tester.tap(find.byKey(SettingsKeys.hostAppRow));
+    await pumpFeatureUi(tester);
+
+    expect(
+      find.text('Could not open that link. Please try again.'),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('delete account confirmation delegates to controller', (
     tester,
   ) async {
@@ -295,6 +443,9 @@ ProviderContainer _settingsContainer({
   final container = ProviderContainer(
     overrides: [
       uidProvider.overrideWith((ref) => Stream.value(user.uid)),
+      appPackageInfoProvider.overrideWith(
+        (ref) async => (version: '1.0.1', buildNumber: '3'),
+      ),
       authRepositoryProvider.overrideWithValue(
         authRepository ?? _FakeSettingsAuthRepository(),
       ),

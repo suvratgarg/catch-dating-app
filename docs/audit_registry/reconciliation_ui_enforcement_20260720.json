@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "discardedFiles": [
+    {
+      "path": "docs/audit_registry/doc_versions.json",
+      "category": "discarded-theirs",
+      "reason": "The integration branch keeps the UI-enforcement catalog, whose audit, regression-ledger, and release-operation versions are all higher than or equal to the website branch values; release_operations 1.10.5 retains the website prelaunch store-link contract introduced by 1.10.4."
+    }
+  ]
+}

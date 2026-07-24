@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/clubs/data/club_draft_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_draft.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -25,6 +26,7 @@ void main() {
         description: 'Easy social club.',
         location: 'in-mh-mumbai',
         instagramHandle: '@sunsetstriders',
+        organizerType: OrganizerType.community,
       );
 
       await repository.saveDraft(userId: 'host-1', draft: draft);
@@ -34,6 +36,7 @@ void main() {
       expect(loaded!.name, 'Sunset Striders');
       expect(loaded.location, 'in-mh-mumbai');
       expect(loaded.instagramHandle, '@sunsetstriders');
+      expect(loaded.organizerType, OrganizerType.community);
     });
 
     test('different users have isolated drafts', () async {

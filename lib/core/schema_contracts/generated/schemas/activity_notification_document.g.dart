@@ -51,6 +51,7 @@ const schemaActivityNotificationDocumentSchema = <String, Object?>{
         'eventCancelled',
         'eventUpdated',
         'clubUpdate',
+        'organizerUpdate',
       ],
       'x-catch-ownership': 'server-only',
     },
@@ -134,6 +135,15 @@ const schemaActivityNotificationDocumentSchema = <String, Object?>{
       'x-catch-ownership': 'server-only',
     },
     'clubId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+      'x-catch-ownership': 'server-only',
+    },
+    'organizerId': <String, Object?>{
       'type': <Object?>[
         'string',
         'null',

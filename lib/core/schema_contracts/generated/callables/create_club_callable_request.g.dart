@@ -15,6 +15,7 @@ final class CreateClubCallableRequest {
     required this.description,
     required this.location,
     required this.area,
+    this.organizerType,
     this.imageUrl,
     this.profileImageUrl,
     this.clubPhotos,
@@ -30,6 +31,7 @@ final class CreateClubCallableRequest {
   final String description;
   final String location;
   final String area;
+  final String? organizerType;
   final String? imageUrl;
   final String? profileImageUrl;
   final List<Map<String, Object?>>? clubPhotos;
@@ -45,6 +47,7 @@ final class CreateClubCallableRequest {
     'description': description,
     'location': location,
     'area': area,
+    'organizerType': ?organizerType,
     'imageUrl': ?imageUrl,
     'profileImageUrl': ?profileImageUrl,
     'clubPhotos': ?clubPhotos,

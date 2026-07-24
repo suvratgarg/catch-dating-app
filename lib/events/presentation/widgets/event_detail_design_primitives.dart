@@ -100,7 +100,9 @@ class EventDetailHintList extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 7),
+            padding: const EdgeInsets.only(
+              top: CatchLayout.eventDetailHintDotTopInset,
+            ),
             child: CatchSurface(
               width: CatchLayout.eventDetailHintDotExtent,
               height: CatchLayout.eventDetailHintDotExtent,
@@ -723,7 +725,9 @@ class ItineraryRow extends StatelessWidget {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 3),
+                  padding: const EdgeInsets.only(
+                    top: CatchLayout.eventDetailItineraryDotTopInset,
+                  ),
                   child: CatchSurface(
                     width: CatchLayout.eventDetailItineraryDotExtent,
                     height: CatchLayout.eventDetailItineraryDotExtent,
@@ -737,9 +741,12 @@ class ItineraryRow extends StatelessWidget {
                 if (!isLast)
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        vertical:
+                            CatchLayout.eventDetailItineraryRailVerticalInset,
+                      ),
                       child: SizedBox(
-                        width: 1.5,
+                        width: CatchStroke.underline,
                         child: ColoredBox(color: railColor),
                       ),
                     ),

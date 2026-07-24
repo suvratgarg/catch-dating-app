@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/catch_test_fonts.dart';
+import 'support/catch_golden_file_comparator.dart';
 
 /// Auto-discovered by `flutter test` for EVERY test under `test/goldens/` (and
 /// nowhere else — the app's other ~1200 tests are unaffected).
@@ -16,5 +17,8 @@ import '../support/catch_test_fonts.dart';
 Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   await loadCatchTestFonts();
+  goldenFileComparator = CatchGoldenFileComparator(
+    Uri.parse('test/goldens/flutter_test_config.dart'),
+  );
   await testMain();
 }

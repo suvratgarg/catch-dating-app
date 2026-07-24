@@ -13,6 +13,7 @@ enum ActivityNotificationType {
   eventCancelled,
   eventUpdated,
   clubUpdate,
+  organizerUpdate,
 }
 
 @freezed
@@ -30,6 +31,7 @@ abstract class ActivityNotification with _$ActivityNotification {
     String? matchId,
     String? eventId,
     String? clubId,
+    String? organizerId,
     String? postId,
     String? actorUid,
     String? actorName,

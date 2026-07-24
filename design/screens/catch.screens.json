@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-07-19",
+  "updated": "2026-07-23",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -12,6 +12,29 @@
   "screens": [
     {
       "id": "screen.event.detail",
+        "shell": {
+          "owner": "host",
+          "nestedScaffoldAllowed": false,
+          "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "media-hero",
+          "expression": "SliverAppBar",
+          "owner": "registered media-hero",
+          "reason": "The registered collapsing media hero owns route chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Event Detail",
       "owner": "events",
       "priority": "P1",
@@ -19,27 +42,27 @@
       "routes": [
         {
           "id": "eventDetailScreen",
-          "path": "/clubs/:clubId/events/:eventId",
+          "path": "/organizers/:clubId/events/:eventId",
           "role": "primary"
         },
         {
           "id": "calendarEventDetailScreen",
-          "path": "/calendar/clubs/:clubId/events/:eventId",
+          "path": "/calendar/organizers/:clubId/events/:eventId",
           "role": "alias"
         },
         {
           "id": "savedEventDetailScreen",
-          "path": "/saved-events/clubs/:clubId/events/:eventId",
+          "path": "/saved-events/organizers/:clubId/events/:eventId",
           "role": "alias"
         },
         {
           "id": "dashboardEventDetailScreen",
-          "path": "/dashboard/clubs/:clubId/events/:eventId",
+          "path": "/dashboard/organizers/:clubId/events/:eventId",
           "role": "alias"
         },
         {
           "id": "hostAppEventDetailScreen",
-          "path": "/host/clubs/:clubId/events/:eventId",
+          "path": "/host/organizers/:clubId/events/:eventId",
           "role": "host"
         }
       ],
@@ -110,6 +133,20 @@
           "status": "available",
           "path": "design/components/catch.components.json",
           "notes": "`catch.event_detail_sections` groups Event Detail hero, ticket facts, overview primitives, host/social sections, companion prompt, booking dock, and avatar stack without promoting event-only compounds to reusable primitives."
+        },
+        {
+          "id": "repo.event-detail-feature-contract",
+          "kind": "repo",
+          "status": "available",
+          "path": "design/features/event_detail.feature.json",
+          "notes": "Structured orchestration source for Event Detail dimensions, booking-action cardinality, and exact screen-state coverage."
+        },
+        {
+          "id": "generated.event-detail-feature-contract",
+          "kind": "generated",
+          "status": "available",
+          "path": "design/features/generated/event_detail.feature_contract.json",
+          "notes": "Deterministic projection resolving every Event Detail state to captures, Widgetbook previews, tests, action cases, components, and data contracts."
         }
       ],
       "captures": [
@@ -453,6 +490,9 @@
           "kind": "offline",
           "status": "captured",
           "source": "Current fatal-error path can show backend/network failures, but there is no explicit offline composition state.",
+          "tests": [
+            "test/events/event_detail_widgets_test.dart"
+          ],
           "nextAction": "Define explicit offline copy and retry behavior if product wants this to diverge from the generic event error surface.",
           "captureIds": [
             "event_detail_offline"
@@ -465,7 +505,10 @@
           "id": "text_scale_2",
           "kind": "accessibility",
           "status": "captured",
-          "source": "No dedicated Event Detail text-scale capture yet.",
+          "source": "Text-scale 2.0 is exercised through the full Event Detail composition on the tall review device.",
+          "tests": [
+            "test/events/event_detail_widgets_test.dart"
+          ],
           "nextAction": "Compare tall-device text-scale capture after section adapters reduce layout drift.",
           "captureIds": [
             "event_detail_text_scale_2"
@@ -478,7 +521,10 @@
           "id": "reduced_motion",
           "kind": "accessibility",
           "status": "captured",
-          "source": "Hero and route transition use motion helpers, but no reduced-motion preview is registered for this screen.",
+          "source": "Hero and route transition motion is exercised with animations disabled across the full Event Detail composition.",
+          "tests": [
+            "test/events/event_detail_widgets_test.dart"
+          ],
           "nextAction": "Compare reduced-motion capture for hero presentation modes and route transition.",
           "captureIds": [
             "event_detail_reduced_motion"
@@ -920,6 +966,29 @@
     },
     {
       "id": "screen.club.detail",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "media-hero",
+          "expression": "SliverAppBar",
+          "owner": "registered media-hero",
+          "reason": "The registered collapsing media hero owns route chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Club Detail",
       "owner": "clubs",
       "priority": "P1",
@@ -927,7 +996,7 @@
       "routes": [
         {
           "id": "clubDetailScreen",
-          "path": "/clubs/:clubId",
+          "path": "/organizers/:clubId",
           "role": "primary"
         }
       ],
@@ -1561,6 +1630,28 @@
     },
     {
       "id": "screen.explore.discovery",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Explore Discovery",
       "owner": "explore",
       "priority": "P1",
@@ -1568,12 +1659,12 @@
       "routes": [
         {
           "id": "exploreScreen",
-          "path": "/clubs",
+          "path": "/organizers",
           "role": "primary"
         },
         {
           "id": "exploreMapScreen",
-          "path": "/clubs/map",
+          "path": "/organizers/map",
           "role": "alias"
         }
       ],
@@ -1656,6 +1747,20 @@
           "status": "available",
           "path": "design/reference_screens/manifest.json",
           "notes": "Explore discovery-feed PNG reference plus masks is registered for advisory pixel comparison."
+        },
+        {
+          "id": "repo.explore-feature-contract",
+          "kind": "repo",
+          "status": "available",
+          "path": "design/features/explore.feature.json",
+          "notes": "Structured orchestration source for Explore discovery/map dimensions, empty-state recovery action cardinality, exact screen-state coverage, and explicit evidence debt."
+        },
+        {
+          "id": "generated.explore-feature-contract",
+          "kind": "generated",
+          "status": "available",
+          "path": "design/features/generated/explore.feature_contract.json",
+          "notes": "Deterministic projection resolving every Explore state to captures, Widgetbook previews, tests or named evidence exceptions, action cases, components, and data contracts."
         }
       ],
       "captures": [
@@ -2001,6 +2106,9 @@
           "source": "ExploreMapScreen supports broad pan/filter scope through the map route distance controls, and the deterministic placeholder now renders an active distance ring when user location is seeded.",
           "captureIds": [
             "explore_map_distance_ring"
+          ],
+          "previewIds": [
+            "ExploreMapScreen/Map route states"
           ],
           "tests": [
             "test/explore/explore_widgets_test.dart"
@@ -2380,11 +2488,39 @@
           "id": "DS-EXPLORE-004",
           "status": "closed",
           "nextAction": "Closed by ExploreDiscoveryScreenState, which maps route provider-wave inputs into map launcher state, route body branch state, and empty-state copy/action before ExploreScreen renders visual slivers. Existing provider-free section states own feed-card planning, cover/search-open/event/external/club/map-sheet/filter/chrome labels, and map labels. The catalog-only CrossPaths proposal was retired; live attendee signals now use the established veiled-avatar privacy contract."
+        },
+        {
+          "id": "DS-EXPLORE-005",
+          "status": "open",
+          "nextAction": "Close the feature-contract evidence exceptions by adding deterministic capture coverage for no-exact-pin and zero-radius map results, plus focused automated coverage for no-exact-pin, offline, text-scale-2, and reduced-motion route states."
         }
       ]
     },
     {
       "id": "screen.dashboard.home",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Dashboard Home",
       "owner": "dashboard",
       "priority": "P1",
@@ -3044,11 +3180,39 @@
           "id": "DS-DASHBOARD-004",
           "status": "closed",
           "nextAction": "Closed by Dashboard Home reference export: full_dashboard.png and empty_start.png live under design/reference_screens/screen.dashboard.home, the manifest maps them to dashboard_home/dashboard_home_empty_start captures, and tool/design/check_reference_screens.mjs provides advisory pixel comparison. Current empty-start comparison after the hero-shell pass is 54.05% mismatch / 59.13 meanDelta, down from the first 58.50% / 76.92 baseline; full_dashboard remains at 28.50% / 36.79 until the populated-state pass."
+        },
+        {
+          "id": "DS-DASHBOARD-005",
+          "status": "open",
+          "nextAction": "Add focused state-level tests for profile_error, memberships_error, offline, text_scale_2, reduced_motion, and light_dark; feature.dashboard_home carries these six explicit evidence exceptions while compiling all 19 registered states and 12 Dashboard-owned actions."
         }
       ]
     },
     {
       "id": "screen.event_success.companion",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "compact",
+          "expression": "CatchTopBar",
+          "owner": "CatchTopBar",
+          "reason": "The source owns canonical compact route chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Event Success Companion",
       "owner": "event_success",
       "priority": "P1",
@@ -3056,7 +3220,7 @@
       "routes": [
         {
           "id": "eventSuccessCompanionScreen",
-          "path": "/clubs/:clubId/events/:eventId/companion",
+          "path": "/organizers/:clubId/events/:eventId/companion",
           "role": "primary"
         }
       ],
@@ -4120,17 +4284,44 @@
         {
           "id": "DS-EVENT-SUCCESS-COMPANION-003",
           "status": "closed",
-          "nextAction": "Closed by EventSuccessCompanionScreenState plus provider-free companion action sections. CompatibilityQuestionnaireSection, FirstHelloCheckInCard, SelfCheckInCard, PaperSelfCheckInBar, MicroPodCard, RotationScheduleCard, WingmanRequestSection, and EventSuccessFeedbackForm now receive explicit action state and typed callbacks from EventSuccessCompanionScreen/EventSuccessCompanionRouteScreen."
+          "nextAction": "Closed for provider-free companion section APIs and EventSuccessCompanionScreenState ownership. FirstHelloCheckInCard, SelfCheckInCard, PaperSelfCheckInBar, MicroPodCard, RotationScheduleCard, WingmanRequestSection, EventSuccessFeedbackForm, and CompatibilityQuestionnaireSection receive explicit action state and typed callbacks from EventSuccessCompanionScreen. The missing production route binding for the compatibility callback is tracked separately by DS-EVENT-SUCCESS-COMPANION-005."
         },
         {
           "id": "DS-EVENT-SUCCESS-COMPANION-004",
           "status": "blocked",
           "nextAction": "Blocked on missing canonical design exports for stage, reveal, wingman, afterglow, feedback, offline/error, accessibility, and theme variants. The only local Event Success Companion reference is design/reference_screens/screen.event_success.companion/default_live_guide.png with masks.json."
+        },
+        {
+          "id": "DS-EVENT-SUCCESS-COMPANION-005",
+          "status": "open",
+          "nextAction": "Wire EventSuccessCompanionRouteScreen to EventSuccessController.saveCompatibilityResponse through compatibilityResponseMutation, add route-level persistence proof, then remove FEATURE-ACTION-WIRING-001 from feature.event_success. Separately add focused tests for the nine registered state-level test exceptions; auto_launch remains launcher-policy evidence without synthetic visual evidence."
         }
       ]
     },
     {
       "id": "screen.catches.hub",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Catches Hub",
       "owner": "swipes",
       "priority": "P1",
@@ -4554,6 +4745,29 @@
     },
     {
       "id": "screen.catches.event",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Catches Event Deck",
       "owner": "swipes",
       "priority": "P1",
@@ -5242,6 +5456,28 @@
     },
     {
       "id": "screen.matches.list",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Matches List",
       "owner": "matches",
       "priority": "P1",
@@ -5804,6 +6040,29 @@
     },
     {
       "id": "screen.matches.chat",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "identity",
+          "expression": "CatchTopBar.identity",
+          "owner": "CatchTopBar",
+          "reason": "The source owns identity-aware canonical top-bar chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Match Chat",
       "owner": "chats",
       "priority": "P1",
@@ -6634,6 +6893,28 @@
     },
     {
       "id": "screen.profile.self",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "inline",
+          "expression": "CatchScreenHeaderTitle",
+          "owner": "CatchScreenHeaderTitle",
+          "reason": "The route uses canonical inline screen identity below shell chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Self Profile",
       "owner": "user_profile",
       "priority": "P1",
@@ -7338,6 +7619,28 @@
     },
     {
       "id": "screen.profile.public",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "compact",
+          "expression": "CatchTopBar",
+          "owner": "CatchTopBar",
+          "reason": "The source owns canonical compact route chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Public Profile",
       "owner": "public_profile",
       "priority": "P1",
@@ -7925,6 +8228,28 @@
     },
     {
       "id": "screen.host.home",
+        "shell": {
+          "owner": "host",
+          "nestedScaffoldAllowed": false,
+          "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Host Home",
       "owner": "hosts",
       "priority": "P1",
@@ -7974,6 +8299,20 @@
       },
       "designRefs": [
         {
+          "id": "repo.host-home-feature-contract",
+          "kind": "repo",
+          "status": "available",
+          "path": "design/features/host_home.feature.json",
+          "notes": "Authoritative Host Home feature orchestration source; the compiler requires exact coverage of all registered Host Home states and typed actions."
+        },
+        {
+          "id": "generated.host-home-feature-contract",
+          "kind": "generated",
+          "status": "available",
+          "path": "design/features/generated/host_home.feature_contract.json",
+          "notes": "Generated Host Home state, action, evidence, component, and data-contract projection; do not edit directly."
+        },
+        {
           "id": "repo.host-operations-tests",
           "kind": "repo",
           "status": "available",
@@ -8004,7 +8343,7 @@
         {
           "id": "host_home_events_list",
           "status": "captured",
-          "notes": "The 2026-07-10 deterministic full-shell capture renders the production HostAppShell at HostHomeTab.events with New/exact-policy-gated Repeat actions, minute-refreshed Upcoming/Live/Past filters, month groups, activity-spined rows, and truthful fill progress. It passes the canonical reference at 15.24% mismatch / 15.20 meanDelta without regressionThresholds."
+          "notes": "The deterministic full-shell capture renders the production HostAppShell at HostHomeTab.events with New/exact-policy-gated Repeat actions, minute-refreshed Upcoming/Live/Past filters, month groups, activity-spined rows, and truthful fill progress. The 2026-07-22 integrated result is 14.74% mismatch / 18.63 meanDelta, bounded at 18% / 19 by HOST-V2-EVENTS-VISUAL-DRIFT-001 while the canonical 18 mean-delta threshold remains unchanged."
         },
         {
           "id": "host_home_switcher_cohost",
@@ -8224,7 +8563,7 @@
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
-          "nextAction": "Host Events semantic and canonical visual parity is closed at 15.24% / 15.20 without a regression ceiling. HOST-V2-TODAY-FUNCTIONAL-PARITY-001 still tracks real pending-approval, offer, draft, and guest-inquiry composition; the current truthful Today baseline is 28.48% / 37.31.",
+          "nextAction": "Restore Host Events below the canonical mean-delta threshold and remove HOST-V2-EVENTS-VISUAL-DRIFT-001. HOST-V2-TODAY-FUNCTIONAL-PARITY-001 separately tracks real pending-approval, offer, draft, and guest-inquiry composition; the current truthful Today baseline is 28.48% / 37.31.",
           "previewIds": [
             "hostHomeRouteStates"
           ],
@@ -8540,11 +8879,39 @@
           "id": "DS-HOST-HOME-004",
           "status": "blocked",
           "nextAction": "Blocked/reference-only until canonical state-variant exports exist: Host Today and Host Events references and masks are exported and registered. The current Claude sources only provide the base Today and Events compositions; loading, empty, role/cohost, offline/error, text-scale, reduced-motion, light/dark, and additional event-list variants need source exports before reference work can continue."
+        },
+        {
+          "id": "DS-HOST-HOME-005",
+          "status": "open",
+          "nextAction": "Close feature.host_home evidence exceptions with focused tests for 12 registered route, nested-event, empty, offline, accessibility, and theme states; standalone captures for create/manage navigation; and a dedicated Widgetbook scenario for nested hosted-event offline."
         }
       ]
     },
     {
       "id": "screen.host.clubs",
+        "shell": {
+          "owner": "host",
+          "nestedScaffoldAllowed": false,
+          "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Host Clubs",
       "owner": "hosts",
       "priority": "P1",
@@ -8557,32 +8924,32 @@
         },
         {
           "id": "hostClubsScreen",
-          "path": "/host/clubs",
+          "path": "/host/organizers",
           "role": "alias"
         },
         {
           "id": "hostEditClubScreen",
-          "path": "/host/clubs/:clubId/edit",
+          "path": "/host/organizers/:clubId/edit",
           "role": "alias"
         },
         {
           "id": "hostClubEventDefaultsScreen",
-          "path": "/host/clubs/event-defaults",
+          "path": "/host/organizers/event-defaults",
           "role": "host"
         },
         {
           "id": "hostClubLiveGuideScreen",
-          "path": "/host/clubs/live-guide",
+          "path": "/host/organizers/live-guide",
           "role": "host"
         },
         {
           "id": "hostClubTeamScreen",
-          "path": "/host/clubs/team",
+          "path": "/host/organizers/team",
           "role": "host"
         },
         {
           "id": "hostClubPaymentsScreen",
-          "path": "/host/clubs/payments",
+          "path": "/host/organizers/payments",
           "role": "host"
         }
       ],
@@ -8699,6 +9066,20 @@
         "notes": "HostClubsScreen resolves auth and hosted/owned club streams and owns the canonical Edit/Insights/Preview tab shell. HostClubEditTab owns only Media, Identity, Contact, and Club settings; Event defaults, Live event guide, Host team, and owner-only Payments use top-level spoke routes resolved through the same club stream. HostClubDefaultsSaver serializes optimistic defaults updates, profile/media edits run through HostClubEditController, payouts through HostPaymentAccountController, host-team mutations through HostTeamManagementController, and HostClubInsightsState owns analytics query state."
       },
       "designRefs": [
+        {
+          "id": "repo.host-organizers-feature-contract",
+          "kind": "repo",
+          "status": "available",
+          "path": "design/features/host_organizers.feature.json",
+          "notes": "Authoritative Host Organizers feature orchestration source across Edit, Insights, Preview, settings spokes, payouts, team, and host identity."
+        },
+        {
+          "id": "generated.host-organizers-feature-contract",
+          "kind": "generated",
+          "status": "available",
+          "path": "design/features/generated/host_organizers.feature_contract.json",
+          "notes": "Generated Host Organizers state, action, evidence, component, and data-contract projection; do not edit directly."
+        },
         {
           "id": "repo.host-clubs-tests",
           "kind": "repo",
@@ -10237,6 +10618,11 @@
           "id": "DS-HOST-CLUBS-004",
           "status": "closed",
           "nextAction": "The 2026-07-10 production full-shell Organizer comparison is within the aggregate advisory threshold at 12.02% mismatch / 7.79 meanDelta with navigation chrome included. Extra cohost, empty, loading/error/offline, analytics, payout, inline editor, team mutation, text-scale, reduced-motion, and light/dark comparisons depend on future design exports."
+        },
+        {
+          "id": "DS-HOST-CLUBS-005",
+          "status": "open",
+          "nextAction": "Close feature.host_organizers evidence exceptions with focused tests for the registered route, settings, analytics, payout, profile, team, accessibility, and theme states; deterministic captures for the 14 preview-only states; and a dedicated Widgetbook scenario for host_team_offline."
         }
       ],
       "captureIds": [
@@ -10257,6 +10643,28 @@
     },
     {
       "id": "screen.host.club.detail",
+        "shell": {
+          "owner": "host",
+          "nestedScaffoldAllowed": false,
+          "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "media-hero",
+          "expression": "SliverAppBar",
+          "owner": "registered media-hero",
+          "reason": "The registered collapsing media hero owns route chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Host Club Detail",
       "owner": "hosts",
       "priority": "P1",
@@ -10264,7 +10672,7 @@
       "routes": [
         {
           "id": "hostClubDetailScreen",
-          "path": "/host/clubs/:clubId",
+          "path": "/host/organizers/:clubId",
           "role": "primary"
         }
       ],
@@ -11033,6 +11441,29 @@
     },
     {
       "id": "screen.host.event.create",
+        "shell": {
+          "owner": "host",
+          "nestedScaffoldAllowed": false,
+          "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Host Create Event",
       "owner": "hosts",
       "priority": "P1",
@@ -11040,7 +11471,7 @@
       "routes": [
         {
           "id": "hostCreateEventScreen",
-          "path": "/host/clubs/:clubId/create-event",
+          "path": "/host/organizers/:clubId/create-event",
           "role": "primary"
         }
       ],
@@ -12276,11 +12707,39 @@
           "id": "DS-HOST-EVENT-CREATE-005",
           "status": "closed",
           "nextAction": "Closed. HostCreateEventRouteState now watches signed-in uid state and renders a host-access error before CreateEventScreen for signed-out or non-host-team users, with state and widget coverage."
+        },
+        {
+          "id": "DS-HOST-EVENT-CREATE-006",
+          "status": "open",
+          "nextAction": "feature.host_event_create compiles all 31 registered states and 33 meaningful actions. Add focused state tests for the nine registered test exceptions and one dedicated location-picker offline Widgetbook scenario to retire its ten evidence exceptions."
         }
       ]
     },
     {
       "id": "screen.host.event.manage",
+        "shell": {
+          "owner": "host",
+          "nestedScaffoldAllowed": false,
+          "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "compact",
+          "expression": "CatchTopBar",
+          "owner": "CatchTopBar",
+          "reason": "The source owns canonical compact route chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Host Event Manage",
       "owner": "hosts",
       "priority": "P1",
@@ -12288,7 +12747,7 @@
       "routes": [
         {
           "id": "hostAppEventManageScreen",
-          "path": "/host/clubs/:clubId/events/:eventId/manage",
+          "path": "/host/organizers/:clubId/events/:eventId/manage",
           "role": "primary"
         }
       ],
@@ -12405,6 +12864,20 @@
           "status": "available",
           "path": "test/event_success/event_success_live_screens_test.dart",
           "notes": "Event Success host tests cover setup, live, and report tabs, host report availability, live signal quality, and Event Success host states embedded by Host Manage."
+        },
+        {
+          "id": "repo.host-event-manage-feature-contract",
+          "kind": "repo",
+          "status": "available",
+          "path": "design/features/host_event_manage.feature.json",
+          "notes": "Structured orchestration source for Host Manage route/workspace dimensions, edit/cancel/delete action outcomes, exact screen-state coverage, and explicit evidence debt."
+        },
+        {
+          "id": "generated.host-event-manage-feature-contract",
+          "kind": "generated",
+          "status": "available",
+          "path": "design/features/generated/host_event_manage.feature_contract.json",
+          "notes": "Deterministic projection resolving every Host Manage state to captures, Widgetbook previews, tests or named evidence exceptions, action cases, components, and data contracts."
         },
         {
           "id": "claude.host-event-manage",
@@ -13301,6 +13774,9 @@
           "captureIds": [
             "host_manage_invite_links_loading"
           ],
+          "previewIds": [
+            "HostEventManageRouteScreen/Route and section states"
+          ],
           "notes": "Named invite-link provider loading now has the deterministic host_manage_invite_links_loading tall capture inside the private-access card.",
           "widgetbook": [
             "HostEventManageRouteScreen/Route and section states"
@@ -13315,6 +13791,9 @@
           "captureIds": [
             "host_manage_invite_links_error"
           ],
+          "previewIds": [
+            "HostEventManageRouteScreen/Route and section states"
+          ],
           "notes": "Named invite-link provider failure now has the deterministic host_manage_invite_links_error tall capture with branded inline retry.",
           "widgetbook": [
             "HostEventManageRouteScreen/Route and section states"
@@ -13328,6 +13807,9 @@
           "status": "captured",
           "captureIds": [
             "host_manage_invite_links_offline"
+          ],
+          "previewIds": [
+            "HostEventManageRouteScreen/Route and section states"
           ],
           "notes": "Named invite-link offline failure now has the deterministic host_manage_invite_links_offline tall capture with branded inline retry.",
           "widgetbook": [
@@ -13962,6 +14444,11 @@
           "id": "DS-HOST-EVENT-MANAGE-005",
           "status": "blocked",
           "nextAction": "Blocked/reference-only until canonical edge-state exports exist: setup/private-access, attendance roster, live console, post-event report, private-access missing-code, invite-link disabled-row, and invite-link long-label/source states have deterministic captures. Remaining work is masks for additional dynamic host data once canonical exports exist."
+        },
+        {
+          "id": "DS-HOST-EVENT-MANAGE-006",
+          "status": "open",
+          "nextAction": "Close the feature-contract evidence exceptions with focused tests for the registered route provider waves, roster edge states, private-access and invite-link variants, action-row states, offline/accessibility/theme states, and other Host Manage states that currently rely on deterministic capture and Widgetbook proof only."
         }
       ],
       "captureIds": [
@@ -14054,6 +14541,28 @@
     },
     {
       "id": "screen.host.inbox",
+        "shell": {
+          "owner": "host",
+          "nestedScaffoldAllowed": false,
+          "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Host Inbox",
       "owner": "hosts",
       "priority": "P1",
@@ -14933,11 +15442,39 @@
           "id": "DS-HOST-INBOX-004",
           "status": "in_progress",
           "nextAction": "Functional semantics and the authorized callable are implemented locally. Keep production sending disabled until the live callable preflight passes, then record delivery evidence; visual closure separately requires meanDelta 18 or below from the current 31.90."
+        },
+        {
+          "id": "DS-HOST-INBOX-005",
+          "status": "open",
+          "nextAction": "feature.host_inbox compiles all 25 registered states and ten actions. Add four standalone interaction captures and focused tests for the eight registered test exceptions to retire its twelve evidence exceptions."
         }
       ]
     },
     {
       "id": "screen.host.chat",
+        "shell": {
+          "owner": "host",
+          "nestedScaffoldAllowed": false,
+          "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "identity",
+          "expression": "CatchTopBar.identity",
+          "owner": "CatchTopBar",
+          "reason": "The source owns identity-aware canonical top-bar chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Host Chat",
       "owner": "hosts",
       "priority": "P1",
@@ -15861,11 +16398,33 @@
           "id": "DS-HOST-CHAT-005",
           "status": "blocked",
           "nextAction": "Blocked. Baseline shared Messaging-thread Host Chat reference and masks are registered; dedicated Host Chat design variants are still needed for keyboard/safe-area, timestamps, profile photos, generated share-card rasterization if retained, dynamic message times, snackbars, dialogs, host-shell chrome, accessibility, and theme states."
+        },
+        {
+          "id": "DS-HOST-CHAT-006",
+          "status": "open",
+          "nextAction": "feature.member_chat now binds Host Chat as a second projection of the same ChatScreen implementation, compiling all 29 host states and nine host actions. Add six standalone captures and focused tests for the 19 registered test exceptions to retire its 25 host-surface evidence exceptions."
         }
       ]
     },
     {
       "id": "screen.start.welcome",
+        "shell": {
+          "owner": "standalone",
+          "nestedScaffoldAllowed": true,
+          "reason": "The route is presented outside the tab shell."
+        },
+        "topBar": {
+          "role": "none",
+          "expression": "none",
+          "owner": "standalone route",
+          "reason": "This standalone entry route intentionally has no app top bar."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Start Welcome",
       "owner": "onboarding",
       "priority": "P2",
@@ -15940,6 +16499,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "Production WelcomePage starts the object reel and lands on the final welcome composition unless playIntro is false or reduced motion is active.",
+          "previewIds": [
+            "WelcomePage/Splash states"
+          ],
           "captureIds": [
             "start_welcome_animated_reel"
           ],
@@ -15953,6 +16515,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "WelcomePage(playIntro: false) renders the final Catch welcome state immediately for deterministic captures.",
+          "previewIds": [
+            "WelcomePage/Splash states"
+          ],
           "captureIds": [
             "start_welcome",
             "start_welcome_text_scale_2"
@@ -15967,6 +16532,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "The primary CTA routes to auth with the current location as from=, while the secondary CTA routes to the clubs surface.",
+          "previewIds": [
+            "WelcomePage/Splash states"
+          ],
           "captureIds": [
             "start_welcome",
             "start_welcome_reduced_motion",
@@ -15982,6 +16550,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "WelcomePage lands immediately when MediaQuery.disableAnimations is true.",
+          "previewIds": [
+            "WelcomePage/Splash states"
+          ],
           "captureIds": [
             "start_welcome_reduced_motion"
           ],
@@ -15995,6 +16566,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "Start Welcome text scale 2.0 capture covers title, body copy, and bottom CTAs.",
+          "previewIds": [
+            "WelcomePage/Splash states"
+          ],
           "captureIds": [
             "start_welcome_text_scale_2"
           ],
@@ -16005,6 +16579,9 @@
           "kind": "theme",
           "status": "captured",
           "source": "The start route intentionally uses the sunset dark landing palette; the current capture covers that dark branded state.",
+          "previewIds": [
+            "WelcomePage/Splash states"
+          ],
           "captureIds": [
             "start_welcome",
             "start_welcome_reduced_motion",
@@ -16113,6 +16690,25 @@
     },
     {
       "id": "screen.auth.phone_entry",
+        "shell": {
+          "owner": "standalone",
+          "nestedScaffoldAllowed": true,
+          "reason": "The route is presented outside the tab shell."
+        },
+        "topBar": {
+          "role": "none",
+          "expression": "none",
+          "owner": "standalone route",
+          "reason": "This standalone entry route intentionally has no app top bar."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "error",
+            "mutation"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Auth Phone Entry",
       "owner": "auth",
       "priority": "P2",
@@ -16298,6 +16894,10 @@
           "kind": "populated",
           "status": "captured",
           "source": "AuthScreen renders PhonePage while AuthController.step is AuthStep.phone, using OnboardingStepFrame and CatchField/CatchButton primitives.",
+          "previewIds": [
+            "AuthScreen/Screen states",
+            "PhonePage/Phone entry states"
+          ],
           "captureIds": [
             "auth_phone_entry",
             "auth_phone_text_scale_2"
@@ -16312,6 +16912,10 @@
           "kind": "populated",
           "status": "captured",
           "source": "PhonePage renders a country-code selector bound to AuthController.countryCode and resets sendOtpMutation on change.",
+          "previewIds": [
+            "AuthScreen/Screen states",
+            "CountryCodeSelector/Country code selector states"
+          ],
           "captureIds": [
             "auth_country_picker_open",
             "auth_country_code_australia"
@@ -16326,6 +16930,10 @@
           "kind": "error",
           "status": "captured",
           "source": "AuthInput validators drive phone/OTP validation copy before send or verify mutations run.",
+          "previewIds": [
+            "AuthScreen/Screen states",
+            "PhonePage/Phone entry states"
+          ],
           "captureIds": [
             "auth_phone_validation_error"
           ],
@@ -16340,6 +16948,10 @@
           "kind": "mutation",
           "status": "captured",
           "source": "AuthController.sendOtpMutation drives the Send code loading state and CatchErrorBanner failure surface.",
+          "previewIds": [
+            "AuthScreen/Screen states",
+            "PhonePage/Phone entry states"
+          ],
           "captureIds": [
             "auth_send_code_pending",
             "auth_send_code_error"
@@ -16354,6 +16966,10 @@
           "kind": "populated",
           "status": "captured",
           "source": "After codeSent, AuthScreen renders OtpPage with CatchOtpCodeField, verify CTA, resend cooldown, and change-number action.",
+          "previewIds": [
+            "AuthScreen/Screen states",
+            "OtpPage/OTP entry states"
+          ],
           "captureIds": [
             "auth_otp_entry",
             "auth_otp_text_scale_2",
@@ -16369,6 +16985,10 @@
           "kind": "mutation",
           "status": "captured",
           "source": "AuthController.verifyOtpMutation drives Verify loading/error behavior, while sendOtpMutation also covers resend failures on the OTP page.",
+          "previewIds": [
+            "AuthScreen/Screen states",
+            "OtpPage/OTP entry states"
+          ],
           "captureIds": [
             "auth_verify_code_pending",
             "auth_verify_code_error",
@@ -16385,6 +17005,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "Widgetbook and deterministic captures cover phone and OTP text-scale 2 states.",
+          "previewIds": [
+            "AuthScreen/Screen states"
+          ],
           "captureIds": [
             "auth_phone_text_scale_2",
             "auth_otp_text_scale_2"
@@ -16396,6 +17019,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "Widgetbook and deterministic captures cover OTP reduced-motion treatment.",
+          "previewIds": [
+            "AuthScreen/Screen states"
+          ],
           "captureIds": [
             "auth_otp_reduced_motion"
           ],
@@ -16522,15 +17148,40 @@
           "status": "closed",
           "nextAction": "Closed by auth_phone_validation_error, which drives invalid phone input and submit through the capture harness."
         },
-        {
-          "id": "DS-AUTH-003",
-          "status": "closed",
-          "nextAction": "Closed by AuthPhoneEntryViewState and AuthOtpEntryViewState, which move production phone/OTP display policy, cooldown copy, resend/verify/change-number action enablement, and mutation loading flags into provider-free adapters with focused tests. Future work is state-specific design references under DS-AUTH-001."
-        }
+            {
+              "id": "DS-AUTH-003",
+              "status": "closed",
+              "nextAction": "Closed by AuthPhoneEntryViewState and AuthOtpEntryViewState, which move production phone/OTP display policy, cooldown copy, resend/verify/change-number action enablement, and mutation loading flags into provider-free adapters with focused tests. Future work is state-specific design references under DS-AUTH-001."
+            },
+            {
+              "id": "DS-AUTH-004",
+              "status": "closed",
+              "nextAction": "Closed under REG-PENDING-SNAPSHOT-001. Phone and country controls now freeze while sendOtpMutation is pending, input callbacks cannot reset the in-flight guard, duplicate controller dispatches return the same Future, and flow reset invalidates stale Firebase callbacks. Focused controller, presentation-state, and widget tests prove the submitted snapshot stays coherent."
+            }
       ]
     },
     {
       "id": "screen.onboarding.flow",
+        "shell": {
+          "owner": "standalone",
+          "nestedScaffoldAllowed": true,
+          "reason": "The route is presented outside the tab shell."
+        },
+        "topBar": {
+          "role": "step-flow",
+          "expression": "CatchStepHeader",
+          "owner": "CatchStepHeader",
+          "reason": "The step flow owns progress and navigation through the canonical header."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "mutation"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Onboarding Flow",
       "owner": "onboarding",
       "priority": "P2",
@@ -16865,6 +17516,10 @@
           "kind": "populated",
           "status": "captured",
           "source": "OnboardingScreen starts at OnboardingStep.welcome when no signed-in profile/draft entry is available and renders WelcomePage.",
+          "previewIds": [
+            "OnboardingScreen/Route states",
+            "WelcomePage/Splash states"
+          ],
           "captureIds": [
             "onboarding_welcome"
           ],
@@ -16878,6 +17533,10 @@
           "kind": "populated",
           "status": "captured",
           "source": "NameDobPage owns the route/provider edge while OnboardingNameDobState and OnboardingNameDobStep own first name, last name, DOB, verified phone display, date policy, validation, and typed submit/date callbacks inside the shared step frame.",
+          "previewIds": [
+            "OnboardingScreen/Route states",
+            "NameDobPage/Identity form"
+          ],
           "captureIds": [
             "onboarding_name_dob",
             "onboarding_name_dob_validation_error",
@@ -16893,6 +17552,10 @@
           "kind": "populated",
           "status": "captured",
           "source": "GenderInterestPage owns the route/provider edge while OnboardingGenderInterestState and OnboardingGenderInterestStep own selected-chip display, validation copy, save pending/error display, typed submit intent, and typed chip callbacks.",
+          "previewIds": [
+            "OnboardingScreen/Route states",
+            "GenderInterestPage/Gender and interest form"
+          ],
           "captureIds": [
             "onboarding_gender_interest",
             "onboarding_gender_interest_validation_error",
@@ -16908,6 +17571,10 @@
           "kind": "populated",
           "status": "captured",
           "source": "InstagramPage owns the route/provider edge while OnboardingInstagramState and OnboardingInstagramStep own optional handle seed text, trimmed continue intent, skip intent, and typed callbacks.",
+          "previewIds": [
+            "OnboardingScreen/Route states",
+            "InstagramPage/Instagram form"
+          ],
           "captureIds": [
             "onboarding_instagram",
             "onboarding_instagram_filled",
@@ -16920,6 +17587,10 @@
           "kind": "empty",
           "status": "captured",
           "source": "PhotosPage enforces the required photo gate before profile completion, adapts copy for profileCompletionOnly mode, and routes upload-failure feedback through the shared Catch snackbar helper.",
+          "previewIds": [
+            "OnboardingScreen/Route states",
+            "PhotosPage/Photo grid states"
+          ],
           "captureIds": [
             "onboarding_photos_gate",
             "onboarding_photos_one_photo_disabled",
@@ -16937,6 +17608,10 @@
           "kind": "populated",
           "status": "captured",
           "source": "ProfilePromptsPage owns the route/provider edge while OnboardingProfilePromptsState and OnboardingProfilePromptsStep own prompt selection normalization, available prompt options, answer projection, footer progress, completion gating, mutation error display, and typed callbacks.",
+          "previewIds": [
+            "OnboardingScreen/Route states",
+            "ProfilePromptsPage/Prompt form"
+          ],
           "captureIds": [
             "onboarding_prompts_empty",
             "onboarding_prompts_partial",
@@ -16950,6 +17625,10 @@
           "kind": "populated",
           "status": "captured",
           "source": "RunningPrefsPage owns the route/provider edge while OnboardingRunningPrefsState and OnboardingRunningPrefsStep own pace labels, run-preference chip selections, mode-specific footer/reason/time labels, mutation error display, and typed complete-run-preferences submit intent.",
+          "previewIds": [
+            "OnboardingScreen/Route states",
+            "RunningPrefsPage/Run preferences form"
+          ],
           "captureIds": [
             "onboarding_running_prefs"
           ],
@@ -16964,6 +17643,11 @@
           "kind": "error",
           "status": "captured",
           "source": "Step pages validate required fields before advancing or completing the flow.",
+          "previewIds": [
+            "OnboardingScreen/Route states",
+            "NameDobPage/Identity form",
+            "GenderInterestPage/Gender and interest form"
+          ],
           "captureIds": [
             "onboarding_name_dob_validation_error",
             "onboarding_gender_interest_validation_error"
@@ -16978,6 +17662,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "OnboardingController fetches and migrates OnboardingDraft records to resume the correct step and prefill profile draft data.",
+          "previewIds": [
+            "OnboardingScreen/Route states"
+          ],
           "captureIds": [
             "onboarding_saved_draft"
           ],
@@ -16992,6 +17679,10 @@
           "kind": "mutation",
           "status": "captured",
           "source": "OnboardingController.saveProfileMutation owns profile-save operations while step pages render pending/error feedback.",
+          "previewIds": [
+            "OnboardingScreen/Route states",
+            "GenderInterestPage/Gender and interest form"
+          ],
           "captureIds": [
             "onboarding_save_profile_pending",
             "onboarding_save_profile_error"
@@ -17006,6 +17697,11 @@
           "kind": "mutation",
           "status": "captured",
           "source": "OnboardingController.completeMutation owns final completion and controller invalidation once onboarding is done.",
+          "previewIds": [
+            "OnboardingScreen/Route states",
+            "ProfilePromptsPage/Prompt form",
+            "RunningPrefsPage/Run preferences form"
+          ],
           "captureIds": [
             "onboarding_complete_run_prefs_pending",
             "onboarding_complete_run_prefs_error"
@@ -17020,6 +17716,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "Step-specific text-scale 2.0 captures cover name/DOB, photos, prompts, and running preferences layouts.",
+          "previewIds": [
+            "OnboardingScreen/Route states"
+          ],
           "captureIds": [
             "onboarding_name_dob_text_scale_2",
             "onboarding_photos_text_scale_2",
@@ -17033,6 +17732,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "Gender/interest reduced-motion capture covers the step frame with route animations disabled.",
+          "previewIds": [
+            "OnboardingScreen/Route states"
+          ],
           "captureIds": [
             "onboarding_gender_interest_reduced_motion"
           ],
@@ -17241,15 +17943,46 @@
           "status": "closed",
           "nextAction": "Closed by route-shell plus step adapters: OnboardingFlowState owns entry mode/current step/back/progress/top-bar copy, while OnboardingNameDobState, OnboardingGenderInterestState, OnboardingInstagramState, OnboardingPhotosState, OnboardingProfilePromptsState, and OnboardingRunningPrefsState own step-local display state, validation/copy policy, mutation display state, and typed callbacks or submit intents. State-specific references remain tracked under DS-ONBOARDING-004."
         },
-        {
-          "id": "DS-ONBOARDING-004",
-          "status": "blocked",
-          "nextAction": "Blocked/reference-only until a canonical interaction source exists: primary onboarding step references are exported and manifest-registered for welcome, name/DOB, gender/interest, Instagram filled, photos count-met, prompts partial, and running preferences. Remaining references and masks are interaction-specific keyboard, date picker, photo picker/upload, prompt picker/copy variants, mutation feedback, accessibility, and theme variants."
-        }
+            {
+              "id": "DS-ONBOARDING-004",
+              "status": "blocked",
+              "nextAction": "Blocked/reference-only until a canonical interaction source exists: primary onboarding step references are exported and manifest-registered for welcome, name/DOB, gender/interest, Instagram filled, photos count-met, prompts partial, and running preferences. Remaining references and masks are interaction-specific keyboard, date picker, photo picker/upload, prompt picker/copy variants, mutation feedback, accessibility, and theme variants."
+            },
+            {
+              "id": "DS-ONBOARDING-005",
+              "status": "open",
+              "nextAction": "REG-FEATURE-CONTRACT-DRIFT-001: InstagramPage and OnboardingStep.instagram are implemented, captured, and previewed, but standard onboarding exits after saveProfile, profile-completion entry begins at photos/prompts, run-preferences entry begins at runningPrefs, and saved drafts beyond genderInterest are collapsed back to genderInterest. Decide whether to retire the orphaned Instagram step or restore an explicit production transition and route test."
+            },
+            {
+              "id": "DS-ONBOARDING-006",
+              "status": "closed",
+              "nextAction": "Closed under REG-PENDING-SNAPSHOT-001. Save and completion mutations now freeze step-back navigation, gender and interest choices, prompt questions and answers, and every running-preference control. Controller-owned saves and completions deduplicate concurrent dispatches, input callbacks cannot reset an in-flight mutation, and focused state, controller, and widget tests prove the submitted snapshot remains coherent."
+            }
       ]
     },
     {
       "id": "screen.calendar.home",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "screen",
+          "expression": "CatchScreenTopBar",
+          "owner": "CatchScreenTopBar",
+          "reason": "The source owns canonical screen-level top-bar chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Calendar Home",
       "owner": "calendar",
       "priority": "P2",
@@ -17375,8 +18108,14 @@
           "kind": "permission",
           "status": "captured",
           "source": "When uid is unavailable, CalendarScreen renders empty signed-up/saved event streams rather than querying user-specific providers.",
+          "previewIds": [
+            "CalendarScreen/Screen states"
+          ],
           "captureIds": [
             "calendar_uid_missing"
+          ],
+          "tests": [
+            "test/events/calendar_screen_test.dart"
           ],
           "nextAction": "calendar_uid_missing captures the signed-out empty-stream fallback; decide whether signed-out calendar should show branded access copy only if product policy changes."
         },
@@ -17385,6 +18124,9 @@
           "kind": "loading",
           "status": "captured",
           "source": "signedUpEvents or savedEvents loading renders a Calendar-shaped skeleton under the Calendar top bar with pinned date-header, stats-strip, and agenda-row placeholders.",
+          "previewIds": [
+            "CalendarScreen/Screen states"
+          ],
           "captureIds": [
             "calendar_loading"
           ],
@@ -17398,8 +18140,14 @@
           "kind": "error",
           "status": "captured",
           "source": "signedUpEvents or savedEvents errors render CatchErrorState.fromError with AppErrorContext.event and retry invalidation.",
+          "previewIds": [
+            "CalendarScreen/Screen states"
+          ],
           "captureIds": [
             "calendar_events_error"
+          ],
+          "tests": [
+            "test/calendar/calendar_screen_test.dart"
           ],
           "nextAction": "Compare provider-error copy against a future Calendar Home error reference if design adds one."
         },
@@ -17408,6 +18156,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "calendar_planned_events renders booked and saved event rows with JOINED/SAVED treatment and stats.",
+          "previewIds": [
+            "CalendarScreen/Screen states"
+          ],
           "captureIds": [
             "calendar_planned_events",
             "calendar_light_dark"
@@ -17422,6 +18173,9 @@
           "kind": "empty",
           "status": "captured",
           "source": "No signed-up or saved events render the No planned events yet CatchEmptyState.",
+          "previewIds": [
+            "CalendarScreen/Screen states"
+          ],
           "captureIds": [
             "calendar_empty"
           ],
@@ -17435,9 +18189,16 @@
           "kind": "loading",
           "status": "captured",
           "source": "When event rows exist, clubNameLookupProvider controls a secondary loading/error state before the agenda list renders.",
+          "previewIds": [
+            "CalendarScreen/Screen states"
+          ],
           "captureIds": [
             "calendar_club_names_loading",
             "calendar_club_names_error"
+          ],
+          "tests": [
+            "test/calendar/calendar_screen_state_test.dart",
+            "test/calendar/calendar_screen_test.dart"
           ],
           "nextAction": "Compare agenda secondary loading/error treatment against future references if design adds them."
         },
@@ -17446,6 +18207,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "Drag and selection interactions toggle the week strip/month grid date header and preserve selected-date agenda scroll.",
+          "previewIds": [
+            "CalendarScreen/Screen states"
+          ],
           "captureIds": [
             "calendar_expanded_month",
             "calendar_selected_day"
@@ -17460,6 +18224,9 @@
           "kind": "populated",
           "status": "tested",
           "source": "Selecting an agenda row pushes the calendar Event Detail alias route with event extra.",
+          "previewIds": [
+            "CalendarScreen/Screen states"
+          ],
           "tests": [
             "test/calendar/calendar_screen_test.dart"
           ],
@@ -17470,6 +18237,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "Widgetbook CalendarScreen states include text-scale 2.0 review for header, stats, date controls, agenda rows, and state surfaces.",
+          "previewIds": [
+            "CalendarScreen/Screen states"
+          ],
           "captureIds": [
             "calendar_text_scale_2"
           ],
@@ -17480,6 +18250,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "Widgetbook CalendarScreen states include reduced-motion review; selected-day scroll animation still uses CatchMotion.calendarScroll at runtime.",
+          "previewIds": [
+            "CalendarScreen/Screen states"
+          ],
           "captureIds": [
             "calendar_reduced_motion"
           ],
@@ -17639,6 +18412,27 @@
     },
     {
       "id": "screen.saved_events.list",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "compact",
+          "expression": "CatchTopBar",
+          "owner": "CatchTopBar",
+          "reason": "The source owns canonical compact route chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Saved Events List",
       "owner": "events",
       "priority": "P2",
@@ -17680,7 +18474,7 @@
             "symbol": "SavedEventRepository"
           }
         ],
-        "notes": "SavedEventsScreen watches the current uid, streams saved event details, owns the route Scaffold, retry invalidation, club-name lookup, and saved-event detail navigation. SavedEventsListState owns event ordering, saved/past badge labels, tile statuses, today, and club-id lookup input. SavedEventsHeaderSliver, SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, and SavedEventsMessage own provider-free header, agenda, loading, error, lookup-error, and empty surfaces."
+        "notes": "SavedEventsScreen watches the current uid, streams saved event details, owns CatchRouteScaffold chrome, retry invalidation, club-name lookup, and saved-event detail navigation. SavedEventsListState owns event ordering, saved/past badge labels, tile statuses, today, and club-id lookup input. SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, and SavedEventsMessage own provider-free agenda, loading, error, lookup-error, and empty surfaces; the duplicate body headline was removed."
       },
       "designRefs": [
         {
@@ -17755,6 +18549,9 @@
           "kind": "permission",
           "status": "captured",
           "source": "When uid is unavailable, SavedEventsScreen renders an empty event stream instead of querying saved events.",
+          "previewIds": [
+            "SavedEventsScreen/Saved states"
+          ],
           "captureIds": [
             "saved_events_uid_missing"
           ],
@@ -17765,8 +18562,14 @@
           "kind": "loading",
           "status": "captured",
           "source": "watchSavedEventDetailsForUserProvider loading renders the Saved Events agenda/date-rail skeleton through _SavedEventsLoading.",
+          "previewIds": [
+            "SavedEventsScreen/Saved states"
+          ],
           "captureIds": [
             "saved_events_loading"
+          ],
+          "tests": [
+            "test/events/saved_events_screen_test.dart"
           ],
           "nextAction": "Compare loading skeleton hierarchy against a future Saved Events reference if design adds one."
         },
@@ -17775,6 +18578,9 @@
           "kind": "error",
           "status": "captured",
           "source": "Saved-event stream errors render CatchErrorState.fromError with AppErrorContext.event and retry invalidation.",
+          "previewIds": [
+            "SavedEventsScreen/Saved states"
+          ],
           "captureIds": [
             "saved_events_error"
           ],
@@ -17785,6 +18591,9 @@
           "kind": "empty",
           "status": "captured",
           "source": "An empty saved-event list renders No saved events yet copy through _SavedEventsMessage; repository tests prove deleted/missing event docs are omitted before this empty branch.",
+          "previewIds": [
+            "SavedEventsScreen/Saved states"
+          ],
           "captureIds": [
             "saved_events_empty"
           ],
@@ -17798,6 +18607,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "saved_events_list renders upcoming and past saved events using EventAgendaSliverList and SAVED/PAST status.",
+          "previewIds": [
+            "SavedEventsScreen/Saved states"
+          ],
           "captureIds": [
             "saved_events_list",
             "saved_events_past_only",
@@ -17813,6 +18625,9 @@
           "kind": "loading",
           "status": "captured",
           "source": "Saved event rows wait on clubNameLookupProvider and render loading/error before the agenda list when club names are unavailable.",
+          "previewIds": [
+            "SavedEventsScreen/Saved states"
+          ],
           "captureIds": [
             "saved_events_club_names_loading",
             "saved_events_club_names_error"
@@ -17824,6 +18639,9 @@
           "kind": "populated",
           "status": "tested",
           "source": "Selecting a saved event pushes the saved Event Detail alias route with event extra.",
+          "previewIds": [
+            "SavedEventsScreen/Saved states"
+          ],
           "tests": [
             "test/events/saved_events_screen_test.dart"
           ],
@@ -17834,6 +18652,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "Saved Events text scale 2.0 capture covers top bar, header, agenda rows, and state surfaces.",
+          "previewIds": [
+            "SavedEventsScreen/Saved states"
+          ],
           "captureIds": [
             "saved_events_text_scale_2"
           ],
@@ -17844,6 +18665,9 @@
           "kind": "theme",
           "status": "captured",
           "source": "Saved Events populated route capture is registered for paired light/dark output.",
+          "previewIds": [
+            "SavedEventsScreen/Saved states"
+          ],
           "captureIds": [
             "saved_events_light_dark"
           ],
@@ -17851,8 +18675,8 @@
         }
       ],
       "composition": {
-        "currentLayout": "SavedEventsScreen owns uid/provider orchestration, route Scaffold, club-name lookup, retry invalidation, and event-detail navigation, then resolves SavedEventsListState before passing typed data into provider-free SavedEventsHeaderSliver, SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, and SavedEventsMessage sections.",
-        "targetLayout": "Saved Events should keep providers at the route boundary, SavedEventsListState as the ordered-row adapter, and public section widgets as the owner of header, agenda, loading/error, lookup-error, and empty surfaces.",
+        "currentLayout": "SavedEventsScreen owns uid/provider orchestration, CatchRouteScaffold chrome, club-name lookup, retry invalidation, and event-detail navigation, then resolves SavedEventsListState before passing typed data into provider-free SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, and SavedEventsMessage sections.",
+        "targetLayout": "Saved Events should keep providers at the route boundary, one compact route title in CatchRouteScaffold, SavedEventsListState as the ordered-row adapter, and public section widgets as the owner of agenda, loading/error, lookup-error, and empty surfaces.",
         "sections": [
           {
             "id": "section.saved_events.list_adapter",
@@ -17878,29 +18702,6 @@
               "populated_saved_events"
             ],
             "migration": "SavedEventsListState now owns event ordering, saved/past badge labels, tile statuses, today, and club-id lookup input; route-owned provider waves, retry intents, club-name lookup, and navigation callbacks stay at the screen boundary."
-          },
-          {
-            "id": "section.saved_events.header",
-            "name": "Saved events list header",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "SavedEventsHeader"
-            ],
-            "flutter": {
-              "file": "lib/events/presentation/saved_events_screen.dart",
-              "symbol": "SavedEventsHeaderSliver"
-            },
-            "currentOwner": "SavedEventsHeaderSliver",
-            "targetOwner": "SavedEventsHeaderSliver",
-            "dependencies": [
-              "catch.top_bar"
-            ],
-            "states": [
-              "populated_saved_events",
-              "text_scale_2"
-            ],
-            "migration": "SavedEventsHeaderSliver owns page title/header copy as a provider-free sliver section."
           },
           {
             "id": "section.saved_events.agenda",
@@ -17968,7 +18769,7 @@
         {
           "id": "DS-SAVED-EVENTS-003",
           "status": "closed",
-          "nextAction": "Closed by SavedEventsHeaderSliver, SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, SavedEventsMessage, and SavedEventsListState provider-free section boundaries."
+          "nextAction": "Closed by one CatchRouteScaffold title plus SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, SavedEventsMessage, and SavedEventsListState provider-free section boundaries."
         },
         {
           "id": "DS-SAVED-EVENTS-004",
@@ -17979,6 +18780,27 @@
     },
     {
       "id": "screen.filters.preferences",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "compact",
+          "expression": "CatchTopBar",
+          "owner": "CatchTopBar",
+          "reason": "The source owns canonical compact route chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "error",
+            "loading",
+            "mutation",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Filters Preferences",
       "owner": "swipes",
       "priority": "P2",
@@ -18075,7 +18897,7 @@
         {
           "id": "filters_missing_profile",
           "status": "captured",
-          "notes": "Resolved null profile branch, currently a blank body pending product copy decision."
+          "notes": "Resolved null profile branch with branded profile-unavailable copy and a profile-provider retry action."
         },
         {
           "id": "filters_dirty_edit",
@@ -18147,11 +18969,14 @@
           "id": "profile_missing",
           "kind": "permission",
           "status": "captured",
-          "source": "A null profile currently renders an empty SizedBox after data resolves.",
+          "source": "A resolved null profile renders a branded Profile not available CatchEmptyState with onboarding/sign-in guidance and profile-provider retry.",
           "captureIds": [
             "filters_missing_profile"
           ],
-          "nextAction": "Product should still decide whether missing profile should render branded access/recovery copy instead of an empty body.",
+          "tests": [
+            "test/swipes/filters_screen_test.dart"
+          ],
+          "nextAction": "Keep the missing-profile recovery copy and retry proof current if onboarding access policy changes.",
           "previewIds": [
             "FiltersScreen/Route states"
           ]
@@ -18210,6 +19035,9 @@
           "source": "FiltersController.saveFiltersMutation pending drives Apply filters loading and disables reset/apply duplicate work.",
           "captureIds": [
             "filters_save_pending"
+          ],
+          "tests": [
+            "test/swipes/filters_screen_state_test.dart"
           ],
           "nextAction": "Compare pending apply treatment against future mutation reference if design adds one.",
           "previewIds": [
@@ -18427,11 +19255,41 @@
           "id": "DS-FILTERS-003",
           "status": "closed",
           "nextAction": "Closed by FiltersPreferencesState owning saved defaults, draft values, dirty state, reset/apply availability, pending state, and save request fields while FiltersScreen retains provider waves, mutation listening, route close/pop behavior, and controller execution."
+        },
+        {
+          "id": "DS-FILTERS-004",
+          "status": "closed",
+          "nextAction": "Closed under REG-PENDING-SNAPSHOT-001. Filter save now freezes route dismissal, close, Reset, age range, gender choices, and Apply while the controller deduplicates repeated saves. Focused controller, presentation-state, and route tests prove the visible draft cannot diverge from the persisted request."
+        },
+        {
+          "id": "DS-FILTERS-005",
+          "status": "closed",
+          "nextAction": "Closed. A resolved null profile now renders branded Profile not available guidance with profile-provider retry instead of a blank body, and the focused route test proves both visible copy and retry invalidation."
         }
       ]
     },
     {
       "id": "screen.event.recap",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "compact",
+          "expression": "CatchTopBar",
+          "owner": "CatchTopBar",
+          "reason": "The source owns canonical compact route chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Event Recap",
       "owner": "swipes",
       "priority": "P2",
@@ -18527,6 +19385,16 @@
           "id": "event_recap_partial_profiles",
           "status": "captured",
           "notes": "Batched profile lookup fallback where missing profiles render Guest tiles."
+        },
+        {
+          "id": "event_recap_profile_lookup_loading",
+          "status": "captured",
+          "notes": "Resolved recap with batched attendee-profile enrichment still loading."
+        },
+        {
+          "id": "event_recap_profile_lookup_error",
+          "status": "captured",
+          "notes": "Resolved recap with attendee-profile enrichment failure and exact-query retry."
         },
         {
           "id": "event_recap_selected_tiles",
@@ -18632,17 +19500,51 @@
           ]
         },
         {
+          "id": "profile_lookup_loading",
+          "kind": "loading",
+          "status": "captured",
+          "source": "When the recap is resolved but publicProfilesByIdsProvider is still loading, EventRecapReadyBody preserves the hero and deck action while VibeGridSkeleton replaces unresolved attendee rows.",
+          "captureIds": [
+            "event_recap_profile_lookup_loading"
+          ],
+          "tests": [
+            "test/swipes/event_recap_screen_state_test.dart",
+            "test/swipes/event_recap_screen_test.dart"
+          ],
+          "nextAction": "Keep profile-enrichment loading visually distinct from a resolved empty roster.",
+          "previewIds": [
+            "EventRecapScreen/Event recap route states"
+          ]
+        },
+        {
+          "id": "profile_lookup_error",
+          "kind": "error",
+          "status": "captured",
+          "source": "A failed batched public-profile lookup renders CatchInlineErrorState with AppErrorContext.profile and retries the exact attendee-id query without discarding the resolved recap.",
+          "captureIds": [
+            "event_recap_profile_lookup_error"
+          ],
+          "tests": [
+            "test/swipes/event_recap_screen_state_test.dart",
+            "test/swipes/event_recap_screen_test.dart"
+          ],
+          "nextAction": "Keep the retry scoped to the exact attendee-id query while preserving resolved recap context.",
+          "previewIds": [
+            "EventRecapScreen/Event recap route states"
+          ]
+        },
+        {
           "id": "profile_lookup_fallback",
           "kind": "populated",
           "status": "captured",
-          "source": "Missing public-profile entries render Guest fallback tiles while profile photos use CatchNetworkImage when available.",
+          "source": "After the batched lookup resolves, genuinely missing public-profile entries alone render Guest fallback tiles while resolved profile photos use CatchNetworkImage.",
           "captureIds": [
             "event_recap_partial_profiles"
           ],
           "tests": [
             "test/swipes/event_recap_screen_state_test.dart"
           ],
-          "nextAction": "Compare missing-profile fallback treatment against the canonical recap source once available.",
+          "nextAction": "Keep the Guest fallback limited to resolved absence; loading and failure retain their separate skeleton and retry states.",
           "previewIds": [
             "EventRecapScreen/Event recap route states"
           ]
@@ -18773,6 +19675,8 @@
             "states": [
               "populated_attendees",
               "empty_roster",
+              "profile_lookup_loading",
+              "profile_lookup_error",
               "profile_lookup_fallback",
               "vibe_selection"
             ],
@@ -18847,11 +19751,37 @@
           "id": "DS-EVENT-RECAP-004",
           "status": "blocked",
           "nextAction": "Canonical Event Recap reference export is blocked until design provides a standalone recap/attendee-selection source; the current bundle only covers Catches/Event Deck and post-run catch-window references."
+        },
+        {
+          "id": "DS-EVENT-RECAP-005",
+          "status": "closed",
+          "nextAction": "Closed. EventRecapScreenState preserves batched profile loading, failure, and resolved absence separately; the route shows a grid skeleton while loading, branded inline retry on failure, and Guest only for a genuinely absent resolved profile, with focused state and recovery tests."
         }
       ]
     },
     {
       "id": "screen.host.club.create",
+        "shell": {
+          "owner": "host",
+          "nestedScaffoldAllowed": false,
+          "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "error",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Host Create Club",
       "owner": "hosts",
       "priority": "P2",
@@ -18859,7 +19789,7 @@
       "routes": [
         {
           "id": "hostCreateClubScreen",
-          "path": "/host/clubs/create-club",
+          "path": "/host/organizers/create-organizer",
           "role": "primary"
         }
       ],
@@ -19051,6 +19981,9 @@
           "kind": "populated",
           "status": "implemented",
           "source": "HostCreateClubScreen delegates directly to CreateClubScreen for the create route.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "nextAction": "Add a route/navigation test proving the host shell opens this route from Host Home and Host Clubs."
         },
         {
@@ -19058,6 +19991,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "CreateClubScreen attempts to load a saved create-club draft after the first frame and shows restored draft feedback.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "captureIds": [
             "create_club_draft_restored"
           ],
@@ -19068,6 +20004,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "The first step renders name, city, area, cover/profile media, and basics controls.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "captureIds": [
             "create_club_basics"
           ],
@@ -19078,6 +20017,9 @@
           "kind": "error",
           "status": "captured",
           "source": "Missing required basics block Next and show field-level validation errors.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "tests": [
             "test/explore/explore_widgets_test.dart"
           ],
@@ -19091,6 +20033,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "Club photo picker reads selected image bytes and previews picked club photos.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "tests": [
             "test/explore/explore_widgets_test.dart"
           ],
@@ -19104,6 +20049,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "Details step renders description and optional Instagram, phone, and email contact fields.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "captureIds": [
             "create_club_details"
           ],
@@ -19114,6 +20062,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "Host defaults step renders reusable admission, cohort, dynamic pricing, and cancellation defaults.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "captureIds": [
             "create_club_host_defaults"
           ],
@@ -19124,6 +20075,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "Event Success defaults step renders guide and default configuration for future events.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "captureIds": [
             "create_club_event_success_defaults"
           ],
@@ -19133,21 +20087,35 @@
           "id": "save_draft_pending_error",
           "kind": "mutation",
           "status": "captured",
-          "source": "CreateClubDraftController.saveDraftMutation drives footer loading and CatchErrorBanner copy when saving fails; draft restore/save success feedback uses the shared Catch snackbar helper.",
+          "source": "CreateClubDraftController.saveDraftMutation freezes route, wizard, media, fields/defaults, and footer actions while pending; CatchErrorBanner owns failure copy and the shared Catch snackbar owns success feedback.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "nextAction": "Compare captured save-draft pending/error feedback against canonical design references once exported.",
           "captureIds": [
             "create_club_save_draft_pending",
             "create_club_save_draft_error"
+          ],
+          "tests": [
+            "test/hosts/host_club_create_state_test.dart",
+            "test/explore/explore_widgets_test.dart"
           ]
         },
         {
           "id": "submit_pending",
           "kind": "mutation",
           "status": "captured",
-          "source": "CreateClubController.submitMutation disables footer actions and shows loading while submit is pending.",
+          "source": "CreateClubController.submitMutation freezes route, wizard, media, fields/defaults, and footer actions while pending; CreateClubController returns the active Future for duplicate direct calls.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "nextAction": "Compare captured submit pending footer behavior against canonical design references once exported.",
           "captureIds": [
             "create_club_submit_pending"
+          ],
+          "tests": [
+            "test/clubs/clubs_controllers_test.dart",
+            "test/explore/explore_widgets_test.dart"
           ]
         },
         {
@@ -19155,6 +20123,9 @@
           "kind": "mutation",
           "status": "captured",
           "source": "Submit mutation errors render inline CatchErrorBanner copy.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "tests": [
             "test/explore/explore_widgets_test.dart"
           ],
@@ -19168,6 +20139,9 @@
           "kind": "mutation",
           "status": "tested",
           "source": "Successful create deletes the draft, then HostClubSubmitOutcomeState maps the pending-to-success transition to close-route before CreateClubScreen performs the Navigator pop.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "tests": [
             "test/explore/explore_widgets_test.dart"
           ],
@@ -19178,6 +20152,9 @@
           "kind": "permission",
           "status": "implemented",
           "source": "The form can render without uid, but submit/draft mutations require signed-in uid and surface failure through mutation feedback.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "nextAction": "Decide whether the route should render explicit signed-out access copy before the form."
         },
         {
@@ -19185,6 +20162,9 @@
           "kind": "offline",
           "status": "captured",
           "source": "Offline-looking create submit failures surface through shared mutation error copy.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "nextAction": "Decide whether offline submit failures need distinct retry affordances beyond shared mutation error feedback.",
           "captureIds": [
             "create_club_submit_offline"
@@ -19195,6 +20175,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "The multi-step form needs text-scale review for step header, media pickers, fields, and footer.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "captureIds": [
             "create_club_text_scale_2"
           ],
@@ -19205,6 +20188,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "PageController step transitions use CatchMotion.pageStep.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "captureIds": [
             "create_club_reduced_motion"
           ],
@@ -19215,6 +20201,9 @@
           "kind": "theme",
           "status": "captured",
           "source": "Create club uses tokenized backgrounds, fields, and footer surfaces.",
+          "previewIds": [
+            "HostCreateClubScreen/Route and wizard states"
+          ],
           "captureIds": [
             "create_club_light_dark"
           ],
@@ -19391,15 +20380,43 @@
           "status": "closed",
           "nextAction": "HostClubCreateState now owns footer action labels/enabled state, media enabled state, media display values, field/city display state, mutation error copy, draft-load retry state, and typed primary/save-draft/draft-restore intents; HostClubCreateRouteIntent owns route callback dispatch; HostClubCreateDraftRequest and HostClubCreateSubmitRequest own draft/submit request construction; HostClubSubmitOutcomeState owns submit-success close-route policy."
         },
-        {
-          "id": "DS-HOST-CLUB-CREATE-004",
-          "status": "blocked",
-          "nextAction": "Blocked: Host Create Club basics reference is exported and wired. Additional wizard, mutation, accessibility, and theme pixel comparisons need canonical state-specific Claude/Figma references before app-code work resumes."
-        }
+            {
+              "id": "DS-HOST-CLUB-CREATE-004",
+              "status": "blocked",
+              "nextAction": "Blocked: Host Create Club basics reference is exported and wired. Additional wizard, mutation, accessibility, and theme pixel comparisons need canonical state-specific Claude/Figma references before app-code work resumes."
+            },
+            {
+              "id": "DS-HOST-CLUB-CREATE-005",
+              "status": "closed",
+              "nextAction": "Closed: organizer submit, draft save, and initial draft restore use frozen route snapshots. Header/gesture dismissal, step movement, media, all form/default decisions, and footer actions are disabled while pending; submit and draft controllers deduplicate direct duplicate calls, with focused controller/state/widget proof."
+            }
       ]
     },
     {
       "id": "screen.host.event.edit",
+        "shell": {
+          "owner": "host",
+          "nestedScaffoldAllowed": false,
+          "reason": "The host adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "compact",
+          "expression": "CatchTopBar",
+          "owner": "CatchTopBar",
+          "reason": "The source owns canonical compact route chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Host Edit Event",
       "owner": "hosts",
       "priority": "P2",
@@ -19407,7 +20424,7 @@
       "routes": [
         {
           "id": "hostAppEditEventScreen",
-          "path": "/host/clubs/:clubId/events/:eventId/edit",
+          "path": "/host/organizers/:clubId/events/:eventId/edit",
           "role": "primary"
         }
       ],
@@ -19585,6 +20602,9 @@
           "kind": "loading",
           "status": "captured",
           "source": "Route loading is true while uidProvider is loading.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add route capture for uid loading and signed-out host-shell behavior.",
           "captureIds": [
             "edit_hosted_event_route_loading"
@@ -19595,6 +20615,9 @@
           "kind": "loading",
           "status": "captured",
           "source": "Club/event provider loading renders a tokenized Scaffold with HostRouteLoadingBody(showTabRail: true).",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add deterministic route loading capture.",
           "captureIds": [
             "edit_hosted_event_route_loading"
@@ -19605,6 +20628,9 @@
           "kind": "error",
           "status": "captured",
           "source": "uid, club, or event provider errors render CatchErrorScaffold.fromError with event context and retry invalidation.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add error/offline capture for failed club/event provider waves.",
           "captureIds": [
             "edit_hosted_event_route_error"
@@ -19615,6 +20641,9 @@
           "kind": "empty",
           "status": "captured",
           "source": "Missing club or event renders Event not found copy.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add missing/deleted event capture and recovery decision.",
           "captureIds": [
             "edit_hosted_event_not_found"
@@ -19625,6 +20654,9 @@
           "kind": "permission",
           "status": "captured",
           "source": "A uid that is not hosted by the club receives Action unavailable copy.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add unauthorized route capture and test for non-host viewer.",
           "captureIds": [
             "edit_hosted_event_unauthorized"
@@ -19635,6 +20667,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "Loaded event pre-fills schedule, location, distance, description, policy, and invite fields.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "captureIds": [
             "edit_hosted_event"
           ],
@@ -19648,6 +20683,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "Future events without booking/waitlist/attendance activity expose date, time, and duration controls.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add Widgetbook state for editable schedule controls.",
           "captureIds": [
             "edit_hosted_event"
@@ -19658,6 +20696,9 @@
           "kind": "permission",
           "status": "captured",
           "source": "Events with activity render a read-only schedule card and hide date picker controls.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "tests": [
             "test/hosts/edit_hosted_event_screen_test.dart"
           ],
@@ -19671,6 +20712,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "Unlocked events expose capacity, price, admission format, cohort caps, demand pricing, age, invite, and cancellation policy controls.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add previews for each admission preset and dynamic pricing/cohort toggle branch.",
           "captureIds": [
             "edit_hosted_event"
@@ -19681,6 +20725,9 @@
           "kind": "permission",
           "status": "captured",
           "source": "Started or active events render a read-only policy summary instead of editable policy controls.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add policy-locked capture.",
           "captureIds": [
             "edit_hosted_event_schedule_locked"
@@ -19691,6 +20738,9 @@
           "kind": "populated",
           "status": "captured",
           "source": "MapPinTile opens LocationPickerScreen with map tiles optionally disabled for deterministic captures.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Selected-location capture is covered; add route callback proof for opening LocationPickerScreen if picker navigation becomes a product-risk area.",
           "captureIds": [
             "edit_hosted_event_location_selected"
@@ -19701,6 +20751,9 @@
           "kind": "error",
           "status": "captured",
           "source": "Required meeting point, distance, capacity, price, age, invite code, and pinned starting point requirements validate before save; missing pinned-location feedback uses the shared Catch snackbar helper.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Validation capture and save-blocking test are covered; keep moving validation state into a future HostEventEditScreenState adapter.",
           "captureIds": [
             "edit_hosted_event_validation_error"
@@ -19714,6 +20767,9 @@
           "kind": "loading",
           "status": "captured",
           "source": "Invite-only policy watches watchEventPrivateAccessProvider and shows loading copy while current invite code loads.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Compare invite-code loading treatment against private-access reference variants once exported.",
           "captureIds": [
             "edit_hosted_event_private_access_loading"
@@ -19723,10 +20779,17 @@
           "id": "submit_pending",
           "kind": "mutation",
           "status": "captured",
-          "source": "HostEventEditScreenState maps updateHostedEventMutation pending into EditHostedEventFooterState loading and disabled Save changes state.",
+          "source": "HostEventEditScreenState maps updateHostedEventMutation pending into a frozen route and form plus loading/disabled Save state; HostEventBookingController returns the active Future for duplicate direct calls.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Pending footer display policy is adapter-owned; compare against mutation reference variants once exported.",
           "captureIds": [
             "edit_hosted_event_submit_pending"
+          ],
+          "tests": [
+            "test/hosts/host_event_booking_controller_test.dart",
+            "test/hosts/edit_hosted_event_screen_test.dart"
           ]
         },
         {
@@ -19734,6 +20797,9 @@
           "kind": "mutation",
           "status": "captured",
           "source": "HostEventEditScreenState exposes updateHostedEventMutation errors before EditHostedEventScreen renders CatchErrorBanner.fromError under the scope notice.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Submit error display policy is adapter-owned; compare against mutation reference variants once exported.",
           "captureIds": [
             "edit_hosted_event_submit_error"
@@ -19744,6 +20810,9 @@
           "kind": "mutation",
           "status": "tested",
           "source": "HostEventEditScreenState owns success copy and pop-on-success policy; EditHostedEventScreen still executes the update mutation, provider invalidations, snackbar, and Navigator pop side effects.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "tests": [
             "test/hosts/edit_hosted_event_screen_test.dart"
           ],
@@ -19754,6 +20823,9 @@
           "kind": "permission",
           "status": "captured",
           "source": "Cancelled events show Cancelled event scope notice and disable save/edit controls.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add cancelled event capture.",
           "captureIds": [
             "edit_hosted_event_cancelled"
@@ -19764,6 +20836,9 @@
           "kind": "offline",
           "status": "captured",
           "source": "Network-looking route or submit failures currently use error scaffold/banner copy.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Offline route-load capture is covered; add state-specific references if the offline treatment diverges from the shared Catch error contract.",
           "captureIds": [
             "edit_hosted_event_offline"
@@ -19774,6 +20849,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "The dense long form needs text-scale coverage for scope notice, fields, policy cards, and footer.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add text-scale capture and Widgetbook section states.",
           "captureIds": [
             "edit_hosted_event_text_scale_2"
@@ -19784,6 +20862,9 @@
           "kind": "accessibility",
           "status": "captured",
           "source": "Date/time picker, location picker, and route transition need reduced-motion review.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add reduced-motion review after fixtures are stable.",
           "captureIds": [
             "edit_hosted_event_reduced_motion"
@@ -19794,6 +20875,9 @@
           "kind": "theme",
           "status": "captured",
           "source": "Edit event uses tokenized surfaces and controls.",
+          "previewIds": [
+            "EditHostedEventRouteScreen/Route and section states"
+          ],
           "nextAction": "Add light/dark capture pair before pixel diff enforcement.",
           "captureIds": [
             "edit_hosted_event_light_dark"
@@ -19975,15 +21059,41 @@
           "status": "closed",
           "nextAction": "HostEventEditScreenState now owns loaded editability, schedule/policy locks, field display state, save footer state, save error input, feedback copy, and pop-on-success policy. HostEventEditFieldDisplayState owns schedule, location/details, and policy display values; HostEventEditSaveRequest owns validated save payload construction; HostEventEditPrivateAccessState owns invite-only private-access watch and invite-code seed policy; HostEventEditScheduleValidationState owns invalid-start validation state; HostEventEditIntent owns typed route callback payloads."
         },
-        {
-          "id": "DS-HOST-EVENT-EDIT-004",
-          "status": "closed",
-          "nextAction": "Closed for the owner-edit reference: edit_hosted_event compares within threshold against the registered Claude reference at 9.25% mismatch / 10.93 meanDelta. Reopen only if design adds new canonical Host Edit Event references."
-        }
+            {
+              "id": "DS-HOST-EVENT-EDIT-004",
+              "status": "closed",
+              "nextAction": "Closed for the owner-edit reference: edit_hosted_event compares within threshold against the registered Claude reference at 9.25% mismatch / 10.93 meanDelta. Reopen only if design adds new canonical Host Edit Event references."
+            },
+            {
+              "id": "DS-HOST-EVENT-EDIT-005",
+              "status": "closed",
+              "nextAction": "Closed: event edit save uses a frozen route snapshot. Route dismissal and the complete schedule, location, pace, policy, and text-field form are non-interactive while pending; the update controller returns the active Future for duplicates, with focused state, controller, and widget proof."
+            }
       ]
     },
     {
       "id": "screen.event.location_map",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "shell",
+          "expression": "shell-owned",
+          "owner": "CatchAdaptiveTabScaffold",
+          "reason": "The route body relies on shell chrome or a registered nested composition owner."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Event Location Map",
       "owner": "events",
       "priority": "P3",
@@ -20071,6 +21181,16 @@
           "id": "event_location_map_no_coordinate",
           "status": "captured",
           "notes": "No exact coordinate state with branded Location unavailable copy."
+        },
+        {
+          "id": "event_location_map_directions_pending",
+          "status": "captured",
+          "notes": "Pinned map with the singleton directions launch held pending and its CTA showing progress."
+        },
+        {
+          "id": "event_location_map_directions_failure",
+          "status": "captured",
+          "notes": "Pinned map with a failed platform directions launch and honest visible snackbar feedback."
         },
         {
           "id": "event_location_map_text_scale_2",
@@ -20162,12 +21282,16 @@
         {
           "id": "directions_action",
           "kind": "mutation",
-          "status": "tested",
-          "source": "Get directions invokes the route-owned callback; EventLocationMapRouteScreen delegates the state directions URI to externalLinkControllerProvider.",
+          "status": "captured",
+          "source": "Get directions invokes a route-owned singleton launch for the current directions URI; EventLocationMapRouteScreen shows button progress and rejects duplicate taps while pending, then restores the action and reports false or thrown launcher failures.",
+          "captureIds": [
+            "event_location_map_directions_pending",
+            "event_location_map_directions_failure"
+          ],
           "tests": [
             "test/events/events_widgets_test.dart"
           ],
-          "nextAction": "Add Widgetbook/capture proof for directions pending/failure copy if design requires inline feedback.",
+          "nextAction": "Keep success, false, thrown-error, pending, and duplicate-tap tests current with the deterministic pending/failure captures.",
           "previewIds": [
             "EventLocationMapScreen/Map states"
           ]
@@ -20376,11 +21500,38 @@
           "id": "DP-EVENT-MAP-004",
           "status": "blocked",
           "nextAction": "Canonical Event Location Map reference export is blocked until design provides a standalone full-screen map route source; current Claude sources only provide MapCard, MapPicker, and MapPin primitives."
+        },
+        {
+          "id": "DP-EVENT-MAP-005",
+          "status": "closed",
+          "nextAction": "Closed. EventLocationMapRouteScreen awaits ExternalLinkController.openExternal, renders Get directions loading while the request is pending, rejects duplicate taps, restores the action afterward, and shows route-owned feedback for both false launcher results and thrown failures; focused widget tests prove success, false, error, and pending paths."
         }
       ]
     },
     {
       "id": "screen.notifications.list",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "screen",
+          "expression": "CatchScreenTopBar",
+          "owner": "CatchScreenTopBar",
+          "reason": "The source owns canonical screen-level top-bar chrome."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Notifications List",
       "owner": "dashboard",
       "priority": "P3",
@@ -20474,6 +21625,11 @@
           "notes": "Activity route capture for uidProvider loading under the Activity top bar."
         },
         {
+          "id": "notifications_uid_error",
+          "status": "captured",
+          "notes": "Activity route capture for uidProvider failure with explicit auth-context retry."
+        },
+        {
           "id": "notifications_signed_out",
           "status": "captured",
           "notes": "Activity route capture for signed-out or missing uid state."
@@ -20534,14 +21690,30 @@
           ]
         },
         {
+          "id": "uid_error",
+          "kind": "error",
+          "status": "captured",
+          "source": "uidProvider failure renders CatchErrorState with AppErrorContext.auth and an identity retry instead of ActivitySignedOutState.",
+          "captureIds": [
+            "notifications_uid_error"
+          ],
+          "tests": [
+            "test/dashboard/dashboard_screen_test.dart"
+          ],
+          "nextAction": "Keep identity failure visually distinct from the successfully resolved signed-out state.",
+          "previewIds": [
+            "ActivityScreen/Screen states"
+          ]
+        },
+        {
           "id": "signed_out",
           "kind": "permission",
           "status": "captured",
-          "source": "Null uid or uid provider error renders ActivitySignedOutState with No activity yet copy.",
+          "source": "A successfully resolved null uid alone renders ActivitySignedOutState; uidProvider failures use the separate uid_error state.",
           "captureIds": [
             "notifications_signed_out"
           ],
-          "nextAction": "Confirm whether shell redirect should replace the local signed-out state.",
+          "nextAction": "Separately confirm whether a real signed-out session should redirect through the shell.",
           "previewIds": [
             "ActivityScreen/Screen states"
           ]
@@ -20841,11 +22013,38 @@
           "id": "DP-NOTIFICATIONS-003",
           "status": "closed",
           "nextAction": "Closed by NotificationsListState adapter with injected clock/grouping, explicit unread action lifecycle, row route intents, and provider-free ActivitySection.fromState composition."
+        },
+        {
+          "id": "DP-NOTIFICATIONS-004",
+          "status": "closed",
+          "nextAction": "Closed. Activity preserves uidProvider failure as a branded auth error with retry, keeps resolved null uid as the distinct signed-out state, and has focused screen proof that identity failure never renders No activity yet."
         }
       ]
     },
     {
       "id": "screen.reviews.history",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "compact",
+          "expression": "CatchTopBar",
+          "owner": "CatchRouteScaffold",
+          "reason": "The pushed route uses canonical compact back chrome and a scroll-derived divider."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Reviews History",
       "owner": "reviews",
       "priority": "P3",
@@ -21078,8 +22277,8 @@
           "id": "event_context_missing",
           "kind": "empty",
           "status": "captured",
-          "source": "reviews_history_missing_event_context captures Event review and Legacy club review fallback labels from ReviewsHistoryRow display data.",
-          "nextAction": "Compare missing-context row copy against exported references.",
+          "source": "ReviewsHistoryState reads only watchEventsByIdsProvider.asData and maps event enrichment loading, failure, and genuinely missing records to the same Event review or Legacy club review fallback labels.",
+          "nextAction": "Define an explicit enrichment loading/failure policy or a deliberately cached fallback with retry under DP-REVIEWS-HISTORY-005, then compare genuine missing-context copy against exported references.",
           "previewIds": [
             "ReviewsHistoryScreen/Screen states"
           ],
@@ -21094,11 +22293,12 @@
           "id": "edit_review_sheet",
           "kind": "mutation",
           "status": "tested",
-          "source": "Event-backed own reviews open the shared Edit review sheet through showWriteReviewSheet.",
+          "source": "Event-backed own reviews open the shared Edit review sheet through showWriteReviewSheet; submit/delete pending freezes rating, comment, both write actions, and sheet dismissal while WriteReviewController returns the active write future to duplicate callers.",
           "tests": [
-            "test/reviews/reviews_widgets_test.dart"
+            "test/reviews/reviews_widgets_test.dart",
+            "test/reviews/write_review_controller_test.dart"
           ],
-          "nextAction": "Add mutation pending/error visual states for update/delete once sheet fixtures are shared.",
+          "nextAction": "Keep the frozen review snapshot intact while adding a dedicated sheet capture and later visual comparison.",
           "previewIds": [
             "ReviewsHistoryScreen/Screen states",
             "WriteReviewSheet/Sheet states"
@@ -21280,11 +22480,43 @@
           "id": "DP-REVIEWS-HISTORY-004",
           "status": "blocked",
           "nextAction": "Canonical Reviews History reference export is blocked until design provides a standalone reviews-history screen source; current Claude sources only provide ReviewRow and review sections inside other surfaces."
+        },
+        {
+          "id": "DP-REVIEWS-HISTORY-005",
+          "status": "open",
+          "nextAction": "Event-context enrichment loading, failure, and genuinely missing records collapse into the same fallback row label because ReviewsHistoryState reads only provider asData. Define explicit enrichment recovery or document and test a deliberate cached fallback policy."
+        },
+        {
+          "id": "DP-REVIEWS-HISTORY-006",
+          "status": "closed",
+          "nextAction": "Closed by frozen rating/comment/write/dismiss controls during submit or delete, controller-level duplicate-write deduplication, and focused widget/controller proof."
         }
       ]
     },
     {
       "id": "screen.settings.account",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "compact",
+          "expression": "CatchTopBar",
+          "owner": "CatchRouteScaffold",
+          "reason": "The pushed route uses canonical compact back chrome and a scroll-derived divider."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Settings Account",
       "owner": "safety",
       "priority": "P3",
@@ -21485,6 +22717,16 @@
           "notes": "Settings Account fixture with blocked-account unblock mutation using shared offline error feedback."
         },
         {
+          "id": "settings_external_link_pending",
+          "status": "captured",
+          "notes": "Settings Account fixture with Catch Host launch held pending, selected-row progress, and whole-surface exclusivity."
+        },
+        {
+          "id": "settings_external_link_failure",
+          "status": "captured",
+          "notes": "Settings Account fixture with a false external-launch result and honest visible feedback."
+        },
+        {
           "id": "settings_text_scale_2",
           "status": "captured",
           "notes": "Settings Account fixture rendered at text scale 2.0 with blocked-account rows."
@@ -21578,14 +22820,18 @@
           ]
         },
         {
-          "id": "host_app_handoff",
+          "id": "external_link_outcomes",
           "kind": "mutation",
-          "status": "tested",
-          "source": "Catch Host row opens the central host handoff link through ExternalLinkController.",
+          "status": "captured",
+          "source": "Catch Host and configured privacy, support, and terms rows use one route-owned external-link operation. The selected row shows progress, the whole Settings surface freezes while pending, false and thrown failures show honest feedback, and actions restore afterward.",
+          "captureIds": [
+            "settings_external_link_pending",
+            "settings_external_link_failure"
+          ],
           "tests": [
             "test/safety/settings_screen_test.dart"
           ],
-          "nextAction": "Decide whether host-app link stays external or becomes in-app role switch when host routes are enabled.",
+          "nextAction": "Keep the destination policy separate from launch integrity; whether Catch Host stays external or becomes an in-app role switch remains an owner decision.",
           "previewIds": [
             "SettingsScreen/Screen states"
           ]
@@ -21594,14 +22840,16 @@
           "id": "notification_preferences",
           "kind": "mutation",
           "status": "captured",
-          "source": "Preference toggles optimistically update local CatchToggle state and persist through SettingsController.savePreference.",
+          "source": "Preference toggles optimistically update local CatchToggle state and persist through SettingsController.savePreference; any settings mutation freezes every settings action plus route exit, while SettingsController deduplicates overlapping preference, unblock, and delete calls.",
           "captureIds": [
             "settings_preference_pending"
           ],
           "tests": [
-            "test/safety/settings_screen_test.dart"
+            "test/safety/settings_screen_test.dart",
+            "test/safety/settings_controller_test.dart",
+            "test/safety/settings_account_state_test.dart"
           ],
-          "nextAction": "Compare disabled-toggle pending affordance against the Settings mutation contract during visual polish.",
+          "nextAction": "Keep whole-surface exclusivity intact while comparing the disabled-toggle pending affordance during visual polish.",
           "previewIds": [
             "SettingsScreen/Screen states",
             "SettingsScreen/Mutation states"
@@ -21690,15 +22938,16 @@
           "id": "unblock_mutation",
           "kind": "mutation",
           "status": "captured",
-          "source": "Unblock action routes through SettingsController.unblockUserMutation and shows shared Catch snackbar success feedback.",
+          "source": "Unblock action routes through SettingsController.unblockUserMutation and shows shared Catch snackbar success feedback; pending unblock freezes every settings action and route exit, and the controller rejects overlapping settings writes.",
           "captureIds": [
             "settings_unblock_pending",
             "settings_unblock_error"
           ],
           "tests": [
-            "test/safety/settings_screen_test.dart"
+            "test/safety/settings_screen_test.dart",
+            "test/safety/settings_controller_test.dart"
           ],
-          "nextAction": "Compare unblock pending/error affordances against the Settings mutation contract during visual polish.",
+          "nextAction": "Compare unblock pending/error affordances during visual polish without weakening whole-surface exclusivity.",
           "previewIds": [
             "SettingsScreen/Mutation states"
           ]
@@ -21707,17 +22956,18 @@
           "id": "delete_account_flow",
           "kind": "mutation",
           "status": "captured",
-          "source": "Delete account row opens confirm danger dialog and delegates confirmed deletion to SettingsController.requestAccountDeletion.",
+          "source": "Delete account row opens the confirm danger dialog and delegates confirmed deletion to SettingsController.requestAccountDeletion; the dialog rechecks global pending state, and delete pending freezes every settings action plus route exit.",
           "captureIds": [
             "settings_delete_pending",
             "settings_delete_error"
           ],
           "tests": [
-            "test/safety/settings_screen_test.dart"
+            "test/safety/settings_screen_test.dart",
+            "test/safety/settings_controller_test.dart"
           ],
           "nextAction": "Add a dedicated confirm-dialog capture if destructive-dialog pixel parity becomes blocking.",
           "previewIds": [
-            "CatchConfirmDialog/Dialog states",
+            "CatchConfirmDialog/Contract states",
             "SettingsScreen/Mutation states"
           ]
         },
@@ -21725,15 +22975,16 @@
           "id": "sign_out_action",
           "kind": "mutation",
           "status": "captured",
-          "source": "Log out row delegates to AuthSessionController.signOutMutation and shows pending spinner while signing out.",
+          "source": "Log out row delegates to AuthSessionController.signOutMutation and shows a pending spinner; sign-out pending freezes every settings action and route exit, while AuthSessionController returns the active session future to duplicate callers.",
           "captureIds": [
             "settings_sign_out_pending",
             "settings_sign_out_error"
           ],
           "tests": [
-            "test/safety/settings_screen_test.dart"
+            "test/safety/settings_screen_test.dart",
+            "test/auth/presentation/auth_controller_test.dart"
           ],
-          "nextAction": "Compare sign-out pending/error affordances against the Settings mutation contract during visual polish.",
+          "nextAction": "Compare sign-out pending/error affordances during visual polish without weakening whole-surface exclusivity.",
           "previewIds": [
             "SettingsScreen/Mutation states"
           ]
@@ -21830,7 +23081,7 @@
             "migration": "SettingsAccountState now owns profile provider waves, preference draft values, blocked-account rows, provider retry states, and mutation pending flags; SettingsScreen keeps route callbacks and controller calls at the edge.",
             "previewIds": [
               "SettingsScreen/Screen states",
-              "CatchConfirmDialog/Dialog states",
+              "CatchConfirmDialog/Contract states",
               "SettingsScreen/Mutation states"
             ]
           },
@@ -21854,7 +23105,7 @@
             "states": [
               "profile_backed_account",
               "history_navigation_rows",
-              "host_app_handoff"
+              "external_link_outcomes"
             ],
             "migration": "Keep Account rows data-driven and route callbacks owned by the adapter.",
             "previewIds": [
@@ -21913,7 +23164,7 @@
             "migration": "Keep safety row layout reusable while SettingsController owns destructive and privacy mutations.",
             "previewIds": [
               "SettingsScreen/Screen states",
-              "CatchConfirmDialog/Dialog states",
+              "CatchConfirmDialog/Contract states",
               "SettingsScreen/Mutation states"
             ]
           },
@@ -21992,11 +23243,44 @@
           "id": "DP-SETTINGS-ACCOUNT-003",
           "status": "closed",
           "nextAction": "SettingsAccountState now owns profile provider waves, preference draft values, blocked-account rows, provider retry states, and mutation pending flags before visual parity edits."
+        },
+        {
+          "id": "DP-SETTINGS-ACCOUNT-004",
+          "status": "closed",
+          "nextAction": "Closed by SettingsMutationState.operationPending, global action and route-exit freezing, confirmation rechecks, controller-level write deduplication, and focused state/controller/widget proof."
+        },
+        {
+          "id": "DP-SETTINGS-ACCOUNT-005",
+          "status": "closed",
+          "nextAction": "Closed. Host-app and configured privacy/support/terms launches now share a route-owned pending guard, disable every Settings action and route exit while pending, show a spinner on the selected row, restore the surface afterward, and present visible feedback for false and thrown launcher failures; focused widget tests prove duplicate-tap exclusion and both failure paths."
         }
       ]
     },
     {
       "id": "screen.payments.history",
+        "shell": {
+          "owner": "consumer",
+          "nestedScaffoldAllowed": false,
+          "reason": "The consumer adaptive tab shell owns root scaffold and navigation chrome."
+        },
+        "topBar": {
+          "role": "compact",
+          "expression": "CatchTopBar",
+          "owner": "CatchRouteScaffold",
+          "reason": "The pushed route uses canonical compact back chrome and a scroll-derived divider."
+        },
+        "statePolicy": {
+          "requiredStates": [
+            "data",
+            "empty",
+            "error",
+            "loading",
+            "mutation",
+            "offline",
+            "permission"
+          ],
+          "owner": "registered screen state controller and Catch state surfaces"
+        },
       "name": "Payment History",
       "owner": "payments",
       "priority": "P3",
@@ -22119,6 +23403,16 @@
           "id": "payment_history_missing_event_title",
           "status": "captured",
           "notes": "Payment History missing event title route capture."
+        },
+        {
+          "id": "payment_history_event_title_loading",
+          "status": "captured",
+          "notes": "Resolved payments with batched event-title enrichment still loading."
+        },
+        {
+          "id": "payment_history_event_title_error",
+          "status": "captured",
+          "notes": "Resolved payments with batched event-title enrichment failure and exact-query retry."
         },
         {
           "id": "payment_history_text_scale_2",
@@ -22261,7 +23555,7 @@
           "id": "failed_signup_help",
           "kind": "mutation",
           "status": "captured",
-          "source": "Sign-up failure payments show support recovery copy and a Get help with this booking action in the detail sheet; help feedback uses the shared Catch snackbar helper.",
+          "source": "Sign-up failure payments honestly label the action How to get help with this booking; it closes the receipt and shows actionable guidance to include the visible payment and order IDs when contacting Catch support without claiming to open an unimplemented channel.",
           "captureIds": [
             "payment_history_failed_signup_receipt_sheet",
             "payment_history_support_snackbar"
@@ -22269,21 +23563,53 @@
           "tests": [
             "test/payments/payment_history_screen_test.dart"
           ],
-          "nextAction": "Revisit snackbar-only support routing if a dedicated help route or support composer ships.",
+          "nextAction": "Keep the guidance label and outcome aligned unless a configured support route, composer, email, phone, or case-creation channel is implemented.",
           "previewIds": [
             "PaymentHistoryScreen/Screen states",
             "PaymentReceiptSheet/Receipt states"
           ]
         },
         {
-          "id": "event_title_loading_missing",
+          "id": "event_title_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "payment_history_missing_event_title captures the batched event-title lookup fallback to Event booking when a referenced event is unavailable.",
+          "source": "When payments are resolved but watchEventsByIdsProvider is loading, PaymentHistoryViewModel preserves an explicit enrichment-loading status and PaymentHistoryList renders row-shaped skeletons instead of a false missing title.",
+          "captureIds": [
+            "payment_history_event_title_loading"
+          ],
           "tests": [
             "test/payments/payment_history_screen_test.dart"
           ],
-          "nextAction": "Compare resolved and fallback event-title rows against exported references.",
+          "nextAction": "Keep enrichment loading visually distinct from resolved missing event titles.",
+          "previewIds": [
+            "PaymentHistoryScreen/Screen states"
+          ]
+        },
+        {
+          "id": "event_title_error",
+          "kind": "error",
+          "status": "captured",
+          "source": "Event-title lookup failure is preserved in PaymentHistoryViewModel and renders an event-specific CatchErrorState with exact-query retry.",
+          "captureIds": [
+            "payment_history_event_title_error"
+          ],
+          "tests": [
+            "test/payments/payment_history_screen_test.dart"
+          ],
+          "nextAction": "Keep the retry scoped to the batched payment event-id query and preserve the resolved payment set.",
+          "previewIds": [
+            "PaymentHistoryScreen/Screen states"
+          ]
+        },
+        {
+          "id": "event_title_missing",
+          "kind": "empty",
+          "status": "captured",
+          "source": "After event-title enrichment resolves, a genuinely absent event uses the honest Event unavailable row label while retaining receipt access.",
+          "tests": [
+            "test/payments/payment_history_screen_test.dart"
+          ],
+          "nextAction": "Compare the resolved-absence label against exported references once Payment History references exist.",
           "previewIds": [
             "PaymentHistoryScreen/Screen states"
           ],
@@ -22295,7 +23621,7 @@
           "id": "offline",
           "kind": "offline",
           "status": "captured",
-          "source": "Payment History uses shared obviousOfflineException/appErrorDescriptor copy for uid and payment stream retry surfaces; event-title lookup keeps the existing fallback row behavior.",
+          "source": "Payment History uses shared obviousOfflineException/appErrorDescriptor copy for uid, payment, and event-title retry surfaces; offline title enrichment no longer impersonates a missing event.",
           "captureIds": [
             "payment_history_uid_offline",
             "payment_history_payments_offline"
@@ -22486,6 +23812,16 @@
           "id": "DP-PAYMENT-HISTORY-004",
           "status": "blocked",
           "nextAction": "Canonical Payment History reference export is blocked until design provides a standalone payment-history screen source; current Claude sources only provide Booking payment and confirmation moments."
+        },
+        {
+          "id": "DP-PAYMENT-HISTORY-005",
+          "status": "closed",
+          "nextAction": "Closed. The receipt CTA now says How to get help with this booking, closes the sheet, and shows actionable guidance to include the visible payment and order IDs; the focused widget test proves the exact label and snackbar outcome without implying an unimplemented support handoff."
+        },
+        {
+          "id": "DP-PAYMENT-HISTORY-006",
+          "status": "closed",
+          "nextAction": "Closed. PaymentHistoryViewModel now distinguishes event-title loading, failure, resolved titles, and genuinely missing events; the UI shows skeletons, an event-specific retry state, or Event unavailable respectively, with focused widget proof."
         }
       ]
     }

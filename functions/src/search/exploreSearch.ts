@@ -54,7 +54,7 @@ interface AlgoliaHit {
 }
 
 /**
- * Searches the Explore club and event indices through Algolia.
+ * Searches the Explore organizer and event indices through Algolia.
  * @param {CallableRequest<unknown>} request Callable request.
  * @param {ExploreSearchDeps} deps Injectable dependencies for tests.
  * @return {Promise<ExploreSearchCallableResponse>} Search hit ids.
@@ -104,9 +104,11 @@ export async function searchExploreWithAlgolia(
   }
 
   const data = await response.json() as AlgoliaMultiSearchResponse;
-  const [clubsResult, eventsResult] = data.results ?? [];
+  const [organizersResult, eventsResult] = data.results ?? [];
+  const organizerIds = uniqueHitIds(organizersResult);
   return {
-    clubIds: uniqueHitIds(clubsResult),
+    organizerIds,
+    clubIds: organizerIds,
     eventIds: uniqueHitIds(eventsResult),
   };
 }
@@ -126,7 +128,7 @@ export function buildAlgoliaExploreSearchBody(
   return {
     requests: [
       {
-        indexName: clubsIndexName(),
+        indexName: organizersIndexName(),
         query: payload.query,
         hitsPerPage: limit,
         filters: marketId ?
@@ -164,12 +166,17 @@ function algoliaEndpoint(): string {
 }
 
 /**
- * Reads the club index name with a local-test fallback.
- * @return {string} Algolia clubs index name.
+ * Reads the organizer index name with rollout-compatible fallbacks.
+ * @return {string} Algolia organizers index name.
  */
-export function clubsIndexName(): string {
-  return process.env.ALGOLIA_CLUBS_INDEX || "clubs";
+export function organizersIndexName(): string {
+  return process.env.ALGOLIA_ORGANIZERS_INDEX ||
+    process.env.ALGOLIA_CLUBS_INDEX ||
+    "organizers";
 }
+
+/** @deprecated Use organizersIndexName. */
+export const clubsIndexName = organizersIndexName;
 
 /**
  * Reads the event index name with a local-test fallback.

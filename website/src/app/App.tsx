@@ -4,6 +4,7 @@ import {
   getPageKey,
   pageClassFor,
   pageMeta,
+  pageMetaForEvent,
   pageMetaForListing,
   type PageKey,
 } from "./pageMeta";
@@ -16,11 +17,17 @@ import {
 } from "./usePageLifecycle";
 import {isOrganizerSearchPath, marketingRoutePaths} from "./routeRegistry";
 import {MarketingConsentBanner} from "../features/marketing/MarketingConsentBanner";
+import {publishedLegalContent} from "../content/legal";
 import {claimRouteStateForLocation} from "../features/claims/claimRouting";
+import {
+  getEventDetailForPath,
+  isEventDetailPath,
+} from "../features/events/eventDetailModel";
 import {
   getHostListingRouteForPath,
 } from "../features/organizers/routing";
 import {PageShell} from "../shared/site";
+import {PendingRequestProvider} from "../shared/pendingRequest";
 import {RouteLoadingState} from "../shared/ui/primitives";
 
 const ClaimPage = lazy(async () => ({
@@ -28,6 +35,9 @@ const ClaimPage = lazy(async () => ({
 }));
 const HomePage = lazy(async () => ({
   default: (await import("../features/home/HomePage")).HomePage,
+}));
+const EventDetailPage = lazy(async () => ({
+  default: (await import("../features/events/EventDetailPage")).EventDetailPage,
 }));
 const HostListingPage = lazy(async () => ({
   default: (await import("../features/organizers/HostListingPage")).HostListingPage,
@@ -41,24 +51,40 @@ const NotFoundPage = lazy(async () => ({
 const OrganizerSearchPage = lazy(async () => ({
   default: (await import("../features/organizers/OrganizerSearchPage")).OrganizerSearchPage,
 }));
+const LegalPage = lazy(async () => ({
+  default: (await import("../features/legal/LegalPage")).LegalPage,
+}));
 
 function App() {
   return (
     <BrowserRouter>
-      <MarketingRouteShell />
+      <PendingRequestProvider>
+        <MarketingRouteShell />
+      </PendingRequestProvider>
     </BrowserRouter>
   );
 }
 
 function MarketingRouteShell() {
   const location = useLocation();
+  const event = getEventDetailForPath(location.pathname);
   const listingRoute = getHostListingRouteForPath(location.pathname);
   const listing = listingRoute?.listing ?? null;
-  const fallbackPage = pageKeyForCurrentRoute(location.pathname, Boolean(listing));
-  const page: PageKey = listing ? "listing" : fallbackPage;
+  const fallbackPage = pageKeyForCurrentRoute(
+    location.pathname,
+    Boolean(listing),
+    Boolean(event)
+  );
+  const page: PageKey = event
+    ? "event_detail"
+    : listing
+      ? "listing"
+      : fallbackPage;
   const captures = useMarketingCaptures();
   const routeKey = `${location.pathname}${location.search}${location.hash}`;
-  const meta = listingRoute ?
+  const meta = event
+    ? pageMetaForEvent(event)
+    : listingRoute ?
     pageMetaForListing(listingRoute.listing, {
       noindexOverride: listingRoute.isLegacyPath,
     }) :
@@ -97,12 +123,47 @@ function MarketingRouteShell() {
             )}
           />
           <Route
+            path={marketingRoutePaths.event_detail}
+            element={event ? (
+              <EventDetailPage event={event} />
+            ) : (
+              <NotFoundPage />
+            )}
+          />
+          <Route
             path={marketingRoutePaths.claim}
             element={<ClaimRoute />}
           />
           <Route
             path={marketingRoutePaths.claim_lookup}
             element={<ClaimRoute />}
+          />
+          <Route
+            path={marketingRoutePaths.privacy}
+            element={(
+              <LegalPage
+                page={publishedLegalContent.pages.privacy}
+                effectiveDate={publishedLegalContent.effectiveDate}
+              />
+            )}
+          />
+          <Route
+            path={marketingRoutePaths.terms}
+            element={(
+              <LegalPage
+                page={publishedLegalContent.pages.terms}
+                effectiveDate={publishedLegalContent.effectiveDate}
+              />
+            )}
+          />
+          <Route
+            path={marketingRoutePaths.help}
+            element={(
+              <LegalPage
+                page={publishedLegalContent.pages.help}
+                effectiveDate={publishedLegalContent.effectiveDate}
+              />
+            )}
           />
           <Route
             path={marketingRoutePaths.not_found}
@@ -117,8 +178,12 @@ function MarketingRouteShell() {
 
 function pageKeyForCurrentRoute(
   pathname: string,
-  hasListing: boolean
-): Exclude<PageKey, "listing"> {
+  hasListing: boolean,
+  hasEvent: boolean
+): Exclude<PageKey, "listing" | "event_detail"> {
+  if (!hasEvent && isEventDetailPath(pathname)) {
+    return "not_found";
+  }
   if (!hasListing && pathname.startsWith("/organizers/") && !isOrganizerSearchPath(pathname)) {
     return "not_found";
   }

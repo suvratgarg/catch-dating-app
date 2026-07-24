@@ -69,6 +69,7 @@ class EventPolicyStep extends StatelessWidget {
         padding: CatchInsets.formStepBody,
         children: [
           CatchSectionList(
+            emptyStateOmitted: true,
             gap: 0,
             children: [
               CatchSection.plain(
@@ -82,6 +83,8 @@ class EventPolicyStep extends StatelessWidget {
                   CatchField.input(
                     key: CreateEventFormKeys.capacity,
                     title: context.l10n.hostsEventPolicyStepTitleMaxAttendees,
+                    contract: CatchContractConstraints
+                        .createEventCallablePayloadCapacityLimit,
                     controller: capacityController,
                     inputHint: '20',
                     icon: CatchIcons.peopleOutline,
@@ -107,6 +110,8 @@ class EventPolicyStep extends StatelessWidget {
                         .hostsEventPolicyStepTitleBasePriceCurrencycode(
                           currencyCode: currencyCode,
                         ),
+                    contract: CatchContractConstraints
+                        .createEventCallablePayloadPriceInPaise,
                     controller: priceController,
                     inputHint: '0',
                     icon: CatchIcons.paymentsOutlined,
@@ -140,6 +145,14 @@ class EventPolicyStep extends StatelessWidget {
                   CatchField.optionCards<EventAdmissionPreset>(
                     title:
                         context.l10n.hostsEventPolicyStepLabelAdmissionFormat,
+                    contract: CatchContractConstraints
+                        .createEventCallablePayloadEventPolicyAdmissionFormat,
+                    contractValue: (preset) => switch (preset) {
+                      EventAdmissionPreset.openCapacity => 'open',
+                      EventAdmissionPreset.inviteOnly => 'inviteOnly',
+                      EventAdmissionPreset.requestToJoin => 'manualApproval',
+                      EventAdmissionPreset.balancedSingles => 'balancedRatio',
+                    },
                     values: EventAdmissionPreset.values,
                     itemTitle: (preset) => preset.title(context.l10n),
                     itemDescription: (preset) =>
@@ -152,6 +165,8 @@ class EventPolicyStep extends StatelessWidget {
                     CatchField.input(
                       key: CreateEventFormKeys.inviteCode,
                       title: context.l10n.hostsEventPolicyStepTitleInviteCode,
+                      contract: CatchContractConstraints
+                          .createEventCallablePayloadPrivateAccessInviteCode,
                       controller: inviteCodeController,
                       inputHint: context
                           .l10n
@@ -176,6 +191,8 @@ class EventPolicyStep extends StatelessWidget {
                     CatchField.toggle(
                       key: CreateEventFormKeys.cohortCapsToggle,
                       title: context.l10n.hostsEventPolicyStepTitleCohortCaps,
+                      contract: CatchContractConstraints
+                          .mobileFormStateEventCohortCapsEnabled,
                       body: context
                           .l10n
                           .hostsEventPolicyStepBodyOptionallyCapStraightMen,
@@ -191,6 +208,8 @@ class EventPolicyStep extends StatelessWidget {
                             title: context
                                 .l10n
                                 .hostsEventPolicyStepTitleMaxStraightMen,
+                            contract: CatchContractConstraints
+                                .createEventCallablePayloadConstraintsMaxMen,
                             isOptional: true,
                             controller: maxMenController,
                             inputHint: context
@@ -214,6 +233,8 @@ class EventPolicyStep extends StatelessWidget {
                             title: context
                                 .l10n
                                 .hostsEventPolicyStepTitleMaxStraightWomen,
+                            contract: CatchContractConstraints
+                                .createEventCallablePayloadConstraintsMaxWomen,
                             isOptional: true,
                             controller: maxWomenController,
                             inputHint: context
@@ -250,6 +271,8 @@ class EventPolicyStep extends StatelessWidget {
                       key: CreateEventFormKeys.dynamicPricingToggle,
                       title:
                           context.l10n.hostsEventPolicyStepTitleDemandPricing,
+                      contract: CatchContractConstraints
+                          .mobileFormStateEventDynamicPricingEnabled,
                       body: context
                           .l10n
                           .hostsEventPolicyStepBodyIncreaseTheStraightMen,
@@ -265,6 +288,8 @@ class EventPolicyStep extends StatelessWidget {
                                 .hostsEventPolicyStepTitleStepCurrencycode(
                                   currencyCode: currencyCode,
                                 ),
+                            contract: CatchContractConstraints
+                                .createEventCallablePayloadEventPolicyPricingDemandPricingRulesItemsStepAdjustmentInPaise,
                             controller: dynamicPricingStepController,
                             inputHint: '250',
                             icon: CatchIcons.trendingUpRounded,
@@ -286,6 +311,8 @@ class EventPolicyStep extends StatelessWidget {
                                 .hostsEventPolicyStepTitleMaxCurrencycode(
                                   currencyCode: currencyCode,
                                 ),
+                            contract: CatchContractConstraints
+                                .createEventCallablePayloadEventPolicyPricingDemandPricingRulesItemsMaxAdjustmentInPaise,
                             controller: dynamicPricingMaxController,
                             inputHint: '1500',
                             icon: CatchIcons.priceChangeOutlined,
@@ -308,11 +335,18 @@ class EventPolicyStep extends StatelessWidget {
                     key: CreateEventFormKeys.minAge,
                     minAgeController: minAgeController,
                     maxAgeController: maxAgeController,
+                    minimumContract: CatchContractConstraints
+                        .createEventCallablePayloadConstraintsMinAge,
+                    maximumContract: CatchContractConstraints
+                        .createEventCallablePayloadConstraintsMaxAge,
                   ),
                   CatchField.optionCards<EventCancellationPolicyId>(
                     title: context
                         .l10n
                         .hostsEventPolicyStepLabelCancellationPolicy,
+                    contract: CatchContractConstraints
+                        .createEventCallablePayloadEventPolicyCancellationPolicyId,
+                    contractValue: (value) => value.name,
                     values: EventCancellationPolicyId.values,
                     itemTitle: (policyId) => policyFor(policyId).title,
                     itemDescription: (policyId) =>

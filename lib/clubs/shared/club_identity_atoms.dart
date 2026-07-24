@@ -11,9 +11,9 @@ import 'package:flutter/material.dart';
 
 String clubMemberCountLabel(Club club) {
   final count = club.memberCount;
-  if (count == 1) return '1 member';
-  if (count > 0) return '$count members';
-  return 'New club';
+  if (count == 1) return '1 follower';
+  if (count > 0) return '$count followers';
+  return 'New organizer';
 }
 
 List<String> visibleClubTags(

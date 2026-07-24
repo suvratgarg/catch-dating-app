@@ -9,6 +9,10 @@ export interface ExploreSearchCallableResponse {
   /**
    * @maxItems 50
    */
+  organizerIds: string[];
+  /**
+   * @maxItems 50
+   */
   clubIds: string[];
   /**
    * @maxItems 50

@@ -14,6 +14,16 @@ export interface UpdateClubCallablePayload {
     description?: string;
     location?: string;
     area?: string;
+    /**
+     * Canonical organizer classification. Club is one organizer subtype; missing legacy values normalize to club during migration.
+     */
+    organizerType?:
+      | "club"
+      | "community"
+      | "individual"
+      | "eventProducer"
+      | "venue"
+      | "brand";
     hostName?: string;
     hostAvatarUrl?: string | null;
     imageUrl?: string | null;

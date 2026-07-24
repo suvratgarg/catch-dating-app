@@ -8,6 +8,9 @@ import {
   defaultOrganizerDirectoryFilters,
   hasAnyEventSignal,
   hasUpcomingCatchEvent,
+  isClaimSubmissionEnabledListing,
+  isClaimedListing,
+  isPubliclyReadableListing,
   isUnclaimedListing,
   isVerifiedListing,
   organizerAppearanceContext,
@@ -19,18 +22,25 @@ import {
   type OrganizerStatusFilter,
 } from "./selectors";
 import type {HostListing} from "./types";
+import {organizerPolicyForListing} from "./organizerPolicy";
 
 type FieldUpdater<T> = T | ((current: T) => T);
 
-export function useOrganizerDirectoryController() {
+export function useOrganizerDirectoryController(
+  sourceListings: readonly HostListing[] = hostListings
+) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const publicListings = useMemo(
+    () => sourceListings.filter(isPubliclyReadableListing),
+    [sourceListings]
+  );
   const cityOptions = useMemo(
-    () => [...new Set(hostListings.map((listing) => listing.city))].sort(),
-    []
+    () => [...new Set(publicListings.map((listing) => listing.city))].sort(),
+    [publicListings]
   );
   const formatOptions = useMemo(
-    () => [...new Set(hostListings.flatMap((listing) => listing.formats))].sort(),
-    []
+    () => [...new Set(publicListings.flatMap((listing) => listing.formats))].sort(),
+    [publicListings]
   );
   const currentFilters = useMemo(
     () => readOrganizerFiltersFromUrl(cityOptions, formatOptions, searchParams),
@@ -109,42 +119,51 @@ export function useOrganizerDirectoryController() {
   }, [updateFilters]);
 
   const results = useMemo(() => {
-    const filtered = hostListings.filter((listing) => {
+    const filtered = publicListings.filter((listing) => {
       const haystack = organizerDirectorySearchText(listing);
       if (queryTerms.length && !queryTerms.every((term) => haystack.includes(term))) return false;
       if (statusFilter === "verified" && !isVerifiedListing(listing)) return false;
-      if (statusFilter === "claimed" && listing.status !== "claimed") return false;
+      if (statusFilter === "claimed" && !isClaimedListing(listing)) return false;
       if (statusFilter === "unclaimed" && !isUnclaimedListing(listing)) return false;
       if (formatFilter !== "all" && !listing.formats.includes(formatFilter)) return false;
       if (cityFilter !== "all" && listing.city !== cityFilter) return false;
       if (upcomingOnly && !hasUpcomingCatchEvent(listing)) return false;
-      if (minRating > 0 && (listing.metrics?.rating ?? 0) < minRating) return false;
+      if (
+        minRating > 0 &&
+        (
+          !organizerPolicyForListing(listing).canReadPublicReviews ||
+          (listing.metrics?.rating ?? 0) < minRating
+        )
+      ) return false;
       return true;
     });
     return filtered.slice().sort((a, b) => compareListings(a, b, sort));
-  }, [cityFilter, formatFilter, minRating, queryTerms, sort, statusFilter, upcomingOnly]);
+  }, [cityFilter, formatFilter, minRating, publicListings, queryTerms, sort, statusFilter, upcomingOnly]);
 
   const summary = useMemo(() => {
     let verifiedCount = 0;
     let unclaimedCount = 0;
     let eventBackedCount = 0;
     const claimableListings: HostListing[] = [];
-    for (const listing of hostListings) {
+    for (const listing of publicListings) {
       if (isVerifiedListing(listing)) verifiedCount += 1;
       if (isUnclaimedListing(listing)) {
         unclaimedCount += 1;
-        if (claimableListings.length < 3) claimableListings.push(listing);
+        if (
+          claimableListings.length < 3 &&
+          isClaimSubmissionEnabledListing(listing)
+        ) claimableListings.push(listing);
       }
       if (hasAnyEventSignal(listing)) eventBackedCount += 1;
     }
     return {
       claimableListings,
       eventBackedCount,
-      profileCount: hostListings.length,
+      profileCount: publicListings.length,
       unclaimedCount,
       verifiedCount,
     };
-  }, []);
+  }, [publicListings]);
 
   function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

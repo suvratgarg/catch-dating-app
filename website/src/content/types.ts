@@ -77,16 +77,68 @@ export interface ListingMetaCopy {
   };
 }
 
-export interface WebsiteMetaCopy {
-  readonly routes: Readonly<
-    Record<"home" | "host" | "organizers" | "claim" | "not_found", StaticPageMetaCopy>
-  >;
-  readonly listing: ListingMetaCopy;
+export interface EventMetaCopy {
+  readonly titleTemplate: string;
+  readonly catchTwitterTemplate: string;
+  readonly externalTwitterTemplate: string;
+  readonly staticLabels: {
+    readonly eventEyebrow: string;
+    readonly hostedByPrefix: string;
+    readonly scheduleHeading: string;
+    readonly locationLabel: string;
+    readonly priceLabel: string;
+    readonly sourceLabel: string;
+    readonly reviewsHeading: string;
+    readonly lastReviewedPrefix: string;
+    readonly homeBreadcrumb: string;
+    readonly organizersBreadcrumb: string;
+  };
 }
 
-export type OwnerGatedLegalPath = "/help" | "/privacy" | "/terms";
+export interface WebsiteMetaCopy {
+  readonly routes: Readonly<
+    Record<
+      "home" | "host" | "organizers" | "claim" | "privacy" | "terms" | "help" | "not_found",
+      StaticPageMetaCopy
+    >
+  >;
+  readonly listing: ListingMetaCopy;
+  readonly event: EventMetaCopy;
+}
 
-export interface OwnerGatedLegalPage {
-  readonly path: OwnerGatedLegalPath;
-  readonly body: string | null;
+export type PublishedLegalPath = "/help/" | "/privacy/" | "/terms/";
+
+export interface PublishedLegalSection {
+  readonly heading: string;
+  readonly paragraphs: readonly string[];
+  readonly bullets?: readonly string[];
+}
+
+export interface PublishedLegalPage {
+  readonly path: PublishedLegalPath;
+  readonly eyebrow: string;
+  readonly title: string;
+  readonly summary: string;
+  readonly sections: readonly PublishedLegalSection[];
+}
+
+export interface PublishedLegalContent {
+  readonly operator: {
+    readonly name: string;
+    readonly supportEmail: string;
+    readonly formalAddress: string;
+    readonly governingCourts: string;
+    readonly grievanceOfficer: string;
+  };
+  readonly ui: {
+    readonly homeLabel: string;
+    readonly organizersLabel: string;
+    readonly hostsLabel: string;
+    readonly contactLabel: string;
+    readonly effectivePrefix: string;
+    readonly contactPrompt: string;
+    readonly footerBody: string;
+  };
+  readonly effectiveDate: string;
+  readonly pages: Readonly<Record<"help" | "privacy" | "terms", PublishedLegalPage>>;
 }

@@ -26,7 +26,6 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final uidAsync = ref.watch(uidProvider);
     if (uidAsync.isLoading) {
       return HostLoadingScreen(
@@ -64,7 +63,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen> {
     final club = clubs.where((item) => item.id == widget.clubId).firstOrNull;
     if (club == null) {
       return CatchErrorScaffold.fromError(
-        StateError('Club unavailable'),
+        StateError('Organizer unavailable'),
         context: AppErrorContext.club,
         onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
       );
@@ -96,19 +95,17 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen> {
           HostProfileController.saveProfileMutation,
         ],
         errorContext: AppErrorContext.profile,
-        child: Scaffold(
-          backgroundColor: t.bg,
-          appBar: CatchScreenTopBar(
-            context: context,
-            eyebrow: club.name,
+        child: CatchRouteScaffold(
+          topBarBuilder: (context, scrolledUnder) => CatchTopBar(
             title: context.l10n.hostsHostClubEditTabLabelHostTeam,
+            subtitle: club.name,
             leading: CatchIconAction(
               tooltip: MaterialLocalizations.of(context).backButtonTooltip,
               icon: CatchIcons.arrowBackIosNewRounded,
               onPressed: _leaveTeam,
             ),
             leadingType: CatchTopBarLeading.back,
-            border: true,
+            divider: scrolledUnder,
             bottom: CatchTabRail<HostTeamMode>(
               selected: _selectedTab,
               onChanged: (tab) => setState(() => _selectedTab = tab),
@@ -480,6 +477,7 @@ class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
         CatchField.inputActions(
           key: const ValueKey('host-team-profile-display-name'),
           title: context.l10n.hostsHostClubTeamScreenTitleDisplayName,
+          contract: CatchContractConstraints.hostProfileDocumentDisplayName,
           controller: widget.displayNameController,
           open: _accordion.isExpanded(_displayNameField),
           onOpenChanged: (open) => _setOpen(_displayNameField, open),
@@ -505,6 +503,7 @@ class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
         CatchField.inputActions(
           key: const ValueKey('host-team-profile-role-title'),
           title: context.l10n.hostsHostClubTeamScreenTitleRoleTitle,
+          contract: CatchContractConstraints.hostProfileDocumentRoleTitle,
           controller: widget.roleTitleController,
           open: _accordion.isExpanded(_roleTitleField),
           onOpenChanged: (open) => _setOpen(_roleTitleField, open),
@@ -529,6 +528,7 @@ class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
         CatchField.inputActions(
           key: const ValueKey('host-team-profile-bio'),
           title: context.l10n.hostsHostClubTeamScreenTitleAboutYouAsA,
+          contract: CatchContractConstraints.hostProfileDocumentBio,
           controller: widget.bioController,
           open: _accordion.isExpanded(_bioField),
           onOpenChanged: (open) => _setOpen(_bioField, open),

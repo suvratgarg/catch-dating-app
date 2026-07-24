@@ -15,6 +15,9 @@ abstract final class SettingsKeys {
   static const reviewHistoryRow = ValueKey('settings.reviewHistory.row');
   static const paymentHistoryRow = ValueKey('settings.paymentHistory.row');
   static const hostAppRow = ValueKey('settings.hostApp.row');
+  static const privacyPolicyRow = ValueKey('settings.privacyPolicy.row');
+  static const helpSupportRow = ValueKey('settings.helpSupport.row');
+  static const termsRow = ValueKey('settings.terms.row');
   static const eventPolicyLabRow = ValueKey('settings.eventPolicyLab.row');
   static const eventSuccessLabRow = ValueKey('settings.eventSuccessLab.row');
   static const eventSuccessManualQaRow = ValueKey(

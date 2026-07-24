@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Public organizer listing projection consumed by the marketing website and future shared web/app listing surfaces. It is generated from approved organizer, seed, or demo data and is not the canonical club document.
+ * Public organizer listing projection consumed by the marketing website and future shared web/app listing surfaces. It is generated from approved organizer, seed, or demo data and is not the canonical organizer document.
  */
 export interface WebsiteHostListingProjection {
   id: string;
@@ -20,7 +20,13 @@ export interface WebsiteHostListingProjection {
   category: string;
   status: string;
   indexing: "index, follow" | "noindex, follow";
-  sourceConfidence: "first_party" | "high" | "medium" | "low";
+  sourceConfidence:
+    | "first_party"
+    | "seedOnly"
+    | "high"
+    | "medium"
+    | "low"
+    | "ownerVerified";
   headline: string;
   description: string;
   sourceSummary: string;
@@ -54,9 +60,13 @@ export interface WebsiteHostListingProjection {
     timeline: "upcoming" | "past";
     startTime: string;
     endTime: string;
+    timezone?: string;
     date: string;
     location: string;
+    locationDetails?: string;
     summary: string;
+    requirements?: string;
+    accessibility?: string;
     capacityLimit: number;
     bookedCount: number;
     checkedInCount: number;
@@ -73,9 +83,13 @@ export interface WebsiteHostListingProjection {
     availability: "read_only_external";
     startTime: string;
     endTime: string | null;
+    timezone?: string;
     date: string;
     location: string;
+    locationDetails?: string;
     summary: string;
+    requirements?: string;
+    accessibility?: string;
     priceLabel: string;
     sourceLabel: string;
     sourceHref: string;
@@ -101,6 +115,7 @@ export interface WebsiteHostListingProjection {
   }[];
   reviews: {
     id: string | null;
+    eventId: string | null;
     reviewerName: string;
     rating: number;
     comment: string;
@@ -136,6 +151,33 @@ export interface WebsiteHostListingProjection {
       | "write_needed"
       | "static_fixture"
       | "unknown";
+  };
+  authority: {
+    ownershipState: "programmatic" | "userCreated" | "claimed" | "transferred";
+    claimState:
+      | "unclaimed"
+      | "claimPending"
+      | "claimed"
+      | "verified"
+      | "suppressed";
+    provenanceOrigin: "userCreated" | "scraper" | "adminSeed" | "import";
+    sourceConfidence: "seedOnly" | "low" | "medium" | "high" | "ownerVerified";
+    verificationStatus: "unverified" | "sourceBacked" | "ownerVerified";
+    appVisibility: "discoverable" | "hidden";
+    publishStatus: "draft" | "qa" | "published" | "suppressed" | "removed";
+    indexStatus: "noindex" | "indexReady" | "indexed";
+  };
+  capabilities: {
+    claimRequest: {
+      state: "enabled" | "disabled";
+      reason: string;
+    };
+    publicReviews: {
+      targetState: "enabled" | "disabled";
+      readState: "enabled" | "disabled";
+      writeState: "enabled" | "disabled";
+      reason: string;
+    };
   };
   lastVerifiedAt: string;
   searchText: string;

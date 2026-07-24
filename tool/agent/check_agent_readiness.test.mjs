@@ -2,8 +2,29 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   dependencyBaselineGrowthWarnings,
+  extractCommandPaths,
   extractDependencyBaselineSnapshot,
+  testInventoryMatches,
 } from "./check_agent_readiness.mjs";
+
+test("extractCommandPaths validates Functions build outputs through tracked sources", () => {
+  assert.deepEqual(
+    extractCommandPaths(
+      "npm --prefix functions run build && node --test functions/lib/operations/projectionImporter.test.js functions/test/operations-import-shadow-projection.test.cjs",
+    ),
+    [
+      "functions/src/operations/projectionImporter.test.ts",
+      "functions/test/operations-import-shadow-projection.test.cjs",
+    ],
+  );
+});
+
+test("extractCommandPaths keeps Functions lib paths without a declared build", () => {
+  assert.deepEqual(
+    extractCommandPaths("node --test functions/lib/operations/projectionImporter.test.js"),
+    ["functions/lib/operations/projectionImporter.test.js"],
+  );
+});
 
 test("extractDependencyBaselineSnapshot reads readiness baseline metrics", () => {
   const snapshot = extractDependencyBaselineSnapshot({
@@ -159,4 +180,23 @@ test("dependencyBaselineGrowthWarnings is silent when baseline is stable", () =>
   );
 
   assert.deepEqual(warnings, []);
+});
+
+test("test inventory readiness proof rejects stale generated content", () => {
+  const inventory = {
+    schemaVersion: 1,
+    generatedFrom: "fixture",
+    generatedBy: "fixture",
+    total: 1,
+    categories: {
+      flutter_unit_widget: {
+        count: 1,
+        files: ["test/current_test.dart"],
+      },
+    },
+  };
+  const current = `${JSON.stringify(inventory, null, 2)}\n`;
+
+  assert.equal(testInventoryMatches(current, inventory), true);
+  assert.equal(testInventoryMatches('{"total":0}\n', inventory), false);
 });

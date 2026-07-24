@@ -1,9 +1,9 @@
 ---
 doc_id: explore_findings_remediation_spec
 version: 1.1.0
-updated: 2026-07-03
+updated: 2026-07-23
 owner: app
-status: active
+status: retirement_ready
 ---
 
 # Explore + User Profile + Chats Findings — Remediation & Generalization Spec

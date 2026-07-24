@@ -8,14 +8,16 @@ class CreateClubStepHeader extends StatelessWidget {
     required this.subtitle,
     required this.currentStep,
     required this.totalSteps,
-    required this.onBack,
+    this.onBack,
+    this.showBack = true,
   });
 
   final String title;
   final String? subtitle;
   final int currentStep;
   final int totalSteps;
-  final VoidCallback onBack;
+  final VoidCallback? onBack;
+  final bool showBack;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +27,7 @@ class CreateClubStepHeader extends StatelessWidget {
       step: currentStep + 1,
       total: totalSteps,
       onBack: onBack,
+      showBack: showBack,
     );
   }
 }

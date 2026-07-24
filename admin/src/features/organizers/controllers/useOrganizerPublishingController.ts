@@ -30,6 +30,7 @@ import {
   launchMarketIds,
 } from "../../../shared/config/launchMarkets";
 import {adminQueryKeys} from "../../../shared/query/queryKeys";
+import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 
 export type OrganizerPublishingFilter =
   | "launchCities"
@@ -56,6 +57,7 @@ export function useOrganizerPublishingController({
   onSelectClubId?: (clubId: string) => void;
 }) {
   const queryClient = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebouncedValue(query, query.trim() ? 250 : 0);
   const [filter, setFilter] =
@@ -119,7 +121,7 @@ export function useOrganizerPublishingController({
   const loadClub = useCallback(async (nextClubId = clubId) => {
     const normalizedClubId = nextClubId.trim();
     if (!normalizedClubId) {
-      onError("Enter a clubs/{id} document id before loading.");
+      onError("Enter an organizers/{id} document id before loading.");
       return;
     }
     if (onSelectClubId && normalizedClubId !== detailClubId) {
@@ -192,6 +194,22 @@ export function useOrganizerPublishingController({
     [form]
   );
 
+  const persistOrganizer = useCallback(async (
+    payload: ReturnType<typeof buildOrganizerSavePayload>
+  ) => {
+    if (Object.keys(payload.fields).length === 0) return null;
+    const result = await saveMutation.mutateAsync(payload);
+    const refreshed = await queryClient.fetchQuery({
+      queryKey: adminQueryKeys.organizers.detail(result.clubId),
+      queryFn: () => loadOrganizerProfile({clubId: result.clubId}),
+      staleTime: 0,
+    });
+    setClub(refreshed.club);
+    setForm(formFromOrganizerProfile(refreshed.club));
+    await refreshList();
+    return result;
+  }, [queryClient, refreshList, saveMutation]);
+
   const save = useCallback(async () => {
     if (!club || !form) {
       onError("Load an organizer before saving.");
@@ -210,24 +228,32 @@ export function useOrganizerPublishingController({
         "Resolve organizer validation issues before saving.");
       return false;
     }
+    const operation = beginOperation();
+    if (!operation) return false;
     try {
-      const result = await saveMutation.mutateAsync(payload);
-      const refreshed = await queryClient.fetchQuery({
-        queryKey: adminQueryKeys.organizers.detail(result.clubId),
-        queryFn: () => loadOrganizerProfile({clubId: result.clubId}),
-        staleTime: 0,
-      });
-      setClub(refreshed.club);
-      setForm(formFromOrganizerProfile(refreshed.club));
-      await refreshList();
+      const result = await persistOrganizer(payload);
       onError(null);
-      onNotice(`Saved ${result.updatedFieldCount} organizer field updates.`);
+      onNotice(
+        result ?
+          `Saved ${result.updatedFieldCount} organizer field updates.` :
+          "No organizer changes to save."
+      );
       return true;
     } catch (error) {
       onError(messageFromError(error, "Unable to save organizer profile."));
       return false;
+    } finally {
+      endOperation(operation);
     }
-  }, [club, form, onError, onNotice, queryClient, refreshList, saveMutation]);
+  }, [
+    beginOperation,
+    club,
+    endOperation,
+    form,
+    onError,
+    onNotice,
+    persistOrganizer,
+  ]);
 
   const saveAndPublish = useCallback(async () => {
     if (!club || !form) {
@@ -247,12 +273,13 @@ export function useOrganizerPublishingController({
       onError("Complete the publish checklist before indexing this profile.");
       return;
     }
+    const savePayload = buildOrganizerSavePayload(club, form);
+    const publishPayload = buildOrganizerPublishPayload(form, checklist);
+    const operation = beginOperation();
+    if (!operation) return;
     try {
-      const saved = await save();
-      if (!saved) return;
-      const result = await publishMutation.mutateAsync(
-        buildOrganizerPublishPayload(form, checklist)
-      );
+      await persistOrganizer(savePayload);
+      const result = await publishMutation.mutateAsync(publishPayload);
       const refreshed = await queryClient.fetchQuery({
         queryKey: adminQueryKeys.organizers.detail(result.clubId),
         queryFn: () => loadOrganizerProfile({clubId: result.clubId}),
@@ -269,17 +296,21 @@ export function useOrganizerPublishingController({
       );
     } catch (error) {
       onError(messageFromError(error, "Unable to publish organizer profile."));
+    } finally {
+      endOperation(operation);
     }
   }, [
+    beginOperation,
     checklist,
     club,
+    endOperation,
     form,
     onError,
     onNotice,
     publishMutation,
     queryClient,
     refreshList,
-    save,
+    persistOrganizer,
   ]);
 
   return {

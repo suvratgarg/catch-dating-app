@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_organizer_payload.schema.json",
+  "title": "CreateOrganizerCallablePayload",
+  "description": "Callable payload accepted by createOrganizer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "description", "location", "area"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "name": {"type": "string", "minLength": 1, "maxLength": 120},
+    "description": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "location": {"$ref": "../shared/event_common.schema.json#/definitions/marketId"},
+    "area": {"type": "string", "minLength": 1, "maxLength": 120},
+    "organizerType": {
+      "$ref": "../shared/event_common.schema.json#/definitions/organizerType"
+    },
+    "imageUrl": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
+    "profileImageUrl": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
+    "organizerPhotos": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {"$ref": "../embedded/uploaded_photo.schema.json"}
+    },
+    "logoPhoto": {
+      "anyOf": [
+        {"$ref": "../embedded/uploaded_photo.schema.json"},
+        {"type": "null"}
+      ]
+    },
+    "instagramHandle": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
+    "phoneNumber": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
+    "email": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
+    "hostDefaults": {
+      "$ref": "../shared/event_common.schema.json#/definitions/clubHostDefaults"
+    }
+  }
+}

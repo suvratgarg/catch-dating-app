@@ -34,15 +34,17 @@ flutter build web --release
 
 ## Coverage
 
-Widgetbook currently has 97 annotated primitive use cases:
+The generated Widgetbook coverage and contract-reference checks own the live
+use-case counts; this README intentionally does not duplicate those changing
+numbers. Run:
 
-- `lib/primitives/primitive_contract_use_cases.dart`: 10 use cases covering the
-  formal component-contract registry in `design/components/catch.components.json`.
-- `lib/primitives/core_catalog_use_cases.dart`: 87 use cases covering the broad
-  Core Design System section of `docs/widget_catalog.md`, including menu,
-  input, search, navigation, loading, feedback, activity/media, event-card,
-  data-display, sheet/footer, section, row, people, device-frame, profile, and
-  layout primitives.
+```bash
+node tool/run.mjs check design:widgetbook-contract-refs design:widgetbook-coverage
+```
+
+CI also analyzes and compiles this package as a web consumer. Structural
+annotation coverage is not sufficient on its own: a stale callback, constructor,
+or generated route must fail compilation before merge.
 
 The feedback/error section intentionally groups placement adapters together:
 `CatchErrorState`, `CatchErrorScaffold`, `CatchSliverErrorState`, and

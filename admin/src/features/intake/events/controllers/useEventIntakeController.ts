@@ -22,6 +22,7 @@ import type {
 } from "../../../../shared/types/adminTypes";
 import {adminQueryKeys} from "../../../../shared/query/queryKeys";
 import {usePendingMutationRecord} from "../../../../shared/query/usePendingMutationRecord";
+import {useAdminPendingOperationGuard} from "../../../../shared/pendingOperation";
 
 export type EventIntakeTab = "setup" | "inbox" | "candidates";
 
@@ -33,6 +34,7 @@ export function useEventIntakeController({
   onNotice: (message: string | null) => void;
 }) {
   const queryClient = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const bridgeQueryKey = adminQueryKeys.eventIntake.dashboardBridge();
   const bridgeQuery = useQuery({
     queryKey: bridgeQueryKey,
@@ -123,6 +125,8 @@ export function useEventIntakeController({
       edits,
       checklist: checklistForEventIntakeDecision(targetType, decision),
     };
+    const operation = beginOperation();
+    if (!operation) return;
     onError(null);
     onNotice(null);
     try {
@@ -141,8 +145,19 @@ export function useEventIntakeController({
           error.message :
           "Unable to record event intake decision."
       );
+    } finally {
+      endOperation(operation);
     }
-  }, [bridge, decisionMutation, notes, onError, onNotice, setBridge]);
+  }, [
+    beginOperation,
+    bridge,
+    decisionMutation,
+    endOperation,
+    notes,
+    onError,
+    onNotice,
+    setBridge,
+  ]);
 
   const updateSource = useCallback((
     sourceId: string,

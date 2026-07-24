@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.4.167
-updated: 2026-07-16
+version: 0.4.178
+updated: 2026-07-24
 owner: marketing_website
 status: active
 ---
@@ -25,7 +25,7 @@ The website is already split out of the old monolithic shell:
 - `website/src/content/meta.json`, validated by
   `website/src/content/meta.schema.json` and
   the browser-safe `website/src/content/metaContract.ts`, owns static page
-  metadata and the static labels used for generated organizer HTML.
+  metadata and the static labels used for generated organizer and event HTML.
   `website/src/app/pageMeta.ts` runtime-validates on client module load;
   `tool/marketing/website_meta_contract.mjs` adds filesystem reading for Node
   postbuild. Ajv parity tests run valid and invalid fixtures through both the
@@ -33,9 +33,11 @@ The website is already split out of the old monolithic shell:
   or copy of the strings.
 - `website/scripts/postbuild.mjs` emits route-specific static HTML after Vite.
   Generated organizer routes include semantic profile content, Organization and
-  breadcrumb JSON-LD, canonical/robots metadata, and `lastVerifiedAt` sitemap
-  dates before React executes. `checkOrganizerBuildOutputs.mjs` fails builds
-  that regress those crawlable outputs.
+  breadcrumb JSON-LD. Generated event routes include read-only event details,
+  source-aware registration handoff, event-scoped reviews, Event and breadcrumb
+  JSON-LD, canonical/robots metadata, and organizer-derived freshness before
+  React executes. `checkOrganizerBuildOutputs.mjs` fails builds that regress
+  those crawlable outputs.
 - Postbuild emits root `404.html`; the marketing Hosting target intentionally
   has no catch-all SPA rewrite, so unknown direct URLs reach Firebase's custom
   404 response with status 404. The route contract declares that status, the
@@ -47,10 +49,55 @@ The website is already split out of the old monolithic shell:
   ownership, and Storybook coverage status. It is validated bidirectionally
   against referenced Storybook `parameters.catchComponent` declarations by
   `tool/marketing/check_website_components.mjs`.
+- `design/features/feature_coverage.json` classifies every marketing route as a
+  contracted, grouped, planned, or explicitly excluded feature projection.
+  Shared product outcomes may target a cross-runtime identity such as
+  `feature.explore` or `feature.organizer_detail`; route metadata, static output,
+  React components, actions, and evidence remain owned by the website runtime.
+  Organizer Search is the first live projection: the feature compiler resolves
+  its three real route states, controller actions, route/section Storybook
+  previews, focused controller tests, and public listing projection schema into
+  the same generated `feature.explore` artifact as Flutter Explore. The removed
+  `saved-organizers` route state belongs to organizer detail storage and was not
+  an Organizer Search state.
+- All stateful marketing route authorities are now compiled. Marketing Home
+  owns public discovery handoffs, store availability, Host routing, and member
+  waitlist conversion. Host Acquisition owns the interactive operating
+  previews and the five-stage Host application. Organizer Claim binds both the
+  canonical workspace and dynamic lookup route so known, not-found, pending,
+  already-claimed, and unavailable authority states remain exact. Privacy,
+  Terms, Help, and 404 stay explicitly excluded as static/fallback surfaces;
+  the legacy organizer-listing route stays grouped because its difference is
+  static canonical/noindex policy rather than an independent workflow.
+- Marketing mutations use the frozen-snapshot variant of
+  `ARCH-PENDING-SNAPSHOT-001`. Waitlist, Host application, canonical Claim,
+  and listing Claim register one active request, disable their complete native
+  form boundary, guard controller entry points against same-tick duplicates,
+  and temporarily block sibling forms, shared route links, and browser exit.
+  This keeps the visible draft, auth session, step, and submitted payload
+  identical until the request settles.
+- Marketing Home and Host Acquisition bind their remote lead mutation to the
+  shared `contracts/http/join_waitlist_request.schema.json` and
+  `join_waitlist_response.schema.json` contracts. The generator projects the
+  same types into website and Functions code, while both boundaries reject
+  malformed payloads and responses.
 - `website/src/generated/hostListings.json` is production-only and excludes
-  `dataOrigin: "catchDemo"`. Storybook reads the explicit demo-inclusive
+  `dataOrigin: "catchDemo"` plus organizer-intake and seed records that do not
+  resolve to a `live` city in the active market pack. Multi-market organizer
+  listings expose only their live-market projection in production. Storybook reads the explicit demo-inclusive
   `hostListings.demo.json` projection through `stories/fixtures/hostListings.ts`.
   The generator and pretypecheck gate validate both outputs.
+- `design/public_surface_behavior.json` is the cross-surface authority and
+  action matrix described by
+  `docs/web_surface_architecture.md#public-viewer-and-listing-authority-matrix`.
+  Website listing policy must consume canonical ownership, claim,
+  verification, publication, independent claim/review-target/read/write
+  capability fields, and runtime availability; it must not infer an enabled
+  action from provenance or sign-in state. Published-but-suppressed records and
+  review capabilities without a verified canonical target fail closed. The
+  strict checker plus
+  `website/src/features/organizers/publicSurfaceBehavior.test.ts` prove every
+  registered website row against production policy and presentation adapters.
 - Home event discovery applies the pure `homeEventEligibility.ts` selector:
   only future Catch events in market-pack live cities are eligible. External
   events remain listing-page evidence, and city aliases normalize at this
@@ -303,9 +350,18 @@ The website is already split out of the old monolithic shell:
   external row, and edited event form state remain local to the controller.
   Listing public reviews are the first website reference migration for remote
   reads, mutations, cache updates, and invalidation. Claim request submission,
-  waitlist submission, and host application submission now follow the same
-  website mutation convention.
+  waitlist submission, and host application submission follow the same website
+  mutation convention and frozen-snapshot pending boundary. TanStack mutation
+  state drives the visible disabled boundary; a synchronous controller ref
+  prevents a duplicate before React can publish that state.
 - Feature folders exist under `website/src/features/**`.
+- `website/src/features/events/**` owns the generated event-detail route,
+  event projection normalization, and event-scoped review filtering. It
+  composes organizer authority, review presentation, and app-download adapters
+  without introducing website booking, checkout, or sign-in state. The route
+  uses the shared event-detail primitives for a ticket plus organizer/action
+  rail at wide viewports and a single-column, app-aligned stack on mobile;
+  shared Catch tokens own its type, color, spacing, radius, and activity accent.
 
 The next refactor should focus on page and style decomposition, not another
 top-level framework rewrite. The largest current files are page or style
@@ -685,10 +741,15 @@ website/src/
 - `content/site.ts` owns site-wide authored labels such as app-store CTA copy.
   The feature hook owns `import.meta.env` reads and joins destinations to copy;
   environment access never belongs in the content layer.
-- `content/legal.ts` reserves the existing app-linked `/privacy`, `/terms`, and
-  `/help` contracts with null bodies; `content/site.ts` reserves an empty
-  contact destination. A pretypecheck contract requires them to remain
-  unregistered and unlinked until owner-supplied text and destinations exist.
+- `content/legal.json` owns the published `/privacy/`, `/terms/`, and `/help/`
+  content plus confirmed operator and grievance facts; `content/legal.ts`
+  exposes its typed runtime contract. `content/site.ts` owns the public contact
+  destination and site-wide legal footer links. A pretypecheck contract rejects
+  placeholders, incomplete sections, or missing route registration.
+  Native Settings remains fail-closed: Privacy, Terms, and Help rows render only
+  when `CATCH_PRIVACY_POLICY_URL`, `CATCH_TERMS_URL`, and `CATCH_HELP_URL`
+  contain valid owner-approved destinations. Privacy and Terms are separate
+  documents and must never alias the same route.
 - `content/markets/index.ts` selects the active market pack. City lists,
   currency, geo-adaptive labels, India-specific comparison columns, and example
   event name/venue/city/currency belong in that pack rather than page or
@@ -704,8 +765,13 @@ website/src/
   named cross-feature controllers only when the product flow requires it.
 - `features/claims/**` may depend on organizer listing models because the claim
   flow selects an organizer.
+- `features/events/**` may depend on organizer listing policy and models,
+  review presentation, and marketing app-download adapters because event
+  details inherit organizer authority while keeping registration source-aware.
 - `features/organizers/**` may depend on claim and review controllers for the
-  listing page until those panels move behind local adapter components.
+  listing page, and on the event projection for event-card deep links and the
+  executable public-surface behavior harness, until those panels move behind
+  local adapter components.
 - `shared/**` must not import from `features/**` or route-specific `content/**`.
 - `generated/**` should be read through a typed feature-owned adapter.
 

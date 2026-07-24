@@ -43,6 +43,9 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
           title: context
               .l10n
               .eventSuccessEventSuccessStructureConfigEditorTextGroupPeopleInto,
+          contract: CatchContractConstraints
+              .eventSuccessPlanDocumentStructureConfigUnitKind,
+          contractValue: (value) => value.name,
           values: EventSuccessUnitKind.values,
           itemTitle: (kind) => kind.label,
           itemDescription: (kind) => kind.setupHint,
@@ -53,6 +56,8 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
         if (value.unitKind != EventSuccessUnitKind.wholeGroup)
           CatchField.stepper(
             title: value.unitKind.peoplePerLabel,
+            contract: CatchContractConstraints
+                .eventSuccessPlanDocumentStructureConfigUnitSize,
             body: context.l10n
                 .eventSuccessEventSuccessStructureConfigEditorDetailTargetSizeForEach(
                   singularLabel: value.unitKind.singularLabel,
@@ -79,6 +84,9 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
         if (supportsUnitCount)
           CatchField.optionCards<bool>(
             title: value.unitKind.countLabel,
+            contract: CatchContractConstraints
+                .eventSuccessPlanDocumentStructureConfigUnitCount,
+            contractValue: (value) => value.toString(),
             values: const [false, true],
             itemTitle: (fixed) => fixed
                 ? context
@@ -105,6 +113,8 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
         if (supportsUnitCount && value.unitCount != null)
           CatchField.stepper(
             title: value.unitKind.countLabel,
+            contract: CatchContractConstraints
+                .eventSuccessPlanDocumentStructureConfigUnitCount,
             body: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorDetailSetTheNumberYourselfOrLetCatchWorkItOutFromAttendance,
@@ -133,6 +143,9 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             title: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorTitleSpreadPeopleOutBy,
+            contract: CatchContractConstraints
+                .eventSuccessPlanDocumentStructureConfigBalanceActivityAttributes,
+            contractValue: (value) => value.name,
             body: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorTextCatchUsesThisWhenItBuildsTheGroups,
@@ -156,6 +169,9 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             title: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorTitleKeepSimilarPeopleTogetherBy,
+            contract: CatchContractConstraints
+                .eventSuccessPlanDocumentStructureConfigClusterActivityAttributes,
+            contractValue: (value) => value.name,
             body: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorTextCatchUsesThisWhenItBuildsTheGroups,
@@ -181,6 +197,9 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             title: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorTextMeetingTheSamePersonAgain,
+            contract: CatchContractConstraints
+                .eventSuccessPlanDocumentStructureConfigRotationRepeatStrategy,
+            contractValue: (value) => value.name,
             values: EventSuccessRotationRepeatStrategy.values,
             itemLabel: (strategy) => strategy.label,
             selected: {value.rotationRepeatStrategy},
@@ -195,6 +214,8 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             title: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorLabelMaxTimesTheSamePairMeets,
+            contract: CatchContractConstraints
+                .eventSuccessPlanDocumentStructureConfigMaxPairMeetings,
             body: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorDetailOnlyUsedWhenThereAreMoreRoundsThanPeopleToMeet,

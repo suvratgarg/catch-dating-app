@@ -5,24 +5,24 @@ import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAdminRole} from "./adminAuth";
 import {setAdminAuditLogInTransaction} from "./adminAudit";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
+import type {AdminDecideAccessApplicationCallablePayload} from
+  "../shared/generated/adminDecideAccessApplicationCallablePayload";
+import type {AdminDecideAccessApplicationCallableResponse} from
+  "../shared/generated/adminDecideAccessApplicationCallableResponse";
+import {validateAdminDecideAccessApplicationCallablePayload} from
+  "../shared/generated/schemaValidators";
+import {validateCallableWithAjv} from "../shared/validation";
 
 const accessReviewRoles = ["admin", "adminOwner", "support"] as const;
 const editableStatuses = ["pending", "waitlisted", "notSelectedYet"];
 
 export type AccessApplicationDecision = "approve" | "deny";
 
-export interface AdminDecideAccessApplicationPayload {
-  applicationUid: string;
-  decision: AccessApplicationDecision;
-  note: string;
-  cohortId?: string | null;
-}
+export type AdminDecideAccessApplicationPayload =
+  AdminDecideAccessApplicationCallablePayload;
 
-export interface AdminDecideAccessApplicationResponse {
-  applicationUid: string;
-  decision: AccessApplicationDecision;
-  status: "approvedForProfile" | "notSelectedYet";
-}
+export type AdminDecideAccessApplicationResponse =
+  AdminDecideAccessApplicationCallableResponse;
 
 export interface AdminGetAccessApplicationDetailsPayload {
   applicationUid: string;
@@ -129,6 +129,10 @@ export async function adminDecideAccessApplicationHandler(
   deps: AccessApplicationDeps = defaultDeps
 ): Promise<AdminDecideAccessApplicationResponse> {
   const adminContext = requireAdminRole(request, accessReviewRoles);
+  validateCallableWithAjv(
+    request,
+    validateAdminDecideAccessApplicationCallablePayload
+  );
   const payload = normalizeDecisionPayload(request.data);
   const db = deps.firestore();
   await deps.checkRateLimit?.(

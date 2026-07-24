@@ -16,6 +16,11 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
   {
+    name: "MobileFormState",
+    source: "forms/mobile_form_state.schema.json",
+    typeOutput: "functions/src/shared/generated/mobileFormState.ts",
+  },
+  {
     name: "OperationRun",
     source: "operations/run.schema.json",
     typeOutput: "functions/src/shared/generated/operationRunContract.ts",
@@ -61,6 +66,12 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/onboardingDraftDocument.ts",
   },
   {
+    name: "AccessApplicationDocument",
+    source: "firestore/access_applications.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/accessApplicationDocument.ts",
+  },
+  {
     name: "UserProfileDocument",
     source: "firestore/users.schema.json",
     typeOutput: "functions/src/shared/generated/userProfileDocument.ts",
@@ -79,6 +90,39 @@ const schemaSpecs = [
     name: "ClubDocument",
     source: "firestore/clubs.schema.json",
     typeOutput: "functions/src/shared/generated/clubDocument.ts",
+  },
+  {
+    name: "OrganizerDocument",
+    source: "firestore/organizers.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerDocument.ts",
+  },
+  {
+    name: "OrganizerPostDocument",
+    source: "firestore/organizer_posts.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerPostDocument.ts",
+  },
+  {
+    name: "OrganizerTeamMembershipDocument",
+    source: "firestore/organizer_team_memberships.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerTeamMembershipDocument.ts",
+  },
+  {
+    name: "OrganizerFollowDocument",
+    source: "firestore/organizer_follows.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerFollowDocument.ts",
+  },
+  {
+    name: "OrganizerClaimRequestDocument",
+    source: "firestore/organizer_claim_requests.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerClaimRequestDocument.ts",
+  },
+  {
+    name: "OrganizerScheduleLockDocument",
+    source: "firestore/organizer_schedule_locks.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerScheduleLockDocument.ts",
   },
   {
     name: "ClubPostDocument",
@@ -360,6 +404,67 @@ const schemaSpecs = [
       "functions/src/shared/generated/createClubCallablePayload.ts",
   },
   {
+    name: "CreateOrganizerCallablePayload",
+    source: "callables/create_organizer_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createOrganizerCallablePayload.ts",
+  },
+  {
+    name: "CreateOrganizerCallableResponse",
+    source: "callable_responses/create_organizer_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createOrganizerCallableResponse.ts",
+  },
+  {
+    name: "UpdateOrganizerCallablePayload",
+    source: "callables/update_organizer_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/updateOrganizerCallablePayload.ts",
+  },
+  {
+    name: "ArchiveOrganizerCallablePayload",
+    source: "callables/archive_organizer_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/archiveOrganizerCallablePayload.ts",
+  },
+  {
+    name: "DeleteOrganizerCallablePayload",
+    source: "callables/delete_organizer_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/deleteOrganizerCallablePayload.ts",
+  },
+  {
+    name: "CreateOrganizerPostCallablePayload",
+    source: "callables/create_organizer_post_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createOrganizerPostCallablePayload.ts",
+  },
+  {
+    name: "CreateOrganizerPostCallableResponse",
+    source: "callable_responses/create_organizer_post_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createOrganizerPostCallableResponse.ts",
+  },
+  {
+    name: "RequestOrganizerClaimCallablePayload",
+    source: "callables/request_organizer_claim_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/requestOrganizerClaimCallablePayload.ts",
+  },
+  {
+    name: "RequestOrganizerClaimCallableResponse",
+    source: "callable_responses/request_organizer_claim_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/requestOrganizerClaimCallableResponse.ts",
+  },
+  {
+    name: "AdminDecideOrganizerClaimCallablePayload",
+    source: "callables/admin_decide_organizer_claim_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminDecideOrganizerClaimCallablePayload.ts",
+  },
+  {
     name: "CreateClubCallableResponse",
     source: "callable_responses/create_club_response.schema.json",
     typeOutput:
@@ -426,6 +531,39 @@ const schemaSpecs = [
       "functions/src/shared/generated/addClubHostCallablePayload.ts",
   },
   {
+    name: "OrganizerFollowCallablePayload",
+    source: "callables/organizer_follow_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerFollowCallablePayload.ts",
+  },
+  {
+    name: "SetOrganizerNotificationPreferenceCallablePayload",
+    source:
+      "callables/set_organizer_notification_preference_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "setOrganizerNotificationPreferenceCallablePayload.ts",
+  },
+  {
+    name: "AddOrganizerManagerCallablePayload",
+    source: "callables/add_organizer_manager_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/addOrganizerManagerCallablePayload.ts",
+  },
+  {
+    name: "RemoveOrganizerManagerCallablePayload",
+    source: "callables/remove_organizer_manager_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/removeOrganizerManagerCallablePayload.ts",
+  },
+  {
+    name: "TransferOrganizerOwnershipCallablePayload",
+    source: "callables/transfer_organizer_ownership_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "transferOrganizerOwnershipCallablePayload.ts",
+  },
+  {
     name: "RemoveClubHostCallablePayload",
     source: "callables/remove_club_host_payload.schema.json",
     typeOutput:
@@ -481,6 +619,18 @@ const schemaSpecs = [
       "functions/src/shared/generated/adminListIntakeOperationsCallablePayload.ts",
   },
   {
+    name: "AdminListActionExecutionsCallablePayload",
+    source: "callables/admin_list_action_executions_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminListActionExecutionsCallablePayload.ts",
+  },
+  {
+    name: "AdminRecordActionExecutionCallablePayload",
+    source: "callables/admin_record_action_execution_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminRecordActionExecutionCallablePayload.ts",
+  },
+  {
     name: "AdminDecideOrganizerEventCandidateCallablePayload",
     source: "callables/admin_decide_organizer_event_candidate_payload.schema.json",
     typeOutput:
@@ -524,6 +674,24 @@ const schemaSpecs = [
       "functions/src/shared/generated/adminUpdateClubDetailsCallablePayload.ts",
   },
   {
+    name: "AdminGetOrganizerDetailsCallablePayload",
+    source: "callables/admin_get_organizer_details_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminGetOrganizerDetailsCallablePayload.ts",
+  },
+  {
+    name: "AdminListOrganizerDetailsCallablePayload",
+    source: "callables/admin_list_organizer_details_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminListOrganizerDetailsCallablePayload.ts",
+  },
+  {
+    name: "AdminUpdateOrganizerDetailsCallablePayload",
+    source: "callables/admin_update_organizer_details_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminUpdateOrganizerDetailsCallablePayload.ts",
+  },
+  {
     name: "AdminGetEventDetailsCallablePayload",
     source: "callables/admin_get_event_details_payload.schema.json",
     typeOutput:
@@ -560,6 +728,13 @@ const schemaSpecs = [
     source: "callables/start_club_host_conversation_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/startClubHostConversationCallablePayload.ts",
+  },
+  {
+    name: "StartOrganizerConversationCallablePayload",
+    source: "callables/start_organizer_conversation_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "startOrganizerConversationCallablePayload.ts",
   },
   {
     name: "ArchiveClubCallablePayload",
@@ -746,6 +921,32 @@ const schemaSpecs = [
     source: "callable_responses/list_public_club_reviews_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/listPublicClubReviewsCallableResponse.ts",
+  },
+  {
+    name: "CreatePublicOrganizerReviewCallablePayload",
+    source: "callables/create_public_organizer_review_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createPublicOrganizerReviewCallablePayload.ts",
+  },
+  {
+    name: "CreatePublicOrganizerReviewCallableResponse",
+    source:
+      "callable_responses/create_public_organizer_review_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createPublicOrganizerReviewCallableResponse.ts",
+  },
+  {
+    name: "ListPublicOrganizerReviewsCallablePayload",
+    source: "callables/list_public_organizer_reviews_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listPublicOrganizerReviewsCallablePayload.ts",
+  },
+  {
+    name: "ListPublicOrganizerReviewsCallableResponse",
+    source:
+      "callable_responses/list_public_organizer_reviews_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listPublicOrganizerReviewsCallableResponse.ts",
   },
   {
     name: "UpdateEventReviewCallablePayload",
@@ -939,6 +1140,185 @@ const schemaSpecs = [
     source: "client_writes/reset_match_unread_count.schema.json",
     typeOutput:
       "functions/src/shared/generated/resetMatchUnreadCountClientWrite.ts",
+  },
+  {
+    name: "AdminGetOverviewCallablePayload",
+    source: "callables/admin_get_overview_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminGetOverviewCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminGetOverviewCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminGetOverviewCallableResponse",
+    source: "callable_responses/admin_get_overview_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminGetOverviewCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminGetOverviewCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminDecideAccessApplicationCallablePayload",
+    source:
+      "callables/admin_decide_access_application_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminDecideAccessApplicationCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminDecideAccessApplicationCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminDecideAccessApplicationCallableResponse",
+    source:
+      "callable_responses/" +
+      "admin_decide_access_application_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminDecideAccessApplicationCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminDecideAccessApplicationCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminSetAdminUserRolesCallablePayload",
+    source: "callables/admin_set_admin_user_roles_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminSetAdminUserRolesCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminSetAdminUserRolesCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminSetAdminUserRolesCallableResponse",
+    source:
+      "callable_responses/admin_set_admin_user_roles_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminSetAdminUserRolesCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminSetAdminUserRolesCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminDecideSafetyTriageItemCallablePayload",
+    source:
+      "callables/admin_decide_safety_triage_item_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminDecideSafetyTriageItemCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminDecideSafetyTriageItemCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminDecideSafetyTriageItemCallableResponse",
+    source:
+      "callable_responses/" +
+      "admin_decide_safety_triage_item_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminDecideSafetyTriageItemCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminDecideSafetyTriageItemCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminAssignSafetyTriageItemCallablePayload",
+    source:
+      "callables/admin_assign_safety_triage_item_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminAssignSafetyTriageItemCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminAssignSafetyTriageItemCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminAssignSafetyTriageItemCallableResponse",
+    source:
+      "callable_responses/" +
+      "admin_assign_safety_triage_item_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminAssignSafetyTriageItemCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminAssignSafetyTriageItemCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminCreateMarketingContentDraftCallablePayload",
+    source:
+      "callables/admin_create_marketing_content_draft_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminCreateMarketingContentDraftCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminCreateMarketingContentDraftCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminCreateMarketingContentDraftCallableResponse",
+    source:
+      "callable_responses/" +
+      "admin_create_marketing_content_draft_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminCreateMarketingContentDraftCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminCreateMarketingContentDraftCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminRecordMarketingReviewDecisionCallablePayload",
+    source:
+      "callables/" +
+      "admin_record_marketing_review_decision_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminRecordMarketingReviewDecisionCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminRecordMarketingReviewDecisionCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminRecordMarketingReviewDecisionCallableResponse",
+    source:
+      "callable_responses/" +
+      "admin_record_marketing_review_decision_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminRecordMarketingReviewDecisionCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminRecordMarketingReviewDecisionCallableResponse.ts",
+    ],
+  },
+  {
+    name: "JoinWaitlistHTTPRequest",
+    source: "http/join_waitlist_request.schema.json",
+    typeOutput: "functions/src/shared/generated/joinWaitlistHttpRequest.ts",
+    additionalTypeOutputs: [
+      "website/src/shared/contracts/generated/joinWaitlistHttpRequest.ts",
+    ],
+  },
+  {
+    name: "JoinWaitlistHTTPResponse",
+    source: "http/join_waitlist_response.schema.json",
+    typeOutput: "functions/src/shared/generated/joinWaitlistHttpResponse.ts",
+    additionalTypeOutputs: [
+      "website/src/shared/contracts/generated/joinWaitlistHttpResponse.ts",
+    ],
   },
 ];
 
@@ -1217,6 +1597,13 @@ async function main() {
     renderToolValidators()
   );
   addTextOutput(
+    "website/src/shared/contracts/generated/joinWaitlistSchemas.ts",
+    renderWebsiteJoinWaitlistSchemas({
+      requestSchema: bundledSchemas.get("JoinWaitlistHTTPRequest"),
+      responseSchema: bundledSchemas.get("JoinWaitlistHTTPResponse"),
+    })
+  );
+  addTextOutput(
     "lib/core/schema_contracts/generated/profile_schema_contracts.g.dart",
     renderDartContracts({
       profileCatalog,
@@ -1357,10 +1744,13 @@ async function addTypeOutput(spec, schema) {
   let types = await compileTs(schema, spec.name);
   types = normalizeExternalTypeReferences(spec.name, types);
   const imports = tsTypeImports(spec.name, types);
-  addTextOutput(
+  const content = `${tsGeneratedHeader()}${imports}${types.trim()}\n`;
+  for (const output of [
     spec.typeOutput,
-    `${tsGeneratedHeader()}${imports}${types.trim()}\n`
-  );
+    ...(spec.additionalTypeOutputs ?? []),
+  ]) {
+    addTextOutput(output, content);
+  }
 }
 
 function compileTs(schema, name) {
@@ -1760,6 +2150,16 @@ export function assertValidSchemaPayload(validator, payload, label) {
 `;
 }
 
+function renderWebsiteJoinWaitlistSchemas({requestSchema, responseSchema}) {
+  return `${tsGeneratedHeader()}` +
+`export const joinWaitlistRequestSchema: Record<string, unknown> =
+  ${jsonForTs(requestSchema)};
+
+export const joinWaitlistResponseSchema: Record<string, unknown> =
+  ${jsonForTs(responseSchema)};
+`;
+}
+
 function renderDartContracts({
   profileCatalog,
   photoCatalog,
@@ -1983,7 +2383,7 @@ function renderDartFieldConstraints({schemaSpecs, schemaMap}) {
   const constraints = [];
   for (const spec of schemaSpecs) {
     const schema = schemaMap.get(spec.name);
-    if (!schema || !isFieldConstraintSchema(spec, schema)) continue;
+    if (!schema) continue;
 
     const patchConfig = schema["x-callable-shape"] === "patch" ?
       dartPatchClassConfig(spec.name) :
@@ -2000,17 +2400,33 @@ function renderDartFieldConstraints({schemaSpecs, schemaMap}) {
   }
 
   constraints.sort((a, b) => a.path.localeCompare(b.path));
+  disambiguateFieldConstraintNames(constraints);
   const declarations = constraints.map((entry) => {
     const args = [
       `path: ${dartString(entry.path)}`,
       entry.maxLength == null ? null : `maxLength: ${entry.maxLength}`,
       entry.minLength == null ? null : `minLength: ${entry.minLength}`,
       entry.required ? "required: true" : null,
+      entry.valueTypes == null ? null :
+        `valueTypes: <String>[${entry.valueTypes.map(dartString).join(", ")}]`,
+      entry.format == null ? null : `format: ${dartString(entry.format)}`,
       entry.pattern == null ? null : `pattern: ${dartString(entry.pattern)}`,
       entry.enumValues == null ? null :
         `enumValues: <String>[${entry.enumValues.map(dartString).join(", ")}]`,
+      entry.itemValueTypes == null ? null :
+        `itemValueTypes: <String>[${
+          entry.itemValueTypes.map(dartString).join(", ")
+        }]`,
+      entry.itemEnumValues == null ? null :
+        `itemEnumValues: <String>[${
+          entry.itemEnumValues.map(dartString).join(", ")
+        }]`,
+      entry.minItems == null ? null : `minItems: ${entry.minItems}`,
+      entry.maxItems == null ? null : `maxItems: ${entry.maxItems}`,
+      entry.uniqueItems ? "uniqueItems: true" : null,
       entry.minimum == null ? null : `minimum: ${entry.minimum}`,
       entry.maximum == null ? null : `maximum: ${entry.maximum}`,
+      entry.multipleOf == null ? null : `multipleOf: ${entry.multipleOf}`,
     ].filter(Boolean);
     return `  static const ${entry.constName} = CatchContractFieldConstraints(\n` +
       `${args.map((arg) => `    ${arg},`).join("\n")}\n` +
@@ -2021,27 +2437,43 @@ function renderDartFieldConstraints({schemaSpecs, schemaMap}) {
   ).join("\n");
 
   return `${dartGeneratedHeader()}
-/// UI-relevant constraints projected from patch and Firestore document schemas.
+/// UI-relevant constraints projected from every generated JSON Schema.
 class CatchContractFieldConstraints {
   const CatchContractFieldConstraints({
     required this.path,
     this.maxLength,
     this.minLength,
     this.required = false,
+    this.valueTypes,
+    this.format,
     this.pattern,
     this.enumValues,
+    this.itemValueTypes,
+    this.itemEnumValues,
+    this.minItems,
+    this.maxItems,
+    this.uniqueItems = false,
     this.minimum,
     this.maximum,
+    this.multipleOf,
   });
 
   final String path;
   final int? maxLength;
   final int? minLength;
   final bool required;
+  final List<String>? valueTypes;
+  final String? format;
   final String? pattern;
   final List<String>? enumValues;
+  final List<String>? itemValueTypes;
+  final List<String>? itemEnumValues;
+  final int? minItems;
+  final int? maxItems;
+  final bool uniqueItems;
   final num? minimum;
   final num? maximum;
+  final num? multipleOf;
 }
 
 abstract final class CatchContractConstraints {
@@ -2054,9 +2486,34 @@ ${allEntries}
 `;
 }
 
-function isFieldConstraintSchema(spec, schema) {
-  return spec.source.startsWith("firestore/") ||
-    schema["x-callable-shape"] === "patch";
+function disambiguateFieldConstraintNames(constraints) {
+  const entriesByName = new Map();
+  for (const entry of constraints) {
+    const entries = entriesByName.get(entry.constName) ?? [];
+    entries.push(entry);
+    entriesByName.set(entry.constName, entries);
+  }
+
+  const usedNames = new Set(
+    constraints
+      .filter((entry) => entriesByName.get(entry.constName)?.length === 1)
+      .map((entry) => entry.constName),
+  );
+  for (const entries of entriesByName.values()) {
+    if (entries.length === 1) continue;
+    for (const entry of entries) {
+      const pathSuffix = entry.segments.map(pascalCase).join("Property");
+      const candidate = `${entry.constName}At${pathSuffix}`;
+      let uniqueName = candidate;
+      let suffix = 2;
+      while (usedNames.has(uniqueName)) {
+        uniqueName = `${candidate}${suffix}`;
+        suffix += 1;
+      }
+      entry.constName = uniqueName;
+      usedNames.add(uniqueName);
+    }
+  }
 }
 
 function collectFieldConstraints({schema, rootName, segments, constraints}) {
@@ -2082,13 +2539,36 @@ function collectFieldConstraints({schema, rootName, segments, constraints}) {
       fieldSchema,
       requiredFields.has(fieldName)
     );
-    if (!projected) continue;
-    const path = `${rootName}.${nextSegments.join(".")}`;
-    constraints.push({
-      ...projected,
-      path,
-      constName: `${rootName}${nextSegments.map(pascalCase).join("")}`,
-    });
+    if (projected) {
+      const path = `${rootName}.${nextSegments.join(".")}`;
+      constraints.push({
+        ...projected,
+        path,
+        segments: nextSegments,
+        constName: `${rootName}${nextSegments.map(pascalCase).join("")}`,
+      });
+    }
+
+    const itemObject = constraintObjectSchema(fieldSchema?.items);
+    if (itemObject?.properties) {
+      collectFieldConstraints({
+        schema: itemObject,
+        rootName,
+        segments: [...nextSegments, "items"],
+        constraints,
+      });
+    } else if (fieldSchema?.items && typeof fieldSchema.items === "object") {
+      const itemConstraint = projectFieldConstraint(fieldSchema.items, true);
+      if (itemConstraint) {
+        const itemSegments = [...nextSegments, "items"];
+        constraints.push({
+          ...itemConstraint,
+          path: `${rootName}.${itemSegments.join(".")}`,
+          segments: itemSegments,
+          constName: `${rootName}${itemSegments.map(pascalCase).join("")}`,
+        });
+      }
+    }
   }
 }
 
@@ -2118,10 +2598,25 @@ function projectFieldConstraint(schema, parentRequired) {
     branches.flatMap((branch) => Array.isArray(branch.enum) ? branch.enum : [])
       .filter((value) => typeof value === "string")
   )];
-  const types = branches.flatMap((branch) => Array.isArray(branch.type) ?
+  const types = [...new Set(branches.flatMap((branch) => Array.isArray(branch.type) ?
     branch.type :
     [branch.type]
-  );
+  ).filter((value) => typeof value === "string"))];
+  const valueTypes = types.filter((type) => type !== "null");
+  const formats = [...new Set(values("format")
+    .filter((value) => typeof value === "string"))];
+  const itemBranches = branches.flatMap((branch) => {
+    const items = branch.items;
+    if (!items || Array.isArray(items) || typeof items !== "object") return [];
+    return [items, ...(items.anyOf ?? []), ...(items.oneOf ?? [])]
+      .filter((item) => item && typeof item === "object");
+  });
+  const itemValueTypes = [...new Set(itemBranches.flatMap((item) =>
+    Array.isArray(item.type) ? item.type : [item.type]
+  ).filter((value) => typeof value === "string" && value !== "null"))];
+  const itemEnumValues = [...new Set(itemBranches.flatMap((item) =>
+    Array.isArray(item.enum) ? item.enum : []
+  ).filter((value) => typeof value === "string"))];
   const allowsNull = types.includes("null") ||
     branches.some((branch) => branch.const === null);
   const allowsEmpty = branches.some((branch) => branch.const === "") ||
@@ -2134,10 +2629,18 @@ function projectFieldConstraint(schema, parentRequired) {
     maxLength,
     minLength,
     required,
+    valueTypes: valueTypes.length > 0 ? valueTypes : null,
+    format: formats.length === 1 ? formats[0] : null,
     pattern: patterns.length === 1 ? patterns[0] : null,
     enumValues: enumValues.length > 0 ? enumValues : null,
+    itemValueTypes: itemValueTypes.length > 0 ? itemValueTypes : null,
+    itemEnumValues: itemEnumValues.length > 0 ? itemEnumValues : null,
+    minItems: numberValue("minItems", Math.min),
+    maxItems: numberValue("maxItems", Math.max),
+    uniqueItems: values("uniqueItems").includes(true),
     minimum: numberValue("minimum", Math.min),
     maximum: numberValue("maximum", Math.max),
+    multipleOf: numberValue("multipleOf", Math.min),
   };
   return Object.values(result).some((value) => value != null && value !== false) ?
     result :

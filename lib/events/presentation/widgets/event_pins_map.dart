@@ -737,6 +737,7 @@ Future<CatchMapMarkerBitmap> _buildEventMapPinBitmap({
       text: String.fromCharCode(iconData.codePoint),
       // Native map marker bitmaps have to serialize the icon font into a PNG;
       // user-visible text above still comes from CatchTextStyles.
+      // typography:allow: theme-independent art serializes an icon font only.
       style: TextStyle(
         color: activityColor,
         fontFamily: iconData.fontFamily,
@@ -1066,14 +1067,12 @@ double eventMapFixtureRingSize({
     <= 5 => 460.0,
     _ => 640.0,
   };
-  final available = math.min(viewport.width, viewport.height) * 0.9;
+  final available = CatchLayout.distanceRingAvailableDiameterFor(viewport);
   return math.min(requested, available);
 }
 
-double _placeholderPinAnchorOffset(bool selected) {
-  if (!selected) return CatchLayout.activityMapPinRestingSize / 2;
-  return CatchLayout.activityMapPinSelectedSize + CatchSpacing.s5;
-}
+double _placeholderPinAnchorOffset(bool selected) =>
+    CatchLayout.activityMapPinAnchorOffset(selected);
 
 bool _canSelectMapItem(
   EventMapPinItem item, {

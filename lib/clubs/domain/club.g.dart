@@ -32,7 +32,7 @@ _Club _$ClubFromJson(Map<String, dynamic> json) => _Club(
   imageUrl: json['imageUrl'] as String?,
   profileImageUrl: json['profileImageUrl'] as String?,
   clubPhotos:
-      (json['clubPhotos'] as List<dynamic>?)
+      (_readOrganizerPhotos(json, 'organizerPhotos') as List<dynamic>?)
           ?.map((e) => UploadedPhoto.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
@@ -42,7 +42,8 @@ _Club _$ClubFromJson(Map<String, dynamic> json) => _Club(
   tags:
       (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const [],
-  memberCount: (json['memberCount'] as num?)?.toInt() ?? 0,
+  memberCount:
+      (_readFollowerCount(json, 'followerCount') as num?)?.toInt() ?? 0,
   rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
   reviewCount: (json['reviewCount'] as num?)?.toInt() ?? 0,
   nextEventAt: const NullableTimestampConverter().fromJson(json['nextEventAt']),
@@ -59,6 +60,29 @@ _Club _$ClubFromJson(Map<String, dynamic> json) => _Club(
   appVisibility:
       $enumDecodeNullable(_$ClubAppVisibilityEnumMap, json['appVisibility']) ??
       ClubAppVisibility.discoverable,
+  ownership: json['ownership'] == null
+      ? null
+      : OrganizerOwnership.fromJson(json['ownership'] as Map<String, dynamic>),
+  claim: json['claim'] == null
+      ? null
+      : OrganizerClaim.fromJson(json['claim'] as Map<String, dynamic>),
+  publicPage: json['publicPage'] == null
+      ? null
+      : OrganizerPublicPage.fromJson(
+          json['publicPage'] as Map<String, dynamic>,
+        ),
+  provenance: json['provenance'] == null
+      ? null
+      : OrganizerProvenance.fromJson(
+          json['provenance'] as Map<String, dynamic>,
+        ),
+  organizerType:
+      $enumDecodeNullable(
+        _$OrganizerTypeEnumMap,
+        _readOrganizerType(json, 'organizerType'),
+      ) ??
+      OrganizerType.club,
+  publicCategoryLabel: json['publicCategoryLabel'] as String?,
   hostDefaults: json['hostDefaults'] == null
       ? const ClubHostDefaults()
       : ClubHostDefaults.fromJson(json['hostDefaults'] as Map<String, dynamic>),
@@ -80,10 +104,10 @@ Map<String, dynamic> _$ClubToJson(_Club instance) => <String, dynamic>{
   'createdAt': const TimestampConverter().toJson(instance.createdAt),
   'imageUrl': instance.imageUrl,
   'profileImageUrl': instance.profileImageUrl,
-  'clubPhotos': instance.clubPhotos.map((e) => e.toJson()).toList(),
+  'organizerPhotos': instance.clubPhotos.map((e) => e.toJson()).toList(),
   'logoPhoto': instance.logoPhoto?.toJson(),
   'tags': instance.tags,
-  'memberCount': instance.memberCount,
+  'followerCount': instance.memberCount,
   'rating': instance.rating,
   'reviewCount': instance.reviewCount,
   'nextEventAt': const NullableTimestampConverter().toJson(
@@ -98,6 +122,12 @@ Map<String, dynamic> _$ClubToJson(_Club instance) => <String, dynamic>{
   'archivedAt': const NullableTimestampConverter().toJson(instance.archivedAt),
   'archiveReason': instance.archiveReason,
   'appVisibility': _$ClubAppVisibilityEnumMap[instance.appVisibility]!,
+  'ownership': instance.ownership?.toJson(),
+  'claim': instance.claim?.toJson(),
+  'publicPage': instance.publicPage?.toJson(),
+  'provenance': instance.provenance?.toJson(),
+  'organizerType': _$OrganizerTypeEnumMap[instance.organizerType]!,
+  'publicCategoryLabel': instance.publicCategoryLabel,
   'hostDefaults': instance.hostDefaults.toJson(),
 };
 
@@ -109,6 +139,15 @@ const _$ClubLifecycleStatusEnumMap = {
 const _$ClubAppVisibilityEnumMap = {
   ClubAppVisibility.discoverable: 'discoverable',
   ClubAppVisibility.hidden: 'hidden',
+};
+
+const _$OrganizerTypeEnumMap = {
+  OrganizerType.club: 'club',
+  OrganizerType.community: 'community',
+  OrganizerType.individual: 'individual',
+  OrganizerType.eventProducer: 'eventProducer',
+  OrganizerType.venue: 'venue',
+  OrganizerType.brand: 'brand',
 };
 
 _ClubHostProfile _$ClubHostProfileFromJson(Map<String, dynamic> json) =>

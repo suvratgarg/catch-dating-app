@@ -8,16 +8,23 @@ import {
   ClubDocument,
   EventDocument,
   MatchDocument,
+  OrganizerDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {StartClubHostConversationCallablePayload} from
   "../shared/generated/startClubHostConversationCallablePayload";
 import {
   validateStartClubHostConversationCallablePayload,
+  validateStartOrganizerConversationCallablePayload,
 } from "../shared/generated/schemaValidators";
 import {clubHostUserIds} from "../shared/clubHosts";
+import {organizerManagerUserIds} from "../shared/organizerHosts";
 import {assertNoBlockingRelationshipInTransaction} from "../safety/blocking";
 import {normalizeClubHostPayload} from "./clubPayloadNormalization";
+import {StartOrganizerConversationCallablePayload} from
+  "../shared/generated/startOrganizerConversationCallablePayload";
+import {normalizeOrganizerHostPayload} from
+  "../organizers/organizerPayloadNormalization";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 
 interface ClubHostConversationDeps {
@@ -48,12 +55,45 @@ export async function startClubHostConversationHandler(
   deps: ClubHostConversationDeps = defaultDeps
 ): Promise<{matchId: string}> {
   const callerUid = requireAuth(request);
-  const data =
+  const legacyData =
     validateCallableWithAjv<StartClubHostConversationCallablePayload>(
       request,
       validateStartClubHostConversationCallablePayload,
       normalizeClubHostPayload
     );
+  return startOrganizerConversationCore(callerUid, {
+    organizerId: legacyData.clubId,
+    hostUid: legacyData.hostUid,
+    eventId: legacyData.eventId,
+  }, deps, "startClubHostConversation");
+}
+
+/** Starts or reuses a canonical organizer-host conversation. */
+export async function startOrganizerConversationHandler(
+  request: CallableRequest<unknown>,
+  deps: ClubHostConversationDeps = defaultDeps
+): Promise<{matchId: string}> {
+  const callerUid = requireAuth(request);
+  const data =
+    validateCallableWithAjv<StartOrganizerConversationCallablePayload>(
+      request,
+      validateStartOrganizerConversationCallablePayload,
+      normalizeOrganizerHostPayload
+    );
+  return startOrganizerConversationCore(
+    callerUid,
+    data,
+    deps,
+    "startOrganizerConversation"
+  );
+}
+
+async function startOrganizerConversationCore(
+  callerUid: string,
+  data: StartOrganizerConversationCallablePayload,
+  deps: ClubHostConversationDeps,
+  rateLimitAction: "startClubHostConversation" | "startOrganizerConversation"
+): Promise<{matchId: string}> {
   if (callerUid === data.hostUid) {
     throw new HttpsError(
       "failed-precondition",
@@ -62,17 +102,18 @@ export async function startClubHostConversationHandler(
   }
 
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, callerUid, "startClubHostConversation");
+  await deps.checkRateLimit?.(db, callerUid, rateLimitAction);
   const [user1Id, user2Id] = [callerUid, data.hostUid].sort();
   const legacyPairMatchId = `${user1Id}_${user2Id}`;
   const scopedMatchId = clubHostInquiryMatchId({
-    clubId: data.clubId,
+    clubId: data.organizerId,
     eventId: data.eventId,
     user1Id,
     user2Id,
   });
   let resolvedMatchId = scopedMatchId;
-  const clubRef = db.collection("clubs").doc(data.clubId);
+  const organizerRef = db.collection("organizers").doc(data.organizerId);
+  const clubRef = db.collection("clubs").doc(data.organizerId);
   const matchRef = db.collection("matches").doc(scopedMatchId);
   const legacyPairMatchRef = db.collection("matches").doc(legacyPairMatchId);
   const eventRef = data.eventId ?
@@ -82,6 +123,7 @@ export async function startClubHostConversationHandler(
 
   await db.runTransaction(async (tx) => {
     const [
+      organizerSnap,
       clubSnap,
       matchSnap,
       legacyPairMatchSnap,
@@ -90,6 +132,7 @@ export async function startClubHostConversationHandler(
       eventSnap,
     ] =
       await Promise.all([
+        tx.get(organizerRef),
         tx.get(clubRef),
         tx.get(matchRef),
         tx.get(legacyPairMatchRef),
@@ -104,17 +147,19 @@ export async function startClubHostConversationHandler(
         "This conversation is unavailable."
       );
     }
-    if (!clubSnap.exists) {
-      throw new HttpsError("not-found", "Club not found.");
+    if (!organizerSnap.exists && !clubSnap.exists) {
+      throw new HttpsError("not-found", "Organizer not found.");
     }
-    const club = requireDoc<ClubDocument>(
-      clubSnap,
-      "ClubDocument"
-    );
-    if (!clubHostUserIds(club).includes(data.hostUid)) {
+    const hostUserIds = organizerSnap.exists ?
+      organizerManagerUserIds(requireDoc<OrganizerDocument>(
+        organizerSnap,
+        "OrganizerDocument"
+      )) :
+      clubHostUserIds(requireDoc<ClubDocument>(clubSnap, "ClubDocument"));
+    if (!hostUserIds.includes(data.hostUid)) {
       throw new HttpsError(
         "permission-denied",
-        "That user is not a host for this club."
+        "That user is not a manager for this organizer."
       );
     }
     if (eventRef) {
@@ -122,10 +167,10 @@ export async function startClubHostConversationHandler(
         throw new HttpsError("not-found", "Event not found.");
       }
       const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
-      if (event.clubId !== data.clubId) {
+      if ((event.organizerId ?? event.clubId) !== data.organizerId) {
         throw new HttpsError(
           "failed-precondition",
-          "That event does not belong to this club."
+          "That event does not belong to this organizer."
         );
       }
     }
@@ -142,7 +187,7 @@ export async function startClubHostConversationHandler(
         "MatchDocument"
       );
       if (match.conversationType !== "clubHostInquiry" ||
-          match.clubId !== data.clubId) {
+          (match.organizerId ?? match.clubId) !== data.organizerId) {
         throw new HttpsError(
           "failed-precondition",
           "This conversation id is unavailable."
@@ -162,8 +207,9 @@ export async function startClubHostConversationHandler(
         legacyPairMatchSnap,
         "MatchDocument"
       );
+      const legacyOrganizerId = legacyMatch.organizerId ?? legacyMatch.clubId;
       if (legacyMatch.conversationType === "clubHostInquiry" &&
-          legacyMatch.clubId === data.clubId) {
+          legacyOrganizerId === data.organizerId) {
         if (legacyMatch.status === "blocked") {
           throw new HttpsError(
             "failed-precondition",
@@ -191,7 +237,8 @@ export async function startClubHostConversationHandler(
       blockedBy: null,
       blockedAt: null,
       conversationType: "clubHostInquiry",
-      clubId: data.clubId,
+      organizerId: data.organizerId,
+      clubId: data.organizerId,
     };
     tx.create(matchRef, matchDoc);
   });
@@ -225,4 +272,9 @@ export function clubHostInquiryMatchId(scope: {
 export const startClubHostConversation = onCall(
   appCheckCallableOptions,
   (request) => startClubHostConversationHandler(request)
+);
+
+export const startOrganizerConversation = onCall(
+  appCheckCallableOptions,
+  (request) => startOrganizerConversationHandler(request)
 );

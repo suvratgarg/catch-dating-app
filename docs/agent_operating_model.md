@@ -314,7 +314,10 @@ Each skill must declare:
 - `success_receipt`;
 - `known_failure_modes`.
 
-The readiness gate checks that skill source docs and commands still exist.
+The readiness gate checks that skill source docs and commands still exist. When
+a guard explicitly builds Functions before running compiled `functions/lib`
+tests, readiness validates the corresponding tracked `functions/src` test. This
+keeps clean checkouts authoritative instead of relying on local build residue.
 
 ## Measuring Workflow Quality
 

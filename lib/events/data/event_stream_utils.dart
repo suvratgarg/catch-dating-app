@@ -226,7 +226,7 @@ Stream<List<Event>> watchEventsForClubIdsStream({
       for (var index = 0; index < chunks.length; index += 1) {
         final chunk = chunks[index];
         final sub = eventsRef
-            .where('clubId', whereIn: chunk)
+            .where('organizerId', whereIn: chunk)
             .limit(ReadLimitPolicy.boundedWorkingSet)
             .snapshots()
             .listen((snapshot) {

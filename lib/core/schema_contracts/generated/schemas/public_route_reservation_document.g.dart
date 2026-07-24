@@ -80,6 +80,7 @@ const schemaPublicRouteReservationDocumentSchema = <String, Object?>{
       'type': 'string',
       'enum': <Object?>[
         'club',
+        'organizer',
       ],
       'x-catch-ownership': 'server-only',
     },
@@ -87,6 +88,7 @@ const schemaPublicRouteReservationDocumentSchema = <String, Object?>{
       'type': 'string',
       'enum': <Object?>[
         'clubs',
+        'organizers',
       ],
       'x-catch-ownership': 'server-only',
     },
@@ -100,7 +102,7 @@ const schemaPublicRouteReservationDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 260,
-      'pattern': '^clubs/[^/]+\$',
+      'pattern': '^(clubs|organizers)/[^/]+\$',
       'x-catch-ownership': 'server-only',
     },
     'slug': <String, Object?>{
@@ -193,6 +195,9 @@ const schemaPublicRouteReservationDocumentSchema = <String, Object?>{
       'enum': <Object?>[
         'adminUpdateClubDetails',
         'adminSetClubIndexStatus',
+        'adminUpdateOrganizerDetails',
+        'adminSetOrganizerIndexStatus',
+        'clubsToOrganizersMigration',
       ],
       'x-catch-ownership': 'server-only',
     },

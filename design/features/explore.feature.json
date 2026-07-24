@@ -1,0 +1,678 @@
+{
+  "$schema": "./feature_contract.schema.json",
+  "version": 2,
+  "updated": "2026-07-23",
+  "id": "feature.explore",
+  "name": "Explore",
+  "owner": "explore",
+  "status": "pilot",
+  "description": "Orchestrates organizer discovery across Flutter and marketing-web projections without duplicating the owning screen, route, component, data, or preview registries.",
+  "surfaces": [
+    {
+      "id": "consumer_flutter",
+      "runtime": "flutter",
+      "authority": {
+        "registry": "flutter_screens",
+        "id": "screen.explore.discovery"
+      },
+      "actionScope": {
+        "included": "Empty-result recovery actions represented by ExploreDiscoveryEmptyAction.",
+        "excluded": [
+          "Search entry, city and filter editing, organizer follow/sign-in, map interaction, event or organizer navigation, and membership mutations retain their existing owners and verification paths."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "widgetbook/lib/explore/explore_use_cases.dart",
+          "widgetbook/lib/primitives/core_catalog_use_cases.dart"
+        ],
+        "actionOwners": [
+          {
+            "id": "empty_recovery",
+            "language": "dart",
+            "file": "lib/explore/presentation/explore_screen_state.dart",
+            "symbol": "ExploreDiscoveryEmptyAction"
+          }
+        ],
+        "componentContracts": [
+          "catch.button",
+          "catch.chip",
+          "catch.count_pill",
+          "catch.cover_story",
+          "catch.event_card",
+          "catch.field",
+          "catch.icon_button",
+          "catch.surface",
+          "catch.top_bar"
+        ],
+        "dataContracts": [
+          "contracts/firestore/club_memberships.schema.json",
+          "contracts/firestore/clubs.schema.json",
+          "contracts/firestore/events.schema.json",
+          "contracts/firestore/external_events.schema.json",
+          "contracts/firestore/organizers.schema.json"
+        ]
+      },
+      "dimensions": {
+        "surface": {
+          "default": "discovery",
+          "values": [
+            "discovery",
+            "map"
+          ]
+        },
+        "load": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "loading",
+            "error",
+            "offline"
+          ]
+        },
+        "content": {
+          "default": "populated",
+          "values": [
+            "populated",
+            "empty"
+          ]
+        },
+        "viewer": {
+          "default": "member",
+          "values": [
+            "guest",
+            "member"
+          ]
+        },
+        "search": {
+          "default": "inactive",
+          "values": [
+            "inactive",
+            "active"
+          ]
+        },
+        "filters": {
+          "default": "inactive",
+          "values": [
+            "inactive",
+            "active"
+          ]
+        },
+        "selection": {
+          "default": "none",
+          "values": [
+            "none",
+            "pin"
+          ]
+        },
+        "accessibility": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "text_scale_2",
+            "reduced_motion"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "clear_search",
+          "owner": "empty_recovery",
+          "codeValue": "clearSearch",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "routeInstanceId",
+            "queryStateVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "discovery_feed",
+                "no_search_results",
+                "empty_city"
+              ]
+            }
+          ],
+          "description": "Clears the active search term once for the current Explore query state."
+        },
+        {
+          "id": "clear_filters",
+          "owner": "empty_recovery",
+          "codeValue": "clearFilters",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "routeInstanceId",
+            "filterStateVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "discovery_feed",
+                "no_search_results",
+                "empty_city"
+              ]
+            }
+          ],
+          "description": "Clears active Explore filters once for the current filter state."
+        },
+        {
+          "id": "clear_search_and_filters",
+          "owner": "empty_recovery",
+          "codeValue": "clearSearchAndFilters",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "routeInstanceId",
+            "queryStateVersion",
+            "filterStateVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "discovery_feed",
+                "empty_city"
+              ]
+            }
+          ],
+          "description": "Clears both search and filters as one recovery transition for the current Explore state."
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "loading",
+          "stateId": "loading",
+          "dimensions": {
+            "load": "loading"
+          },
+          "actionCases": [
+            {
+              "id": "default"
+            }
+          ]
+        },
+        {
+          "id": "club_source_error",
+          "stateId": "club_source_error",
+          "dimensions": {
+            "load": "error"
+          },
+          "actionCases": [
+            {
+              "id": "default"
+            }
+          ]
+        },
+        {
+          "id": "event_feed_error",
+          "stateId": "event_feed_error",
+          "dimensions": {
+            "load": "error"
+          },
+          "actionCases": [
+            {
+              "id": "default"
+            }
+          ]
+        },
+        {
+          "id": "empty_city",
+          "stateId": "empty_city",
+          "dimensions": {
+            "content": "empty"
+          },
+          "actionCases": [
+            {
+              "id": "default"
+            }
+          ]
+        },
+        {
+          "id": "no_search_results",
+          "stateId": "no_search_results",
+          "dimensions": {
+            "content": "empty"
+          },
+          "actionCases": [
+            {
+              "id": "search_only",
+              "dimensions": {
+                "search": "active"
+              },
+              "enabledActions": [
+                "clear_search"
+              ]
+            },
+            {
+              "id": "filters_only",
+              "dimensions": {
+                "filters": "active"
+              },
+              "enabledActions": [
+                "clear_filters"
+              ]
+            },
+            {
+              "id": "search_and_filters",
+              "dimensions": {
+                "search": "active",
+                "filters": "active"
+              },
+              "enabledActions": [
+                "clear_search_and_filters"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "discovery_feed",
+          "stateId": "discovery_feed",
+          "dimensions": {},
+          "actionCases": [
+            {
+              "id": "default"
+            }
+          ]
+        },
+        {
+          "id": "search_query",
+          "stateId": "search_query",
+          "dimensions": {
+            "search": "active"
+          },
+          "actionCases": [
+            {
+              "id": "default"
+            }
+          ]
+        },
+        {
+          "id": "filters_active",
+          "stateId": "filters_active",
+          "dimensions": {
+            "filters": "active"
+          },
+          "actionCases": [
+            {
+              "id": "default"
+            }
+          ]
+        },
+        {
+          "id": "anonymous_guest",
+          "stateId": "anonymous_guest",
+          "dimensions": {
+            "viewer": "guest"
+          },
+          "actionCases": [
+            {
+              "id": "default"
+            }
+          ]
+        },
+        {
+          "id": "unclaimed_host_projection",
+          "stateId": "unclaimed_host_projection",
+          "dimensions": {},
+          "actionCases": [
+            {
+              "id": "default"
+            }
+          ]
+        },
+        {
+          "id": "map_route",
+          "stateId": "map_route",
+          "dimensions": {
+            "surface": "map"
+          },
+          "actionCases": [
+            {
+              "id": "default"
+            }
+          ]
+        },
+        {
+          "id": "pins_ready",
+          "stateId": "pins_ready",
+          "dimensions": {
+            "surface": "map"
+          },
+          "actionCases": [
+            {
+              "id": "default"
+            }
+          ]
+        },
+        {
+          "id": "selected_pin",
+          "stateId": "selected_pin",
+          "dimensions": {
+            "surface": "map",
+            "selection": "pin"
+          },
+          "actionCases": [
+            {
+              "id": "default"
+            }
+          ]
+        },
+        {
+          "id": "large_pan_scope",
+          "stateId": "large_pan_scope",
+          "dimensions": {
+            "surface": "map"
+          },
+          "actionCases": [
+            {
+              "id": "default"
+            }
+          ]
+        },
+        {
+          "id": "no_exact_pins",
+          "stateId": "no_exact_pins",
+          "dimensions": {
+            "surface": "map",
+            "content": "empty"
+          },
+          "actionCases": [
+            {
+              "id": "default"
+            }
+          ]
+        },
+        {
+          "id": "zero_radius_results",
+          "stateId": "zero_radius_results",
+          "dimensions": {
+            "surface": "map",
+            "content": "empty"
+          },
+          "actionCases": [
+            {
+              "id": "default"
+            }
+          ]
+        },
+        {
+          "id": "map_loading",
+          "stateId": "map_loading",
+          "dimensions": {
+            "surface": "map",
+            "load": "loading"
+          },
+          "actionCases": [
+            {
+              "id": "default"
+            }
+          ]
+        },
+        {
+          "id": "map_error",
+          "stateId": "map_error",
+          "dimensions": {
+            "surface": "map",
+            "load": "error"
+          },
+          "actionCases": [
+            {
+              "id": "default"
+            }
+          ]
+        },
+        {
+          "id": "offline",
+          "stateId": "offline",
+          "dimensions": {
+            "load": "offline"
+          },
+          "actionCases": [
+            {
+              "id": "default"
+            }
+          ]
+        },
+        {
+          "id": "text_scale_2",
+          "stateId": "text_scale_2",
+          "dimensions": {
+            "accessibility": "text_scale_2"
+          },
+          "actionCases": [
+            {
+              "id": "default"
+            }
+          ]
+        },
+        {
+          "id": "reduced_motion",
+          "stateId": "reduced_motion",
+          "dimensions": {
+            "accessibility": "reduced_motion"
+          },
+          "actionCases": [
+            {
+              "id": "default"
+            }
+          ]
+        }
+      ],
+      "requiredEvidence": {
+        "captures": true,
+        "previews": true,
+        "tests": true
+      },
+      "evidenceExceptions": [
+        {
+          "stateIds": [
+            "no_exact_pins",
+            "zero_radius_results"
+          ],
+          "evidence": [
+            "captures"
+          ],
+          "debtId": "DS-EXPLORE-005",
+          "reason": "These map empty variants are implemented and previewed but do not yet have dedicated deterministic capture ids."
+        },
+        {
+          "stateIds": [
+            "no_exact_pins",
+            "offline",
+            "text_scale_2",
+            "reduced_motion"
+          ],
+          "evidence": [
+            "tests"
+          ],
+          "debtId": "DS-EXPLORE-005",
+          "reason": "These registered route states do not yet name focused automated test evidence in the screen contract."
+        }
+      ]
+    },
+    {
+      "id": "marketing_web",
+      "runtime": "react_marketing",
+      "authority": {
+        "registry": "marketing_routes",
+        "id": "organizer_search"
+      },
+      "actionScope": {
+        "included": "URL-owned organizer directory filtering, search submission analytics, and filter reset actions represented by useOrganizerDirectoryController.",
+        "excluded": [
+          "Organizer detail navigation, organizer saving, claim navigation, and listing-card analytics retain their route, detail-controller, and component owners."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "website/src/stories/MarketingRoutes.stories.tsx",
+          "website/src/stories/OrganizerSearchSections.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "directory_controller",
+            "language": "typescript",
+            "file": "website/src/features/organizers/useOrganizerDirectoryController.ts",
+            "symbol": "useOrganizerDirectoryController"
+          }
+        ],
+        "componentContracts": [
+          "route_organizer_search",
+          "organizer_search_hero",
+          "organizer_results_section"
+        ],
+        "dataContracts": [
+          "contracts/public/website_host_listing_projection.schema.json"
+        ],
+        "testEvidence": {
+          "default": [
+            "website/src/features/organizers/useOrganizerDirectoryController.test.tsx"
+          ],
+          "filtered": [
+            "website/src/features/organizers/useOrganizerDirectoryController.test.tsx"
+          ],
+          "empty-results": [
+            "website/src/features/organizers/useOrganizerDirectoryController.test.tsx"
+          ]
+        }
+      },
+      "dimensions": {
+        "filters": {
+          "default": "default",
+          "values": [
+            "default",
+            "active"
+          ]
+        },
+        "results": {
+          "default": "populated",
+          "values": [
+            "populated",
+            "empty"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "update_filters",
+          "owner": "directory_controller",
+          "codeValue": "updateFilters",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "searchParamsVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default",
+                "filtered",
+                "empty-results"
+              ]
+            }
+          ],
+          "description": "Projects query and filter updates into canonical URL search parameters and recalculates visible organizer results."
+        },
+        {
+          "id": "submit_search",
+          "owner": "directory_controller",
+          "codeValue": "handleSearch",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "appearanceContext"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "analytics.organizer_search_submitted"
+            }
+          ],
+          "description": "Records one search submission and bounded organizer appearance events for the current query context."
+        },
+        {
+          "id": "clear_filters",
+          "owner": "directory_controller",
+          "codeValue": "clearFilters",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "searchParamsVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "analytics.organizer_search_filters_cleared"
+            }
+          ],
+          "description": "Resets the current URL-owned filter tuple once and records the reset."
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "default",
+          "stateId": "default",
+          "dimensions": {},
+          "actionCases": [
+            {
+              "id": "default",
+              "enabledActions": [
+                "update_filters",
+                "submit_search",
+                "clear_filters"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "filtered",
+          "stateId": "filtered",
+          "dimensions": {
+            "filters": "active"
+          },
+          "actionCases": [
+            {
+              "id": "active_filters",
+              "enabledActions": [
+                "update_filters",
+                "submit_search",
+                "clear_filters"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "empty_results",
+          "stateId": "empty-results",
+          "dimensions": {
+            "filters": "active",
+            "results": "empty"
+          },
+          "actionCases": [
+            {
+              "id": "no_matches",
+              "enabledActions": [
+                "update_filters",
+                "submit_search",
+                "clear_filters"
+              ]
+            }
+          ]
+        }
+      ],
+      "requiredEvidence": {
+        "captures": false,
+        "previews": true,
+        "tests": true
+      }
+    }
+  ]
+}

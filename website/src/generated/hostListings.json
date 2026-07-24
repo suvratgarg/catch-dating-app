@@ -92,115 +92,32 @@
     },
     "publicApi": {
       "state": "disabled",
-      "reason": "Claiming is not available for this organizer yet.",
+      "reason": "Claiming is not available until target readiness is verified against Firestore.",
       "claimTargetSyncStatus": "write_needed"
+    },
+    "authority": {
+      "ownershipState": "programmatic",
+      "claimState": "unclaimed",
+      "provenanceOrigin": "import",
+      "sourceConfidence": "high",
+      "verificationStatus": "sourceBacked",
+      "appVisibility": "hidden",
+      "publishStatus": "published",
+      "indexStatus": "indexed"
+    },
+    "capabilities": {
+      "claimRequest": {
+        "state": "disabled",
+        "reason": "Claiming is not available until target readiness is verified against Firestore."
+      },
+      "publicReviews": {
+        "targetState": "disabled",
+        "readState": "disabled",
+        "writeState": "disabled",
+        "reason": "Public reviews are unavailable until canonical target readiness is verified."
+      }
     },
     "lastVerifiedAt": "2026-06-18",
     "searchText": "after fly eventorganizer indore indore social runs run-and-rave fitness/wellness community music social indore luma luma was reviewed as an organizer-intake surface with high confidence. instagram instagram was reviewed as an organizer-intake surface with high confidence."
-  },
-  {
-    "id": "bhag",
-    "listingVariant": "unclaimedScraped",
-    "dataOrigin": "organizerIntake",
-    "name": "Bhag Club",
-    "slug": "bhag",
-    "city": "Delhi NCR",
-    "citySlug": "delhi-ncr",
-    "region": "",
-    "country": "India",
-    "path": "/organizers/bhag/",
-    "legacyPaths": [
-      "/organizers/delhi/bhag-run-club/"
-    ],
-    "category": "brand",
-    "status": "unclaimed",
-    "indexing": "index, follow",
-    "sourceConfidence": "high",
-    "headline": "Bhag Club organizer profile",
-    "description": "Bhag Club appears to be a running community and brand with public web and event-platform evidence. The entity should be represented once, with city-filtered events, rather than duplicated into separate city logins.",
-    "sourceSummary": "The official Bhag site and a Luma event page provide evidence for running programming, but the city-specific public listing still needs admin review.",
-    "logo": {
-      "mode": "monogram",
-      "text": "BC",
-      "status": "not_verified"
-    },
-    "formats": [
-      "Running community",
-      "Training programs",
-      "Social runs"
-    ],
-    "facts": [
-      {
-        "label": "Market",
-        "value": "Delhi NCR"
-      },
-      {
-        "label": "Organizer type",
-        "value": "brand"
-      },
-      {
-        "label": "Claim state",
-        "value": "Unclaimed"
-      },
-      {
-        "label": "Indexing",
-        "value": "index, follow"
-      },
-      {
-        "label": "App visibility",
-        "value": "hidden"
-      },
-      {
-        "label": "Source surfaces",
-        "value": "3"
-      }
-    ],
-    "eventEvidence": [],
-    "reviews": [],
-    "fitNotes": [
-      "This profile was promoted from organizer intake after manual admin review.",
-      "Events remain market-filtered under one canonical organizer identity.",
-      "Claiming unlocks owner-managed copy, official media, Catch events, and verified reviews."
-    ],
-    "missingEvidence": [
-      "Whether Delhi NCR should be the primary market or only one market",
-      "Current city-specific event cadence",
-      "Owner or preferred business contact",
-      "Logo or media permission"
-    ],
-    "sources": [
-      {
-        "type": "officialWebsite",
-        "label": "Official website",
-        "detail": "Official website was reviewed as an organizer-intake surface with high confidence.",
-        "confidence": "high",
-        "href": "https://thebhag.in/"
-      },
-      {
-        "type": "instagram",
-        "label": "Instagram",
-        "detail": "Instagram was reviewed as an organizer-intake surface with high confidence.",
-        "confidence": "high",
-        "href": "https://www.instagram.com/bhagclub/"
-      },
-      {
-        "type": "luma",
-        "label": "Luma",
-        "detail": "Luma was reviewed as an organizer-intake surface with high confidence.",
-        "confidence": "high",
-        "href": "https://luma.com/ixj7uqiu"
-      }
-    ],
-    "claim": {
-      "href": "/organizers/bhag/#claim",
-      "label": "Claim this listing"
-    },
-    "publicApi": {
-      "state": "disabled",
-      "reason": "Claiming is not available for this organizer yet.",
-      "claimTargetSyncStatus": "write_needed"
-    },
-    "lastVerifiedAt": "2026-06-18",
-    "searchText": "bhag club brand delhi ncr delhi-ncr running community training programs social runs delhi ncr official website official website was reviewed as an organizer-intake surface with high confidence. instagram instagram was reviewed as an organizer-intake surface with high confidence. luma luma was reviewed as an organizer-intake surface with high confidence."
   }
 ]

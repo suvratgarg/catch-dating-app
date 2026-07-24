@@ -3,6 +3,10 @@ import fs from "node:fs";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fromRepo, repoRoot, toolRoot} from "./lib/repo_paths.mjs";
+import {
+  toolSupportsPlatform,
+  validateToolPlatforms,
+} from "./lib/tool_platform.mjs";
 
 const manifestPath = fromRepo("tool/tools_manifest.json");
 
@@ -15,6 +19,8 @@ if (command === "help" || command === "--help" || command === "-h") {
   listTools(argv);
 } else if (command === "check") {
   checkTools(argv);
+} else if (command === "impacted") {
+  impactedTools(argv);
 } else if (command === "run" || command === "exec") {
   runTool(argv);
 } else {
@@ -34,6 +40,7 @@ function loadManifest() {
 function listTools(args) {
   const {category, json} = parseListArgs(args);
   const tools = selectTools(loadManifest(), {category});
+  requireSelection(tools, {category});
 
   if (json) {
     console.log(JSON.stringify(tools, null, 2));
@@ -72,7 +79,19 @@ function checkTools(args) {
     return;
   }
 
+  requireSelection(tools, {category, ids});
+  runChecks(tools);
+}
+
+function runChecks(tools) {
   for (const tool of tools) {
+    if (!toolSupportsPlatform(tool)) {
+      console.log(
+        `==> ${tool.id}: skipped on ${process.platform}; ` +
+        `supported platforms: ${tool.platforms.join(", ")}`,
+      );
+      continue;
+    }
     for (const check of tool.checks ?? []) {
       console.log(`==> ${tool.id}: ${check}`);
       const result = spawnSync(check, {
@@ -90,6 +109,108 @@ function checkTools(args) {
   console.log("Tool checks passed.");
 }
 
+function requireSelection(tools, {category, ids = []} = {}) {
+  if (tools.length > 0 || (!category && ids.length === 0)) return;
+  const selector = category ? `category ${category}` : `tool ids ${ids.join(", ")}`;
+  console.error(`No active tools matched ${selector}.`);
+  process.exit(64);
+}
+
+function impactedTools(args) {
+  const options = parseImpactedArgs(args);
+  const manifest = loadManifest();
+  const rootManifest = JSON.parse(
+    fs.readFileSync(fromRepo("tool/repository_root_manifest.json"), "utf8"),
+  );
+  const changedPaths = options.paths ?? changedPathsSince(options.base);
+  const relationships = rootManifest.relationships ?? [];
+  const matchedRelationships = relationships.filter((relationship) =>
+    changedPaths.some((changedPath) => relationshipPatterns(relationship)
+      .some((pattern) => matchesGlob(changedPath, pattern)))
+  );
+  const matchedPaths = new Set(changedPaths.filter((changedPath) =>
+    matchedRelationships.some((relationship) => relationshipPatterns(relationship)
+      .some((pattern) => matchesGlob(changedPath, pattern)))
+  ));
+  const toolIds = [...new Set(matchedRelationships.flatMap(
+    (relationship) => relationship.checks ?? [],
+  ))].sort();
+  const ciWorkflows = [...new Set(matchedRelationships.flatMap(
+    (relationship) => relationship.ciWorkflows ?? [],
+  ))].sort();
+  const unmatchedPaths = changedPaths.filter((changedPath) => !matchedPaths.has(changedPath));
+  const result = {
+    base: options.base,
+    changedPaths,
+    relationships: matchedRelationships.map((relationship) => relationship.id).sort(),
+    toolIds,
+    ciWorkflows,
+    unmatchedPaths,
+  };
+
+  if (options.json || !options.check) {
+    console.log(JSON.stringify(result, null, 2));
+  } else {
+    console.log(`Impacted relationships: ${result.relationships.join(", ") || "none"}`);
+    console.log(`Impacted tool checks: ${toolIds.join(", ") || "none"}`);
+    console.log(`CI workflows: ${ciWorkflows.join(", ") || "none"}`);
+  }
+
+  if (unmatchedPaths.length > 0) {
+    console.error(`Unmapped changed paths: ${unmatchedPaths.join(", ")}`);
+    process.exitCode = 1;
+    return;
+  }
+  if (!options.check || toolIds.length === 0) return;
+  const tools = selectTools(manifest, {ids: toolIds});
+  const missingIds = toolIds.filter((id) => !tools.some((tool) => tool.id === id));
+  if (missingIds.length > 0) {
+    console.error(`Impact graph references unknown tool ids: ${missingIds.join(", ")}`);
+    process.exitCode = 1;
+    return;
+  }
+  requireSelection(tools, {ids: toolIds});
+  runChecks(tools);
+}
+
+function changedPathsSince(base) {
+  const commands = [
+    ["diff", "--name-only", `${base}...HEAD`],
+    ["diff", "--name-only"],
+    ["diff", "--cached", "--name-only"],
+    ["ls-files", "--others", "--exclude-standard"],
+  ];
+  const paths = new Set();
+  for (const gitArgs of commands) {
+    const result = spawnSync("git", gitArgs, {cwd: repoRoot, encoding: "utf8"});
+    if (result.status !== 0) {
+      console.error(result.stderr || `Unable to resolve changed paths from ${base}.`);
+      process.exit(result.status ?? 1);
+    }
+    for (const line of result.stdout.split(/\r?\n/).filter(Boolean)) paths.add(line);
+  }
+  return [...paths].sort();
+}
+
+function relationshipPatterns(relationship) {
+  return [
+    ...(relationship.sources ?? []),
+    ...(relationship.generatedOutputs ?? []),
+    ...(relationship.consumers ?? []),
+  ];
+}
+
+export function matchesGlob(value, pattern) {
+  const doubleStar = "\u0000";
+  const escaped = pattern
+    .replace(/[.+^${}()|[\]\\]/g, "\\$&")
+    .replaceAll("**", doubleStar)
+    .replaceAll("*", "[^/]*")
+    .replaceAll("?", "[^/]")
+    .replaceAll(doubleStar, ".*");
+  return new RegExp(`^${escaped}$`).test(value);
+}
+
 function runTool(args) {
   const id = args[0];
   if (!id) {
@@ -104,6 +225,13 @@ function runTool(args) {
   }
   if (!tool.command) {
     console.error(`Tool ${id} does not define a command.`);
+    process.exit(64);
+  }
+  if (!toolSupportsPlatform(tool)) {
+    console.error(
+      `Tool ${id} is unavailable on ${process.platform}; ` +
+      `supported platforms: ${tool.platforms.join(", ")}.`,
+    );
     process.exit(64);
   }
 
@@ -126,6 +254,9 @@ function validateManifest(manifest) {
     if (!tool.id) errors.push("Tool entry is missing id.");
     if (!tool.category) errors.push(`${tool.id ?? "<missing>"} is missing category.`);
     if (!tool.path) errors.push(`${tool.id ?? "<missing>"} is missing path.`);
+    for (const error of validateToolPlatforms(tool)) {
+      errors.push(`${tool.id ?? "<missing>"}: ${error}`);
+    }
     if (tool.id && ids.has(tool.id)) errors.push(`Duplicate tool id: ${tool.id}`);
     if (tool.id) ids.add(tool.id);
     if (tool.path) {
@@ -197,6 +328,20 @@ function parseCheckArgs(args) {
   return {category, ids, manifestOnly};
 }
 
+function parseImpactedArgs(args) {
+  const pathsValue = valueAfter(args, "--paths");
+  return {
+    base: valueAfter(args, "--base") ?? "origin/main",
+    paths: pathsValue == null ? null : pathsValue
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean)
+      .sort(),
+    json: args.includes("--json"),
+    check: args.includes("--check"),
+  };
+}
+
 function valueAfter(args, flag) {
   const index = args.indexOf(flag);
   if (index === -1) return null;
@@ -217,11 +362,13 @@ function printHelp() {
 Commands:
   list [--category name] [--json]
   check [--category name] [--manifest-only] [tool-id ...]
+  impacted [--base ref | --paths a,b] [--json] [--check]
   run <tool-id> [args...]
 
 Examples:
   node tool/run.mjs list --category data
   node tool/run.mjs check --manifest-only
+  node tool/run.mjs impacted --base origin/main --check
   node tool/run.mjs run demo:ops list-commands
 `);
 }

@@ -15,21 +15,22 @@ const model = {
     "adminGetAccessApplicationDetails",
     "adminGetAdminUserRoles",
     "adminGetClubClaimRequestDetails",
-    "adminGetClubDetails",
     "adminGetEventDetails",
     "adminGetEventIntakeDashboard",
     "adminGetEventSupplyReadiness",
     "adminGetHostAnalytics",
     "adminGetMarketingOpsDashboard",
+    "adminGetOrganizerDetails",
     "adminGetOverview",
     "adminGetSafetyTriageDetails",
     "adminGetUserAnalytics",
+    "adminListActionExecutions",
     "adminListAdminRoleAssignments",
     "adminListClubClaimRequests",
-    "adminListClubDetails",
     "adminListEventDetails",
     "adminListExternalEventDetails",
     "adminListIntakeOperations",
+    "adminListOrganizerDetails",
     "adminPublishExternalEvent",
     "adminRecordEventIntakeReviewDecision",
     "adminRecordMarketingReviewDecision",
@@ -37,10 +38,152 @@ const model = {
     "adminResolveOrganizerEventLocation",
     "adminSetAdminUserRoles",
     "adminSetClubIndexStatus",
-    "adminUpdateClubDetails",
-    "adminUpdateEventDetails"
+    "adminUpdateEventDetails",
+    "adminUpdateOrganizerDetails"
   ],
   "schemas": [
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_assign_safety_triage_item_payload.schema.json",
+      "title": "Admin Assign Safety Triage Item Callable Payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetPath",
+        "assigneeUid",
+        "note"
+      ],
+      "properties": {
+        "targetPath": {
+          "type": "string",
+          "maxLength": 260,
+          "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+        },
+        "assigneeUid": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{3,128}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_create_marketing_content_draft_payload.schema.json",
+      "title": "Admin Create Marketing Content Draft Callable Payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "draftType"
+      ],
+      "properties": {
+        "draftType": {
+          "type": "string",
+          "enum": [
+            "event_highlights",
+            "feature_explainer"
+          ]
+        },
+        "cityId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-z0-9-]{2,60}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "weekStart": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sourceRecommendationSetId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "title": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_decide_access_application_payload.schema.json",
+      "title": "Admin Decide Access Application Callable Payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applicationUid",
+        "decision",
+        "note"
+      ],
+      "properties": {
+        "applicationUid": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "approve",
+            "deny"
+          ]
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "cohortId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/callables/admin_decide_club_claim_payload.schema.json",
@@ -75,8 +218,8 @@ const model = {
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/shared/event_common.schema.json",
-      "title": "Event and club common contract definitions",
-      "description": "Shared enum, scalar, and embedded definitions for event, club, participation, and saved-event contracts.",
+      "title": "Event and organizer common contract definitions",
+      "description": "Shared enum, scalar, and embedded definitions for event, organizer, participation, and saved-event contracts.",
       "definitions": {
         "demoMetadataFields": {
           "synthetic": {
@@ -527,6 +670,25 @@ const model = {
             "active",
             "archived"
           ]
+        },
+        "organizerLifecycleStatus": {
+          "type": "string",
+          "enum": [
+            "active",
+            "archived"
+          ]
+        },
+        "organizerType": {
+          "type": "string",
+          "enum": [
+            "club",
+            "community",
+            "individual",
+            "eventProducer",
+            "venue",
+            "brand"
+          ],
+          "description": "Canonical organizer classification. Club is one organizer subtype; missing legacy values normalize to club during migration."
         },
         "clubMembershipRole": {
           "type": "string",
@@ -1599,16 +1761,81 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_get_club_details_payload.schema.json",
-      "title": "AdminGetClubDetailsCallablePayload",
-      "description": "Callable payload accepted by adminGetClubDetails.",
+      "$id": "https://catch.app/contracts/callables/admin_decide_safety_triage_item_payload.schema.json",
+      "title": "Admin Decide Safety Triage Item Callable Payload",
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "clubId"
+        "targetPath",
+        "decision",
+        "note"
       ],
       "properties": {
-        "clubId": {
+        "targetPath": {
+          "$ref": "#/definitions/targetPath"
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "review",
+            "dismiss"
+          ]
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      },
+      "definitions": {
+        "targetPath": {
+          "type": "string",
+          "maxLength": 260,
+          "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_get_access_application_details_payload.schema.json",
+      "title": "AdminGetAccessApplicationDetailsCallablePayload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applicationUid"
+      ],
+      "properties": {
+        "applicationUid": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_get_admin_user_roles_payload.schema.json",
+      "title": "AdminGetAdminUserRolesCallablePayload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetUid"
+      ],
+      "properties": {
+        "targetUid": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_get_club_claim_request_details_payload.schema.json",
+      "title": "AdminGetClubClaimRequestDetailsCallablePayload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId"
+      ],
+      "properties": {
+        "requestId": {
           "$ref": "../shared/event_common.schema.json#/definitions/documentId"
         }
       }
@@ -1631,76 +1858,120 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_list_club_details_payload.schema.json",
-      "title": "AdminListClubDetailsCallablePayload",
-      "description": "Callable payload accepted by adminListClubDetails. This lists canonical organizer profile rows from clubs/{clubId} for the admin publishing workspace.",
+      "$id": "https://catch.app/contracts/callables/admin_get_event_intake_dashboard_payload.schema.json",
+      "title": "AdminGetEventIntakeDashboardCallablePayload",
+      "type": "object",
+      "additionalProperties": false
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_get_event_supply_readiness_payload.schema.json",
+      "title": "AdminGetEventSupplyReadinessCallablePayload",
+      "type": "object",
+      "additionalProperties": false
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_get_marketing_ops_dashboard_payload.schema.json",
+      "title": "AdminGetMarketingOpsDashboardCallablePayload",
+      "type": "object",
+      "additionalProperties": false
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_get_organizer_details_payload.schema.json",
+      "title": "AdminGetOrganizerDetailsCallablePayload",
+      "description": "Callable payload accepted by adminGetOrganizerDetails.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId"
+      ],
+      "properties": {
+        "organizerId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_get_overview_payload.schema.json",
+      "title": "Admin Get Overview Callable Payload",
+      "type": "object",
+      "additionalProperties": false
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_get_safety_triage_details_payload.schema.json",
+      "title": "AdminGetSafetyTriageDetailsCallablePayload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetPath"
+      ],
+      "properties": {
+        "targetPath": {
+          "type": "string",
+          "pattern": "^(reports|moderationFlags|eventSafetyReports)/[A-Za-z0-9_-]{1,180}$"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_list_action_executions_payload.schema.json",
+      "title": "AdminListActionExecutionsCallablePayload",
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "query": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 160
-        },
-        "citySlug": {
-          "anyOf": [
-            {
-              "$ref": "../shared/event_common.schema.json#/definitions/marketId"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "citySlugs": {
-          "anyOf": [
-            {
-              "type": "array",
-              "items": {
-                "$ref": "../shared/event_common.schema.json#/definitions/marketId"
-              },
-              "minItems": 1,
-              "maxItems": 10,
-              "uniqueItems": true
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "publishStatus": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "draft",
-            "qa",
-            "published",
-            "suppressed",
-            "removed",
-            null
-          ]
-        },
-        "appVisibility": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "discoverable",
-            "hidden",
-            null
-          ]
-        },
         "limit": {
           "type": "integer",
           "minimum": 1,
           "maximum": 100
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
         }
       }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_list_admin_role_assignments_payload.schema.json",
+      "title": "AdminListAdminRoleAssignmentsCallablePayload",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "active",
+            "revoked",
+            "all",
+            null
+          ]
+        },
+        "limit": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 100
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_list_club_claim_requests_payload.schema.json",
+      "title": "AdminListClubClaimRequestsCallablePayload",
+      "type": "object",
+      "additionalProperties": false
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1718,6 +1989,16 @@ const model = {
           "maxLength": 160
         },
         "clubId": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "organizerId": {
           "anyOf": [
             {
               "$ref": "../shared/event_common.schema.json#/definitions/documentId"
@@ -2033,6 +2314,79 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_list_organizer_details_payload.schema.json",
+      "title": "AdminListOrganizerDetailsCallablePayload",
+      "description": "Callable payload accepted by adminListOrganizerDetails. This lists canonical organizer profile rows from organizers/{organizerId} for the admin publishing workspace.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "query": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "citySlug": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/marketId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "citySlugs": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "../shared/event_common.schema.json#/definitions/marketId"
+              },
+              "minItems": 1,
+              "maxItems": 10,
+              "uniqueItems": true
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "publishStatus": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "draft",
+            "qa",
+            "published",
+            "suppressed",
+            "removed",
+            null
+          ]
+        },
+        "appVisibility": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "discoverable",
+            "hidden",
+            null
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/callables/admin_publish_external_event_payload.schema.json",
       "title": "AdminPublishExternalEventCallablePayload",
       "description": "Callable payload accepted by adminPublishExternalEvent. This publishes one preflight-approved read-only externalEvents/{eventId} document from eventSupplyReadiness/current.",
@@ -2151,6 +2505,99 @@ const model = {
             "rightsReviewed",
             "noCatchHostingImplied"
           ],
+          "properties": {
+            "sourceReviewed": {
+              "type": "boolean"
+            },
+            "dateReviewed": {
+              "type": "boolean"
+            },
+            "venueReviewed": {
+              "type": "boolean"
+            },
+            "copyReviewed": {
+              "type": "boolean"
+            },
+            "rightsReviewed": {
+              "type": "boolean"
+            },
+            "noCatchHostingImplied": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_record_marketing_review_decision_payload.schema.json",
+      "title": "Admin Record Marketing Review Decision Callable Payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetType",
+        "targetId",
+        "decision",
+        "note"
+      ],
+      "properties": {
+        "targetType": {
+          "type": "string",
+          "enum": [
+            "source_profile",
+            "query_template",
+            "run_plan",
+            "source_result",
+            "event_candidate",
+            "recommendation_item",
+            "recommendation_set",
+            "content_draft"
+          ]
+        },
+        "targetId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "approve",
+            "needs_changes",
+            "hold",
+            "reject",
+            "export_ready"
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "edits": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "checklist": {
+          "$ref": "#/definitions/checklist"
+        }
+      },
+      "definitions": {
+        "checklist": {
+          "type": "object",
+          "additionalProperties": false,
           "properties": {
             "sourceReviewed": {
               "type": "boolean"
@@ -2538,6 +2985,49 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_set_admin_user_roles_payload.schema.json",
+      "title": "Admin Set Admin User Roles Callable Payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetUid",
+        "roles",
+        "note"
+      ],
+      "properties": {
+        "targetUid": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "roles": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/adminRole"
+          }
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      },
+      "definitions": {
+        "adminRole": {
+          "type": "string",
+          "enum": [
+            "admin",
+            "adminOwner",
+            "safetyReviewer",
+            "support",
+            "finance",
+            "analyticsViewer"
+          ]
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/callables/admin_set_club_index_status_payload.schema.json",
       "title": "AdminSetClubIndexStatusCallablePayload",
       "description": "Callable payload accepted by adminSetClubIndexStatus.",
@@ -2595,18 +3085,68 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_update_club_details_payload.schema.json",
-      "title": "AdminUpdateClubDetailsCallablePayload",
-      "description": "Callable payload accepted by adminUpdateClubDetails. This edits owner-safe organizer listing fields through an audited admin callable.",
+      "$id": "https://catch.app/contracts/callables/admin_update_event_details_payload.schema.json",
+      "title": "AdminUpdateEventDetailsCallablePayload",
+      "description": "Callable payload accepted by adminUpdateEventDetails. This edits low-risk app-facing canonical event fields through an audited admin callable.",
       "x-callable-shape": "patch",
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "clubId",
+        "eventId",
         "fields"
       ],
       "properties": {
-        "clubId": {
+        "eventId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "reviewNote": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        },
+        "fields": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "description": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "photoUrl": {
+              "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"
+            },
+            "distanceKm": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "pace": {
+              "$ref": "../shared/event_common.schema.json#/definitions/paceLevel"
+            },
+            "eventFormat": {
+              "$ref": "../shared/event_common.schema.json#/definitions/eventFormatSnapshot"
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_update_organizer_details_payload.schema.json",
+      "title": "AdminUpdateOrganizerDetailsCallablePayload",
+      "description": "Callable payload accepted by adminUpdateOrganizerDetails. This edits owner-safe organizer listing fields through an audited admin callable.",
+      "x-callable-shape": "patch",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "fields"
+      ],
+      "properties": {
+        "organizerId": {
           "$ref": "../shared/event_common.schema.json#/definitions/documentId"
         },
         "fields": {
@@ -2656,6 +3196,16 @@ const model = {
             },
             "profileImageUrl": {
               "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"
+            },
+            "organizerType": {
+              "$ref": "../shared/event_common.schema.json#/definitions/organizerType"
+            },
+            "publicCategoryLabel": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 120
             },
             "entityKind": {
               "type": "string",
@@ -2857,56 +3407,6 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_update_event_details_payload.schema.json",
-      "title": "AdminUpdateEventDetailsCallablePayload",
-      "description": "Callable payload accepted by adminUpdateEventDetails. This edits low-risk app-facing canonical event fields through an audited admin callable.",
-      "x-callable-shape": "patch",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "eventId",
-        "fields"
-      ],
-      "properties": {
-        "eventId": {
-          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-        },
-        "reviewNote": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 1000
-        },
-        "fields": {
-          "type": "object",
-          "additionalProperties": false,
-          "minProperties": 1,
-          "properties": {
-            "description": {
-              "type": "string",
-              "maxLength": 2000
-            },
-            "photoUrl": {
-              "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"
-            },
-            "distanceKm": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 100
-            },
-            "pace": {
-              "$ref": "../shared/event_common.schema.json#/definitions/paceLevel"
-            },
-            "eventFormat": {
-              "$ref": "../shared/event_common.schema.json#/definitions/eventFormatSnapshot"
-            }
-          }
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/callables/host_analytics_query_payload.schema.json",
       "title": "HostAnalyticsQueryCallablePayload",
       "description": "Callable payload accepted by getHostAnalytics and adminGetHostAnalytics.",
@@ -2918,6 +3418,16 @@ const model = {
       "additionalProperties": false,
       "properties": {
         "clubId": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "organizerId": {
           "anyOf": [
             {
               "$ref": "../shared/event_common.schema.json#/definitions/documentId"
@@ -3031,6 +3541,527 @@ const model = {
             "week",
             "month"
           ]
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_assign_safety_triage_item_response.schema.json",
+      "title": "Admin Assign Safety Triage Item Callable Response",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetPath",
+        "assignment"
+      ],
+      "properties": {
+        "targetPath": {
+          "type": "string",
+          "maxLength": 260,
+          "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+        },
+        "assignment": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ownerTeam",
+            "assigneeUid",
+            "queue",
+            "severity"
+          ],
+          "properties": {
+            "ownerTeam": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "assigneeUid": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_-]{3,128}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "queue": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "severity": {
+              "type": "string",
+              "enum": [
+                "high",
+                "medium",
+                "watch"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_create_marketing_content_draft_response.schema.json",
+      "title": "Admin Create Marketing Content Draft Callable Response",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "draft",
+        "bridge",
+        "dashboardPath"
+      ],
+      "properties": {
+        "draft": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": true
+        },
+        "bridge": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": true
+        },
+        "dashboardPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 260
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_decide_access_application_response.schema.json",
+      "title": "Admin Decide Access Application Callable Response",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applicationUid",
+        "decision",
+        "status"
+      ],
+      "properties": {
+        "applicationUid": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "approve",
+            "deny"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "approvedForProfile",
+            "notSelectedYet"
+          ]
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_decide_safety_triage_item_response.schema.json",
+      "title": "Admin Decide Safety Triage Item Callable Response",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetPath",
+        "decision",
+        "status"
+      ],
+      "properties": {
+        "targetPath": {
+          "type": "string",
+          "maxLength": 260,
+          "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "review",
+            "dismiss"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "reviewed",
+            "dismissed"
+          ]
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_get_overview_response.schema.json",
+      "title": "Admin Get Overview Callable Response",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generatedAt",
+        "timezone",
+        "metrics",
+        "queues",
+        "dataQuality"
+      ],
+      "properties": {
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "timezone": {
+          "const": "UTC"
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/metric"
+          }
+        },
+        "queues": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "safetyReports",
+            "moderationFlags",
+            "eventSafetyReports",
+            "accessApplications",
+            "clubClaimRequests",
+            "clubIndexReviews",
+            "paymentIssues"
+          ],
+          "properties": {
+            "safetyReports": {
+              "$ref": "#/definitions/queue"
+            },
+            "moderationFlags": {
+              "$ref": "#/definitions/queue"
+            },
+            "eventSafetyReports": {
+              "$ref": "#/definitions/queue"
+            },
+            "accessApplications": {
+              "$ref": "#/definitions/queue"
+            },
+            "clubClaimRequests": {
+              "$ref": "#/definitions/queue"
+            },
+            "clubIndexReviews": {
+              "$ref": "#/definitions/queue"
+            },
+            "paymentIssues": {
+              "$ref": "#/definitions/queue"
+            }
+          }
+        },
+        "dataQuality": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/dataQuality"
+          }
+        }
+      },
+      "definitions": {
+        "metric": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "value"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "value": {
+              "type": "number"
+            },
+            "unit": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          }
+        },
+        "queue": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/queueItem"
+          }
+        },
+        "queueItem": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "title",
+            "detail",
+            "status",
+            "createdAt",
+            "targetPath"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "detail": {
+              "type": "string",
+              "maxLength": 1000
+            },
+            "status": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "createdAt": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "targetPath": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 260
+            }
+          }
+        },
+        "dataQuality": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "state",
+            "detail",
+            "owner",
+            "runbook",
+            "nextAction"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "state": {
+              "type": "string",
+              "enum": [
+                "ok",
+                "warning",
+                "blocked"
+              ]
+            },
+            "detail": {
+              "type": "string",
+              "maxLength": 1000
+            },
+            "owner": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "runbook": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 260
+            },
+            "nextAction": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_list_action_executions_response.schema.json",
+      "title": "AdminListActionExecutionsCallableResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "generatedAt",
+        "rows",
+        "nextCursor"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "rows": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/definitions/execution"
+          }
+        },
+        "nextCursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      },
+      "definitions": {
+        "execution": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schemaVersion",
+            "executionId",
+            "actionId",
+            "callable",
+            "actorUid",
+            "actorRoles",
+            "status",
+            "requestHash",
+            "responseHash",
+            "target",
+            "errorCode",
+            "errorMessage",
+            "cliVersion",
+            "startedAt",
+            "finishedAt",
+            "updatedAt"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "const": 1
+            },
+            "executionId": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            },
+            "actionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "callable": {
+              "type": "string",
+              "pattern": "^admin[A-Z][A-Za-z0-9]+$"
+            },
+            "actorUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "actorRoles": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "enum": [
+                  "admin",
+                  "adminOwner",
+                  "safetyReviewer",
+                  "support",
+                  "finance",
+                  "analyticsViewer"
+                ]
+              }
+            },
+            "status": {
+              "enum": [
+                "started",
+                "succeeded",
+                "failed",
+                "indeterminate"
+              ]
+            },
+            "requestHash": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "responseHash": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "target": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            },
+            "errorCode": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 120
+            },
+            "errorMessage": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            },
+            "cliVersion": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "startedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "finishedAt": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
         }
       }
     },
@@ -3957,6 +4988,158 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_record_marketing_review_decision_response.schema.json",
+      "title": "Admin Record Marketing Review Decision Callable Response",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decisionId",
+        "targetType",
+        "targetId",
+        "decision",
+        "decisionStatus",
+        "decisionPath"
+      ],
+      "properties": {
+        "decisionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 150
+        },
+        "targetType": {
+          "type": "string",
+          "enum": [
+            "source_profile",
+            "query_template",
+            "run_plan",
+            "source_result",
+            "event_candidate",
+            "recommendation_item",
+            "recommendation_set",
+            "content_draft"
+          ]
+        },
+        "targetId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "approve",
+            "needs_changes",
+            "hold",
+            "reject",
+            "export_ready"
+          ]
+        },
+        "decisionStatus": {
+          "type": "string",
+          "enum": [
+            "approved",
+            "needs_changes",
+            "held",
+            "rejected",
+            "export_ready"
+          ]
+        },
+        "decisionPath": {
+          "type": "string",
+          "pattern": "^marketingReviewDecisions/[^/]+$",
+          "maxLength": 260
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_set_admin_user_roles_response.schema.json",
+      "title": "Admin Set Admin User Roles Callable Response",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "user",
+        "beforeRoles",
+        "afterRoles"
+      ],
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/user"
+        },
+        "beforeRoles": {
+          "$ref": "#/definitions/roles"
+        },
+        "afterRoles": {
+          "$ref": "#/definitions/roles"
+        }
+      },
+      "definitions": {
+        "adminRole": {
+          "type": "string",
+          "enum": [
+            "admin",
+            "adminOwner",
+            "safetyReviewer",
+            "support",
+            "finance",
+            "analyticsViewer"
+          ]
+        },
+        "roles": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/adminRole"
+          }
+        },
+        "nullableText": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "user": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "targetUid",
+            "email",
+            "displayName",
+            "disabled",
+            "roles",
+            "assignmentPath"
+          ],
+          "properties": {
+            "targetUid": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{3,128}$"
+            },
+            "email": {
+              "$ref": "#/definitions/nullableText"
+            },
+            "displayName": {
+              "$ref": "#/definitions/nullableText"
+            },
+            "disabled": {
+              "type": "boolean"
+            },
+            "roles": {
+              "$ref": "#/definitions/roles"
+            },
+            "assignmentPath": {
+              "type": "string",
+              "pattern": "^adminRoleAssignments/[^/]+$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/callable_responses/host_analytics_response.schema.json",
       "title": "HostAnalyticsCallableResponse",
       "description": "Shared aggregate analytics response returned by host and admin analytics callables. Values are aggregate-only and host-safe.",
@@ -4022,10 +5205,17 @@ const model = {
           "type": "object",
           "additionalProperties": false,
           "required": [
+            "organizerIds",
             "clubIds",
             "eventIds"
           ],
           "properties": {
+            "organizerIds": {
+              "type": "array",
+              "items": {
+                "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+              }
+            },
             "clubIds": {
               "type": "array",
               "items": {
@@ -4039,6 +5229,13 @@ const model = {
               }
             },
             "clubName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 160
+            },
+            "organizerName": {
               "type": [
                 "string",
                 "null"
@@ -4126,6 +5323,9 @@ const model = {
                 "$ref": "../shared/event_common.schema.json#/definitions/documentId"
               },
               "clubId": {
+                "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+              },
+              "organizerId": {
                 "$ref": "../shared/event_common.schema.json#/definitions/documentId"
               },
               "title": {
@@ -4746,36 +5946,6 @@ const model = {
       }
     },
     {
-      "$id": "https://catch.app/contracts/admin_runtime/adminAssignSafetyTriageItem_payload.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
-      "$id": "https://catch.app/contracts/admin_runtime/adminAssignSafetyTriageItem_response.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
-      "$id": "https://catch.app/contracts/admin_runtime/adminCreateMarketingContentDraft_payload.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
-      "$id": "https://catch.app/contracts/admin_runtime/adminCreateMarketingContentDraft_response.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
-      "$id": "https://catch.app/contracts/admin_runtime/adminDecideAccessApplication_payload.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
-      "$id": "https://catch.app/contracts/admin_runtime/adminDecideAccessApplication_response.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
       "$id": "https://catch.app/contracts/admin_runtime/adminDecideClubClaim_response.schema.json",
       "type": "object",
       "additionalProperties": true
@@ -4796,27 +5966,7 @@ const model = {
       "additionalProperties": true
     },
     {
-      "$id": "https://catch.app/contracts/admin_runtime/adminDecideSafetyTriageItem_payload.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
-      "$id": "https://catch.app/contracts/admin_runtime/adminDecideSafetyTriageItem_response.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
-      "$id": "https://catch.app/contracts/admin_runtime/adminGetAccessApplicationDetails_payload.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
       "$id": "https://catch.app/contracts/admin_runtime/adminGetAccessApplicationDetails_response.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
-      "$id": "https://catch.app/contracts/admin_runtime/adminGetAdminUserRoles_payload.schema.json",
       "type": "object",
       "additionalProperties": true
     },
@@ -4826,17 +5976,7 @@ const model = {
       "additionalProperties": true
     },
     {
-      "$id": "https://catch.app/contracts/admin_runtime/adminGetClubClaimRequestDetails_payload.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
       "$id": "https://catch.app/contracts/admin_runtime/adminGetClubClaimRequestDetails_response.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
-      "$id": "https://catch.app/contracts/admin_runtime/adminGetClubDetails_response.schema.json",
       "type": "object",
       "additionalProperties": true
     },
@@ -4846,17 +5986,7 @@ const model = {
       "additionalProperties": true
     },
     {
-      "$id": "https://catch.app/contracts/admin_runtime/adminGetEventIntakeDashboard_payload.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
       "$id": "https://catch.app/contracts/admin_runtime/adminGetEventIntakeDashboard_response.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
-      "$id": "https://catch.app/contracts/admin_runtime/adminGetEventSupplyReadiness_payload.schema.json",
       "type": "object",
       "additionalProperties": true
     },
@@ -4866,27 +5996,12 @@ const model = {
       "additionalProperties": true
     },
     {
-      "$id": "https://catch.app/contracts/admin_runtime/adminGetMarketingOpsDashboard_payload.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
       "$id": "https://catch.app/contracts/admin_runtime/adminGetMarketingOpsDashboard_response.schema.json",
       "type": "object",
       "additionalProperties": true
     },
     {
-      "$id": "https://catch.app/contracts/admin_runtime/adminGetOverview_payload.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
-      "$id": "https://catch.app/contracts/admin_runtime/adminGetOverview_response.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
-      "$id": "https://catch.app/contracts/admin_runtime/adminGetSafetyTriageDetails_payload.schema.json",
+      "$id": "https://catch.app/contracts/admin_runtime/adminGetOrganizerDetails_response.schema.json",
       "type": "object",
       "additionalProperties": true
     },
@@ -4896,27 +6011,12 @@ const model = {
       "additionalProperties": true
     },
     {
-      "$id": "https://catch.app/contracts/admin_runtime/adminListAdminRoleAssignments_payload.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
       "$id": "https://catch.app/contracts/admin_runtime/adminListAdminRoleAssignments_response.schema.json",
       "type": "object",
       "additionalProperties": true
     },
     {
-      "$id": "https://catch.app/contracts/admin_runtime/adminListClubClaimRequests_payload.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
       "$id": "https://catch.app/contracts/admin_runtime/adminListClubClaimRequests_response.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
-      "$id": "https://catch.app/contracts/admin_runtime/adminListClubDetails_response.schema.json",
       "type": "object",
       "additionalProperties": true
     },
@@ -4931,22 +6031,17 @@ const model = {
       "additionalProperties": true
     },
     {
+      "$id": "https://catch.app/contracts/admin_runtime/adminListOrganizerDetails_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
       "$id": "https://catch.app/contracts/admin_runtime/adminPublishExternalEvent_response.schema.json",
       "type": "object",
       "additionalProperties": true
     },
     {
       "$id": "https://catch.app/contracts/admin_runtime/adminRecordEventIntakeReviewDecision_response.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
-      "$id": "https://catch.app/contracts/admin_runtime/adminRecordMarketingReviewDecision_payload.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
-      "$id": "https://catch.app/contracts/admin_runtime/adminRecordMarketingReviewDecision_response.schema.json",
       "type": "object",
       "additionalProperties": true
     },
@@ -4961,22 +6056,7 @@ const model = {
       "additionalProperties": true
     },
     {
-      "$id": "https://catch.app/contracts/admin_runtime/adminSetAdminUserRoles_payload.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
-      "$id": "https://catch.app/contracts/admin_runtime/adminSetAdminUserRoles_response.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
       "$id": "https://catch.app/contracts/admin_runtime/adminSetClubIndexStatus_response.schema.json",
-      "type": "object",
-      "additionalProperties": true
-    },
-    {
-      "$id": "https://catch.app/contracts/admin_runtime/adminUpdateClubDetails_response.schema.json",
       "type": "object",
       "additionalProperties": true
     },
@@ -4984,107 +6064,139 @@ const model = {
       "$id": "https://catch.app/contracts/admin_runtime/adminUpdateEventDetails_response.schema.json",
       "type": "object",
       "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminUpdateOrganizerDetails_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
     }
   ],
   "requestSchemaIds": {
-    "adminAssignSafetyTriageItem": "https://catch.app/contracts/admin_runtime/adminAssignSafetyTriageItem_payload.schema.json",
-    "adminCreateMarketingContentDraft": "https://catch.app/contracts/admin_runtime/adminCreateMarketingContentDraft_payload.schema.json",
-    "adminDecideAccessApplication": "https://catch.app/contracts/admin_runtime/adminDecideAccessApplication_payload.schema.json",
+    "adminAssignSafetyTriageItem": "https://catch.app/contracts/callables/admin_assign_safety_triage_item_payload.schema.json",
+    "adminCreateMarketingContentDraft": "https://catch.app/contracts/callables/admin_create_marketing_content_draft_payload.schema.json",
+    "adminDecideAccessApplication": "https://catch.app/contracts/callables/admin_decide_access_application_payload.schema.json",
     "adminDecideClubClaim": "https://catch.app/contracts/callables/admin_decide_club_claim_payload.schema.json",
     "adminDecideOrganizerEventCandidate": "https://catch.app/contracts/callables/admin_decide_organizer_event_candidate_payload.schema.json",
     "adminDecideOrganizerIntake": "https://catch.app/contracts/callables/admin_decide_organizer_intake_payload.schema.json",
     "adminDecideOrganizerPolicyGap": "https://catch.app/contracts/callables/admin_decide_organizer_policy_gap_payload.schema.json",
-    "adminDecideSafetyTriageItem": "https://catch.app/contracts/admin_runtime/adminDecideSafetyTriageItem_payload.schema.json",
-    "adminGetAccessApplicationDetails": "https://catch.app/contracts/admin_runtime/adminGetAccessApplicationDetails_payload.schema.json",
-    "adminGetAdminUserRoles": "https://catch.app/contracts/admin_runtime/adminGetAdminUserRoles_payload.schema.json",
-    "adminGetClubClaimRequestDetails": "https://catch.app/contracts/admin_runtime/adminGetClubClaimRequestDetails_payload.schema.json",
-    "adminGetClubDetails": "https://catch.app/contracts/callables/admin_get_club_details_payload.schema.json",
+    "adminDecideSafetyTriageItem": "https://catch.app/contracts/callables/admin_decide_safety_triage_item_payload.schema.json",
+    "adminGetAccessApplicationDetails": "https://catch.app/contracts/callables/admin_get_access_application_details_payload.schema.json",
+    "adminGetAdminUserRoles": "https://catch.app/contracts/callables/admin_get_admin_user_roles_payload.schema.json",
+    "adminGetClubClaimRequestDetails": "https://catch.app/contracts/callables/admin_get_club_claim_request_details_payload.schema.json",
     "adminGetEventDetails": "https://catch.app/contracts/callables/admin_get_event_details_payload.schema.json",
-    "adminGetEventIntakeDashboard": "https://catch.app/contracts/admin_runtime/adminGetEventIntakeDashboard_payload.schema.json",
-    "adminGetEventSupplyReadiness": "https://catch.app/contracts/admin_runtime/adminGetEventSupplyReadiness_payload.schema.json",
+    "adminGetEventIntakeDashboard": "https://catch.app/contracts/callables/admin_get_event_intake_dashboard_payload.schema.json",
+    "adminGetEventSupplyReadiness": "https://catch.app/contracts/callables/admin_get_event_supply_readiness_payload.schema.json",
     "adminGetHostAnalytics": "https://catch.app/contracts/callables/host_analytics_query_payload.schema.json",
-    "adminGetMarketingOpsDashboard": "https://catch.app/contracts/admin_runtime/adminGetMarketingOpsDashboard_payload.schema.json",
-    "adminGetOverview": "https://catch.app/contracts/admin_runtime/adminGetOverview_payload.schema.json",
-    "adminGetSafetyTriageDetails": "https://catch.app/contracts/admin_runtime/adminGetSafetyTriageDetails_payload.schema.json",
+    "adminGetMarketingOpsDashboard": "https://catch.app/contracts/callables/admin_get_marketing_ops_dashboard_payload.schema.json",
+    "adminGetOrganizerDetails": "https://catch.app/contracts/callables/admin_get_organizer_details_payload.schema.json",
+    "adminGetOverview": "https://catch.app/contracts/callables/admin_get_overview_payload.schema.json",
+    "adminGetSafetyTriageDetails": "https://catch.app/contracts/callables/admin_get_safety_triage_details_payload.schema.json",
     "adminGetUserAnalytics": "https://catch.app/contracts/callables/user_analytics_query_payload.schema.json",
-    "adminListAdminRoleAssignments": "https://catch.app/contracts/admin_runtime/adminListAdminRoleAssignments_payload.schema.json",
-    "adminListClubClaimRequests": "https://catch.app/contracts/admin_runtime/adminListClubClaimRequests_payload.schema.json",
-    "adminListClubDetails": "https://catch.app/contracts/callables/admin_list_club_details_payload.schema.json",
+    "adminListActionExecutions": "https://catch.app/contracts/callables/admin_list_action_executions_payload.schema.json",
+    "adminListAdminRoleAssignments": "https://catch.app/contracts/callables/admin_list_admin_role_assignments_payload.schema.json",
+    "adminListClubClaimRequests": "https://catch.app/contracts/callables/admin_list_club_claim_requests_payload.schema.json",
     "adminListEventDetails": "https://catch.app/contracts/callables/admin_list_event_details_payload.schema.json",
     "adminListExternalEventDetails": "https://catch.app/contracts/callables/admin_list_external_event_details_payload.schema.json",
     "adminListIntakeOperations": "https://catch.app/contracts/callables/admin_list_intake_operations_payload.schema.json",
+    "adminListOrganizerDetails": "https://catch.app/contracts/callables/admin_list_organizer_details_payload.schema.json",
     "adminPublishExternalEvent": "https://catch.app/contracts/callables/admin_publish_external_event_payload.schema.json",
     "adminRecordEventIntakeReviewDecision": "https://catch.app/contracts/callables/admin_record_event_intake_review_decision_payload.schema.json",
-    "adminRecordMarketingReviewDecision": "https://catch.app/contracts/admin_runtime/adminRecordMarketingReviewDecision_payload.schema.json",
+    "adminRecordMarketingReviewDecision": "https://catch.app/contracts/callables/admin_record_marketing_review_decision_payload.schema.json",
     "adminRecordOrganizerCuration": "https://catch.app/contracts/callables/admin_record_organizer_curation_payload.schema.json",
     "adminResolveOrganizerEventLocation": "https://catch.app/contracts/callables/admin_resolve_organizer_event_location_payload.schema.json",
-    "adminSetAdminUserRoles": "https://catch.app/contracts/admin_runtime/adminSetAdminUserRoles_payload.schema.json",
+    "adminSetAdminUserRoles": "https://catch.app/contracts/callables/admin_set_admin_user_roles_payload.schema.json",
     "adminSetClubIndexStatus": "https://catch.app/contracts/callables/admin_set_club_index_status_payload.schema.json",
-    "adminUpdateClubDetails": "https://catch.app/contracts/callables/admin_update_club_details_payload.schema.json",
-    "adminUpdateEventDetails": "https://catch.app/contracts/callables/admin_update_event_details_payload.schema.json"
+    "adminUpdateEventDetails": "https://catch.app/contracts/callables/admin_update_event_details_payload.schema.json",
+    "adminUpdateOrganizerDetails": "https://catch.app/contracts/callables/admin_update_organizer_details_payload.schema.json"
   },
   "responseSchemaIds": {
-    "adminAssignSafetyTriageItem": "https://catch.app/contracts/admin_runtime/adminAssignSafetyTriageItem_response.schema.json",
-    "adminCreateMarketingContentDraft": "https://catch.app/contracts/admin_runtime/adminCreateMarketingContentDraft_response.schema.json",
-    "adminDecideAccessApplication": "https://catch.app/contracts/admin_runtime/adminDecideAccessApplication_response.schema.json",
+    "adminAssignSafetyTriageItem": "https://catch.app/contracts/callable_responses/admin_assign_safety_triage_item_response.schema.json",
+    "adminCreateMarketingContentDraft": "https://catch.app/contracts/callable_responses/admin_create_marketing_content_draft_response.schema.json",
+    "adminDecideAccessApplication": "https://catch.app/contracts/callable_responses/admin_decide_access_application_response.schema.json",
     "adminDecideClubClaim": "https://catch.app/contracts/admin_runtime/adminDecideClubClaim_response.schema.json",
     "adminDecideOrganizerEventCandidate": "https://catch.app/contracts/admin_runtime/adminDecideOrganizerEventCandidate_response.schema.json",
     "adminDecideOrganizerIntake": "https://catch.app/contracts/admin_runtime/adminDecideOrganizerIntake_response.schema.json",
     "adminDecideOrganizerPolicyGap": "https://catch.app/contracts/admin_runtime/adminDecideOrganizerPolicyGap_response.schema.json",
-    "adminDecideSafetyTriageItem": "https://catch.app/contracts/admin_runtime/adminDecideSafetyTriageItem_response.schema.json",
+    "adminDecideSafetyTriageItem": "https://catch.app/contracts/callable_responses/admin_decide_safety_triage_item_response.schema.json",
     "adminGetAccessApplicationDetails": "https://catch.app/contracts/admin_runtime/adminGetAccessApplicationDetails_response.schema.json",
     "adminGetAdminUserRoles": "https://catch.app/contracts/admin_runtime/adminGetAdminUserRoles_response.schema.json",
     "adminGetClubClaimRequestDetails": "https://catch.app/contracts/admin_runtime/adminGetClubClaimRequestDetails_response.schema.json",
-    "adminGetClubDetails": "https://catch.app/contracts/admin_runtime/adminGetClubDetails_response.schema.json",
     "adminGetEventDetails": "https://catch.app/contracts/admin_runtime/adminGetEventDetails_response.schema.json",
     "adminGetEventIntakeDashboard": "https://catch.app/contracts/admin_runtime/adminGetEventIntakeDashboard_response.schema.json",
     "adminGetEventSupplyReadiness": "https://catch.app/contracts/admin_runtime/adminGetEventSupplyReadiness_response.schema.json",
     "adminGetHostAnalytics": "https://catch.app/contracts/callable_responses/host_analytics_response.schema.json",
     "adminGetMarketingOpsDashboard": "https://catch.app/contracts/admin_runtime/adminGetMarketingOpsDashboard_response.schema.json",
-    "adminGetOverview": "https://catch.app/contracts/admin_runtime/adminGetOverview_response.schema.json",
+    "adminGetOrganizerDetails": "https://catch.app/contracts/admin_runtime/adminGetOrganizerDetails_response.schema.json",
+    "adminGetOverview": "https://catch.app/contracts/callable_responses/admin_get_overview_response.schema.json",
     "adminGetSafetyTriageDetails": "https://catch.app/contracts/admin_runtime/adminGetSafetyTriageDetails_response.schema.json",
     "adminGetUserAnalytics": "https://catch.app/contracts/callable_responses/user_analytics_response.schema.json",
+    "adminListActionExecutions": "https://catch.app/contracts/callable_responses/admin_list_action_executions_response.schema.json",
     "adminListAdminRoleAssignments": "https://catch.app/contracts/admin_runtime/adminListAdminRoleAssignments_response.schema.json",
     "adminListClubClaimRequests": "https://catch.app/contracts/admin_runtime/adminListClubClaimRequests_response.schema.json",
-    "adminListClubDetails": "https://catch.app/contracts/admin_runtime/adminListClubDetails_response.schema.json",
     "adminListEventDetails": "https://catch.app/contracts/admin_runtime/adminListEventDetails_response.schema.json",
     "adminListExternalEventDetails": "https://catch.app/contracts/admin_runtime/adminListExternalEventDetails_response.schema.json",
     "adminListIntakeOperations": "https://catch.app/contracts/callable_responses/admin_list_intake_operations_response.schema.json",
+    "adminListOrganizerDetails": "https://catch.app/contracts/admin_runtime/adminListOrganizerDetails_response.schema.json",
     "adminPublishExternalEvent": "https://catch.app/contracts/admin_runtime/adminPublishExternalEvent_response.schema.json",
     "adminRecordEventIntakeReviewDecision": "https://catch.app/contracts/admin_runtime/adminRecordEventIntakeReviewDecision_response.schema.json",
-    "adminRecordMarketingReviewDecision": "https://catch.app/contracts/admin_runtime/adminRecordMarketingReviewDecision_response.schema.json",
+    "adminRecordMarketingReviewDecision": "https://catch.app/contracts/callable_responses/admin_record_marketing_review_decision_response.schema.json",
     "adminRecordOrganizerCuration": "https://catch.app/contracts/admin_runtime/adminRecordOrganizerCuration_response.schema.json",
     "adminResolveOrganizerEventLocation": "https://catch.app/contracts/admin_runtime/adminResolveOrganizerEventLocation_response.schema.json",
-    "adminSetAdminUserRoles": "https://catch.app/contracts/admin_runtime/adminSetAdminUserRoles_response.schema.json",
+    "adminSetAdminUserRoles": "https://catch.app/contracts/callable_responses/admin_set_admin_user_roles_response.schema.json",
     "adminSetClubIndexStatus": "https://catch.app/contracts/admin_runtime/adminSetClubIndexStatus_response.schema.json",
-    "adminUpdateClubDetails": "https://catch.app/contracts/admin_runtime/adminUpdateClubDetails_response.schema.json",
-    "adminUpdateEventDetails": "https://catch.app/contracts/admin_runtime/adminUpdateEventDetails_response.schema.json"
+    "adminUpdateEventDetails": "https://catch.app/contracts/admin_runtime/adminUpdateEventDetails_response.schema.json",
+    "adminUpdateOrganizerDetails": "https://catch.app/contracts/admin_runtime/adminUpdateOrganizerDetails_response.schema.json"
   },
   "strictRequests": [
+    "adminAssignSafetyTriageItem",
+    "adminCreateMarketingContentDraft",
+    "adminDecideAccessApplication",
     "adminDecideClubClaim",
     "adminDecideOrganizerEventCandidate",
     "adminDecideOrganizerIntake",
     "adminDecideOrganizerPolicyGap",
-    "adminGetClubDetails",
+    "adminDecideSafetyTriageItem",
+    "adminGetAccessApplicationDetails",
+    "adminGetAdminUserRoles",
+    "adminGetClubClaimRequestDetails",
     "adminGetEventDetails",
+    "adminGetEventIntakeDashboard",
+    "adminGetEventSupplyReadiness",
     "adminGetHostAnalytics",
+    "adminGetMarketingOpsDashboard",
+    "adminGetOrganizerDetails",
+    "adminGetOverview",
+    "adminGetSafetyTriageDetails",
     "adminGetUserAnalytics",
-    "adminListClubDetails",
+    "adminListActionExecutions",
+    "adminListAdminRoleAssignments",
+    "adminListClubClaimRequests",
     "adminListEventDetails",
     "adminListExternalEventDetails",
     "adminListIntakeOperations",
+    "adminListOrganizerDetails",
     "adminPublishExternalEvent",
     "adminRecordEventIntakeReviewDecision",
+    "adminRecordMarketingReviewDecision",
     "adminRecordOrganizerCuration",
     "adminResolveOrganizerEventLocation",
+    "adminSetAdminUserRoles",
     "adminSetClubIndexStatus",
-    "adminUpdateClubDetails",
-    "adminUpdateEventDetails"
+    "adminUpdateEventDetails",
+    "adminUpdateOrganizerDetails"
   ],
   "strictResponses": [
+    "adminAssignSafetyTriageItem",
+    "adminCreateMarketingContentDraft",
+    "adminDecideAccessApplication",
+    "adminDecideSafetyTriageItem",
     "adminGetHostAnalytics",
+    "adminGetOverview",
     "adminGetUserAnalytics",
-    "adminListIntakeOperations"
+    "adminListActionExecutions",
+    "adminListIntakeOperations",
+    "adminRecordMarketingReviewDecision",
+    "adminSetAdminUserRoles"
   ]
 } as const;
 const ajv = new Ajv({allErrors: true, strict: false, validateSchema: false});

@@ -683,6 +683,8 @@ Widget profileSingleEnumEntryStates(BuildContext context) {
           child: ProfileSingleEnumEntry<EducationLevel>(
             icon: CatchIcons.schoolOutlined,
             label: 'Education',
+            contract: CatchContractConstraints.updateUserProfilePatchEducation,
+            contractValue: (value) => value.name,
             values: EducationLevel.values,
             value: EducationLevel.masters,
             fieldName: 'education',
@@ -701,6 +703,8 @@ Widget profileSingleEnumEntryStates(BuildContext context) {
           child: ProfileSingleEnumEntry<EducationLevel>(
             icon: CatchIcons.schoolOutlined,
             label: 'Education',
+            contract: CatchContractConstraints.updateUserProfilePatchEducation,
+            contractValue: (value) => value.name,
             values: EducationLevel.values,
             value: null,
             fieldName: 'education',
@@ -733,6 +737,8 @@ Widget profileMultiEnumEntryStates(BuildContext context) {
           child: ProfileMultiEnumEntry<Language>(
             icon: CatchIcons.languageOutlined,
             label: 'Languages',
+            contract: CatchContractConstraints.updateUserProfilePatchLanguages,
+            contractValue: (value) => value.name,
             values: Language.values,
             selected: const [Language.english, Language.hindi],
             fieldName: 'languages',
@@ -752,6 +758,8 @@ Widget profileMultiEnumEntryStates(BuildContext context) {
           child: ProfileMultiEnumEntry<Language>(
             icon: CatchIcons.languageOutlined,
             label: 'Languages',
+            contract: CatchContractConstraints.updateUserProfilePatchLanguages,
+            contractValue: (value) => value.name,
             values: Language.values,
             selected: const [],
             fieldName: 'languages',
@@ -968,6 +976,8 @@ Widget profileDirectTextEntryFieldStates(BuildContext context) {
               ProfileDirectTextEntryField(
                 icon: CatchIcons.personOutlined,
                 label: 'Display name',
+                contract:
+                    CatchContractConstraints.updateUserProfilePatchDisplayName,
                 currentValue: 'Neha',
                 currentFieldValue: 'Neha',
                 fieldName: 'displayName',
@@ -1434,6 +1444,10 @@ Widget profileInlineRangeEditorStates(BuildContext context) {
           child: ProfileInlineRangeEditor(
             icon: CatchIcons.directionsRunOutlined,
             title: 'Pace',
+            minimumContract: CatchContractConstraints
+                .updateUserProfilePatchActivityPreferencesRunningPaceMinSecsPerKm,
+            maximumContract: CatchContractConstraints
+                .updateUserProfilePatchActivityPreferencesRunningPaceMaxSecsPerKm,
             value: '5:15-6:30 min/km',
             currentMin: 315,
             currentMax: 390,
@@ -2277,6 +2291,8 @@ class ProfileInlineRelationshipGoalChoiceEntryEditor extends StatelessWidget {
     return ProfileInlineSingleChoiceEntryEditor<RelationshipGoal>(
       icon: CatchIcons.favoriteOutline,
       label: 'Looking for',
+      contract: CatchContractConstraints.updateUserProfilePatchRelationshipGoal,
+      contractValue: (value) => value.name,
       values: RelationshipGoal.values,
       currentValue: RelationshipGoal.relationship,
       fieldName: 'relationshipGoal',
@@ -2297,6 +2313,8 @@ class ProfileInlineLanguageMultiChoiceEntryEditor extends StatelessWidget {
     return ProfileInlineMultiChoiceEntryEditor<Language>(
       icon: CatchIcons.languageOutlined,
       label: 'Languages',
+      contract: CatchContractConstraints.updateUserProfilePatchLanguages,
+      contractValue: (value) => value.name,
       values: Language.values,
       currentValues: const [Language.english, Language.hindi],
       fieldName: 'languages',
@@ -2318,6 +2336,7 @@ class _InlineEditorVariantsState extends State<_InlineEditorVariants> {
         ProfileDirectTextEntryField(
           icon: CatchIcons.personOutlined,
           label: 'Display name',
+          contract: CatchContractConstraints.updateUserProfilePatchDisplayName,
           currentValue: 'Neha',
           currentFieldValue: 'Neha',
           fieldName: 'displayName',
@@ -2328,6 +2347,7 @@ class _InlineEditorVariantsState extends State<_InlineEditorVariants> {
         ProfileDirectTextEntryField(
           icon: CatchIcons.workOutline,
           label: 'Job title',
+          contract: CatchContractConstraints.updateUserProfilePatchOccupation,
           inputHint: 'e.g. Product designer',
           currentValue: '',
           currentFieldValue: null,
@@ -2343,6 +2363,10 @@ class _InlineEditorVariantsState extends State<_InlineEditorVariants> {
         ProfileInlineRangeEditor(
           icon: CatchIcons.directionsRunOutlined,
           title: 'Pace',
+          minimumContract: CatchContractConstraints
+              .updateUserProfilePatchActivityPreferencesRunningPaceMinSecsPerKm,
+          maximumContract: CatchContractConstraints
+              .updateUserProfilePatchActivityPreferencesRunningPaceMaxSecsPerKm,
           value: '5:15-6:30 min/km',
           currentMin: 315,
           currentMax: 390,

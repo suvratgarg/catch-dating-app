@@ -3,6 +3,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_screen.dart';
@@ -47,6 +48,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
             context.l10n.hostsHostCreateEventScreenTitleEventSetupUnavailable,
         message:
             context.l10n.hostsHostCreateEventScreenMessageThatOrganizerDoesNot,
+        secondaryAction: const CatchErrorBackAction(),
       );
     }
     if (initialPrefill != null && initialPrefill.values.clubId != clubId) {
@@ -54,6 +56,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
         title: context.l10n.hostsHostCreateEventScreenTitleRepeatUnavailable,
         message:
             context.l10n.hostsHostCreateEventScreenMessageThatEventBelongsTo,
+        secondaryAction: const CatchErrorBackAction(),
       );
     }
     final routeState = HostCreateEventRouteState.resolve(
@@ -103,10 +106,12 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
       HostCreateEventRouteStatus.notFound => CatchErrorScaffold(
         title: context.l10n.hostsHostCreateEventScreenTitleClubNotFound,
         message: context.l10n.hostsHostCreateEventScreenMessageThisClubIsNo,
+        secondaryAction: const CatchErrorBackAction(),
       ),
       HostCreateEventRouteStatus.forbidden => CatchErrorScaffold(
         title: context.l10n.hostsHostCreateEventScreenTitleHostAccessRequired,
         message: context.l10n.hostsHostCreateEventScreenMessageOnlyThisClubS,
+        secondaryAction: const CatchErrorBackAction(),
       ),
       HostCreateEventRouteStatus.ready => CreateEventScreen(
         club: state.club!,
@@ -120,9 +125,5 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
 }
 
 CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
-  return value.when(
-    data: CatchAsyncState<T>.data,
-    loading: () => const CatchAsyncState.loading(),
-    error: (error, stackTrace) => CatchAsyncState<T>.error(error),
-  );
+  return catchAsyncStateFromAsyncValue(value);
 }

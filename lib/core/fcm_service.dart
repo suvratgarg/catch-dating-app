@@ -44,21 +44,21 @@ String? hostEventManageRouteFromMessageData(Map<String, Object?> data) {
       type != 'eventHostManage') {
     return null;
   }
-  final clubId = data['clubId'];
+  final clubId = data['organizerId'] ?? data['clubId'];
   final eventId = data['eventId'];
   if (clubId is! String || clubId.isEmpty) return null;
   if (eventId is! String || eventId.isEmpty) return null;
-  return '/host/clubs/$clubId/events/$eventId/manage';
+  return '/host/organizers/$clubId/events/$eventId/manage';
 }
 
 String? eventCompanionRouteFromMessageData(Map<String, Object?> data) {
   if (AppConfig.appRole.isHost) return null;
   if (data['type'] != 'eventCompanionReady') return null;
-  final clubId = data['clubId'];
+  final clubId = data['organizerId'] ?? data['clubId'];
   final eventId = data['eventId'];
   if (clubId is! String || clubId.isEmpty) return null;
   if (eventId is! String || eventId.isEmpty) return null;
-  return '/clubs/$clubId/events/$eventId/companion';
+  return '/organizers/$clubId/events/$eventId/companion';
 }
 
 String? eventDetailRouteFromMessageData(Map<String, Object?> data) {
@@ -74,18 +74,28 @@ String? eventDetailRouteFromMessageData(Map<String, Object?> data) {
     'eventUpdated',
   };
   if (!eventActivityTypes.contains(data['type'])) return null;
-  final clubId = data['clubId'];
+  final clubId = data['organizerId'] ?? data['clubId'];
   final eventId = data['eventId'];
   if (clubId is! String || clubId.isEmpty) return null;
   if (eventId is! String || eventId.isEmpty) return null;
-  return '/clubs/$clubId/events/$eventId';
+  return '/organizers/$clubId/events/$eventId';
+}
+
+String? organizerRouteFromMessageData(Map<String, Object?> data) {
+  if (AppConfig.appRole.isHost || data['type'] != 'organizerUpdate') {
+    return null;
+  }
+  final organizerId = data['organizerId'] ?? data['clubId'];
+  if (organizerId is! String || organizerId.isEmpty) return null;
+  return '/organizers/$organizerId';
 }
 
 String? routeFromMessageData(Map<String, Object?> data) =>
     hostEventManageRouteFromMessageData(data) ??
     chatRouteFromMessageData(data) ??
     eventCompanionRouteFromMessageData(data) ??
-    eventDetailRouteFromMessageData(data);
+    eventDetailRouteFromMessageData(data) ??
+    organizerRouteFromMessageData(data);
 
 void navigateToMessageRoute(GoRouter router, Map<String, Object?> data) {
   final route = routeFromMessageData(data);
@@ -211,10 +221,22 @@ class FcmService {
   }
 
   Future<void> _saveToken(String uid, String token) async {
+    final userRef = _db.collection('users').doc(uid);
+
+    // Keep the legacy consumer field working while older production rules and
+    // senders are still deployed. A denied compatibility-projection write must
+    // not prevent the other token representation from being attempted.
+    if (!AppConfig.appRole.isHost) {
+      try {
+        await userRef.update({'fcmToken': token});
+      } catch (error, stackTrace) {
+        _logError(error, stackTrace, resource: 'users');
+      }
+    }
+
     try {
       final installationId = await _pushInstallationId();
       final packageInfo = await PackageInfo.fromPlatform();
-      final userRef = _db.collection('users').doc(uid);
       await userRef.collection('pushInstallations').doc(installationId).set({
         'token': token,
         'appRole': AppConfig.appRoleName,
@@ -226,24 +248,31 @@ class FcmService {
         'timeZone': DateTime.now().timeZoneName,
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
-
-      // Legacy compatibility for existing consumer notification senders.
-      if (!AppConfig.appRole.isHost) {
-        await userRef.update({'fcmToken': token});
-      }
-    } catch (e, st) {
-      _errorLogger.logAppException(
-        normalizeBackendError(
-          e,
-          stackTrace: st,
-          context: const BackendErrorContext(
-            service: BackendService.firestore,
-            action: 'save push token',
-            resource: 'users',
-          ),
-        ),
+    } catch (error, stackTrace) {
+      _logError(
+        error,
+        stackTrace,
+        resource: 'push_installations',
       );
     }
+  }
+
+  void _logError(
+    Object error,
+    StackTrace stackTrace, {
+    required String resource,
+  }) {
+    _errorLogger.logAppException(
+      normalizeBackendError(
+        error,
+        stackTrace: stackTrace,
+        context: BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'save push token',
+          resource: resource,
+        ),
+      ),
+    );
   }
 
   Future<String> _pushInstallationId() {

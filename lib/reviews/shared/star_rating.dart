@@ -41,12 +41,14 @@ class StarRatingPicker extends StatelessWidget {
     required this.onChanged,
     this.size = 40,
     this.keyBuilder,
+    this.enabled = true,
   });
 
   final int rating;
   final ValueChanged<int> onChanged;
   final double size;
   final Key Function(int rating)? keyBuilder;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +66,7 @@ class StarRatingPicker extends StatelessWidget {
           ),
           child: Semantics(
             button: true,
+            enabled: enabled,
             label: context.l10n.reviewsStarRatingLabelRateValueStarValue2(
               value: value,
               value2: value == 1 ? '' : context.l10n.reviewsStarRatingLabelS,
@@ -71,7 +74,7 @@ class StarRatingPicker extends StatelessWidget {
             selected: clampedRating == value,
             child: GestureDetector(
               key: keyBuilder?.call(value),
-              onTap: () => onChanged(value),
+              onTap: enabled ? () => onChanged(value) : null,
               child: Padding(
                 padding: CatchInsets.inlineHorizontalTight,
                 child: Icon(

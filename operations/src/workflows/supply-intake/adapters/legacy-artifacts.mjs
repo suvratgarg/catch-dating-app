@@ -3,13 +3,18 @@ import path from "node:path";
 import {hashText} from "../../../platform/canonical-json.mjs";
 import {OperationsError, invariant} from "../../../platform/errors.mjs";
 
-const LEGACY_ARTIFACTS = Object.freeze({
+export const LEGACY_ARTIFACTS = Object.freeze({
   organizerPublicationPackets: "tool/organizer_intake/generated/publication_review_packets.json",
   organizerActionQueue: "tool/organizer_intake/generated/organizer_operator_action_queue.json",
   organizerHealth: "tool/organizer_intake/generated/organizer_operational_health.json",
   llmPromptQueue: "tool/organizer_intake/generated/source_mention_llm_prompt_queue.json",
   crawlRunPlan: "tool/organizer_intake/generated/event_crawl_run_plan.json",
 });
+
+export const LEGACY_ARTIFACT_PATTERNS = Object.freeze([
+  "tool/marketing/event_guide/generated/{market}/{reviewedRun}/event_intake_bridge.json",
+  ...Object.values(LEGACY_ARTIFACTS),
+]);
 
 export class LegacyIntakeArtifactAdapter {
   constructor({repoRoot}) {
@@ -110,7 +115,7 @@ export class LegacyIntakeArtifactAdapter {
   }
 }
 
-export function stripArtifactData(snapshot) {
+export function stripArtifactData(snapshot, {market} = {}) {
   return {
     ...snapshot,
     artifacts: Object.fromEntries(Object.entries(snapshot.artifacts).map(([id, artifact]) => [id, {
@@ -119,19 +124,36 @@ export function stripArtifactData(snapshot) {
       relativePath: artifact.relativePath,
       sha256: artifact.sha256,
       sizeBytes: artifact.sizeBytes,
-      counts: artifactCounts(id, artifact.data),
+      counts: artifactCounts(id, artifact.data, {market}),
     }])),
   };
 }
 
-function artifactCounts(id, data) {
+export function organizerPacketSupportsMarket(packet, market) {
+  if (typeof market !== "string" || market.length === 0) return false;
+  const geography = packet?.identity?.geography;
+  const declaredMarkets = [
+    geography?.primaryMarketSlug,
+    ...(geography?.markets ?? []).flatMap((entry) => [
+      entry?.marketSlug,
+      entry?.eventFilter?.citySlug,
+    ]),
+  ].filter((entry) => typeof entry === "string" && entry.length > 0);
+  return declaredMarkets.includes(market);
+}
+
+function artifactCounts(id, data, {market} = {}) {
   if (!data) return {};
   if (id === "eventIntakeBridge") return {
     sourceProfiles: data.sourceProfiles?.length ?? 0,
     sourceResults: data.sourceResults?.length ?? 0,
     eventCandidates: data.eventCandidates?.length ?? 0,
   };
-  if (id === "organizerPublicationPackets") return {organizers: data.packets?.length ?? 0};
+  if (id === "organizerPublicationPackets") return {
+    organizers: market ?
+      (data.packets ?? []).filter((packet) => organizerPacketSupportsMarket(packet, market)).length :
+      data.packets?.length ?? 0,
+  };
   if (id === "organizerActionQueue") return {actions: data.actions?.length ?? 0};
   if (id === "llmPromptQueue") return {requests: data.requests?.length ?? 0};
   if (id === "crawlRunPlan") return {runIntents: data.runIntents?.length ?? 0};

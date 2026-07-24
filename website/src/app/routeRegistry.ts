@@ -3,8 +3,12 @@ export type MarketingRouteId =
   | "host"
   | "organizer_search"
   | "organizer_listing"
+  | "event_detail"
   | "claim"
   | "claim_lookup"
+  | "privacy"
+  | "terms"
+  | "help"
   | "not_found";
 
 export interface MarketingRouteDefinition {
@@ -17,8 +21,12 @@ export const marketingRouteDefinitions = [
   {id: "host", path: "/host/*"},
   {id: "organizer_search", path: "/organizers"},
   {id: "organizer_listing", path: "/organizers/*"},
+  {id: "event_detail", path: "/events/:eventId"},
   {id: "claim", path: "/claim"},
   {id: "claim_lookup", path: "/claim/:listing"},
+  {id: "privacy", path: "/privacy/*"},
+  {id: "terms", path: "/terms/*"},
+  {id: "help", path: "/help/*"},
   {id: "not_found", path: "*"},
 ] as const satisfies readonly MarketingRouteDefinition[];
 

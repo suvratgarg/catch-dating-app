@@ -20,10 +20,10 @@ if (!["marketing", "admin"].includes(target)) {
 
 const required = target === "marketing" ? [
   ...commonFirebaseVars,
+  "VITE_GTM_ID",
   "VITE_FIREBASE_MEASUREMENT_ID",
   "VITE_WEBSITE_APPCHECK_SITE_KEY",
-  "VITE_APP_STORE_URL",
-  "VITE_PLAY_STORE_URL",
+  "VITE_STORE_LINKS_MODE",
 ] : [
   ...commonFirebaseVars,
   "VITE_FIREBASE_MEASUREMENT_ID",
@@ -39,20 +39,16 @@ for (const name of required) {
   }
 }
 
-if (target === "marketing") {
-  validateStoreUrl({
-    name: "VITE_APP_STORE_URL",
-    hostname: "apps.apple.com",
-    pathPattern: /\/id\d+(?:$|[/?#])/u,
-    description: "an HTTPS apps.apple.com product URL containing an Apple app id",
-  });
-  validateStoreUrl({
-    name: "VITE_PLAY_STORE_URL",
-    hostname: "play.google.com",
-    pathPattern: /^\/store\/apps\/details$/u,
-    requiredSearchParam: "id",
-    description: "an HTTPS play.google.com/store/apps/details URL with an id parameter",
-  });
+if (target === "marketing" && process.env.VITE_STORE_LINKS_MODE?.trim()) {
+  validateMarketingStoreLinks(process.env.VITE_STORE_LINKS_MODE.trim());
+}
+
+if (
+  target === "marketing" &&
+  process.env.VITE_GTM_ID?.trim() &&
+  !/^GTM-[A-Z0-9]+$/u.test(process.env.VITE_GTM_ID.trim())
+) {
+  errors.push("VITE_GTM_ID must be a Google Tag Manager container id such as GTM-XXXXXXX.");
 }
 
 const deployEnv = process.env.CATCH_FIREBASE_DEPLOY_ENV;
@@ -185,6 +181,42 @@ function validateStoreUrl({
   } catch {
     errors.push(`${name} must be ${description}.`);
   }
+}
+
+function validateMarketingStoreLinks(mode) {
+  if (mode === "prelaunch") {
+    for (const name of ["VITE_APP_STORE_URL", "VITE_PLAY_STORE_URL"]) {
+      if (process.env[name]?.trim()) {
+        errors.push(`${name} must be empty when VITE_STORE_LINKS_MODE is prelaunch.`);
+      }
+    }
+    return;
+  }
+
+  if (mode !== "live") {
+    errors.push("VITE_STORE_LINKS_MODE must be prelaunch or live.");
+    return;
+  }
+
+  for (const name of ["VITE_APP_STORE_URL", "VITE_PLAY_STORE_URL"]) {
+    if (!process.env[name]?.trim()) {
+      errors.push(`${name} is required when VITE_STORE_LINKS_MODE is live.`);
+    }
+  }
+
+  validateStoreUrl({
+    name: "VITE_APP_STORE_URL",
+    hostname: "apps.apple.com",
+    pathPattern: /\/id\d+(?:$|[/?#])/u,
+    description: "an HTTPS apps.apple.com product URL containing an Apple app id",
+  });
+  validateStoreUrl({
+    name: "VITE_PLAY_STORE_URL",
+    hostname: "play.google.com",
+    pathPattern: /^\/store\/apps\/details$/u,
+    requiredSearchParam: "id",
+    description: "an HTTPS play.google.com/store/apps/details URL with an id parameter",
+  });
 }
 
 function printUsage() {

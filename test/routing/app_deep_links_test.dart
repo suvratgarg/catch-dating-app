@@ -6,24 +6,24 @@ void main() {
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
   group('AppDeepLinks', () {
-    test('builds a club detail URL from the router path contract', () {
+    test('builds an organizer detail URL from the router path contract', () {
       expect(
         AppDeepLinks.club('club-1').toString(),
-        'https://catchdates.com/clubs/club-1',
+        'https://catchdates.com/organizers/club-1',
       );
     });
 
     test('builds a nested event detail URL from the router path contract', () {
       expect(
         AppDeepLinks.event(clubId: 'club-1', eventId: 'event-1').toString(),
-        'https://catchdates.com/clubs/club-1/events/event-1',
+        'https://catchdates.com/organizers/club-1/events/event-1',
       );
     });
 
     test('encodes route parameter values as path segments', () {
       expect(
         AppDeepLinks.club('club with spaces').toString(),
-        'https://catchdates.com/clubs/club%20with%20spaces',
+        'https://catchdates.com/organizers/club%20with%20spaces',
       );
     });
 
@@ -34,7 +34,7 @@ void main() {
     test('builds consumer in-app event paths by default', () {
       expect(
         AppDeepLinks.inAppEventPath(clubId: 'club-1', eventId: 'event-1'),
-        '/clubs/club-1/events/event-1',
+        '/organizers/club-1/events/event-1',
       );
     });
 
@@ -43,7 +43,7 @@ void main() {
 
       expect(
         AppDeepLinks.inAppEventPath(clubId: 'club-1', eventId: 'event-1'),
-        '/host/clubs/club-1/events/event-1',
+        '/host/organizers/club-1/events/event-1',
       );
     });
   });

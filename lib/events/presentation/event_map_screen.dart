@@ -99,6 +99,9 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
         Positioned.fill(
           child: CatchAsyncValueView<EventMapViewModel>(
             value: viewModelAsync,
+            onRetry:
+                widget.onRetry ??
+                () => ref.invalidate(eventMapViewModelProvider),
             loadingBuilder: (_) => const EventMapLoadingBody(),
             errorBuilder: (_, error, _) => CatchErrorState.fromError(
               error,
@@ -211,14 +214,14 @@ class EventMapLoadingBody extends StatelessWidget {
             ),
             Center(
               child: CatchSkeleton.circle(
-                size: CatchSpacing.s12 + CatchSpacing.s4,
+                size: CatchLayout.eventMapLoadingPinExtent,
               ),
             ),
             Positioned(
               left: CatchSpacing.s5,
               top: CatchSpacing.s5,
               child: CatchSkeleton.box(
-                width: CatchSpacing.s16 * 2,
+                width: CatchLayout.eventMapLoadingLabelWidth,
                 height: CatchSpacing.s9,
                 radius: CatchRadius.pill,
                 borderColor: t.line,

@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -10,6 +12,7 @@ import 'package:catch_dating_app/events/presentation/event_detail_controller.dar
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/organizers/domain/organizer_authority.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -22,6 +25,22 @@ void main() {
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
   group('buildEventDetailViewModel', () {
+    test('does not derive guest actions before auth resolves', () {
+      final result = buildEventDetailViewModel(
+        eventAsync: AsyncData(buildEvent()),
+        userProfileAsync: const AsyncData(null),
+        reviewsAsync: const AsyncData(<Review>[]),
+        clubAsync: AsyncData(buildClub()),
+        savedEventAsync: const AsyncData(null),
+        participationAsync: const AsyncData(null),
+        currentUid: null,
+        isAuthenticated: false,
+        authResolved: false,
+      );
+
+      expect(result.isLoading, isTrue);
+    });
+
     test('returns loading while any dependency is still loading', () {
       final result = buildEventDetailViewModel(
         eventAsync: const AsyncLoading(),
@@ -37,7 +56,7 @@ void main() {
       expect(result.isLoading, isTrue);
     });
 
-    test('consumer role treats owned events as consumer event detail', () {
+    test('consumer owner relationship suppresses attendee actions', () {
       final event = buildEvent();
       final user = buildUser();
       final review = buildReview(reviewerUserId: 'runner-2');
@@ -58,7 +77,7 @@ void main() {
       expect(value!.event, event);
       expect(value.userProfile, user);
       expect(value.reviews, [review]);
-      expect(value.isHost, isFalse);
+      expect(value.isHost, isTrue);
       expect(value.isSaved, isFalse);
       expect(value.participation, isNull);
     });
@@ -121,7 +140,7 @@ void main() {
       },
     );
 
-    test('consumer role keeps detail available when club ownership fails', () {
+    test('consumer detail surfaces organizer authority failures', () {
       final result = buildEventDetailViewModel(
         eventAsync: AsyncData(buildEvent()),
         userProfileAsync: AsyncData(buildUser()),
@@ -133,8 +152,71 @@ void main() {
         isAuthenticated: true,
       );
 
-      expect(result.hasError, isFalse);
-      expect(result.requireValue!.isHost, isFalse);
+      expect(result.hasError, isTrue);
+      expect(result.error, isA<StateError>());
+    });
+
+    test('consumer detail rejects hidden or suppressed organizers', () {
+      final hidden = buildClub().copyWith(
+        appVisibility: ClubAppVisibility.hidden,
+      );
+      final suppressed = buildClub().copyWith(
+        claim: OrganizerClaim.fromJson({'state': 'suppressed'}),
+      );
+
+      for (final club in [hidden, suppressed]) {
+        final result = buildEventDetailViewModel(
+          eventAsync: AsyncData(buildEvent()),
+          userProfileAsync: const AsyncData(null),
+          reviewsAsync: const AsyncData(<Review>[]),
+          clubAsync: AsyncData(club),
+          savedEventAsync: const AsyncData(null),
+          participationAsync: const AsyncData(null),
+          currentUid: null,
+          isAuthenticated: false,
+        );
+
+        expect(
+          result.value,
+          isNull,
+          reason: club.organizerAuthority.trustState.name,
+        );
+      }
+    });
+
+    test('host runtime may preview an event for a hidden organizer', () {
+      final result = buildEventDetailViewModel(
+        eventAsync: AsyncData(buildEvent()),
+        userProfileAsync: AsyncData(buildUser(uid: 'host-1')),
+        reviewsAsync: const AsyncData(<Review>[]),
+        clubAsync: AsyncData(
+          buildClub().copyWith(appVisibility: ClubAppVisibility.hidden),
+        ),
+        savedEventAsync: const AsyncData(null),
+        participationAsync: const AsyncData(null),
+        currentUid: 'host-1',
+        isAuthenticated: true,
+        appRole: AppRole.host,
+      );
+
+      expect(result.requireValue, isNotNull);
+      expect(result.requireValue!.isHost, isTrue);
+    });
+
+    test('host runtime denies an event owned by another organizer', () {
+      final result = buildEventDetailViewModel(
+        eventAsync: AsyncData(buildEvent()),
+        userProfileAsync: AsyncData(buildUser(uid: 'other-host')),
+        reviewsAsync: const AsyncData(<Review>[]),
+        clubAsync: AsyncData(buildClub(hostUserId: 'owner-1')),
+        savedEventAsync: const AsyncData(null),
+        participationAsync: const AsyncData(null),
+        currentUid: 'other-host',
+        isAuthenticated: true,
+        appRole: AppRole.host,
+      );
+
+      expect(result.value, isNull);
     });
 
     test('returns saved state from the saved event relationship doc', () {
@@ -266,7 +348,7 @@ void main() {
       expect(result.error, isA<StateError>());
     });
 
-    test('keeps the detail page available when saved state fails', () {
+    test('fails closed when saved state cannot be resolved', () {
       final result = buildEventDetailViewModel(
         eventAsync: AsyncData(buildEvent()),
         userProfileAsync: AsyncData(buildUser()),
@@ -281,12 +363,11 @@ void main() {
         isAuthenticated: true,
       );
 
-      expect(result.hasError, isFalse);
-      expect(result.requireValue, isNotNull);
-      expect(result.requireValue!.isSaved, isFalse);
+      expect(result.hasError, isTrue);
+      expect(result.error, isA<StateError>());
     });
 
-    test('keeps the detail page available when participation state fails', () {
+    test('fails closed when participation state cannot be resolved', () {
       final result = buildEventDetailViewModel(
         eventAsync: AsyncData(buildEvent()),
         userProfileAsync: AsyncData(buildUser()),
@@ -301,9 +382,8 @@ void main() {
         isAuthenticated: true,
       );
 
-      expect(result.hasError, isFalse);
-      expect(result.requireValue, isNotNull);
-      expect(result.requireValue!.participation, isNull);
+      expect(result.hasError, isTrue);
+      expect(result.error, isA<StateError>());
     });
 
     test(
@@ -321,7 +401,7 @@ void main() {
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             fetchClubProvider(
               event.clubId,
-            ).overrideWith((ref) async => buildClub(hostUserId: 'runner-77')),
+            ).overrideWith((ref) async => buildClub(hostUserId: 'host-77')),
             watchReviewsForEventProvider(
               event.id,
             ).overrideWith((ref) => Stream.value([review])),
@@ -331,6 +411,10 @@ void main() {
             ).overrideWith((ref) => Stream.value(null)),
             watchEventParticipationProvider(
               event.id,
+              user.uid,
+            ).overrideWith((ref) => Stream.value(null)),
+            watchClubMembershipProvider(
+              event.clubId,
               user.uid,
             ).overrideWith((ref) => Stream.value(null)),
           ],
@@ -351,6 +435,9 @@ void main() {
         );
         await container.read(
           watchEventParticipationProvider(event.id, user.uid).future,
+        );
+        await container.read(
+          watchClubMembershipProvider(event.clubId, user.uid).future,
         );
         await container.pump();
         await container.pump();

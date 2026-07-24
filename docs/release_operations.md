@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.10.3
-updated: 2026-07-16
+version: 1.11.4
+updated: 2026-07-24
 owner: recursive_audit_loop
 status: active
 ---
@@ -26,10 +26,14 @@ production project. A development or staging `hosting:<target>` deployment
 therefore fails until that target is explicitly created and mapped; do not
 work around that failure by falling back to production.
 
-Flutter, Node, Java, Firebase CLI, and CocoaPods versions are owned together in
-`tool/ci/toolchain.env`. GitHub Actions and Xcode Cloud read that contract;
-`bash tool/ci/check_toolchain_consistency.sh` fails when a required pin or the
-Functions Node engine drifts.
+Flutter, Node, Java, Firebase CLI, CocoaPods, the GitHub-hosted Apple runner,
+and the minimum Xcode version are owned together in `tool/ci/toolchain.env`.
+GitHub Actions and Xcode Cloud read that contract;
+`bash tool/ci/check_toolchain_consistency.sh` fails when a required pin, the
+Functions Node engine, or an Apple-native workflow runner drifts. Keep the
+Apple runner major aligned with the minimum Xcode major. `connectivity_plus`
+7.x requires Xcode 26.1.1 or newer, so the native build, release, and hosted
+visual-smoke workflows use `macos-26`.
 
 ## Storage Rules Cross-Service Readiness
 
@@ -132,6 +136,7 @@ The current workflows are:
 | `.github/workflows/release-readiness.yml` | Manual staging/prod release gate. |
 | `.github/workflows/mobile-internal-release.yml` | Canonical Consumer/Host mobile release matrix: signed iOS uploads to TestFlight and signed Android AABs with guarded Play internal upload. |
 | `.github/workflows/observability-evidence.yml` | Manual Crashlytics and Analytics evidence capture. |
+| `.github/workflows/website-production-observability.yml` | Scheduled and manual production website status, canonical-metadata, and launch-content probes. |
 
 ## Git Branch Hygiene
 
@@ -263,9 +268,11 @@ for project in catchdates-dev catchdates-staging catch-dating-app-64e51; do
 done
 ```
 
-Index names default to `clubs` and `events`. Only override them with
-`ALGOLIA_CLUBS_INDEX` or `ALGOLIA_EVENTS_INDEX` if an environment needs
-different index names. These are not secrets.
+Index names default to `organizers` and `events`. Only override them with
+`ALGOLIA_ORGANIZERS_INDEX` or `ALGOLIA_EVENTS_INDEX` if an environment needs
+different index names. `ALGOLIA_CLUBS_INDEX` is a temporary compatibility
+fallback and must not be used in new environment configuration. These are not
+secrets.
 
 Backfill after first setup or after changing searchable data shape:
 
@@ -282,7 +289,7 @@ For dev or staging, change `--env` and omit `--allow-prod`.
 
 Algolia index settings must allow the function filters:
 
-- Clubs index: make `location` filterable/facetable.
+- Organizers index: make `location` filterable/facetable.
 - Events index: make `discoveryCityName` filterable/facetable and store
   `startTimeEpoch` as a numeric attribute.
 
@@ -391,10 +398,13 @@ Marketing and admin Hosting deploys require explicit Vite Firebase/App Check
 environment variables. Firebase Hosting predeploy runs
 `tool/env/check_web_hosting_env.mjs` for both targets so a deployment fails
 before build if the site would fall back to dev Firebase config, sample admin
-mode, or missing App Check. Marketing production deploys also require validated
-HTTPS `VITE_APP_STORE_URL` and `VITE_PLAY_STORE_URL` product links on
-`apps.apple.com` and `play.google.com`; local preview builds may leave them
-unset and use the preview-only fallback state.
+mode, or missing App Check. Marketing production deploys also require an
+explicit store-link contract. `VITE_STORE_LINKS_MODE=prelaunch` requires both
+store URLs to remain empty and preserves the honest coming-soon/waitlist CTA;
+`live` requires validated HTTPS `VITE_APP_STORE_URL` and
+`VITE_PLAY_STORE_URL` product links on `apps.apple.com` and `play.google.com`.
+The automatic workflow defaults an unset mode to `prelaunch`, so the website
+can deploy before the mobile listings exist without publishing fake links.
 
 Both Hosting workflows use the approval-free `prod-hosting` GitHub Environment
 and deploy automatically after their validation job succeeds on a matching
@@ -406,6 +416,10 @@ rollback duplicates in `prod` follow the cutover cleanup above.
 The production admin Hosting target has its own `Admin Website` workflow. It
 validates `npm run web:admin:build`, checks live prod Vite Firebase/App Check
 env, then deploys only `hosting:admin` after matching changes land on `main`.
+The same validation runs the admin unit suite, including the dual-provider
+guard in `admin/src/app/App.test.tsx` and
+`admin/src/shared/api/firebase.test.ts`; a refactor that removes either phone
+OTP or Google sign-in must fail before Hosting deploys.
 
 That local environment check cannot prove Firebase console state. After admin
 Auth, Hosting-domain, provider, reCAPTCHA-key, or App Check changes, record live
@@ -420,13 +434,16 @@ variables into Firebase Hosting predeploys when `hosting` is selected:
 `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`,
 `VITE_FIREBASE_MESSAGING_SENDER_ID`, `VITE_FIREBASE_APP_ID`,
 `VITE_FIREBASE_MEASUREMENT_ID`, `VITE_WEBSITE_APPCHECK_SITE_KEY`,
-`VITE_APP_STORE_URL`, `VITE_PLAY_STORE_URL`,
+`VITE_STORE_LINKS_MODE`, `VITE_APP_STORE_URL`, `VITE_PLAY_STORE_URL`,
 `VITE_ADMIN_DATA_MODE`, `VITE_ADMIN_FIREBASE_ENV`, and
 `VITE_ADMIN_APPCHECK_SITE_KEY`. `VITE_GTM_ID` is optional until the production
 GTM container exists; paid-acquisition readiness still requires setting it and
 validating consent-aware tags. The environment-specific values must match the
 selected Firebase alias; for prod, `VITE_FIREBASE_PROJECT_ID` must be
 `catch-dating-app-64e51` and `VITE_ADMIN_FIREBASE_ENV` must be `prod`.
+For marketing Hosting, an absent environment-level `VITE_STORE_LINKS_MODE`
+defaults to `prelaunch`; cut over by setting it to `live` only after setting
+both official product URLs in the same GitHub Environment.
 
 If the automatic dev deploy fails, fix the branch with a new PR rather than
 rerunning deploys against a stale commit. Use the manual `Firebase Deploy`
@@ -966,6 +983,24 @@ release runbook. Run the split local suite with:
 ```bash
 node tool/run.mjs run test:app-shell-integration
 ```
+
+Pull requests that touch Flutter integration or golden surfaces run
+`.github/workflows/visual-integration-ci.yml` on macOS. It executes the desktop
+goldens with the checked 0.30% hosted-macOS raster tolerance, all deterministic
+headless app-shell wrappers, and the bounded app-shell smoke through the native
+macOS integration binding sequentially. It retains failure diffs and also runs
+on a weekday schedule so platform drift cannot hide behind path filtering. The
+tolerance has a focused known-good/known-bad regression test and must not be
+widened to accept a visual change.
+
+Use `bash tool/test_app_shell_integration.sh <device> smoke` for the bounded
+native lane and `bash tool/test_app_shell_integration.sh <device> all` for every
+native suite. The main Flutter workflow separately analyzes and builds
+`widgetbook/` for web, runs the unit/widget suite with LCOV, publishes the raw
+LCOV plus a handwritten feature-level Markdown summary, and deliberately does
+not impose a global coverage percentage threshold. These are repository
+integration gates; the live service/device evidence below remains separately
+required for affected releases.
 
 The split suite covers app-shell launch/routing plus focused club, event,
 dashboard, Catches, chat, settings, review, and regression flows with service

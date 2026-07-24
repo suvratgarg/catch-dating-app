@@ -16,7 +16,6 @@ import 'package:catch_dating_app/force_update/presentation/update_required_scree
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/data/profile_location_initializer.dart';
-import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -56,10 +55,7 @@ class MyApp extends ConsumerWidget {
         );
       },
       debugShowCheckedModeBanner: false,
-      localizationsDelegates: [
-        ...AppLocalizations.localizationsDelegates,
-        CountryLocalizations.getDelegate(enableLocalization: false),
-      ],
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,

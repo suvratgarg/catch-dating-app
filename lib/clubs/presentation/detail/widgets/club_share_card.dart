@@ -27,7 +27,7 @@ Future<void> showClubShareCardSheet(
     builder: (_) => CatchShareCardSheet(
       card: ClubShareCard(club: club),
       share: share,
-      fileName: 'catch-club-card.png',
+      fileName: 'catch-organizer-card.png',
       buttonLabel: context.l10n.clubsClubHeroAppBarTooltipShareClub,
       footnote: context.l10n.clubsClubShareCardFootnote,
       subject: club.name,

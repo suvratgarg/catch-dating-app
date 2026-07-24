@@ -20,9 +20,26 @@ node tool/run.mjs list --category data
 node tool/run.mjs check --manifest-only
 node tool/run.mjs check audit:backend-errors
 npm run audit:backend-errors:check
+node tool/run.mjs check contracts:flutter-form-inventory
 node tool/run.mjs check --category demo
+node tool/run.mjs impacted --paths contracts/firestore/users.schema.json --json
+node tool/run.mjs impacted --check
 node tool/run.mjs run demo:ops --help
 ```
+
+Filtered `list` and `check` commands fail with exit 64 when no active tool
+matches; an empty category can never count as a successful CI lane. Tools CI
+declares every active manifest category and validates that matrix before fanout.
+Tools that require an operating-system framework declare `platforms` using
+Node platform names (`darwin`, `linux`, or `win32`). Category checks report and
+skip incompatible entries; direct `run` calls fail with exit 64 instead of
+executing a platform-incompatible command.
+
+`impacted` joins changed paths through
+`tool/repository_root_manifest.json#relationships` to their source, generated
+output, and consumer surfaces. It reports the owning checks and workflows,
+fails when any changed path is unmapped, and runs the union of manifest checks
+with `--check`. This graph is the canonical cross-root integration map.
 
 ## Layout
 
@@ -46,16 +63,41 @@ node tool/run.mjs run demo:ops --help
   evidence lives in the audit registry and migration contract metadata.
 - `marketing/`: app-derived website media manifests and screenshot sync checks.
 - `platform/`: Apple/platform configuration helpers.
+- `store/`: deterministic App Store and Google Play asset generators.
+- `test/`: Flutter coverage reporting and test-maintainability ratchets.
 - `ui_capture/`: route inventory, capture coverage, and deterministic screen capture tooling.
 - `remote_ops_manifest.json`: consolidated index for Firebase, App Check, data,
   CI/CD, and App Store/TestFlight operational surfaces.
+
+## Flutter Test Evidence
+
+`tool/test/flutter_coverage_report.mjs` converts `coverage/lcov.info` into
+handwritten-code and top-level-feature visibility. It deliberately has no
+aggregate percentage threshold and calls out that uninstrumented files do not
+appear in LCOV.
+
+`tool/test/check_flutter_test_size.mjs` keeps new and split Flutter test specs
+at or below 1,200 lines. The exact reviewed legacy debt lives in
+`tool/test/flutter_test_size_baseline.json`; growth and stale reductions both
+fail so every improvement is ratcheted. `tool/test_inventory.mjs --check`
+remains the cross-surface filename inventory, and the agent readiness gate also
+performs that exact freshness proof.
+
+```sh
+node --test tool/test/flutter_coverage_report.test.mjs
+node tool/test/flutter_coverage_report.mjs --lcov coverage/lcov.info
+node tool/test/check_flutter_test_size.mjs --check
+node tool/test_inventory.mjs --check
+```
 
 ## Analyzer-Backed UI Reports
 
 The old UI/design shell scanners have been retired. Their stable root wrapper
 names remain because cleanup passes, docs, and CI still call them, but the
 matching policy now lives in `packages/catch_ui_lints` and is reported from
-normal `flutter analyze --no-fatal-infos` output.
+repository-root `dart analyze --format machine` output. In this workspace,
+`flutter analyze` and `dart analyze lib` do not load the Catch plugin; never
+use either command as proof that a Catch UI rule is clean.
 
 Use `--summary` for review-friendly output, `--count` for cheap automated
 checks that only need a numeric debt signal, and
@@ -65,16 +107,17 @@ The drift helper parses the machine analyzer diagnostic-code field; it must not
 count `catch_*` text from filenames, symbol names, or diagnostic messages.
 
 `bash tool/widget_cleanup_scan.sh --check` is the checked broad-cleanup ratchet.
-Its baseline stores current maximum counts rather than claiming that the repo is
-globally clean; new categories and count increases fail until they are fixed or
-reviewed in an explicit baseline update.
+Only the eight remaining regex-only categories live there. Promoted categories
+are analyzer rules with seeded fixture parity, and
+`tool/audit/catch_ui_lint_drift_baseline.json` owns their decrease-only counts.
 
 ## Analyzer Plugin Lints
 
 Catch-owned UI lints live in `packages/catch_ui_lints` and use Dart's
 `analysis_server_plugin` API. They are enabled from the top-level `plugins`
-section in `analysis_options.yaml`, so violations surface through the normal
-`flutter analyze` and IDE analyzer path instead of a separate scanner pass.
+section in `analysis_options.yaml`. The deterministic CLI load path is a
+repository-root `dart analyze`; CI caches that one machine-diagnostic census
+and applies each severity gate to the exact diagnostic-code field.
 The Catch UI plugin runs across handwritten `lib/**` while exempting
 `lib/core/theme/**` token definitions and generated code.
 
@@ -92,6 +135,12 @@ standalone scanners:
 - `tool/check_ui_allow_debt.sh`
 - `tool/check_ui_local_constant_wrappers.sh`
 - `tool/check_ui_system_raw_values.sh`
+
+The component registry generates the plugin steering tables and steering
+probes through `tool/design/build_lint_enforcement_tables.mjs`. The
+bidirectional coverage gate rejects undecided components, orphan codes, stale
+generated output, and expired waivers. Cross-file shell/top-bar/state policy is
+resolved by `tool/architecture/check_ui_composition_contracts.dart`.
 
 ## Where Enforcement Lives
 
@@ -140,9 +189,13 @@ and obsolete review entries.
 `tool/repository_root_manifest.json` is the exact ownership contract for every
 repository-root entry. The gate rejects unclassified or multiply classified
 entries, prohibited roots, unsafe cleanup targets, and machine-local Markdown
-links. The cleaner is dry-run by default and refuses tracked, protected,
-symlinked, or path-escaping targets; mutation additionally requires an explicit
-scope.
+links. Its relationship graph binds sources, generated outputs, consumers,
+checks, and CI workflows, while audit policies identify generated/vendor trees
+reviewed as aggregate units. The cleaner is dry-run by default, preserves
+tracked children in mixed retention directories, refuses candidate-root
+symlinks while counting nested dependency symlinks without following them, and
+rejects protected or path-escaping targets; mutation additionally requires an
+explicit scope.
 
 ```sh
 node tool/check_repository_root_hygiene.mjs
@@ -343,6 +396,7 @@ node tool/run.mjs check web:react-component-governance
 node tool/run.mjs check web:react-query-state
 node tool/run.mjs check web:shared-ui-adoption
 node tool/run.mjs check web:react-controller-test-targets
+node tool/run.mjs check web:admin-pending-operations
 node tool/run.mjs check web:react-dependency-graph
 npm run web:ui:test
 npm run web:ui:typecheck
@@ -364,6 +418,12 @@ accessible table/field/button contracts, and package CI path coverage.
 hook classified in `tool/web/react_controller_test_targets.json`. Promoted
 targets need a named importing behavior suite; planned targets remain visible
 without turning aggregate coverage percentages into a brittle merge gate.
+
+`web:admin-pending-operations` derives write and submitted-query controllers
+from frozen Admin feature-contract cases. It requires each controller to
+acquire and release the shared exclusive lease, rejects pending cases with
+enabled actions, and verifies the workspace, navigation, link, unload, and
+focused regression-test boundary remains installed.
 
 Registry-ready Storybook stories also have deterministic desktop and mobile
 image baselines under `design/visual_baselines/<surface>/<platform>/`. Build
@@ -461,6 +521,75 @@ node tool/run.mjs check --category agent
 When using parallel agents, keep subagent work in disposable Git worktrees and
 record the parent-reviewed result with
 `tool/agent/record_delegation_outcome.mjs`.
+
+## Feature Contract Compiler
+
+`design/features/feature_coverage.json` is the exhaustive migration ledger for
+registered feature surfaces. It derives its inventory from the Flutter screen
+registry, marketing route registry, and route-kind entries in the admin
+component registry. Every authority item must be contracted, grouped under one
+primary feature projection, planned against a stable migration debt id, or
+explicitly excluded. The checker also rejects orphaned source contracts and a
+`contracted` decision whose source contract does not bind the claimed surface.
+
+```sh
+node tool/design/check_feature_coverage.mjs --check
+node tool/design/check_feature_coverage.mjs --summary
+```
+
+`planned` proves that a surface is visible to the migration; it does not claim
+that its state/action/evidence contract exists yet. Grouping is reserved for a
+secondary route projection of the same feature, such as a dynamic lookup or a
+live controller wrapper. Static legal/support and platform fallback routes may
+be excluded when their existing route, metadata, and preview contracts are the
+correct authority and there is no stateful product-action workflow to model.
+
+`design/features/*.feature.json` holds reviewed feature orchestration sources.
+One semantic feature may contain Flutter, marketing React, and admin React
+surface projections. Each projection binds exactly one authoritative screen or
+route, its native component registry, one or more typed action owners, and its
+capture/preview/test evidence instead of duplicating those authorities. The
+compiler expands every action case into enabled, disabled, and not-allowed
+classifications and writes one deterministic cross-surface artifact under
+`design/features/generated/`.
+
+Each surface must state its action scope. Event Detail covers the Flutter
+booking dock; Explore combines Flutter empty-result recovery with marketing-web
+URL filtering/search analytics; Host Event Manage covers primary Flutter
+edit/cancel/delete lifecycle rows; the consumer social reference batch adds
+Catches Hub, Catches Event, Matches List, Member Chat, Self Profile, and Public
+Profile. Organizer Detail adds a three-surface reference for consumer Flutter,
+host Flutter, and the canonical marketing organizer listing. Generated action
+counts must not be read as coverage of excluded route or section actions.
+Actions name their owning Dart or TypeScript symbol and may
+end in local surface states, route destinations, or named side effects.
+Read-only surfaces use empty action/action-owner arrays instead of inventing
+synthetic behavior. Missing required evidence must use an explicit stable-debt
+exception, and the compiler rejects that exception once the referenced evidence
+exists.
+
+State-heavy surfaces may use the compact matrix form. `stateIds` still must
+equal the authority's full state inventory, while `scenarioDefaults` owns the
+common dimension/action case and `scenarioOverrides` records only divergent
+states. The compiler expands this form into ordinary generated scenarios and
+fails missing or unknown state ids and overrides, so the shorter source format
+does not weaken drift detection.
+
+For React routes, `bindings.previewEvidence` maps an authority state to an
+explicitly selected registry preview when route-review and Storybook state
+names differ. The compiler verifies the component belongs to that route and
+that its story source is declared. Website static-output tests under
+`website/scripts/*.test.mjs` are valid evidence for indexing, canonical, and
+sitemap behavior that has no meaningful visual preview.
+
+```sh
+node tool/design/build_feature_contracts.mjs
+node tool/design/build_feature_contracts.mjs --check
+node tool/design/build_feature_contracts.mjs --summary
+```
+
+The `--check` command is blocking in the design parity gate. Generated feature
+contracts are review artifacts and must not be edited by hand.
 
 ## Design Tokens
 

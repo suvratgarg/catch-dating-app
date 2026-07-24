@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/public/website_host_listing_projection.schema.json",
   "title": "WebsiteHostListingProjection",
-  "description": "Public organizer listing projection consumed by the marketing website and future shared web/app listing surfaces. It is generated from approved organizer, seed, or demo data and is not the canonical club document.",
+  "description": "Public organizer listing projection consumed by the marketing website and future shared web/app listing surfaces. It is generated from approved organizer, seed, or demo data and is not the canonical organizer document.",
   "type": "object",
   "additionalProperties": false,
   "x-owner": "website/scripts/generateOrganizerListings.mjs",
@@ -34,6 +34,8 @@
     "sources",
     "claim",
     "publicApi",
+    "authority",
+    "capabilities",
     "lastVerifiedAt",
     "searchText"
   ],
@@ -67,7 +69,7 @@
     },
     "sourceConfidence": {
       "type": "string",
-      "enum": ["first_party", "high", "medium", "low"]
+      "enum": ["first_party", "seedOnly", "high", "medium", "low", "ownerVerified"]
     },
     "headline": {"$ref": "#/definitions/nonEmptyString"},
     "description": {"$ref": "#/definitions/nonEmptyString"},
@@ -127,8 +129,22 @@
       }
     },
     "publicApi": {"$ref": "#/definitions/publicApi"},
+    "authority": {"$ref": "#/definitions/authority"},
+    "capabilities": {"$ref": "#/definitions/capabilities"},
     "lastVerifiedAt": {"$ref": "#/definitions/nonEmptyString"},
     "searchText": {"$ref": "#/definitions/nonEmptyString"}
+  },
+  "not": {
+    "properties": {
+      "authority": {
+        "properties": {
+          "claimState": {"const": "suppressed"},
+          "publishStatus": {"const": "published"}
+        },
+        "required": ["claimState", "publishStatus"]
+      }
+    },
+    "required": ["authority"]
   },
   "definitions": {
     "nonEmptyString": {
@@ -211,9 +227,13 @@
         "timeline": {"type": "string", "enum": ["upcoming", "past"]},
         "startTime": {"$ref": "#/definitions/nonEmptyString"},
         "endTime": {"$ref": "#/definitions/nonEmptyString"},
+        "timezone": {"$ref": "#/definitions/nonEmptyString"},
         "date": {"$ref": "#/definitions/nonEmptyString"},
         "location": {"$ref": "#/definitions/nonEmptyString"},
+        "locationDetails": {"type": "string"},
         "summary": {"type": "string"},
+        "requirements": {"type": "string"},
+        "accessibility": {"type": "string"},
         "capacityLimit": {"type": "integer", "minimum": 0},
         "bookedCount": {"type": "integer", "minimum": 0},
         "checkedInCount": {"type": "integer", "minimum": 0},
@@ -256,9 +276,13 @@
         },
         "startTime": {"$ref": "#/definitions/nonEmptyString"},
         "endTime": {"type": ["string", "null"]},
+        "timezone": {"$ref": "#/definitions/nonEmptyString"},
         "date": {"$ref": "#/definitions/nonEmptyString"},
         "location": {"$ref": "#/definitions/nonEmptyString"},
+        "locationDetails": {"type": "string"},
         "summary": {"type": "string"},
+        "requirements": {"type": "string"},
+        "accessibility": {"type": "string"},
         "priceLabel": {"$ref": "#/definitions/nonEmptyString"},
         "sourceLabel": {"$ref": "#/definitions/nonEmptyString"},
         "sourceHref": {"type": "string", "format": "uri"},
@@ -316,6 +340,7 @@
       "additionalProperties": false,
       "required": [
         "id",
+        "eventId",
         "reviewerName",
         "rating",
         "comment",
@@ -327,6 +352,7 @@
       ],
       "properties": {
         "id": {"type": ["string", "null"]},
+        "eventId": {"type": ["string", "null"]},
         "reviewerName": {"$ref": "#/definitions/nonEmptyString"},
         "rating": {"type": "number", "minimum": 0, "maximum": 5},
         "comment": {"type": "string"},
@@ -375,6 +401,108 @@
             "unknown"
           ]
         }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ownershipState",
+        "claimState",
+        "provenanceOrigin",
+        "sourceConfidence",
+        "verificationStatus",
+        "appVisibility",
+        "publishStatus",
+        "indexStatus"
+      ],
+      "properties": {
+        "ownershipState": {
+          "type": "string",
+          "enum": ["programmatic", "userCreated", "claimed", "transferred"]
+        },
+        "claimState": {
+          "type": "string",
+          "enum": ["unclaimed", "claimPending", "claimed", "verified", "suppressed"]
+        },
+        "provenanceOrigin": {
+          "type": "string",
+          "enum": ["userCreated", "scraper", "adminSeed", "import"]
+        },
+        "sourceConfidence": {
+          "type": "string",
+          "enum": ["seedOnly", "low", "medium", "high", "ownerVerified"]
+        },
+        "verificationStatus": {
+          "type": "string",
+          "enum": ["unverified", "sourceBacked", "ownerVerified"]
+        },
+        "appVisibility": {
+          "type": "string",
+          "enum": ["discoverable", "hidden"]
+        },
+        "publishStatus": {
+          "type": "string",
+          "enum": ["draft", "qa", "published", "suppressed", "removed"]
+        },
+        "indexStatus": {
+          "type": "string",
+          "enum": ["noindex", "indexReady", "indexed"]
+        }
+      }
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "reason"],
+      "properties": {
+        "state": {"type": "string", "enum": ["enabled", "disabled"]},
+        "reason": {"$ref": "#/definitions/nonEmptyString"}
+      }
+    },
+    "publicReviewCapability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["targetState", "readState", "writeState", "reason"],
+      "properties": {
+        "targetState": {"type": "string", "enum": ["enabled", "disabled"]},
+        "readState": {"type": "string", "enum": ["enabled", "disabled"]},
+        "writeState": {"type": "string", "enum": ["enabled", "disabled"]},
+        "reason": {"$ref": "#/definitions/nonEmptyString"}
+      },
+      "not": {
+        "anyOf": [
+          {
+            "properties": {
+              "targetState": {"const": "disabled"},
+              "readState": {"const": "enabled"}
+            },
+            "required": ["targetState", "readState"]
+          },
+          {
+            "properties": {
+              "targetState": {"const": "disabled"},
+              "writeState": {"const": "enabled"}
+            },
+            "required": ["targetState", "writeState"]
+          },
+          {
+            "properties": {
+              "readState": {"const": "disabled"},
+              "writeState": {"const": "enabled"}
+            },
+            "required": ["readState", "writeState"]
+          }
+        ]
+      }
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claimRequest", "publicReviews"],
+      "properties": {
+        "claimRequest": {"$ref": "#/definitions/capability"},
+        "publicReviews": {"$ref": "#/definitions/publicReviewCapability"}
       }
     },
     "source": {

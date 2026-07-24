@@ -87,6 +87,9 @@ class EventDetailCta extends ConsumerWidget {
     required this.userProfile,
     required this.clubId,
     required this.participation,
+    this.isSaved = false,
+    this.isHosted = false,
+    this.isClubMember = false,
     this.inviteCode,
     this.inviteLinkId,
     this.now,
@@ -97,6 +100,9 @@ class EventDetailCta extends ConsumerWidget {
   final UserProfile userProfile;
   final String clubId;
   final EventParticipation? participation;
+  final bool isSaved;
+  final bool isHosted;
+  final bool isClubMember;
   final String? inviteCode;
   final String? inviteLinkId;
   final DateTime? now;
@@ -150,6 +156,9 @@ class EventDetailCta extends ConsumerWidget {
       event: event,
       userProfile: userProfile,
       participation: participation,
+      isSaved: isSaved,
+      isHosted: isHosted,
+      isClubMember: isClubMember,
       now: referenceNow,
       hasInviteCode: inviteCode?.trim().isNotEmpty ?? false,
       supportsPaidBookings: supportsPaid,

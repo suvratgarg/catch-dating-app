@@ -102,6 +102,7 @@ class _EventSuccessModuleConsolidationPrototypeState
               ),
               gapH20,
               CatchSectionList(
+                emptyStateOmitted: true,
                 children: [
                   CatchSection.fieldRows(
                     first: true,

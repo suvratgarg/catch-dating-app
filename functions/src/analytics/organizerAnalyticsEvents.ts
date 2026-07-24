@@ -68,10 +68,11 @@ export async function recordOrganizerAnalyticsEventHandler(
 
   const db = deps.firestore();
   await assertOrganizerScope(db, payload);
+  const organizerId = payload.organizerId;
 
   const occurredAt = deps.now();
   const analyticsEventId = [
-    payload.clubId,
+    organizerId,
     payload.eventId ?? "organizer",
     payload.eventName,
     occurredAt.getTime(),
@@ -87,7 +88,7 @@ export async function recordOrganizerAnalyticsEventHandler(
         occurred_at: occurredAt.toISOString(),
         event_date: utcDateKey(occurredAt),
         event_name: payload.eventName,
-        club_id: payload.clubId,
+        club_id: organizerId,
         target_event_id: payload.eventId ?? null,
         page_path: payload.pagePath,
         source: payload.source ?? null,
@@ -110,7 +111,8 @@ async function assertOrganizerScope(
   db: FirebaseFirestore.Firestore,
   payload: RecordOrganizerAnalyticsEventCallablePayload
 ): Promise<void> {
-  const clubRef = db.collection("clubs").doc(payload.clubId);
+  const organizerId = payload.organizerId;
+  const clubRef = db.collection("organizers").doc(organizerId);
   const eventRef = payload.eventId ?
     db.collection("events").doc(payload.eventId) :
     null;
@@ -131,7 +133,9 @@ async function assertOrganizerScope(
   if (eventSnapshot && !eventSnapshot.exists) {
     throw new HttpsError("not-found", "Event not found.");
   }
-  if (eventSnapshot && eventSnapshot.get("clubId") !== payload.clubId) {
+  if (eventSnapshot &&
+      (eventSnapshot.get("organizerId") ?? eventSnapshot.get("clubId")) !==
+        organizerId) {
     throw new HttpsError(
       "invalid-argument",
       "Event does not belong to that organizer."
@@ -144,9 +148,11 @@ function normalizePayload(data: unknown): unknown {
     return data;
   }
   const input = data as Record<string, unknown>;
+  const organizerId = input.organizerId ?? input.clubId;
   return {
     ...input,
     clubId: trimmedString(input.clubId),
+    organizerId: trimmedString(organizerId),
     eventId: nullableTrimmedString(input.eventId),
     pagePath: trimmedString(input.pagePath),
     source: nullableTrimmedString(input.source),

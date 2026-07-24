@@ -13,6 +13,7 @@ test("refreshClubNextEvent stores the earliest upcoming active event",
     const later = timestamp("2026-05-14T10:00:00.000Z");
     const past = timestamp("2026-05-11T10:00:00.000Z");
     const firestore = fakeFirestore({
+      "organizers/club-1": {nextEventAt: null, nextEventLabel: null},
       "clubs/club-1": {nextEventAt: null, nextEventLabel: null},
       "events/past": event("club-1", past, "Past gate"),
       "events/later": event("club-1", later, "Later gate"),
@@ -26,10 +27,12 @@ test("refreshClubNextEvent stores the earliest upcoming active event",
       nowTimestamp: () => now,
     });
 
-    assert.deepEqual(firestore.get("clubs/club-1"), {
+    const expectedProjection = {
       nextEventAt: soon,
       nextEventLabel: "Soon gate",
-    });
+    };
+    assert.deepEqual(firestore.get("organizers/club-1"), expectedProjection);
+    assert.deepEqual(firestore.get("clubs/club-1"), expectedProjection);
   }
 );
 
@@ -37,6 +40,10 @@ test("refreshClubNextEvent clears projection when no future event exists",
   async () => {
     const now = timestamp("2026-05-12T10:00:00.000Z");
     const firestore = fakeFirestore({
+      "organizers/club-1": {
+        nextEventAt: timestamp("2026-05-13T10:00:00.000Z"),
+        nextEventLabel: "Old gate",
+      },
       "clubs/club-1": {
         nextEventAt: timestamp("2026-05-13T10:00:00.000Z"),
         nextEventLabel: "Old gate",
@@ -52,10 +59,12 @@ test("refreshClubNextEvent clears projection when no future event exists",
       nowTimestamp: () => now,
     });
 
-    assert.deepEqual(firestore.get("clubs/club-1"), {
+    const expectedProjection = {
       nextEventAt: null,
       nextEventLabel: null,
-    });
+    };
+    assert.deepEqual(firestore.get("organizers/club-1"), expectedProjection);
+    assert.deepEqual(firestore.get("clubs/club-1"), expectedProjection);
   }
 );
 
@@ -63,8 +72,8 @@ test("syncClubNextEventHandler refreshes moved clubs", async () => {
   const refreshed: string[] = [];
   const now = timestamp("2026-05-12T10:00:00.000Z");
   const firestore = fakeFirestore({
-    "clubs/club-1": {},
-    "clubs/club-2": {},
+    "organizers/club-1": {},
+    "organizers/club-2": {},
   });
 
   const deps = {
@@ -72,7 +81,7 @@ test("syncClubNextEventHandler refreshes moved clubs", async () => {
     firestore: () => ({
       ...firestore,
       collection: (path: string) => {
-        if (path === "clubs") {
+        if (path === "organizers") {
           return {
             doc: (id: string) => {
               refreshed.push(id);
@@ -86,8 +95,8 @@ test("syncClubNextEventHandler refreshes moved clubs", async () => {
   };
 
   await syncClubNextEventHandler(
-    {clubId: "club-1"} as never,
-    {clubId: "club-2"} as never,
+    {organizerId: "club-1"} as never,
+    {organizerId: "club-2"} as never,
     deps
   );
 
@@ -95,12 +104,12 @@ test("syncClubNextEventHandler refreshes moved clubs", async () => {
 });
 
 function event(
-  clubId: string,
+  organizerId: string,
   startTime: FirebaseFirestore.Timestamp,
   meetingPoint: string,
   status = "active"
 ) {
-  return {clubId, startTime, meetingPoint, status};
+  return {organizerId, clubId: organizerId, startTime, meetingPoint, status};
 }
 
 function timestamp(iso: string): FirebaseFirestore.Timestamp {
@@ -115,6 +124,25 @@ function fakeFirestore(initialDocs: Record<string, Record<string, unknown>>) {
     get: (path: string) => docs[path],
     collection: (collectionPath: string) =>
       queryRef(collectionPath, []),
+    batch: () => {
+      const writes: Array<{
+        ref: ReturnType<typeof docRef>;
+        patch: Record<string, unknown>;
+        options: {merge: boolean};
+      }> = [];
+      return {
+        set: (
+          ref: ReturnType<typeof docRef>,
+          patch: Record<string, unknown>,
+          options: {merge: boolean}
+        ) => writes.push({ref, patch, options}),
+        commit: async () => {
+          await Promise.all(
+            writes.map(({ref, patch, options}) => ref.set(patch, options))
+          );
+        },
+      };
+    },
   };
 
   function docRef(path: string) {

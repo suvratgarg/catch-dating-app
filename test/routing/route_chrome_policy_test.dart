@@ -19,7 +19,10 @@ void main() {
     ]) {
       expect(
         _routeBlock(source, route),
-        contains('parentNavigatorKey: _rootNavigatorKey'),
+        anyOf(
+          contains('parentNavigatorKey: keys.root'),
+          contains('parentNavigatorKey: rootNavigatorKey'),
+        ),
         reason: '${route.name} must sit above the floating tab shell.',
       );
     }

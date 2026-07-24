@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
@@ -13,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:riverpod/misc.dart' show Override;
 
 Club buildClub({
   String id = 'club-1',
@@ -168,9 +171,14 @@ Review buildReview({
   );
 }
 
-Future<void> pumpTestApp(WidgetTester tester, Widget child) async {
+Future<void> pumpTestApp(
+  WidgetTester tester,
+  Widget child, {
+  List<Override> overrides = const [],
+}) async {
   await tester.pumpWidget(
     ProviderScope(
+      overrides: overrides,
       child: MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(body: child),
@@ -182,6 +190,8 @@ Future<void> pumpTestApp(WidgetTester tester, Widget child) async {
 
 class FakeClubsRepository implements ClubsRepository {
   String generatedId = 'generated-club-id';
+  Completer<String>? createClubCompleter;
+  int createClubCallCount = 0;
   String? joinedClubId;
   String? leftClubId;
   String? notificationsClubId;
@@ -218,6 +228,7 @@ class FakeClubsRepository implements ClubsRepository {
     required String description,
     required String location,
     required String area,
+    OrganizerType organizerType = OrganizerType.club,
     String? imageUrl,
     String? profileImageUrl,
     String? instagramHandle,
@@ -225,8 +236,13 @@ class FakeClubsRepository implements ClubsRepository {
     String? email,
     ClubHostDefaults? hostDefaults,
   }) async {
+    createClubCallCount += 1;
     if (createError != null) {
       throw createError!;
+    }
+    final pendingCreate = createClubCompleter;
+    if (pendingCreate != null) {
+      await pendingCreate.future;
     }
     final resolvedClubId = clubId ?? generatedId;
     lastCreateCall = CreateClubCall(
@@ -235,6 +251,7 @@ class FakeClubsRepository implements ClubsRepository {
       description: description,
       location: location,
       area: area,
+      organizerType: organizerType,
       imageUrl: imageUrl,
       profileImageUrl: profileImageUrl,
       instagramHandle: instagramHandle,
@@ -356,16 +373,27 @@ class FakeClubsRepository implements ClubsRepository {
   }
 
   @override
-  Future<String> startClubHostConversation({
-    required String clubId,
+  Future<String> startOrganizerConversation({
+    required String organizerId,
     required String hostUid,
     String? eventId,
   }) async {
-    startedConversationClubId = clubId;
+    startedConversationClubId = organizerId;
     startedConversationHostUid = hostUid;
     startedConversationEventId = eventId;
     return nextHostConversationMatchId;
   }
+
+  @override
+  Future<String> startClubHostConversation({
+    required String clubId,
+    required String hostUid,
+    String? eventId,
+  }) => startOrganizerConversation(
+    organizerId: clubId,
+    hostUid: hostUid,
+    eventId: eventId,
+  );
 }
 
 class CreateClubCall {
@@ -375,6 +403,7 @@ class CreateClubCall {
     required this.description,
     required this.location,
     required this.area,
+    this.organizerType = OrganizerType.club,
     this.imageUrl,
     this.profileImageUrl,
     this.instagramHandle,
@@ -388,6 +417,7 @@ class CreateClubCall {
   final String description;
   final String location;
   final String area;
+  final OrganizerType organizerType;
   final String? imageUrl;
   final String? profileImageUrl;
   final String? instagramHandle;

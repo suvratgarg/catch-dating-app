@@ -1,6 +1,7 @@
 part of '../host_operations_screen.dart';
 
 abstract final class HostClubEditFieldKeys {
+  static const organizerType = 'organizerType';
   static const name = 'name';
   static const location = 'location';
   static const area = 'area';
@@ -343,8 +344,24 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
     Club club,
     List<_HostClubCityOption> cityOptions,
   ) {
+    final organizerTypeOptions = [
+      for (final type in OrganizerType.values)
+        _HostOrganizerTypeOption(
+          value: type,
+          label: _hostOrganizerTypeLabel(context, type),
+        ),
+    ];
+    final selectedOrganizerType = organizerTypeOptions.firstWhere(
+      (option) => option.value == club.organizerType,
+    );
     if (!widget.isOwner) {
       return [
+        CatchFormReadRow<UpdateClubPatch>(
+          id: HostClubEditFieldKeys.organizerType,
+          icon: CatchIcons.groups3Outlined,
+          label: context.l10n.hostsOrganizerTypeLabel,
+          body: selectedOrganizerType.label,
+        ),
         CatchFormReadRow<UpdateClubPatch>(
           id: HostClubEditFieldKeys.name,
           icon: CatchIcons.groups3Outlined,
@@ -373,6 +390,17 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
     }
 
     return [
+      CatchFormSingleChoiceRow<UpdateClubPatch, _HostOrganizerTypeOption>(
+        id: HostClubEditFieldKeys.organizerType,
+        icon: CatchIcons.groups3Outlined,
+        label: context.l10n.hostsOrganizerTypeLabel,
+        values: organizerTypeOptions,
+        value: selectedOrganizerType,
+        allowEmptySelection: false,
+        contract: CatchContractConstraints.updateClubPatchOrganizerType,
+        contractValue: (option) => option.value.name,
+        patchForValue: (value) => UpdateClubPatch(organizerType: value!.value),
+      ),
       CatchFormTextRow<UpdateClubPatch>(
         id: HostClubEditFieldKeys.name,
         icon: CatchIcons.groups3Outlined,
@@ -393,6 +421,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         value: cityOptions.firstWhere((city) => city.value == club.location),
         allowEmptySelection: false,
         contract: CatchContractConstraints.updateClubPatchLocation,
+        contractValue: (option) => option.value,
         patchForValue: (value) => UpdateClubPatch(location: value!.value),
       ),
       CatchFormTextRow<UpdateClubPatch>(
@@ -534,6 +563,25 @@ final class _HostClubCityOption implements Labelled {
   @override
   final String label;
 }
+
+final class _HostOrganizerTypeOption implements Labelled {
+  const _HostOrganizerTypeOption({required this.value, required this.label});
+
+  final OrganizerType value;
+  @override
+  final String label;
+}
+
+String _hostOrganizerTypeLabel(BuildContext context, OrganizerType type) =>
+    switch (type) {
+      OrganizerType.club => context.l10n.hostsOrganizerTypeClub,
+      OrganizerType.community => context.l10n.hostsOrganizerTypeCommunity,
+      OrganizerType.individual => context.l10n.hostsOrganizerTypeIndividual,
+      OrganizerType.eventProducer =>
+        context.l10n.hostsOrganizerTypeEventProducer,
+      OrganizerType.venue => context.l10n.hostsOrganizerTypeVenue,
+      OrganizerType.brand => context.l10n.hostsOrganizerTypeBrand,
+    };
 
 sealed class _HostClubMediaDraft {
   const _HostClubMediaDraft();

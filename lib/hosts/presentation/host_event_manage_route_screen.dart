@@ -32,11 +32,15 @@ class HostEventManageRouteScreen extends ConsumerWidget {
 
     return CatchAsyncValueView<_HostEventManageRouteData>(
       value: routeDataAsync,
-      loadingBuilder: (_) => Scaffold(
-        backgroundColor: CatchTokens.of(context).bg,
-        appBar: CatchTopBar(
+      onRetry: () {
+        ref.invalidate(uidProvider);
+        ref.invalidate(fetchClubProvider(clubId));
+        ref.invalidate(watchEventProvider(eventId));
+      },
+      loadingBuilder: (_) => CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
-          border: true,
+          divider: scrolledUnder,
         ),
         body: const SafeArea(child: HostRouteLoadingBody(showTabRail: true)),
       ),
@@ -59,6 +63,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
             message: context
                 .l10n
                 .hostsHostEventManageRouteScreenMessageThisHostedEventIs,
+            secondaryAction: const CatchErrorBackAction(),
           );
         }
 
@@ -71,6 +76,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
                 .l10n
                 .hostsHostEventManageRouteScreenMessageYouCanManageOnly,
             icon: CatchIcons.blockRounded,
+            secondaryAction: const CatchErrorBackAction(),
           );
         }
 
