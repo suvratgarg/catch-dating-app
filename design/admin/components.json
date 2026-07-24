@@ -455,7 +455,7 @@
           "publication-packets"
         ]
       },
-      "notes": "Organizer Intake live route wrapper delegates to OrganizerIntakeWorkspace with feedback providers; deterministic preview coverage uses generated organizer intake bridge fixtures in AdminRoutes.stories.tsx."
+      "notes": "Organizer Intake live route wrapper delegates to OrganizerIntakeWorkspace with feedback providers; deterministic preview coverage uses typed synthetic operation records in AdminRoutes.stories.tsx."
     },
     {
       "id": "workspace_organizer_intake",
@@ -476,7 +476,7 @@
           "publication-packets"
         ]
       },
-      "notes": "Prop-driven Organizer Intake workspace used by the live route wrapper and deterministic Storybook previews; generated bridge state and mutation callbacks are supplied by the controller seam."
+      "notes": "Prop-driven Organizer Intake workspace used by the live route wrapper and deterministic Storybook previews; typed synthetic state and mutation callbacks are supplied by the controller seam."
     },
     {
       "id": "route_marketing_ops",
@@ -495,7 +495,7 @@
           "post-board"
         ]
       },
-      "notes": "Marketing Ops route wrapper keeps live admin feedback props and delegates to MarketingOpsWorkspace; deterministic preview coverage uses generated marketing dashboard bridge fixtures in AdminRoutes.stories.tsx."
+      "notes": "Marketing Ops route wrapper keeps live admin feedback props and delegates to MarketingOpsWorkspace; deterministic preview coverage uses typed synthetic dashboard state in AdminRoutes.stories.tsx."
     },
     {
       "id": "workspace_marketing_ops",

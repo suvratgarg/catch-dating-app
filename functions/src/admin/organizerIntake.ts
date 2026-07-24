@@ -48,8 +48,8 @@ export interface AdminDecideOrganizerIntakeResponse {
 
 /**
  * Records the latest manual admin decision for an organizer-intake candidate.
- * Raw scrape/search evidence stays outside Firestore; this stores only the
- * low-volume review decision needed to bridge admin QA to publication tools.
+ * Candidate evidence stays in operationRuns/operationWorkItems; this stores
+ * only the low-volume review decision needed by publication workflows.
  * @param {CallableRequest<unknown>} request Callable request.
  * @param {OrganizerIntakeDeps} deps Injectable dependencies.
  * @return {Promise<AdminDecideOrganizerIntakeResponse>} Persisted decision.

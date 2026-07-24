@@ -1,8 +1,39 @@
 {
-  "version": 95,
+  "version": 100,
   "updated": "2026-07-24",
   "owner": "agent_operating_model",
   "entries": [
+    {
+      "id": "REG-ADMIN-LIVE-DATA-PARITY-001",
+      "title": "Admin live routes drift from Firestore callables or package generated operational fixtures",
+      "status": "active",
+      "applies_to": [
+        ".github/workflows/admin-website.yml",
+        "admin/scripts/checkBundleBudget.mjs",
+        "admin/src/features/**",
+        "admin/src/shared/api/adminApi.ts",
+        "contracts/admin/admin_live_data_sources.json",
+        "functions/src/index.ts",
+        "operations/launch/**",
+        "tool/organizer_intake/check_admin_review_bridge.mjs",
+        "tool/organizer_intake/{generated,batches,answer_packets,review_decisions,curation_decisions,event_review_decisions,event_location_resolutions,policy_gap_decisions,search_result_batches,event_source_batches,raw_artifacts}/**",
+        "tool/run.mjs",
+        "tool/tools_manifest.json",
+        "tool/web/check_admin_live_data_sources.mjs"
+      ],
+      "symptom": "A production Admin route reads generated repository JSON, mutable launch or organizer workflow JSON is retained in the repository, a generated operational fixture survives in the live Vite manifest, or the frontend calls a source-exported callable that is absent or unreachable in the selected Firebase environment and surfaces only a generic internal error.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check web:admin-live-data-sources && node tool/run.mjs check --category host-discovery && VITE_ADMIN_DATA_MODE=live npm --workspace catch-admin run build && node tool/web/check_admin_live_data_sources.mjs --check --verify-live --environment prod --summary",
+        "guardEvidence": "the route inventory covers every Admin navigation and Intake workspace, operational JSON snapshots and legacy organizer or launch-board state are forbidden, previews use typed synthetic data, category CI executes active tools only, the Firestore organizer path is enforced, live builds reject generated operational assets, and the production preflight requires every declared callable to return a Firebase callable response"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "docs/release_operations.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "Mutable queue, review, curation, policy, dashboard, and launch-board content belongs in Firestore. Admin previews use typed synthetic data; contracts, explicit fixtures, configuration, and deterministic public build projections are not operational state."
+    },
     {
       "id": "REG-ADMIN-MOBILE-TOOLBAR-001",
       "title": "Admin toolbar search expands into a tall empty block on mobile",
@@ -2944,6 +2975,56 @@
         "docs/release_operations.md"
       ],
       "notes": "Firestore automatically adds __name__ ordering to single-field indexes. Keep explicit composite entries only when at least two user fields require a composite."
+    },
+    {
+      "id": "REG-ADMIN-ORGANIZER-SEARCH-QUEUE-001",
+      "title": "Organizer search candidates are counted but absent from the admin queue",
+      "status": "active",
+      "applies_to": [
+        "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx",
+        "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
+        "operations/src/platform/read-models.mjs",
+        "tool/organizer_intake/check_admin_review_bridge.mjs"
+      ],
+      "symptom": "The generated bridge reports captured organizer candidates and the Incoming stage count includes them, but the selectable queue is built only from canonical intake entities, leaving operators no path to review discovery output in the console.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin run test -- --run src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
+        "guardEvidence": "the organizer intake route renders 50 Incoming candidate cards, preserves the 25-per-market filter split, exposes captured source context, and offers the existing-entity attach action without inventing a net-new publication writer"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/operations_platform.md",
+        "operations/launch/pilot_supply_intake_findings_2026-07-24.md"
+      ],
+      "notes": "Discovery candidates and canonical organizer entities remain distinct entry kinds. Net-new draft creation stays disabled until the candidate-to-entity scaffolder is governed and callable-backed."
+    },
+    {
+      "id": "REG-WEBSITE-ORGANIZER-FIRESTORE-PROJECTION-001",
+      "title": "Marketing deploy regenerates organizer pages from retired repository state",
+      "status": "active",
+      "applies_to": [
+        ".github/workflows/marketing-website.yml",
+        ".github/workflows/react-surface-validation.yml",
+        "contracts/firestore/organizers.schema.json",
+        "website/package.json",
+        "website/scripts/generateOrganizerListings.mjs",
+        "website/scripts/generateOrganizerListings.test.mjs",
+        "website/scripts/marketingDeployWorkflow.test.mjs",
+        "website/src/generated/hostListings.json"
+      ],
+      "symptom": "Deleting repo-backed organizer intake JSON leaves the committed public listing stale and makes production materialization silently fall back to seed files, so CI fails or a deploy can drop the canonical organizer page.",
+      "guard": {
+        "type": "command",
+        "command": "node --test website/scripts/generateOrganizerListings.test.mjs website/scripts/marketingDeployWorkflow.test.mjs && npm --workspace catch-marketing run check:organizer-listings",
+        "guardEvidence": "pull requests validate the static build projection, while the production workflow is contract-tested to read canonical organizer documents from Firestore before Firebase predeploy"
+      },
+      "owner_docs": [
+        "docs/data_contracts.md",
+        "docs/marketing_website_architecture.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "The committed hostListings files are deterministic production and Storybook build artifacts, not operational editing surfaces. Claim and review capabilities remain fail-closed until separately governed in Firestore."
     }
   ]
 }

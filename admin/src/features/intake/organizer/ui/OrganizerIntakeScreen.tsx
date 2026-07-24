@@ -21,6 +21,16 @@ const LazyOrganizerIntakeDiagnostics = lazy(async () => {
 });
 
 export function OrganizerIntakeScreen() {
+  return (
+    <Suspense
+      fallback={<AdminWorkbenchNote>Loading organizer intake...</AdminWorkbenchNote>}
+    >
+      <OrganizerIntakeLoadedScreen />
+    </Suspense>
+  );
+}
+
+function OrganizerIntakeLoadedScreen() {
   const {setError: onError, setNotice: onNotice} = useAdminFeedback();
   const controller = useOrganizerIntakeController({onError, onNotice});
   return <OrganizerIntakeWorkspace controller={controller} />;
@@ -40,6 +50,14 @@ export function OrganizerIntakeWorkspace({
       />
     );
   }
+  if (!controller.diagnosticsBridge) {
+    return (
+      <organizerIntakeWorkbench.OrganizerTaskWorkbench
+        controller={controller}
+        onShowDiagnostics={() => setShowDiagnostics(false)}
+      />
+    );
+  }
   return (
     <>
       <AdminToolbar>
@@ -52,7 +70,10 @@ export function OrganizerIntakeWorkspace({
         </AdminButton>
       </AdminToolbar>
       <Suspense fallback={<AdminWorkbenchNote>Loading diagnostics...</AdminWorkbenchNote>}>
-        <LazyOrganizerIntakeDiagnostics controller={controller} />
+        <LazyOrganizerIntakeDiagnostics
+          bridge={controller.diagnosticsBridge}
+          controller={controller}
+        />
       </Suspense>
     </>
   );

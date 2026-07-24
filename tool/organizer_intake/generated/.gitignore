@@ -1,0 +1,2 @@
+# Repository-generated operational state is retired. Firestore owns it.
+*.json

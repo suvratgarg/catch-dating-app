@@ -37,12 +37,16 @@ import {
   formFromEventProfile,
 } from "../features/events/controllers/eventPublishingHelpers";
 import {EventPublishingWorkspace} from "../features/events/ui/EventPublishingScreen";
-import eventIntakeBridgeFixture from "../generated/eventIntakeBridge.json";
+import {
+  sampleEventIntakeBridge,
+  sampleMarketingOpsBridge,
+} from "../shared/api/sampleOperationalData";
 import type {EventIntakeController} from "../features/intake/events/controllers/useEventIntakeController";
 import {EventIntakePreviewWorkspace} from "../features/intake/events/ui/EventIntakeWorkspace";
 import type {IntakeOperationsController} from "../features/intake/operations/controllers/useIntakeOperationsController";
 import {IntakeOperationsPreviewWorkspace} from "../features/intake/operations/ui/IntakeOperationsWorkspace";
-import organizerIntakeBridgeFixture from "../features/intake/organizer/generated/organizerIntakeBridge.json";
+import {organizerWorkbenchFromOperations} from
+  "../features/intake/organizer/controllers/loadOrganizerIntakeBridge";
 import type {OrganizerIntakeController} from "../features/intake/organizer/controllers/useOrganizerIntakeController";
 import {OrganizerIntakeWorkspace} from "../features/intake/organizer/ui/OrganizerIntakeScreen";
 import {IntakeWorkspace} from "../features/intake/ui/IntakeWorkspaceScreen";
@@ -54,7 +58,6 @@ import {
   type FinanceOpsController,
 } from "../features/finance/controllers/useFinanceOpsController";
 import {FinanceOpsWorkspace} from "../features/finance/ui/FinanceOpsScreen";
-import marketingOpsBridgeFixture from "../generated/marketingOpsBridge.json";
 import type {MarketingOpsController} from "../features/marketing/controllers/useMarketingOpsController";
 import {MarketingOpsWorkspace} from "../features/marketing/ui/MarketingOpsScreen";
 import {
@@ -293,7 +296,7 @@ const eventController: EventPublishingController = {
   view: "list",
 };
 const eventIntakeBridge =
-  eventIntakeBridgeFixture as unknown as EventIntakeBridge;
+  structuredClone(sampleEventIntakeBridge) as EventIntakeBridge;
 const eventIntakeController: EventIntakeController = {
   activeTab: "setup",
   bridge: eventIntakeBridge,
@@ -343,10 +346,17 @@ const intakeOperationsController: IntakeOperationsController = {
   loadMore: async () => false,
   refresh: async () => true,
 };
-const organizerIntakeBridge =
-  organizerIntakeBridgeFixture as unknown as OrganizerIntakeController["bridge"];
+const organizerSampleOperations = sampleIntakeOperations({
+  entityKind: "organizer",
+});
+const organizerIntakeBridge = organizerWorkbenchFromOperations(
+  organizerSampleOperations,
+  organizerSampleOperations.workItems
+);
 const organizerIntakeController: OrganizerIntakeController = {
   bridge: organizerIntakeBridge,
+  diagnosticsBridge: null,
+  source: "sample",
   curationForms: {},
   curationInFlight: {},
   decisionInFlight: {},
@@ -436,7 +446,7 @@ const organizerIntakeController: OrganizerIntakeController = {
   },
 };
 const marketingOpsBridge =
-  marketingOpsBridgeFixture as unknown as MarketingOpsController["bridge"];
+  structuredClone(sampleMarketingOpsBridge) as MarketingOpsController["bridge"];
 const marketingOpsSelectedDraft =
   marketingOpsBridge?.contentDrafts[0] ?? null;
 const marketingOpsController: MarketingOpsController = {
@@ -955,7 +965,7 @@ const dataQualityRows: DataQualityRow[] = [
     detail: "Generated today for Indore launch week content packaging.",
     stateDefinition: "Stale is a client heuristic when generatedAt is more than 7 days old.",
     owner: "Marketing ops",
-    runbook: "admin/src/generated/marketingOpsBridge.json",
+    runbook: "marketingOpsDashboards/current",
     nextAction: "No action; generated bridge is fresh enough for the launch workspace.",
     updatedAt: "2026-07-03T09:15:00.000Z",
     freshness: "current",

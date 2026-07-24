@@ -1755,6 +1755,16 @@ const schemaOrganizerDocumentSchema = <String, Object?>{
           'minLength': 1,
           'maxLength': 240,
         },
+        'legacyPaths': <String, Object?>{
+          'type': 'array',
+          'maxItems': 12,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 240,
+          },
+        },
         'publishStatus': <String, Object?>{
           'type': 'string',
           'enum': <Object?>[

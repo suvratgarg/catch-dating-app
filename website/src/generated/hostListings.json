@@ -7,19 +7,19 @@
     "slug": "afterfly",
     "city": "Indore",
     "citySlug": "indore",
-    "region": "",
+    "region": "Madhya Pradesh",
     "country": "India",
     "path": "/organizers/afterfly/",
     "legacyPaths": [
       "/organizers/indore/afterfly-run-club/"
     ],
-    "category": "eventOrganizer",
+    "category": "Progressive techno run club",
     "status": "unclaimed",
     "indexing": "index, follow",
     "sourceConfidence": "high",
-    "headline": "AFTER FLY organizer profile",
-    "description": "AFTER FLY is an Indore organizer candidate discovered through public event evidence. The current draft should remain website-only until an admin reviews identity, surfaces, cadence, and owner-safe copy.",
-    "sourceSummary": "A public Luma event page connects AFTER FLY to an Indore run-and-rave event in March 2025 and embedded event data lists Instagram handle afterfly.in.",
+    "headline": "AFTER FLY run club in Indore",
+    "description": "AFTER FLY is an Indore run-and-rave organizer discovered through a public Luma event page. This unclaimed profile summarizes verified public facts for owner review and stays out of search until cadence, contact, and claim details are confirmed.",
+    "sourceSummary": "A public Luma event page confirms AFTER FLY hosted AFTERFLY TAKEOFF RUN & RAVE in Indore on 2025-03-16. The page describes a movement-and-music community and the embedded event data lists Instagram handle afterfly.in.",
     "logo": {
       "mode": "monogram",
       "text": "AF",
@@ -29,61 +29,93 @@
       "Social runs",
       "Run-and-rave",
       "Fitness/wellness community",
-      "Music social"
+      "Techno afters"
     ],
     "facts": [
       {
-        "label": "Market",
-        "value": "Indore"
+        "label": "Location",
+        "value": "Indore, Madhya Pradesh"
       },
       {
-        "label": "Organizer type",
-        "value": "eventOrganizer"
+        "label": "Official source name",
+        "value": "AFTER FLY"
+      },
+      {
+        "label": "Instagram",
+        "value": "afterfly.in"
+      },
+      {
+        "label": "Format",
+        "value": "Run club plus post-run music social"
+      },
+      {
+        "label": "Verified event",
+        "value": "AFTERFLY TAKEOFF RUN & RAVE, 16 Mar 2025"
+      },
+      {
+        "label": "Categories",
+        "value": "Fitness, Wellness"
       },
       {
         "label": "Claim state",
-        "value": "Unclaimed"
+        "value": "Unclaimed seed listing"
       },
       {
         "label": "Indexing",
-        "value": "index, follow"
-      },
-      {
-        "label": "App visibility",
-        "value": "hidden"
-      },
-      {
-        "label": "Source surfaces",
-        "value": "2"
+        "value": "Noindex until verified"
       }
     ],
-    "eventEvidence": [],
+    "eventEvidence": [
+      {
+        "date": "16 Mar 2025, 7:00 AM-11:00 AM IST",
+        "facts": [
+          "Hosted by AFTER FLY",
+          "Listed under Fitness and Wellness",
+          "Run segment described as 2.2 km and optional for walkers",
+          "Page copy states INR 499 per person with payment link sent by Instagram DM after registering",
+          "Luma registration is closed on the public page"
+        ],
+        "location": "Indore, Madhya Pradesh",
+        "sourceHref": "https://luma.com/pxgmph3b",
+        "sourceLabel": "Luma event page",
+        "summary": "The public Luma page lists a Sunday social run from Traffic Park near Daly College followed by a post-run techno social at Tropico Cafe.",
+        "title": "AFTERFLY TAKEOFF RUN & RAVE"
+      }
+    ],
     "reviews": [],
     "fitNotes": [
-      "This profile was promoted from organizer intake after manual admin review.",
-      "Events remain market-filtered under one canonical organizer identity.",
-      "Claiming unlocks owner-managed copy, official media, Catch events, and verified reviews."
+      "Repeatable run-club programming is a strong Catch organizer category because guests already share a live activity.",
+      "Indore gives the first test outside the largest metros, which helps validate city coverage and source sparsity.",
+      "Run-and-rave programming is a useful adjacency test because it blends low-pressure activity, curated crowd energy, and a post-event social setting."
     ],
     "missingEvidence": [
+      "Owner verification or claim",
+      "Logo or profile image permission",
       "Current event cadence after March 2025",
-      "Owner or preferred business contact",
-      "Logo or media permission",
-      "Whether every discovered Afterfly surface belongs to this organizer"
+      "Owner or host contact outside platform relay",
+      "Current booking or attendance process",
+      "Whether the public Instagram handle is the preferred owner contact"
     ],
     "sources": [
       {
-        "type": "luma",
-        "label": "Luma",
-        "detail": "Luma was reviewed as an organizer-intake surface with high confidence.",
+        "type": "user_supplied",
+        "label": "User seed input",
+        "detail": "User requested an initial listing for Afterfly Run Club in Indore.",
+        "confidence": "medium"
+      },
+      {
+        "type": "public_event_page",
+        "label": "Luma event page",
+        "detail": "AFTERFLY TAKEOFF RUN & RAVE is a public event page hosted by AFTER FLY in Indore, with Fitness and Wellness categories, registration closed, and source copy describing a run plus post-run techno social.",
         "confidence": "high",
         "href": "https://luma.com/pxgmph3b"
       },
       {
-        "type": "instagram",
-        "label": "Instagram",
-        "detail": "Instagram was reviewed as an organizer-intake surface with high confidence.",
+        "type": "embedded_event_data",
+        "label": "Luma structured event data",
+        "detail": "The event page's structured data confirms the Indore location and 2025-03-16 timing; embedded page data lists instagram_handle afterfly.in.",
         "confidence": "high",
-        "href": "https://www.instagram.com/afterfly.in/"
+        "href": "https://luma.com/pxgmph3b"
       }
     ],
     "claim": {
@@ -93,7 +125,7 @@
     "publicApi": {
       "state": "disabled",
       "reason": "Claiming is not available until target readiness is verified against Firestore.",
-      "claimTargetSyncStatus": "write_needed"
+      "claimTargetSyncStatus": "unknown"
     },
     "authority": {
       "ownershipState": "programmatic",
@@ -117,7 +149,7 @@
         "reason": "Public reviews are unavailable until canonical target readiness is verified."
       }
     },
-    "lastVerifiedAt": "2026-06-18",
-    "searchText": "after fly eventorganizer indore indore social runs run-and-rave fitness/wellness community music social indore luma luma was reviewed as an organizer-intake surface with high confidence. instagram instagram was reviewed as an organizer-intake surface with high confidence."
+    "lastVerifiedAt": "2026-06-10",
+    "searchText": "after fly indore indore club progressive techno run club progressive techno run club afterfly.in social runs run-and-rave fitness/wellness techno afters social runs run-and-rave fitness/wellness community techno afters"
   }
 ]

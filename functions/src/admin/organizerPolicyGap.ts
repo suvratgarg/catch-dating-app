@@ -52,7 +52,7 @@ export interface AdminDecideOrganizerPolicyGapResponse {
 /**
  * Records the latest manual product/admin decision for a policy gap. This is a
  * review bridge only; accepted policy decisions remain blocked until the
- * underlying repo-backed policy/config is explicitly encoded and checked.
+ * owning implementation or configuration is explicitly encoded and checked.
  * @param {CallableRequest<unknown>} request Callable request.
  * @param {OrganizerPolicyGapDeps} deps Injectable dependencies.
  * @return {Promise<AdminDecideOrganizerPolicyGapResponse>} Decision.

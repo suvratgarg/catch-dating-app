@@ -1,10 +1,11 @@
 import {act, renderHook, waitFor} from "@testing-library/react";
 import {beforeEach, describe, expect, it, vi} from "vitest";
-import eventIntakeFixture from "../../../generated/eventIntakeBridge.json";
-import executionPlanFixture from "../../../generated/externalEventImportExecutionPlan.json";
-import importPlanFixture from "../../../generated/externalEventImportPlan.json";
-import marketingFixture from "../../../generated/marketingOpsBridge.json";
 import {sampleHostAnalytics, sampleOverview} from "../../../shared/api/sampleData";
+import {
+  sampleEventIntakeBridge,
+  sampleEventSupplyReadiness,
+  sampleMarketingOpsBridge,
+} from "../../../shared/api/sampleOperationalData";
 import {createQueryHarness} from "../../../shared/test/queryHarness";
 import type {
   AdminGetEventSupplyReadinessResponse,
@@ -27,18 +28,20 @@ const mocks = vi.hoisted(() => ({
 vi.mock("../api/dataQualityRepository", () => mocks);
 
 const eventSupply = {
-  generatedAt: "2026-07-13T08:00:00.000Z",
+  ...sampleEventSupplyReadiness,
   source: "event_supply_readiness",
-  importPlan: importPlanFixture,
-  executionPlan: executionPlanFixture,
-} as AdminGetEventSupplyReadinessResponse;
+} satisfies AdminGetEventSupplyReadinessResponse;
 
 describe("useDataQualityController", () => {
   beforeEach(() => {
     mocks.loadDataQualityOverview.mockReset().mockResolvedValue(sampleOverview);
     mocks.loadDataQualityHostAnalytics.mockReset().mockResolvedValue(sampleHostAnalytics);
-    mocks.loadDataQualityMarketingBridge.mockReset().mockResolvedValue(marketingFixture as MarketingOpsBridge);
-    mocks.loadDataQualityEventIntakeBridge.mockReset().mockResolvedValue(eventIntakeFixture as unknown as EventIntakeBridge);
+    mocks.loadDataQualityMarketingBridge.mockReset().mockResolvedValue(
+      sampleMarketingOpsBridge as MarketingOpsBridge
+    );
+    mocks.loadDataQualityEventIntakeBridge.mockReset().mockResolvedValue(
+      sampleEventIntakeBridge as EventIntakeBridge
+    );
     mocks.loadDataQualityEventSupplyReadiness.mockReset().mockResolvedValue(eventSupply);
   });
 
@@ -98,8 +101,8 @@ describe("useDataQualityController", () => {
 
   it("sorts by severity then owner and labels run plans as configuration", () => {
     const rows = buildDataQualityRows({
-      eventIntake: eventIntakeFixture as unknown as EventIntakeBridge,
-      marketingBridge: marketingFixture as MarketingOpsBridge,
+      eventIntake: sampleEventIntakeBridge,
+      marketingBridge: sampleMarketingOpsBridge,
       overview: sampleOverview,
     });
     const ranks = rows.map((row) => row.severity === "blocked" ? 3 : row.severity === "warning" ? 2 : 1);

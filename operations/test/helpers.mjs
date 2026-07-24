@@ -84,6 +84,11 @@ export async function createFixtureRepository(root) {
       adminDecision: {currentDecision: {decision: "approve_public"}},
     }],
   });
+  await writeJson(root, "tool/organizer_intake/generated/search_result_candidate_queue.json", {
+    schemaVersion: 1,
+    candidates: [],
+    summary: {candidates: 0},
+  });
   await writeJson(root, "tool/organizer_intake/generated/organizer_operator_action_queue.json", {schemaVersion: 1, actions: []});
   await writeJson(root, "tool/organizer_intake/generated/organizer_operational_health.json", {schemaVersion: 1, summary: {workstreams: 0}});
   await writeJson(root, "tool/organizer_intake/generated/source_mention_llm_prompt_queue.json", {schemaVersion: 1, requests: []});

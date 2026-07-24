@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Every Admin route reads operational state through an authenticated backend contract. Operational snapshots are not retained in the repository; previews use typed synthetic fixtures.",
+  "routes": [
+    {
+      "routeId": "overview",
+      "navId": "overview",
+      "paths": ["/", "/overview"],
+      "liveReads": ["adminGetOverview", "adminGetHostAnalytics"]
+    },
+    {
+      "routeId": "safety",
+      "navId": "safety",
+      "paths": ["/safety"],
+      "liveReads": ["adminGetOverview", "adminGetSafetyTriageDetails"],
+      "liveMutations": ["adminAssignSafetyTriageItem", "adminDecideSafetyTriageItem"]
+    },
+    {
+      "routeId": "access",
+      "navId": "access",
+      "paths": ["/access"],
+      "liveReads": ["adminGetOverview", "adminGetAccessApplicationDetails"],
+      "liveMutations": ["adminDecideAccessApplication"]
+    },
+    {
+      "routeId": "event-intake",
+      "navId": "organizer-intake",
+      "paths": ["/intake/events"],
+      "liveReads": ["adminGetEventIntakeDashboard"],
+      "liveMutations": ["adminRecordEventIntakeReviewDecision"]
+    },
+    {
+      "routeId": "organizer-intake",
+      "navId": "organizer-intake",
+      "paths": ["/intake/organizers"],
+      "liveReads": ["adminListIntakeOperations"],
+      "liveMutations": [
+        "adminDecideOrganizerEventCandidate",
+        "adminDecideOrganizerIntake",
+        "adminDecideOrganizerPolicyGap",
+        "adminRecordOrganizerCuration",
+        "adminResolveOrganizerEventLocation"
+      ]
+    },
+    {
+      "routeId": "intake-operations",
+      "navId": "organizer-intake",
+      "paths": ["/intake/operations"],
+      "liveReads": ["adminListIntakeOperations"]
+    },
+    {
+      "routeId": "organizers",
+      "navId": "organizers",
+      "paths": ["/organizers"],
+      "liveReads": [
+        "adminGetClubClaimRequestDetails",
+        "adminGetOrganizerDetails",
+        "adminListClubClaimRequests",
+        "adminListOrganizerDetails"
+      ],
+      "liveMutations": [
+        "adminDecideClubClaim",
+        "adminSetClubIndexStatus",
+        "adminUpdateOrganizerDetails"
+      ]
+    },
+    {
+      "routeId": "events",
+      "navId": "events",
+      "paths": ["/events"],
+      "liveReads": [
+        "adminGetEventDetails",
+        "adminGetEventSupplyReadiness",
+        "adminListEventDetails",
+        "adminListExternalEventDetails"
+      ],
+      "liveMutations": ["adminPublishExternalEvent", "adminUpdateEventDetails"]
+    },
+    {
+      "routeId": "growth",
+      "navId": "growth",
+      "paths": ["/growth"],
+      "liveReads": ["adminGetOverview", "adminGetHostAnalytics"]
+    },
+    {
+      "routeId": "marketing",
+      "navId": "marketing-ops",
+      "paths": ["/marketing"],
+      "liveReads": ["adminGetMarketingOpsDashboard"],
+      "liveMutations": [
+        "adminCreateMarketingContentDraft",
+        "adminRecordMarketingReviewDecision"
+      ]
+    },
+    {
+      "routeId": "users",
+      "navId": "users",
+      "paths": ["/users"],
+      "liveReads": ["adminGetUserAnalytics"]
+    },
+    {
+      "routeId": "finance",
+      "navId": "finance",
+      "paths": ["/finance"],
+      "liveReads": ["adminGetOverview", "adminGetHostAnalytics"]
+    },
+    {
+      "routeId": "data-quality",
+      "navId": "quality",
+      "paths": ["/quality"],
+      "liveReads": [
+        "adminGetEventIntakeDashboard",
+        "adminGetEventSupplyReadiness",
+        "adminGetHostAnalytics",
+        "adminGetMarketingOpsDashboard",
+        "adminGetOverview"
+      ]
+    },
+    {
+      "routeId": "admin-roles",
+      "navId": "admin-roles",
+      "paths": ["/admin-roles"],
+      "liveReads": ["adminGetAdminUserRoles", "adminListAdminRoleAssignments"],
+      "liveMutations": ["adminSetAdminUserRoles"]
+    },
+    {
+      "routeId": "agent-activity",
+      "navId": "operations",
+      "paths": ["/operations"],
+      "liveReads": ["adminListActionExecutions"]
+    }
+  ]
+}

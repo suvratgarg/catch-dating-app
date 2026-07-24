@@ -252,12 +252,11 @@ read/write.
 ## Marketing Ops
 
 The Marketing tab is the human review console for the weekly event-guide loop.
-Marketing and sample marketing API paths read
-`admin/src/generated/marketingOpsBridge.json` in sample mode. Event Intake reads
-`admin/src/generated/eventIntakeBridge.json` in sample mode and
-`eventIntakeDashboards/current` in live mode through
-`adminGetEventIntakeDashboard`. Regenerate both admin bridge files from the
-repo-owned loop with:
+Live Marketing and Event Intake state is read from
+`marketingOpsDashboards/current` and `eventIntakeDashboards/current` through
+authenticated callables. Sample mode uses small typed synthetic objects in
+`admin/src/shared/api/sampleOperationalData.ts`; it never retains a copy of
+production operations data.
 
 The Intake tab shows an active publication-boundary panel for Event leads and
 Organizers before the dense workspaces render. Event leads write review
@@ -266,21 +265,23 @@ payments, or waitlists. Organizer Intake records review, curation, policy, and
 location decisions; canonical organizer publication, route indexing, and claim
 handoff still pass through promotion tooling and the Organizers workspace.
 
+In live mode Organizer Intake loads the newest completed organizer-only Supply
+Intake run for Indore and Mumbai through `adminListIntakeOperations`. Candidate
+rows are persisted `operationWorkItems`; sample and Storybook views use typed
+synthetic operation records. The checked
+`contracts/admin/admin_live_data_sources.json` inventory covers every Admin
+route and fails if production feature code imports generated operational JSON.
+Live builds also fail if any generated Event Intake, Organizer Intake,
+Marketing Ops, or external-event plan fixture survives in the Vite manifest.
+
 The third Intake workspace, Automation, reads canonical Supply Intake runs and
 work items through `adminListIntakeOperations`. It mirrors the persisted
 Incoming, Verify, Resolve, and Ready stages and highlights the human exception
 queue. It is read-only in both sample and live mode: the browser cannot request
 a run, fetch a source, call a model, deploy a rule, or publish a listing.
 
-```bash
-node tool/marketing/event_guide/scripts/generate_marketing_ops_bridge.mjs \
-  --week 2026-06-22 \
-  --admin-output admin/src/generated/marketingOpsBridge.json \
-  --event-intake-admin-output admin/src/generated/eventIntakeBridge.json
-```
-
 Publish the event-owned live Event Intake dashboard after reviewing the
-generated bridge:
+workflow output:
 
 ```bash
 node tool/marketing/event_guide/publish_event_intake_dashboard.mjs --env dev

@@ -43,8 +43,7 @@ export interface AdminRecordOrganizerCurationResponse {
 }
 
 /**
- * Records one manual organizer-intake curation operation for deterministic
- * export into the repo-backed curation_decisions batch format.
+ * Records one durable manual organizer-intake curation operation.
  * @param {CallableRequest<unknown>} request Callable request.
  * @param {OrganizerCurationDeps} deps Injectable dependencies.
  * @return {Promise<AdminRecordOrganizerCurationResponse>} Persisted operation.

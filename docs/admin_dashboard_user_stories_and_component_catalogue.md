@@ -1,7 +1,7 @@
 ---
 doc_id: admin_dashboard_user_stories_and_component_catalogue
 version: 0.2.27
-updated: 2026-07-23
+updated: 2026-07-24
 owner: admin_console
 status: active
 ---
@@ -42,7 +42,7 @@ Files inspected:
 - `admin/src/shared/ui/AdminPrimitives/`
 - `admin/src/features/marketing/api/marketingRepository.ts`
 - `admin/src/features/marketing/controllers/useMarketingOpsController.ts`
-- `admin/src/generated/marketingOpsBridge.json`
+- `admin/src/shared/api/sampleOperationalData.ts`
 - `admin/src/features/marketing/renderers/marketingFeatureDropRenderer.ts`
 - `admin/src/features/marketing/ui/MarketingOpsScreen.tsx`
 - `admin/src/shared/controllers/marketingReviewDecisionHelpers.ts`
@@ -55,7 +55,7 @@ Files inspected:
 - `admin/src/features/intake/organizer/api/organizerIntakeRepository.ts`
 - `admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.ts`
 - `admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts`
-- `admin/src/features/intake/organizer/generated/organizerIntakeBridge.json`
+- `admin/src/shared/operations/sampleIntakeOperations.ts`
 - `admin/src/features/intake/organizer/types/organizerIntakeTypes.ts`
 - `admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx`
 - `admin/src/features/safety/api/safetyTriageRepository.ts`
@@ -133,7 +133,8 @@ old analytics/intake/marketing registry: the root Events tab is now a canonical
 from `externalEvents/{id}` through `adminListExternalEventDetails`, keeping
 source-backed candidate supply separate from Catch-hosted event documents. It
 now also exposes external import-plan and execution-preflight snapshots from
-`eventSupplyReadiness/current`, with generated sample fallback, so operators can
+`eventSupplyReadiness/current`; explicit sample mode uses typed synthetic
+fixtures, so operators can
 see read-only draft counts, blockers, guardrails, and regeneration commands
 before any importer exists. Its
 Indore + Mumbai default uses the same bounded launch-city pattern.
@@ -151,7 +152,7 @@ placeholder screen structure.
 | Launch access | `features/access`; Overview provides route-only queue previews | `adminGetOverview` capped access queue; direct `adminGetAccessApplicationDetails`; `adminDecideAccessApplication` | URL-owned list/detail review, inspect source evidence, enter a required note/cohort, choose exact backed outcomes, receive completion feedback | Real launch-gate review workflow; full directory, cohort catalogue, invitation, notification, and durable history still need contracts |
 | Growth | `features/growth` | independently loaded overview metrics and host analytics | inspect four backed outcomes, apply endpoint-owned range, filter URL-owned signals, inspect accessible trend/table and source basis | Complete approved read-only KPI workflow; cohort conversion, attribution, referral, paid ROI, and retention claims remain absent |
 | Marketing | `features/marketing` | immutable marketing ops bridge snapshot plus session working copies | URL-owned board/composer/libraries/activity/diagnostics, draft creation, edit, rights confirmation, review, manual export-ready decisions | Complete approved content-studio workflow; arbitrary edits remain session-only and direct social publishing/autosave remain absent |
-| Intake | `features/intake` | Event Intake reads `adminGetEventIntakeDashboard` and writes `adminRecordEventIntakeReviewDecision`; Organizer Intake reads generated organizer bridge artifacts; Automation reads canonical operations records through `adminListIntakeOperations` | review event and organizer intake, inspect persisted shadow runs and human exceptions | Strong but dense; Automation is deliberately read-only until a trusted worker and publication authority are enabled |
+| Intake | `features/intake` | Event Intake reads `adminGetEventIntakeDashboard` and writes `adminRecordEventIntakeReviewDecision`; Organizer Intake and Automation read canonical operations records through `adminListIntakeOperations`; typed synthetic records support sample/Storybook views without operational snapshots | review event and organizer intake, inspect persisted shadow runs and human exceptions | Strong but dense; Automation is deliberately read-only until a trusted worker and publication authority are enabled |
 | Organizers | `features/organizers` | canonical `clubs/{id}` list/detail and bounded claims queue via admin callables | URL-owned Directory/Claims, inspect one record, edit task-ordered fields, diff, validate, save, publish/index through dedicated callable, review one claim | Complete approved canonical publishing workflow; Intake handoff waits for a validated canonical target |
 | Events | `features/events` | canonical `events/{id}` list/detail, bounded `externalEvents/{id}` supply, and `eventSupplyReadiness/current` snapshots | URL-owned canonical/readiness/external workspaces, URL filters, safe listing edits, backed performance, preflight evidence, publication checklist | Complete approved event workflow; external point read, organizer-owned lifecycle mutations, and Intake handoff remain contract-first |
 | Users | `features/users` | one exact-UID `adminGetUserAnalytics` aggregate response | validate exact UID, mask prior UID while loading, inspect four outcomes and accessible activity summary with explicit missing/forbidden/stale/partial states | Complete approved read-only analytics lookup; broad identity search and account, safety, payment, or support actions remain absent |
@@ -649,7 +650,8 @@ Current adherence:
   snapshot.
 - Good: the tab now reads external event import plan and execution preflight
   snapshots through `adminGetEventSupplyReadiness` from
-  `eventSupplyReadiness/current` in live mode, with generated sample fallback.
+  `eventSupplyReadiness/current` in live mode. Explicit sample mode uses typed
+  synthetic fixtures and is never a live-data fallback.
   Read-only draft counts, blockers, guardrails, source files, and operator
   commands are visible next to the external supply table.
 - Good: import-plan actions now render as a searchable/filterable directory

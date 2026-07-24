@@ -296,7 +296,7 @@ export function buildDataQualityRows({
       isEmpty: false,
       detail: `${marketingBridge.city.label} · week of ${marketingBridge.weekStart}`,
       owner: "Marketing ops",
-      runbook: "admin/src/generated/marketingOpsBridge.json",
+      runbook: "marketingOpsDashboards/current",
       owningWorkflowPath: "/marketing",
     }));
     rows.push(buildRunPlanConfigurationRow({

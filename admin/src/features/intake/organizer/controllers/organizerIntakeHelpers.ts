@@ -104,7 +104,7 @@ export function surfaceForCandidateCuration(
       ...candidate.suggestedSurface.evidenceRefs,
       {
         type: "manualNote",
-        ref: "admin/src/features/intake/organizer/generated/organizerIntakeBridge.json",
+        ref: "operationRuns + operationWorkItems",
         description:
           `Search candidate ${candidate.candidateId} observed ${candidate.observedAt}.`,
       },
@@ -317,7 +317,7 @@ export function defaultPolicyGapDecisionNote(
   decision: OrganizerPolicyGapDecision
 ) {
   if (decision === "accept") {
-    return `Product policy accepted for ${gap.gapId}; behavior remains disabled until encoded in repo-backed policy.`;
+    return `Product policy accepted for ${gap.gapId}; behavior remains disabled until encoded in the owning implementation or configuration.`;
   }
   if (decision === "hold") {
     return `Product policy held for ${gap.gapId}; required inputs remain unresolved.`;

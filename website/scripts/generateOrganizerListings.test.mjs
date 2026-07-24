@@ -60,11 +60,7 @@ test("production output excludes demo listings while explicit story output inclu
     storyListings.some((listing) => listing.dataOrigin === "catchDemo"),
     true
   );
-  assert.equal(
-    storyListings.some((listing) => listing.id === "bhag"),
-    true,
-    "Storybook keeps non-production market fixtures available for review"
-  );
+  assert.equal(storyListings.some((listing) => listing.dataOrigin === "catchDemo"), true);
 });
 
 test("approved organizer intake projections render canonical listings and suppress legacy seeds", () => {

@@ -7711,6 +7711,16 @@ export const organizerDocumentSchema = {
           "minLength": 1,
           "maxLength": 240
         },
+        "legacyPaths": {
+          "type": "array",
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
         "publishStatus": {
           "type": "string",
           "enum": [
@@ -18455,7 +18465,7 @@ export const organizerIntakeReviewDecisionDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_intake_review_decisions.schema.json",
   "title": "OrganizerIntakeReviewDecisionDocument",
-  "description": "Latest admin review decision stored at organizerIntakeReviewDecisions/{entityId}. Raw scrape/search evidence is not stored here.",
+  "description": "Latest admin review decision stored at organizerIntakeReviewDecisions/{entityId}. Candidate evidence remains in operationRuns and operationWorkItems.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "organizerIntakeReviewDecisions",
@@ -18540,7 +18550,7 @@ export const organizerIntakeReviewDecisionDocumentSchema = {
         },
         "manualReportsReviewed": {
           "type": "boolean",
-          "description": "True when the reviewer explicitly inspected manual reports that have no local raw artifact. Raw evidence remains outside Firestore; projection replay decides when this acknowledgement is required."
+          "description": "True when the reviewer explicitly inspected manual reports that have no stored source artifact. Projection replay decides when this acknowledgement is required."
         }
       }
     },
@@ -18778,7 +18788,7 @@ export const organizerIntakeCurationDecisionDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_intake_curation_decisions.schema.json",
   "title": "OrganizerIntakeCurationDecisionDocument",
-  "description": "One manual organizer-intake curation operation stored at organizerIntakeCurationDecisions/{operationId}. Raw scrape/search evidence is not stored here.",
+  "description": "One manual organizer-intake curation operation stored at organizerIntakeCurationDecisions/{operationId}. Candidate evidence remains in operationRuns and operationWorkItems.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "organizerIntakeCurationDecisions",
@@ -26266,7 +26276,7 @@ export const adminRecordOrganizerCurationCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_record_organizer_curation_payload.schema.json",
   "title": "AdminRecordOrganizerCurationCallablePayload",
-  "description": "Callable payload accepted by adminRecordOrganizerCuration. This records one low-volume manual organizer-intake curation operation for deterministic export into repo-backed curation batches.",
+  "description": "Callable payload accepted by adminRecordOrganizerCuration. This records one durable low-volume manual organizer-intake curation operation in Firestore.",
   "type": "object",
   "additionalProperties": false,
   "required": [

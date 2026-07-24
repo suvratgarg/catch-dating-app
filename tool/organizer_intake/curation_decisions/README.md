@@ -1,11 +1,8 @@
 # Organizer Curation Decisions
 
-Repo-backed manual QA operations for dedupe and surface cleanup.
+Live operations exist only in
+`organizerIntakeCurationDecisions/{operationId}` through
+`adminRecordOrganizerCuration`.
 
-Use these batches to merge duplicate organizer candidates, suppress false
-positives, reject or accept ambiguous surfaces, and mark surfaces that need a
-separate organizer entity. The generator applies these operations before
-building dedupe, review, website projection, and claim-target artifacts.
-
-Live admin persistence can move here later, but raw search and scrape evidence
-should still stay out of Firestore.
+Repository curation JSON is retired and ignored. Use the authenticated Admin
+workbench; do not export Firestore back into this directory.

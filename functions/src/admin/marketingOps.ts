@@ -105,8 +105,9 @@ interface AdminGetMarketingOpsDashboardResponse {
 }
 
 /**
- * Returns the latest Firestore-published marketing ops dashboard. The local
- * generator remains the source of truth until a sync job writes this document.
+ * Returns the latest Firestore-published marketing ops dashboard. Missing
+ * operational state returns an explicit empty dashboard; production never
+ * falls back to a repository snapshot.
  * @param {CallableRequest<unknown>} request Callable request.
  * @param {MarketingOpsDeps} deps Injectable dependencies.
  * @return {Promise<AdminGetMarketingOpsDashboardResponse>} Dashboard bridge.

@@ -1308,6 +1308,10 @@ export interface OrganizerDocument {
     slug: string;
     citySlug: string;
     canonicalPath: string;
+    /**
+     * @maxItems 12
+     */
+    legacyPaths?: string[];
     publishStatus: "draft" | "qa" | "published" | "suppressed" | "removed";
     indexStatus: "noindex" | "indexReady" | "indexed";
     robots: "noindex, follow" | "index, follow";
@@ -2693,7 +2697,7 @@ export interface SeedEventManifestDocument {
 }
 
 /**
- * Latest admin review decision stored at organizerIntakeReviewDecisions/{entityId}. Raw scrape/search evidence is not stored here.
+ * Latest admin review decision stored at organizerIntakeReviewDecisions/{entityId}. Candidate evidence remains in operationRuns and operationWorkItems.
  */
 export interface OrganizerIntakeReviewDecisionDocument {
   schemaVersion: 1;
@@ -2709,7 +2713,7 @@ export interface OrganizerIntakeReviewDecisionDocument {
     mediaRightsReviewed: boolean;
     crawlDisabledReviewed: boolean;
     /**
-     * True when the reviewer explicitly inspected manual reports that have no local raw artifact. Raw evidence remains outside Firestore; projection replay decides when this acknowledgement is required.
+     * True when the reviewer explicitly inspected manual reports that have no stored source artifact. Projection replay decides when this acknowledgement is required.
      */
     manualReportsReviewed?: boolean;
   };
@@ -2755,7 +2759,7 @@ export interface EventIntakeReviewDecisionDocument {
 }
 
 /**
- * One manual organizer-intake curation operation stored at organizerIntakeCurationDecisions/{operationId}. Raw scrape/search evidence is not stored here.
+ * One manual organizer-intake curation operation stored at organizerIntakeCurationDecisions/{operationId}. Candidate evidence remains in operationRuns and operationWorkItems.
  */
 export interface OrganizerIntakeCurationDecisionDocument {
   schemaVersion: 1;

@@ -25,8 +25,19 @@ import type * as Intake from "../types/organizerIntakeTypes";
 
 type OrganizerWorkbenchStage = "incoming" | "verify" | "resolve" | "ready";
 type OrganizerQueueFilter = "all" | "attention" | "ready";
+type OrganizerWorkbenchEntry =
+  | {
+    id: string;
+    kind: "entity";
+    item: Intake.OrganizerIntakeItem;
+  }
+  | {
+    id: string;
+    kind: "candidate";
+    candidate: Intake.OrganizerSearchCandidate;
+  };
 
-const organizerWorkbenchStageKey = "catch-admin.organizer-intake-stage.v1";
+const organizerWorkbenchStageKey = "catch-admin.organizer-intake-stage.v2";
 
 function OrganizerTaskWorkbench({
   controller,
@@ -37,10 +48,14 @@ function OrganizerTaskWorkbench({
 }) {
   const {
     bridge,
+    diagnosticsBridge,
     decisionInFlight,
     decisionNotes,
+    curationInFlight,
     handleDecision,
+    handleAttachCandidate,
     localDecisions,
+    localCuration,
     manualReportAcknowledgements,
     publicationPacketByEntity,
     setDecisionNotes,
@@ -53,52 +68,94 @@ function OrganizerTaskWorkbench({
   const [searchQuery, setSearchQuery] = useState("");
   const [city, setCity] = useState("all");
   const [priority, setPriority] = useState("all");
-  const [selectedEntityId, setSelectedEntityId] = useState<string | null>(
-    bridge.items[0]?.entityId ?? null
-  );
+  const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
+  const duplicateCandidateIds = useMemo(() => new Set(
+    bridge.searchCandidates.duplicateKeys.flatMap((entry) => entry.candidateIds)
+  ), [bridge.searchCandidates.duplicateKeys]);
 
   const stageCounts = useMemo(() => ({
     incoming: stageItems(bridge.items, publicationPacketByEntity, "incoming").length +
-      bridge.searchCandidates.summary.candidates,
+      bridge.searchCandidates.candidates.length,
     verify: stageItems(bridge.items, publicationPacketByEntity, "verify").length,
     resolve: stageItems(bridge.items, publicationPacketByEntity, "resolve").length,
     ready: stageItems(bridge.items, publicationPacketByEntity, "ready").length,
-  }), [bridge.items, bridge.searchCandidates.summary.candidates, publicationPacketByEntity]);
+  }), [bridge.items, bridge.searchCandidates.candidates.length, publicationPacketByEntity]);
   const cityOptions = useMemo(() => [
     {value: "all", label: "All launch cities"},
     ...Array.from(new Set(
-      bridge.items.flatMap((item) => item.markets.map((market) => market.displayName))
+      [
+        ...bridge.items.flatMap((item) =>
+          item.markets.map((market) => market.displayName)),
+        ...bridge.searchCandidates.candidates
+          .map((candidate) => candidate.queryIntent.marketSlug)
+          .filter((marketSlug): marketSlug is string => Boolean(marketSlug))
+          .map(marketLabelForSlug),
+      ]
     )).sort().map((label) => ({value: label, label})),
-  ], [bridge.items]);
-  const filteredItems = useMemo(() => {
-    const query = searchQuery.trim().toLocaleLowerCase();
-    return stageItems(bridge.items, publicationPacketByEntity, activeStage)
-      .filter((item) => city === "all" ||
-        item.markets.some((market) => market.displayName === city))
-      .filter((item) => priority === "all" || item.priority === priority)
-      .filter((item) => queueFilter !== "attention" ||
-        organizerItemNeedsAttention(item, publicationPacketByEntity.get(item.entityId)))
-      .filter((item) => queueFilter !== "ready" ||
-        organizerItemIsReady(item, publicationPacketByEntity.get(item.entityId)))
-      .filter((item) => !query || organizerSearchText(item).includes(query));
+  ], [bridge.items, bridge.searchCandidates.candidates]);
+  const stagedEntries = useMemo<OrganizerWorkbenchEntry[]>(() => {
+    const entityEntries = stageItems(
+      bridge.items,
+      publicationPacketByEntity,
+      activeStage
+    ).map((item) => ({
+      id: `entity:${item.entityId}`,
+      kind: "entity" as const,
+      item,
+    }));
+    if (activeStage !== "incoming") return entityEntries;
+    const candidateEntries = bridge.searchCandidates.candidates.map((candidate) => ({
+      id: `candidate:${candidate.candidateId}`,
+      kind: "candidate" as const,
+      candidate,
+    }));
+    return [...candidateEntries, ...entityEntries];
   }, [
     activeStage,
     bridge.items,
+    bridge.searchCandidates.candidates,
+    publicationPacketByEntity,
+  ]);
+  const filteredEntries = useMemo(() => {
+    const query = searchQuery.trim().toLocaleLowerCase();
+    return stagedEntries
+      .filter((entry) => city === "all" ||
+        workbenchEntryMarkets(entry).includes(city))
+      .filter((entry) => priority === "all" ||
+        workbenchEntryPriority(entry, duplicateCandidateIds) === priority)
+      .filter((entry) => queueFilter !== "attention" ||
+        workbenchEntryNeedsAttention(
+          entry,
+          publicationPacketByEntity,
+          duplicateCandidateIds
+        ))
+      .filter((entry) => queueFilter !== "ready" ||
+        workbenchEntryIsReady(
+          entry,
+          publicationPacketByEntity,
+          duplicateCandidateIds
+        ))
+      .filter((entry) => !query || workbenchEntrySearchText(entry).includes(query));
+  }, [
     city,
+    duplicateCandidateIds,
     priority,
     publicationPacketByEntity,
     queueFilter,
     searchQuery,
+    stagedEntries,
   ]);
 
   useEffect(() => {
-    if (filteredItems.some((item) => item.entityId === selectedEntityId)) return;
-    setSelectedEntityId(filteredItems[0]?.entityId ?? null);
-  }, [filteredItems, selectedEntityId]);
+    if (filteredEntries.some((entry) => entry.id === selectedEntryId)) return;
+    setSelectedEntryId(filteredEntries[0]?.id ?? null);
+  }, [filteredEntries, selectedEntryId]);
 
-  const item = bridge.items.find((candidate) =>
-    candidate.entityId === selectedEntityId
-  ) ?? null;
+  const selectedEntry = filteredEntries.find((entry) =>
+    entry.id === selectedEntryId) ?? null;
+  const item = selectedEntry?.kind === "entity" ? selectedEntry.item : null;
+  const candidate = selectedEntry?.kind === "candidate" ?
+    selectedEntry.candidate : null;
   const packet = item ? publicationPacketByEntity.get(item.entityId) : undefined;
   const manualReports = packet?.evidenceSummary.manualReportsWithoutArtifacts ?? 0;
   const reportsAcknowledged = item ?
@@ -111,6 +168,14 @@ function OrganizerTaskWorkbench({
     item && publicationPacketReady(packet) &&
     (manualReports === 0 || reportsAcknowledged)
   );
+  const candidateChecklist = candidate ?
+    organizerCandidateChecklistRows(candidate, duplicateCandidateIds) : [];
+  const candidateChecklistComplete =
+    candidateChecklist.filter((row) => row.passed).length;
+  const candidateInFlight = candidate ?
+    curationInFlight[candidate.candidateId] === true : false;
+  const candidateCuration = candidate ?
+    localCuration[candidate.candidateId] : undefined;
 
   const setStage = (stage: OrganizerWorkbenchStage) => {
     setActiveStageState(stage);
@@ -144,10 +209,14 @@ function OrganizerTaskWorkbench({
           value={priority}
           onChange={setPriority}
         />
-        <AdminButton onClick={onShowDiagnostics}>Diagnostics</AdminButton>
-        <AdminButton variant="primary" onClick={onShowDiagnostics}>
-          Discovery plan
-        </AdminButton>
+        {diagnosticsBridge ? (
+          <>
+            <AdminButton onClick={onShowDiagnostics}>Diagnostics</AdminButton>
+            <AdminButton variant="primary" onClick={onShowDiagnostics}>
+              Discovery plan
+            </AdminButton>
+          </>
+        ) : null}
       </AdminIntakeTaskToolbar>
       <AdminIntakeStageRail<OrganizerWorkbenchStage>
         ariaLabel="Organizer intake stages"
@@ -242,23 +311,96 @@ function OrganizerTaskWorkbench({
           statusTone: organizerItemStatus(item, packet).tone,
           subtitle: `Organizer lead · ${item.entityId} · ${marketLabel(item)}`,
           title: item.displayName,
+        } : candidate ? {
+          action: (
+            <AdminLinkButton
+              href={candidate.canonicalUrl}
+              icon={<ExternalLink size={14} strokeWidth={1.9} />}
+              label={`Open source for ${candidate.title}`}
+              rel="noreferrer"
+              target="_blank"
+            >
+              Open source
+            </AdminLinkButton>
+          ),
+          checklistRows: candidateChecklist,
+          checklistTitle: "Candidate checks",
+          footerActions: candidate.existingEntityMatches.length > 0 ? (
+            <AdminButton
+              disabled={candidateInFlight || Boolean(candidateCuration)}
+              loading={candidateInFlight}
+              loadingLabel="Attaching"
+              variant="primary"
+              onClick={() => void handleAttachCandidate(candidate)}
+            >
+              {candidateCuration ? "Attach recorded" : "Attach to existing organizer"}
+            </AdminButton>
+          ) : (
+            <AdminButton disabled>Create organizer draft unavailable</AdminButton>
+          ),
+          footerHint: candidateCuration ?
+            `Recorded at ${candidateCuration.decisionPath}.` :
+            candidate.existingEntityMatches.length > 0 ?
+              "Attaching records curation only. Publication remains separately gated." :
+              "This lead is reviewable here, but the governed candidate-to-entity scaffolder is not implemented yet.",
+          impactRows: organizerCandidateImpactRows(candidate),
+          impactTitle: "Intake impact",
+          initials: initialsForLabel(candidate.title),
+          note: (
+            <AdminIntakeSection>
+              <p>
+                {candidate.reviewContext?.reviewNotes ??
+                  candidate.snippet ??
+                  "No search-result snippet was captured for this candidate."}
+              </p>
+              {candidate.reviewContext?.eventSignal ? (
+                <p>{candidate.reviewContext.eventSignal}</p>
+              ) : null}
+              {candidate.reviewContext?.formats.length ? (
+                <p>
+                  Formats: {candidate.reviewContext.formats.join(", ")}
+                </p>
+              ) : null}
+            </AdminIntakeSection>
+          ),
+          noteTitle: candidate.reviewContext ?
+            "Reviewed intake context" : "Captured search context",
+          primaryRows: organizerCandidateEvidenceRows(candidate),
+          primaryTitle: "Source evidence",
+          readiness: {
+            blockers: candidateChecklist.length - candidateChecklistComplete,
+            complete: candidateChecklistComplete,
+            label: "Candidate readiness",
+            total: candidateChecklist.length,
+          },
+          status: organizerCandidateStatus(candidate, duplicateCandidateIds).label,
+          statusTone: organizerCandidateStatus(
+            candidate,
+            duplicateCandidateIds
+          ).tone,
+          subtitle:
+            `Search candidate · ${candidateMarketLabel(candidate)} · observed ${candidate.observedAt}`,
+          title: candidate.title,
         } : null}
         emptyDetail="Select an organizer lead to review evidence and handoff impact."
         emptyQueue="No organizer leads match this stage and filter set."
         filters={[
-          {id: "all", label: `All ${filteredItems.length}`, selected: queueFilter === "all"},
+          {id: "all", label: `All ${filteredEntries.length}`, selected: queueFilter === "all"},
           {id: "attention", label: "Needs attention", selected: queueFilter === "attention"},
           {id: "ready", label: "Ready", selected: queueFilter === "ready"},
         ]}
-        items={filteredItems.map((candidate) => queueItem(
-          candidate,
-          publicationPacketByEntity.get(candidate.entityId)
-        ))}
-        queueMeta={`${filteredItems.length} item${filteredItems.length === 1 ? "" : "s"}`}
+        items={filteredEntries.map((entry) =>
+          entry.kind === "entity" ?
+            queueItem(
+              entry.item,
+              publicationPacketByEntity.get(entry.item.entityId)
+            ) :
+            organizerCandidateQueueItem(entry.candidate, duplicateCandidateIds))}
+        queueMeta={`${filteredEntries.length} item${filteredEntries.length === 1 ? "" : "s"}`}
         queueTitle={stageTitle(activeStage)}
-        selectedId={selectedEntityId}
+        selectedId={selectedEntryId}
         onFilterChange={(filterId) => setQueueFilter(filterId as OrganizerQueueFilter)}
-        onSelect={setSelectedEntityId}
+        onSelect={setSelectedEntryId}
       />
     </>
   );
@@ -452,6 +594,247 @@ function organizerSearchText(item: Intake.OrganizerIntakeItem) {
   ].join(" ").toLocaleLowerCase();
 }
 
+function workbenchEntryMarkets(entry: OrganizerWorkbenchEntry) {
+  if (entry.kind === "candidate") {
+    return [candidateMarketLabel(entry.candidate)];
+  }
+  return entry.item.markets.map((market) => market.displayName);
+}
+
+function workbenchEntryPriority(
+  entry: OrganizerWorkbenchEntry,
+  duplicateCandidateIds: Set<string>
+) {
+  if (entry.kind === "entity") return entry.item.priority;
+  if (
+    entry.candidate.existingEntityMatches.length > 0 ||
+    duplicateCandidateIds.has(entry.candidate.candidateId)
+  ) {
+    return "p0";
+  }
+  if (
+    entry.candidate.reviewAction === "supporting_evidence_only" ||
+    entry.candidate.normalizedKey === null
+  ) {
+    return "p2";
+  }
+  return "p1";
+}
+
+function workbenchEntryNeedsAttention(
+  entry: OrganizerWorkbenchEntry,
+  packets: Map<string, Intake.OrganizerPublicationReviewPacket>,
+  duplicateCandidateIds: Set<string>
+) {
+  if (entry.kind === "candidate") {
+    return organizerCandidateChecklistRows(
+      entry.candidate,
+      duplicateCandidateIds
+    ).some((row) => !row.passed);
+  }
+  return organizerItemNeedsAttention(
+    entry.item,
+    packets.get(entry.item.entityId)
+  );
+}
+
+function workbenchEntryIsReady(
+  entry: OrganizerWorkbenchEntry,
+  packets: Map<string, Intake.OrganizerPublicationReviewPacket>,
+  duplicateCandidateIds: Set<string>
+) {
+  if (entry.kind === "candidate") {
+    return organizerCandidateChecklistRows(
+      entry.candidate,
+      duplicateCandidateIds
+    ).every((row) => row.passed);
+  }
+  return organizerItemIsReady(entry.item, packets.get(entry.item.entityId));
+}
+
+function workbenchEntrySearchText(entry: OrganizerWorkbenchEntry) {
+  if (entry.kind === "entity") return organizerSearchText(entry.item);
+  const candidate = entry.candidate;
+  return [
+    candidate.title,
+    candidate.candidateId,
+    candidate.platform,
+    candidate.surfaceKind,
+    candidate.reviewAction,
+    candidate.snippet,
+    candidate.query,
+    candidate.queryIntent.marketSlug,
+    candidate.queryIntent.activityKind,
+    ...candidate.diagnostics,
+    ...candidate.existingEntityMatches.map((match) => match.entityId),
+    candidate.reviewContext?.recordStatus,
+    candidate.reviewContext?.eventSignal,
+    candidate.reviewContext?.reviewNotes,
+    ...(candidate.reviewContext?.formats ?? []),
+    ...(candidate.reviewContext?.sources ?? []),
+  ].filter(Boolean).join(" ").toLocaleLowerCase();
+}
+
+function organizerCandidateQueueItem(
+  candidate: Intake.OrganizerSearchCandidate,
+  duplicateCandidateIds: Set<string>
+) {
+  const status = organizerCandidateStatus(candidate, duplicateCandidateIds);
+  return {
+    description: `${candidate.platform} · ${candidateMarketLabel(candidate)}`,
+    id: `candidate:${candidate.candidateId}`,
+    initials: initialsForLabel(candidate.title),
+    meta: candidate.reviewContext ?
+      `${candidate.reviewContext.recordStatus.replaceAll("_", " ")} · verified ${candidate.reviewContext.verifiedAt ?? "date unavailable"}` :
+      `#${candidate.rank} · ${candidate.reviewAction.replaceAll("_", " ")}`,
+    status: status.label,
+    statusTone: status.tone,
+    title: candidate.title,
+  };
+}
+
+function organizerCandidateStatus(
+  candidate: Intake.OrganizerSearchCandidate,
+  duplicateCandidateIds: Set<string>
+): {label: string; tone: "neutral" | "warning" | "danger" | "success"} {
+  if (duplicateCandidateIds.has(candidate.candidateId)) {
+    return {label: "duplicate key", tone: "danger"};
+  }
+  if (candidate.existingEntityMatches.length > 0) {
+    return {label: "matched", tone: "success"};
+  }
+  if (!candidate.normalizedKey) {
+    return {label: "needs identity", tone: "danger"};
+  }
+  if (candidate.diagnostics.length > 0) {
+    return {label: "needs review", tone: "warning"};
+  }
+  if (candidate.reviewContext?.recordStatus === "review_now") {
+    return {label: "review now", tone: "success"};
+  }
+  return {label: "new lead", tone: "neutral"};
+}
+
+function organizerCandidateChecklistRows(
+  candidate: Intake.OrganizerSearchCandidate,
+  duplicateCandidateIds: Set<string>
+) {
+  const duplicateKey = duplicateCandidateIds.has(candidate.candidateId);
+  const ownershipConfirmed =
+    candidate.suggestedSurface.confidence.ownership === "high";
+  return [
+    {
+      id: "market",
+      label: "Pilot market assigned",
+      meta: candidateMarketLabel(candidate),
+      passed: Boolean(candidate.queryIntent.marketSlug),
+    },
+    {
+      id: "source",
+      label: "Source URL captured",
+      meta: candidate.platform,
+      passed: Boolean(candidate.canonicalUrl),
+    },
+    {
+      id: "identity",
+      label: "Unique identity key",
+      meta: duplicateKey ?
+        "collides with another candidate" :
+        candidate.normalizedKey ?? "missing",
+      passed: Boolean(candidate.normalizedKey) && !duplicateKey,
+    },
+    {
+      id: "ownership",
+      label: "Organizer ownership confirmed",
+      meta: ownershipConfirmed ? "confirmed" : "manual review required",
+      passed: ownershipConfirmed,
+    },
+    {
+      id: "review-context",
+      label: "Reviewed intake evidence",
+      meta: candidate.reviewContext?.verifiedAt ??
+        "No reviewed shortlist context",
+      passed: Boolean(candidate.reviewContext?.verifiedAt),
+    },
+  ];
+}
+
+function organizerCandidateEvidenceRows(
+  candidate: Intake.OrganizerSearchCandidate
+) {
+  const primarySource = {
+    href: candidate.canonicalUrl,
+    id: "source",
+    meta: candidate.snippet ?? candidate.query,
+    status: `observed ${candidate.observedAt}`,
+    statusTone: "neutral" as const,
+    title:
+      `${candidate.platform} · ${candidate.surfaceKind.replaceAll("_", " ")}`,
+  };
+  const reviewedSources = (candidate.reviewContext?.sources ?? [])
+    .filter((source) => source !== candidate.canonicalUrl)
+    .map((source, index) => ({
+      href: source,
+      id: `review-source:${index}`,
+      meta: candidate.reviewContext?.eventSignal ?? "Reviewed source",
+      status: `verified ${candidate.reviewContext?.verifiedAt ?? "date unavailable"}`,
+      statusTone: "success" as const,
+      title: `Reviewed source ${index + 1}`,
+    }));
+  return [
+    primarySource,
+    ...reviewedSources,
+    {
+      id: "query",
+      meta: candidate.query,
+      status: candidate.reviewAction.replaceAll("_", " "),
+      statusTone: candidate.existingEntityMatches.length > 0 ?
+        "success" as const : "warning" as const,
+      title: "Discovery query",
+    },
+  ];
+}
+
+function organizerCandidateImpactRows(
+  candidate: Intake.OrganizerSearchCandidate
+) {
+  return [
+    {
+      id: "entity",
+      label: "Organizer record",
+      value: candidate.existingEntityMatches[0]?.entityId ?
+        `Attach to ${candidate.existingEntityMatches[0].entityId}` :
+        "Draft required",
+    },
+    {id: "website", label: "Website listing", value: "No write"},
+    {id: "app", label: "App visibility", value: "Hidden"},
+    {id: "crawl", label: "Recurring crawl", value: "Disabled"},
+    {id: "market", label: "Pilot market", value: candidateMarketLabel(candidate)},
+    ...(candidate.reviewContext ? [{
+      id: "record-status",
+      label: "Review status",
+      value: candidate.reviewContext.recordStatus.replaceAll("_", " "),
+    }, {
+      id: "inventory",
+      label: "Existing inventory",
+      value: candidate.reviewContext.existingInventory ? "Attach" : "Net new",
+    }] : []),
+  ];
+}
+
+function candidateMarketLabel(candidate: Intake.OrganizerSearchCandidate) {
+  return candidate.queryIntent.marketSlug ?
+    marketLabelForSlug(candidate.queryIntent.marketSlug) :
+    "Market unassigned";
+}
+
+function marketLabelForSlug(slug: string) {
+  return slug.split("-")
+    .map((part) => part.length > 0 ?
+      `${part[0]?.toLocaleUpperCase()}${part.slice(1)}` : part)
+    .join(" ");
+}
+
 function activityLabel(packet?: Intake.OrganizerPublicationReviewPacket) {
   return packet?.identity.activity.primaryActivityKind
     ?.replaceAll(/([a-z])([A-Z])/gu, "$1 $2") ?? "Organizer";
@@ -474,7 +857,7 @@ function stageTitle(stage: OrganizerWorkbenchStage) {
 }
 
 function readOrganizerWorkbenchStage(): OrganizerWorkbenchStage {
-  if (typeof window === "undefined") return "verify";
+  if (typeof window === "undefined") return "incoming";
   try {
     const value = window.localStorage.getItem(organizerWorkbenchStageKey);
     if (value === "incoming" || value === "verify" || value === "resolve" || value === "ready") {
@@ -483,7 +866,7 @@ function readOrganizerWorkbenchStage(): OrganizerWorkbenchStage {
   } catch {
     // Fall through to the review-first default.
   }
-  return "verify";
+  return "incoming";
 }
 
 export const organizerIntakeWorkbench = {OrganizerTaskWorkbench};

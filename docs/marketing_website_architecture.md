@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.4.179
+version: 0.4.180
 updated: 2026-07-24
 owner: marketing_website
 status: active
@@ -86,7 +86,10 @@ The website is already split out of the old monolithic shell:
   resolve to a `live` city in the active market pack. Multi-market organizer
   listings expose only their live-market projection in production. Storybook reads the explicit demo-inclusive
   `hostListings.demo.json` projection through `stories/fixtures/hostListings.ts`.
-  The generator and pretypecheck gate validate both outputs.
+  The production deploy regenerates `hostListings.json` from canonical
+  Firestore organizer documents; the committed JSON is a static build
+  projection, never the operational source of truth. The pretypecheck gate
+  validates both outputs.
 - `design/public_surface_behavior.json` is the cross-surface authority and
   action matrix described by
   `docs/web_surface_architecture.md#public-viewer-and-listing-authority-matrix`.

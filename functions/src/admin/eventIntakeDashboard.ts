@@ -172,7 +172,7 @@ function bridgeFromDashboard(
 }
 
 /**
- * Projects a broader generated bridge into the Event Intake read model.
+ * Projects persisted dashboard state into the Event Intake read model.
  * @param {Record<string, unknown>} bridge Source bridge.
  * @param {string} bridgeSource Source marker.
  * @return {Record<string, unknown>} Event Intake bridge.

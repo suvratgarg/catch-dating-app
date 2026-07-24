@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.9.2
+version: 0.9.3
 updated: 2026-07-24
 owner: web_platform
 status: active
@@ -404,10 +404,32 @@ trusted operator, not a browser route or callable.
 
 An exception is resolved in the owning Event or Organizer Intake surface. The
 Automation workspace does not write an `OperationDecision` or resume the same
-run; a later Supply Intake run can see that decision only after the owning
-compatibility artifact is regenerated. Reconciliation creates a separate
-immutable child run for expiry and stale-evidence changes rather than editing an
-already imported run.
+run. The owning review decision stays durable in its audited Firestore
+collection; no repository artifact regeneration is part of the live workflow.
+Any later Supply Intake reconciliation must read that persisted decision
+explicitly and create a separate immutable child run for expiry and
+stale-evidence changes rather than editing an already imported run.
+
+## Admin Live Data Source Contract
+
+`contracts/admin/admin_live_data_sources.json` inventories every Admin route,
+including the three Intake workspaces, and names its authenticated live reads
+and mutations. `web:admin-live-data-sources` reconciles that inventory with the
+navigation, Admin API boundary, and Functions exports. It also rejects
+generated operational JSON imports from production feature code; such imports
+are allowed only in explicitly named sample or Storybook modules. Its
+`--verify-live` mode probes every declared callable in the selected Firebase
+environment and fails when a Hosting build would depend on an absent or
+unreachable backend. The live Admin bundle gate also rejects generated Event
+Intake, Organizer Intake, Marketing Ops, and external-event plan fixtures, so
+those artifacts cannot ship as dormant production assets.
+
+Organizer Intake live mode reads the latest completed organizer-only Supply
+Intake run for each launch market through `adminListIntakeOperations`. Its
+search candidates therefore come from `operationRuns` and
+`operationWorkItems`. Sample and Storybook views use typed synthetic operation
+records; no operational JSON snapshot is retained or packaged. The browser
+does not upload a generated file or reconstruct a queue from repository state.
 
 ## Admin Agent Activity Monitor
 
@@ -526,11 +548,11 @@ pipeline:
   Storybook stories through a Playwright Chromium axe gate;
 - pushes to `main` that touch marketing-site inputs deploy only
   `hosting:marketing` to the production Firebase project;
-- the deploy job reads canonical organizer claim-target readiness from
-  production, materializes receipt-aware production and demo projections in
-  the ephemeral runner checkout, and verifies both before Firebase invokes the
-  normal predeploy build; committed receipt-free projections remain the stable
-  PR validation source rather than being mistaken for production readiness;
+- the deploy job reads canonical `organizers/{id}` documents from production
+  Firestore and materializes the production-only organizer projection in the
+  ephemeral runner checkout before Firebase invokes the normal predeploy
+  build; pull requests validate the committed build projection without
+  treating it as mutable operational state;
 - generated public routes are served as static files; only explicit host,
   claim, and API rewrites remain, so unknown paths use `dist/404.html` with an
   actual HTTP 404 instead of the root SPA shell;

@@ -33,6 +33,10 @@ Production organizer projection deliberately excludes `catchDemo` records.
 Storybook/sales fixture and is checked independently. Home discovery further
 filters production data to future Catch-bookable events in configured live
 market cities; external events remain visible only on organizer listings.
+The production Hosting job regenerates `src/generated/hostListings.json` from
+canonical `organizers/{id}` documents in Firestore. The checked-in file is a
+build projection for deterministic pull-request validation, not an operational
+editing surface.
 
 Firebase Hosting deploys run
 `node tool/env/check_web_hosting_env.mjs marketing` before building. Production
@@ -46,15 +50,11 @@ HTTPS `VITE_APP_STORE_URL` and `VITE_PLAY_STORE_URL` product links. The deploy
 workflow defaults an unset GitHub Environment mode to `prelaunch`; set
 `VITE_STORE_LINKS_MODE=live` in `prod-hosting` only when both listings exist.
 
-The production deploy job also runs a read-only claim-target sync against the
-selected Firebase project and writes a temporary readiness receipt. Organizer
-listing generation accepts that receipt only when its project id and exact
-claim-target-plan SHA-256 match, so claim CTAs cannot be enabled from the
-checked-in empty fixture or from a stale environment snapshot. This preflight
-does not write Firestore. Checked-in or fixture-generated sync previews remain
-advisory even when an action says `in_sync`; they never enable claim or review
-capabilities. The reviewed organizer promotion pipeline uses the same receipt
-handoff in `--claim-sync firestore` mode.
+The production deploy job reads the canonical organizer collection directly.
+Content publication does not itself enable claim or public-review mutations;
+those capabilities remain fail-closed until a separate Firestore-owned
+capability decision is implemented. Fixture-generated sync previews cannot
+enable production capabilities.
 
 The deploy job uses the repo's existing `prod` Firebase alias and Google Cloud
 Workload Identity variables:

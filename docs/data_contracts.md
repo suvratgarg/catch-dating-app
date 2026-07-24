@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.5.2
+version: 1.5.3
 updated: 2026-07-24
 owner: recursive_audit_loop
 status: active
@@ -100,6 +100,13 @@ the migration window and must not become the authority for new behavior.
 Production canonical parity completed on 2026-07-22, and current Flutter reads
 do not fall back to `clubs`; compatibility writes remain until the separate
 released-client retirement gate is approved.
+
+Public organizer website content is also owned by the canonical organizer
+document. `publicPage` controls publication, indexing, canonical and legacy
+paths; `publicProfile`, `publicSources`, `provenance`, `claim`, and `ownership`
+provide the owner-safe projection inputs. Production Hosting exports those
+fields from Firestore at build time. Repository JSON must not be used as the
+editing or approval surface.
 
 ### Required Event Meeting Location
 
@@ -421,6 +428,14 @@ the canonical queryable task flag, and published or terminal records cannot
 remain in the active human-review lane. The live admin surface reads
 those durable records through `adminListIntakeOperations`; it cannot enqueue a
 run or mutate workflow state.
+
+Organizer discovery candidates are normalized into the bounded
+`normalizedPayload.intake` projection on organizer work items. The payload
+contains only the reviewed candidate fields required by the Admin queue; it is
+not a canonical `organizers/{id}` document and grants no publication,
+ownership, crawl, or app-visibility authority. Organizer-only shadow runs may
+omit an Event Intake bridge, but remain subject to the same immutable export,
+contract validation, and trusted importer.
 
 The trusted shadow-projection importer validates the export again, resets only
 the Firestore persistence revision to zero, and retains each local source

@@ -100,6 +100,7 @@ export function toCanonicalRunRecord(run, items = [], actions = [], checkpoints 
     status: run.status,
     scope: {
       market: run.plan?.market ?? null,
+      intakeScope: run.plan?.intakeScope ?? "all",
       through: run.plan?.through ?? null,
       planId: run.planId,
     },
@@ -146,6 +147,9 @@ export function toCanonicalRunRecord(run, items = [], actions = [], checkpoints 
       localCounters: run.counters,
       capabilities: run.capabilities,
       localBudget: run.budget,
+      ...(run.plan?.organizerReviewPolicy ? {
+        organizerReviewPolicy: run.plan.organizerReviewPolicy,
+      } : {}),
     },
   };
 }
@@ -206,6 +210,7 @@ export function toCanonicalWorkItemRecord(item, {
       decisionProvenance: {...item.decisionProvenance},
       citations: uniqueSorted(item.evidence.citations),
       provenanceStatus: item.evidence.provenanceStatus,
+      ...(item.adminProjection ? {intake: item.adminProjection} : {}),
     },
     decisionId: null,
     publicationPlanId: null,

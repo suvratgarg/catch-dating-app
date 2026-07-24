@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.3.0
-updated: 2026-07-23
+version: 1.3.1
+updated: 2026-07-24
 owner: operations_platform
 status: active
 ---
@@ -217,6 +217,14 @@ generic platform requirement.
 The Event and Organizer Intake tabs remain the human-review surfaces. The
 operations projection adds run health and exception inventory without replacing
 their source evidence or backed decision callables.
+
+Organizer discovery can run with `--intake-scope organizer`. This scope does
+not require or project an Event Intake bridge, so each launch market can
+produce an immutable organizer queue independently. Normalized organizer
+candidate fields are carried in the work item's bounded Admin projection;
+private raw-provider payloads remain excluded. The live Organizer Intake tab
+selects the newest completed organizer run per launch market and ignores
+historical runs rather than merging duplicate snapshots.
 
 ### Admin projection bridge
 

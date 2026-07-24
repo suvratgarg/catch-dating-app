@@ -184,6 +184,237 @@ test("Mumbai plans admit only organizer packets with Mumbai market evidence", as
   });
 });
 
+test("organizer search candidates become database-ready organizer work items", async () => {
+  const repoRoot = await createFixtureRepository(
+    await temporaryDirectory("catch-ops-organizer-candidates-")
+  );
+  const queuePath = path.join(
+    repoRoot,
+    "tool/organizer_intake/generated/search_result_candidate_queue.json"
+  );
+  const candidateFor = (candidateId, market) => ({
+    candidateId,
+    batchId: `batch-${market}`,
+    resultId: candidateId,
+    rank: 1,
+    query: `${market} organizers`,
+    queryIntent: {
+      activityKind: "organizer-discovery",
+      entityHint: null,
+      marketSlug: market,
+    },
+    observedAt: "2026-07-14",
+    title: `${market} candidate`,
+    snippet: "Reviewed shortlist evidence.",
+    url: `https://${candidateId}.example/`,
+    canonicalUrl: `https://${candidateId}.example/`,
+    platform: "officialWebsite",
+    surfaceKind: "website",
+    normalizedKey: `domain:${candidateId}.example`,
+    suggestedSurface: {
+      confidence: {city: "high", entityMatch: "medium", ownership: "low"},
+      crawl: {
+        eventDiscoveryStatus: "disabled",
+        policy: "manualOnly",
+        supportsEventExtraction: false,
+      },
+      evidenceRefs: [],
+      normalizedKey: `domain:${candidateId}.example`,
+      notes: "Verify ownership.",
+      platform: "officialWebsite",
+      role: "secondary",
+      status: "candidate",
+      surfaceId: `surface-${candidateId}`,
+      surfaceKind: "website",
+      url: `https://${candidateId}.example/`,
+    },
+    existingEntityMatches: [],
+    reviewAction: "verify_ownership_before_attach",
+    diagnostics: ["first_party_claim_requires_manual_confirmation"],
+    reviewContext: {
+      recordStatus: "review_now",
+      existingInventory: false,
+      formats: [market === "mumbai" ? "Speed dating" : "Social mixer"],
+      sources: [`https://${candidateId}.example/`],
+      eventSignal:
+        `A current ${market === "mumbai" ? "Mumbai" : "Indore"} event is visible.`,
+      reviewNotes: "Verify the organizer boundary.",
+      verifiedAt: "2026-07-14",
+    },
+  });
+  await fs.writeFile(queuePath, `${JSON.stringify({
+    schemaVersion: 1,
+    reviewPolicy: {
+      shortlistId: "fixture-organizer-review",
+      generatedAt: NOW,
+      target: {organizers: 2, markets: {mumbai: 1, indore: 1}},
+      summary: {totalCandidates: 2, mumbai: 1, indore: 1},
+      publicationPolicy: "Human review remains required.",
+      recordStatusDefinitions: {
+        review_now: "Ready for human entity review.",
+      },
+    },
+    candidates: [
+      candidateFor("candidate-mumbai", "mumbai"),
+      candidateFor("candidate-indore", "indore"),
+    ],
+  }, null, 2)}\n`);
+
+  const workflow = new SupplyIntakeWorkflow({repoRoot});
+  const plan = await workflow.createPlan({
+    market: "mumbai",
+    through: "2026-07-28",
+    now: NOW,
+  });
+  assert.equal(
+    plan.artifactSnapshot.artifacts.organizerSearchCandidates.counts.organizers,
+    1
+  );
+  const items = await workflow.project(plan, {
+    runId: "run-organizer-candidates",
+    now: NOW,
+  });
+  const projectedCandidate = items.find((item) =>
+    item.sourceEntity.id === "candidate-mumbai");
+  assert.ok(projectedCandidate);
+  const candidate = {
+    ...projectedCandidate,
+    ...workflow.review(projectedCandidate, {now: NOW}),
+  };
+  assert.equal(candidate.entityKind, "organizer");
+  assert.equal(candidate.primaryStage, "incoming");
+  assert.equal(candidate.owner, "human");
+  assert.equal(
+    candidate.adminProjection.recordType,
+    "organizer_search_candidate"
+  );
+  const projection = buildAdminProjection({
+    schemaVersion: 1,
+    runId: "run-organizer-candidates",
+    workflowId: "supply-intake",
+    workflowVersion: "0.1.0",
+    revision: 0,
+    mode: "shadow",
+    status: "completed",
+    planId: plan.planId,
+    plan,
+    planHash: hashValue(plan),
+    capabilities: plan.capabilities,
+    budget: {limits: plan.budgets, consumed: {}},
+    counters: {actions: 0},
+    createdAt: NOW,
+    updatedAt: NOW,
+    startedAt: NOW,
+    completedAt: NOW,
+    failure: null,
+  }, [candidate]);
+  assert.deepEqual(
+    projection.items[0].normalizedPayload.intake.candidate,
+    candidate.adminProjection.candidate
+  );
+  assert.equal(
+    projection.items[0].normalizedPayload.intake.candidate.queryIntent.marketSlug,
+    "mumbai"
+  );
+  assert.deepEqual(
+    projection.items[0].normalizedPayload.intake.candidate.reviewContext,
+    {
+      recordStatus: "review_now",
+      existingInventory: false,
+      formats: ["Speed dating"],
+      sources: ["https://candidate-mumbai.example/"],
+      eventSignal: "A current Mumbai event is visible.",
+      reviewNotes: "Verify the organizer boundary.",
+      verifiedAt: "2026-07-14",
+    }
+  );
+  assert.deepEqual(projection.run.metadata.organizerReviewPolicy, {
+    shortlistId: "fixture-organizer-review",
+    generatedAt: NOW,
+    target: {organizers: 2, markets: {mumbai: 1, indore: 1}},
+    summary: {totalCandidates: 2, mumbai: 1, indore: 1},
+    publicationPolicy: "Human review remains required.",
+    recordStatusDefinitions: {
+      review_now: "Ready for human entity review.",
+    },
+  });
+});
+
+test("organizer-only plans do not require an Event Intake bridge", async () => {
+  const repoRoot = await createFixtureRepository(
+    await temporaryDirectory("catch-ops-organizer-only-")
+  );
+  await fs.rm(path.join(
+    repoRoot,
+    "tool/marketing/event_guide/generated"
+  ), {recursive: true});
+  const queuePath = path.join(
+    repoRoot,
+    "tool/organizer_intake/generated/search_result_candidate_queue.json"
+  );
+  await fs.writeFile(queuePath, `${JSON.stringify({
+    schemaVersion: 1,
+    candidates: [{
+      candidateId: "indore-candidate",
+      batchId: "batch-indore",
+      resultId: "indore-candidate",
+      rank: 1,
+      query: "indore organizers",
+      queryIntent: {
+        activityKind: "organizer-discovery",
+        entityHint: null,
+        marketSlug: "indore",
+      },
+      observedAt: "2026-07-14",
+      title: "Indore candidate",
+      snippet: null,
+      url: "https://indore.example/",
+      canonicalUrl: "https://indore.example/",
+      platform: "officialWebsite",
+      surfaceKind: "website",
+      normalizedKey: "domain:indore.example",
+      suggestedSurface: {
+        confidence: {city: "high", entityMatch: "medium", ownership: "low"},
+        crawl: {
+          eventDiscoveryStatus: "disabled",
+          policy: "manualOnly",
+          supportsEventExtraction: false,
+        },
+        evidenceRefs: [],
+        normalizedKey: "domain:indore.example",
+        notes: "Verify ownership.",
+        platform: "officialWebsite",
+        role: "secondary",
+        status: "candidate",
+        surfaceId: "surface-indore-candidate",
+        surfaceKind: "website",
+        url: "https://indore.example/",
+      },
+      existingEntityMatches: [],
+      reviewAction: "verify_ownership_before_attach",
+      diagnostics: [],
+    }],
+  }, null, 2)}\n`);
+  const workflow = new SupplyIntakeWorkflow({repoRoot});
+  const plan = await workflow.createPlan({
+    market: "indore",
+    intakeScope: "organizer",
+    through: "2026-07-28",
+    now: NOW,
+  });
+  assert.equal(
+    plan.artifactSnapshot.artifacts.eventIntakeBridge.status,
+    "not_requested"
+  );
+  const items = await workflow.project(plan, {
+    runId: "run-organizer-only",
+    now: NOW,
+  });
+  assert.deepEqual(items.map((item) => item.sourceEntity.id), [
+    "indore-candidate",
+  ]);
+});
+
 test("plan creation rejects a stale or expired Event Intake bridge", async () => {
   const repoRoot = await createFixtureRepository(
     await temporaryDirectory("catch-ops-stale-bridge-")

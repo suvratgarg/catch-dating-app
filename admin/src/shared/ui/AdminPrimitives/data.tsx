@@ -315,8 +315,8 @@ export function AdminIntakePublicationBoundaryPanel({
         <StateRow
           label="Read model"
           value={isEvents ?
-            "eventIntakeDashboards/current plus generated local-preview bridge" :
-            "repo-owned organizer intake bridge JSON"}
+            "eventIntakeDashboards/current" :
+            "operationRuns + operationWorkItems"}
         />
         <StateRow
           label="Writes here"
