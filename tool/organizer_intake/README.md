@@ -459,15 +459,13 @@ review export command reads those low-volume decisions and writes the
 repo-backed `event_review_decisions/*.json` bridge only when `--write` is
 supplied. It never writes Firestore and it never imports events.
 
-`check_admin_review_bridge.mjs` validates the admin-review bridge itself. It
-fails if any review channel is missing its admin API wrapper, backend callable
-export, contract schema, generated DTO/document, Firestore decision collection,
-exporter, local decision folder, tool manifest entry, or promotion-pipeline
-flag. It also validates that the generated pending-input, pending-work
-coverage, and promotion-execution packets are embedded in
-`admin/src/features/intake/organizer/generated/organizerIntakeBridge.json` and
-rendered by the admin intake screen. Run it before website deploys, claim-target
-syncs, or adding a new manual review channel.
+`check_admin_review_bridge.mjs` now validates the durable Firestore review path.
+It fails if Organizer Intake stops reading completed Supply Intake runs through
+`adminListIntakeOperations`, if any review channel loses its Admin API wrapper,
+backend callable, contract, audited Firestore decision write, or React Query
+mutation, or if a retired Admin operational JSON snapshot is reintroduced. Run
+it before website deploys, claim-target syncs, or adding a new manual review
+channel.
 
 Approved public projections also generate
 `generated/organizer_claim_targets.json` and
@@ -479,13 +477,14 @@ reviewing the durable preview and a live dry run,
 targets. The sync skips claimed or owner-bound club documents.
 
 Before deploying the website or applying claim-target writes, run
-`check_admin_review_bridge.mjs` and `check_promotion_bridge.mjs`. The admin
-bridge check verifies the review-write/export/generation wiring; the promotion
-bridge check verifies that every approved organizer projection has one canonical
-website listing, matching legacy path metadata, and a matching unclaimed
-Firestore claim target. The website postbuild step then writes route HTML plus
-`sitemap.xml` and `robots.txt`; only indexable routes are included in the
-sitemap, while legacy paths and noindex directory/search pages stay excluded.
+`check_admin_review_bridge.mjs` and `check_promotion_bridge.mjs`. The Admin
+check verifies the Firestore read/write path and rejects legacy operational
+snapshots; the promotion bridge check verifies that every approved organizer
+projection has one canonical website listing, matching legacy path metadata,
+and a matching unclaimed Firestore claim target. The website postbuild step
+then writes route HTML plus `sitemap.xml` and `robots.txt`; only indexable routes
+are included in the sitemap, while legacy paths and noindex directory/search
+pages stay excluded.
 
 For the normal reviewed promotion pass, use
 `run_promotion_pipeline.mjs`. Its default mode is local-only: it regenerates

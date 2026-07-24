@@ -3105,7 +3105,7 @@
       "command": "node tool/organizer_intake/check_admin_review_bridge.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Validates every organizer admin review channel is wired through admin UI/API, backend callable, contracts, Firestore decision export, tooling manifests, promotion pipeline flags, and the generated pending-input and promotion-execution admin handoffs.",
+      "description": "Validates Organizer Intake reads completed Supply Intake runs from Firestore, every review channel writes through an audited callable-backed Firestore collection, and retired Admin operational JSON snapshots are not reintroduced.",
       "checks": [
         "node --check tool/organizer_intake/check_admin_review_bridge.mjs",
         "node --test tool/organizer_intake/check_admin_review_bridge.test.mjs",
