@@ -22,8 +22,8 @@
     "scannedSourceModules": 335,
     "dependencyLeafNodes": 23,
     "moduleNodes": 358,
-    "moduleEdges": 1236,
-    "runtimeModuleEdges": 983,
+    "moduleEdges": 1238,
+    "runtimeModuleEdges": 985,
     "typeOnlyModuleEdges": 253,
     "dynamicImportEdges": 29,
     "reExportEdges": 65,
@@ -2532,8 +2532,8 @@
       "targetSurface": "website",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 50,
-      "runtimeEdges": 47,
+      "edges": 52,
+      "runtimeEdges": 49,
       "typeOnlyEdges": 3,
       "dynamicImports": 0,
       "reExports": 0,
@@ -2549,6 +2549,7 @@
         "website/src/features/organizers/publicDiscovery.ts",
         "website/src/features/organizers/publicDiscoveryData.ts",
         "website/src/features/organizers/publicSurfaceBehavior.test.ts",
+        "website/src/features/organizers/sections/HostListingSections.tsx",
         "website/src/features/organizers/sections/ListingClaimSections.tsx",
         "website/src/features/organizers/sections/ListingEventsSections.tsx",
         "website/src/features/organizers/sections/ListingFactsSection.tsx",
@@ -3011,8 +3012,8 @@
       "targetSurface": "website",
       "targetScope": "feature",
       "targetFeature": "organizers",
-      "edges": 28,
-      "runtimeEdges": 20,
+      "edges": 27,
+      "runtimeEdges": 19,
       "typeOnlyEdges": 8,
       "dynamicImports": 0,
       "reExports": 0,
@@ -3079,8 +3080,8 @@
       "targetSurface": "website",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 22,
-      "runtimeEdges": 20,
+      "edges": 23,
+      "runtimeEdges": 21,
       "typeOnlyEdges": 2,
       "dynamicImports": 0,
       "reExports": 0,
@@ -3704,8 +3705,8 @@
       "sourceLayer": "feature",
       "targetSurface": "website",
       "targetLayer": "content",
-      "edges": 79,
-      "runtimeEdges": 78,
+      "edges": 81,
+      "runtimeEdges": 80,
       "typeOnlyEdges": 1,
       "dynamicImports": 0,
       "reExports": 0,
@@ -3743,8 +3744,10 @@
         "website/src/features/organizers/publicDiscovery.ts",
         "website/src/features/organizers/publicDiscoveryData.ts",
         "website/src/features/organizers/publicSurfaceBehavior.test.ts",
+        "website/src/features/organizers/sections/HostListingSections.tsx",
         "website/src/features/organizers/sections/ListingClaimSections.tsx",
         "website/src/features/organizers/sections/ListingEventsSections.tsx",
+        "website/src/features/organizers/sections/ListingFactsSection.tsx",
         "website/src/features/organizers/sections/ListingHeroSection.tsx",
         "website/src/features/organizers/sections/ListingReviewsSection.tsx",
         "website/src/features/organizers/sections/ListingSourcesSection.tsx",
@@ -3859,6 +3862,7 @@
         "website/src/features/organizers/OrganizerSearchPage.tsx",
         "website/src/features/organizers/featuredOrganizerCardItem.tsx",
         "website/src/features/organizers/publicDiscovery.ts",
+        "website/src/features/organizers/sections/HostListingSections.tsx",
         "website/src/features/organizers/sections/ListingClaimSections.tsx",
         "website/src/features/organizers/sections/ListingEventsSections.tsx",
         "website/src/features/organizers/sections/ListingFactsSection.tsx",
@@ -4041,8 +4045,8 @@
       "sourceLayer": "story",
       "targetSurface": "website",
       "targetLayer": "feature",
-      "edges": 54,
-      "runtimeEdges": 42,
+      "edges": 53,
+      "runtimeEdges": 41,
       "typeOnlyEdges": 12,
       "dynamicImports": 0,
       "reExports": 0,
@@ -4133,8 +4137,8 @@
       "sourceLayer": "story",
       "targetSurface": "website",
       "targetLayer": "shared",
-      "edges": 19,
-      "runtimeEdges": 17,
+      "edges": 20,
+      "runtimeEdges": 18,
       "typeOnlyEdges": 2,
       "dynamicImports": 0,
       "reExports": 0,
@@ -4445,9 +4449,9 @@
     },
     {
       "package": "react",
-      "edges": 124,
+      "edges": 123,
       "runtimeEdges": 64,
-      "typeOnlyEdges": 60,
+      "typeOnlyEdges": 59,
       "dynamicImports": 0,
       "surfaces": [
         "admin",
@@ -4532,7 +4536,6 @@
         "website/src/features/host/sections/PlaybookShowcase.tsx",
         "website/src/features/marketing/MarketingConsentBanner.tsx",
         "website/src/features/marketing/useAppDownloadCtas.ts",
-        "website/src/features/organizers/sections/ListingHeroSection.tsx",
         "website/src/features/organizers/sections/OrganizerSearchSections.tsx",
         "website/src/features/organizers/useHostListingPageController.ts",
         "website/src/features/organizers/useOrganizerDirectoryController.test.tsx",
@@ -16772,7 +16775,7 @@
       "specifier": "./ListingFactsSection",
       "kind": "import",
       "typeOnly": false,
-      "line": 11,
+      "line": 12,
       "column": 1
     },
     {
@@ -16781,7 +16784,7 @@
       "specifier": "./ListingFitSection",
       "kind": "import",
       "typeOnly": false,
-      "line": 12,
+      "line": 13,
       "column": 1
     },
     {
@@ -16790,7 +16793,7 @@
       "specifier": "./ListingHeroSection",
       "kind": "import",
       "typeOnly": false,
-      "line": 13,
+      "line": 14,
       "column": 1
     },
     {
@@ -16799,7 +16802,7 @@
       "specifier": "./ListingReviewsSection",
       "kind": "import",
       "typeOnly": false,
-      "line": 14,
+      "line": 18,
       "column": 1
     },
     {
@@ -16808,7 +16811,7 @@
       "specifier": "./ListingSourcesSection",
       "kind": "import",
       "typeOnly": false,
-      "line": 15,
+      "line": 19,
       "column": 1
     },
     {
@@ -16817,7 +16820,7 @@
       "specifier": "./RecommendedOrganizersSection",
       "kind": "import",
       "typeOnly": false,
-      "line": 16,
+      "line": 20,
       "column": 1
     },
     {
@@ -16826,7 +16829,34 @@
       "specifier": "../organizerPolicy",
       "kind": "import",
       "typeOnly": false,
-      "line": 17,
+      "line": 21,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/sections/HostListingSections.tsx",
+      "target": "website/src/features/organizers/publicDiscovery.ts",
+      "specifier": "../publicDiscovery",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 22,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/sections/HostListingSections.tsx",
+      "target": "website/src/shared/ui/primitives/index.ts",
+      "specifier": "../../../shared/ui/primitives",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 23,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/sections/HostListingSections.tsx",
+      "target": "website/src/content/organizer.ts",
+      "specifier": "@content/organizer",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 28,
       "column": 1
     },
     {
@@ -16921,11 +16951,20 @@
     },
     {
       "source": "website/src/features/organizers/sections/ListingEventsSections.tsx",
+      "target": "website/src/content/organizer.ts",
+      "specifier": "@content/organizer",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/organizers/sections/ListingEventsSections.tsx",
       "target": "website/src/analytics.ts",
       "specifier": "../../../analytics",
       "kind": "import",
       "typeOnly": false,
-      "line": 2,
+      "line": 3,
       "column": 1
     },
     {
@@ -16934,7 +16973,7 @@
       "specifier": "../../../shared/site",
       "kind": "import",
       "typeOnly": false,
-      "line": 3,
+      "line": 4,
       "column": 1
     },
     {
@@ -16943,7 +16982,7 @@
       "specifier": "../../../shared/ui/primitives",
       "kind": "import",
       "typeOnly": false,
-      "line": 4,
+      "line": 5,
       "column": 1
     },
     {
@@ -16952,7 +16991,7 @@
       "specifier": "../../marketing/useAppDownloadCtas",
       "kind": "import",
       "typeOnly": false,
-      "line": 15,
+      "line": 19,
       "column": 1
     },
     {
@@ -16961,7 +17000,7 @@
       "specifier": "../analytics",
       "kind": "import",
       "typeOnly": false,
-      "line": 16,
+      "line": 20,
       "column": 1
     },
     {
@@ -16970,7 +17009,7 @@
       "specifier": "../publicDiscovery",
       "kind": "import",
       "typeOnly": false,
-      "line": 17,
+      "line": 21,
       "column": 1
     },
     {
@@ -16979,13 +17018,13 @@
       "specifier": "../types",
       "kind": "import",
       "typeOnly": true,
-      "line": 21,
+      "line": 25,
       "column": 1
     },
     {
       "source": "website/src/features/organizers/sections/ListingFactsSection.tsx",
-      "target": "website/src/shared/site/index.ts",
-      "specifier": "../../../shared/site",
+      "target": "website/src/content/organizer.ts",
+      "specifier": "@content/organizer",
       "kind": "import",
       "typeOnly": false,
       "line": 1,
@@ -16997,7 +17036,7 @@
       "specifier": "../../../shared/ui/primitives",
       "kind": "import",
       "typeOnly": false,
-      "line": 2,
+      "line": 5,
       "column": 1
     },
     {
@@ -17006,16 +17045,7 @@
       "specifier": "../organizerPolicy",
       "kind": "import",
       "typeOnly": false,
-      "line": 3,
-      "column": 1
-    },
-    {
-      "source": "website/src/features/organizers/sections/ListingFactsSection.tsx",
-      "target": "website/src/features/organizers/selectors.ts",
-      "specifier": "../selectors",
-      "kind": "import",
-      "typeOnly": false,
-      "line": 4,
+      "line": 11,
       "column": 1
     },
     {
@@ -17024,7 +17054,7 @@
       "specifier": "../types",
       "kind": "import",
       "typeOnly": true,
-      "line": 5,
+      "line": 12,
       "column": 1
     },
     {
@@ -17056,20 +17086,11 @@
     },
     {
       "source": "website/src/features/organizers/sections/ListingHeroSection.tsx",
-      "target": "website/src/content/generated.ts",
-      "specifier": "@content/generated",
+      "target": "website/src/content/organizer.ts",
+      "specifier": "@content/organizer",
       "kind": "import",
       "typeOnly": false,
       "line": 1,
-      "column": 1
-    },
-    {
-      "source": "website/src/features/organizers/sections/ListingHeroSection.tsx",
-      "target": "website/src/content/templates.ts",
-      "specifier": "@content/templates",
-      "kind": "import",
-      "typeOnly": false,
-      "line": 2,
       "column": 1
     },
     {
@@ -17078,7 +17099,7 @@
       "specifier": "../OrganizerIdentity",
       "kind": "import",
       "typeOnly": false,
-      "line": 4,
+      "line": 5,
       "column": 1
     },
     {
@@ -17087,7 +17108,7 @@
       "specifier": "../publicDiscovery",
       "kind": "import",
       "typeOnly": false,
-      "line": 8,
+      "line": 9,
       "column": 1
     },
     {
@@ -17096,7 +17117,7 @@
       "specifier": "../organizerPolicy",
       "kind": "import",
       "typeOnly": false,
-      "line": 9,
+      "line": 10,
       "column": 1
     },
     {
@@ -17105,7 +17126,7 @@
       "specifier": "../types",
       "kind": "import",
       "typeOnly": true,
-      "line": 10,
+      "line": 11,
       "column": 1
     },
     {
@@ -17114,7 +17135,7 @@
       "specifier": "../../../shared/ui/primitives",
       "kind": "import",
       "typeOnly": false,
-      "line": 11,
+      "line": 12,
       "column": 1
     },
     {
@@ -17123,7 +17144,7 @@
       "specifier": "../analytics",
       "kind": "import",
       "typeOnly": false,
-      "line": 28,
+      "line": 20,
       "column": 1
     },
     {
@@ -17132,7 +17153,7 @@
       "specifier": "../../marketing/tracking",
       "kind": "import",
       "typeOnly": false,
-      "line": 29,
+      "line": 21,
       "column": 1
     },
     {
@@ -17218,8 +17239,8 @@
     },
     {
       "source": "website/src/features/organizers/sections/ListingSourcesSection.tsx",
-      "target": "website/src/content/generated.ts",
-      "specifier": "@content/generated",
+      "target": "website/src/shared/ui/primitives/index.ts",
+      "specifier": "../../../shared/ui/primitives",
       "kind": "import",
       "typeOnly": false,
       "line": 1,
@@ -17227,11 +17248,11 @@
     },
     {
       "source": "website/src/features/organizers/sections/ListingSourcesSection.tsx",
-      "target": "website/src/shared/ui/primitives/index.ts",
-      "specifier": "../../../shared/ui/primitives",
+      "target": "website/src/content/organizer.ts",
+      "specifier": "@content/organizer",
       "kind": "import",
       "typeOnly": false,
-      "line": 2,
+      "line": 5,
       "column": 1
     },
     {
@@ -17240,7 +17261,7 @@
       "specifier": "../analytics",
       "kind": "import",
       "typeOnly": false,
-      "line": 7,
+      "line": 6,
       "column": 1
     },
     {
@@ -17249,7 +17270,7 @@
       "specifier": "../types",
       "kind": "import",
       "typeOnly": true,
-      "line": 8,
+      "line": 7,
       "column": 1
     },
     {
@@ -19166,7 +19187,7 @@
       "specifier": "./actions",
       "kind": "import",
       "typeOnly": false,
-      "line": 2,
+      "line": 7,
       "column": 1
     },
     {
@@ -19175,7 +19196,7 @@
       "specifier": "./foundation",
       "kind": "import",
       "typeOnly": false,
-      "line": 3,
+      "line": 8,
       "column": 1
     },
     {
@@ -19184,7 +19205,7 @@
       "specifier": "./layout",
       "kind": "import",
       "typeOnly": false,
-      "line": 4,
+      "line": 9,
       "column": 1
     },
     {
@@ -19193,7 +19214,7 @@
       "specifier": "./layout2",
       "kind": "import",
       "typeOnly": false,
-      "line": 5,
+      "line": 10,
       "column": 1
     },
     {
@@ -19787,7 +19808,7 @@
       "specifier": "../features/organizers/sections/ListingFactsSection",
       "kind": "import",
       "typeOnly": false,
-      "line": 11,
+      "line": 12,
       "column": 1
     },
     {
@@ -19796,7 +19817,7 @@
       "specifier": "../features/organizers/sections/ListingFitSection",
       "kind": "import",
       "typeOnly": false,
-      "line": 12,
+      "line": 13,
       "column": 1
     },
     {
@@ -19805,7 +19826,7 @@
       "specifier": "../features/organizers/sections/ListingHeroSection",
       "kind": "import",
       "typeOnly": false,
-      "line": 13,
+      "line": 14,
       "column": 1
     },
     {
@@ -19814,7 +19835,7 @@
       "specifier": "../features/organizers/sections/ListingClaimSections",
       "kind": "import",
       "typeOnly": false,
-      "line": 14,
+      "line": 18,
       "column": 1
     },
     {
@@ -19823,7 +19844,7 @@
       "specifier": "../features/organizers/sections/ListingReviewsSection",
       "kind": "import",
       "typeOnly": false,
-      "line": 15,
+      "line": 19,
       "column": 1
     },
     {
@@ -19832,7 +19853,7 @@
       "specifier": "../features/organizers/sections/ListingSourcesSection",
       "kind": "import",
       "typeOnly": false,
-      "line": 16,
+      "line": 20,
       "column": 1
     },
     {
@@ -19841,16 +19862,7 @@
       "specifier": "../features/organizers/sections/RecommendedOrganizersSection",
       "kind": "import",
       "typeOnly": false,
-      "line": 17,
-      "column": 1
-    },
-    {
-      "source": "website/src/stories/OrganizerListingSections.stories.tsx",
-      "target": "website/src/features/organizers/routing.ts",
-      "specifier": "../features/organizers/routing",
-      "kind": "import",
-      "typeOnly": false,
-      "line": 18,
+      "line": 21,
       "column": 1
     },
     {
@@ -19859,7 +19871,7 @@
       "specifier": "../features/organizers/selectors",
       "kind": "import",
       "typeOnly": false,
-      "line": 19,
+      "line": 22,
       "column": 1
     },
     {
@@ -19868,7 +19880,7 @@
       "specifier": "../features/organizers/types",
       "kind": "import",
       "typeOnly": true,
-      "line": 20,
+      "line": 23,
       "column": 1
     },
     {
@@ -19877,7 +19889,16 @@
       "specifier": "../shared/query/queryClient",
       "kind": "import",
       "typeOnly": false,
-      "line": 21,
+      "line": 24,
+      "column": 1
+    },
+    {
+      "source": "website/src/stories/OrganizerListingSections.stories.tsx",
+      "target": "website/src/shared/ui/primitives/index.ts",
+      "specifier": "../shared/ui/primitives",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 25,
       "column": 1
     },
     {
@@ -22453,15 +22474,6 @@
       "specifier": "vitest",
       "kind": "import",
       "typeOnly": false,
-      "line": 3,
-      "column": 1
-    },
-    {
-      "source": "website/src/features/organizers/sections/ListingHeroSection.tsx",
-      "package": "react",
-      "specifier": "react",
-      "kind": "import",
-      "typeOnly": true,
       "line": 3,
       "column": 1
     },
