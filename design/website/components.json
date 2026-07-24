@@ -1,6 +1,6 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 88,
+  "version": 89,
   "updated": "2026-07-24",
   "owner": "marketing_website",
   "sourceOfTruth": {
@@ -673,7 +673,7 @@
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/organizer.tsx",
-      "exportName": "ListingHeroShell",
+      "exportName": "ListingProfileLayout",
       "css": [
         "website/src/styles/organizers.css",
         "website/src/styles/responsive.css"
@@ -683,12 +683,12 @@
         "story": "website/src/stories/ListingPrimitives.stories.tsx",
         "exportName": "ListingHeroShellStory",
         "states": [
-          "hero-shell",
-          "metrics",
-          "share-status"
+          "polaroid",
+          "status-ledger",
+          "action-rail"
         ]
       },
-      "notes": "Shared website organizer listing hero shell primitives for hero shell, inner layout, copy, eyebrow, panel metrics, and share-status slots; raw organizer listing hero shells are blocked by web:react-component-governance."
+      "notes": "Shared website organizer profile primitives for the wide-primary two-column layout, CatchPolaroid-inspired hero, provenance status ledger, sticky action rail, source links, and empty rail states. Event ticket notches and perforation remain exclusive to the event-detail primitive family."
     },
     {
       "id": "shared_listing_review_shell",
@@ -2499,7 +2499,31 @@
           "claimable-unclaimed"
         ]
       },
-      "notes": "Generated listing hero with claim, save, share, identity, and source-backed diagnostics; public profile-strength scores are deliberately omitted."
+      "notes": "Generated organizer hero using the Catch polaroid material, a provenance ledger, and a separate capability-aware action rail; public profile-strength scores and event-ticket chrome are deliberately omitted."
+    },
+    {
+      "id": "listing_hero_rail_section",
+      "kind": "section",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/sections",
+      "source": "website/src/features/organizers/sections/ListingHeroSection.tsx",
+      "exportName": "ListingHeroRailSection",
+      "css": [
+        "website/src/styles/organizers.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OrganizerListingSections.stories.tsx",
+        "exportName": "ListingHeroRail",
+        "states": [
+          "claim-enabled"
+        ]
+      },
+      "notes": "Capability-aware organizer identity and action rail. Enabled claims link to the claim route; unavailable claims stay visibly disabled with the canonical capability reason."
     },
     {
       "id": "listing_facts_section",
@@ -2524,7 +2548,7 @@
           "app-created"
         ]
       },
-      "notes": "Generated listing fact grid for both unclaimed and app-created profile shapes."
+      "notes": "Generated organizer About and format section for both source-backed and app-created profile shapes; provenance and ownership status stay in the hero ledger."
     },
     {
       "id": "listing_catch_events_section",
@@ -2548,6 +2572,30 @@
         ]
       },
       "notes": "App-created generated listing event section backed by Catch event supply."
+    },
+    {
+      "id": "listing_events_rail_section",
+      "kind": "section",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/sections",
+      "source": "website/src/features/organizers/sections/ListingEventsSections.tsx",
+      "exportName": "ListingEventsRailSection",
+      "css": [
+        "website/src/styles/organizers.css",
+        "website/src/styles/responsive.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OrganizerListingSections.stories.tsx",
+        "exportName": "ListingEventsRail",
+        "states": [
+          "empty"
+        ]
+      },
+      "notes": "Compact organizer action-rail event summary with a truthful empty state and a link to the detailed event sections when published supply exists."
     },
     {
       "id": "listing_reviews_section",
@@ -2646,7 +2694,7 @@
           "claimable-unclaimed"
         ]
       },
-      "notes": "Generated unclaimed listing source-ledger section."
+      "notes": "Compact organizer action-rail source list with outbound analytics; source-backed provenance remains separate from ownership verification."
     },
     {
       "id": "listing_missing_evidence_section",

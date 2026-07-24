@@ -5,16 +5,27 @@ import {ListingMissingEvidenceSection} from "./ListingClaimSections";
 import {
   ListingCatchEventsSection,
   ListingEventEvidenceSection,
+  ListingEventsRailSection,
   ListingEventSuccessSection,
   ListingExternalEventsSection,
 } from "./ListingEventsSections";
 import {ListingFactsSection} from "./ListingFactsSection";
 import {ListingFitSection} from "./ListingFitSection";
-import {ListingHeroSection} from "./ListingHeroSection";
+import {
+  ListingHeroRailSection,
+  ListingHeroSection,
+} from "./ListingHeroSection";
 import {ListingReviewsSection} from "./ListingReviewsSection";
 import {ListingSourcesSection} from "./ListingSourcesSection";
 import {RecommendedOrganizersSection} from "./RecommendedOrganizersSection";
 import {organizerPolicyForListing} from "../organizerPolicy";
+import {activityForListing} from "../publicDiscovery";
+import {
+  ListingProfileLayout,
+  ListingProfilePrimary,
+  ListingProfileRail,
+} from "../../../shared/ui/primitives";
+import {organizerListingCopy} from "@content/organizer";
 
 export function HostListingSections({
   claimController,
@@ -34,51 +45,39 @@ export function HostListingSections({
     shareStatus,
   } = controller;
   const canRequestClaim = organizerPolicyForListing(listing).canRequestClaim;
+  const activity = activityForListing(listing);
 
   return (
-    <>
-      <ListingHeroSection
-        claimHref={claimHref}
-        canRequestClaim={canRequestClaim}
-        isAppCreated={isAppCreated}
-        isSaved={isSaved}
-        listing={listing}
-        onSaveListing={handleSaveListing}
-        onShareListing={() => void handleShareListing()}
-        shareStatus={shareStatus}
-      />
+    <ListingProfileLayout activityToken={activity.token}>
+      <ListingProfilePrimary>
+        <ListingHeroSection listing={listing} />
+        <ListingFactsSection listing={listing} />
 
-      <ListingFactsSection
-        isAppCreated={isAppCreated}
-        listing={listing}
-      />
+        {listing.catchEvents?.length ? (
+          <ListingCatchEventsSection listing={listing} />
+        ) : null}
 
-      {listing.catchEvents?.length ? (
-        <ListingCatchEventsSection listing={listing} />
-      ) : null}
+        {listing.externalEvents?.length ? (
+          <ListingExternalEventsSection
+            anchorId={listing.catchEvents?.length ? "external-events" : "events"}
+            listing={listing}
+          />
+        ) : null}
 
-      {listing.externalEvents?.length ? (
-        <ListingExternalEventsSection
-          anchorId={listing.catchEvents?.length ? "external-events" : "events"}
+        <ListingEventEvidenceSection listing={listing} />
+        <ListingReviewsSection listing={listing} />
+
+        {listing.eventSuccessSummary ? (
+          <ListingEventSuccessSection summary={listing.eventSuccessSummary} />
+        ) : null}
+
+        <ListingFitSection
+          isAppCreated={isAppCreated}
           listing={listing}
         />
-      ) : null}
 
-      <ListingEventEvidenceSection listing={listing} />
-      <ListingReviewsSection listing={listing} />
-
-      {listing.eventSuccessSummary ? (
-        <ListingEventSuccessSection summary={listing.eventSuccessSummary} />
-      ) : null}
-
-      <ListingFitSection
-        isAppCreated={isAppCreated}
-        listing={listing}
-      />
-
-      {!isAppCreated ? (
-        <>
-          <ListingSourcesSection listing={listing} />
+        {!isAppCreated ? (
+          <>
           {claimController.presentation.panel !== "hidden" ? (
             <ListingMissingEvidenceSection
               claimController={claimController}
@@ -86,8 +85,28 @@ export function HostListingSections({
             />
           ) : null}
           <RecommendedOrganizersSection current={listing} />
-        </>
-      ) : null}
-    </>
+          </>
+        ) : null}
+      </ListingProfilePrimary>
+
+      <ListingProfileRail
+        aria-label={organizerListingCopy.detail.railAriaLabel(listing.name)}
+      >
+        <ListingHeroRailSection
+          claimHref={claimHref}
+          canRequestClaim={canRequestClaim}
+          isAppCreated={isAppCreated}
+          isSaved={isSaved}
+          listing={listing}
+          onSaveListing={handleSaveListing}
+          onShareListing={() => void handleShareListing()}
+          shareStatus={shareStatus}
+        />
+        {!isAppCreated && listing.sources.length ? (
+          <ListingSourcesSection listing={listing} />
+        ) : null}
+        <ListingEventsRailSection listing={listing} />
+      </ListingProfileRail>
+    </ListingProfileLayout>
   );
 }

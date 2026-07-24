@@ -278,7 +278,7 @@ export const OrganizerListing: Story = {
   render: () => (
     <WebsiteQueryProvider>
       <MemoryRouter initialEntries={[generatedOrganizerListing.path]}>
-        <HostListingPage listing={generatedOrganizerListing} />
+        <OrganizerListingRouteStory listing={generatedOrganizerListing} />
       </MemoryRouter>
     </WebsiteQueryProvider>
   ),
@@ -324,6 +324,11 @@ export const EventDetailExternal: Story = {
 function EventDetailRouteStory({event}: {event: EventDetailRecord}) {
   useRevealAnimations("event_detail", event.eventId);
   return <EventDetailPage event={event} />;
+}
+
+function OrganizerListingRouteStory({listing}: {listing: HostListing}) {
+  useRevealAnimations("listing", listing.id);
+  return <HostListingPage listing={listing} />;
 }
 
 function requireListing(id: string): HostListing {

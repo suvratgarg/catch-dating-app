@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "discardedFiles": [
+    {
+      "path": "design-qa.md",
+      "category": "discarded-theirs",
+      "reason": "Organizer Detail QA content was preserved under the governed path docs/audit_registry/organizer_detail_design_qa_20260724.md while current Event Detail QA remained at its existing governed path."
+    }
+  ]
+}
