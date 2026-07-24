@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "discardedFiles": [
+    {
+      "path": "design/visual_baselines/admin/darwin/admin-dashboard-shared-primitives--admin-sign-in-screen-story.desktop.png",
+      "category": "discarded-ours",
+      "reason": "The current-main desktop image represented the superseded dual-provider sign-in screen. The merged tree intentionally replaces it with a freshly generated combined-tree capture of the verified phone-OTP-only screen; exact comparison and visual review passed."
+    },
+    {
+      "path": "design/visual_baselines/admin/darwin/admin-dashboard-shared-primitives--admin-sign-in-screen-story.mobile.png",
+      "category": "discarded-ours",
+      "reason": "The current-main mobile image represented the superseded dual-provider sign-in screen. The merged tree intentionally replaces it with a freshly generated combined-tree capture of the verified phone-OTP-only screen; exact comparison and visual review passed."
+    }
+  ]
+}
