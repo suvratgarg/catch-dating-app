@@ -62,9 +62,36 @@ export function configuredIndexes(indexConfig) {
   );
 }
 
+export function validateConfiguredIndexes(indexConfig) {
+  const errors = [];
+  for (const index of indexConfig.indexes ?? []) {
+    const fields = index.fields ?? [];
+    const explicitNameField = fields.some(
+      (field) => field.fieldPath === "__name__"
+    );
+    const userFields = fields.filter(
+      (field) => field.fieldPath !== "__name__"
+    );
+    if (explicitNameField && userFields.length < 2) {
+      errors.push(
+        "firestore.indexes.json: unnecessary composite index " +
+          canonicalIndex(
+            index.collectionGroup,
+            fields.map((field) => ({
+              fieldPath: field.fieldPath,
+              mode: field.mode ?? field.order ?? field.arrayConfig,
+            }))
+          ) +
+          "; Firestore provides this shape through single-field indexes"
+      );
+    }
+  }
+  return errors;
+}
+
 export function validateContracts({sources, indexConfig}) {
   const configured = configuredIndexes(indexConfig);
-  const errors = [];
+  const errors = validateConfiguredIndexes(indexConfig);
   let contractCount = 0;
 
   for (const source of sources) {

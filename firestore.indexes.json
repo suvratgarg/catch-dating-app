@@ -717,14 +717,6 @@
         {"fieldPath": "taskFlags", "arrayConfig": "CONTAINS"},
         {"fieldPath": "__name__", "mode": "ASCENDING"}
       ]
-    },
-    {
-      "collectionGroup": "adminActionExecutions",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {"fieldPath": "startedAt", "mode": "DESCENDING"},
-        {"fieldPath": "__name__", "mode": "DESCENDING"}
-      ]
     }
   ],
   "fieldOverrides": [

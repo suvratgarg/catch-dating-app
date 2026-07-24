@@ -1,5 +1,5 @@
 {
-  "version": 94,
+  "version": 95,
   "updated": "2026-07-24",
   "owner": "agent_operating_model",
   "entries": [
@@ -2922,6 +2922,28 @@
         "tool/README.md"
       ],
       "notes": "Do not downgrade connectivity_plus to hide an obsolete hosted SDK. Advance the checked Apple runner and minimum Xcode contract together when an Apple-native dependency raises its build requirement."
+    },
+    {
+      "id": "REG-FIRESTORE-INDEX-DEPLOYABILITY-001",
+      "title": "Firestore index configuration includes a non-deployable pseudo-composite",
+      "status": "active",
+      "applies_to": [
+        "firestore.indexes.json",
+        "tool/contracts/check_firestore_query_indexes.mjs",
+        "tool/contracts/check_firestore_query_indexes.test.mjs",
+        ".github/workflows/firebase-dev-deploy.yml"
+      ],
+      "symptom": "Firebase accepts local query and rules tests but rejects firestore:indexes with HTTP 400 because an explicit user field plus __name__ entry duplicates the built-in single-field index.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/contracts/check_firestore_query_indexes.test.mjs && node tool/contracts/check_firestore_query_indexes.mjs",
+        "guardEvidence": "a known-bad startedAt plus __name__ fixture fails closed before Firebase deployment while repository-owned composite query contracts remain synchronized"
+      },
+      "owner_docs": [
+        "docs/data_contracts.md",
+        "docs/release_operations.md"
+      ],
+      "notes": "Firestore automatically adds __name__ ordering to single-field indexes. Keep explicit composite entries only when at least two user fields require a composite."
     }
   ]
 }

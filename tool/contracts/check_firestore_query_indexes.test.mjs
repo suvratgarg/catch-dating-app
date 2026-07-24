@@ -5,6 +5,7 @@ import {
   canonicalIndex,
   parseIndexContracts,
   requiresCompositeIndexContract,
+  validateConfiguredIndexes,
   validateContracts,
 } from "./check_firestore_query_indexes.mjs";
 
@@ -61,6 +62,24 @@ Future<void> load() async {
     indexConfig,
   });
   assert.match(result.errors.join("\n"), /has no firestore-index contract/u);
+});
+
+test("known-bad unnecessary single-field composite index is detected", () => {
+  const errors = validateConfiguredIndexes({
+    indexes: [
+      {
+        collectionGroup: "adminActionExecutions",
+        fields: [
+          {fieldPath: "startedAt", mode: "DESCENDING"},
+          {fieldPath: "__name__", mode: "DESCENDING"},
+        ],
+      },
+    ],
+  });
+  assert.match(
+    errors.join("\n"),
+    /unnecessary composite index adminActionExecutions\|startedAt:DESCENDING,__name__:DESCENDING/u
+  );
 });
 
 test("contract parser preserves ordered and array index modes", () => {
