@@ -37,7 +37,7 @@ type OrganizerWorkbenchEntry =
     candidate: Intake.OrganizerSearchCandidate;
   };
 
-const organizerWorkbenchStageKey = "catch-admin.organizer-intake-stage.v1";
+const organizerWorkbenchStageKey = "catch-admin.organizer-intake-stage.v2";
 
 function OrganizerTaskWorkbench({
   controller,

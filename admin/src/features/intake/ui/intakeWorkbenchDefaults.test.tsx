@@ -49,6 +49,10 @@ describe("Intake task-first defaults", () => {
   });
 
   it("opens captured organizer search candidates in the Incoming review stage", async () => {
+    window.localStorage.setItem(
+      "catch-admin.organizer-intake-stage.v1",
+      "verify"
+    );
     const {wrapper} = createQueryHarness();
     render(<OrganizerHarness />, {wrapper});
 

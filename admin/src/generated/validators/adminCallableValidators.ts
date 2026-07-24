@@ -2625,7 +2625,7 @@ const model = {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/callables/admin_record_organizer_curation_payload.schema.json",
       "title": "AdminRecordOrganizerCurationCallablePayload",
-      "description": "Callable payload accepted by adminRecordOrganizerCuration. This records one low-volume manual organizer-intake curation operation for deterministic export into repo-backed curation batches.",
+      "description": "Callable payload accepted by adminRecordOrganizerCuration. This records one durable low-volume manual organizer-intake curation operation in Firestore.",
       "type": "object",
       "additionalProperties": false,
       "required": [
