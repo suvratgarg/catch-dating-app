@@ -3,6 +3,7 @@
 
 import {createRequire} from "node:module";
 import {
+  mobileFormStateSchema,
   operationRunSchema,
   operationWorkItemSchema,
   profilePromptAnswerSchema,
@@ -12,6 +13,7 @@ import {
   activityPreferencesSchema,
   configCitiesDocumentSchema,
   onboardingDraftDocumentSchema,
+  accessApplicationDocumentSchema,
   userProfileDocumentSchema,
   publicProfileDocumentSchema,
   hostProfileDocumentSchema,
@@ -107,6 +109,8 @@ import {
   adminRecordOrganizerCurationCallablePayloadSchema,
   adminRecordEventIntakeReviewDecisionCallablePayloadSchema,
   adminListIntakeOperationsCallablePayloadSchema,
+  adminListActionExecutionsCallablePayloadSchema,
+  adminRecordActionExecutionCallablePayloadSchema,
   adminDecideOrganizerEventCandidateCallablePayloadSchema,
   adminDecideOrganizerPolicyGapCallablePayloadSchema,
   adminResolveOrganizerEventLocationCallablePayloadSchema,
@@ -188,6 +192,22 @@ import {
   deleteSavedEventClientWriteSchema,
   markNotificationReadClientWriteSchema,
   resetMatchUnreadCountClientWriteSchema,
+  adminGetOverviewCallablePayloadSchema,
+  adminGetOverviewCallableResponseSchema,
+  adminDecideAccessApplicationCallablePayloadSchema,
+  adminDecideAccessApplicationCallableResponseSchema,
+  adminSetAdminUserRolesCallablePayloadSchema,
+  adminSetAdminUserRolesCallableResponseSchema,
+  adminDecideSafetyTriageItemCallablePayloadSchema,
+  adminDecideSafetyTriageItemCallableResponseSchema,
+  adminAssignSafetyTriageItemCallablePayloadSchema,
+  adminAssignSafetyTriageItemCallableResponseSchema,
+  adminCreateMarketingContentDraftCallablePayloadSchema,
+  adminCreateMarketingContentDraftCallableResponseSchema,
+  adminRecordMarketingReviewDecisionCallablePayloadSchema,
+  adminRecordMarketingReviewDecisionCallableResponseSchema,
+  joinWaitlistHTTPRequestSchema,
+  joinWaitlistHTTPResponseSchema,
 } from "./schema_contract_registry.mjs";
 
 const requireFromRepo = createRequire(
@@ -212,6 +232,7 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateMobileFormState = ajv.compile(mobileFormStateSchema);
 export const validateOperationRun = ajv.compile(operationRunSchema);
 export const validateOperationWorkItem = ajv.compile(operationWorkItemSchema);
 export const validateProfilePromptAnswer = ajv.compile(profilePromptAnswerSchema);
@@ -221,6 +242,7 @@ export const validateUploadedPhoto = ajv.compile(uploadedPhotoSchema);
 export const validateActivityPreferences = ajv.compile(activityPreferencesSchema);
 export const validateConfigCitiesDocument = ajv.compile(configCitiesDocumentSchema);
 export const validateOnboardingDraftDocument = ajv.compile(onboardingDraftDocumentSchema);
+export const validateAccessApplicationDocument = ajv.compile(accessApplicationDocumentSchema);
 export const validateUserProfileDocument = ajv.compile(userProfileDocumentSchema);
 export const validatePublicProfileDocument = ajv.compile(publicProfileDocumentSchema);
 export const validateHostProfileDocument = ajv.compile(hostProfileDocumentSchema);
@@ -316,6 +338,8 @@ export const validateAdminDecideOrganizerIntakeCallablePayload = ajv.compile(adm
 export const validateAdminRecordOrganizerCurationCallablePayload = ajv.compile(adminRecordOrganizerCurationCallablePayloadSchema);
 export const validateAdminRecordEventIntakeReviewDecisionCallablePayload = ajv.compile(adminRecordEventIntakeReviewDecisionCallablePayloadSchema);
 export const validateAdminListIntakeOperationsCallablePayload = ajv.compile(adminListIntakeOperationsCallablePayloadSchema);
+export const validateAdminListActionExecutionsCallablePayload = ajv.compile(adminListActionExecutionsCallablePayloadSchema);
+export const validateAdminRecordActionExecutionCallablePayload = ajv.compile(adminRecordActionExecutionCallablePayloadSchema);
 export const validateAdminDecideOrganizerEventCandidateCallablePayload = ajv.compile(adminDecideOrganizerEventCandidateCallablePayloadSchema);
 export const validateAdminDecideOrganizerPolicyGapCallablePayload = ajv.compile(adminDecideOrganizerPolicyGapCallablePayloadSchema);
 export const validateAdminResolveOrganizerEventLocationCallablePayload = ajv.compile(adminResolveOrganizerEventLocationCallablePayloadSchema);
@@ -397,6 +421,22 @@ export const validateCreateSavedEventClientWrite = ajv.compile(createSavedEventC
 export const validateDeleteSavedEventClientWrite = ajv.compile(deleteSavedEventClientWriteSchema);
 export const validateMarkNotificationReadClientWrite = ajv.compile(markNotificationReadClientWriteSchema);
 export const validateResetMatchUnreadCountClientWrite = ajv.compile(resetMatchUnreadCountClientWriteSchema);
+export const validateAdminGetOverviewCallablePayload = ajv.compile(adminGetOverviewCallablePayloadSchema);
+export const validateAdminGetOverviewCallableResponse = ajv.compile(adminGetOverviewCallableResponseSchema);
+export const validateAdminDecideAccessApplicationCallablePayload = ajv.compile(adminDecideAccessApplicationCallablePayloadSchema);
+export const validateAdminDecideAccessApplicationCallableResponse = ajv.compile(adminDecideAccessApplicationCallableResponseSchema);
+export const validateAdminSetAdminUserRolesCallablePayload = ajv.compile(adminSetAdminUserRolesCallablePayloadSchema);
+export const validateAdminSetAdminUserRolesCallableResponse = ajv.compile(adminSetAdminUserRolesCallableResponseSchema);
+export const validateAdminDecideSafetyTriageItemCallablePayload = ajv.compile(adminDecideSafetyTriageItemCallablePayloadSchema);
+export const validateAdminDecideSafetyTriageItemCallableResponse = ajv.compile(adminDecideSafetyTriageItemCallableResponseSchema);
+export const validateAdminAssignSafetyTriageItemCallablePayload = ajv.compile(adminAssignSafetyTriageItemCallablePayloadSchema);
+export const validateAdminAssignSafetyTriageItemCallableResponse = ajv.compile(adminAssignSafetyTriageItemCallableResponseSchema);
+export const validateAdminCreateMarketingContentDraftCallablePayload = ajv.compile(adminCreateMarketingContentDraftCallablePayloadSchema);
+export const validateAdminCreateMarketingContentDraftCallableResponse = ajv.compile(adminCreateMarketingContentDraftCallableResponseSchema);
+export const validateAdminRecordMarketingReviewDecisionCallablePayload = ajv.compile(adminRecordMarketingReviewDecisionCallablePayloadSchema);
+export const validateAdminRecordMarketingReviewDecisionCallableResponse = ajv.compile(adminRecordMarketingReviewDecisionCallableResponseSchema);
+export const validateJoinWaitlistHTTPRequest = ajv.compile(joinWaitlistHTTPRequestSchema);
+export const validateJoinWaitlistHTTPResponse = ajv.compile(joinWaitlistHTTPResponseSchema);
 
 export function schemaErrorMessages(validator) {
   return (validator.errors ?? []).map((error) => {

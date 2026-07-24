@@ -1,4 +1,5 @@
 import {websiteCopy} from "@content/generated";
+import {organizerListingCopy} from "@content/organizer";
 import {trackMarketingEvent} from "../../../analytics";
 import {SectionHeader} from "../../../shared/site";
 import {
@@ -9,8 +10,11 @@ import {
   type EventActionCardModel,
   ListingEventDownloadPanel,
   ListingEventEvidenceList,
+  ListingRailEmptyState,
+  ListingRailSection,
   ListingSuccessMetricGrid,
   ListingSection,
+  ButtonLink,
 } from "../../../shared/ui/primitives";
 import {useAppDownloadCtas} from "../../marketing/useAppDownloadCtas";
 import {trackOrganizerAnalytics} from "../analytics";
@@ -19,6 +23,28 @@ import {
   externalEventActionCardForListing,
 } from "../publicDiscovery";
 import type {HostListing, HostListingEventSuccessSummary} from "../types";
+
+export function ListingEventsRailSection({listing}: {listing: HostListing}) {
+  const catchCount = listing.catchEvents?.length ?? 0;
+  const externalCount = listing.externalEvents?.length ?? 0;
+  const total = catchCount + externalCount;
+
+  return (
+    <ListingRailSection eyebrow={organizerListingCopy.detail.eventsEyebrow}>
+      <ListingRailEmptyState
+        title={total ? `${total} published ${total === 1 ? "event" : "events"}` : "No published Catch events yet"}
+        body={total
+          ? `${catchCount ? `${catchCount} in Catch` : ""}${catchCount && externalCount ? " · " : ""}${externalCount ? `${externalCount} from approved public sources` : ""}.`
+          : "This organizer has not published an event on Catch."}
+      />
+      {total ? (
+        <ButtonLink variant="ghost" href="#events">
+          {organizerListingCopy.detail.viewEventsAction}
+        </ButtonLink>
+      ) : null}
+    </ListingRailSection>
+  );
+}
 
 export function ListingCatchEventsSection({listing}: {listing: HostListing}) {
   const events = listing.catchEvents ?? [];
@@ -154,6 +180,17 @@ function withExternalEventActionTracking(
   return {
     ...card,
     actions: card.actions.map((action) => {
+      if (action.trackingLabel === "external_event_open_details") {
+        return {
+          ...action,
+          onClick: () => trackOrganizerAnalytics(
+            listing,
+            "eventView",
+            "external_event_card",
+            eventId
+          ),
+        };
+      }
       if (action.trackingLabel !== "external_event_source") return action;
       return {
         ...action,

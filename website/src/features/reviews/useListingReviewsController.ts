@@ -79,12 +79,16 @@ export function useListingReviewsController(listing: HostListing) {
       };
       return {
         moderationStatus: review.moderationStatus ?? "pending",
-        review,
+        callableReview: review,
+        review: organizerReviewForListing(review),
       };
     },
   });
 
-  const remoteReviews = reviewsQuery.data?.reviews;
+  const remoteReviews = useMemo(
+    () => reviewsQuery.data?.reviews.map(organizerReviewForListing),
+    [reviewsQuery.data?.reviews]
+  );
   const reviews = useMemo(() => policy.canReadPublicReviews ?
     mergeReviews(localReviews, mergeReviews(remoteReviews ?? [], seedReviews)) :
     [], [localReviews, policy.canReadPublicReviews, remoteReviews, seedReviews]);
@@ -122,6 +126,7 @@ export function useListingReviewsController(listing: HostListing) {
 
     const localReview: HostListingReview = {
       id: `local-${Date.now()}`,
+      eventId: null,
       reviewerName: isAnonymous ? "Anonymous reviewer" : trimmedName,
       rating,
       comment: trimmedComment,
@@ -165,7 +170,7 @@ export function useListingReviewsController(listing: HostListing) {
         reviewQueryKey,
         (current) => {
           const seen = new Set<string>();
-          const reviews = [result.review, ...(current?.reviews ?? [])].filter((review) => {
+          const reviews = [result.callableReview, ...(current?.reviews ?? [])].filter((review) => {
             if (seen.has(review.id)) return false;
             seen.add(review.id);
             return true;
@@ -221,6 +226,15 @@ export function useListingReviewsController(listing: HostListing) {
     status: resolvedStatus,
     submitReview,
     summary,
+  };
+}
+
+function organizerReviewForListing(
+  review: Omit<HostListingReview, "eventId">
+): HostListingReview {
+  return {
+    ...review,
+    eventId: null,
   };
 }
 

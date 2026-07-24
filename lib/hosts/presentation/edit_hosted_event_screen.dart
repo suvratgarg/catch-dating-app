@@ -23,8 +23,8 @@ import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_route_scaffold.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -326,8 +326,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       widget.event,
       _now,
     );
+    final requestControlsEnabled = canEdit && !mutation.isPending;
     final fieldState = HostEventEditFieldDisplayState.fromForm(
-      canEdit: canEdit,
+      canEdit: requestControlsEnabled,
       scheduleLocked: scheduleLocked,
       selectedDate: _selectedDate,
       selectedStartTime: _selectedStartTime,
@@ -380,299 +381,335 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       }
     }
 
-    return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-        title: context.l10n.hostsEditHostedEventScreenTitleEditEvent,
-        divider: scrolledUnder,
-      ),
-      body: SafeArea(
-        top: false,
-        child: Form(
-          key: _formKey,
-          autovalidateMode: widget.formAutovalidateMode,
-          child: ListView(
-            padding: CatchInsets.pageBody,
-            children: [
-              CatchSectionList(
-                emptyStateOmitted: true,
-                gap: 0,
+    return PopScope(
+      canPop: !mutation.isPending,
+      child: CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: context.l10n.hostsEditHostedEventScreenTitleEditEvent,
+          leadingType: mutation.isPending
+              ? CatchTopBarLeading.none
+              : CatchTopBarLeading.auto,
+          divider: scrolledUnder,
+        ),
+        body: SafeArea(
+          top: false,
+          child: IgnorePointer(
+            ignoring: mutation.isPending,
+            child: Form(
+              key: _formKey,
+              autovalidateMode: widget.formAutovalidateMode,
+              child: ListView(
+                padding: CatchInsets.pageBody,
                 children: [
-                  CatchSection.plain(
-                    child: EditHostedEventScopeNotice(
-                      isCancelled: widget.event.isCancelled,
-                      scheduleLocked: screenState.scheduleLocked,
-                      policyLocked: screenState.policyLocked,
-                    ),
-                  ),
-                  if (screenState.hasSaveError)
-                    CatchSection.plain(
-                      padding: const EdgeInsets.only(top: CatchSpacing.s3),
-                      child: CatchErrorBanner.fromError(
-                        screenState.saveError!,
-                        context: AppErrorContext.event,
-                      ),
-                    ),
-                  if (screenState.scheduleLocked)
-                    ReadOnlyHostedEventScheduleCard(event: widget.event)
-                  else
-                    CatchSection.fieldRows(
-                      title:
-                          context.l10n.hostsEditHostedEventScreenLabelSchedule,
-                      children: [
-                        CatchField.nav(
-                          key: CreateEventFormKeys.datePicker,
-                          title: context
-                              .l10n
-                              .hostsEditHostedEventScreenTitleEventDate,
-                          body: scheduleFields.dateValue,
-                          icon: CatchIcons.calendarTodayOutlined,
-                          onTap: () => _handleIntent(
-                            const HostEventEditPickDateIntent(),
-                          ),
-                        ),
-                        CatchField.nav(
-                          key: CreateEventFormKeys.timePicker,
-                          title: context
-                              .l10n
-                              .hostsEditHostedEventScreenTitleStartTime,
-                          body: scheduleFields.startTimeValue,
-                          icon: CatchIcons.scheduleOutlined,
-                          error: scheduleFields.errorText,
-                          onTap: () => _handleIntent(
-                            const HostEventEditPickStartTimeIntent(),
-                          ),
-                        ),
-                        CatchField.stepper(
-                          title: context
-                              .l10n
-                              .hostsEditHostedEventScreenLabelDuration,
-                          body: EventFormatters.durationMinutes(
-                            scheduleFields.durationMinutes,
-                          ),
-                          value: scheduleFields.durationMinutes,
-                          min: CatchBusinessRules.eventMinDurationMinutes,
-                          max: CatchBusinessRules.eventMaxDurationMinutes,
-                          step: CatchBusinessRules.eventDurationStepMinutes,
-                          formatter: (value) =>
-                              EventFormatters.durationMinutes(value.round()),
-                          decreaseSemanticLabel: context
-                              .l10n
-                              .hostsEditHostedEventScreenBodyDecreaseDuration,
-                          increaseSemanticLabel: context
-                              .l10n
-                              .hostsEditHostedEventScreenBodyIncreaseDuration,
-                          onChanged: (duration) => _handleIntent(
-                            HostEventEditDurationChangedIntent(
-                              duration.round(),
-                            ),
-                          ),
-                          icon: CatchIcons.timerOutlined,
-                        ),
-                      ],
-                    ),
-                  CatchSection.fieldRows(
-                    title: context.l10n.hostsEditHostedEventScreenLabelWhere,
+                  CatchSectionList(
+                    emptyStateOmitted: true,
+                    gap: 0,
                     children: [
-                      CatchField.input(
-                        key: CreateEventFormKeys.meetingPoint,
-                        title: context
-                            .l10n
-                            .hostsEditHostedEventScreenTitleLocationName,
-                        controller: _meetingPointController,
-                        enabled: screenState.canEdit,
-                        inputHint: context
-                            .l10n
-                            .hostsEditHostedEventScreenPlaceholderEGBandstandPromenade,
-                        helperText: context
-                            .l10n
-                            .hostsEditHostedEventScreenHelpertextThisIsWhatAttendees,
-                        icon: CatchIcons.locationOnOutlined,
-                        textCapitalization: TextCapitalization.words,
-                        textInputAction: TextInputAction.next,
-                        onChanged: (value) => _handleIntent(
-                          HostEventEditMeetingPointChangedIntent(value),
+                      CatchSection.plain(
+                        child: EditHostedEventScopeNotice(
+                          isCancelled: widget.event.isCancelled,
+                          scheduleLocked: screenState.scheduleLocked,
+                          policyLocked: screenState.policyLocked,
                         ),
-                        validator: (value) =>
-                            value == null || value.trim().isEmpty
-                            ? context
+                      ),
+                      if (screenState.hasSaveError)
+                        CatchSection.plain(
+                          padding: CatchInsets.fieldSectionChildTop,
+                          child: CatchErrorBanner.fromError(
+                            screenState.saveError!,
+                            context: AppErrorContext.event,
+                          ),
+                        ),
+                      if (screenState.scheduleLocked)
+                        ReadOnlyHostedEventScheduleCard(event: widget.event)
+                      else
+                        CatchSection.fieldRows(
+                          title: context
+                              .l10n
+                              .hostsEditHostedEventScreenLabelSchedule,
+                          children: [
+                            CatchField.nav(
+                              key: CreateEventFormKeys.datePicker,
+                              title: context
                                   .l10n
-                                  .hostsEditHostedEventScreenBodyRequired
-                            : null,
-                      ),
-                      CatchField.nav(
-                        key: CreateEventFormKeys.mapPicker,
-                        title: context.l10n.hostsWhereStepLabelMeetingLocation,
-                        body: locationState.hasStartingPoint
-                            ? (locationState.selectedLabel.isEmpty
-                                  ? context
-                                        .l10n
-                                        .eventsMapPinTileTitlePinnedLocation
-                                  : locationState.selectedLabel)
-                            : context.l10n.eventsMapPinTileTitleChooseOnMap,
-                        icon: locationState.hasStartingPoint
-                            ? CatchIcons.editLocationAltOutlined
-                            : CatchIcons.mapOutlined,
-                        onTap: locationState.canPick
-                            ? () => _handleIntent(
-                                const HostEventEditPickLocationIntent(),
-                              )
-                            : null,
-                      ),
-                      CatchField.input(
-                        key: CreateEventFormKeys.locationDetails,
-                        title: context
-                            .l10n
-                            .hostsEditHostedEventScreenTitleExtraDirections,
-                        isOptional: true,
-                        controller: _locationDetailsController,
-                        enabled: screenState.canEdit,
-                        inputHint: context
-                            .l10n
-                            .hostsEditHostedEventScreenPlaceholderEGMeetOutside,
-                        icon: CatchIcons.infoOutline,
-                        maxLines: 3,
-                        textCapitalization: TextCapitalization.sentences,
-                        textInputAction: TextInputAction.next,
-                      ),
-                    ],
-                  ),
-                  CatchSection.fieldRows(
-                    title: context
-                        .l10n
-                        .hostsEditHostedEventScreenLabelEventDetails,
-                    children: [
-                      if (detailsFields.isDistanceBased) ...[
-                        CatchField.input(
-                          key: CreateEventFormKeys.distance,
-                          title: context
-                              .l10n
-                              .hostsEditHostedEventScreenTitleDistanceKm,
-                          controller: _distanceController,
-                          enabled: screenState.canEdit,
-                          inputHint: '10',
-                          icon: CatchIcons.straightenOutlined,
-                          keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true,
-                          ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(
-                                context.l10n.hostsEditHostedEventScreenBodyDD,
+                                  .hostsEditHostedEventScreenTitleEventDate,
+                              body: scheduleFields.dateValue,
+                              icon: CatchIcons.calendarTodayOutlined,
+                              onTap: () => _handleIntent(
+                                const HostEventEditPickDateIntent(),
                               ),
                             ),
-                          ],
-                          textInputAction: TextInputAction.next,
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return context
+                            CatchField.nav(
+                              key: CreateEventFormKeys.timePicker,
+                              title: context
                                   .l10n
-                                  .hostsEditHostedEventScreenBodyRequired;
-                            }
-                            final distance = double.tryParse(value.trim());
-                            if (distance == null) {
-                              return context
+                                  .hostsEditHostedEventScreenTitleStartTime,
+                              body: scheduleFields.startTimeValue,
+                              icon: CatchIcons.scheduleOutlined,
+                              error: scheduleFields.errorText,
+                              onTap: () => _handleIntent(
+                                const HostEventEditPickStartTimeIntent(),
+                              ),
+                            ),
+                            CatchField.stepper(
+                              title: context
                                   .l10n
-                                  .hostsEditHostedEventScreenBodyInvalid;
-                            }
-                            if (distance <= 0) {
-                              return context
-                                  .l10n
-                                  .hostsEditHostedEventScreenBodyMustBe0;
-                            }
-                            return null;
-                          },
-                        ),
-                        CatchField.choices<PaceLevel>(
-                          title:
-                              context.l10n.hostsEventDetailsStepLabelPaceLevel,
-                          body: detailsFields.selectedPace.label,
-                          values: PaceLevel.values,
-                          itemLabel: (pace) => pace.label,
-                          itemAccent: (_) => ActivityPalette.resolve(
-                            context,
-                            widget.event.eventFormat.activityKind,
-                          ).accent,
-                          selected: <PaceLevel>{detailsFields.selectedPace},
-                          onSelectionChanged: screenState.canEdit
-                              ? (selection) => _handleIntent(
-                                  HostEventEditPaceChangedIntent(
-                                    selection.single,
+                                  .hostsEditHostedEventScreenLabelDuration,
+                              contract: CatchContractConstraints
+                                  .mobileFormStateEventDurationMinutes,
+                              body: EventFormatters.durationMinutes(
+                                scheduleFields.durationMinutes,
+                              ),
+                              value: scheduleFields.durationMinutes,
+                              min: CatchBusinessRules.eventMinDurationMinutes,
+                              max: CatchBusinessRules.eventMaxDurationMinutes,
+                              step: CatchBusinessRules.eventDurationStepMinutes,
+                              formatter: (value) =>
+                                  EventFormatters.durationMinutes(
+                                    value.round(),
                                   ),
-                                )
-                              : null,
-                          enabled: screenState.canEdit,
-                          icon: CatchIcons.speedOutlined,
+                              decreaseSemanticLabel: context
+                                  .l10n
+                                  .hostsEditHostedEventScreenBodyDecreaseDuration,
+                              increaseSemanticLabel: context
+                                  .l10n
+                                  .hostsEditHostedEventScreenBodyIncreaseDuration,
+                              onChanged: (duration) => _handleIntent(
+                                HostEventEditDurationChangedIntent(
+                                  duration.round(),
+                                ),
+                              ),
+                              icon: CatchIcons.timerOutlined,
+                            ),
+                          ],
                         ),
-                      ],
-                      CatchField.input(
-                        key: CreateEventFormKeys.description,
+                      CatchSection.fieldRows(
+                        title:
+                            context.l10n.hostsEditHostedEventScreenLabelWhere,
+                        children: [
+                          CatchField.input(
+                            key: CreateEventFormKeys.meetingPoint,
+                            title: context
+                                .l10n
+                                .hostsEditHostedEventScreenTitleLocationName,
+                            contract: CatchContractConstraints
+                                .updateEventCallablePayloadFieldsMeetingPoint,
+                            controller: _meetingPointController,
+                            enabled: screenState.canEdit,
+                            inputHint: context
+                                .l10n
+                                .hostsEditHostedEventScreenPlaceholderEGBandstandPromenade,
+                            helperText: context
+                                .l10n
+                                .hostsEditHostedEventScreenHelpertextThisIsWhatAttendees,
+                            icon: CatchIcons.locationOnOutlined,
+                            textCapitalization: TextCapitalization.words,
+                            textInputAction: TextInputAction.next,
+                            onChanged: (value) => _handleIntent(
+                              HostEventEditMeetingPointChangedIntent(value),
+                            ),
+                            validator: (value) =>
+                                value == null || value.trim().isEmpty
+                                ? context
+                                      .l10n
+                                      .hostsEditHostedEventScreenBodyRequired
+                                : null,
+                          ),
+                          CatchField.nav(
+                            key: CreateEventFormKeys.mapPicker,
+                            title:
+                                context.l10n.hostsWhereStepLabelMeetingLocation,
+                            body: locationState.hasStartingPoint
+                                ? (locationState.selectedLabel.isEmpty
+                                      ? context
+                                            .l10n
+                                            .eventsMapPinTileTitlePinnedLocation
+                                      : locationState.selectedLabel)
+                                : context.l10n.eventsMapPinTileTitleChooseOnMap,
+                            icon: locationState.hasStartingPoint
+                                ? CatchIcons.editLocationAltOutlined
+                                : CatchIcons.mapOutlined,
+                            onTap: locationState.canPick
+                                ? () => _handleIntent(
+                                    const HostEventEditPickLocationIntent(),
+                                  )
+                                : null,
+                          ),
+                          CatchField.input(
+                            key: CreateEventFormKeys.locationDetails,
+                            title: context
+                                .l10n
+                                .hostsEditHostedEventScreenTitleExtraDirections,
+                            contract: CatchContractConstraints
+                                .updateEventCallablePayloadFieldsLocationDetails,
+                            isOptional: true,
+                            controller: _locationDetailsController,
+                            enabled: screenState.canEdit,
+                            inputHint: context
+                                .l10n
+                                .hostsEditHostedEventScreenPlaceholderEGMeetOutside,
+                            icon: CatchIcons.infoOutline,
+                            maxLines: 3,
+                            textCapitalization: TextCapitalization.sentences,
+                            textInputAction: TextInputAction.next,
+                          ),
+                        ],
+                      ),
+                      CatchSection.fieldRows(
                         title: context
                             .l10n
-                            .hostsEditHostedEventScreenTitleDescription,
-                        isOptional: true,
-                        controller: _descriptionController,
-                        enabled: screenState.canEdit,
-                        inputHint: context
-                            .l10n
-                            .hostsEditHostedEventScreenPlaceholderWhatShouldAttendeesExpect,
-                        icon: CatchIcons.editNoteOutlined,
-                        maxLines: 4,
-                        textCapitalization: TextCapitalization.sentences,
-                        textInputAction: TextInputAction.newline,
+                            .hostsEditHostedEventScreenLabelEventDetails,
+                        children: [
+                          if (detailsFields.isDistanceBased) ...[
+                            CatchField.input(
+                              key: CreateEventFormKeys.distance,
+                              title: context
+                                  .l10n
+                                  .hostsEditHostedEventScreenTitleDistanceKm,
+                              contract: CatchContractConstraints
+                                  .updateEventCallablePayloadFieldsDistanceKm,
+                              controller: _distanceController,
+                              enabled: screenState.canEdit,
+                              inputHint: '10',
+                              icon: CatchIcons.straightenOutlined,
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                    decimal: true,
+                                  ),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(
+                                    context
+                                        .l10n
+                                        .hostsEditHostedEventScreenBodyDD,
+                                  ),
+                                ),
+                              ],
+                              textInputAction: TextInputAction.next,
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return context
+                                      .l10n
+                                      .hostsEditHostedEventScreenBodyRequired;
+                                }
+                                final distance = double.tryParse(value.trim());
+                                if (distance == null) {
+                                  return context
+                                      .l10n
+                                      .hostsEditHostedEventScreenBodyInvalid;
+                                }
+                                if (distance <= 0) {
+                                  return context
+                                      .l10n
+                                      .hostsEditHostedEventScreenBodyMustBe0;
+                                }
+                                return null;
+                              },
+                            ),
+                            CatchField.choices<PaceLevel>(
+                              title: context
+                                  .l10n
+                                  .hostsEventDetailsStepLabelPaceLevel,
+                              contract: CatchContractConstraints
+                                  .updateEventCallablePayloadFieldsPace,
+                              contractValue: (value) => value.name,
+                              body: detailsFields.selectedPace.label,
+                              values: PaceLevel.values,
+                              itemLabel: (pace) => pace.label,
+                              itemAccent: (_) => ActivityPalette.resolve(
+                                context,
+                                widget.event.eventFormat.activityKind,
+                              ).accent,
+                              selected: <PaceLevel>{detailsFields.selectedPace},
+                              onSelectionChanged: screenState.canEdit
+                                  ? (selection) => _handleIntent(
+                                      HostEventEditPaceChangedIntent(
+                                        selection.single,
+                                      ),
+                                    )
+                                  : null,
+                              enabled: screenState.canEdit,
+                              icon: CatchIcons.speedOutlined,
+                            ),
+                          ],
+                          CatchField.input(
+                            key: CreateEventFormKeys.description,
+                            title: context
+                                .l10n
+                                .hostsEditHostedEventScreenTitleDescription,
+                            contract: CatchContractConstraints
+                                .updateEventCallablePayloadFieldsDescription,
+                            isOptional: true,
+                            controller: _descriptionController,
+                            enabled: screenState.canEdit,
+                            inputHint: context
+                                .l10n
+                                .hostsEditHostedEventScreenPlaceholderWhatShouldAttendeesExpect,
+                            icon: CatchIcons.editNoteOutlined,
+                            maxLines: 4,
+                            textCapitalization: TextCapitalization.sentences,
+                            textInputAction: TextInputAction.newline,
+                          ),
+                        ],
                       ),
+                      if (screenState.policyLocked)
+                        ReadOnlyHostedEventPolicyCard(event: widget.event)
+                      else
+                        EditableHostedEventPolicyCard(
+                          state: fields.policy,
+                          capacityController: _capacityController,
+                          priceController: _priceController,
+                          minAgeController: _minAgeController,
+                          maxAgeController: _maxAgeController,
+                          maxMenController: _maxMenController,
+                          maxWomenController: _maxWomenController,
+                          inviteCodeController: _inviteCodeController,
+                          dynamicPricingStepController:
+                              _dynamicPricingStepController,
+                          dynamicPricingMaxController:
+                              _dynamicPricingMaxController,
+                          onAdmissionPresetChanged: (preset) => _handleIntent(
+                            HostEventEditAdmissionPresetChangedIntent(preset),
+                          ),
+                          onCohortCapsEnabledChanged: (value) => _handleIntent(
+                            HostEventEditCohortCapsChangedIntent(value),
+                          ),
+                          onDynamicPricingChanged: (value) => _handleIntent(
+                            HostEventEditDynamicPricingChangedIntent(value),
+                          ),
+                          onCancellationPolicyChanged: (policyId) =>
+                              _handleIntent(
+                                HostEventEditCancellationPolicyChangedIntent(
+                                  policyId,
+                                ),
+                              ),
+                          privateAccessAsync: privateAccessState.privateAccess,
+                        ),
                     ],
                   ),
-                  if (screenState.policyLocked)
-                    ReadOnlyHostedEventPolicyCard(event: widget.event)
-                  else
-                    EditableHostedEventPolicyCard(
-                      state: fields.policy,
-                      capacityController: _capacityController,
-                      priceController: _priceController,
-                      minAgeController: _minAgeController,
-                      maxAgeController: _maxAgeController,
-                      maxMenController: _maxMenController,
-                      maxWomenController: _maxWomenController,
-                      inviteCodeController: _inviteCodeController,
-                      dynamicPricingStepController:
-                          _dynamicPricingStepController,
-                      dynamicPricingMaxController: _dynamicPricingMaxController,
-                      onAdmissionPresetChanged: (preset) => _handleIntent(
-                        HostEventEditAdmissionPresetChangedIntent(preset),
-                      ),
-                      onCohortCapsEnabledChanged: (value) => _handleIntent(
-                        HostEventEditCohortCapsChangedIntent(value),
-                      ),
-                      onDynamicPricingChanged: (value) => _handleIntent(
-                        HostEventEditDynamicPricingChangedIntent(value),
-                      ),
-                      onCancellationPolicyChanged: (policyId) => _handleIntent(
-                        HostEventEditCancellationPolicyChangedIntent(policyId),
-                      ),
-                      privateAccessAsync: privateAccessState.privateAccess,
-                    ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
-      ),
-      bottomNavigationBar: CatchBottomDock(
-        child: CatchButton(
-          key: EditHostedEventKeys.saveButton,
-          label: screenState.footer.label,
-          onPressed: screenState.footer.isEnabled
-              ? () => _handleIntent(const HostEventEditSaveIntent())
-              : null,
-          isLoading: screenState.footer.isLoading,
-          fullWidth: true,
-          icon: Icon(CatchIcons.saveOutlined),
+        bottomNavigationBar: CatchBottomDock(
+          child: CatchButton(
+            key: EditHostedEventKeys.saveButton,
+            label: screenState.footer.label,
+            onPressed: screenState.footer.isEnabled
+                ? () => _handleIntent(const HostEventEditSaveIntent())
+                : null,
+            isLoading: screenState.footer.isLoading,
+            fullWidth: true,
+            icon: Icon(CatchIcons.saveOutlined),
+          ),
         ),
       ),
     );
   }
 
   Future<void> _pickDate() async {
+    if (_savePending) return;
     final today = DateUtils.dateOnly(_now);
     final lastDate = today.add(CatchBusinessRules.eventEditDatePickerWindow);
     final initialDate = _selectedDate.isBefore(today) ? today : _selectedDate;
@@ -683,7 +720,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       lastDate: lastDate,
       title: context.l10n.hostsEditHostedEventScreenTitleEventDate,
     );
-    if (picked == null) return;
+    if (picked == null || _savePending) return;
     final scheduleError = _scheduleValidationFor(
       picked,
       _selectedStartTime,
@@ -695,12 +732,13 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   }
 
   Future<void> _pickStartTime() async {
+    if (_savePending) return;
     final picked = await showCatchTimePicker(
       context: context,
       initialTime: _selectedStartTime,
       title: context.l10n.hostsEditHostedEventScreenTitleStartTime,
     );
-    if (picked == null) return;
+    if (picked == null || _savePending) return;
     final scheduleError = _scheduleValidationFor(
       _selectedDate,
       picked,
@@ -712,6 +750,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   }
 
   Future<void> _pickLocation() async {
+    if (_savePending) return;
     final deviceLocation = ref.read(deviceLocationProvider).asData?.value;
     final locationState = HostEventEditLocationState.from(
       canEdit: true,
@@ -730,7 +769,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
         fullscreenDialog: true,
       ),
     );
-    if (result != null) {
+    if (result != null && !_savePending) {
       setState(() {
         _startingPoint = result.coordinate;
         _meetingLocationAddress = result.address;
@@ -765,6 +804,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   }
 
   void _handleIntent(HostEventEditIntent intent) {
+    if (_savePending) return;
     switch (intent) {
       case HostEventEditPickDateIntent():
         unawaited(_pickDate());
@@ -811,6 +851,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   }
 
   void _saveChanges() {
+    if (_savePending) return;
     final screenState = HostEventEditScreenState.from(
       event: widget.event,
       now: _now,
@@ -877,12 +918,16 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
         ref.invalidate(watchEventParticipationRosterProvider(widget.event.id));
         if (!mounted) return;
         showCatchSnackBar(context, screenState.saveOutcome.successMessage);
-        if (screenState.saveOutcome.popRouteOnSuccess) {
-          await Navigator.of(context).maybePop();
+        if (screenState.saveOutcome.popRouteOnSuccess &&
+            Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
         }
       }),
     );
   }
+
+  bool get _savePending =>
+      ref.read(HostEventBookingController.updateHostedEventMutation).isPending;
 }
 
 class EditHostedEventScopeNotice extends StatelessWidget {
@@ -1001,7 +1046,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
     return CatchSection.fieldRows(
       title: context.l10n.hostsEditHostedEventScreenLabelEventPolicy,
       footer: Padding(
-        padding: const EdgeInsets.only(top: CatchSpacing.s2),
+        padding: CatchInsets.formSectionTop,
         child: Text(
           context.l10n.hostsEditHostedEventScreenTextEditableUntilTheFirst,
           style: CatchTextStyles.supporting(context, color: t.ink2),
@@ -1011,6 +1056,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
         CatchField.input(
           key: CreateEventFormKeys.capacity,
           title: context.l10n.hostsEditHostedEventScreenTitleMaxAttendees,
+          contract: CatchContractConstraints
+              .updateEventCallablePayloadFieldsCapacityLimit,
           controller: capacityController,
           inputHint: '20',
           icon: CatchIcons.peopleOutline,
@@ -1025,6 +1072,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
               .hostsEditHostedEventScreenTitleBasePriceCurrencycode(
                 currencyCode: state.currencyCode,
               ),
+          contract: CatchContractConstraints
+              .updateEventCallablePayloadFieldsPriceInPaise,
           controller: priceController,
           inputHint: '0',
           icon: CatchIcons.paymentsOutlined,
@@ -1043,6 +1092,14 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
         ),
         CatchField.optionCards<EventAdmissionPreset>(
           title: context.l10n.hostsEditHostedEventScreenLabelAdmissionFormat,
+          contract: CatchContractConstraints
+              .updateEventCallablePayloadFieldsEventPolicyAdmissionFormat,
+          contractValue: (preset) => switch (preset) {
+            EventAdmissionPreset.openCapacity => 'open',
+            EventAdmissionPreset.inviteOnly => 'inviteOnly',
+            EventAdmissionPreset.requestToJoin => 'manualApproval',
+            EventAdmissionPreset.balancedSingles => 'balancedRatio',
+          },
           values: EventAdmissionPreset.values,
           itemTitle: (preset) => preset.title(context.l10n),
           itemDescription: (preset) => preset.description(context.l10n),
@@ -1054,6 +1111,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           CatchField.input(
             key: CreateEventFormKeys.inviteCode,
             title: context.l10n.hostsEditHostedEventScreenTitleInviteCode,
+            contract: CatchContractConstraints
+                .updateEventCallablePayloadFieldsPrivateAccessInviteCode,
             controller: inviteCodeController,
             inputHint:
                 context.l10n.hostsEditHostedEventScreenPlaceholderCatchDelhi,
@@ -1077,6 +1136,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           CatchField.toggle(
             key: CreateEventFormKeys.cohortCapsToggle,
             title: context.l10n.hostsEditHostedEventScreenTitleCohortCaps,
+            contract:
+                CatchContractConstraints.mobileFormStateEventCohortCapsEnabled,
             body: context
                 .l10n
                 .hostsEditHostedEventScreenBodyOptionallyCapStraightMen,
@@ -1092,6 +1153,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   title: context
                       .l10n
                       .hostsEditHostedEventScreenTitleMaxStraightMen,
+                  contract: CatchContractConstraints
+                      .updateEventCallablePayloadFieldsConstraintsMaxMen,
                   isOptional: true,
                   controller: maxMenController,
                   icon: CatchIcons.maleOutlined,
@@ -1106,6 +1169,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   title: context
                       .l10n
                       .hostsEditHostedEventScreenTitleMaxStraightWomen,
+                  contract: CatchContractConstraints
+                      .updateEventCallablePayloadFieldsConstraintsMaxWomen,
                   isOptional: true,
                   controller: maxWomenController,
                   icon: CatchIcons.femaleOutlined,
@@ -1130,6 +1195,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           CatchField.toggle(
             key: CreateEventFormKeys.dynamicPricingToggle,
             title: context.l10n.hostsEditHostedEventScreenTitleDemandPricing,
+            contract: CatchContractConstraints
+                .mobileFormStateEventDynamicPricingEnabled,
             body:
                 context.l10n.hostsEditHostedEventScreenBodyIncreasePriceForThe,
             value: state.dynamicPricingEnabled,
@@ -1144,6 +1211,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                       .hostsEditHostedEventScreenTitleStepCurrencycode(
                         currencyCode: state.currencyCode,
                       ),
+                  contract: CatchContractConstraints
+                      .updateEventCallablePayloadFieldsEventPolicyPricingDemandPricingRulesItemsStepAdjustmentInPaise,
                   controller: dynamicPricingStepController,
                   inputHint: '250',
                   icon: CatchIcons.trendingUpRounded,
@@ -1159,6 +1228,8 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                       .hostsEditHostedEventScreenTitleMaxCurrencycode(
                         currencyCode: state.currencyCode,
                       ),
+                  contract: CatchContractConstraints
+                      .updateEventCallablePayloadFieldsEventPolicyPricingDemandPricingRulesItemsMaxAdjustmentInPaise,
                   controller: dynamicPricingMaxController,
                   inputHint: '1500',
                   icon: CatchIcons.priceChangeOutlined,
@@ -1175,9 +1246,16 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           key: CreateEventFormKeys.minAge,
           minAgeController: minAgeController,
           maxAgeController: maxAgeController,
+          minimumContract: CatchContractConstraints
+              .updateEventCallablePayloadFieldsConstraintsMinAge,
+          maximumContract: CatchContractConstraints
+              .updateEventCallablePayloadFieldsConstraintsMaxAge,
         ),
         CatchField.optionCards<EventCancellationPolicyId>(
           title: context.l10n.hostsEditHostedEventScreenLabelCancellationPolicy,
+          contract: CatchContractConstraints
+              .updateEventCallablePayloadFieldsEventPolicyCancellationPolicyId,
+          contractValue: (value) => value.name,
           values: EventCancellationPolicyId.values,
           itemTitle: (policyId) => policyFor(policyId).title,
           itemDescription: (policyId) => policyFor(policyId).attendeeSummary,

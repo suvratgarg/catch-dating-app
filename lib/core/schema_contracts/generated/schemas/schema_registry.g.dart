@@ -17,6 +17,11 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'MobileFormState',
+    source: 'forms/mobile_form_state.schema.json',
+    schema: schemaMobileFormStateSchema,
+  ),
+  SchemaContractDefinition(
     name: 'OperationRun',
     source: 'operations/run.schema.json',
     schema: schemaOperationRunSchema,
@@ -60,6 +65,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     name: 'OnboardingDraftDocument',
     source: 'firestore/onboarding_drafts.schema.json',
     schema: schemaOnboardingDraftDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AccessApplicationDocument',
+    source: 'firestore/access_applications.schema.json',
+    schema: schemaAccessApplicationDocumentSchema,
   ),
   SchemaContractDefinition(
     name: 'UserProfileDocument',
@@ -537,6 +547,16 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaAdminListIntakeOperationsCallablePayloadSchema,
   ),
   SchemaContractDefinition(
+    name: 'AdminListActionExecutionsCallablePayload',
+    source: 'callables/admin_list_action_executions_payload.schema.json',
+    schema: schemaAdminListActionExecutionsCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminRecordActionExecutionCallablePayload',
+    source: 'callables/admin_record_action_execution_payload.schema.json',
+    schema: schemaAdminRecordActionExecutionCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
     name: 'AdminDecideOrganizerEventCandidateCallablePayload',
     source: 'callables/admin_decide_organizer_event_candidate_payload.schema.json',
     schema: schemaAdminDecideOrganizerEventCandidateCallablePayloadSchema,
@@ -941,9 +961,90 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     source: 'client_writes/reset_match_unread_count.schema.json',
     schema: schemaResetMatchUnreadCountClientWriteSchema,
   ),
+  SchemaContractDefinition(
+    name: 'AdminGetOverviewCallablePayload',
+    source: 'callables/admin_get_overview_payload.schema.json',
+    schema: schemaAdminGetOverviewCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminGetOverviewCallableResponse',
+    source: 'callable_responses/admin_get_overview_response.schema.json',
+    schema: schemaAdminGetOverviewCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminDecideAccessApplicationCallablePayload',
+    source: 'callables/admin_decide_access_application_payload.schema.json',
+    schema: schemaAdminDecideAccessApplicationCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminDecideAccessApplicationCallableResponse',
+    source: 'callable_responses/admin_decide_access_application_response.schema.json',
+    schema: schemaAdminDecideAccessApplicationCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminSetAdminUserRolesCallablePayload',
+    source: 'callables/admin_set_admin_user_roles_payload.schema.json',
+    schema: schemaAdminSetAdminUserRolesCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminSetAdminUserRolesCallableResponse',
+    source: 'callable_responses/admin_set_admin_user_roles_response.schema.json',
+    schema: schemaAdminSetAdminUserRolesCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminDecideSafetyTriageItemCallablePayload',
+    source: 'callables/admin_decide_safety_triage_item_payload.schema.json',
+    schema: schemaAdminDecideSafetyTriageItemCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminDecideSafetyTriageItemCallableResponse',
+    source: 'callable_responses/admin_decide_safety_triage_item_response.schema.json',
+    schema: schemaAdminDecideSafetyTriageItemCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminAssignSafetyTriageItemCallablePayload',
+    source: 'callables/admin_assign_safety_triage_item_payload.schema.json',
+    schema: schemaAdminAssignSafetyTriageItemCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminAssignSafetyTriageItemCallableResponse',
+    source: 'callable_responses/admin_assign_safety_triage_item_response.schema.json',
+    schema: schemaAdminAssignSafetyTriageItemCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminCreateMarketingContentDraftCallablePayload',
+    source: 'callables/admin_create_marketing_content_draft_payload.schema.json',
+    schema: schemaAdminCreateMarketingContentDraftCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminCreateMarketingContentDraftCallableResponse',
+    source: 'callable_responses/admin_create_marketing_content_draft_response.schema.json',
+    schema: schemaAdminCreateMarketingContentDraftCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminRecordMarketingReviewDecisionCallablePayload',
+    source: 'callables/admin_record_marketing_review_decision_payload.schema.json',
+    schema: schemaAdminRecordMarketingReviewDecisionCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'AdminRecordMarketingReviewDecisionCallableResponse',
+    source: 'callable_responses/admin_record_marketing_review_decision_response.schema.json',
+    schema: schemaAdminRecordMarketingReviewDecisionCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'JoinWaitlistHTTPRequest',
+    source: 'http/join_waitlist_request.schema.json',
+    schema: schemaJoinWaitlistHTTPRequestSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'JoinWaitlistHTTPResponse',
+    source: 'http/join_waitlist_response.schema.json',
+    schema: schemaJoinWaitlistHTTPResponseSchema,
+  ),
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'MobileFormState': schemaMobileFormStateSchema,
   'OperationRun': schemaOperationRunSchema,
   'OperationWorkItem': schemaOperationWorkItemSchema,
   'ProfilePromptAnswer': schemaProfilePromptAnswerSchema,
@@ -953,6 +1054,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'ActivityPreferences': schemaActivityPreferencesSchema,
   'ConfigCitiesDocument': schemaConfigCitiesDocumentSchema,
   'OnboardingDraftDocument': schemaOnboardingDraftDocumentSchema,
+  'AccessApplicationDocument': schemaAccessApplicationDocumentSchema,
   'UserProfileDocument': schemaUserProfileDocumentSchema,
   'PublicProfileDocument': schemaPublicProfileDocumentSchema,
   'HostProfileDocument': schemaHostProfileDocumentSchema,
@@ -1048,6 +1150,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'AdminRecordOrganizerCurationCallablePayload': schemaAdminRecordOrganizerCurationCallablePayloadSchema,
   'AdminRecordEventIntakeReviewDecisionCallablePayload': schemaAdminRecordEventIntakeReviewDecisionCallablePayloadSchema,
   'AdminListIntakeOperationsCallablePayload': schemaAdminListIntakeOperationsCallablePayloadSchema,
+  'AdminListActionExecutionsCallablePayload': schemaAdminListActionExecutionsCallablePayloadSchema,
+  'AdminRecordActionExecutionCallablePayload': schemaAdminRecordActionExecutionCallablePayloadSchema,
   'AdminDecideOrganizerEventCandidateCallablePayload': schemaAdminDecideOrganizerEventCandidateCallablePayloadSchema,
   'AdminDecideOrganizerPolicyGapCallablePayload': schemaAdminDecideOrganizerPolicyGapCallablePayloadSchema,
   'AdminResolveOrganizerEventLocationCallablePayload': schemaAdminResolveOrganizerEventLocationCallablePayloadSchema,
@@ -1129,9 +1233,26 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'DeleteSavedEventClientWrite': schemaDeleteSavedEventClientWriteSchema,
   'MarkNotificationReadClientWrite': schemaMarkNotificationReadClientWriteSchema,
   'ResetMatchUnreadCountClientWrite': schemaResetMatchUnreadCountClientWriteSchema,
+  'AdminGetOverviewCallablePayload': schemaAdminGetOverviewCallablePayloadSchema,
+  'AdminGetOverviewCallableResponse': schemaAdminGetOverviewCallableResponseSchema,
+  'AdminDecideAccessApplicationCallablePayload': schemaAdminDecideAccessApplicationCallablePayloadSchema,
+  'AdminDecideAccessApplicationCallableResponse': schemaAdminDecideAccessApplicationCallableResponseSchema,
+  'AdminSetAdminUserRolesCallablePayload': schemaAdminSetAdminUserRolesCallablePayloadSchema,
+  'AdminSetAdminUserRolesCallableResponse': schemaAdminSetAdminUserRolesCallableResponseSchema,
+  'AdminDecideSafetyTriageItemCallablePayload': schemaAdminDecideSafetyTriageItemCallablePayloadSchema,
+  'AdminDecideSafetyTriageItemCallableResponse': schemaAdminDecideSafetyTriageItemCallableResponseSchema,
+  'AdminAssignSafetyTriageItemCallablePayload': schemaAdminAssignSafetyTriageItemCallablePayloadSchema,
+  'AdminAssignSafetyTriageItemCallableResponse': schemaAdminAssignSafetyTriageItemCallableResponseSchema,
+  'AdminCreateMarketingContentDraftCallablePayload': schemaAdminCreateMarketingContentDraftCallablePayloadSchema,
+  'AdminCreateMarketingContentDraftCallableResponse': schemaAdminCreateMarketingContentDraftCallableResponseSchema,
+  'AdminRecordMarketingReviewDecisionCallablePayload': schemaAdminRecordMarketingReviewDecisionCallablePayloadSchema,
+  'AdminRecordMarketingReviewDecisionCallableResponse': schemaAdminRecordMarketingReviewDecisionCallableResponseSchema,
+  'JoinWaitlistHTTPRequest': schemaJoinWaitlistHTTPRequestSchema,
+  'JoinWaitlistHTTPResponse': schemaJoinWaitlistHTTPResponseSchema,
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'forms/mobile_form_state.schema.json': schemaMobileFormStateSchema,
   'operations/run.schema.json': schemaOperationRunSchema,
   'operations/work_item.schema.json': schemaOperationWorkItemSchema,
   'embedded/profile_prompt_answer.schema.json': schemaProfilePromptAnswerSchema,
@@ -1141,6 +1262,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'embedded/activity_preferences.schema.json': schemaActivityPreferencesSchema,
   'firestore/config_cities.schema.json': schemaConfigCitiesDocumentSchema,
   'firestore/onboarding_drafts.schema.json': schemaOnboardingDraftDocumentSchema,
+  'firestore/access_applications.schema.json': schemaAccessApplicationDocumentSchema,
   'firestore/users.schema.json': schemaUserProfileDocumentSchema,
   'firestore/public_profiles.schema.json': schemaPublicProfileDocumentSchema,
   'firestore/host_profiles.schema.json': schemaHostProfileDocumentSchema,
@@ -1236,6 +1358,8 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callables/admin_record_organizer_curation_payload.schema.json': schemaAdminRecordOrganizerCurationCallablePayloadSchema,
   'callables/admin_record_event_intake_review_decision_payload.schema.json': schemaAdminRecordEventIntakeReviewDecisionCallablePayloadSchema,
   'callables/admin_list_intake_operations_payload.schema.json': schemaAdminListIntakeOperationsCallablePayloadSchema,
+  'callables/admin_list_action_executions_payload.schema.json': schemaAdminListActionExecutionsCallablePayloadSchema,
+  'callables/admin_record_action_execution_payload.schema.json': schemaAdminRecordActionExecutionCallablePayloadSchema,
   'callables/admin_decide_organizer_event_candidate_payload.schema.json': schemaAdminDecideOrganizerEventCandidateCallablePayloadSchema,
   'callables/admin_decide_organizer_policy_gap_payload.schema.json': schemaAdminDecideOrganizerPolicyGapCallablePayloadSchema,
   'callables/admin_resolve_organizer_event_location_payload.schema.json': schemaAdminResolveOrganizerEventLocationCallablePayloadSchema,
@@ -1317,4 +1441,20 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'client_writes/delete_saved_event.schema.json': schemaDeleteSavedEventClientWriteSchema,
   'client_writes/mark_notification_read.schema.json': schemaMarkNotificationReadClientWriteSchema,
   'client_writes/reset_match_unread_count.schema.json': schemaResetMatchUnreadCountClientWriteSchema,
+  'callables/admin_get_overview_payload.schema.json': schemaAdminGetOverviewCallablePayloadSchema,
+  'callable_responses/admin_get_overview_response.schema.json': schemaAdminGetOverviewCallableResponseSchema,
+  'callables/admin_decide_access_application_payload.schema.json': schemaAdminDecideAccessApplicationCallablePayloadSchema,
+  'callable_responses/admin_decide_access_application_response.schema.json': schemaAdminDecideAccessApplicationCallableResponseSchema,
+  'callables/admin_set_admin_user_roles_payload.schema.json': schemaAdminSetAdminUserRolesCallablePayloadSchema,
+  'callable_responses/admin_set_admin_user_roles_response.schema.json': schemaAdminSetAdminUserRolesCallableResponseSchema,
+  'callables/admin_decide_safety_triage_item_payload.schema.json': schemaAdminDecideSafetyTriageItemCallablePayloadSchema,
+  'callable_responses/admin_decide_safety_triage_item_response.schema.json': schemaAdminDecideSafetyTriageItemCallableResponseSchema,
+  'callables/admin_assign_safety_triage_item_payload.schema.json': schemaAdminAssignSafetyTriageItemCallablePayloadSchema,
+  'callable_responses/admin_assign_safety_triage_item_response.schema.json': schemaAdminAssignSafetyTriageItemCallableResponseSchema,
+  'callables/admin_create_marketing_content_draft_payload.schema.json': schemaAdminCreateMarketingContentDraftCallablePayloadSchema,
+  'callable_responses/admin_create_marketing_content_draft_response.schema.json': schemaAdminCreateMarketingContentDraftCallableResponseSchema,
+  'callables/admin_record_marketing_review_decision_payload.schema.json': schemaAdminRecordMarketingReviewDecisionCallablePayloadSchema,
+  'callable_responses/admin_record_marketing_review_decision_response.schema.json': schemaAdminRecordMarketingReviewDecisionCallableResponseSchema,
+  'http/join_waitlist_request.schema.json': schemaJoinWaitlistHTTPRequestSchema,
+  'http/join_waitlist_response.schema.json': schemaJoinWaitlistHTTPResponseSchema,
 };

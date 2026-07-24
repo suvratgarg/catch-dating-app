@@ -17,7 +17,6 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_broadcast_c
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 typedef HostBroadcastRequestIdFactory = String Function();
@@ -151,6 +150,9 @@ class _HostBroadcastComposerSheetState
               ),
               gapH8,
               CatchOptionGroup<EventBroadcastAudience>(
+                contract: CatchContractConstraints
+                    .sendEventBroadcastCallablePayloadAudience,
+                contractValue: (audience) => audience.name,
                 options: [
                   CatchOption(
                     value: EventBroadcastAudience.booked,
@@ -188,6 +190,9 @@ class _HostBroadcastComposerSheetState
               gapH8,
               for (final template in HostBroadcastTemplate.values) ...[
                 CatchOptionCard(
+                  contract: CatchContractConstraints
+                      .mobileFormStateHostBroadcastTemplate,
+                  contractValue: template.name,
                   title: template.label(context.l10n),
                   description: template.description(context.l10n),
                   selected: _template == template,
@@ -200,6 +205,8 @@ class _HostBroadcastComposerSheetState
               gapH20,
               CatchField.input(
                 title: context.l10n.hostsHostBroadcastComposerSheetTitleMessage,
+                contract: CatchContractConstraints
+                    .sendEventBroadcastCallablePayloadBody,
                 controller: _bodyController,
                 placeholder: context
                     .l10n
@@ -208,7 +215,6 @@ class _HostBroadcastComposerSheetState
                 maxLines: 5,
                 enabled: !mutation.isPending,
                 textCapitalization: TextCapitalization.sentences,
-                inputFormatters: [LengthLimitingTextInputFormatter(500)],
                 onChanged: (_) => _handleContentChanged(),
               ),
               if (!_sendingEnabled) ...[

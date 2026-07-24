@@ -3,6 +3,10 @@ import fs from "node:fs";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fromRepo, repoRoot, toolRoot} from "./lib/repo_paths.mjs";
+import {
+  toolSupportsPlatform,
+  validateToolPlatforms,
+} from "./lib/tool_platform.mjs";
 
 const manifestPath = fromRepo("tool/tools_manifest.json");
 
@@ -81,6 +85,13 @@ function checkTools(args) {
 
 function runChecks(tools) {
   for (const tool of tools) {
+    if (!toolSupportsPlatform(tool)) {
+      console.log(
+        `==> ${tool.id}: skipped on ${process.platform}; ` +
+        `supported platforms: ${tool.platforms.join(", ")}`,
+      );
+      continue;
+    }
     for (const check of tool.checks ?? []) {
       console.log(`==> ${tool.id}: ${check}`);
       const result = spawnSync(check, {
@@ -216,6 +227,13 @@ function runTool(args) {
     console.error(`Tool ${id} does not define a command.`);
     process.exit(64);
   }
+  if (!toolSupportsPlatform(tool)) {
+    console.error(
+      `Tool ${id} is unavailable on ${process.platform}; ` +
+      `supported platforms: ${tool.platforms.join(", ")}.`,
+    );
+    process.exit(64);
+  }
 
   const forwarded = args.slice(1).map(shellQuote).join(" ");
   const commandLine = forwarded ? `${tool.command} ${forwarded}` : tool.command;
@@ -236,6 +254,9 @@ function validateManifest(manifest) {
     if (!tool.id) errors.push("Tool entry is missing id.");
     if (!tool.category) errors.push(`${tool.id ?? "<missing>"} is missing category.`);
     if (!tool.path) errors.push(`${tool.id ?? "<missing>"} is missing path.`);
+    for (const error of validateToolPlatforms(tool)) {
+      errors.push(`${tool.id ?? "<missing>"}: ${error}`);
+    }
     if (tool.id && ids.has(tool.id)) errors.push(`Duplicate tool id: ${tool.id}`);
     if (tool.id) ids.add(tool.id);
     if (tool.path) {

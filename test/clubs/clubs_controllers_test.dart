@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
@@ -688,6 +689,57 @@ void main() {
   });
 
   group('CreateClubController', () {
+    test('deduplicates an active organizer submit snapshot', () async {
+      final pendingCreate = Completer<String>();
+      final fakeRepository = FakeClubsRepository()
+        ..createClubCompleter = pendingCreate;
+      final container = ProviderContainer(
+        overrides: [
+          clubsRepositoryProvider.overrideWith((ref) => fakeRepository),
+          imageUploadRepositoryProvider.overrideWith(
+            (ref) => FakeImageUploadRepository(),
+          ),
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+      final controller = container.read(createClubControllerProvider.notifier);
+
+      final first = controller.submit(
+        name: 'Sunset Striders',
+        location: buildClub().location,
+        area: 'Bandra',
+        description: 'Frozen request',
+      );
+      final duplicate = controller.submit(
+        name: 'Different organizer',
+        location: 'Delhi',
+        area: 'Hauz Khas',
+        description: 'Must not replace the first request',
+      );
+
+      expect(identical(first, duplicate), isTrue);
+      expect(fakeRepository.createClubCallCount, 1);
+      pendingCreate.complete(fakeRepository.generatedId);
+      await Future.wait([first, duplicate]);
+
+      fakeRepository.createClubCompleter = null;
+      await controller.submit(
+        name: 'Next organizer',
+        location: buildClub().location,
+        area: 'Bandra',
+        description: 'New request after completion',
+      );
+      expect(fakeRepository.createClubCallCount, 2);
+    });
+
     test('picks multiple club photos and reads preview bytes', () async {
       final images = [
         XFile.fromData(Uint8List.fromList(const [1]), name: 'club-a.png'),

@@ -1,6 +1,10 @@
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+export 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart'
+    show CatchContractConstraints, CatchContractFieldConstraints;
 
 /// Catch settings toggle.
 ///
@@ -11,6 +15,8 @@ class CatchToggle extends StatefulWidget {
     super.key,
     required this.value,
     required this.onChanged,
+    this.contract,
+    this.contractExemption,
     this.semanticLabel,
   }) : _field = false;
 
@@ -22,11 +28,15 @@ class CatchToggle extends StatefulWidget {
     super.key,
     required this.value,
     required this.onChanged,
+    this.contract,
+    this.contractExemption,
     this.semanticLabel,
   }) : _field = true;
 
   final bool value;
   final ValueChanged<bool>? onChanged;
+  final CatchContractFieldConstraints? contract;
+  final String? contractExemption;
   final String? semanticLabel;
   final bool _field;
 
@@ -44,6 +54,11 @@ class _CatchToggleState extends State<CatchToggle> {
 
   @override
   Widget build(BuildContext context) {
+    assert(
+      widget.contract == null ||
+          widget.contract!.valueTypes?.contains('boolean') != false,
+      'CatchToggle requires a boolean contract.',
+    );
     final t = CatchTokens.of(context);
     final enabled = widget.onChanged != null;
     final trackColor = widget.value ? t.primary : t.line2;

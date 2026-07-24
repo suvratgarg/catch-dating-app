@@ -1826,6 +1826,12 @@ abstract class AppLocalizations {
   /// **'Get directions'**
   String get eventsEventLocationMapBodyScreenLabelGetDirections;
 
+  /// Failure feedback when the device cannot open walking directions.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open directions. Please try again.'**
+  String get eventsEventLocationMapDirectionsOpenFailed;
+
   /// Product copy used by lib/events/presentation/event_map_screen.dart (title).
   ///
   /// In en, this message translates to:
@@ -4579,7 +4585,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/payments/presentation/payment_history_screen.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Get help with this booking'**
+  /// **'How to get help with this booking'**
   String get paymentsPaymentHistoryScreenLabelGetHelpWithThis;
 
   /// Product copy used by lib/public_profile/presentation/public_profile_screen.dart (tooltip).
@@ -5001,6 +5007,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Contact us'**
   String get safetySettingsScreenBodyContactUs;
+
+  /// Failure feedback when a Settings external link cannot be opened.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open that link. Please try again.'**
+  String get safetySettingsScreenExternalLinkOpenFailed;
 
   /// Product copy used by lib/safety/presentation/settings_screen.dart (title).
   ///
@@ -17556,10 +17568,10 @@ abstract class AppLocalizations {
   /// **'Please select who you want to see'**
   String get onboardingGenderValidationSelectInterest;
 
-  /// Guidance when a payment-history booking needs support.
+  /// Actionable guidance when a payment-history booking needs support.
   ///
   /// In en, this message translates to:
-  /// **'Please contact Catch support for assistance with this booking.'**
+  /// **'Contact Catch support and include the payment and order IDs shown on this receipt.'**
   String get paymentsHistorySupportMessage;
 
   /// Confirmation after removing an account block.

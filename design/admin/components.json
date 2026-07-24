@@ -15,6 +15,8 @@
       "workspace_access_review",
       "route_admin_role_management",
       "workspace_admin_role_management",
+      "route_admin_action_executions",
+      "workspace_admin_action_executions",
       "route_data_quality",
       "workspace_data_quality",
       "route_event_publishing",
@@ -150,6 +152,44 @@
         ]
       },
       "notes": "Prop-driven Admin Roles workspace surface used by the route wrapper and deterministic Storybook previews; query, register fetch, and mutation logic stay in AdminRoleManagementScreen."
+    },
+    {
+      "id": "route_admin_action_executions",
+      "kind": "route",
+      "owner": "features/operations",
+      "source": "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx",
+      "exportName": "AdminActionExecutionsScreen",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "AdminActionExecutionsRouteStory",
+        "states": [
+          "bounded-receipt-register"
+        ]
+      },
+      "notes": "Route wrapper owns the bounded adminListActionExecutions query. The employee monitor is read-only and never exposes stored request or response bodies."
+    },
+    {
+      "id": "workspace_admin_action_executions",
+      "kind": "workspace",
+      "owner": "features/operations",
+      "source": "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx",
+      "exportName": "AdminActionExecutionsWorkspace",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutes.stories.tsx",
+        "exportName": "AdminActionExecutionsWorkspaceStory",
+        "states": [
+          "bounded-receipt-register"
+        ]
+      },
+      "notes": "Prop-driven agent activity workspace used by the route and deterministic Storybook preview; paging and local filters remain controller-owned."
     },
     {
       "id": "route_data_quality",

@@ -1,8 +1,57 @@
 {
-  "version": 63,
-  "updated": "2026-07-23",
+  "version": 94,
+  "updated": "2026-07-24",
   "owner": "agent_operating_model",
   "entries": [
+    {
+      "id": "REG-ADMIN-MOBILE-TOOLBAR-001",
+      "title": "Admin toolbar search expands into a tall empty block on mobile",
+      "status": "active",
+      "applies_to": [
+        "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
+        "admin/src/styles.css",
+        "admin/src/features/**/ui/**",
+        "design/visual_baselines/admin/**"
+      ],
+      "symptom": "A column-layout workbench toolbar retains the desktop 260px flex basis, causing its 36px search control to consume a large vertical blank area on narrow screens.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin run build:storybook && node tool/web/check_storybook_visuals.mjs --surface admin --check",
+        "guardEvidence": "registered admin route and workspace stories retain fixed desktop/mobile screenshots, including mobile workbench toolbars"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "When workbench-toolbar switches to flex-direction column, its search-control must reset the desktop flex basis to the 36px control height."
+    },
+    {
+      "id": "REG-ADMIN-CLI-PARITY-001",
+      "title": "Admin CLI drifts from the employee console or bypasses guarded callables",
+      "status": "active",
+      "applies_to": [
+        "contracts/admin/**",
+        "contracts/callables/admin_*",
+        "contracts/callable_responses/admin_*",
+        "operations/src/admin/**",
+        "operations/src/admin-cli/**",
+        "operations/scripts/check-admin-action-catalog.mjs",
+        "admin/src/features/operations/**",
+        "admin/src/shared/api/adminApi.ts",
+        "functions/src/admin/**"
+      ],
+      "symptom": "An admin console callable has no agent action, an agent command invents separate business logic, a mutation executes without dry-run and exact confirmation, a specialist role cannot record its authorized action, an ambiguous transport result is mislabeled as a safe failure, or execution monitoring stores sensitive request or response bodies.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/admin/generate_admin_action_catalog.mjs --check && node operations/scripts/check-admin-action-catalog.mjs && npm --prefix operations test",
+        "guardEvidence": "the generated catalog must be current; GUI callables, strict request schemas, Functions exports, workflow membership, examples, roles, and mutation confirmations must align; CLI tests prove start-before-effect, dry-run defaults, exact target confirmation, failed versus indeterminate outcomes, and partial terminal-receipt recovery"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "docs/web_surface_architecture.md",
+        "docs/backend_operation_catalog.md"
+      ],
+      "notes": "The action catalog is a thin parity layer over existing role-gated callables. Only features needing durable runs, leases, work items, budgets, or checkpoints become operations workflows."
+    },
     {
       "id": "REG-PUBLIC-SURFACE-BEHAVIOR-001",
       "title": "Public actions drift from viewer, authority, or runtime state",
@@ -766,7 +815,8 @@
       },
       "owner_docs": [
         "docs/app_architecture.md",
-        "docs/plans/explore_screen_quality_pass_spec.md"
+        "docs/plans/explore_screen_quality_pass_spec.md",
+        "design/features/explore.feature.json"
       ],
       "notes": "Cover ranking is an independent display decision; chronological body order and actual CTA side effects remain authoritative."
     },
@@ -1744,7 +1794,8 @@
         "design/components/catch.components.json",
         "design/screens/catch.screens.json",
         "docs/design_parity/event_detail_composition_tracker.md",
-        "docs/widget_catalog.md"
+        "docs/widget_catalog.md",
+        "design/features/event_detail.feature.json"
       ],
       "notes": "Keep sign-up and good-to-know facts inside EventDetailInformationState, review actions inside EventDetailReviewsState, host affordances callback-derived through CatchHostRow, and primary action platform selection inside CatchBottomAction."
     },
@@ -1864,7 +1915,8 @@
       "owner_docs": [
         "tool/README.md",
         "artifacts/README.md",
-        "docs/plans/repository_root_hygiene_spec.md"
+        "docs/plans/repository_root_hygiene_spec.md",
+        "docs/agent_operating_model.md"
       ],
       "notes": "The cleaner is allowlist-only, dry-run by default, and never invokes git clean."
     },
@@ -2041,7 +2093,8 @@
       },
       "owner_docs": [
         "docs/widget_catalog.md",
-        "docs/plans/catch_system_stretch_spec.md"
+        "docs/plans/catch_system_stretch_spec.md",
+        "design/components/catch.components.json"
       ],
       "notes": "Null is a meaningful TextField maxLines value. Branch on config presence before reading maxLines; do not use a null-coalescing fallback on the stored value."
     },
@@ -2063,7 +2116,8 @@
       },
       "owner_docs": [
         "docs/widget_catalog.md",
-        "docs/plans/catch_system_stretch_spec.md"
+        "docs/plans/catch_system_stretch_spec.md",
+        "design/components/catch.components.json"
       ],
       "notes": "The private mode implementations are both the widget and its sealed config, avoiding nested parameterized object construction inside const initializer lists. CatchField overrides runtimeType with the public facade type so Flutter's Widget.canUpdate contract and existing exact-type finders retain their pre-refactor behavior while Dart type tests and the exhaustive config switch still see the private implementation subtype."
     },
@@ -2135,7 +2189,8 @@
       "owner_docs": [
         "docs/design_language.md",
         "docs/web_surface_architecture.md",
-        "docs/plans/catch_system_stretch_spec.md"
+        "docs/plans/catch_system_stretch_spec.md",
+        "design/components/catch.components.json"
       ],
       "notes": "Flutter owns interaction names and behavior. React implementations remain native; only the semantic vocabulary and adoption evidence are shared."
     },
@@ -2598,6 +2653,275 @@
         "docs/release_operations.md"
       ],
       "notes": "The materialized files exist only in the deployment runner checkout. Committed generated projections stay receipt-free so pull-request drift validation remains deterministic and does not claim live production readiness."
+    },
+    {
+      "id": "REG-FLUTTER-FORM-CONTRACT-DRIFT-001",
+      "title": "Flutter forms drift from schema-owned constraints behind generic adapters",
+      "status": "active",
+      "applies_to": [
+        "contracts/**/*.schema.json",
+        "lib/core/forms/**",
+        "lib/core/schema_contracts/**",
+        "lib/core/widgets/catch_field*.dart",
+        "lib/core/widgets/catch_chip*.dart",
+        "lib/core/widgets/catch_option_*.dart",
+        "lib/core/widgets/catch_otp_code_field.dart",
+        "lib/core/widgets/catch_range_slider.dart",
+        "lib/core/widgets/catch_search_field.dart",
+        "lib/core/widgets/catch_toggle.dart",
+        "lib/core/widgets/catch_top_bar.dart",
+        "lib/**/presentation/**",
+        "tool/contracts/generate_schema_contracts.mjs",
+        "tool/contracts/generate_flutter_form_contract_inventory.mjs",
+        "docs/audit_registry/flutter_form_contract_inventory.json"
+      ],
+      "symptom": "An editable Consumer or Catch Host control repeats a literal limit, accepts an enum value the wire contract rejects, omits one range endpoint, or passes a nullable descriptor contract through a generically bound adapter while the coverage report still appears green.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/contracts/generate_flutter_form_contract_inventory.test.mjs && node tool/contracts/generate_flutter_form_contract_inventory.mjs --check && flutter test --concurrency=1 test/core/forms/contract_alignment_test.dart test/core/widgets/catch_field/input_test.dart test/core/widgets/catch_field/control_test.dart",
+        "guardEvidence": "known-bad scanner fixtures reject missing direct, search, OTP, and descriptor bindings, the generated inventory requires typed serializers and both range endpoints, and widget tests prove text, choice, and numeric configuration is derived at runtime"
+      },
+      "owner_docs": [
+        "docs/data_contracts.md",
+        "docs/app_architecture.md",
+        "docs/audit_registry/rules.json"
+      ],
+      "notes": "Presentation-only composite state belongs in contracts/forms rather than pretending to be a stored payload field. Explicit UI limits may narrow a backend contract but never relax it."
+    },
+    {
+      "id": "REG-WEB-VISUAL-STORY-DATA-001",
+      "title": "Marketing visual stories drift with mutable production organizer projections",
+      "status": "active",
+      "applies_to": [
+        "website/src/features/organizers/OrganizerSearchPage.tsx",
+        "website/src/features/organizers/useOrganizerDirectoryController.ts",
+        "website/src/stories/MarketingRoutes.stories.tsx",
+        "website/src/stories/OrganizerSearchSections.stories.tsx",
+        "website/src/stories/fixtures/hostListings.ts",
+        "design/visual_baselines/website/**"
+      ],
+      "symptom": "Organizer-search Storybook captures change when the committed production organizer projection gains or loses a listing, even though the story contract and UI implementation are unchanged.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-marketing run test:unit -- --run src/features/organizers/useOrganizerDirectoryController.test.tsx && npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check",
+        "guardEvidence": "the controller test proves preview callers can inject typed static listings, and both organizer-search stories use the governed demo projection so production listing churn cannot alter their captures"
+      },
+      "owner_docs": [
+        "docs/marketing_website_architecture.md",
+        "docs/web_surface_architecture.md",
+        "design/website/components.json"
+      ],
+      "notes": "Production routes continue to use the receipt-free generated organizer projection by default. Only preview surfaces inject the stable demo fixture."
+    },
+    {
+      "id": "REG-PENDING-SNAPSHOT-001",
+      "title": "A pending request can be duplicated or completed against a changed snapshot",
+      "status": "active",
+      "applies_to": [
+        "lib/**/presentation/**",
+        "website/src/features/**",
+        "admin/src/features/**",
+        "admin/src/shared/pendingOperation.tsx",
+        "admin/src/shared/pendingOperation.test.tsx",
+        "admin/src/shared/ui/AdminPrimitives/**",
+        "design/features/**",
+        "design/screens/catch.screens.json",
+        "test/**"
+      ],
+      "symptom": "A primary button shows loading while request-defining inputs, route exits, mutation-reset callbacks, or conflicting actions remain live; a second dispatch starts another operation or a stale callback advances a reset or edited flow.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/auth/presentation/auth_controller_test.dart test/auth/presentation/auth_presentation_state_test.dart test/auth/presentation/auth_screen_test.dart test/onboarding/onboarding_controller_test.dart test/onboarding/onboarding_flow_state_test.dart test/onboarding/onboarding_widgets_test.dart test/swipes/filters_screen_test.dart test/swipes/filters_screen_state_test.dart test/clubs/clubs_controllers_test.dart test/hosts/host_club_create_state_test.dart test/hosts/host_event_booking_controller_test.dart test/hosts/edit_hosted_event_screen_test.dart test/reviews/write_review_controller_test.dart test/reviews/reviews_widgets_test.dart test/safety/settings_controller_test.dart test/safety/settings_account_state_test.dart test/safety/settings_screen_test.dart && flutter test --concurrency=1 test/explore/explore_widgets_test.dart --plain-name \"CreateClubScreen freezes route and draft controls while submit is pending\" && npm --prefix website exec vitest run -- --project=unit src/features/waitlist/useWaitlistFormController.test.tsx src/features/host/application/useHostApplicationController.test.tsx src/features/claims/useClaimFlowController.test.tsx src/features/claims/useClaimRequestMutation.test.tsx src/shared/pendingRequest.test.tsx && npm --prefix admin test -- --run && npm --prefix admin run typecheck && node tool/run.mjs check web:admin-pending-operations && node tool/design/build_feature_contracts.mjs --check && node tool/design/check_screen_contracts.mjs --check",
+        "guardEvidence": "Phone Authentication proves duplicate-send and stale-callback protection; Member Onboarding proves frozen route, identity, prompt, and running-preference snapshots plus controller deduplication; Matching Preferences proves frozen route, reset, age, gender, and apply controls plus one persisted save; Host Organizer Create proves frozen submit, draft-save, and draft-restore controls plus one create request; Host Event Edit proves frozen route/form controls plus one update request; Reviews proves frozen rating, comment, write, and dismissal controls plus one write request; Account Settings proves whole-surface action and route freezing across preference, unblock, delete, and sign-out domains plus one overlapping controller write; Marketing proves frozen form, step, auth, sibling-form, shared-link, and browser-exit boundaries plus single-flight waitlist, Host application, and Claim requests; Admin proves an immutable visible request snapshot, a synchronous cross-controller exclusive lease, disabled workspace and navigation controls, blocked shared links, and browser-unload protection; generated feature and screen contracts retain the same pending action matrices."
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/design_parity/README.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "Phone Authentication is the frozen-snapshot reference. Member Onboarding, Matching Preferences, Host Organizer Create, Host Event Edit, Reviews, Account Settings, Marketing forms, and the Admin console are aligned adopters. Versioned editing and independently keyed concurrency remain permitted only as explicit, tested variants. Admin intentionally uses one global exclusive lease so writes and submitted queries cannot overlap across shared navigation, feedback, selection, or query-cache surfaces."
+    },
+    {
+      "id": "REG-FEATURE-CONTRACT-DRIFT-001",
+      "title": "Feature orchestration claims complete evidence while surfaces, states, or actions drift",
+      "status": "active",
+      "applies_to": [
+        "design/features/**",
+        "design/screens/catch.screens.json",
+        "design/components/catch.components.json",
+        "design/website/routes.json",
+        "design/admin/components.json",
+        "widgetbook/lib/**",
+        "test/**",
+        "tool/design/check_feature_coverage.mjs",
+        "tool/design/build_feature_contracts.mjs"
+      ],
+      "symptom": "A feature brief appears deterministic but omits an entire registered product surface, conflates Flutter and React runtime ownership, splits a filtered projection from the same user goal, groups a stateful secondary route without compiling its exact inventory, duplicates or omits an authority state, treats an implemented but unreachable state as live product flow, fabricates an action from repository capability that the route never exposes, binds a real action to the wrong but valid route authority, collapses dependency or identity loading/failure into a successful fallback, labels guidance as a completed external handoff, ignores external false/error/pending outcomes, cites an unrelated schema for a remote action whose request/response boundary is uncontracted, overclaims or underclaims an Admin callable's generated request/response validation strength, leaves an action or owner unclassified, points to missing evidence, falsely claims a surface binding, invents an Admin preview for a route wrapper whose registry marks preview not required, enables an action whose controller exists but whose route callback is unwired, models a pending request as guarded while request-defining fields, auth, navigation, or another mutation domain remain live, or carries a stale generated projection.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/design/check_feature_coverage.test.mjs tool/design/build_feature_contracts.test.mjs && node tool/design/check_feature_coverage.mjs --check && node tool/design/build_feature_contracts.mjs --check && node tool/design/check_screen_contracts.mjs --check",
+        "guardEvidence": "known-bad coverage tests reject unclassified registry additions, duplicate or unknown decisions, invalid grouping, false multi-runtime contract bindings, and orphaned contracts; compiler tests prove compact state matrices retain exact authority coverage, accept stable annotated Flutter preview-builder ids and top-level Dart function owners, reject out-of-inventory overrides, validate explicit marketing and Admin route-state preview mappings including preview-not-required wrappers, require exact generated Admin callable request/response validation strength, preserve known implementation gaps with stable debt while rejecting any enabled known-gap action, support shared multi-runtime and read-only features, and reject runtime/authority mismatches, duplicate or missing states, missing evidence, stale exceptions, invalid outcomes, and unknown action owners/actions/dimensions"
+      },
+      "owner_docs": [
+        "docs/design_parity/README.md",
+        "docs/web_surface_architecture.md",
+        "docs/marketing_website_architecture.md",
+        "design/screens/README.md",
+        "tool/README.md"
+      ],
+      "notes": "The reference set now includes all 32 Flutter screen authorities through Event Detail with its exact-location projection, Event Recap, Explore, Dashboard Home, Event Success, Event Planning, Matching Preferences, Host Home, Host Organizers, Host Organizer Create, Host Event Create, Host Event Manage with its owner-edit projection, Host Inbox, Catches Hub, Catches Event, Matches List, Chat Thread, Self Profile, Public Profile, Organizer Detail, Phone Authentication, Member Onboarding with its Start Welcome projection, Notifications, Reviews, Payments, and Account Settings, plus every stateful marketing route through Marketing Home, Host Acquisition, Organizer Claim, Organizer Search, and Organizer Detail, and all 14 Admin route authorities across 12 feature identities. Explore is the first two-runtime feature; Organizer Detail is the first three-surface feature; Host Organizers proves that one coherent user workspace can retain separate action owners without fake fragmentation; Host Event Create and Host Organizer Create prove that meaningful decisions and effects should be cardinalized while raw field-entry events remain form data; Chat Thread proves that consumer and host policy projections of the same production implementation belong in one contract while retaining exact surface-specific states, actions, and evidence; Start Welcome proves that two registered entry points using the same implementation for the same goal should reuse one feature identity and semantic action ids; Event Planning proves that a filtered route using a different screen class can still be a projection when data, actions, and user goal overlap, and that repository capability must not fabricate UI actions. Event Location Map proves that a registered read-only child route can extend its parent feature while an unrelated fullscreen LocationPickerScreen modal must remain a parent-owned side effect instead of borrowing that route authority. Event Recap, Reviews, and Payments prove that loading, failure, and genuine absence in a secondary dependency must not be mislabeled as one successful fallback; Notifications applies the same rule to identity failure versus sign-out. Payments proves a visible CTA must be named for its actual guidance outcome rather than an unimplemented support handoff. Account Settings proves that per-controller pending guards do not imply safe whole-surface concurrency when other mutation and route domains remain active. Organizer Claim proves a dynamic route with its own state vocabulary should compile as a second projection instead of remaining a loose group. Marketing Home and Host Acquisition prove that an action contract must cite the actual shared HTTP request/response schemas rather than a nearby projection; their lead boundary now has generated types and runtime validation on both sides. Admin contracts prove that generated structural object validation is useful but is not interchangeable with a strict field-level request or response schema, and that runtime validation strength can itself be compiler-checked. Admin Intake and Overview prove a secondary route component with independent state and actions must compile as a projection rather than be grouped away. Compact state matrices reduce repeated source boilerplate while keeping the exact authority inventory explicit. Event Success demonstrates that a controller method is not sufficient action proof: the unwired compatibility callback is a disabled known gap until route-level wiring and a persistence test exist. Host Organizer Create, Host Event Edit, Phone Authentication, Member Onboarding, Matching Preferences, Reviews, Account Settings, Marketing Home, Host Acquisition, Organizer Claim, and the affected Admin workspaces expose pending-mutation snapshot or concurrency drift explicitly: disabling a primary button is not equivalent to freezing every action that can change, dismiss, invalidate, or overlap the request, and an input callback must not reset the in-flight guard. Member Onboarding also proves that an implemented, captured state is not live-flow coverage when no production transition reaches it; reachability must be explicit until it is retired or reconnected. Matching Preferences additionally shows that an explicit missing-data state can still reveal unacceptable blank-body UX. Feature contracts orchestrate existing authorities and expose named evidence debt; they do not generate Flutter or React behavior, business algorithms, security rules, network schemas, or migrations."
+    },
+    {
+      "id": "REG-REMOTE-CONTRACT-PARITY-001",
+      "title": "A remote request or response drifts between its producer and consumer",
+      "status": "active",
+      "applies_to": [
+        "contracts/http/**",
+        "contracts/callables/**",
+        "contracts/callable_responses/**",
+        "tool/contracts/generate_schema_contracts.mjs",
+        "functions/src/waitlist/**",
+        "functions/src/admin/**",
+        "website/src/shared/contracts/**",
+        "website/src/shared/api/joinWaitlistContract.ts",
+        "admin/scripts/generateCallableValidators.mjs",
+        "admin/src/generated/contracts/**",
+        "admin/src/generated/validators/**",
+        "design/features/**"
+      ],
+      "symptom": "A frontend and Function compile against separate hand-written payload types, a browser casts malformed response JSON as success, a Function silently ignores unknown request fields, or a feature contract describes a structural object check as a deterministic field-level network contract.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/contracts/generate_schema_contracts.mjs --check && node tool/contracts/validate_schema_contracts.mjs && npm --prefix admin run check:callable-validators && npm --prefix admin test -- --run src/generated/validators/adminCallableValidators.test.ts src/shared/api/adminApi.test.ts && npm --prefix website run test:unit -- --run src/shared/api/joinWaitlistContract.test.ts src/features/waitlist/useWaitlistFormController.test.tsx src/features/host/application/useHostApplicationController.test.tsx && npm --prefix functions run build && node --test functions/lib/waitlist/joinWaitlist.test.js functions/lib/admin/accessApplications.test.js functions/lib/admin/adminUserRoles.test.js functions/lib/admin/safetyTriage.test.js functions/lib/admin/marketingOps.test.js && node tool/design/build_feature_contracts.mjs --check",
+        "guardEvidence": "The shared lead schemas cover member, Host, legacy runner, invalid request, success, malformed response, and response-error cases; generated types are emitted into both website and Functions. The prioritized Admin overview, access, role, safety, and marketing mutation directions use the same request/response schemas in Functions types, Admin types, runtime validators, fixtures, and compiled feature bindings."
+      },
+      "owner_docs": [
+        "docs/data_contracts.md",
+        "docs/web_surface_architecture.md",
+        "docs/marketing_website_architecture.md",
+        "docs/design_parity/README.md"
+      ],
+      "notes": "Public HTTP and callable schemas are boundary contracts, not substitutes for authorization, business rules, Firestore ownership, or feature-state evidence. Structural validators remain valid but must stay labeled structural until a dedicated field-level schema exists."
+    },
+    {
+      "id": "REG-FLUTTER-TEST-EVIDENCE-DRIFT-001",
+      "title": "Flutter test confidence is overstated by stale inventory, invisible coverage, or growing monolithic specs",
+      "status": "active",
+      "applies_to": [
+        "test/**",
+        "integration_test/**",
+        "tool/test/**",
+        "tool/test_inventory.mjs",
+        "tool/agent/check_agent_readiness.mjs",
+        "docs/audit_registry/test_inventory.json",
+        ".github/workflows/flutter-ci.yml",
+        "TESTS.md"
+      ],
+      "symptom": "A green suite can still hide newly untracked tests, lose feature-level coverage evidence, or let already monolithic Flutter specs grow until failures are difficult to localize.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/test/flutter_coverage_report.test.mjs tool/test/check_flutter_test_size.test.mjs tool/test_inventory.test.mjs tool/agent/check_agent_readiness.test.mjs && node tool/test/check_flutter_test_size.mjs --check && node tool/test_inventory.mjs --check && node tool/agent/check_agent_readiness.mjs",
+        "guardEvidence": "known-bad LCOV, oversized-spec, and stale-inventory fixtures fail closed; the exact legacy size baseline cannot grow; readiness independently proves the generated test inventory matches the current Git-backed surface"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/agent_operating_model.md",
+        "TESTS.md"
+      ],
+      "notes": "Coverage remains visibility-only rather than a global percentage gate. The dashboard full-home-shell group is the reference physical decomposition, and all remaining oversized specs are exact decrease-only debt."
+    },
+    {
+      "id": "REG-WEB-EVENT-DETAIL-BOUNDARY-001",
+      "title": "Marketing event detail conflates organizer trust, event supply, reviews, or registration authority",
+      "status": "active",
+      "applies_to": [
+        "design/public_surface_behavior.json",
+        "design/website/routes.json",
+        "contracts/public/website_host_listing_projection.schema.json",
+        "website/src/features/events/**",
+        "website/src/features/organizers/publicDiscovery.ts",
+        "website/scripts/postbuild.mjs"
+      ],
+      "symptom": "A crawled event looks Catch-verified, an organizer badge is reused as event provenance, organizer reviews leak onto an event, duplicate event ids resolve ambiguously, or the unsigned marketing website presents a booking, checkout, or sign-in flow.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix website run test:unit -- --run src/features/events src/features/organizers/publicSurfaceBehavior.test.ts && npm --prefix website run check:postbuild-contract && node tool/run.mjs check design:public-surface-behavior",
+        "guardEvidence": "event-model and section tests prove unique-id fail-closed routing, exact eventId review filtering, and source-aware actions; postbuild and public-surface contracts prove static output preserves the same no-booking and provenance boundaries"
+      },
+      "owner_docs": [
+        "docs/marketing_website_architecture.md",
+        "docs/web_surface_architecture.md",
+        "design/public_surface_behavior.json"
+      ],
+      "notes": "Catch-native events hand registration to the app. External events hand registration to their official source. Claim eligibility belongs to the organizer policy and is shown independently from event supply."
+    },
+    {
+      "id": "REG-WEB-EVENT-DETAIL-CONTRAST-001",
+      "title": "Activity accents lose contrast inside event-detail cards and actions",
+      "status": "active",
+      "applies_to": [
+        "website/src/styles/event-detail.css",
+        "website/src/stories/EventDetailSections.stories.tsx",
+        "website/src/stories/MarketingRoutes.stories.tsx"
+      ],
+      "symptom": "An activity accent remains decorative-strength when used as small text or a button background on a light event-detail surface, or an unclaimed organizer mark uses the faint ink token below the large-text contrast floor.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-marketing run test:storybook:a11y",
+        "guardEvidence": "the event-detail section and full-route stories run in Chromium with axe color-contrast failures blocking CI"
+      },
+      "owner_docs": [
+        "docs/marketing_website_architecture.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "Keep activity identity in decorative treatments, but mix activity accents toward semantic ink before using them for foreground text or action backgrounds on light surfaces."
+    },
+    {
+      "id": "REG-TOOL-PLATFORM-COMPAT-001",
+      "title": "Platform-native generators run in incompatible CI lanes",
+      "status": "active",
+      "applies_to": [
+        "tool/run.mjs",
+        "tool/lib/tool_platform.mjs",
+        "tool/tools_manifest.json",
+        ".github/workflows/tools-ci.yml"
+      ],
+      "symptom": "A category-wide Ubuntu tool check invokes a macOS framework-backed Swift generator and fails with a missing AppKit module even though the generator and its outputs are healthy on Darwin.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/run.test.mjs && node tool/run.mjs check --manifest-only && node tool/run.mjs check --category marketing",
+        "guardEvidence": "the runner validates declared Node platform names, skips incompatible checks in category runs, and rejects direct execution on an unsupported operating system"
+      },
+      "owner_docs": [
+        "tool/README.md",
+        "docs/agent_operating_model.md"
+      ],
+      "notes": "Keep syntax-only checks platform-neutral only when they are useful; the owning native generator check must remain declared for its actual operating system."
+    },
+    {
+      "id": "REG-CI-APPLE-SDK-COMPAT-001",
+      "title": "Apple-native CI compiles dependencies with an obsolete SDK",
+      "status": "active",
+      "applies_to": [
+        "pubspec.yaml",
+        "pubspec.lock",
+        "tool/ci/toolchain.env",
+        "tool/ci/check_toolchain_consistency.sh",
+        ".github/workflows/app-build-matrix.yml",
+        ".github/workflows/mobile-internal-release.yml",
+        ".github/workflows/visual-integration-ci.yml"
+      ],
+      "symptom": "A hosted Apple-native job uses macos-15 with Xcode 16.4 while connectivity_plus 7.1.1 compiles NWPath.isUltraConstrained, a symbol available only to an Xcode 26.1.1-or-newer SDK, so native smoke fails before execution.",
+      "guard": {
+        "type": "command",
+        "command": "bash tool/ci/check_toolchain_consistency.sh",
+        "guardEvidence": "the checked dependency constraint owns an explicit minimum Xcode version, the Apple runner major matches that Xcode major, and every native build, release, and hosted visual-smoke workflow uses the declared runner"
+      },
+      "owner_docs": [
+        "docs/release_operations.md",
+        "tool/README.md"
+      ],
+      "notes": "Do not downgrade connectivity_plus to hide an obsolete hosted SDK. Advance the checked Apple runner and minimum Xcode contract together when an Apple-native dependency raises its build requirement."
     }
   ]
 }

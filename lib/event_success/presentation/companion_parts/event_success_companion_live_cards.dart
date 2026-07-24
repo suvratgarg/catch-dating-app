@@ -557,6 +557,8 @@ class IncludeMeToggle extends StatelessWidget {
           ),
         ),
         CatchToggle(
+          contract: CatchContractConstraints
+              .mobileFormStateEventSuccessLiveCardIncluded,
           value: included,
           semanticLabel: label,
           onChanged: busy ? null : onChanged,

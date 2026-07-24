@@ -1142,6 +1142,39 @@ void main() {
     },
   );
 
+  testWidgets('CatchField.stepper derives bounds and step from its contract', (
+    tester,
+  ) async {
+    num value = 30;
+    await tester.pumpWidget(
+      _wrap(
+        StatefulBuilder(
+          builder: (context, setState) => CatchField.stepper(
+            title: 'Duration',
+            contract:
+                CatchContractConstraints.mobileFormStateEventDurationMinutes,
+            value: value,
+            decreaseSemanticLabel: 'Decrease duration',
+            increaseSemanticLabel: 'Increase duration',
+            initiallyOpen: true,
+            onChanged: (next) => setState(() => value = next),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.bySemanticsLabel('Increase duration'));
+    await tester.pump();
+    expect(value, 45);
+
+    final stepper = tester.widget<CatchFieldStepper>(
+      find.byType(CatchFieldStepper),
+    );
+    expect(stepper.min, 30);
+    expect(stepper.max, 240);
+    expect(stepper.step, 15);
+  });
+
   testWidgets('CatchField Escape cancels an open editor', (tester) async {
     final controller = TextEditingController(text: 'Draft');
     final focusNode = FocusNode();

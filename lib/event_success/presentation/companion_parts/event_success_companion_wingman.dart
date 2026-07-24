@@ -123,9 +123,10 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
               title: context
                   .l10n
                   .eventSuccessEventSuccessCompanionWingmanTitlePrivateNoteToHost,
+              contract: CatchContractConstraints
+                  .eventSuccessWingmanRequestDocumentNote,
               controller: _noteController,
               maxLines: 2,
-              inputFormatters: [LengthLimitingTextInputFormatter(240)],
             ),
           ),
           gapH12,

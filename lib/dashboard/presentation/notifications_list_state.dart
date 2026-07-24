@@ -22,6 +22,12 @@ final class NotificationsAccessLoading extends NotificationsListState {
   const NotificationsAccessLoading();
 }
 
+final class NotificationsAccessError extends NotificationsListState {
+  const NotificationsAccessError({required this.error});
+
+  final Object error;
+}
+
 final class NotificationsSignedOut extends NotificationsListState {
   const NotificationsSignedOut();
 }

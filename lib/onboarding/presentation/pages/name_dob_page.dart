@@ -158,6 +158,8 @@ class OnboardingNameDobStep extends StatelessWidget {
             children: [
               CatchField.input(
                 title: context.l10n.onboardingNameDobPageTitleFirstName,
+                contract:
+                    CatchContractConstraints.onboardingDraftDocumentFirstName,
                 controller: controllers.firstName,
                 autofocus: state.shouldAutofocus,
                 icon: CatchIcons.personOutlineRounded,
@@ -171,6 +173,8 @@ class OnboardingNameDobStep extends StatelessWidget {
               ),
               CatchField.input(
                 title: context.l10n.onboardingNameDobPageTitleLastName,
+                contract:
+                    CatchContractConstraints.onboardingDraftDocumentLastName,
                 controller: controllers.lastName,
                 icon: CatchIcons.personOutlineRounded,
                 textCapitalization: TextCapitalization.words,
@@ -184,6 +188,8 @@ class OnboardingNameDobStep extends StatelessWidget {
               CatchField.input(
                 key: OnboardingFormKeys.dateOfBirth,
                 title: context.l10n.onboardingNameDobPageTitleDateOfBirth,
+                contract: CatchContractConstraints
+                    .mobileFormStateOnboardingDateOfBirthText,
                 controller: controllers.date,
                 readOnly: true,
                 onTap: () => callbacks.onPickDate(state.datePickerRequest),
@@ -196,6 +202,8 @@ class OnboardingNameDobStep extends StatelessWidget {
               CatchField.input(
                 key: OnboardingFormKeys.phone,
                 title: context.l10n.onboardingNameDobPageTitlePhone,
+                contract:
+                    CatchContractConstraints.onboardingDraftDocumentPhoneNumber,
                 controller: controllers.phone,
                 readOnly: true,
                 keyboardType: TextInputType.phone,

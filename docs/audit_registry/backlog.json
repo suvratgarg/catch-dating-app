@@ -1,6 +1,6 @@
 {
-  "version": "2.7.166",
-  "updated": "2026-07-22",
+  "version": "2.7.172",
+  "updated": "2026-07-23",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, uid-loading conflation follow-up, React component-governance follow-up including class-name boundary enforcement and exported website feature component registry coverage, admin feature export boundary, the retired website legacy site barrel/import boundary, UI label spans, empty-state variants, page shells, claim-flow route/root/auth-row shells, website Host Page route, Host Application flow, Host feature section, waitlist form shells, marketing section, marketing info-card, marketing loop-list, marketing consent banner, featured organizer card, app-download CTA group, organizer listing, organizer listing hero, organizer listing event section including event-action cards, organizer search section, organizer search result shells, PublicSearchBar ownership, public event-card shells, admin editor section/form shells, admin layout span classes, admin eyebrow labels, admin card/stat layout shells, admin loading icon shells, admin toolbar shells/modifiers, admin marketing studio shell/tabs, admin marketing post-board shells, admin marketing composer flow shells, admin marketing picker list/row shells, admin marketing feature-shot grid/card shells, admin marketing brand-contract shells, admin marketing help/compliance text/list shells, admin marketing event-library grid/card/link shells, admin marketing media-library grid/card shells, admin marketing new-post grid/card shells, admin marketing guide shells, admin marketing stacked-section shells, admin marketing app-media shells, admin marketing field shells, admin marketing layout shells, admin diff list shells, admin publishing utility primitives, admin event supply shells, admin selected table rows, admin marketing tag rows, admin marketing query lists, admin marketing slide editor/list shells, admin marketing recommendation list/item shells, admin marketing audit list/row shells, admin feature-drop feature editor/list shells, admin feature-drop controls/preview shells, admin marketing preview/export shells, admin marketing carousel preview shells, admin marketing image editor shells, admin guardrail lists, admin intake source lists, admin intake gate lists, admin intake decision/footer shells, admin intake workspace shells, admin organizer intake curation shells, admin overview queue shells, admin roadmap lists, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
   "scanner_snapshot": {
@@ -314,6 +314,35 @@
         "docs/demo_data_seeding.md"
       ],
       "source": "deep_semantic_audit_2026-06"
+    },
+    {
+      "id": "DOC-FEATURE-CONTRACT-RETIREMENT-001",
+      "title": "Retire completed feature-contract and implementation handoffs",
+      "status": "active",
+      "owner": "agent",
+      "area": "docs,feature-contracts,lifecycle",
+      "priority": "low",
+      "summary": "The repository-wide lifecycle audit classified 11 of 99 Markdown documents as retirement-ready. Four feature inventories or remediation handoffs are superseded by exhaustive compiled feature contracts plus their screen, component, architecture, and evidence owners; seven additional completed or resolved work orders now have executable replacement owners. Identification is complete, but deletion must rewrite every inbound reference and preserve any unique debt first.",
+      "acceptance": [
+        "rewrite every non-historical inbound reference to the durable replacement named in docs/README.md",
+        "migrate any remaining unique debt or deferred owner decision before deleting a candidate",
+        "delete the 11 retirement-ready files together with stale doc-version, summary, index, code-comment, and tracker references",
+        "prove no live references remain and run docs, feature-contract, manifest, enforcement-integrity, and readiness gates"
+      ],
+      "paths": [
+        "docs/design_parity/event_detail_composition_tracker.md",
+        "docs/design_parity/event_club_profile_parity_handoff.md",
+        "docs/plans/explore_screen_quality_pass_spec.md",
+        "docs/plans/explore_findings_remediation_spec.md",
+        "docs/design_parity/adaptive_tab_bar_spec.md",
+        "docs/design_parity/fable_ui_issue_handoff.md",
+        "docs/audit_registry/host_consumer_ui_reconciliation_findings_2026-07-18.md",
+        "docs/plans/catch_ui_enforcement_system_spec.md",
+        "docs/plans/repository_root_hygiene_spec.md",
+        "docs/plans/web_platform_hardening_spec.md",
+        "docs/plans/catch_system_stretch_spec.md"
+      ],
+      "source": "2026-07-23-feature-contract-doc-retirement-audit"
     }
   ],
   "next_up": [

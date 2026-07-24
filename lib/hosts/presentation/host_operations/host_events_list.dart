@@ -133,6 +133,9 @@ class HostEventsClubSection extends StatelessWidget {
                 ),
                 gapH16,
                 CatchOptionGroup<HostEventsLifecycleFilter>(
+                  contract: CatchContractConstraints
+                      .mobileFormStateHostEventsLifecycleFilter,
+                  contractValue: (filter) => filter.name,
                   selected: state.selectedFilter,
                   onChanged: onFilterChanged,
                   options: [

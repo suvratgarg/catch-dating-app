@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/schema_contracts/catch_contract_field_policy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -19,6 +21,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
+
+export 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart'
+    show CatchContractConstraints, CatchContractFieldConstraints;
 
 part 'catch_field_control.dart';
 part 'catch_field_configs.dart';
@@ -62,6 +67,7 @@ abstract class CatchField extends StatefulWidget {
   const CatchField._shared({
     super.key,
     required this.title,
+    this.contract,
     this.body,
     this.action,
     this.emphasis = CatchFieldEmphasis.body,
@@ -181,6 +187,7 @@ abstract class CatchField extends StatefulWidget {
     Key? key,
     String? title,
     String? body,
+    CatchContractFieldConstraints? contract,
     required bool value,
     required ValueChanged<bool>? onChanged,
     int titleMaxLines,
@@ -199,6 +206,7 @@ abstract class CatchField extends StatefulWidget {
   const factory CatchField.input({
     Key? key,
     required String title,
+    CatchContractFieldConstraints? contract,
     String? placeholder,
     String? emptyValueText,
     String? inputHint,
@@ -257,6 +265,8 @@ abstract class CatchField extends StatefulWidget {
     Key? key,
     required String title,
     String? body,
+    CatchContractFieldConstraints? contract,
+    String? contractExemption,
     required Widget control,
     bool? open,
     bool initiallyOpen,
@@ -289,6 +299,8 @@ abstract class CatchField extends StatefulWidget {
     Key? key,
     required String title,
     String? body,
+    CatchContractFieldConstraints? contract,
+    String Function(T value)? contractValue,
     required List<T> values,
     required String Function(T value) itemLabel,
     required Set<T> selected,
@@ -315,18 +327,26 @@ abstract class CatchField extends StatefulWidget {
     String? errorText,
     bool divider = false,
   }) {
-    final selectedSummary = values
-        .where(selected.contains)
+    final supportedValues = CatchContractFieldPolicy.supportedChoiceValues(
+      contract,
+      values,
+      contractValue,
+      multi: multi,
+    );
+    final supportedSelection = selected.intersection(supportedValues.toSet());
+    final selectedSummary = supportedValues
+        .where(supportedSelection.contains)
         .map(itemLabel)
         .join(' · ');
     return CatchField.control(
       key: key,
       title: title,
+      contract: contract,
       body: body ?? (selectedSummary.isEmpty ? null : selectedSummary),
       control: CatchFieldChoiceControl<T>(
-        values: values,
+        values: supportedValues,
         itemLabel: itemLabel,
-        selected: selected,
+        selected: supportedSelection,
         multi: multi,
         allowEmptySelection: allowEmptySelection,
         autoClose: !multi && onSubmit == null,
@@ -363,6 +383,8 @@ abstract class CatchField extends StatefulWidget {
     Key? key,
     required String title,
     String? body,
+    CatchContractFieldConstraints? contract,
+    String Function(T value)? contractValue,
     required List<T> values,
     required String Function(T value) itemTitle,
     required String Function(T value) itemDescription,
@@ -384,20 +406,28 @@ abstract class CatchField extends StatefulWidget {
     String? errorText,
     bool divider = false,
   }) {
+    final supportedValues = CatchContractFieldPolicy.supportedChoiceValues(
+      contract,
+      values,
+      contractValue,
+      multi: false,
+    );
     assert(
-      values.isNotEmpty,
+      supportedValues.isNotEmpty,
       'CatchField.optionCards needs at least one value.',
     );
     assert(
-      values.contains(selected),
-      'CatchField.optionCards selected must be present in values.',
+      supportedValues.contains(selected),
+      'CatchField.optionCards selected must be allowed by the schema '
+      'contract.',
     );
     return CatchField.control(
       key: key,
       title: title,
+      contract: contract,
       body: body ?? itemTitle(selected),
       control: CatchFieldOptionCardControl<T>(
-        values: values,
+        values: supportedValues,
         itemTitle: itemTitle,
         itemDescription: itemDescription,
         selected: selected,
@@ -429,11 +459,12 @@ abstract class CatchField extends StatefulWidget {
     Key? key,
     required String title,
     String? body,
+    CatchContractFieldConstraints? contract,
     required num value,
     required ValueChanged<num>? onChanged,
     num? min,
     num? max,
-    num step = 1,
+    num? step,
     String? unit,
     String Function(num value)? formatter,
     required String decreaseSemanticLabel,
@@ -456,16 +487,32 @@ abstract class CatchField extends StatefulWidget {
     String? errorText,
     bool divider = false,
   }) {
-    assert(step > 0, 'CatchField.stepper requires a positive step.');
+    assert(
+      step == null || step > 0,
+      'CatchField.stepper requires a positive step.',
+    );
+    final effectiveMin = CatchContractFieldPolicy.effectiveMinimum(
+      contract,
+      min,
+    );
+    final effectiveMax = CatchContractFieldPolicy.effectiveMaximum(
+      contract,
+      max,
+    );
+    final effectiveStep = CatchContractFieldPolicy.effectiveStep(
+      contract,
+      step,
+    );
     return CatchField.control(
       key: key,
       title: title,
+      contract: contract,
       body: body,
       control: CatchFieldStepper(
         value: value,
-        min: min,
-        max: max,
-        step: step,
+        min: effectiveMin,
+        max: effectiveMax,
+        step: effectiveStep,
         unit: unit,
         formatter: formatter,
         decreaseSemanticLabel: decreaseSemanticLabel,
@@ -500,6 +547,7 @@ abstract class CatchField extends StatefulWidget {
   const factory CatchField.inputActions({
     Key? key,
     required String title,
+    CatchContractFieldConstraints? contract,
     required TextEditingController controller,
     required bool open,
     required ValueChanged<bool> onOpenChanged,
@@ -545,6 +593,8 @@ abstract class CatchField extends StatefulWidget {
   static CatchField select<T>({
     Key? key,
     required String title,
+    CatchContractFieldConstraints? contract,
+    String Function(T value)? contractValue,
     required List<T> values,
     required String Function(T item) itemLabel,
     T? value,
@@ -558,14 +608,21 @@ abstract class CatchField extends StatefulWidget {
     String? helperText,
     CatchFieldSupportTone helperTone = CatchFieldSupportTone.neutral,
   }) {
+    final supportedValues = CatchContractFieldPolicy.supportedChoiceValues(
+      contract,
+      values,
+      contractValue,
+      multi: false,
+    );
     assert(
-      values.toSet().length == values.length,
+      supportedValues.toSet().length == supportedValues.length,
       'CatchField.select values must be unique.',
     );
     return _SelectConfig.select(
       key: key,
       title: title,
-      values: List<Object?>.unmodifiable(values),
+      contract: contract,
+      values: List<Object?>.unmodifiable(supportedValues),
       itemLabel: (item) => itemLabel(item as T),
       value: value,
       onSelectChanged: onChanged == null
@@ -616,6 +673,9 @@ abstract class CatchField extends StatefulWidget {
 
   /// Primary row text or input label.
   final String? title;
+
+  /// Generated schema constraint bound to this editable field.
+  final CatchContractFieldConstraints? contract;
 
   /// Supporting row text.
   final String? body;
@@ -743,12 +803,19 @@ abstract class CatchField extends StatefulWidget {
   TextCapitalization get textCapitalization =>
       _inputConfig?.textCapitalization ?? TextCapitalization.none;
   List<TextInputFormatter>? get inputFormatters =>
-      _inputConfig?.inputFormatters;
+      CatchContractFieldPolicy.effectiveInputFormatters(
+        contract,
+        _inputConfig?.inputFormatters,
+        explicitMaxLength: _inputConfig?.maxLength,
+      );
   Iterable<String>? get autofillHints => _inputConfig?.autofillHints;
   bool get obscureText => _inputConfig?.obscureText ?? false;
   int? get maxLines => _inputConfig == null ? 1 : _inputConfig!.maxLines;
   int? get minLines => _inputConfig?.minLines;
-  int? get maxLength => _inputConfig?.maxLength;
+  int? get maxLength => CatchContractFieldPolicy.effectiveMaxLength(
+    contract,
+    _inputConfig?.maxLength,
+  );
   bool get readOnly => _inputConfig?.readOnly ?? false;
   bool get autofocus => _inputConfig?.autofocus ?? false;
   bool get isOptional => switch (_config) {

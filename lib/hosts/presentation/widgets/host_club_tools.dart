@@ -20,7 +20,6 @@ import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HostClubManagementPanel extends StatelessWidget {
@@ -281,6 +280,8 @@ Future<void> _showClubPostComposer({
                 children: [
                   CatchField.input(
                     title: context.l10n.hostsHostClubToolsTitleUpdate,
+                    contract: CatchContractConstraints
+                        .createClubPostCallablePayloadText,
                     controller: controller,
                     placeholder: context
                         .l10n
@@ -290,7 +291,6 @@ Future<void> _showClubPostComposer({
                     textCapitalization: TextCapitalization.sentences,
                     maxLines: 5,
                     minLines: 3,
-                    inputFormatters: [LengthLimitingTextInputFormatter(500)],
                     helperText: context.l10n
                         .hostsHostClubToolsHelpertextValue1CharactersLeft(
                           value1: 500 - controller.text.length,

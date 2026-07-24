@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 4.7.1
-updated: 2026-07-21
+version: 4.8.1
+updated: 2026-07-23
 owner: recursive_audit_loop
 status: active
 ---
@@ -42,17 +42,19 @@ section unless the task requires a full historical audit.
 | Widget inventory and reusable widget guidance | `widget_catalog.md` | Catalog of Flutter widgets, primitive APIs, feature ownership notes, and catalog-update rules for material widget architecture changes. |
 | Visual identity / design language | `design_language.md` | Locked editorial identity — palette (B&W base + activity color), typography (Archivo/platform system/IBM Plex Mono), photo grading, ticket/polaroid metaphors, exploration log, and the UI elevation roadmap. |
 | Design parity state matrix, inventory, and composition migration | `design_parity/` | Feature-by-feature design-spec parity matrix plus Claude Design to Widgetbook inventory and layered composition migration spec connecting screens, states, captures, component contracts, previews, lints, token specimens, and visual-diff gaps. |
+| Cross-surface feature contracts | `../design/features/feature_contract.schema.json`, `../design/features/feature_coverage.json` | Executable feature identities spanning Flutter, marketing, and admin authorities while keeping each runtime's routes, actions, components, data contracts, previews, captures, and tests explicit. The coverage registry is the exhaustive migration ledger. |
 | Code, Figma, and Claude Design sync | `../design/components/README.md`, `../design/sync/README.md` | Canonical component/concept identity plus generated cross-tool mapping, contract digests, live capability evidence, and the Badge + Field rollout gate. |
 | UI migration prompts | `sizing_migration_prompt.md`, `design_token_migration_prompt.md` | Reusable agent prompts for the mechanical sizing and design-token sweeps; each pairs with its `tool/check_*.sh` scanner as the deterministic definition of done. |
 | Action cardinality | `action_cardinality_policy.md` | Product and engineering rule for whether each action is disallowed, singleton, unbounded, or domain-bounded, plus initial action-surface audit. |
 | Release operations | `release_operations.md` | CI/release gates, Firebase deploy ordering, environment prerequisites, smoke tests, and human release evidence. |
-| Durable business operations | `operations_platform.md` | Canonical boundary for resumable human/worker/agent workflows, persisted runs and work items, authority lanes, Supply Intake stages, source learning, publication plans, and future admin-workflow adoption. |
-| Web surface architecture | `web_surface_architecture.md` | Domain/subdomain ownership, Firebase Hosting targets, stack boundaries for marketing/app/admin, marketing CI/CD, public website route contracts, and future host-portal placement. |
+| Durable business operations | `operations_platform.md` | Canonical boundary for resumable human/worker/agent workflows plus the schema-backed admin action CLI, guarded callable invocation, hash-only receipts, persisted runs and work items, authority lanes, Supply Intake stages, source learning, and publication plans. |
+| Web surface architecture | `web_surface_architecture.md` | Domain/subdomain ownership, Firebase Hosting targets, stack boundaries for marketing/app/admin, the agent-activity employee monitor, marketing CI/CD, public website route contracts, and future host-portal placement. |
 | Public viewer and listing authority behavior | `web_surface_architecture.md#public-viewer-and-listing-authority-matrix`, `../design/public_surface_behavior.json` | Executable app/website matrix for auth resolution, profile readiness, app role, listing lifecycle/authority/publication, event capability, claim/review target and runtime capability, action disposition, exact consumer-route ownership, and proof harnesses. |
 | Marketing website architecture | `marketing_website_architecture.md` | Code organization, route-first/page-controller-component boundaries, target feature structure, and refactor order for `website/**`. |
 | Admin and analytics dashboard | `admin_analytics_dashboard_spec.md` | Internal admin console and analytics product spec: safety/access ops, cohort retention, host/event analytics, user value, finance, BigQuery marts, and admin API boundaries. |
 | Admin dashboard user stories and component catalogue | `admin_dashboard_user_stories_and_component_catalogue.md` | Tab-by-tab user stories, current workflow fit, top admin-console weaknesses, inspected-file log, and React admin primitive/component migration catalogue. |
 | Marketing app media pipeline | `marketing_app_media_pipeline.md` | Capture manifest, website screenshot sync, host vertical media slots, and drift-check workflow for app-derived marketing assets. Fed by the UI capture pipeline below. |
+| App listing screenshot production | `store/app_listing_screenshot_production_brief.md`, `store/app_listing_prototypes/README.md` | Approved Catch and Catch Host store-listing narrative, ordered shot matrix, first iPhone visual-review checkpoint, fixture and capture requirements, platform export contract, naming, QA, and upload handoff. |
 | UI capture / visual review pipeline | `plans/ui_capture_pipeline_plan.md` | One deterministic per-screen capture harness with two consumers — raw review PNGs (fast UI review after changes) and curated marketing media (feeds the manifest above). Reuses the golden harness (`matchCatchGolden`); a route-drift check keeps the screen catalog honest. |
 | Marketing landing page research | `marketing_landing_page_research.md` | Reference-site research, production rewrite rationale, guardrails, and residual marketing-site product decisions after the old tracker was folded in. |
 | Organizer/event discovery and claimable listings | `plans/host_listing_discovery_architecture.md` | Deterministic organizer/event discovery, claim workflow, source-mention resolution, clustering, bounded LLM extraction/adjudication, candidate backlog, source-evidence ledger, index-readiness gates, and Firestore projection planning. |
@@ -98,8 +100,41 @@ durable owners above or closed in code.
 | `config_cicd_platform_audit_2026-05-21.md` | Config/CI/CD/platform hardening is mostly closed, but Crashlytics script noise, analytics plist verification, contract-source migration, and Razorpay env guard follow-ups remain. |
 | `event_success_theatrical_experience_tracker.md` | Event Success live ceremony polish is active: native sensory cues, attendee moment theatre, host showtime console, invite-loop follow-up, private afterglow recap planning, and the optional First Hello arrival ritual. |
 | `sales_demo_seed_tracker.md` | Sales-grade synthetic supply is active: canonical personas/assets, cohort scope, image production, U.S./India market packs, host sales scenario, event policy coverage, and migration of lower-quality demo surfaces remain. |
-| `plans/repository_root_hygiene_spec.md` | Implemented historical closeout for root classification, safe regenerable cleanup, retention, portable docs, test inventory, and worktree policy. Current policy lives in `tool/repository_root_manifest.json`, `tool/README.md`, `artifacts/README.md`, and `docs/agent_operating_model.md`; do not treat the plan as a live source of truth. |
-| `plans/catch_ui_enforcement_system_spec.md` | Implemented historical receipt for the generated Catch UI analyzer/API/checker enforcement system. Current policy lives in `docs/app_architecture.md`, `design/components/README.md`, `design/screens/catch.screens.json`, and `tool/README.md`. |
+
+## Retirement-Ready Documents
+
+The 2026-07-23 feature-contract lifecycle audit reviewed all 99 Markdown files
+under `docs/`. The executable contracts replace current surface, state, action,
+route, component, and evidence inventories; they do not replace product intent,
+architecture, business policy, data schemas, copy, release procedures, or
+operational runbooks.
+
+The following 11 documents are ready to delete after their named inbound
+references are rewritten in the same change. Their durable decisions already
+live in the listed owners and pass receipts. Actual deletion is tracked by
+`DOC-FEATURE-CONTRACT-RETIREMENT-001`; until then, do not treat these files as
+active sources of truth.
+
+| Retirement-ready document | Why it is redundant | Durable replacement |
+|---|---|---|
+| `design_parity/event_detail_composition_tracker.md` | Its section map, exact states, actions, evidence, and remaining gaps are now represented by checked screen, component, and feature contracts. | `../design/screens/catch.screens.json`, `../design/components/catch.components.json`, `../design/features/event_detail.feature.json`, `design_parity/comprehensive_todo.md` |
+| `design_parity/event_club_profile_parity_handoff.md` | The 22-item Event Map, Organizer Detail, and Profile handoff is fully implemented; current projections and evidence are compiled rather than checklist-owned. | `../design/features/explore.feature.json`, `../design/features/organizer_detail.feature.json`, `../design/features/profile_self.feature.json`, `../design/features/profile_public.feature.json`, component/screen registries, `audit_registry/passes.jsonl` |
+| `plans/explore_screen_quality_pass_spec.md` | The quality pass is complete; current Explore states/actions/evidence are compiled and its durable ranking, data, privacy, and capture constraints are guarded elsewhere. | `../design/features/explore.feature.json`, `app_architecture.md`, `data_contracts.md`, `design_language.md`, `agent_regression_ledger.json`, `design_parity/comprehensive_todo.md` |
+| `plans/explore_findings_remediation_spec.md` | All three named implementation receipts landed; feature coverage is compiled and architecture/scanner adoption has durable machine owners. | `../design/features/explore.feature.json`, `../design/features/profile_self.feature.json`, `../design/features/profile_public.feature.json`, `../design/features/member_chat.feature.json`, `app_architecture.md`, `audit_registry/architecture_pattern_adoption.json`, `audit_registry/rules.json` |
+| `design_parity/adaptive_tab_bar_spec.md` | The work order is complete and the remaining Home/Catches absorption is separately owned. | `../design/components/catch.components.json`, `app_architecture.md`, `widget_catalog.md`, tab-root scanners/tests, `plans/home_catches_unification_spec.md` |
+| `design_parity/fable_ui_issue_handoff.md` | The single issue is resolved and the containment rule is encoded in the field/section contracts and architecture guidance. | `../design/components/catch.components.json`, `app_architecture.md`, `agent_regression_ledger.json`, focused tests |
+| `audit_registry/host_consumer_ui_reconciliation_findings_2026-07-18.md` | Every finding is resolved; current constraints and proof have canonical owners. | `app_architecture.md`, `widget_catalog.md`, `agent_regression_ledger.json`, `audit_registry/passes.jsonl` |
+| `plans/catch_ui_enforcement_system_spec.md` | The implementation receipt is complete and the live rule set is executable. | `app_architecture.md`, `../design/components/README.md`, `../design/screens/catch.screens.json`, `../tool/README.md`, analyzer/scanner tests |
+| `plans/repository_root_hygiene_spec.md` | The owner-reviewed plan is fully implemented and already labels itself historical. | `../tool/repository_root_manifest.json`, `../tool/README.md`, `../artifacts/README.md`, `agent_operating_model.md` |
+| `plans/web_platform_hardening_spec.md` | All phases and final verification are complete; current React and callable-validation rules are enforced by registries and gates. | `web_surface_architecture.md`, `marketing_website_architecture.md`, `../design/website/components.json`, `../design/admin/components.json`, web checks |
+| `plans/catch_system_stretch_spec.md` | The completion audit closes every phase and owner gate; current field, top-bar, async, terminal-padding, and schema rules have durable owners. | `app_architecture.md`, `widget_catalog.md`, `../design/components/`, `../contracts/`, generated contract and UI gates |
+
+Feature-related docs that remain intentionally active include Event Success
+theatre, Home live-layer and Home/Catches unification, Host Edit/Live Guide,
+Host Insights, Profile quality and public-profile work, Splash/Welcome boot
+policy, Admin product/analytics specs, and the website copy deck/implementation
+spec. Each contains open work, owner decisions, future product intent, copy, or
+runtime policy that a current-state feature contract deliberately does not own.
 
 Completed temporary trackers removed or folded into owner docs after code
 verification include `dashboard_run_focus_tracker.md`,

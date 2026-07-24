@@ -456,11 +456,11 @@ per repo rules, and for Phase B specifically: a PR note confirming
 
 ## 14. Stretch — what a 10 looks like
 
-> **2026-07-17 update:** the stretch goals were authorized and are now
-> specified for implementation in
-> [`catch_system_stretch_spec.md`](catch_system_stretch_spec.md), which
-> supersedes this section as the work contract (S5/S6 stay
-> trigger-gated there). This section remains as rationale only.
+> **2026-07-23 lifecycle update:** the authorized stretch work is complete.
+> Current field, interaction-vocabulary, motion, schema, accessibility, and
+> agent-legibility contracts live in `docs/widget_catalog.md`,
+> `docs/app_architecture.md`, `design/components/`, and the generated contract
+> gates. This section remains rationale only.
 
 ⚠ OWNER: nothing in this section is authorized work. Phases A–E end at
 ~8.5/10. The remaining 1.5 points are step-changes in what the system

@@ -1,6 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import {describe, expect, it} from "vitest";
+import {eventDetailCopy} from "../../content/events";
+import {
+  buildPublicEventDetailRecords,
+  getEventDetailForPath,
+} from "../events/eventDetailModel";
 import {hostListings} from "./data";
 import {
   listingClaimPresentationFor,
@@ -60,6 +65,9 @@ describe("public surface behavior contract", () => {
         break;
       case "web.organizerListing":
         verifyListing(configuration, listing, policy);
+        break;
+      case "web.eventDetail":
+        verifyEventDetail(configuration, listing, policy);
         break;
       case "web.claim":
         verifyClaim(configuration, policy);
@@ -217,4 +225,80 @@ function verifyClaim(
   expect(expectations["claim.form"].disposition).toBe(expected.form);
   expect(expectations["claim.submit"].disposition).toBe(expected.submit);
   expect(expectations["claim.status"].disposition).toBe(expected.status);
+}
+
+function verifyEventDetail(
+  configuration: MatrixConfiguration,
+  listing: HostListing,
+  policy: ReturnType<typeof organizerPolicyForListing>
+) {
+  const {expectations, values} = configuration;
+  const supply = values["event.supply"];
+  const eventId = `matrix-${supply}`;
+  const eventListing = {
+    ...listing,
+    catchEvents: supply === "catchNative" ? [{
+      id: eventId,
+      role: "hostEventSetup",
+      title: eventDetailCopy.hero.catchActionHeading,
+      activityKind: "dinner",
+      timeline: "upcoming",
+      startTime: "2099-01-01T10:00:00.000Z",
+      endTime: "2099-01-01T12:00:00.000Z",
+      timezone: "Asia/Kolkata",
+      date: "Jan 1, 2099, 3:30 PM-5:30 PM",
+      location: "Mumbai",
+      summary: "Matrix event detail fixture.",
+      capacityLimit: 20,
+      bookedCount: 10,
+      checkedInCount: 0,
+      waitlistedCount: 0,
+      priceLabel: "₹1,500",
+      scorecard: null,
+    }] : [],
+    externalEvents: supply === "external" ? [{
+      id: eventId,
+      title: eventDetailCopy.hero.externalActionHeading,
+      activityKind: "socialRun",
+      availability: "read_only_external",
+      startTime: "2099-01-01T10:00:00.000Z",
+      endTime: "2099-01-01T12:00:00.000Z",
+      timezone: "Asia/Kolkata",
+      date: "Jan 1, 2099, 3:30 PM-5:30 PM",
+      location: "Indore",
+      summary: "Matrix external event detail fixture.",
+      priceLabel: "Free RSVP",
+      sourceLabel: "Luma",
+      sourceHref: "https://luma.com/matrix-event",
+      externalLinkCount: 1,
+      dedupeKey: "matrix-external-event",
+    }] : [],
+  } as HostListing;
+  const records = buildPublicEventDetailRecords(
+    [eventListing],
+    Date.parse("2026-07-24T00:00:00.000Z")
+  );
+  const event = getEventDetailForPath(`/events/${eventId}/`, records);
+  const readable = policy.isPubliclyReadable;
+
+  expect(expectations["route.access"].disposition)
+    .toBe(readable ? "visibleWeb" : "hidden");
+  expect(Boolean(event)).toBe(readable);
+  expect(expectations["event.details"].disposition)
+    .toBe(readable ? "visibleReadOnly" : "hidden");
+  expect(expectations["event.appAction"].disposition)
+    .toBe(readable && supply === "catchNative" ? "visibleExternal" : "hidden");
+  expect(expectations["event.officialSource"].disposition)
+    .toBe(readable && supply === "external" ? "visibleExternal" : "hidden");
+  expect(expectations["organizer.openDetail"].disposition)
+    .toBe(readable ? "visibleWeb" : "hidden");
+  expect(expectations["organizer.claim"].disposition)
+    .toBe(readable && policy.canRequestClaim ? "visibleWeb" : "hidden");
+  expect(expectations["review.read"].disposition).toBe(
+    !readable
+      ? "hidden"
+      : policy.canReadPublicReviews
+        ? "visibleReadOnly"
+        : "visibleDisabled"
+  );
 }

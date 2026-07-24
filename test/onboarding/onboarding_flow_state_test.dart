@@ -56,6 +56,22 @@ void main() {
       expect(state.topBar?.stepTotal, 2);
     });
 
+    test('freezes backward navigation while a step mutation is pending', () {
+      final state = OnboardingFlowState.from(
+        l10n: l10n,
+        data: const OnboardingData(
+          step: OnboardingStep.prompts,
+          operationPending: true,
+        ),
+        profileCompletionOnly: true,
+        runPreferencesOnly: false,
+      );
+
+      expect(state.previousStep, OnboardingStep.photos);
+      expect(state.operationPending, isTrue);
+      expect(state.topBar?.canGoBack, isFalse);
+    });
+
     test('locks run-preferences entry to a single-step flow', () {
       final state = OnboardingFlowState.from(
         l10n: l10n,

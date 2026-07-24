@@ -15,18 +15,18 @@
     "concepts": 63,
     "conceptDelta": -1,
     "publicContractClasses": 198,
-    "productionWidgetAndStateClasses": 1099,
+    "productionWidgetAndStateClasses": 1100,
     "members": 118,
     "membersPerConcept": 1.87,
     "unclassifiedContractEntries": 0,
     "unclassifiedProductionEntries": 0,
-    "unresolvedCollisionFamilies": 1,
+    "unresolvedCollisionFamilies": 2,
     "ownerReviewQueueSize": 3
   },
   "ledgerCoverage": {
-    "normalizedMemberSetCoveredClusters": 40,
-    "totalClusters": 41,
-    "unresolvedClusters": 1,
+    "normalizedMemberSetCoveredClusters": 41,
+    "totalClusters": 43,
+    "unresolvedClusters": 2,
     "rankedPairsCovered": 144,
     "totalRankedPairs": 200,
     "unresolvedRankedPairs": 56,
@@ -275,7 +275,7 @@
     {
       "requirement": "1. Reconcile the existing decision ledger",
       "status": "pending",
-      "evidence": "40/41 exact normalized-member-set cluster decisions"
+      "evidence": "41/43 exact normalized-member-set cluster decisions"
     },
     {
       "requirement": "2. Prove all four vertical-slice outcomes",
@@ -300,7 +300,7 @@
     {
       "requirement": "6. Report concept and class counts separately",
       "status": "proven",
-      "evidence": "63 concepts, 198 contracted public classes, 1099 production widget/state classes"
+      "evidence": "63 concepts, 198 contracted public classes, 1100 production widget/state classes"
     },
     {
       "requirement": "7. Complete live Figma/Claude Badge + Field round trip",

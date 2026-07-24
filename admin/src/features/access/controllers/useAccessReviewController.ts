@@ -6,6 +6,7 @@ import type {
   AdminQueueItem,
 } from "../../../shared/types/adminTypes";
 import {adminQueryKeys} from "../../../shared/query/queryKeys";
+import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {
   decideAccessReview,
   listAccessApplications,
@@ -53,6 +54,7 @@ export function useAccessReviewController({
   selectedApplicationUid?: string | null;
 }): AccessReviewController {
   const queryClient = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const [localSelectedApplicationUid, setLocalSelectedApplicationUid] =
     useState<string | null>(null);
   const [query, setQuery] = useState("");
@@ -153,6 +155,8 @@ export function useAccessReviewController({
       onError(issue);
       return false;
     }
+    const operation = beginOperation();
+    if (!operation) return false;
     try {
       const result = await decideMutation.mutateAsync({
         applicationUid,
@@ -187,8 +191,20 @@ export function useAccessReviewController({
     } catch (error) {
       onError(messageFromError(error, "Unable to decide access application."));
       return false;
+    } finally {
+      endOperation(operation);
     }
-  }, [decideMutation, form, onError, onNotice, queryClient, selected, setSelectedApplicationUid]);
+  }, [
+    beginOperation,
+    decideMutation,
+    endOperation,
+    form,
+    onError,
+    onNotice,
+    queryClient,
+    selected,
+    setSelectedApplicationUid,
+  ]);
 
   const refresh = useCallback(async () => {
     await listQuery.refetch();

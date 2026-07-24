@@ -7,7 +7,10 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
+  late List<String> consoleLines;
+
   setUp(() {
+    consoleLines = <String>[];
     PackageInfo.setMockInitialValues(
       appName: 'Catch',
       packageName: 'com.catchdating.app',
@@ -22,6 +25,7 @@ void main() {
     final logger = ErrorLogger(
       crashReporter: reporter,
       shouldReportErrors: false,
+      consoleSink: consoleLines.add,
     );
 
     await logger.initialize();
@@ -38,6 +42,7 @@ void main() {
     final logger = ErrorLogger(
       crashReporter: reporter,
       shouldReportErrors: true,
+      consoleSink: consoleLines.add,
     );
 
     await logger.initialize();
@@ -56,6 +61,8 @@ void main() {
     expect(reporter.recordedErrors, hasLength(1));
     expect(reporter.recordedErrors.single.fatal, isTrue);
     expect(reporter.recordedErrors.single.reason, 'test failure');
+    expect(consoleLines.first, contains('[FATAL]'));
+    expect(consoleLines.first, contains('test failure'));
   });
 
   test('does not report expected app exceptions', () async {
@@ -63,6 +70,7 @@ void main() {
     final logger = ErrorLogger(
       crashReporter: reporter,
       shouldReportErrors: true,
+      consoleSink: consoleLines.add,
     );
 
     logger.logAppException(const PaymentCancelledException());
@@ -76,6 +84,7 @@ void main() {
     final logger = ErrorLogger(
       crashReporter: reporter,
       shouldReportErrors: true,
+      consoleSink: consoleLines.add,
     );
 
     logger.logFlutterError(

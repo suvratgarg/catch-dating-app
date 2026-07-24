@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "tool": "audit-merge-drops",
+  "refs": {
+    "base": "529630920934ac6252214e8d4447c405227a7937",
+    "ours": "b025b2385a932ee21625521d437f55e33af4c1b6",
+    "theirs": "de3a5a7cc8fd3df89ce71c08025fc0034312f441",
+    "merged": "71ca53a5214eec45c14581d49b5574c363e2c790"
+  },
+  "summary": {
+    "changedPaths": 538,
+    "discarded-ours": 0,
+    "discarded-theirs": 0,
+    "both-diverged": 18,
+    "resolved-equivalent": 0,
+    "retained-ours": 480,
+    "retained-theirs": 40,
+    "discardedPaths": 0,
+    "unreceiptedDiscardedPaths": 0,
+    "invalidReceipts": 0,
+    "strictPass": true
+  },
+  "discardReceipt": "docs/audit_registry/web_event_detail_20260724_merge_drop_receipt.json",
+  "bothDivergedReview": [
+    {
+      "paths": [
+        "design/features/event_detail.feature.json",
+        "design/features/feature_coverage.json",
+        "design/features/generated/event_detail.feature_contract.json"
+      ],
+      "resolution": "Added the marketing event-detail surface to the canonical event-detail feature contract and regenerated the artifact. All 30 states and 45 action cases are covered, and the exhaustive feature coverage gate passes."
+    },
+    {
+      "paths": [
+        "design/website/components.json",
+        "design/website/routes.json",
+        "docs/marketing_website_architecture.md",
+        "docs/web_surface_architecture.md",
+        "website/src/app/App.tsx",
+        "website/src/features/events/sections/EventDetailSections.tsx",
+        "website/src/stories/MarketingRoutes.stories.tsx"
+      ],
+      "resolution": "Preserved the source branch's read-only Catch and external event-detail routes and responsive redesign while retaining main's current route shell and governance. Marketing typecheck, 102 unit tests, the production build, and route/component/public-surface checks pass."
+    },
+    {
+      "paths": [
+        "docs/agent_regression_ledger.json",
+        "docs/audit_registry/doc_versions.json",
+        "docs/audit_registry/files.jsonl",
+        "docs/audit_registry/passes.jsonl",
+        "docs/audit_registry/test_inventory.json"
+      ],
+      "resolution": "Unioned the branch's event-detail regression and audit history with the newer main-side registries, then refreshed feature, file, and test inventories from the combined tree."
+    },
+    {
+      "paths": [
+        "functions/src/shared/generated/schemaRegistry.ts",
+        "lib/core/schema_contracts/generated/field_constraints.g.dart",
+        "tool/contracts/generated/schema_contract_registry.mjs"
+      ],
+      "resolution": "Retained the newer merged schema registries and form constraints. Schema generation is current and the event-detail projection contract remains present across TypeScript, Dart, and Node outputs."
+    }
+  ],
+  "verification": [
+    "node tool/git/audit_merge_drops.mjs --base 529630920934ac6252214e8d4447c405227a7937 --ours b025b2385a932ee21625521d437f55e33af4c1b6 --theirs de3a5a7cc8fd3df89ce71c08025fc0034312f441 --merged 71ca53a5214eec45c14581d49b5574c363e2c790 --receipt docs/audit_registry/web_event_detail_20260724_merge_drop_receipt.json --strict",
+    "npm --workspace catch-marketing test",
+    "npm --workspace catch-marketing run typecheck",
+    "npm --workspace catch-marketing run build",
+    "node tool/design/build_feature_contracts.mjs --check",
+    "node tool/design/check_feature_coverage.mjs",
+    "node tool/run.mjs check marketing:website-routes",
+    "node tool/run.mjs check marketing:website-components",
+    "node tool/run.mjs check public-surface-behavior",
+    "Browser QA at desktop and mobile widths: no horizontal overflow or console errors; App Store handoff state verified"
+  ]
+}

@@ -5,20 +5,24 @@ import {hostListings} from "./fixtures/hostListings";
 import {
   ListingCatchEventsSection,
   ListingEventEvidenceSection,
+  ListingEventsRailSection,
   ListingEventSuccessSection,
   ListingExternalEventsSection,
 } from "../features/organizers/sections/ListingEventsSections";
 import {ListingFactsSection} from "../features/organizers/sections/ListingFactsSection";
 import {ListingFitSection} from "../features/organizers/sections/ListingFitSection";
-import {ListingHeroSection} from "../features/organizers/sections/ListingHeroSection";
+import {
+  ListingHeroRailSection,
+  ListingHeroSection,
+} from "../features/organizers/sections/ListingHeroSection";
 import {ListingMissingEvidenceSection} from "../features/organizers/sections/ListingClaimSections";
 import {ListingReviewsSection} from "../features/organizers/sections/ListingReviewsSection";
 import {ListingSourcesSection} from "../features/organizers/sections/ListingSourcesSection";
 import {RecommendedOrganizersSection} from "../features/organizers/sections/RecommendedOrganizersSection";
-import {claimHrefForListing} from "../features/organizers/routing";
 import {isUnclaimedListing} from "../features/organizers/selectors";
 import type {HostListing} from "../features/organizers/types";
 import {WebsiteQueryProvider} from "../shared/query/queryClient";
+import {ListingProfileRail} from "../shared/ui/primitives";
 
 const claimableListing = hostListings.find(isUnclaimedListing) ?? requireListing("afterfly");
 const appCreatedListing = requireListing("club-sales-sunday-table");
@@ -28,6 +32,7 @@ const publicReviewListing: HostListing = {
   reviews: [
     {
       id: "public-review-story",
+      eventId: null,
       reviewerName: "Aarav P.",
       rating: 5,
       comment:
@@ -100,15 +105,48 @@ export const ListingHero: Story = {
     },
   },
   render: () => (
-    <ListingHeroSection
-      claimHref={claimHrefForListing(claimableListing)}
-      isAppCreated={false}
-      isSaved={false}
-      listing={claimableListing}
-      onSaveListing={() => undefined}
-      onShareListing={() => undefined}
-      shareStatus=""
-    />
+    <ListingHeroSection listing={claimableListing} />
+  ),
+};
+
+export const ListingHeroRail: Story = {
+  name: "Hero action rail · claim enabled",
+  parameters: {
+    catchComponent: {
+      id: "listing_hero_rail_section",
+      routeIds: listingRouteIds,
+      states: ["claim-enabled"],
+    },
+  },
+  render: () => (
+    <ListingProfileRail aria-label="After Fly listing actions">
+      <ListingHeroRailSection
+        canRequestClaim
+        claimHref="/claim/?listing=afterfly"
+        isAppCreated={false}
+        isSaved={false}
+        listing={claimableListing}
+        onSaveListing={() => undefined}
+        onShareListing={() => undefined}
+        shareStatus=""
+      />
+    </ListingProfileRail>
+  ),
+};
+
+export const ListingEventsRail: Story = {
+  name: "Events rail · empty",
+  parameters: {
+    catchComponent: {
+      id: "listing_events_rail_section",
+      routeIds: listingRouteIds,
+      states: ["empty"],
+    },
+  },
+  render: () => (
+    <ListingProfileRail aria-label="After Fly event status">
+      <ListingEventsRailSection listing={claimableListing} />
+    </ListingProfileRail>
   ),
 };
 
@@ -122,10 +160,7 @@ export const ListingFacts: Story = {
     },
   },
   render: () => (
-    <ListingFactsSection
-      isAppCreated={false}
-      listing={claimableListing}
-    />
+    <ListingFactsSection listing={claimableListing} />
   ),
 };
 
@@ -139,10 +174,7 @@ export const ListingFactsAppCreated: Story = {
     },
   },
   render: () => (
-    <ListingFactsSection
-      isAppCreated
-      listing={appCreatedListing}
-    />
+    <ListingFactsSection listing={appCreatedListing} />
   ),
 };
 

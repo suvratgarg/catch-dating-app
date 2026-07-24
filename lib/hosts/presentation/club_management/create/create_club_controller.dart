@@ -53,6 +53,8 @@ final class NewClubPhotoInput extends ClubPhotoInput {
 class CreateClubController extends _$CreateClubController {
   static final submitMutation = Mutation<void>();
 
+  Future<void>? _submitInFlight;
+
   @override
   void build() {}
 
@@ -104,6 +106,45 @@ class CreateClubController extends _$CreateClubController {
     String? email,
     ClubHostDefaults hostDefaults = const ClubHostDefaults(),
     XFile? profileImage,
+  }) {
+    final existingRequest = _submitInFlight;
+    if (existingRequest != null) return existingRequest;
+
+    late final Future<void> trackedRequest;
+    trackedRequest =
+        _submit(
+          name: name,
+          location: location,
+          area: area,
+          description: description,
+          organizerType: organizerType,
+          clubPhotoInputs: clubPhotoInputs,
+          instagramHandle: instagramHandle,
+          phoneNumber: phoneNumber,
+          email: email,
+          hostDefaults: hostDefaults,
+          profileImage: profileImage,
+        ).whenComplete(() {
+          if (identical(_submitInFlight, trackedRequest)) {
+            _submitInFlight = null;
+          }
+        });
+    _submitInFlight = trackedRequest;
+    return trackedRequest;
+  }
+
+  Future<void> _submit({
+    required String name,
+    required String location,
+    required String area,
+    required String description,
+    required OrganizerType organizerType,
+    required List<ClubPhotoInput>? clubPhotoInputs,
+    required String? instagramHandle,
+    required String? phoneNumber,
+    required String? email,
+    required ClubHostDefaults hostDefaults,
+    required XFile? profileImage,
   }) async {
     final uid = requireSignedInUid(ref, action: 'create an organizer');
 

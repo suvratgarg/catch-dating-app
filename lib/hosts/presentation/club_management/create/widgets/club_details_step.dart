@@ -36,6 +36,8 @@ class ClubDetailsStep extends StatelessWidget {
               first: true,
               child: CatchField.input(
                 title: context.l10n.hostsClubDetailsStepTitleDescription,
+                contract: CatchContractConstraints
+                    .createClubCallablePayloadDescription,
                 controller: descriptionController,
                 icon: CatchIcons.editNoteOutlined,
                 maxLines: 4,

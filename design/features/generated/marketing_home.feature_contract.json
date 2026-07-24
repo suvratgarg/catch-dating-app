@@ -1,0 +1,665 @@
+{
+  "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
+  "version": 2,
+  "generatedFrom": "design/features/marketing_home.feature.json",
+  "generatedFor": "2026-07-23",
+  "sourceDigest": "sha256:831ed515dad679432145a59cfd4c807e8d6e9b4fa97daeec734b15d1e74d5f01",
+  "resolvedDigest": "sha256:c248e9e125c29d9be8947690dc53656fd53ffc61740973eb977ce3095924a31a",
+  "feature": {
+    "id": "feature.marketing_home",
+    "name": "Marketing Home",
+    "owner": "marketing_website",
+    "status": "pilot",
+    "description": "Orchestrates the public product entry, organizer and event discovery handoff, store availability, host acquisition handoff, and member waitlist conversion surface."
+  },
+  "coverage": {
+    "surfaces": 1,
+    "states": 3,
+    "scenarios": 3,
+    "actionCases": 7,
+    "actions": 9,
+    "captures": 0,
+    "previews": 3,
+    "testFiles": 4,
+    "evidenceExceptions": 0
+  },
+  "surfaces": [
+    {
+      "id": "marketing_web",
+      "runtime": "react_marketing",
+      "authority": {
+        "registry": "marketing_routes",
+        "id": "home"
+      },
+      "actionScope": {
+        "included": "Organizer and public-event discovery handoffs, Host acquisition routing, configured or unavailable store CTAs, and member waitlist submission.",
+        "excluded": [
+          "In-page section anchors, consent choices, and footer legal links retain shared site-shell ownership.",
+          "Waitlist field edits and first-focus analytics are form data and telemetry rather than separately cardinalized product actions."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "website/src/stories/HomeSections.stories.tsx",
+          "website/src/stories/MarketingPrimitives.stories.tsx",
+          "website/src/stories/MarketingRoutes.stories.tsx",
+          "website/src/stories/WaitlistForm.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "home_sections",
+            "language": "typescript",
+            "file": "website/src/features/home/sections/HomePageSections.tsx",
+            "symbol": "HomeDiscoverySection"
+          },
+          {
+            "id": "app_download_controller",
+            "language": "typescript",
+            "file": "website/src/features/marketing/useAppDownloadCtas.ts",
+            "symbol": "useAppDownloadCtas"
+          },
+          {
+            "id": "waitlist_controller",
+            "language": "typescript",
+            "file": "website/src/features/waitlist/useWaitlistFormController.ts",
+            "symbol": "useWaitlistFormController"
+          }
+        ],
+        "componentContracts": [
+          "route_home",
+          "home_discovery_section",
+          "home_waitlist_section",
+          "shared_app_download_shell",
+          "waitlist_form_adapter"
+        ],
+        "dataContracts": [
+          "contracts/public/website_host_listing_projection.schema.json",
+          "contracts/http/join_waitlist_request.schema.json",
+          "contracts/http/join_waitlist_response.schema.json"
+        ],
+        "testEvidence": {
+          "default": [
+            "website/src/features/marketing/tracking.test.ts",
+            "website/src/features/organizers/publicDiscovery.test.ts"
+          ],
+          "app-download-pending": [
+            "website/src/features/marketing/useAppDownloadCtas.test.tsx"
+          ],
+          "waitlist-form": [
+            "website/src/features/waitlist/useWaitlistFormController.test.tsx"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 3,
+        "scenarios": 3,
+        "actionCases": 7,
+        "actions": 9,
+        "captures": 0,
+        "previews": 3,
+        "testFiles": 4,
+        "evidenceExceptions": 0
+      },
+      "dimensions": {
+        "presentation": {
+          "default": "default",
+          "values": [
+            "default",
+            "app_download",
+            "waitlist"
+          ]
+        },
+        "store": {
+          "default": "mixed",
+          "values": [
+            "mixed",
+            "configured",
+            "unavailable"
+          ]
+        },
+        "waitlist": {
+          "default": "idle",
+          "values": [
+            "idle",
+            "pending",
+            "validation_error",
+            "failed",
+            "success"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "browse_organizers",
+          "owner": "home_sections",
+          "codeValue": "trackCtaClick",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "placement"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "organizer_search"
+              }
+            }
+          ],
+          "description": "Opens the public organizer directory from Home hero, discovery, empty, or featured-organizer affordances.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_host_acquisition",
+          "owner": "home_sections",
+          "codeValue": "trackCtaClick",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "placement"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "host"
+              }
+            }
+          ],
+          "description": "Opens the canonical Host acquisition page and records the CTA placement.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "submit_public_search",
+          "owner": "home_sections",
+          "codeValue": "trackPublicSearchSubmit",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "queryVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "organizer_search"
+              }
+            },
+            {
+              "kind": "side_effect",
+              "id": "analytics.public_search_submitted"
+            }
+          ],
+          "description": "Projects the Home search query into the canonical Organizer Search URL and records the handoff.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "select_public_search_suggestion",
+          "owner": "home_sections",
+          "codeValue": "trackPublicSearchSuggestionClick",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "suggestionId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "organizer_search"
+              }
+            },
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "organizer_listing_canonical"
+              }
+            }
+          ],
+          "description": "Opens a format search or a source-backed organizer/event destination from the public search suggestions.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_public_event",
+          "owner": "home_sections",
+          "codeValue": "trackPublicEventCardClick",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "eventId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "organizer_listing_canonical"
+              }
+            }
+          ],
+          "description": "Opens the source-backed organizer listing event deep link from a Home event card.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_featured_organizer",
+          "owner": "home_sections",
+          "codeValue": "featuredOrganizerCardItemForListing",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "organizerId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "marketing_routes",
+                "id": "organizer_listing_canonical"
+              }
+            }
+          ],
+          "description": "Opens a canonical listing from the ranked public featured-organizer cards.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "open_store_listing",
+          "owner": "app_download_controller",
+          "codeValue": "handleStoreLinkClick",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "placement",
+            "platform"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "external.store_listing_opened"
+            }
+          ],
+          "description": "Opens a configured app-store destination and records platform and placement analytics.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "acknowledge_store_unavailable",
+          "owner": "app_download_controller",
+          "codeValue": "handlePendingClick",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "placement",
+            "platform"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "analytics.store_cta_pending"
+            }
+          ],
+          "description": "Records that a platform CTA has no configured store destination without pretending navigation occurred.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "submit_member_waitlist",
+          "owner": "waitlist_controller",
+          "codeValue": "handleSubmit",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "formInstanceId",
+            "submissionVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "waitlist-form"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "marketing.member_waitlist_submitted"
+            }
+          ],
+          "description": "Validates and submits one normalized member waitlist payload, then renders success or actionable failure status.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [],
+      "scenarios": [
+        {
+          "id": "default",
+          "stateId": "default",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "presentation": "default",
+            "store": "mixed",
+            "waitlist": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_home/Home",
+              "shared_app_download_shell/AppDownloadCtaGroupStory"
+            ],
+            "tests": [
+              "website/src/features/marketing/tracking.test.ts",
+              "website/src/features/organizers/publicDiscovery.test.ts"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "configured_store",
+              "dimensions": {
+                "presentation": "default",
+                "store": "configured",
+                "waitlist": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "browse_organizers",
+                  "open_host_acquisition",
+                  "submit_public_search",
+                  "select_public_search_suggestion",
+                  "open_public_event",
+                  "open_featured_organizer",
+                  "open_store_listing",
+                  "submit_member_waitlist"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "acknowledge_store_unavailable"
+                ]
+              }
+            },
+            {
+              "id": "unavailable_store",
+              "dimensions": {
+                "presentation": "default",
+                "store": "unavailable",
+                "waitlist": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "browse_organizers",
+                  "open_host_acquisition",
+                  "submit_public_search",
+                  "select_public_search_suggestion",
+                  "open_public_event",
+                  "open_featured_organizer",
+                  "acknowledge_store_unavailable",
+                  "submit_member_waitlist"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_store_listing"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "app_download_pending",
+          "stateId": "app-download-pending",
+          "kind": "route_state",
+          "status": "manual",
+          "dimensions": {
+            "presentation": "app_download",
+            "store": "unavailable",
+            "waitlist": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_home/Home"
+            ],
+            "tests": [
+              "website/src/features/marketing/useAppDownloadCtas.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "store_destination_missing",
+              "dimensions": {
+                "presentation": "app_download",
+                "store": "unavailable",
+                "waitlist": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "browse_organizers",
+                  "open_host_acquisition",
+                  "submit_public_search",
+                  "select_public_search_suggestion",
+                  "open_public_event",
+                  "open_featured_organizer",
+                  "acknowledge_store_unavailable",
+                  "submit_member_waitlist"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_store_listing"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "waitlist_form",
+          "stateId": "waitlist-form",
+          "kind": "route_state",
+          "status": "manual",
+          "dimensions": {
+            "presentation": "waitlist",
+            "store": "mixed",
+            "waitlist": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "home_waitlist_section/HomeWaitlistSectionStory",
+              "route_home/Home"
+            ],
+            "tests": [
+              "website/src/features/waitlist/useWaitlistFormController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "idle",
+              "dimensions": {
+                "presentation": "waitlist",
+                "store": "mixed",
+                "waitlist": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "browse_organizers",
+                  "open_host_acquisition",
+                  "submit_public_search",
+                  "select_public_search_suggestion",
+                  "open_public_event",
+                  "open_featured_organizer",
+                  "submit_member_waitlist"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_store_listing",
+                  "acknowledge_store_unavailable"
+                ]
+              }
+            },
+            {
+              "id": "pending_frozen_snapshot",
+              "dimensions": {
+                "presentation": "waitlist",
+                "store": "mixed",
+                "waitlist": "pending"
+              },
+              "actions": {
+                "enabled": [
+                  "acknowledge_store_unavailable"
+                ],
+                "disabled": [
+                  "browse_organizers",
+                  "open_host_acquisition",
+                  "submit_public_search",
+                  "select_public_search_suggestion",
+                  "open_public_event",
+                  "open_featured_organizer",
+                  "open_store_listing",
+                  "submit_member_waitlist"
+                ],
+                "notAllowed": []
+              }
+            },
+            {
+              "id": "validation_or_failure",
+              "dimensions": {
+                "presentation": "waitlist",
+                "store": "mixed",
+                "waitlist": "failed"
+              },
+              "actions": {
+                "enabled": [
+                  "browse_organizers",
+                  "open_host_acquisition",
+                  "submit_public_search",
+                  "select_public_search_suggestion",
+                  "open_public_event",
+                  "open_featured_organizer",
+                  "submit_member_waitlist"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "open_store_listing",
+                  "acknowledge_store_unavailable"
+                ]
+              }
+            },
+            {
+              "id": "submitted",
+              "dimensions": {
+                "presentation": "waitlist",
+                "store": "mixed",
+                "waitlist": "success"
+              },
+              "actions": {
+                "enabled": [
+                  "browse_organizers",
+                  "open_host_acquisition",
+                  "submit_member_waitlist"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "submit_public_search",
+                  "select_public_search_suggestion",
+                  "open_public_event",
+                  "open_featured_organizer",
+                  "open_store_listing",
+                  "acknowledge_store_unavailable"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "home",
+          "kind": "static",
+          "path": "/"
+        },
+        "components": [
+          {
+            "id": "route_home",
+            "kind": "route",
+            "source": "website/src/features/home/HomePage.tsx",
+            "exportName": "HomePage",
+            "storybook": {
+              "status": "ready",
+              "story": "website/src/stories/MarketingRoutes.stories.tsx",
+              "exportName": "Home",
+              "states": [
+                "default",
+                "app-download-pending",
+                "waitlist-form"
+              ]
+            }
+          },
+          {
+            "id": "home_discovery_section",
+            "kind": "section",
+            "source": "website/src/features/home/sections/HomePageSections.tsx",
+            "exportName": "HomeDiscoverySection",
+            "storybook": {
+              "status": "ready",
+              "story": "website/src/stories/HomeSections.stories.tsx",
+              "exportName": "HomeDiscoverySectionStory",
+              "states": [
+                "event-grid",
+                "search-suggestions",
+                "empty-state"
+              ]
+            }
+          },
+          {
+            "id": "home_waitlist_section",
+            "kind": "section",
+            "source": "website/src/features/home/sections/HomePageSections.tsx",
+            "exportName": "HomeWaitlistSection",
+            "storybook": {
+              "status": "ready",
+              "story": "website/src/stories/HomeSections.stories.tsx",
+              "exportName": "HomeWaitlistSectionStory",
+              "states": [
+                "waitlist-form"
+              ]
+            }
+          },
+          {
+            "id": "shared_app_download_shell",
+            "kind": "supporting-component",
+            "source": "website/src/shared/ui/primitives/actions.tsx",
+            "exportName": "AppDownloadCtaGroup",
+            "storybook": {
+              "status": "ready",
+              "story": "website/src/stories/MarketingPrimitives.stories.tsx",
+              "exportName": "AppDownloadCtaGroupStory",
+              "states": [
+                "default",
+                "panel",
+                "pending-status"
+              ]
+            }
+          },
+          {
+            "id": "waitlist_form_adapter",
+            "kind": "flow",
+            "source": "website/src/features/waitlist/WaitlistForm.tsx",
+            "exportName": "WaitlistForm",
+            "storybook": {
+              "status": "ready",
+              "story": "website/src/stories/WaitlistForm.stories.tsx",
+              "exportName": "MemberWaitlistForm",
+              "states": [
+                "member",
+                "host"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "home_waitlist_section/HomeWaitlistSectionStory",
+          "route_home/Home",
+          "shared_app_download_shell/AppDownloadCtaGroupStory"
+        ]
+      }
+    }
+  ]
+}

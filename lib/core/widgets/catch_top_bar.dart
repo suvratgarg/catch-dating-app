@@ -14,6 +14,8 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+export 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart'
+    show CatchContractConstraints, CatchContractFieldConstraints;
 export 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
 export 'package:catch_dating_app/core/widgets/catch_icon_action.dart';
 
@@ -31,6 +33,8 @@ class CatchTopBarSearch {
     required this.placeholder,
     required this.tooltip,
     this.value = '',
+    this.contract,
+    this.contractExemption,
     this.enabled = true,
     this.expanded,
     this.onExpandedChanged,
@@ -48,6 +52,8 @@ class CatchTopBarSearch {
   });
 
   final String value;
+  final CatchContractFieldConstraints? contract;
+  final String? contractExemption;
   final bool enabled;
   final bool? expanded;
   final ValueChanged<bool>? onExpandedChanged;
@@ -638,6 +644,8 @@ class _CatchTopBarState extends State<CatchTopBar> {
       expanded: _searchOpenEffective,
       maxWidth: maxWidth,
       value: search.value,
+      contract: search.contract,
+      contractExemption: search.contractExemption,
       onChanged: search.onChanged,
       placeholder: search.placeholder,
       autofocus: search.autofocus,

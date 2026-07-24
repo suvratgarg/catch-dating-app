@@ -604,6 +604,12 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Remote monitor receipts for authenticated admin CLI executions. Only
+    // role-gated Admin SDK callables may create, advance, or list them.
+    match /adminActionExecutions/{executionId} {
+      allow read, write: if false;
+    }
+
     // Written exclusively by admin organizer publishing callables to reserve
     // public website routes before pages become indexable.
     match /publicRouteReservations/{routeKey} {

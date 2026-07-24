@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.4.2
-updated: 2026-07-22
+version: 1.5.1
+updated: 2026-07-23
 owner: recursive_audit_loop
 status: active
 ---
@@ -35,9 +35,10 @@ Read this before changing:
 
 | Surface | Owner |
 |---|---|
-| Persisted document schemas, callable payload schemas, fixtures, catalogs | `contracts/` |
+| Persisted document, callable, and public HTTP schemas plus fixtures and catalogs | `contracts/` |
 | Storage path contracts (upload paths, content-type, size limits, owner) | `contracts/storage/` |
 | Generated TypeScript interfaces, Ajv validators, and Admin SDK Timestamp types | `functions/src/shared/generated/` |
+| Generated website and Admin browser contract types | `website/src/shared/contracts/generated/` and `admin/src/generated/contracts/` |
 | Generated Dart schema constants/registry | `lib/core/schema_contracts/generated/` |
 | Tool-side schema registry and validators | `tool/contracts/generated/` |
 | Firestore operation ownership metadata | `tool/contracts/firestore_contract.json` |
@@ -65,6 +66,20 @@ come from JSON Schema; the boundary is the timestamp representation:
 `tool/contracts/check_firestore_contract.mjs` cross-checks that the Admin SDK
 projection has the expected fields for every collection with a
 `typescriptInterface` entry.
+
+### Public HTTP And Admin Callable Boundaries
+
+The public `/api/join-waitlist` endpoint uses the versioned schemas under
+`contracts/http/` for both member waitlist and optional Host application
+payloads. The generator emits the same types into website and Functions code;
+Functions validates incoming requests and every JSON response, while the
+website validates response JSON before treating a submission as successful.
+
+High-risk Admin overview, access-decision, role, safety, and marketing mutation
+requests/responses use dedicated schemas under `contracts/callables/` and
+`contracts/callable_responses/`. The generator emits Functions and Admin types,
+and `admin/scripts/generateCallableValidators.mjs` compiles the same schema
+sources into the browser runtime validator registry.
 
 ## Organizer Authority
 
@@ -245,17 +260,42 @@ decoders).
 
 The schema generator also emits
 `lib/core/schema_contracts/generated/field_constraints.g.dart`. It projects
-UI-relevant `minLength`, `maxLength`, `pattern`, enum, and numeric bounds from
-patch and Firestore document schemas into typed
-`CatchContractFieldConstraints` constants. `CatchForm*Row` descriptors bind
-those constants through `contract:`; call sites may narrow a bound explicitly,
-but may not relax the contract.
+UI-relevant requiredness, value and item types, string length, format, pattern,
+enum values, collection bounds, uniqueness, numeric bounds, and `multipleOf`
+steps from every registered schema into typed
+`CatchContractFieldConstraints` constants. The projection includes persisted
+documents, callable payloads, and `contracts/forms/mobile_form_state.schema.json`
+for editable presentation values that are deterministically transformed before
+they are stored.
 
-`test/core/forms/contract_alignment_test.dart` walks the consumer-profile and
-host-club descriptor factories and contains a seeded over-limit probe, so the
-gate proves both missing bindings and contradictory limits are detectable. Run
-it through `node tool/run.mjs check contracts:form-alignment`; contract CI also
-keeps the generated projection deterministic via the schema generator's
+`CatchContractFieldPolicy` applies those constants at runtime. Text controls
+derive validators, counters, and length formatters; choices filter values
+through an explicit typed-to-wire serializer; steppers and range sliders derive
+bounds and steps. Explicit UI values may narrow a contract for product policy
+but cannot relax it. Composite controls bind each independently stored endpoint.
+
+Every editable canonical control and descriptor instance under production
+`lib/` is covered by
+`docs/audit_registry/flutter_form_contract_inventory.json`. The source scanner
+recognizes `CatchField`, `CatchChipField`, selectable chips, option groups/cards,
+range sliders, toggles, OTP entry, direct and top-bar search fields,
+`CatchForm*Row`, and the retained self-profile descriptors. It fails when a
+control lacks its generated contract, a typed choice lacks its serializer, a
+range lacks either endpoint, or an exemption is not explicit. The current two
+exemptions are disclosure-only Host analytics controls, not editable form
+values.
+
+Run the exhaustive gate with:
+
+```sh
+node tool/run.mjs check contracts:flutter-form-inventory
+```
+
+`test/core/forms/contract_alignment_test.dart` additionally walks the
+consumer-profile and host-club descriptor factories and contains a seeded
+over-limit probe, so contradictory limits remain detectable. Run it through
+`node tool/run.mjs check contracts:form-alignment`. Contract CI runs both gates
+and keeps the generated schema projection deterministic with the generator's
 `--check` mode.
 
 ## Relationship Documents
@@ -396,6 +436,15 @@ Local completed runs hash-bind their full work-item inventory. Reconciliation
 creates a new lineage-bound run and new work-item ids rather than mutating the
 source snapshot, preserving immutable importer semantics across expiry and
 staleness sweeps.
+
+`adminActionExecutions/{executionId}` is the separate remote monitor record for
+one admin CLI invocation. It stores action/callable identity, actor roles,
+target label, request/response hashes, timestamps, and a bounded terminal
+error—not the request or response body. A role-gated callable creates the
+`started` receipt before the business callable runs and advances it to exactly
+one immutable `succeeded`, `failed`, or transport-ambiguous `indeterminate`
+outcome. Browser clients can inspect the bounded projection only through
+`adminListActionExecutions`; direct Firestore reads and writes remain denied.
 
 Runs must budget between 1 and 10,000 work items. Imported run metadata carries
 authoritative total, active, terminal, stage, and human-review aggregates; the

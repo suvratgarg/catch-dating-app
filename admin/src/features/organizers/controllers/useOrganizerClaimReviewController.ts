@@ -1,6 +1,7 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {adminQueryKeys} from "../../../shared/query/queryKeys";
+import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import type {
   AdminClubClaimListRow,
   AdminClubClaimRequestDetails,
@@ -51,6 +52,7 @@ export function useOrganizerClaimReviewController({
   selectedRequestId?: string | null;
 }): OrganizerClaimReviewController {
   const queryClient = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const [localSelectedRequestId, setLocalSelectedRequestId] =
     useState<string | null>(null);
   const [query, setQuery] = useState("");
@@ -129,6 +131,8 @@ export function useOrganizerClaimReviewController({
       onError(issue);
       return false;
     }
+    const operation = beginOperation();
+    if (!operation) return false;
     try {
       const result = await decisionMutation.mutateAsync({
         requestId: selected.requestId,
@@ -166,8 +170,21 @@ export function useOrganizerClaimReviewController({
     } catch (error) {
       onError(messageFromError(error, "Unable to decide organizer claim."));
       return false;
+    } finally {
+      endOperation(operation);
     }
-  }, [decisionMutation, details, note, onError, onNotice, queryClient, selected, setSelectedRequestId]);
+  }, [
+    beginOperation,
+    decisionMutation,
+    details,
+    endOperation,
+    note,
+    onError,
+    onNotice,
+    queryClient,
+    selected,
+    setSelectedRequestId,
+  ]);
 
   const refresh = useCallback(async () => {
     await listQuery.refetch();

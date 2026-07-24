@@ -63,6 +63,7 @@ class ExploreBrowseHeaderContent extends StatelessWidget {
       backgroundColor: backgroundColor ?? t.bg,
       applySafeArea: false,
       search: CatchTopBarSearch(
+        contract: CatchContractConstraints.exploreSearchCallablePayloadQuery,
         value: chrome.searchValue,
         onChanged: onQueryChanged,
         placeholder: chrome.searchPlaceholder,
@@ -209,6 +210,7 @@ class _ExploreDiscoveryTopBar extends StatelessWidget {
       title: chrome.title,
       backgroundColor: backgroundColor ?? t.bg,
       search: CatchTopBarSearch(
+        contract: CatchContractConstraints.exploreSearchCallablePayloadQuery,
         expanded: chrome.searchExpanded,
         value: chrome.searchValue,
         autofocus: chrome.searchAutofocus,

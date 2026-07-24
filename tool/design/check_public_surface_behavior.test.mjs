@@ -156,7 +156,7 @@ test("rejects a proof harness that omits a referenced surface", () => {
 test("rejects a declared absence once its forbidden route exists", () => {
   const matrix = cloneMatrix();
   const absence = matrix.absentSurfaces.find(
-    (entry) => entry.id === "web.eventDetail",
+    (entry) => entry.id === "web.appExploreEquivalent",
   );
   absence.forbiddenRouteIds = ["home"];
   assert.match(

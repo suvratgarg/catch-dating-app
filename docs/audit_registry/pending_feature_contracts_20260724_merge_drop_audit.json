@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "tool": "audit-merge-drops",
+  "refs": {
+    "base": "b65ee7742098d51fbe18fbb0dcf49d34612b87e0",
+    "ours": "12c3368751e7b63d30c7112b3c77ef91c3e101d2",
+    "theirs": "4fb2f98795f5be515b4cf8131a1476f3f8beaf9e",
+    "merged": "4b461968f3859b7d2ea5e607222824f7bade0ca2"
+  },
+  "summary": {
+    "changedPaths": 574,
+    "discarded-ours": 8,
+    "discarded-theirs": 0,
+    "both-diverged": 62,
+    "resolved-equivalent": 0,
+    "retained-ours": 191,
+    "retained-theirs": 313,
+    "discardedPaths": 8,
+    "unreceiptedDiscardedPaths": 0,
+    "invalidReceipts": 0,
+    "strictPass": true
+  },
+  "discardReceipt": "docs/audit_registry/pending_feature_contracts_20260724_merge_drop_receipt.json",
+  "bothDivergedReview": [
+    {
+      "paths": [
+        "admin/src/app/App.tsx",
+        "admin/src/generated/validators/adminCallableValidators.test.ts",
+        "admin/src/generated/validators/adminCallableValidators.ts",
+        "admin/src/shared/types/adminTypes.ts",
+        "admin/src/styles.css"
+      ],
+      "resolution": "Preserved main's Agent Activity route and responsive admin shell while adding the source branch's pending-operation ownership and regenerated 36-callable validator model. Admin typecheck and all 133 unit tests passed."
+    },
+    {
+      "paths": [
+        "design/features/admin_access_review.feature.json",
+        "design/features/admin_data_quality.feature.json",
+        "design/features/admin_event_publishing.feature.json",
+        "design/features/admin_intake.feature.json",
+        "design/features/admin_marketing_ops.feature.json",
+        "design/features/admin_organizer_publishing.feature.json",
+        "design/features/admin_role_management.feature.json",
+        "design/features/admin_safety_triage.feature.json",
+        "design/features/feature_coverage.json",
+        "design/features/generated/admin_access_review.feature_contract.json",
+        "design/features/generated/admin_data_quality.feature_contract.json",
+        "design/features/generated/admin_event_publishing.feature_contract.json",
+        "design/features/generated/admin_intake.feature_contract.json",
+        "design/features/generated/admin_marketing_ops.feature_contract.json",
+        "design/features/generated/admin_organizer_publishing.feature_contract.json",
+        "design/features/generated/admin_role_management.feature_contract.json",
+        "design/features/generated/admin_safety_triage.feature_contract.json"
+      ],
+      "resolution": "Regenerated feature artifacts from the merged authorities, classified main's read-only Agent Activity route, and advanced runtime validation metadata to the strict request schemas now generated for every admin callable. The 41-artifact freshness check and exhaustive 58-authority coverage gate passed."
+    },
+    {
+      "paths": [
+        "docs/README.md",
+        "docs/agent_regression_ledger.json",
+        "docs/app_architecture.md",
+        "docs/audit_registry/architecture_pattern_adoption.json",
+        "docs/audit_registry/doc_versions.json",
+        "docs/audit_registry/files.jsonl",
+        "docs/audit_registry/l10n_key_usage.json",
+        "docs/audit_registry/passes.jsonl",
+        "docs/audit_registry/rules.json",
+        "docs/audit_registry/test_inventory.json",
+        "docs/audit_registry/widget_concept_metrics.json",
+        "docs/audit_registry/widget_concept_report.md",
+        "docs/audit_registry/widget_similarity.json",
+        "docs/backend_operation_catalog.md",
+        "docs/data_contracts.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "resolution": "Unioned owner-document, rule, architecture-adoption, regression, and audit history from both sides, advanced governed versions, and regenerated file, l10n, test, widget-similarity, and concept inventories from the combined tree."
+    },
+    {
+      "paths": [
+        "functions/src/shared/generated/schemaRegistry.ts",
+        "functions/src/shared/generated/schemaValidators.ts",
+        "lib/core/schema_contracts/generated/INDEX.md",
+        "lib/core/schema_contracts/generated/callable_request_dtos.g.dart",
+        "lib/core/schema_contracts/generated/field_constraints.g.dart",
+        "lib/core/schema_contracts/generated/schemas/schema_constants.g.dart",
+        "lib/core/schema_contracts/generated/schemas/schema_registry.g.dart",
+        "tool/contracts/generate_schema_contracts.mjs",
+        "tool/contracts/generated/schema_contract_registry.mjs",
+        "tool/contracts/generated/schema_contract_validators.mjs"
+      ],
+      "resolution": "Regenerated schema registries, validators, Dart DTOs, and form constraints from the union of main's form contracts and the source branch's HTTP/callable contracts. Schema freshness passed and Functions compiled successfully."
+    },
+    {
+      "paths": [
+        "lib/auth/presentation/phone_page.dart",
+        "lib/hosts/presentation/edit_hosted_event_screen.dart",
+        "lib/onboarding/presentation/pages/gender_interest_page.dart",
+        "lib/onboarding/presentation/pages/profile_prompts_page.dart",
+        "lib/onboarding/presentation/pages/running_prefs_page.dart",
+        "lib/reviews/shared/write_review_sheet.dart",
+        "lib/safety/presentation/settings_screen.dart",
+        "lib/swipes/presentation/filters_screen.dart"
+      ],
+      "resolution": "Preserved main's generated form constraints while adding submitted-snapshot protection, whole-surface pending freezes, and pending-safe route behavior. Focused Dart analysis was clean and 44 host/review/settings Flutter tests passed."
+    },
+    {
+      "paths": [
+        "tool/README.md",
+        "tool/repository_root_manifest.json",
+        "tool/tools_manifest.json"
+      ],
+      "resolution": "Combined both tool catalogs and root ownership declarations; tool-manifest validation and repository-root hygiene passed."
+    },
+    {
+      "paths": [
+        "website/src/features/organizers/useOrganizerDirectoryController.test.tsx",
+        "website/src/stories/MarketingRoutes.stories.tsx",
+        "widgetbook/lib/hosts/host_operations_use_cases.dart"
+      ],
+      "resolution": "Preserved main's organizer-search and preview states while adding pending-safe website interactions and new host-operation states. Marketing route/component, architecture, copy, contract, and TypeScript gates passed."
+    }
+  ],
+  "verification": [
+    "node tool/git/audit_merge_drops.mjs --base b65ee7742098d51fbe18fbb0dcf49d34612b87e0 --ours 12c3368751e7b63d30c7112b3c77ef91c3e101d2 --theirs 4fb2f98795f5be515b4cf8131a1476f3f8beaf9e --merged 4b461968f3859b7d2ea5e607222824f7bade0ca2 --receipt docs/audit_registry/pending_feature_contracts_20260724_merge_drop_receipt.json --strict",
+    "npm --workspace catch-admin test",
+    "npm --workspace catch-admin run typecheck",
+    "npm --workspace catch-marketing run typecheck",
+    "npm --prefix functions run build",
+    "node tool/contracts/generate_schema_contracts.mjs --check",
+    "node tool/design/build_feature_contracts.mjs --check",
+    "node tool/design/check_feature_coverage.mjs",
+    "dart analyze lib/hosts/presentation/edit_hosted_event_screen.dart lib/reviews/shared/write_review_sheet.dart lib/safety/presentation/settings_screen.dart",
+    "flutter test test/hosts/edit_hosted_event_screen_test.dart test/reviews/reviews_widgets_test.dart test/safety/settings_screen_test.dart"
+  ]
+}

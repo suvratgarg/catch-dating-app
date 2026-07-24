@@ -1,6 +1,11 @@
+import 'package:catch_dating_app/core/schema_contracts/catch_contract_field_policy.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
+
+export 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart'
+    show CatchContractConstraints, CatchContractFieldConstraints;
 
 enum CatchOptionGroupVariant { label, mono }
 
@@ -18,6 +23,9 @@ class CatchOptionGroup<T> extends StatefulWidget {
     super.key,
     required this.options,
     required this.selected,
+    this.contract,
+    this.contractValue,
+    this.contractExemption,
     this.onChanged,
     this.variant = CatchOptionGroupVariant.label,
     this.accent,
@@ -30,6 +38,9 @@ class CatchOptionGroup<T> extends StatefulWidget {
 
   final List<CatchOption<T>> options;
   final T selected;
+  final CatchContractFieldConstraints? contract;
+  final String Function(T value)? contractValue;
+  final String? contractExemption;
   final ValueChanged<T>? onChanged;
   final CatchOptionGroupVariant variant;
   final Color? accent;
@@ -53,6 +64,18 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
   var _labelKeys = <GlobalKey>[];
   var _labelRects = <Rect?>[];
 
+  List<CatchOption<T>> get _options {
+    final values = CatchContractFieldPolicy.supportedChoiceValues(
+      widget.contract,
+      widget.options.map((option) => option.value).toList(growable: false),
+      widget.contractValue,
+      multi: false,
+    ).toSet();
+    return widget.options
+        .where((option) => values.contains(option.value))
+        .toList(growable: false);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -63,7 +86,10 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
   @override
   void didUpdateWidget(covariant CatchOptionGroup<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.options.length != widget.options.length) {
+    if (oldWidget.options.length != widget.options.length ||
+        oldWidget.options != widget.options ||
+        oldWidget.contract != widget.contract ||
+        oldWidget.contractValue != widget.contractValue) {
       _syncLabelKeys();
     }
     WidgetsBinding.instance.addPostFrameCallback((_) => _updateLabelRects());
@@ -71,10 +97,9 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
 
   void _syncLabelKeys() {
     _labelKeys = [
-      for (var index = 0; index < widget.options.length; index += 1)
-        GlobalKey(),
+      for (var index = 0; index < _options.length; index += 1) GlobalKey(),
     ];
-    _labelRects = List<Rect?>.filled(widget.options.length, null);
+    _labelRects = List<Rect?>.filled(_options.length, null);
   }
 
   void _updateLabelRects() {
@@ -111,11 +136,16 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final options = _options;
+    assert(
+      options.any((option) => option.value == widget.selected),
+      'CatchOptionGroup selected value must be allowed by its contract.',
+    );
     final selectedRule = widget.accent ?? t.ink;
     final gap = widget.variant == CatchOptionGroupVariant.mono
         ? CatchSpacing.s4
         : CatchSpacing.micro18;
-    final selectedIndex = widget.options.indexWhere(
+    final selectedIndex = options.indexWhere(
       (option) => option.value == widget.selected,
     );
     final indicatorRect = _indicatorRect(selectedIndex);
@@ -126,11 +156,11 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
     final optionsRow = Row(
       mainAxisSize: widget.scrollable ? MainAxisSize.min : MainAxisSize.max,
       children: [
-        for (var index = 0; index < widget.options.length; index += 1) ...[
+        for (var index = 0; index < options.length; index += 1) ...[
           if (index != 0) SizedBox(width: gap),
           if (widget.scrollable)
             CatchOptionGroupItem<T>(
-              option: widget.options[index],
+              option: options[index],
               selected: index == selectedIndex,
               selectedRule: selectedRule,
               variant: widget.variant,
@@ -138,13 +168,13 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
               labelKey: _labelKeys[index],
               onTap: widget.onChanged == null
                   ? null
-                  : () => widget.onChanged!(widget.options[index].value),
+                  : () => widget.onChanged!(options[index].value),
             )
           else
             Flexible(
-              flex: widget.options[index].label.length,
+              flex: options[index].label.length,
               child: CatchOptionGroupItem<T>(
-                option: widget.options[index],
+                option: options[index],
                 selected: index == selectedIndex,
                 selectedRule: selectedRule,
                 variant: widget.variant,
@@ -152,7 +182,7 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
                 labelKey: _labelKeys[index],
                 onTap: widget.onChanged == null
                     ? null
-                    : () => widget.onChanged!(widget.options[index].value),
+                    : () => widget.onChanged!(options[index].value),
               ),
             ),
         ],
@@ -209,9 +239,11 @@ class _CatchOptionGroupState<T> extends State<CatchOptionGroup<T>> {
   }
 
   Rect? _indicatorRect(int selectedIndex) {
-    if (selectedIndex < 0 || _labelRects.isEmpty) return null;
+    if (selectedIndex < 0 || _labelRects.isEmpty || _options.isEmpty) {
+      return null;
+    }
     final position = (widget.selectionPosition ?? selectedIndex.toDouble())
-        .clamp(0, widget.options.length - 1)
+        .clamp(0, _options.length - 1)
         .toDouble();
     final lowerIndex = position.floor();
     final upperIndex = position.ceil();

@@ -6,10 +6,15 @@ import {
   OrganizerResultsSection,
   OrganizerSearchHeroSection,
 } from "./sections/OrganizerSearchSections";
+import type {HostListing} from "./types";
 import {useOrganizerDirectoryController} from "./useOrganizerDirectoryController";
 
-export function OrganizerSearchPage() {
-  const controller = useOrganizerDirectoryController();
+interface OrganizerSearchPageProps {
+  listings?: readonly HostListing[];
+}
+
+export function OrganizerSearchPage({listings}: OrganizerSearchPageProps = {}) {
+  const controller = useOrganizerDirectoryController(listings);
   const {
     appearanceContext,
     queryTerms,

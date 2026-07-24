@@ -168,10 +168,12 @@
         "event_location_map_error",
         "event_location_map_not_found",
         "event_location_map_no_coordinate",
+        "event_location_map_directions_pending",
+        "event_location_map_directions_failure",
         "event_location_map_text_scale_2",
         "event_location_map_reduced_motion"
       ],
-      "reason": "Event location map captures cover the required pinned map, route loading, route error, event not found, missing exact coordinates, text scale, reduced motion, and paired light/dark output with network tiles disabled."
+      "reason": "Event location map captures cover the required pinned map, route loading, route error, event not found, missing exact coordinates, directions pending, visible directions-launch failure, text scale, reduced motion, and paired light/dark output with network tiles disabled."
     },
     {
       "routeId": "dashboardScreen",
@@ -203,6 +205,7 @@
       "captureIds": [
         "notifications_activity",
         "notifications_uid_loading",
+        "notifications_uid_error",
         "notifications_signed_out",
         "notifications_activity_loading",
         "notifications_activity_error",
@@ -213,7 +216,7 @@
         "notifications_text_scale_2",
         "notifications_reduced_motion"
       ],
-      "reason": "Notifications captures now cover populated read/unread activity, uid loading, signed-out, activity loading, activity error, empty activity, mark-all-read pending/error, deep-link failure feedback, text scale 2.0, reduced motion, and paired light/dark output."
+      "reason": "Notifications captures now cover populated read/unread activity, uid loading/error, signed-out, activity loading, activity error, empty activity, mark-all-read pending/error, deep-link failure feedback, text scale 2.0, reduced motion, and paired light/dark output."
     },
     {
       "routeId": "exploreScreen",
@@ -401,12 +404,14 @@
         "event_recap_missing_event",
         "event_recap_empty_roster",
         "event_recap_partial_profiles",
+        "event_recap_profile_lookup_loading",
+        "event_recap_profile_lookup_error",
         "event_recap_selected_tiles",
         "event_recap_text_scale_2",
         "event_recap_reduced_motion",
         "event_recap_light_dark"
       ],
-      "reason": "Event Recap captures now cover populated attendees, loading, view-model error, missing event, empty roster, partial profile fallback, selected tiles, text scale 2.0, reduced motion, and paired light/dark output."
+      "reason": "Event Recap captures now cover populated attendees, loading, view-model error, missing event, empty roster, profile-enrichment loading/error, partial profile fallback, selected tiles, text scale 2.0, reduced motion, and paired light/dark output."
     },
     {
       "routeId": "matchesListScreen",
@@ -544,10 +549,12 @@
         "settings_unblock_pending",
         "settings_unblock_error",
         "settings_unblock_offline",
+        "settings_external_link_pending",
+        "settings_external_link_failure",
         "settings_text_scale_2",
         "settings_reduced_motion"
       ],
-      "reason": "Settings Account captures cover profile-backed account rows, profile loading/error/offline/missing, blocked-account empty/loading/error/offline/list footer states, preference/delete/sign-out/unblock mutation pending, error, and offline states, text scale, reduced motion, and paired light/dark outputs."
+      "reason": "Settings Account captures cover profile-backed account rows, profile loading/error/offline/missing, blocked-account empty/loading/error/offline/list footer states, preference/delete/sign-out/unblock mutation pending, error, and offline states, external-link pending/failure outcomes, text scale, reduced motion, and paired light/dark outputs."
     },
     {
       "routeId": "paymentHistoryScreen",
@@ -567,10 +574,12 @@
         "payment_history_failed_signup_receipt_sheet",
         "payment_history_support_snackbar",
         "payment_history_missing_event_title",
+        "payment_history_event_title_loading",
+        "payment_history_event_title_error",
         "payment_history_text_scale_2",
         "payment_history_reduced_motion"
       ],
-      "reason": "Payment History captures now cover uid loading/error/offline, signed-out, payments loading/error/offline, empty, populated mixed-status rows, receipt sheet, failed sign-up help sheet, support snackbar, missing event-title fallback, text scale 2.0, reduced motion, and paired light/dark output from the populated fixture."
+      "reason": "Payment History captures now cover uid loading/error/offline, signed-out, payments loading/error/offline, empty, populated mixed-status rows, receipt sheet, failed sign-up help sheet, support snackbar, event-title loading/error/missing states, text scale 2.0, reduced motion, and paired light/dark output from the populated fixture."
     },
     {
       "routeId": "paymentConfirmationScreen",

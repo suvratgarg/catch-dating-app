@@ -1,0 +1,42 @@
+{
+  "fullName": "Host Name",
+  "email": "host@example.com",
+  "city": "Mumbai",
+  "role": "host",
+  "instagram": "https://instagram.com/sundaytable",
+  "website": "",
+  "hostApplication": {
+    "organizationName": "Sunday Table",
+    "organizationType": "Community",
+    "operatingCity": "Mumbai",
+    "communityLink": "https://instagram.com/sundaytable",
+    "formats": [
+      "Dinner",
+      "Singles mixer"
+    ],
+    "eventCadence": "Monthly",
+    "nextEventName": "Sunday Dinner",
+    "nextEventDate": "2026-08-09",
+    "eventLocation": "Bandra",
+    "expectedCapacity": "24",
+    "priceRange": "INR 1,000-2,000",
+    "admissionModel": "Request to join",
+    "waitlistPlan": "Ranked timed offers",
+    "paymentReadiness": "Need Catch payment onboarding",
+    "eventSuccessModules": [
+      "Attendance and live roster",
+      "Private catch window"
+    ],
+    "hostGoals": "Create thoughtful introductions",
+    "operatingNotes": "Need help with arrival flow"
+  },
+  "attribution": null,
+  "analytics": {
+    "consent": null,
+    "eventId": "host_lead_1",
+    "formVariant": "host",
+    "pagePath": "/host",
+    "pageTitle": "Host on Catch",
+    "submittedAt": "2026-07-23T08:05:00.000Z"
+  }
+}

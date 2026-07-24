@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Catch marketing website metadata content",
   "type": "object",
-  "required": ["$schema", "routes", "listing"],
+  "required": ["$schema", "routes", "listing", "event"],
   "additionalProperties": false,
   "properties": {
     "$schema": {"const": "./meta.schema.json"},
@@ -53,6 +53,67 @@
             "sourcesHeading": {"type": "string", "minLength": 1},
             "lastVerifiedPrefix": {"type": "string", "minLength": 1},
             "notRecorded": {"type": "string", "minLength": 1},
+            "homeBreadcrumb": {"type": "string", "minLength": 1},
+            "organizersBreadcrumb": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    },
+    "event": {
+      "type": "object",
+      "required": [
+        "titleTemplate",
+        "catchTwitterTemplate",
+        "externalTwitterTemplate",
+        "staticLabels"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "titleTemplate": {
+          "type": "string",
+          "allOf": [
+            {"pattern": "\\{title\\}"},
+            {"pattern": "\\{city\\}"}
+          ]
+        },
+        "catchTwitterTemplate": {
+          "type": "string",
+          "allOf": [
+            {"pattern": "\\{title\\}"},
+            {"pattern": "\\{organizer\\}"}
+          ]
+        },
+        "externalTwitterTemplate": {
+          "type": "string",
+          "allOf": [
+            {"pattern": "\\{title\\}"},
+            {"pattern": "\\{source\\}"}
+          ]
+        },
+        "staticLabels": {
+          "type": "object",
+          "required": [
+            "eventEyebrow",
+            "hostedByPrefix",
+            "scheduleHeading",
+            "locationLabel",
+            "priceLabel",
+            "sourceLabel",
+            "reviewsHeading",
+            "lastReviewedPrefix",
+            "homeBreadcrumb",
+            "organizersBreadcrumb"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "eventEyebrow": {"type": "string", "minLength": 1},
+            "hostedByPrefix": {"type": "string", "minLength": 1},
+            "scheduleHeading": {"type": "string", "minLength": 1},
+            "locationLabel": {"type": "string", "minLength": 1},
+            "priceLabel": {"type": "string", "minLength": 1},
+            "sourceLabel": {"type": "string", "minLength": 1},
+            "reviewsHeading": {"type": "string", "minLength": 1},
+            "lastReviewedPrefix": {"type": "string", "minLength": 1},
             "homeBreadcrumb": {"type": "string", "minLength": 1},
             "organizersBreadcrumb": {"type": "string", "minLength": 1}
           }

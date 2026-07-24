@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
 import test from "node:test";
 import {
   normalizeHostApplication,
@@ -8,6 +10,60 @@ import {
   resolveWaitlistCorsOrigin,
   waitlistAllowedOrigins,
 } from "./joinWaitlist";
+import {
+  validateJoinWaitlistHTTPRequest,
+  validateJoinWaitlistHTTPResponse,
+} from "../shared/generated/schemaValidators";
+
+const contractRoot = fs.existsSync(path.resolve(process.cwd(), "contracts")) ?
+  path.resolve(process.cwd(), "contracts") :
+  path.resolve(process.cwd(), "..", "contracts");
+
+function readFixture(relativePath: string): unknown {
+  return JSON.parse(
+    fs.readFileSync(path.resolve(contractRoot, relativePath), "utf8")
+  );
+}
+
+test(
+  "join waitlist schemas cover member, host, and runner compatibility",
+  () => {
+    for (const fixture of [
+      "fixtures/valid/join_waitlist_request_member.json",
+      "fixtures/valid/join_waitlist_request_host.json",
+      "fixtures/valid/join_waitlist_request_runner_compatibility.json",
+    ]) {
+      assert.equal(validateJoinWaitlistHTTPRequest(readFixture(fixture)), true);
+    }
+    assert.equal(
+      validateJoinWaitlistHTTPRequest(
+        readFixture("fixtures/invalid/join_waitlist_request_missing_city.json")
+      ),
+      false
+    );
+  }
+);
+
+test("join waitlist response schema distinguishes success and errors", () => {
+  assert.equal(
+    validateJoinWaitlistHTTPResponse(
+      readFixture("fixtures/valid/join_waitlist_response_success.json")
+    ),
+    true
+  );
+  assert.equal(
+    validateJoinWaitlistHTTPResponse(
+      readFixture("fixtures/valid/join_waitlist_response_error.json")
+    ),
+    true
+  );
+  assert.equal(
+    validateJoinWaitlistHTTPResponse(
+      readFixture("fixtures/invalid/join_waitlist_response_missing_ok.json")
+    ),
+    false
+  );
+});
 
 test("waitlistAllowedOrigins includes production custom domains", () => {
   const origins = waitlistAllowedOrigins("catch-dating-app-64e51");

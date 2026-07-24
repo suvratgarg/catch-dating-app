@@ -8,6 +8,19 @@ import {
   setAdminAuditLogInTransaction,
   writeAdminAuditLog,
 } from "./adminAudit";
+import type {AdminDecideSafetyTriageItemCallablePayload} from
+  "../shared/generated/adminDecideSafetyTriageItemCallablePayload";
+import type {AdminDecideSafetyTriageItemCallableResponse} from
+  "../shared/generated/adminDecideSafetyTriageItemCallableResponse";
+import type {AdminAssignSafetyTriageItemCallablePayload} from
+  "../shared/generated/adminAssignSafetyTriageItemCallablePayload";
+import type {AdminAssignSafetyTriageItemCallableResponse} from
+  "../shared/generated/adminAssignSafetyTriageItemCallableResponse";
+import {
+  validateAdminAssignSafetyTriageItemCallablePayload,
+  validateAdminDecideSafetyTriageItemCallablePayload,
+} from "../shared/generated/schemaValidators";
+import {validateCallableWithAjv} from "../shared/validation";
 
 const safetyDetailRoles = [
   "admin",
@@ -112,28 +125,17 @@ export interface AdminGetSafetyTriageDetailsResponse {
 
 export type AdminSafetyTriageDecision = "review" | "dismiss";
 
-export interface AdminDecideSafetyTriageItemPayload {
-  targetPath: string;
-  decision: AdminSafetyTriageDecision;
-  note: string;
-}
+export type AdminDecideSafetyTriageItemPayload =
+  AdminDecideSafetyTriageItemCallablePayload;
 
-export interface AdminDecideSafetyTriageItemResponse {
-  targetPath: string;
-  decision: AdminSafetyTriageDecision;
-  status: "reviewed" | "dismissed";
-}
+export type AdminDecideSafetyTriageItemResponse =
+  AdminDecideSafetyTriageItemCallableResponse;
 
-export interface AdminAssignSafetyTriageItemPayload {
-  targetPath: string;
-  assigneeUid: string | null;
-  note: string;
-}
+export type AdminAssignSafetyTriageItemPayload =
+  AdminAssignSafetyTriageItemCallablePayload;
 
-export interface AdminAssignSafetyTriageItemResponse {
-  targetPath: string;
-  assignment: AdminSafetyTriageAssignment;
-}
+export type AdminAssignSafetyTriageItemResponse =
+  AdminAssignSafetyTriageItemCallableResponse;
 
 interface SafetyTarget {
   collection: "reports" | "moderationFlags" | "eventSafetyReports";
@@ -217,6 +219,10 @@ export async function adminDecideSafetyTriageItemHandler(
   deps: SafetyTriageDeps = defaultDeps
 ): Promise<AdminDecideSafetyTriageItemResponse> {
   const adminContext = requireAdminRole(request, safetyDecisionRoles);
+  validateCallableWithAjv(
+    request,
+    validateAdminDecideSafetyTriageItemCallablePayload
+  );
   const payload = normalizeSafetyDecisionPayload(request.data);
   const target = parseSafetyTarget(payload.targetPath);
   const nextStatus = statusForDecision(payload.decision);
@@ -275,6 +281,10 @@ export async function adminAssignSafetyTriageItemHandler(
   deps: SafetyTriageDeps = defaultDeps
 ): Promise<AdminAssignSafetyTriageItemResponse> {
   const adminContext = requireAdminRole(request, safetyDecisionRoles);
+  validateCallableWithAjv(
+    request,
+    validateAdminAssignSafetyTriageItemCallablePayload
+  );
   const payload = normalizeSafetyAssignmentPayload(request.data);
   const target = parseSafetyTarget(payload.targetPath);
   const db = deps.firestore();

@@ -8,6 +8,7 @@ import type {
   AdminUserRoleRecord,
 } from "../../../shared/types/adminTypes";
 import {adminQueryKeys} from "../../../shared/query/queryKeys";
+import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {
   loadAdminRoleAssignments,
   loadAdminUserRoles,
@@ -95,6 +96,7 @@ export function useAdminRoleManagementController({
   selectedTargetUid?: string | null;
 }): AdminRoleManagementController {
   const queryClient = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const [fallbackTargetUid, setFallbackTargetUid] = useState<string | null>(null);
   const controlledTargetUid = selectedTargetUid === undefined ?
     fallbackTargetUid : selectedTargetUid;
@@ -203,6 +205,8 @@ export function useAdminRoleManagementController({
       onError(validationIssue ?? "Load an admin user before saving role changes.");
       return false;
     }
+    const operation = beginOperation();
+    if (!operation) return false;
     try {
       const response: AdminSetAdminUserRolesResponse = await saveMutation.mutateAsync({
         targetUid: selectedUser.targetUid,
@@ -231,9 +235,13 @@ export function useAdminRoleManagementController({
     } catch (error) {
       onError(messageFromError(error, "Unable to save admin role changes."));
       return false;
+    } finally {
+      endOperation(operation);
     }
   }, [
     assignmentFilter,
+    beginOperation,
+    endOperation,
     note,
     onError,
     onNotice,

@@ -28,6 +28,7 @@ void main() {
     expect(state.isDirty, isTrue);
     expect(state.resetEnabled, isTrue);
     expect(state.applyEnabled, isTrue);
+    expect(state.requestControlsEnabled, isTrue);
     expect(state.saveRequest.uid, user.uid);
     expect(state.saveRequest.minAgePreference, 25);
     expect(state.saveRequest.maxAgePreference, 99);
@@ -48,6 +49,7 @@ void main() {
     expect(state.isDirty, isFalse);
     expect(state.resetEnabled, isFalse);
     expect(state.applyEnabled, isFalse);
+    expect(state.requestControlsEnabled, isFalse);
     expect(state.content.saving, isTrue);
   });
 }

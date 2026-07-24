@@ -66,6 +66,8 @@ class AuthController extends _$AuthController {
   static final verifyOtpMutation = Mutation<void>();
 
   int? _resendToken;
+  Future<void>? _sendOtpInFlight;
+  int _flowGeneration = 0;
 
   @override
   AuthScreenState build() => AuthScreenState(
@@ -73,13 +75,35 @@ class AuthController extends _$AuthController {
   );
 
   void setCountryCode(String code) {
+    if (_sendOtpInFlight != null) return;
     state = state.copyWith(countryCode: code);
+    sendOtpMutation.reset(ref);
+  }
+
+  void clearSendOtpErrorIfIdle() {
+    if (_sendOtpInFlight != null) return;
     sendOtpMutation.reset(ref);
   }
 
   void goToStep(AuthStep step) => state = state.copyWith(step: step);
 
-  Future<void> sendOtp(String phoneNumber, String countryCode) async {
+  Future<void> sendOtp(String phoneNumber, String countryCode) {
+    final existingRequest = _sendOtpInFlight;
+    if (existingRequest != null) return existingRequest;
+
+    late final Future<void> trackedRequest;
+    trackedRequest = _sendOtp(phoneNumber, countryCode).whenComplete(() {
+      if (identical(_sendOtpInFlight, trackedRequest)) {
+        _sendOtpInFlight = null;
+      }
+    });
+    _sendOtpInFlight = trackedRequest;
+    return trackedRequest;
+  }
+
+  Future<void> _sendOtp(String phoneNumber, String countryCode) async {
+    final requestGeneration = _flowGeneration;
+    bool isCurrentRequest() => requestGeneration == _flowGeneration;
     final normalizedCountryCode = AuthInput.normalizeCountryCode(countryCode);
     final normalizedPhoneNumber = AuthInput.normalizePhoneInput(phoneNumber);
     final formatted = AuthInput.formatPhoneNumber(
@@ -114,6 +138,10 @@ class AuthController extends _$AuthController {
             phoneNumber: formatted,
             forceResendingToken: forceResendingToken,
             codeSent: (verificationId, resendToken) {
+              if (!isCurrentRequest()) {
+                if (!completer.isCompleted) completer.complete();
+                return;
+              }
               _debugLog('AuthController.sendOtp: codeSent');
               _resendToken = resendToken;
               state = state.copyWith(
@@ -123,6 +151,10 @@ class AuthController extends _$AuthController {
               if (!completer.isCompleted) completer.complete();
             },
             verificationFailed: (e) {
+              if (!isCurrentRequest()) {
+                if (!completer.isCompleted) completer.complete();
+                return;
+              }
               _debugLogAppException(
                 'AuthController.sendOtp verificationFailed',
                 e,
@@ -130,6 +162,10 @@ class AuthController extends _$AuthController {
               if (!completer.isCompleted) completer.completeError(e);
             },
             verificationCompleted: (credential) async {
+              if (!isCurrentRequest()) {
+                if (!completer.isCompleted) completer.complete();
+                return;
+              }
               _debugLog('AuthController.sendOtp: verificationCompleted (auto)');
               try {
                 await withBackendErrorContext(
@@ -150,7 +186,13 @@ class AuthController extends _$AuthController {
           )
           .catchError((Object e, StackTrace st) {
             _debugLog('AuthController.sendOtp catchError: $e');
-            if (!completer.isCompleted) completer.completeError(e, st);
+            if (!completer.isCompleted) {
+              if (isCurrentRequest()) {
+                completer.completeError(e, st);
+              } else {
+                completer.complete();
+              }
+            }
           }),
     );
 
@@ -183,6 +225,7 @@ class AuthController extends _$AuthController {
   }
 
   void reset() {
+    _flowGeneration += 1;
     _resendToken = null;
     state = AuthScreenState(
       countryCode: ref.read(authInitialCountryDialCodeProvider),

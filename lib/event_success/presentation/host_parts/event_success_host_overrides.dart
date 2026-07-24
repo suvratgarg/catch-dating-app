@@ -512,6 +512,8 @@ class GroupOverrideUnitEditor extends StatelessWidget {
                   title: context
                       .l10n
                       .eventSuccessEventSuccessHostOverridesTitleGroupLabel,
+                  contract: CatchContractConstraints
+                      .overrideEventSuccessGroupsCallablePayloadRoundsItemsGroupsItemsLabel,
                   initialValue: group.label,
                   textCapitalization: TextCapitalization.words,
                   onChanged: (value) {
@@ -590,6 +592,9 @@ class GroupOverrideMemberEditor extends StatelessWidget {
             title: context
                 .l10n
                 .eventSuccessEventSuccessHostOverridesTitleGroupAttendee,
+            contract: CatchContractConstraints
+                .overrideEventSuccessGroupsCallablePayloadRoundsItemsGroupsItemsParticipantUidsItems,
+            contractValue: (value) => value,
             values: participantUids,
             value: value,
             itemLabel: participantLabel,
@@ -1122,6 +1127,9 @@ class RotationOverridePairEditor extends StatelessWidget {
             title: context
                 .l10n
                 .eventSuccessEventSuccessHostOverridesTitleFirstRotationAttendee,
+            contract: CatchContractConstraints
+                .overrideEventSuccessRotationsCallablePayloadRoundsItemsPairingsItemsUidA,
+            contractValue: (value) => value,
             values: participantUids,
             value: pair.uidA,
             itemLabel: participantLabel,
@@ -1141,6 +1149,9 @@ class RotationOverridePairEditor extends StatelessWidget {
             title: context
                 .l10n
                 .eventSuccessEventSuccessHostOverridesTitleSecondRotationAttendee,
+            contract: CatchContractConstraints
+                .overrideEventSuccessRotationsCallablePayloadRoundsItemsPairingsItemsUidB,
+            contractValue: (value) => value,
             values: participantUids,
             value: pair.uidB,
             itemLabel: participantLabel,

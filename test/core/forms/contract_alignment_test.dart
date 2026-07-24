@@ -82,6 +82,7 @@ void main() {
         .toList(growable: false);
     expect(
       _alignmentIssues(rows, const {
+        'organizerType': 'updateClubPatch.organizerType',
         'name': 'updateClubPatch.name',
         'location': 'updateClubPatch.location',
         'area': 'updateClubPatch.area',

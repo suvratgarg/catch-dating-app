@@ -8,6 +8,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
+import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
@@ -119,6 +120,112 @@ void main() {
     expect(find.byKey(SwipeKeys.vibeTile('runner-3')), findsOneWidget);
     expect(find.byKey(SwipeKeys.vibeTile('runner-1')), findsNothing);
     expect(find.byKey(SwipeKeys.vibeTile('runner-4')), findsNothing);
+  });
+
+  testWidgets('keeps profile lookup loading distinct from missing profiles', (
+    tester,
+  ) async {
+    final event = buildEvent(id: 'recap-event');
+    final profiles = Completer<Map<String, PublicProfile>>();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
+          watchEventProvider(
+            event.id,
+          ).overrideWithValue(AsyncData<Event?>(event)),
+          watchEventParticipationsForEventProvider(event.id).overrideWithValue(
+            AsyncData<List<EventParticipation>>([
+              buildEventParticipation(
+                event: event,
+                uid: 'runner-1',
+                status: EventParticipationStatus.attended,
+              ),
+              buildEventParticipation(
+                event: event,
+                uid: 'runner-2',
+                status: EventParticipationStatus.attended,
+              ),
+            ]),
+          ),
+          publicProfilesByIdsProvider(
+            PublicProfilesQuery(['runner-2']),
+          ).overrideWith((ref) => profiles.future),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: EventRecapScreen(eventId: event.id),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.byType(VibeGridSkeleton), findsOneWidget);
+    expect(find.text('Guest'), findsNothing);
+    expect(find.byKey(SwipeKeys.openCatchesDeckButton), findsOneWidget);
+
+    profiles.complete({
+      'runner-2': buildPublicProfile(uid: 'runner-2', name: 'Mira'),
+    });
+    await pumpFeatureUi(tester);
+    expect(find.text('Mira'), findsOneWidget);
+  });
+
+  testWidgets('profile lookup failures expose retry and recover', (
+    tester,
+  ) async {
+    final event = buildEvent(id: 'recap-event');
+    var attempts = 0;
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
+          watchEventProvider(
+            event.id,
+          ).overrideWithValue(AsyncData<Event?>(event)),
+          watchEventParticipationsForEventProvider(event.id).overrideWithValue(
+            AsyncData<List<EventParticipation>>([
+              buildEventParticipation(
+                event: event,
+                uid: 'runner-1',
+                status: EventParticipationStatus.attended,
+              ),
+              buildEventParticipation(
+                event: event,
+                uid: 'runner-2',
+                status: EventParticipationStatus.attended,
+              ),
+            ]),
+          ),
+          publicProfilesByIdsProvider(
+            PublicProfilesQuery(['runner-2']),
+          ).overrideWith((ref) async {
+            attempts += 1;
+            if (attempts == 1) throw StateError('profiles failed');
+            return {
+              'runner-2': buildPublicProfile(uid: 'runner-2', name: 'Mira'),
+            };
+          }),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: EventRecapScreen(eventId: event.id),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Profile unavailable'), findsOneWidget);
+    expect(find.text('Reload profile'), findsOneWidget);
+    expect(find.text('Guest'), findsNothing);
+
+    await tester.tap(find.text('Reload profile'));
+    await pumpFeatureUi(tester);
+    expect(attempts, 2);
+    expect(find.text('Mira'), findsOneWidget);
   });
 
   testWidgets('EventRecapScreen can seed selected vibe ids', (tester) async {

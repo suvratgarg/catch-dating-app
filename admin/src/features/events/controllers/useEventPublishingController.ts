@@ -35,6 +35,7 @@ import {
   launchMarketSlugs,
 } from "../../../shared/config/launchMarkets";
 import {adminQueryKeys} from "../../../shared/query/queryKeys";
+import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 
 export type EventPublishingFilter =
   | "launchCities"
@@ -90,6 +91,7 @@ export function useEventPublishingController({
   selectedReadinessActionId?: string | null;
 }) {
   const queryClient = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const [localSelectedExternalEventId, setLocalSelectedExternalEventId] =
     useState<string | null>(null);
   const [query, setQuery] = useState("");
@@ -387,6 +389,8 @@ export function useEventPublishingController({
         "Resolve event validation issues before saving.");
       return false;
     }
+    const operation = beginOperation();
+    if (!operation) return false;
     try {
       const result = await saveMutation.mutateAsync(payload);
       const refreshed = await queryClient.fetchQuery({
@@ -407,8 +411,12 @@ export function useEventPublishingController({
     } catch (error) {
       onError(messageFromError(error, "Unable to save event profile."));
       return false;
+    } finally {
+      endOperation(operation);
     }
   }, [
+    beginOperation,
+    endOperation,
     event,
     form,
     onError,
@@ -425,6 +433,8 @@ export function useEventPublishingController({
       onError("Add a review note before publishing external supply.");
       return false;
     }
+    const operation = beginOperation();
+    if (!operation) return false;
     try {
       const result = await publishExternalMutation.mutateAsync({
         sourceActionId: publishRequest.sourceActionId,
@@ -446,8 +456,12 @@ export function useEventPublishingController({
     } catch (error) {
       onError(messageFromError(error, "Unable to publish external event."));
       return false;
+    } finally {
+      endOperation(operation);
     }
   }, [
+    beginOperation,
+    endOperation,
     onError,
     onNotice,
     publishExternalMutation,

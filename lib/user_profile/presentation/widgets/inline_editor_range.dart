@@ -30,6 +30,8 @@ class ProfileInlineRangeEditor extends ConsumerStatefulWidget {
     required this.onSaved,
     required this.onCancel,
     required this.patchForRange,
+    required this.minimumContract,
+    required this.maximumContract,
     this.patchForLatestProfile,
     this.saveEndValue,
     this.savedCurrentMax,
@@ -51,6 +53,8 @@ class ProfileInlineRangeEditor extends ConsumerStatefulWidget {
   final InlineSaveCallback onSaved;
   final VoidCallback onCancel;
   final UpdateUserProfilePatch Function(int min, int max) patchForRange;
+  final CatchContractFieldConstraints minimumContract;
+  final CatchContractFieldConstraints maximumContract;
   final UpdateUserProfilePatch Function(UserProfile user, int min, int max)?
   patchForLatestProfile;
 
@@ -141,6 +145,7 @@ class _ProfileInlineRangeEditorState
     return CatchField.control(
       icon: widget.icon,
       title: widget.title,
+      contract: widget.minimumContract,
       body: body,
       open: widget.isExpanded,
       onOpenChanged: (expanded) {
@@ -151,6 +156,8 @@ class _ProfileInlineRangeEditorState
       status: isSaving ? CatchFieldStatus.saving : _status,
       error: _errorMessage(),
       control: CatchRangeSlider(
+        minimumContract: widget.minimumContract,
+        maximumContract: widget.maximumContract,
         min: widget.sliderMin,
         max: widget.sliderMax,
         divisions: widget.divisions,

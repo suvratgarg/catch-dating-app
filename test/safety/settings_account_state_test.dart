@@ -65,6 +65,27 @@ void main() {
     expect(updated.showOnMap, preferences.showOnMap);
   });
 
+  test(
+    'reports a surface-wide operation while any write domain is pending',
+    () {
+      const idle = SettingsMutationState(
+        savingPreference: false,
+        deletingAccount: false,
+        signingOut: false,
+        unblocking: false,
+      );
+      const deleting = SettingsMutationState(
+        savingPreference: false,
+        deletingAccount: true,
+        signingOut: false,
+        unblocking: false,
+      );
+
+      expect(idle.operationPending, isFalse);
+      expect(deleting.operationPending, isTrue);
+    },
+  );
+
   test('models profile provider loading, error, and missing states', () {
     final error = StateError('profile failed');
 

@@ -48,7 +48,7 @@ void main() {
             checkedInCount: 3,
           ),
         ),
-        rosterProfiles: {'runner-2': profile},
+        rosterProfiles: CatchAsyncState.data({'runner-2': profile}),
         selectedVibeIds: {'runner-3'},
         now: now,
       );
@@ -101,6 +101,41 @@ void main() {
       expect(ready.hero.windowLabel, 'Catch window closed');
       expect(ready.openDeckIntent.selectedVibeIds, isEmpty);
     });
+
+    test('preserves profile lookup loading and error states', () {
+      final event = buildEvent(id: 'recap-event');
+      final viewModel = CatchAsyncState<EventRecapViewModel?>.data(
+        EventRecapViewModel(
+          event: event,
+          attendeeIds: const ['runner-2'],
+          checkedInCount: 2,
+        ),
+      );
+
+      final loading =
+          _state(
+                viewModel: viewModel,
+                rosterProfiles: const CatchAsyncState.loading(),
+              )
+              as EventRecapReady;
+      expect(
+        loading.profileLookupStatus,
+        EventRecapProfileLookupStatus.loading,
+      );
+      expect(loading.attendeeRows, isEmpty);
+      expect(loading.hasAttendees, isTrue);
+
+      final error = StateError('profiles failed');
+      final failed =
+          _state(
+                viewModel: viewModel,
+                rosterProfiles: CatchAsyncState.error(error),
+              )
+              as EventRecapReady;
+      expect(failed.profileLookupStatus, EventRecapProfileLookupStatus.error);
+      expect(failed.profileLookupError, error);
+      expect(failed.attendeeRows, isEmpty);
+    });
   });
 }
 
@@ -108,7 +143,8 @@ EventRecapScreenState _state({
   String eventId = 'event-1',
   CatchAsyncState<EventRecapViewModel?> viewModel =
       const CatchAsyncState<EventRecapViewModel?>.data(null),
-  Map<String, PublicProfile> rosterProfiles = const <String, PublicProfile>{},
+  CatchAsyncState<Map<String, PublicProfile>> rosterProfiles =
+      const CatchAsyncState.data(<String, PublicProfile>{}),
   Set<String> selectedVibeIds = const <String>{},
   DateTime? now,
 }) {

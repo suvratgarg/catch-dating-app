@@ -25,6 +25,7 @@ import type {
 } from "../../../shared/types/adminTypes";
 import {adminQueryKeys} from "../../../shared/query/queryKeys";
 import {usePendingMutationRecord} from "../../../shared/query/usePendingMutationRecord";
+import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 
 export type MarketingStudioTab =
   | "posts"
@@ -60,6 +61,7 @@ export function useMarketingOpsController({
   selectedDraftId?: string | null;
 }) {
   const queryClient = useQueryClient();
+  const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const bridgeQueryKey = adminQueryKeys.marketing.opsBridge();
   const bridgeQuery = useQuery({queryKey: bridgeQueryKey, queryFn: loadMarketingOpsBridge});
   const decisionMutationKey = adminQueryKeys.marketing.decision();
@@ -194,6 +196,8 @@ export function useMarketingOpsController({
       edits,
       checklist: checklistForDecision(targetType, decision, {rightsReviewed}),
     };
+    const operation = beginOperation();
+    if (!operation) return;
     onError(null);
     onNotice(null);
     try {
@@ -205,9 +209,13 @@ export function useMarketingOpsController({
       );
     } catch (error) {
       onError(messageFromError(error, "Unable to record the marketing review decision."));
+    } finally {
+      endOperation(operation);
     }
   }, [
+    beginOperation,
     decisionMutation,
+    endOperation,
     notes,
     onError,
     onNotice,
@@ -268,6 +276,8 @@ export function useMarketingOpsController({
       weekStart: savedBridge.weekStart,
       sourceRecommendationSetId: draftType === "event_highlights" ? recommendationSet?.id ?? null : null,
     };
+    const operation = beginOperation();
+    if (!operation) return;
     onError(null);
     onNotice(null);
     try {
@@ -285,10 +295,14 @@ export function useMarketingOpsController({
       onNotice(`Created ${draftTypeLabel(draftType).toLowerCase()} draft ${response.draft.id}.`);
     } catch (error) {
       onError(messageFromError(error, "Unable to create marketing draft."));
+    } finally {
+      endOperation(operation);
     }
   }, [
+    beginOperation,
     bridgeQueryKey,
     createDraftMutation,
+    endOperation,
     onDraftOpen,
     onError,
     onNotice,

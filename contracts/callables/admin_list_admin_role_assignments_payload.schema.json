@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_admin_role_assignments_payload.schema.json",
+  "title": "AdminListAdminRoleAssignmentsCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "status": {"type": ["string", "null"], "enum": ["active", "revoked", "all", null]},
+    "limit": {"type": ["integer", "null"], "minimum": 1, "maximum": 100}
+  }
+}

@@ -64,6 +64,8 @@ class OnboardingRunningPrefsState {
 
   bool get canSubmit => !isCompleting;
 
+  bool get requestControlsEnabled => !isCompleting;
+
   bool get hasCompleteError => completeErrorMessage != null;
 
   OnboardingRunningPrefsSubmitIntent submitIntent() {

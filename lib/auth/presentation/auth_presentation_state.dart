@@ -7,11 +7,13 @@ class AuthPhoneEntryViewState {
     required this.countryCode,
     required this.shouldAutofocus,
     required this.sendButtonLoading,
+    required this.requestControlsEnabled,
   });
 
   final String countryCode;
   final bool shouldAutofocus;
   final bool sendButtonLoading;
+  final bool requestControlsEnabled;
 
   factory AuthPhoneEntryViewState.from({
     required AuthScreenState data,
@@ -21,6 +23,7 @@ class AuthPhoneEntryViewState {
       countryCode: data.countryCode,
       shouldAutofocus: data.step == AuthStep.phone,
       sendButtonLoading: isSendPending,
+      requestControlsEnabled: !isSendPending,
     );
   }
 }

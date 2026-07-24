@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.3.1
-updated: 2026-07-21
+version: 1.4.1
+updated: 2026-07-23
 owner: recursive_audit_loop
 status: active
 ---
@@ -75,6 +75,17 @@ The current admin callable is a role-gated, rate-limited read projection only.
 | `operationPublicationPlans/{publicationPlanId}` | Hash-bound preflight plan; not publication authority by itself | Trusted publisher boundary |
 | `operationRuleProposals/{ruleProposalId}` | Evidence-derived extractor/rule proposal | Trusted learning worker |
 | `operationRuleEvaluations/{ruleEvaluationId}` | Replay, holdout, shadow, and canary metrics | Trusted evaluation worker |
+| `adminActionExecutions/{executionId}` | Hash-only start/terminal receipt for one agent CLI admin action | Role-gated admin execution callables |
+
+`contracts/admin/admin_action_catalog.json` binds every callable-backed admin
+GUI action to the same stable CLI action id, role set, request schema, GUI
+route, risk, confirmation policy, and contract-loop example. The catalog does
+not bypass a callable: live CLI execution still uses Firebase Auth, App Check,
+the callable's own role/rate/validation/transaction boundary, and a remotely
+visible execution receipt. Mutation commands remain dry-run until both action
+and target confirmations match the validated payload. Timeouts or malformed
+transport responses terminate as `indeterminate` so an agent must reconcile the
+target before deciding whether a retry is safe.
 
 `adminListIntakeOperations` reads runs and work items for workflow
 `supply-intake`. It grants no run-request, network, model, rule-deployment, or
@@ -171,7 +182,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `onBlockCreated` | Firestore trigger on `blocks/{blockId}` create | Backend | `matches/{matchId}` status | Secondary safety guard to close matches after block edge writes. |
 | `reportUser` | Callable | `SafetyRepository.reportUser` | `reports/{autoId}` | Bounded report payload. |
 | `requestAccountDeletion` | Callable | `SafetyRepository.requestAccountDeletion` | `deletedUsers/{uid}`, `users/{uid}`, `publicProfiles/{uid}`, Storage deletes, Auth delete, relationship cleanup across memberships, participations, saved events, profile decisions, matches, reviews, payments, notifications, blocks, reports, and `eventBroadcasts` | Rate-limited before destructive work; backend-only account deletion/anonymization. Writes a processing tombstone before cleanup so notification fan-out cannot race deletion, deletes host-authored broadcast receipts, removes a recipient's target identifier and delivery evidence, deletes original profile photos plus thumbnails, and uses relationship-doc queries instead of scanning parent arrays. |
-| `joinWaitlist` | HTTP function | Marketing site/waitlist form | `launchWaitlist/{emailHash}` | Public endpoint with CORS and IP rate limiting. |
+| `joinWaitlist` | HTTP function | Marketing member waitlist and Host application | `launchWaitlist/{emailHash}`, `marketingConversionEvents/{emailHash}` | Public endpoint with CORS and IP rate limiting; request/response shapes are versioned under `contracts/http/`, generated into website and Functions types, and validated at both boundaries. |
 
 ## Direct Client Firestore Writes
 

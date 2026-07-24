@@ -26,11 +26,13 @@ import {organizerPolicyForListing} from "./organizerPolicy";
 
 type FieldUpdater<T> = T | ((current: T) => T);
 
-export function useOrganizerDirectoryController() {
+export function useOrganizerDirectoryController(
+  sourceListings: readonly HostListing[] = hostListings
+) {
   const [searchParams, setSearchParams] = useSearchParams();
   const publicListings = useMemo(
-    () => hostListings.filter(isPubliclyReadableListing),
-    []
+    () => sourceListings.filter(isPubliclyReadableListing),
+    [sourceListings]
   );
   const cityOptions = useMemo(
     () => [...new Set(publicListings.map((listing) => listing.city))].sort(),

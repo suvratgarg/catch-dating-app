@@ -95,6 +95,44 @@
         }
       ]
     },
+    "FLUTTER-TEST-MAINTAINABILITY-001": {
+      "title": "Keep Flutter test specs bounded while coverage remains honest evidence",
+      "status": "active",
+      "kind": "scar",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.5.5"
+      },
+      "applies_to": [
+        "test/**/*_test.dart",
+        "test/**/*_tests.dart",
+        "integration_test/**/*_test.dart",
+        "integration_test/**/*_tests.dart",
+        "tool/test/**",
+        ".github/workflows/flutter-ci.yml"
+      ],
+      "instruction": "Keep new and split Flutter test specs at or below 1,200 lines, reject growth in every reviewed oversized legacy spec, and use feature-level LCOV as visibility rather than an unsupported aggregate percentage threshold.",
+      "sunset_when": [
+        "A stronger structure-aware test-maintainability gate replaces line-based spec bounds without losing decrease-only legacy tracking"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "test:flutter-test-size",
+          "stage": "scanner-ratchet",
+          "docAnchor": "TESTS.md#coverage-and-test-maintainability",
+          "baseline": "tool/test/flutter_test_size_baseline.json"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/app_architecture.md#testing-expectations"
+        }
+      ]
+    },
     "EXHIBIT-FRESHNESS-001": {
       "title": "Keep architecture exhibits fresh against their tracker anchors",
       "status": "active",
@@ -165,6 +203,11 @@
           "tool": "agent:readiness",
           "stage": "scanner-gate",
           "docAnchor": "docs/agent_operating_model.md#done-criteria-for-this-harness"
+        },
+        {
+          "tool": "design:feature-coverage",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/design_parity/README.md#feature-contract-compiler"
         },
         {
           "tool": "git:audit-merge-drops",
@@ -519,13 +562,23 @@
       "applies_to": [
         "contracts/**/*.schema.json",
         "tool/contracts/generate_schema_contracts.mjs",
+        "tool/contracts/generate_flutter_form_contract_inventory.mjs",
+        "docs/audit_registry/flutter_form_contract_inventory.json",
         "lib/core/schema_contracts/generated/field_constraints.g.dart",
+        "lib/core/schema_contracts/catch_contract_field_policy.dart",
         "lib/core/forms/**",
+        "lib/core/widgets/catch_field*.dart",
+        "lib/core/widgets/catch_chip*.dart",
+        "lib/core/widgets/catch_option_*.dart",
+        "lib/core/widgets/catch_range_slider.dart",
+        "lib/core/widgets/catch_toggle.dart",
+        "lib/**/presentation/**",
+        "test/core/forms/contract_alignment_test.dart",
+        "tool/contracts/generate_flutter_form_contract_inventory.test.mjs",
         "lib/user_profile/presentation/**",
-        "lib/hosts/presentation/**",
-        "test/core/forms/contract_alignment_test.dart"
+        "lib/hosts/presentation/**"
       ],
-      "instruction": "Editable consumer and host form rows that map to schema-owned fields must bind the generated CatchContractFieldConstraints entry instead of repeating length, required, pattern, enum, or numeric constraints as literals.",
+      "instruction": "Every editable canonical control and form-descriptor instance in the Consumer and Catch Host apps must bind generated CatchContractFieldConstraints instead of repeating length, required, pattern, collection, enum, format, or numeric constraints. Typed choices must declare their wire-value serializer, range controls must bind both endpoints, and genuinely non-editable disclosures must carry an explicit audited exemption.",
       "sunset_when": [
         "All schema-backed form factories are generated directly from schema-owned form metadata"
       ],
@@ -537,6 +590,11 @@
       "enforcement": [
         {
           "tool": "contracts:form-alignment",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/data_contracts.md#field-constraint-projection"
+        },
+        {
+          "tool": "contracts:flutter-form-inventory",
           "stage": "scanner-gate",
           "docAnchor": "docs/data_contracts.md#field-constraint-projection"
         }
@@ -1432,6 +1490,7 @@
         "lib/**/presentation/**",
         "lib/**/data/**",
         "functions/src/**",
+        "design/features/**",
         "docs/**"
       ],
       "instruction": "Every user-visible action must declare its scope key and cardinality: not allowed, singleton, unbounded, or domain-bounded. Singleton actions must render their resulting state instead of duplicate CTAs and be enforced server-side. Unbounded actions must have a UI that supports zero, one, and many items. Domain bounds must be real product constraints, not UI shortcuts.",
@@ -1445,6 +1504,11 @@
         }
       ],
       "enforcement": [
+        {
+          "tool": "design:feature-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/design_parity/README.md#feature-contract-compiler"
+        },
         {
           "stage": "manual",
           "docAnchor": "docs/audit_registry/rules.json"
@@ -2937,18 +3001,20 @@
       },
       "applies_to": [
         "operations/**",
+        "contracts/admin/**",
         "contracts/operations/**",
         "functions/src/operations/**",
         "functions/scripts/operations/**",
         "functions/src/admin/**",
         "admin/src/features/intake/operations/**",
+        "admin/src/features/operations/**",
         "tool/host_discovery/**",
         "tool/marketing/event_guide/**",
         "tool/organizer_intake/**",
         "tool/tools_manifest.json",
         "tool/remote_ops_manifest.json"
       ],
-      "instruction": "Resumable runs, work items, leases, budgets, decisions, receipts, and learning state belong in operations/. Legacy tool folders remain compatibility producers. Every workflow manifest stays bound to its executable commands, ordered states, sources, capabilities, and capacity. Shadow mode fails closed. The admin projection crosses into Firestore only through the dry-run-first trusted importer, and publication requires separately authorized execution.",
+      "instruction": "Resumable runs, work items, leases, budgets, decisions, receipts, and learning state belong in operations/. Legacy tool folders remain compatibility producers. Every workflow manifest stays bound to its executable commands, ordered states, sources, capabilities, and capacity. Ordinary admin actions share one catalog across GUI and CLI; strict schemas, role-gated callables, dry-run mutation defaults, confirmations, and hash-only receipts must not drift. Shadow mode fails closed. The admin projection crosses into Firestore only through the dry-run-first trusted importer, and publication requires separately authorized execution.",
       "sunset_when": [
         "A stronger package-boundary mechanism enforces equivalent placement and authority rules"
       ],
@@ -2973,6 +3039,21 @@
           "tool": "operations:workflow-manifest",
           "stage": "scanner-ratchet",
           "docAnchor": "docs/operations_platform.md#adding-another-workflow"
+        },
+        {
+          "tool": "operations:admin-action-catalog",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/operations_platform.md#admin-action-command-surface"
+        },
+        {
+          "tool": "admin:action-catalog-generate",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/operations_platform.md#admin-action-command-surface"
+        },
+        {
+          "tool": "operations:admin-cli",
+          "stage": "manual",
+          "docAnchor": "docs/operations_platform.md#admin-action-command-surface"
         },
         {
           "tool": "operations:import-admin-projection",
@@ -3108,8 +3189,50 @@
           "docAnchor": "docs/web_surface_architecture.md#current-stack"
         }
       ]
+    },
+    "PENDING-SNAPSHOT-001": {
+      "title": "Protect the submitted request snapshot while an operation is pending",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.5.5"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "website/src/features/**",
+        "admin/src/features/**",
+        "design/features/**",
+        "design/screens/catch.screens.json",
+        "test/**"
+      ],
+      "instruction": "Every pending user operation must declare one integrity policy. Frozen snapshots disable request-defining inputs, conflicting actions, mutation-reset callbacks, and unsafe route exits until settlement. Versioned snapshots require immutable generations plus stale-result rejection or cancellation and tests. Independently keyed concurrency requires distinct typed scope keys and separate pending/error surfaces. A loading button alone is not sufficient; controllers must also deduplicate duplicate dispatches or use an equivalent idempotency boundary.",
+      "sunset_when": [
+        "Never; pending request integrity remains a permanent cross-runtime contract"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "design:feature-contracts",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/design_parity/README.md#feature-contract-compiler"
+        },
+        {
+          "tool": "web:admin-pending-operations",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/web_surface_architecture.md#cross-surface-feature-identity"
+        },
+        {
+          "stage": "manual",
+          "docAnchor": "docs/app_architecture.md#exhibit-arch-pending-snapshot-001-pending-request-snapshot-integrity"
+        }
+      ]
     }
   },
-  "version": "2.8.1",
-  "updated": "2026-07-21"
+  "version": "2.8.6",
+  "updated": "2026-07-24"
 }

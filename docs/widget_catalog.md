@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.659
-updated: 2026-07-22
+version: 2.5.660
+updated: 2026-07-23
 owner: recursive_audit_loop
 status: active
 ---
@@ -763,8 +763,8 @@ a feature section here only when auditing that feature's widget surface.
 - Retired the dropped-direction Explore map peek rail, selected-pin lead,
   compact event row family, and alternate event-card constructors from the live
   catalog. Event discovery now keeps recommendation cards on the single ticket
-  card contract, while the map-selection follow-up is tracked in
-  `event_club_profile_parity_handoff.md` as a DateTicket implementation.
+  card contract; the completed map-selection implementation is now bound by
+  `design/features/explore.feature.json` and its registered evidence.
 - Removed the retired event-card states from Widgetbook primitive/catalog
   coverage so the component contract no longer advertises constructors that do
   not exist in `CatchEventCard`.

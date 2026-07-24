@@ -78,6 +78,13 @@ class ActivitySection extends ConsumerWidget {
         if (sectionState is NotificationsActivityLoading ||
             sectionState is NotificationsAccessLoading) ...[
           const ActivitySectionSkeleton(count: 2),
+        ] else if (sectionState is NotificationsAccessError) ...[
+          CatchInlineErrorState.fromError(
+            sectionState.error,
+            context: AppErrorContext.auth,
+            compact: true,
+            onRetry: onRetry,
+          ),
         ] else if (sectionState is NotificationsActivityError) ...[
           if (sectionState.error case final error?)
             CatchInlineErrorState.fromError(

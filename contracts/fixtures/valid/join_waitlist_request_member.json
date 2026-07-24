@@ -1,0 +1,17 @@
+{
+  "fullName": "Member Name",
+  "email": "member@example.com",
+  "city": "Delhi",
+  "role": "member",
+  "instagram": "",
+  "website": "",
+  "attribution": null,
+  "analytics": {
+    "consent": null,
+    "eventId": "waitlist_member_1",
+    "formVariant": "member",
+    "pagePath": "/",
+    "pageTitle": "Catch",
+    "submittedAt": "2026-07-23T08:00:00.000Z"
+  }
+}
