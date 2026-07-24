@@ -1,4 +1,5 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
+import {useState} from "react";
 import {
   initialOverviewHostAnalytics,
   initialOverviewSnapshot,
@@ -65,6 +66,7 @@ import {
   type OrganizerPublishingController,
 } from "../features/organizers/controllers/useOrganizerPublishingController";
 import {
+  completePublishChecklist,
   diffOrganizerProfile,
   emptyPublishChecklist,
   formFromOrganizerProfile,
@@ -1622,6 +1624,14 @@ const renderEventPublishingWorkspace = () => (
   </AdminWorkspace>
 );
 
+const renderEventPublishingDetail = () => (
+  <AdminWorkspace>
+    <EventPublishingWorkspace
+      controller={{...eventController, view: "detail"}}
+    />
+  </AdminWorkspace>
+);
+
 const renderEventIntakeWorkspace = () => (
   <AdminWorkspace>
     <EventIntakePreviewWorkspace controller={eventIntakeController} />
@@ -1653,6 +1663,35 @@ const renderOrganizerPublishingWorkspace = () => (
     <OrganizerPublishingWorkspace controller={organizerPublishingController} />
   </AdminWorkspace>
 );
+
+function OrganizerPublishingBlockedDraftPreview() {
+  const [form, setForm] = useState(organizerPublishingForm);
+  const [checklist, setChecklist] = useState(emptyPublishChecklist);
+  const diffRows = diffOrganizerProfile(organizerPublishingClub, form);
+  const controller: OrganizerPublishingController = {
+    ...organizerPublishingController,
+    checklist,
+    completeChecklist: completePublishChecklist(checklist),
+    diffRows,
+    form,
+    publishingIssues: validateOrganizerPublishingForm(
+      form,
+      {publishing: true, requireReviewNote: true}
+    ),
+    setChecklist,
+    setForm,
+    validationIssues: validateOrganizerPublishingForm(
+      form,
+      {requireReviewNote: diffRows.length > 0}
+    ),
+    view: "detail",
+  };
+  return (
+    <AdminWorkspace>
+      <OrganizerPublishingWorkspace controller={controller} />
+    </AdminWorkspace>
+  );
+}
 
 const renderIntakeWorkspace = () => (
   <AdminWorkspace>
@@ -1808,6 +1847,17 @@ export const EventPublishingWorkspaceStory: Story = {
   render: renderEventPublishingWorkspace,
 };
 
+export const EventPublishingDetailStory: Story = {
+  name: "Event detail",
+  parameters: {
+    catchComponent: {
+      id: "workspace_event_publishing",
+      states: ["canonical-detail"],
+    },
+  },
+  render: renderEventPublishingDetail,
+};
+
 export const IntakeWorkspaceRouteStory: Story = {
   name: "Intake",
   parameters: {
@@ -1928,6 +1978,17 @@ export const OrganizerPublishingWorkspaceStory: Story = {
     },
   },
   render: renderOrganizerPublishingWorkspace,
+};
+
+export const OrganizerPublishingBlockedDraftStory: Story = {
+  name: "Organizer blocked draft",
+  parameters: {
+    catchComponent: {
+      id: "workspace_organizer_publishing",
+      states: ["blocked-draft"],
+    },
+  },
+  render: () => <OrganizerPublishingBlockedDraftPreview />,
 };
 
 export const GrowthRouteStory: Story = {

@@ -21,6 +21,8 @@ import {
 import {
   AdminButton,
   AdminCard,
+  AdminChecklistCopy,
+  AdminChecklistHeader,
   AdminChecklistStack,
   AdminCommandRow,
   AdminCommandStack,
@@ -606,6 +608,39 @@ export const AdminChecklistStackStory: Story = {
           Needs owner review.
         </AlertRow>
       </AdminChecklistStack>
+    </AdminWorkspace>
+  ),
+};
+
+export const AdminChecklistHeaderStory: Story = {
+  name: "Checklist header",
+  parameters: {
+    catchComponent: {
+      id: "shared_admin_checklist_header",
+      states: ["incomplete"],
+    },
+  },
+  render: () => (
+    <AdminWorkspace>
+      <AdminChecklistHeader label="Publication checks" detail="3 tasks remaining" />
+    </AdminWorkspace>
+  ),
+};
+
+export const AdminChecklistCopyStory: Story = {
+  name: "Checklist copy",
+  parameters: {
+    catchComponent: {
+      id: "shared_admin_checklist_copy",
+      states: ["actionable"],
+    },
+  },
+  render: () => (
+    <AdminWorkspace>
+      <AdminChecklistCopy
+        label="Source evidence verified"
+        detail="Open the captured source and confirm it supports the listing."
+      />
     </AdminWorkspace>
   ),
 };

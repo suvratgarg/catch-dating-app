@@ -108,6 +108,11 @@ describe("Intake task-first defaults", () => {
 
     fireEvent.click(screen.getByRole("button", {name: "Diagnostics"}));
     expect(screen.getByRole("heading", {name: "Event candidate queue"})).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", {name: "Crawl setup"}));
+    expect(screen.getByRole("heading", {name: "Review boundary"})).toBeTruthy();
+    expect(screen.queryByText("Event intake contract")).toBeNull();
+    expect(screen.queryByText("adminGetEventIntakeDashboard")).toBeNull();
+    expect(screen.queryByText("adminRecordEventIntakeReviewDecision")).toBeNull();
     fireEvent.click(screen.getByRole("button", {name: "Back to review queue"}));
     expect(screen.getByRole("navigation", {
       name: "Event intake stages",

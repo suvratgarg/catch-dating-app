@@ -29,6 +29,8 @@ import type {
 } from "../../../shared/types/adminTypes";
 import {
   AdminButton,
+  AdminChecklistCopy,
+  AdminChecklistHeader,
   AdminChecklistStack,
   AdminDetailScreenStack,
   AdminDecisionFooterShell,
@@ -89,7 +91,19 @@ import type {
   OrganizerValidationIssue,
   PublishChecklistState,
 } from "../controllers/organizerPublishingHelpers";
-import {organizerTypeLabel} from
+import {
+  countIncompletePublishChecklist,
+  organizerAppVisibilityOptions,
+  organizerLaunchMarketOptions,
+  organizerPublishStatusOptions,
+  organizerPublishingFieldIds,
+  organizerSourceConfidenceOptions,
+  organizerTypeLabel,
+  organizerTypeOptions,
+  organizerVerificationStatusOptions,
+  publishChecklistItems,
+  updateOrganizerLaunchMarket,
+} from
   "../controllers/organizerPublishingHelpers";
 import {useAdminFeedback} from "../../../shared/feedback/AdminFeedbackContext";
 import {organizerDirectoryPanels} from "./organizerDirectoryPanels";
@@ -141,9 +155,6 @@ function OrganizerDetailView({
         onPublish={() => void controller.saveAndPublish()}
         onSave={() => void controller.save()}
         validationIssues={controller.validationIssues}
-      />
-      <OrganizerPublishingContractPanel
-        generatedAt={controller.listGeneratedAt}
       />
     </AdminDetailScreenStack>
   );
@@ -224,23 +235,29 @@ function OrganizerDetailSummary({
     issues.findIndex((candidate) => candidate.id === issue.id) === index
   );
   const blockerCount = countBlockingIssues(readinessIssues);
-  const isReady = blockerCount === 0;
+  const checklistTaskCount =
+    countIncompletePublishChecklist(controller.checklist);
+  const remainingTaskCount = blockerCount + checklistTaskCount;
+  const isReady = remainingTaskCount === 0;
   return (
     <Panel
       span={2}
       icon={<Users size={18} strokeWidth={1.9} />}
       title="Readiness"
-      action={isReady ? "Ready" : `${blockerCount} blockers`}
+      action={isReady ? "Ready" : `${remainingTaskCount} tasks`}
     >
       <AlertRow
         icon={isReady ?
           <CheckCircle2 size={16} strokeWidth={1.9} /> :
           <FileWarning size={16} strokeWidth={1.9} />}
-        title={isReady ? "Ready for operator review" : "Resolve blockers before publishing"}
+        title={isReady ?
+          "Ready for operator review" :
+          `${remainingTaskCount} steps before publishing`}
         tone={isReady ? "neutral" : "warning"}
       >
         App visibility, public-web publication, and search indexing are separate
-        states. Publishing and indexing run only through the dedicated action.
+        states. Required fields and the evidence checklist are shown beside the
+        editor; each field blocker links to its control.
       </AlertRow>
       <AdminStatusGrid>
         <StateRow label="Document" value={club?.clubId ?? controller.clubId} />
@@ -265,48 +282,8 @@ function OrganizerDetailSummary({
         />
         <StateRow label="Save blockers" value={saveBlockers} />
         <StateRow label="Publish blockers" value={publishBlockers} />
+        <StateRow label="Checklist tasks" value={checklistTaskCount} />
       </AdminStatusGrid>
-    </Panel>
-  );
-}
-
-function OrganizerPublishingContractPanel({
-  generatedAt,
-}: {
-  generatedAt: string | null;
-}) {
-  return (
-    <Panel
-      icon={<Database size={18} strokeWidth={1.9} />}
-      title="Publishing contract"
-      action="clubs"
-    >
-      <QualityList>
-        <StateRow
-          label="Source of truth"
-          value="Cloud Firestore organizers/{id}"
-        />
-        <StateRow
-          label="Search/list"
-          value="adminListClubDetails + adminSearch.tokens"
-        />
-        <StateRow
-          label="Canonical snapshot"
-          value={formatDateTime(generatedAt)}
-        />
-        <StateRow
-          label="Writes"
-          value="Audited partial update + index publish callable"
-        />
-        <StateRow
-          label="Route guard"
-          value="canonicalPath shape + publicRouteReservations"
-        />
-        <StateRow
-          label="Action cardinality"
-          value="One publish state per organizer document"
-        />
-      </QualityList>
     </Panel>
   );
 }
@@ -473,14 +450,25 @@ function OrganizerEditor({
     if (!form) return;
     onFormChange({...form, [key]: value});
   };
+  const updateLaunchMarket = (marketId: string) => {
+    if (!form) return;
+    onFormChange(updateOrganizerLaunchMarket(form, marketId));
+  };
+  const hasTargetIssue = (targetId: string) =>
+    publishingIssues.some((issue) =>
+      issue.severity === "blocker" && issue.targetId === targetId);
   const publishBlockerCount = countBlockingIssues(publishingIssues);
+  const checklistTaskCount = countIncompletePublishChecklist(checklist);
+  const remainingPublishTaskCount =
+    publishBlockerCount + checklistTaskCount;
   const publishDisabledReason =
     !form ? "Load an organizer before publishing." :
-    publishBlockerCount > 0 ?
-      `Resolve ${publishBlockerCount} publish blocker${
+    remainingPublishTaskCount > 0 ?
+      `${publishBlockerCount} field blocker${
         publishBlockerCount === 1 ? "" : "s"
-      } before publishing.` :
-    !completeChecklist ? "Complete the publish checklist before publishing." :
+      } · ${checklistTaskCount} checklist item${
+        checklistTaskCount === 1 ? "" : "s"
+      } remaining.` :
     isSaving ? "Wait for the current save to finish." :
     isPublishing ? "Organizer publish is already in progress." :
     undefined;
@@ -494,7 +482,6 @@ function OrganizerEditor({
     <>
     <AdminEditorGrid>
       <AdminEditorPanel
-        span={2}
         icon={<Settings2 size={18} strokeWidth={1.9} />}
         title="Canonical organizer record"
         action={club?.clubId ?? "No organizer loaded"}
@@ -521,6 +508,8 @@ function OrganizerEditor({
               <legend>Identity</legend>
               <AdminFieldGrid columns={2}>
                 <TextField
+                  id={organizerPublishingFieldIds.name}
+                  invalid={hasTargetIssue(organizerPublishingFieldIds.name)}
                   label="Name"
                   onChange={(value) => update("name", value)}
                   value={form.name}
@@ -529,14 +518,7 @@ function OrganizerEditor({
                   label="Organizer type"
                   onChange={(value) =>
                     update("organizerType", value as OrganizerType)}
-                  options={[
-                    "club",
-                    "community",
-                    "individual",
-                    "eventProducer",
-                    "venue",
-                    "brand",
-                  ]}
+                  options={[...organizerTypeOptions]}
                   value={form.organizerType}
                 />
                 <TextField
@@ -545,12 +527,22 @@ function OrganizerEditor({
                   value={form.publicCategoryLabel}
                 />
                 <TextField
-                  label="Area"
+                  id={organizerPublishingFieldIds.area}
+                  invalid={hasTargetIssue(organizerPublishingFieldIds.area)}
+                  label="Area / locality"
                   onChange={(value) => update("area", value)}
                   value={form.area}
                 />
               </AdminFieldGrid>
+              <AdminWorkbenchNote>
+                Organizer type is the governed classification. Public category
+                label is optional reader-facing copy.
+              </AdminWorkbenchNote>
               <TextareaField
+                id={organizerPublishingFieldIds.description}
+                invalid={hasTargetIssue(
+                  organizerPublishingFieldIds.description
+                )}
                 label="Description"
                 onChange={(value) => update("description", value)}
                 rows={4}
@@ -570,45 +562,62 @@ function OrganizerEditor({
                 <StateRow label="Claim state" value={club?.claimState ?? "Unavailable"} />
                 <StateRow label="Ownership state" value={club?.ownershipState ?? "Unavailable"} />
               </QualityList>
-              <AdminFieldGrid columns={3}>
-                <TextField
-                  label="Location slug"
-                  onChange={(value) => update("location", value)}
-                  value={form.location}
-                />
-                <TextField
-                  label="City"
-                  onChange={(value) => update("cityName", value)}
-                  value={form.cityName}
-                />
-                <TextField
-                  label="Region"
-                  onChange={(value) => update("regionName", value)}
-                  value={form.regionName}
-                />
-                <TextField
-                  label="Country code"
-                  onChange={(value) => update("countryCode", value)}
-                  value={form.countryCode}
-                />
-                <TextField
+              <SelectField
+                id={organizerPublishingFieldIds.launchMarket}
+                invalid={hasTargetIssue(
+                  organizerPublishingFieldIds.launchMarket
+                )}
+                label="Launch market"
+                onChange={updateLaunchMarket}
+                options={[
+                  ...(!organizerLaunchMarketOptions.some(
+                    (option) => option.value === form.location
+                  ) && form.location ?
+                    [{
+                      value: form.location,
+                      label: `Current unsupported market · ${form.location}`,
+                    }] :
+                    []),
+                  ...organizerLaunchMarketOptions,
+                ]}
+                value={form.location}
+              />
+              <AdminWorkbenchNote>
+                This governed choice sets the canonical market, city, region,
+                country, and public page city slug together.
+              </AdminWorkbenchNote>
+              <AdminStatusGrid compact>
+                <StateRow label="Market ID" value={form.location} />
+                <StateRow label="City" value={form.cityName} />
+                <StateRow label="Region" value={form.regionName} />
+                <StateRow
                   label="Country"
-                  onChange={(value) => update("countryName", value)}
-                  value={form.countryName}
+                  value={[form.countryName, form.countryCode]
+                    .filter(Boolean).join(" · ")}
                 />
+                <StateRow
+                  label="Page city slug"
+                  value={form.publicPageCitySlug}
+                />
+              </AdminStatusGrid>
+              <AdminFieldGrid columns={3}>
                 <TextField
                   label="Instagram"
                   onChange={(value) => update("instagramHandle", value)}
                   value={form.instagramHandle}
                 />
                 <TextField
+                  id={organizerPublishingFieldIds.email}
+                  invalid={hasTargetIssue(organizerPublishingFieldIds.email)}
                   label="Email"
                   onChange={(value) => update("email", value)}
+                  type="email"
                   value={form.email}
                 />
                 <TextField
                   label="Phone"
                   onChange={(value) => update("phoneNumber", value)}
+                  type="tel"
                   value={form.phoneNumber}
                 />
               </AdminFieldGrid>
@@ -630,20 +639,30 @@ function OrganizerEditor({
                   label="App visibility"
                   onChange={(value) =>
                     update("appVisibility", value as OrganizerAppVisibility)}
-                  options={["hidden", "discoverable"]}
+                  options={[...organizerAppVisibilityOptions]}
                   value={form.appVisibility}
                 />
                 <TextField
+                  id={organizerPublishingFieldIds.publicPageSlug}
+                  invalid={hasTargetIssue(
+                    organizerPublishingFieldIds.publicPageSlug
+                  )}
                   label="Slug"
                   onChange={(value) => update("publicPageSlug", value)}
+                  pattern="[a-z0-9-]+"
                   value={form.publicPageSlug}
                 />
                 <TextField
                   label="Page city slug"
-                  onChange={(value) => update("publicPageCitySlug", value)}
+                  onChange={() => undefined}
+                  readOnly
                   value={form.publicPageCitySlug}
                 />
                 <TextField
+                  id={organizerPublishingFieldIds.canonicalPath}
+                  invalid={hasTargetIssue(
+                    organizerPublishingFieldIds.canonicalPath
+                  )}
                   label="Canonical path"
                   onChange={(value) => update("canonicalPath", value)}
                   value={form.canonicalPath}
@@ -652,7 +671,7 @@ function OrganizerEditor({
                   label="Public-web publication"
                   onChange={(value) =>
                     update("publishStatus", value as OrganizerPublishStatus)}
-                  options={["draft", "qa", "published", "suppressed", "removed"]}
+                  options={[...organizerPublishStatusOptions]}
                   value={form.publishStatus}
                 />
                 <StateRow
@@ -660,13 +679,19 @@ function OrganizerEditor({
                   value={`${club?.publicPage.indexStatus ?? "Unavailable"} · changed only by Save + publish`}
                 />
                 <TextField
+                  id={organizerPublishingFieldIds.imageUrl}
+                  invalid={hasTargetIssue(organizerPublishingFieldIds.imageUrl)}
                   label="Image URL"
                   onChange={(value) => update("imageUrl", value)}
+                  type="url"
                   value={form.imageUrl}
                 />
                 <TextField
+                  id={organizerPublishingFieldIds.logoUrl}
+                  invalid={hasTargetIssue(organizerPublishingFieldIds.logoUrl)}
                   label="Logo URL"
                   onChange={(value) => update("profileImageUrl", value)}
+                  type="url"
                   value={form.profileImageUrl}
                 />
                 <TextField
@@ -685,11 +710,15 @@ function OrganizerEditor({
             <AdminEditorSection>
               <legend>Member-facing fields</legend>
               <TextField
+                id={organizerPublishingFieldIds.headline}
+                invalid={hasTargetIssue(organizerPublishingFieldIds.headline)}
                 label="Headline"
                 onChange={(value) => update("headline", value)}
                 value={form.headline}
               />
               <TextareaField
+                id={organizerPublishingFieldIds.summary}
+                invalid={hasTargetIssue(organizerPublishingFieldIds.summary)}
                 label="Summary"
                 onChange={(value) => update("summary", value)}
                 rows={5}
@@ -727,22 +756,35 @@ function OrganizerEditor({
               <legend>Evidence and review note</legend>
               <AdminFieldGrid columns={3}>
                 <SelectField
+                  id={organizerPublishingFieldIds.sourceConfidence}
+                  invalid={hasTargetIssue(
+                    organizerPublishingFieldIds.sourceConfidence
+                  )}
                   label="Source confidence"
                   onChange={(value) =>
                     update("sourceConfidence", value as OrganizerSourceConfidence)}
-                  options={["seedOnly", "low", "medium", "high", "ownerVerified"]}
+                  options={[...organizerSourceConfidenceOptions]}
                   value={form.sourceConfidence}
                 />
                 <SelectField
+                  id={organizerPublishingFieldIds.verificationStatus}
+                  invalid={hasTargetIssue(
+                    organizerPublishingFieldIds.verificationStatus
+                  )}
                   label="Verification"
                   onChange={(value) =>
                     update("verificationStatus", value as OrganizerVerificationStatus)}
-                  options={["unverified", "sourceBacked", "ownerVerified"]}
+                  options={[...organizerVerificationStatusOptions]}
                   value={form.verificationStatus}
                 />
-                <TextField
+                <TextareaField
+                  id={organizerPublishingFieldIds.reviewNote}
+                  invalid={hasTargetIssue(
+                    organizerPublishingFieldIds.reviewNote
+                  )}
                   label="Review note"
                   onChange={(value) => update("reviewNote", value)}
+                  rows={3}
                   value={form.reviewNote}
                 />
               </AdminFieldGrid>
@@ -768,11 +810,23 @@ function OrganizerEditor({
         validationIssues={validationIssues}
       />
     </AdminEditorGrid>
-    <AdminDecisionFooterShell sticky>
+    <AdminDecisionFooterShell
+      layout="publishing-actions"
+      sticky
+    >
       <div>
         <strong>{diffRows.length} pending field change{diffRows.length === 1 ? "" : "s"}</strong>
         <span>{publishDisabledReason ?? "Ready for save or publish review."}</span>
       </div>
+      {remainingPublishTaskCount > 0 && (
+        <AdminButton
+          onClick={() => focusOrganizerPublishingTarget(
+            "organizer-publishing-readiness"
+          )}
+        >
+          Review {remainingPublishTaskCount} tasks
+        </AdminButton>
+      )}
       <AdminButton
         disabled={!form || isSaving}
         icon={<Save size={15} strokeWidth={1.9} />}
@@ -815,41 +869,58 @@ function PublishingSidePanel({
     (issue, index, rows) => rows.findIndex((item) => item.id === issue.id) === index
   );
   const blockerCount = countBlockingIssues(readinessIssues);
+  const checklistTaskCount = countIncompletePublishChecklist(checklist);
+  const remainingTaskCount = blockerCount + checklistTaskCount;
   return (
-    <AdminWorkbenchStack>
-      <Panel
-        icon={<FileWarning size={18} strokeWidth={1.9} />}
-        title="Readiness and blockers"
-        action={`${blockerCount} blockers`}
-      >
+    <AdminWorkbenchStack alignStart>
+      <div id="organizer-publishing-readiness">
+        <Panel
+          icon={<FileWarning size={18} strokeWidth={1.9} />}
+          title="Readiness and blockers"
+          action={remainingTaskCount === 0 ?
+            "Ready" :
+            `${remainingTaskCount} tasks`}
+        >
         <AlertRow
-          icon={blockerCount === 0 ?
+          icon={remainingTaskCount === 0 ?
             <CheckCircle2 size={16} strokeWidth={1.9} /> :
             <FileWarning size={16} strokeWidth={1.9} />}
-          title={blockerCount === 0 ? "Validation is clear" : "Publishing is blocked"}
-          tone={blockerCount === 0 ? "neutral" : "warning"}
+          title={remainingTaskCount === 0 ?
+            "Ready for final operator review" :
+            `${blockerCount} fields · ${checklistTaskCount} checks remaining`}
+          tone={remainingTaskCount === 0 ? "neutral" : "warning"}
         >
-          This single summary combines save validation, publish validation, and
-          the explicit publication checklist.
+          Fix required fields first, then confirm each evidence check. Selecting
+          a blocker moves focus to the owning control.
         </AlertRow>
-        <IssueList issues={readinessIssues} />
+        <IssueList
+          issues={readinessIssues}
+          onResolve={focusOrganizerPublishingIssue}
+        />
+        <AdminChecklistHeader
+          label="Publication checklist"
+          detail={<>{publishChecklistItems.length - checklistTaskCount} of {
+            publishChecklistItems.length
+          } complete</>}
+        />
         <AdminChecklistStack>
-          {([
-            ["sourceEvidenceVerified", "Source evidence verified"],
-            ["mediaRightsVerified", "Media rights verified"],
-            ["cadenceVerified", "Cadence/crawl fit verified"],
-            ["ownerContactVerified", "Owner contact or claim path verified"],
-          ] as const).map(([key, label]) => (
+          {publishChecklistItems.map((item) => (
             <CheckboxField
-              checked={checklist[key]}
-              key={key}
-              label={label}
+              checked={checklist[item.key]}
+              key={item.key}
+              label={(
+                <AdminChecklistCopy
+                  detail={item.detail}
+                  label={item.label}
+                />
+              )}
               onChange={(checked) =>
-                onChecklistChange({...checklist, [key]: checked})}
+                onChecklistChange({...checklist, [item.key]: checked})}
             />
           ))}
         </AdminChecklistStack>
-      </Panel>
+        </Panel>
+      </div>
       <Panel
         icon={<Database size={18} strokeWidth={1.9} />}
         title="Before / after diff"
@@ -920,15 +991,15 @@ function AppListingPreview({
   const location = [form.cityName || form.area, form.regionName]
     .filter(Boolean)
     .join(", ");
-  const tags = [
+  const tags = [...new Set([
     ...splitPreviewList(form.tagsText),
     ...splitPreviewList(form.formatsText),
-  ].slice(0, 6);
+  ])].slice(0, 6);
   return (
     <QualityList>
       <StateRow
-        label="Collection"
-        value={`organizers/${club?.clubId ?? ""}`}
+        label="Record ID"
+        value={club?.clubId}
       />
       <StateRow label="App visibility" value={form.appVisibility} />
       <StateRow label="Image" value={form.imageUrl ? "imageUrl set" : "missing"} />
@@ -966,7 +1037,13 @@ function splitPreviewList(value: string): string[] {
     .filter(Boolean);
 }
 
-function IssueList({issues}: {issues: OrganizerValidationIssue[]}) {
+function IssueList({
+  issues,
+  onResolve,
+}: {
+  issues: OrganizerValidationIssue[];
+  onResolve: (issue: OrganizerValidationIssue) => void;
+}) {
   if (issues.length === 0) {
     return (
       <QualityList>
@@ -977,15 +1054,39 @@ function IssueList({issues}: {issues: OrganizerValidationIssue[]}) {
   return (
     <AdminRoadmapList>
       {issues.map((issue) => (
-        <AdminRoadmapListItem key={issue.id}>
+        <AdminRoadmapListItem
+          actionable
+          key={issue.id}
+          tone={issue.severity}
+        >
           <FileWarning size={15} strokeWidth={1.9} />
           <span>
             <strong>{issue.label}:</strong> {issue.detail}
           </span>
+          {issue.targetId && (
+            <AdminButton
+              onClick={() => onResolve(issue)}
+              variant="link"
+            >
+              Go to field
+            </AdminButton>
+          )}
         </AdminRoadmapListItem>
       ))}
     </AdminRoadmapList>
   );
+}
+
+function focusOrganizerPublishingIssue(issue: OrganizerValidationIssue) {
+  if (!issue.targetId) return;
+  focusOrganizerPublishingTarget(issue.targetId);
+}
+
+function focusOrganizerPublishingTarget(targetId: string) {
+  const target = document.getElementById(targetId);
+  if (!target) return;
+  target.scrollIntoView({behavior: "smooth", block: "center"});
+  if (target instanceof HTMLElement) target.focus({preventScroll: true});
 }
 
 function DiffList({rows}: {rows: OrganizerDiffRow[]}) {
@@ -1027,7 +1128,6 @@ export const organizerDetailPanels = {
   OrganizerDetailView,
   OrganizerDirectoryPanel,
   OrganizerDetailSummary,
-  OrganizerPublishingContractPanel,
   OrganizerDirectoryTable,
   OrganizerEditor,
   PublishingSidePanel,

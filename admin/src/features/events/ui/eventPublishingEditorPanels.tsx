@@ -2,7 +2,6 @@ import {useMemo, useState} from "react";
 import {
   ArrowLeft,
   CalendarDays,
-  CheckCircle2,
   Clock3,
   Database,
   ExternalLink,
@@ -83,8 +82,10 @@ import {
   AdminPanelActions,
   AdminPublishingLoadbar,
   AdminRowTitle,
+  AdminSecondaryDisclosure,
   AdminSurfacePreview,
   AdminTagRow,
+  AdminWorkbenchNote,
 } from "../../../shared/ui/AdminPrimitives";
 import {
   type ExternalEventPublishRequest,
@@ -195,7 +196,7 @@ function EventEditor({
       >
         <AdminPublishingLoadbar>
           <TextField
-            label="events/{id}"
+            label="Event ID"
             onChange={onEventIdChange}
             value={eventId}
           />
@@ -308,6 +309,13 @@ function EventEditor({
                   value={event ? formatMoney(event) : null}
                 />
               </AdminFieldGrid>
+              <AdminSecondaryDisclosure summary="Why these fields are read-only">
+                <AdminWorkbenchNote>
+                  Schedule, capacity, price, status, and cancellation are managed
+                  by their owning event workflows. Editing copy or format here
+                  cannot change booking or lifecycle state.
+                </AdminWorkbenchNote>
+              </AdminSecondaryDisclosure>
             </AdminEditorSection>
           </AdminForm>
         ) : (
@@ -406,19 +414,6 @@ function EventSidePanel({
           </EmptyState>
         )}
       </Panel>
-      <Panel
-        icon={<CheckCircle2 size={18} strokeWidth={1.9} />}
-        title="Mutation boundary"
-        action="safe fields"
-      >
-        <QualityList>
-          <StateRow label="Callable" value="adminUpdateEventDetails" />
-          <StateRow label="Audit log" value="adminAuditLogs/{id}" />
-          <StateRow label="Search rebuild" value="adminSearch projection" />
-          <StateRow label="Discovery rebuild" value="eventDiscoveryProjection" />
-          <StateRow label="Excluded" value="schedule, policy, cancellation" />
-        </QualityList>
-      </Panel>
     </AdminWorkbenchStack>
   );
 }
@@ -433,7 +428,7 @@ function AppEventPreview({
   const label = form.customActivityLabel || formatEventLabel(form.activityKind);
   return (
     <QualityList>
-      <StateRow label="Collection" value={`events/${event.eventId}`} />
+      <StateRow label="Record ID" value={event.eventId} />
       <StateRow label="Organizer" value={event.organizerName} />
       <StateRow label="Time" value={formatDateTime(event.startTime)} />
       <StateRow label="Venue" value={event.meetingPoint} />

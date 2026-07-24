@@ -66,10 +66,12 @@ export function AdminButton({
   loading?: boolean;
   loadingLabel?: ReactNode;
   selected?: boolean;
-  variant?: "ghost" | "primary";
+  variant?: "ghost" | "primary" | "link";
 } & ButtonHTMLAttributes<HTMLButtonElement>) {
   const classes = [
-    variant === "primary" ? "primary-button" : "ghost-button",
+    variant === "primary" ?
+      "primary-button" :
+      variant === "link" ? "link-button" : "ghost-button",
     selected ? "selected" : "",
     className,
   ].filter(Boolean).join(" ");

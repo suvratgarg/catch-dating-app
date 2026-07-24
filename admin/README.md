@@ -73,7 +73,9 @@ The Organizers tab calls `adminListClubDetails` for the canonical
 Organizer save and index decisions require a review note whenever an audited
 mutation is sent; unchanged saves short-circuit in the UI without calling the
 backend. The organizer list response includes a `generatedAt` snapshot timestamp
-shown in the publishing contract panel.
+shown in the directory scope note. Operator screens do not expose backend
+paths, callable names, or generic publishing-contract panels; implementation
+details stay in the repository architecture and contract documentation.
 Organizer save and index-ready publishing also reserve
 `publicRouteReservations/{routeKey}` so website routes are claimed before
 canonical listings become indexable.

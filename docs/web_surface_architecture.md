@@ -97,6 +97,15 @@ window, but they are compatibility types only. React code must not add a new
 `clubs/{id}` authority, club-named callable, or product-facing generic club
 label. Retirement follows `docs/migrations/clubs_to_organizers.md`.
 
+The organizer detail editor preserves the same boundary in operator input.
+Closed-set organizer, visibility, publication, provenance, verification, and
+launch-market values use governed selects with reader-facing labels. A launch
+market is one selection; its market ID, city, region, country, and public-page
+city slug are derived projections rather than independently editable text.
+Publish validation exposes every blocking field with a focus target, counts the
+four evidence-checklist tasks separately, and keeps the disabled publication
+action paired with a direct route to the remaining work.
+
 ## Public Viewer And Listing Authority Matrix
 
 `design/public_surface_behavior.json` is the executable decision table for
@@ -364,6 +373,16 @@ apply only to endpoints that accept them. Evidence labels distinguish sourced,
 inferred, unknown, generated-at, loaded-at, and session-only state. Diagnostics,
 command material, unsupported actions, and source paths use secondary disclosure
 instead of occupying the primary task flow.
+
+Operator task surfaces describe outcomes, editable scope, blockers, and the
+next available action. They do not render Firestore paths, callable names,
+projection implementation, route-guard mechanics, or generic "publishing
+contract" panels. When a derived or read-only value needs explanation, use a
+short reader-facing disclosure beside that value; exact implementation
+contracts stay in this document, `docs/data_contracts.md`, and
+`docs/backend_operation_catalog.md`. Explicit Diagnostics workspaces may expose
+technical evidence only when that evidence is necessary to troubleshoot the
+workflow.
 
 Mutation interfaces may reuse the shared sticky decision footer only when the
 owning callable has validation, authorization, pending, success, and receipt

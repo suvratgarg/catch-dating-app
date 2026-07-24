@@ -299,11 +299,13 @@ export function AdminDecisionFooterShell({
   children,
   className = "",
   compact = false,
+  layout = "default",
   sticky = false,
   ...props
 }: HTMLAttributes<HTMLDivElement> & {
   children: ReactNode;
   compact?: boolean;
+  layout?: "default" | "publishing-actions";
   sticky?: boolean;
 }) {
   return (
@@ -313,6 +315,7 @@ export function AdminDecisionFooterShell({
         "marketing-decision-footer",
         "admin-decision-footer",
         compact && "compact",
+        layout === "publishing-actions" && "publishing-actions",
         sticky && "sticky",
         className
       )}
