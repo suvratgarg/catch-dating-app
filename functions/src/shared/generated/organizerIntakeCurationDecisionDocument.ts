@@ -10,6 +10,7 @@ export interface OrganizerIntakeCurationDecisionDocument {
   operationId: string;
   operationType:
     | "attach_surface"
+    | "create_entity_draft"
     | "merge_entity"
     | "split_surface"
     | "suppress_entity"
@@ -21,6 +22,8 @@ export interface OrganizerIntakeCurationDecisionDocument {
   surfaceId?: string;
   newEntityId?: string;
   sourceCandidateId?: string;
+  sourceWorkItemId?: string;
+  sourceNormalizedKey?: string;
   decision?:
     | "accept_primary"
     | "accept_secondary"

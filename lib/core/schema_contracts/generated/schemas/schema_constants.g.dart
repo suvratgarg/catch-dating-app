@@ -13,6 +13,8 @@ export 'admin_assign_safety_triage_item_callable_payload.g.dart';
 export 'admin_assign_safety_triage_item_callable_response.g.dart';
 export 'admin_create_marketing_content_draft_callable_payload.g.dart';
 export 'admin_create_marketing_content_draft_callable_response.g.dart';
+export 'admin_create_organizer_draft_from_candidate_callable_payload.g.dart';
+export 'admin_create_organizer_draft_from_candidate_callable_response.g.dart';
 export 'admin_decide_access_application_callable_payload.g.dart';
 export 'admin_decide_access_application_callable_response.g.dart';
 export 'admin_decide_club_claim_callable_payload.g.dart';

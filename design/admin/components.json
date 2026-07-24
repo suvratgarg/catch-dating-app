@@ -1,7 +1,7 @@
 {
   "$schema": "./admin.components.schema.json",
-  "version": 36,
-  "updated": "2026-07-23",
+  "version": 37,
+  "updated": "2026-07-24",
   "owner": "admin_dashboard",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -452,10 +452,12 @@
         "states": [
           "default",
           "workflow-readiness",
-          "publication-packets"
+          "publication-packets",
+          "scrollable-candidate-queue",
+          "organizer-draft-creation"
         ]
       },
-      "notes": "Organizer Intake live route wrapper delegates to OrganizerIntakeWorkspace with feedback providers; deterministic preview coverage uses typed synthetic operation records in AdminRoutes.stories.tsx."
+      "notes": "Organizer Intake live route wrapper delegates to OrganizerIntakeWorkspace with feedback providers; deterministic preview coverage includes a 30-item independently scrollable candidate queue and fail-closed organizer draft creation."
     },
     {
       "id": "workspace_organizer_intake",
@@ -473,10 +475,12 @@
         "states": [
           "default",
           "workflow-readiness",
-          "publication-packets"
+          "publication-packets",
+          "scrollable-candidate-queue",
+          "organizer-draft-creation"
         ]
       },
-      "notes": "Prop-driven Organizer Intake workspace used by the live route wrapper and deterministic Storybook previews; typed synthetic state and mutation callbacks are supplied by the controller seam."
+      "notes": "Prop-driven Organizer Intake workspace used by the live route wrapper and deterministic Storybook previews; reviewed candidates can create an unclaimed hidden draft while publication, indexing, crawling, and ownership remain disabled."
     },
     {
       "id": "route_marketing_ops",

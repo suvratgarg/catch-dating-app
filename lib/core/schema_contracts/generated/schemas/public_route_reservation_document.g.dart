@@ -197,6 +197,7 @@ const schemaPublicRouteReservationDocumentSchema = <String, Object?>{
         'adminSetClubIndexStatus',
         'adminUpdateOrganizerDetails',
         'adminSetOrganizerIndexStatus',
+        'adminCreateOrganizerDraftFromCandidate',
         'clubsToOrganizersMigration',
       ],
       'x-catch-ownership': 'server-only',

@@ -254,6 +254,24 @@ export const adminActionCatalog = {
       "controlPlane": false
     },
     {
+      "actionId": "organizer-intake.create-organizer-draft",
+      "callable": "adminCreateOrganizerDraftFromCandidate",
+      "workflowIds": [
+        "organizer-intake",
+        "organizers"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "summary": "Create one unclaimed, source-backed organizer draft from a reviewed Supply Intake candidate; publication, indexing, app visibility, crawling, and ownership remain disabled.",
+      "controlPlane": false
+    },
+    {
       "actionId": "organizer-intake.decide-publication",
       "callable": "adminDecideOrganizerIntake",
       "workflowIds": [
@@ -705,6 +723,7 @@ export const adminActionCatalog = {
       "label": "Organizer Intake",
       "guiPath": "/intake/organizers",
       "actions": [
+        "organizer-intake.create-organizer-draft",
         "organizer-intake.record-curation",
         "organizer-intake.resolve-location",
         "organizer-intake.decide-event-candidate",
@@ -735,6 +754,7 @@ export const adminActionCatalog = {
       "label": "Organizers",
       "guiPath": "/organizers",
       "actions": [
+        "organizer-intake.create-organizer-draft",
         "organizers.list",
         "organizers.get",
         "organizers.update",

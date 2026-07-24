@@ -611,6 +611,121 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['object'],
   );
 
+  static const adminCreateOrganizerDraftFromCandidateCallablePayloadCandidateId = CatchContractFieldConstraints(
+    path: 'adminCreateOrganizerDraftFromCandidateCallablePayload.candidateId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminCreateOrganizerDraftFromCandidateCallablePayloadDescription = CatchContractFieldConstraints(
+    path: 'adminCreateOrganizerDraftFromCandidateCallablePayload.description',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminCreateOrganizerDraftFromCandidateCallablePayloadName = CatchContractFieldConstraints(
+    path: 'adminCreateOrganizerDraftFromCandidateCallablePayload.name',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminCreateOrganizerDraftFromCandidateCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'adminCreateOrganizerDraftFromCandidateCallablePayload.organizerId',
+    maxLength: 64,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])\$',
+  );
+
+  static const adminCreateOrganizerDraftFromCandidateCallablePayloadOrganizerType = CatchContractFieldConstraints(
+    path: 'adminCreateOrganizerDraftFromCandidateCallablePayload.organizerType',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['club', 'community', 'individual', 'eventProducer', 'venue', 'brand'],
+  );
+
+  static const adminCreateOrganizerDraftFromCandidateCallablePayloadReviewNote = CatchContractFieldConstraints(
+    path: 'adminCreateOrganizerDraftFromCandidateCallablePayload.reviewNote',
+    maxLength: 500,
+    minLength: 10,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminCreateOrganizerDraftFromCandidateCallablePayloadWorkItemId = CatchContractFieldConstraints(
+    path: 'adminCreateOrganizerDraftFromCandidateCallablePayload.workItemId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminCreateOrganizerDraftFromCandidateCallableResponseAppVisibility = CatchContractFieldConstraints(
+    path: 'adminCreateOrganizerDraftFromCandidateCallableResponse.appVisibility',
+    required: true,
+  );
+
+  static const adminCreateOrganizerDraftFromCandidateCallableResponseClaimState = CatchContractFieldConstraints(
+    path: 'adminCreateOrganizerDraftFromCandidateCallableResponse.claimState',
+    required: true,
+  );
+
+  static const adminCreateOrganizerDraftFromCandidateCallableResponseCrawlStatus = CatchContractFieldConstraints(
+    path: 'adminCreateOrganizerDraftFromCandidateCallableResponse.crawlStatus',
+    required: true,
+  );
+
+  static const adminCreateOrganizerDraftFromCandidateCallableResponseCreated = CatchContractFieldConstraints(
+    path: 'adminCreateOrganizerDraftFromCandidateCallableResponse.created',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminCreateOrganizerDraftFromCandidateCallableResponseCurationPath = CatchContractFieldConstraints(
+    path: 'adminCreateOrganizerDraftFromCandidateCallableResponse.curationPath',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^organizerIntakeCurationDecisions/[^/]+\$',
+  );
+
+  static const adminCreateOrganizerDraftFromCandidateCallableResponseIndexStatus = CatchContractFieldConstraints(
+    path: 'adminCreateOrganizerDraftFromCandidateCallableResponse.indexStatus',
+    required: true,
+  );
+
+  static const adminCreateOrganizerDraftFromCandidateCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'adminCreateOrganizerDraftFromCandidateCallableResponse.organizerId',
+    maxLength: 64,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminCreateOrganizerDraftFromCandidateCallableResponseOrganizerPath = CatchContractFieldConstraints(
+    path: 'adminCreateOrganizerDraftFromCandidateCallableResponse.organizerPath',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^organizers/[^/]+\$',
+  );
+
+  static const adminCreateOrganizerDraftFromCandidateCallableResponseOwnershipState = CatchContractFieldConstraints(
+    path: 'adminCreateOrganizerDraftFromCandidateCallableResponse.ownershipState',
+    required: true,
+  );
+
+  static const adminCreateOrganizerDraftFromCandidateCallableResponsePublishStatus = CatchContractFieldConstraints(
+    path: 'adminCreateOrganizerDraftFromCandidateCallableResponse.publishStatus',
+    required: true,
+  );
+
   static const adminDecideAccessApplicationCallablePayloadApplicationUid = CatchContractFieldConstraints(
     path: 'adminDecideAccessApplicationCallablePayload.applicationUid',
     required: true,
@@ -3527,7 +3642,7 @@ abstract final class CatchContractConstraints {
     path: 'clubDocument.adminSearch.updatedBySource',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['adminUpdateClubDetails', 'adminSetClubIndexStatus', 'adminOrganizerSearchBackfill'],
+    enumValues: <String>['adminUpdateClubDetails', 'adminSetClubIndexStatus', 'adminOrganizerSearchBackfill', 'adminCreateOrganizerDraftFromCandidate'],
   );
 
   static const clubDocumentAppVisibility = CatchContractFieldConstraints(
@@ -16575,7 +16690,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerDocument.adminSearch.updatedBySource',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['adminUpdateClubDetails', 'adminSetClubIndexStatus', 'adminOrganizerSearchBackfill'],
+    enumValues: <String>['adminCreateOrganizerDraftFromCandidate', 'adminUpdateClubDetails', 'adminSetClubIndexStatus', 'adminOrganizerSearchBackfill'],
   );
 
   static const organizerDocumentAppVisibility = CatchContractFieldConstraints(
@@ -18461,7 +18576,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerIntakeCurationDecisionDocument.operationType',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['attach_surface', 'merge_entity', 'split_surface', 'suppress_entity', 'surface_decision'],
+    enumValues: <String>['attach_surface', 'create_entity_draft', 'merge_entity', 'split_surface', 'suppress_entity', 'surface_decision'],
   );
 
   static const organizerIntakeCurationDecisionDocumentReason = CatchContractFieldConstraints(
@@ -18514,6 +18629,23 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const organizerIntakeCurationDecisionDocumentSourceNormalizedKey = CatchContractFieldConstraints(
+    path: 'organizerIntakeCurationDecisionDocument.sourceNormalizedKey',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerIntakeCurationDecisionDocumentSourceWorkItemId = CatchContractFieldConstraints(
+    path: 'organizerIntakeCurationDecisionDocument.sourceWorkItemId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
   static const organizerIntakeCurationDecisionDocumentSurfaceConfidenceCity = CatchContractFieldConstraints(
@@ -20144,7 +20276,7 @@ abstract final class CatchContractConstraints {
     path: 'publicRouteReservationDocument.lastVerifiedSource',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['adminUpdateClubDetails', 'adminSetClubIndexStatus', 'adminUpdateOrganizerDetails', 'adminSetOrganizerIndexStatus', 'clubsToOrganizersMigration'],
+    enumValues: <String>['adminUpdateClubDetails', 'adminSetClubIndexStatus', 'adminUpdateOrganizerDetails', 'adminSetOrganizerIndexStatus', 'adminCreateOrganizerDraftFromCandidate', 'clubsToOrganizersMigration'],
   );
 
   static const publicRouteReservationDocumentOwnerCollection = CatchContractFieldConstraints(
@@ -26107,6 +26239,23 @@ abstract final class CatchContractConstraints {
     'adminCreateMarketingContentDraftCallableResponse.bridge': adminCreateMarketingContentDraftCallableResponseBridge,
     'adminCreateMarketingContentDraftCallableResponse.dashboardPath': adminCreateMarketingContentDraftCallableResponseDashboardPath,
     'adminCreateMarketingContentDraftCallableResponse.draft': adminCreateMarketingContentDraftCallableResponseDraft,
+    'adminCreateOrganizerDraftFromCandidateCallablePayload.candidateId': adminCreateOrganizerDraftFromCandidateCallablePayloadCandidateId,
+    'adminCreateOrganizerDraftFromCandidateCallablePayload.description': adminCreateOrganizerDraftFromCandidateCallablePayloadDescription,
+    'adminCreateOrganizerDraftFromCandidateCallablePayload.name': adminCreateOrganizerDraftFromCandidateCallablePayloadName,
+    'adminCreateOrganizerDraftFromCandidateCallablePayload.organizerId': adminCreateOrganizerDraftFromCandidateCallablePayloadOrganizerId,
+    'adminCreateOrganizerDraftFromCandidateCallablePayload.organizerType': adminCreateOrganizerDraftFromCandidateCallablePayloadOrganizerType,
+    'adminCreateOrganizerDraftFromCandidateCallablePayload.reviewNote': adminCreateOrganizerDraftFromCandidateCallablePayloadReviewNote,
+    'adminCreateOrganizerDraftFromCandidateCallablePayload.workItemId': adminCreateOrganizerDraftFromCandidateCallablePayloadWorkItemId,
+    'adminCreateOrganizerDraftFromCandidateCallableResponse.appVisibility': adminCreateOrganizerDraftFromCandidateCallableResponseAppVisibility,
+    'adminCreateOrganizerDraftFromCandidateCallableResponse.claimState': adminCreateOrganizerDraftFromCandidateCallableResponseClaimState,
+    'adminCreateOrganizerDraftFromCandidateCallableResponse.crawlStatus': adminCreateOrganizerDraftFromCandidateCallableResponseCrawlStatus,
+    'adminCreateOrganizerDraftFromCandidateCallableResponse.created': adminCreateOrganizerDraftFromCandidateCallableResponseCreated,
+    'adminCreateOrganizerDraftFromCandidateCallableResponse.curationPath': adminCreateOrganizerDraftFromCandidateCallableResponseCurationPath,
+    'adminCreateOrganizerDraftFromCandidateCallableResponse.indexStatus': adminCreateOrganizerDraftFromCandidateCallableResponseIndexStatus,
+    'adminCreateOrganizerDraftFromCandidateCallableResponse.organizerId': adminCreateOrganizerDraftFromCandidateCallableResponseOrganizerId,
+    'adminCreateOrganizerDraftFromCandidateCallableResponse.organizerPath': adminCreateOrganizerDraftFromCandidateCallableResponseOrganizerPath,
+    'adminCreateOrganizerDraftFromCandidateCallableResponse.ownershipState': adminCreateOrganizerDraftFromCandidateCallableResponseOwnershipState,
+    'adminCreateOrganizerDraftFromCandidateCallableResponse.publishStatus': adminCreateOrganizerDraftFromCandidateCallableResponsePublishStatus,
     'adminDecideAccessApplicationCallablePayload.applicationUid': adminDecideAccessApplicationCallablePayloadApplicationUid,
     'adminDecideAccessApplicationCallablePayload.cohortId': adminDecideAccessApplicationCallablePayloadCohortId,
     'adminDecideAccessApplicationCallablePayload.decision': adminDecideAccessApplicationCallablePayloadDecision,
@@ -28616,6 +28765,8 @@ abstract final class CatchContractConstraints {
     'organizerIntakeCurationDecisionDocument.schemaVersion': organizerIntakeCurationDecisionDocumentSchemaVersion,
     'organizerIntakeCurationDecisionDocument.sourceCandidateId': organizerIntakeCurationDecisionDocumentSourceCandidateId,
     'organizerIntakeCurationDecisionDocument.sourceEntityId': organizerIntakeCurationDecisionDocumentSourceEntityId,
+    'organizerIntakeCurationDecisionDocument.sourceNormalizedKey': organizerIntakeCurationDecisionDocumentSourceNormalizedKey,
+    'organizerIntakeCurationDecisionDocument.sourceWorkItemId': organizerIntakeCurationDecisionDocumentSourceWorkItemId,
     'organizerIntakeCurationDecisionDocument.surface.confidence.city': organizerIntakeCurationDecisionDocumentSurfaceConfidenceCity,
     'organizerIntakeCurationDecisionDocument.surface.confidence.entityMatch': organizerIntakeCurationDecisionDocumentSurfaceConfidenceEntityMatch,
     'organizerIntakeCurationDecisionDocument.surface.confidence.ownership': organizerIntakeCurationDecisionDocumentSurfaceConfidenceOwnership,

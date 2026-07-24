@@ -53,6 +53,8 @@ export const adminQueryKeys = {
   },
   organizerIntake: {
     bridge: () => [...adminQueryKeys.all, "organizer-intake", "bridge"] as const,
+    createDraft: () =>
+      [...adminQueryKeys.all, "organizer-intake", "create-draft"] as const,
     curation: () => [...adminQueryKeys.all, "organizer-intake", "curation"] as const,
     decision: () => [...adminQueryKeys.all, "organizer-intake", "decision"] as const,
     eventDecision: () =>

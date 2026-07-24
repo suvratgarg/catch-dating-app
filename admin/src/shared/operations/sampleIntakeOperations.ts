@@ -136,6 +136,7 @@ export function sampleIntakeOperations(
     },
     runs,
     workItems,
+    organizerDraftLinks: [],
     nextRunCursor: null,
     nextWorkItemCursor: null,
   };
@@ -191,6 +192,7 @@ function sampleOrganizerOperations(
     },
     runs,
     workItems,
+    organizerDraftLinks: [],
     nextRunCursor: null,
     nextWorkItemCursor: null,
   };

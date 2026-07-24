@@ -2764,19 +2764,37 @@ th {
 .intake-review-workbench {
   display: grid;
   grid-template-columns: minmax(300px, 355px) minmax(0, 1fr);
-  min-height: 430px;
-  max-height: min(620px, calc(100vh - 330px));
+  height: clamp(430px, calc(100dvh - 330px), 620px);
+  min-height: 0;
   gap: 10px;
   margin-bottom: 16px;
 }
 
 .intake-review-queue,
 .intake-review-detail {
+  min-height: 0;
   min-width: 0;
-  overflow: auto;
   border: 1px solid var(--line);
   border-radius: 9px;
   background: var(--surface);
+}
+
+.intake-review-queue {
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+}
+
+.intake-review-detail,
+.intake-review-queue-items {
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.intake-review-queue-items {
+  min-height: 0;
+  flex: 1 1 auto;
+  scrollbar-gutter: stable;
 }
 
 .intake-review-queue > header {
@@ -3989,6 +4007,7 @@ th {
   }
 
   .intake-review-workbench {
+    height: auto;
     max-height: none;
   }
 

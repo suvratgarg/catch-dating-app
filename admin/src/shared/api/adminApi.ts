@@ -66,6 +66,8 @@ import {
   AdminDecideOrganizerPolicyGapResponse,
   AdminRecordOrganizerCurationPayload,
   AdminRecordOrganizerCurationResponse,
+  AdminCreateOrganizerDraftFromCandidatePayload,
+  AdminCreateOrganizerDraftFromCandidateResponse,
   AdminRecordEventIntakeReviewDecisionPayload,
   AdminRecordEventIntakeReviewDecisionResponse,
   AdminPublishExternalEventPayload,
@@ -1314,6 +1316,34 @@ export async function decideOrganizerIntake(
     AdminDecideOrganizerIntakePayload,
     AdminDecideOrganizerIntakeResponse
   >(functions, "adminDecideOrganizerIntake");
+  const result = await callable(payload);
+  return result.data;
+}
+
+export async function createOrganizerDraftFromCandidate(
+  payload: AdminCreateOrganizerDraftFromCandidatePayload
+): Promise<AdminCreateOrganizerDraftFromCandidateResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 240));
+    return {
+      organizerId: payload.organizerId,
+      organizerPath: `organizers/${payload.organizerId}`,
+      curationPath:
+        `organizerIntakeCurationDecisions/sample-${payload.candidateId}`,
+      created: true,
+      appVisibility: "hidden",
+      ownershipState: "programmatic",
+      claimState: "unclaimed",
+      publishStatus: "draft",
+      indexStatus: "noindex",
+      crawlStatus: "disabled",
+    };
+  }
+
+  const callable = httpsCallable<
+    AdminCreateOrganizerDraftFromCandidatePayload,
+    AdminCreateOrganizerDraftFromCandidateResponse
+  >(functions, "adminCreateOrganizerDraftFromCandidate");
   const result = await callable(payload);
   return result.data;
 }

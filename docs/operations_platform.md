@@ -367,6 +367,13 @@ inventory-hash-bound run and emits only a hash-bound, non-applicable review
 receipt with `applyAllowed: false`. It cannot publish or mutate an event,
 organizer, website, or app record.
 
+Organizer draft creation is deliberately outside `promote`. The reviewed
+Admin action `adminCreateOrganizerDraftFromCandidate` re-reads the exact
+organizer work item and may create only a hidden, unclaimed, source-backed
+canonical draft. Its deterministic curation receipt is the durable join back
+to the Intake Ready stage; publication, indexing, crawling, app visibility,
+and ownership remain separate governed operations.
+
 Eligibility is evaluated only from the source-publication policy frozen into
 the run plan. The promotion receipt includes that complete policy snapshot and
 its `promotionPolicyHash`, so later edits to a live source profile cannot change

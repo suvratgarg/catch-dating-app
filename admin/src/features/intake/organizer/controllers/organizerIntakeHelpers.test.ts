@@ -3,6 +3,8 @@ import type * as Intake from "../types/organizerIntakeTypes";
 import {
   curationPayloadForItem,
   intakeChecklistForDecision,
+  organizerDraftFormFromCandidate,
+  organizerDraftPayloadForCandidate,
   organizerIntakeDecisionFromString,
   organizerPolicyGapDecisionFromString,
   publicationPacketReady,
@@ -85,5 +87,31 @@ describe("organizer intake helpers", () => {
         crawlDisabledReviewed: true,
       },
     } as unknown as Intake.OrganizerPublicationReviewPacket)).toBe(true);
+  });
+
+  it("builds a strict organizer draft request from a reviewed candidate", () => {
+    const candidate = {
+      workItemId: "work-courtside",
+      candidateId: "candidate-courtside",
+      title: "Courtside Mumbai",
+      platform: "officialWebsite",
+      snippet: "Racket sports and social events.",
+    } as Intake.OrganizerSearchCandidate;
+    const form = organizerDraftFormFromCandidate(candidate);
+
+    expect(form.organizerId).toBe("courtside-mumbai");
+    expect(organizerDraftPayloadForCandidate(candidate, form)).toEqual({
+      ok: true,
+      value: {
+        workItemId: "work-courtside",
+        candidateId: "candidate-courtside",
+        organizerId: "courtside-mumbai",
+        name: "Courtside Mumbai",
+        description: "Racket sports and social events.",
+        organizerType: "community",
+        reviewNote:
+          "Create an unclaimed draft from reviewed candidate candidate-courtside.",
+      },
+    });
   });
 });

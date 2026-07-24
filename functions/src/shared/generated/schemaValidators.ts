@@ -203,6 +203,8 @@ import {AdminDecideSafetyTriageItemCallablePayload} from "./adminDecideSafetyTri
 import {AdminDecideSafetyTriageItemCallableResponse} from "./adminDecideSafetyTriageItemCallableResponse";
 import {AdminAssignSafetyTriageItemCallablePayload} from "./adminAssignSafetyTriageItemCallablePayload";
 import {AdminAssignSafetyTriageItemCallableResponse} from "./adminAssignSafetyTriageItemCallableResponse";
+import {AdminCreateOrganizerDraftFromCandidateCallablePayload} from "./adminCreateOrganizerDraftFromCandidateCallablePayload";
+import {AdminCreateOrganizerDraftFromCandidateCallableResponse} from "./adminCreateOrganizerDraftFromCandidateCallableResponse";
 import {AdminCreateMarketingContentDraftCallablePayload} from "./adminCreateMarketingContentDraftCallablePayload";
 import {AdminCreateMarketingContentDraftCallableResponse} from "./adminCreateMarketingContentDraftCallableResponse";
 import {AdminRecordMarketingReviewDecisionCallablePayload} from "./adminRecordMarketingReviewDecisionCallablePayload";
@@ -409,6 +411,8 @@ import {
   adminDecideSafetyTriageItemCallableResponseSchema,
   adminAssignSafetyTriageItemCallablePayloadSchema,
   adminAssignSafetyTriageItemCallableResponseSchema,
+  adminCreateOrganizerDraftFromCandidateCallablePayloadSchema,
+  adminCreateOrganizerDraftFromCandidateCallableResponseSchema,
   adminCreateMarketingContentDraftCallablePayloadSchema,
   adminCreateMarketingContentDraftCallableResponseSchema,
   adminRecordMarketingReviewDecisionCallablePayloadSchema,
@@ -1216,6 +1220,14 @@ export const validateAdminAssignSafetyTriageItemCallableResponse:
   ValidateFunction<AdminAssignSafetyTriageItemCallableResponse> =
     ajv.compile(adminAssignSafetyTriageItemCallableResponseSchema) as
       ValidateFunction<AdminAssignSafetyTriageItemCallableResponse>;
+export const validateAdminCreateOrganizerDraftFromCandidateCallablePayload:
+  ValidateFunction<AdminCreateOrganizerDraftFromCandidateCallablePayload> =
+    ajv.compile(adminCreateOrganizerDraftFromCandidateCallablePayloadSchema) as
+      ValidateFunction<AdminCreateOrganizerDraftFromCandidateCallablePayload>;
+export const validateAdminCreateOrganizerDraftFromCandidateCallableResponse:
+  ValidateFunction<AdminCreateOrganizerDraftFromCandidateCallableResponse> =
+    ajv.compile(adminCreateOrganizerDraftFromCandidateCallableResponseSchema) as
+      ValidateFunction<AdminCreateOrganizerDraftFromCandidateCallableResponse>;
 export const validateAdminCreateMarketingContentDraftCallablePayload:
   ValidateFunction<AdminCreateMarketingContentDraftCallablePayload> =
     ajv.compile(adminCreateMarketingContentDraftCallablePayloadSchema) as

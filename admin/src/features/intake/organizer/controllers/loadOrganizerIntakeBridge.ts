@@ -6,6 +6,7 @@ import type {
   AdminListIntakeOperationsResponse,
   OperationRun,
   OperationWorkItem,
+  OrganizerDraftLink,
 } from "../../../../shared/operations/operationsTypes";
 import type * as Intake from "../types/organizerIntakeTypes";
 
@@ -36,7 +37,12 @@ Promise<OrganizerIntakeLoadResult> {
   const runs = latestRunPerLaunchMarket(inventory.runs);
   const pages = await Promise.all(runs.map(loadOrganizerRun));
   const workItems = pages.flatMap((page) => page.workItems);
-  const workbench = organizerWorkbenchFromOperations(inventory, workItems);
+  const draftLinks = pages.flatMap((page) => page.organizerDraftLinks);
+  const workbench = organizerWorkbenchFromOperations(
+    inventory,
+    workItems,
+    draftLinks
+  );
   return {
     source: inventory.source === "firestore" ? "firestore" : "sample",
     diagnosticsBridge: null,
@@ -46,9 +52,15 @@ Promise<OrganizerIntakeLoadResult> {
 
 export function organizerWorkbenchFromOperations(
   inventory: AdminListIntakeOperationsResponse,
-  workItems: OperationWorkItem[]
+  workItems: OperationWorkItem[],
+  organizerDraftLinks: OrganizerDraftLink[] = inventory.organizerDraftLinks
 ): OrganizerIntakeWorkbenchBridge {
-  const candidates = workItems.flatMap(organizerCandidateFromWorkItem);
+  const draftLinkByWorkItem = new Map(organizerDraftLinks.map((link) => [
+    link.workItemId,
+    link,
+  ]));
+  const candidates = workItems.flatMap((item) =>
+    organizerCandidateFromWorkItem(item, draftLinkByWorkItem));
   const duplicateKeys = duplicateCandidateKeys(candidates);
   return {
     schemaVersion: 1,
@@ -126,6 +138,10 @@ async function loadOrganizerRun(
     item.workItemId,
     item,
   ]));
+  const organizerDraftLinks = new Map(page.organizerDraftLinks.map((link) => [
+    link.workItemId,
+    link,
+  ]));
   const cursors = new Set<string>();
   while (page.nextWorkItemCursor) {
     if (cursors.has(page.nextWorkItemCursor)) {
@@ -145,12 +161,20 @@ async function loadOrganizerRun(
     for (const item of page.workItems) {
       workItems.set(item.workItemId, item);
     }
+    for (const link of page.organizerDraftLinks) {
+      organizerDraftLinks.set(link.workItemId, link);
+    }
   }
-  return {...page, workItems: Array.from(workItems.values())};
+  return {
+    ...page,
+    workItems: Array.from(workItems.values()),
+    organizerDraftLinks: Array.from(organizerDraftLinks.values()),
+  };
 }
 
 function organizerCandidateFromWorkItem(
-  item: OperationWorkItem
+  item: OperationWorkItem,
+  draftLinkByWorkItem: Map<string, OrganizerDraftLink>
 ): Intake.OrganizerSearchCandidate[] {
   const intake = recordValue(item.normalizedPayload.intake);
   if (intake?.recordType !== "organizer_search_candidate") return [];
@@ -160,7 +184,15 @@ function organizerCandidateFromWorkItem(
       `Organizer work item ${item.workItemId} has an invalid candidate projection.`
     );
   }
-  return [candidate as unknown as Intake.OrganizerSearchCandidate];
+  const draftLink = draftLinkByWorkItem.get(item.workItemId);
+  return [{
+    ...(candidate as unknown as Omit<
+      Intake.OrganizerSearchCandidate,
+      "workItemId" | "draftLink"
+    >),
+    workItemId: item.workItemId,
+    ...(draftLink ? {draftLink} : {}),
+  }];
 }
 
 function isOrganizerCandidate(

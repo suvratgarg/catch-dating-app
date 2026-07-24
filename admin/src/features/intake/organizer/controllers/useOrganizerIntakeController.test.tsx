@@ -19,4 +19,37 @@ describe("useOrganizerIntakeController", () => {
     act(() => result.current.setDecisionNotes({"organizer-1": "Reviewed evidence."}));
     expect(result.current.decisionNotes["organizer-1"]).toBe("Reviewed evidence.");
   });
+
+  it("creates a hidden organizer draft then opens its publishing workspace",
+    async () => {
+      const {wrapper} = createQueryHarness();
+      const onOrganizerDraftCreated = vi.fn();
+      const {result} = renderHook(() => useOrganizerIntakeController({
+        onError: vi.fn(),
+        onNotice: vi.fn(),
+        onOrganizerDraftCreated,
+      }), {wrapper});
+
+      await waitFor(() =>
+        expect(result.current.bridge.searchCandidates.candidates).toHaveLength(2)
+      );
+      const candidate = result.current.bridge.searchCandidates.candidates
+        .find((entry) => entry.existingEntityMatches.length === 0);
+      expect(candidate).toBeTruthy();
+      if (!candidate) throw new Error("Expected a net-new organizer candidate.");
+      await act(async () => {
+        await result.current.handleCreateOrganizerDraft(candidate);
+      });
+
+      expect(result.current.localOrganizerDrafts[candidate.candidateId])
+        .toMatchObject({
+          organizerId: "small-world",
+          appVisibility: "hidden",
+          claimState: "unclaimed",
+          publishStatus: "draft",
+          indexStatus: "noindex",
+          crawlStatus: "disabled",
+        });
+      expect(onOrganizerDraftCreated).toHaveBeenCalledWith("small-world");
+    });
 });

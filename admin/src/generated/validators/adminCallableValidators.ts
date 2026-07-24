@@ -6,6 +6,7 @@ const model = {
   "names": [
     "adminAssignSafetyTriageItem",
     "adminCreateMarketingContentDraft",
+    "adminCreateOrganizerDraftFromCandidate",
     "adminDecideAccessApplication",
     "adminDecideClubClaim",
     "adminDecideOrganizerEventCandidate",
@@ -144,74 +145,207 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_decide_access_application_payload.schema.json",
-      "title": "Admin Decide Access Application Callable Payload",
+      "$id": "https://catch.app/contracts/callables/admin_create_organizer_draft_from_candidate_payload.schema.json",
+      "title": "AdminCreateOrganizerDraftFromCandidateCallablePayload",
+      "description": "Creates one unclaimed, source-backed organizer draft from an exact reviewed Supply Intake work item. The callable cannot publish, index, expose in the app, enable crawling, or assign ownership.",
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "applicationUid",
-        "decision",
-        "note"
+        "workItemId",
+        "candidateId",
+        "organizerId",
+        "name",
+        "description",
+        "organizerType",
+        "reviewNote"
       ],
       "properties": {
-        "applicationUid": {
-          "type": "string",
-          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        "workItemId": {
+          "$ref": "../operations/common.schema.json#/definitions/id"
         },
-        "decision": {
-          "type": "string",
-          "enum": [
-            "approve",
-            "deny"
-          ]
-        },
-        "note": {
+        "candidateId": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 1000
+          "maxLength": 240
         },
-        "cohortId": {
-          "anyOf": [
-            {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 120
-            },
-            {
-              "type": "null"
-            }
-          ]
+        "organizerId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 64,
+          "pattern": "^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "organizerType": {
+          "$ref": "../shared/event_common.schema.json#/definitions/organizerType"
+        },
+        "reviewNote": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 500
         }
       }
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_decide_club_claim_payload.schema.json",
-      "title": "AdminDecideClubClaimCallablePayload",
-      "description": "Callable payload accepted by adminDecideClubClaim.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "requestId",
-        "decision"
-      ],
-      "properties": {
-        "requestId": {
-          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-        },
-        "decision": {
+      "$id": "https://catch.app/contracts/operations/common.schema.json",
+      "title": "OperationsCommonDefinitions",
+      "definitions": {
+        "id": {
           "type": "string",
-          "enum": [
-            "approve",
-            "reject"
-          ]
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
         },
-        "decisionReason": {
+        "workflowId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[a-z][a-z0-9_-]*$"
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[a-z][a-z0-9_.:-]*$"
+        },
+        "isoDateTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "nullableIsoDateTime": {
           "type": [
             "string",
             "null"
           ],
-          "maxLength": 1000
+          "format": "date-time"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "actor": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "actorType",
+            "actorId"
+          ],
+          "properties": {
+            "actorType": {
+              "type": "string",
+              "enum": [
+                "human",
+                "agent",
+                "system"
+              ]
+            },
+            "actorId": {
+              "$ref": "#/definitions/id"
+            }
+          }
+        },
+        "evidenceRef": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "artifactId",
+            "contentHash",
+            "observedAt",
+            "locator"
+          ],
+          "properties": {
+            "artifactId": {
+              "$ref": "#/definitions/id"
+            },
+            "contentHash": {
+              "$ref": "#/definitions/sha256"
+            },
+            "observedAt": {
+              "$ref": "#/definitions/isoDateTime"
+            },
+            "locator": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            }
+          }
+        },
+        "failure": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "code",
+            "message",
+            "retryable"
+          ],
+          "properties": {
+            "code": {
+              "$ref": "#/definitions/code"
+            },
+            "message": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "retryable": {
+              "type": "boolean"
+            }
+          }
+        },
+        "metricSet": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "fieldExactness",
+            "eventPrecision",
+            "duplicatePrecision",
+            "duplicateRecall",
+            "correctionRate",
+            "escalationRate"
+          ],
+          "properties": {
+            "fieldExactness": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "eventPrecision": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "duplicatePrecision": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "duplicateRecall": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "correctionRate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "escalationRate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
         }
       }
     },
@@ -1541,6 +1675,79 @@ const model = {
         "paceSecsPerKm": {
           "type": "integer",
           "minimum": 1
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_decide_access_application_payload.schema.json",
+      "title": "Admin Decide Access Application Callable Payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applicationUid",
+        "decision",
+        "note"
+      ],
+      "properties": {
+        "applicationUid": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "approve",
+            "deny"
+          ]
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "cohortId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_decide_club_claim_payload.schema.json",
+      "title": "AdminDecideClubClaimCallablePayload",
+      "description": "Callable payload accepted by adminDecideClubClaim.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "decision"
+      ],
+      "properties": {
+        "requestId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "approve",
+            "reject"
+          ]
+        },
+        "decisionReason": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
         }
       }
     },
@@ -3634,6 +3841,61 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_create_organizer_draft_from_candidate_response.schema.json",
+      "title": "AdminCreateOrganizerDraftFromCandidateCallableResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "organizerPath",
+        "curationPath",
+        "created",
+        "appVisibility",
+        "ownershipState",
+        "claimState",
+        "publishStatus",
+        "indexStatus",
+        "crawlStatus"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 64
+        },
+        "organizerPath": {
+          "type": "string",
+          "pattern": "^organizers/[^/]+$"
+        },
+        "curationPath": {
+          "type": "string",
+          "pattern": "^organizerIntakeCurationDecisions/[^/]+$"
+        },
+        "created": {
+          "type": "boolean"
+        },
+        "appVisibility": {
+          "const": "hidden"
+        },
+        "ownershipState": {
+          "const": "programmatic"
+        },
+        "claimState": {
+          "const": "unclaimed"
+        },
+        "publishStatus": {
+          "const": "draft"
+        },
+        "indexStatus": {
+          "const": "noindex"
+        },
+        "crawlStatus": {
+          "const": "disabled"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/callable_responses/admin_decide_access_application_response.schema.json",
       "title": "Admin Decide Access Application Callable Response",
       "type": "object",
@@ -4082,6 +4344,7 @@ const model = {
         "summary",
         "runs",
         "workItems",
+        "organizerDraftLinks",
         "nextRunCursor",
         "nextWorkItemCursor"
       ],
@@ -4225,6 +4488,43 @@ const model = {
                 }
               }
             ]
+          }
+        },
+        "organizerDraftLinks": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "workItemId",
+              "candidateId",
+              "organizerId",
+              "curationPath"
+            ],
+            "properties": {
+              "workItemId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "candidateId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "organizerId": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 64,
+                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+              },
+              "curationPath": {
+                "type": "string",
+                "pattern": "^organizerIntakeCurationDecisions/[A-Za-z0-9_-]+$",
+                "maxLength": 300
+              }
+            }
           }
         },
         "nextRunCursor": {
@@ -4451,161 +4751,6 @@ const model = {
           "type": "object",
           "additionalProperties": true,
           "maxProperties": 40
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/operations/common.schema.json",
-      "title": "OperationsCommonDefinitions",
-      "definitions": {
-        "id": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-        },
-        "workflowId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 120,
-          "pattern": "^[a-z][a-z0-9_-]*$"
-        },
-        "code": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 120,
-          "pattern": "^[a-z][a-z0-9_.:-]*$"
-        },
-        "isoDateTime": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "nullableIsoDateTime": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        },
-        "sha256": {
-          "type": "string",
-          "pattern": "^[a-f0-9]{64}$"
-        },
-        "actor": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "actorType",
-            "actorId"
-          ],
-          "properties": {
-            "actorType": {
-              "type": "string",
-              "enum": [
-                "human",
-                "agent",
-                "system"
-              ]
-            },
-            "actorId": {
-              "$ref": "#/definitions/id"
-            }
-          }
-        },
-        "evidenceRef": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "artifactId",
-            "contentHash",
-            "observedAt",
-            "locator"
-          ],
-          "properties": {
-            "artifactId": {
-              "$ref": "#/definitions/id"
-            },
-            "contentHash": {
-              "$ref": "#/definitions/sha256"
-            },
-            "observedAt": {
-              "$ref": "#/definitions/isoDateTime"
-            },
-            "locator": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 1000
-            }
-          }
-        },
-        "failure": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "code",
-            "message",
-            "retryable"
-          ],
-          "properties": {
-            "code": {
-              "$ref": "#/definitions/code"
-            },
-            "message": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 2000
-            },
-            "retryable": {
-              "type": "boolean"
-            }
-          }
-        },
-        "metricSet": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "fieldExactness",
-            "eventPrecision",
-            "duplicatePrecision",
-            "duplicateRecall",
-            "correctionRate",
-            "escalationRate"
-          ],
-          "properties": {
-            "fieldExactness": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1
-            },
-            "eventPrecision": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1
-            },
-            "duplicatePrecision": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1
-            },
-            "duplicateRecall": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1
-            },
-            "correctionRate": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1
-            },
-            "escalationRate": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1
-            }
-          }
         }
       }
     },
@@ -6074,6 +6219,7 @@ const model = {
   "requestSchemaIds": {
     "adminAssignSafetyTriageItem": "https://catch.app/contracts/callables/admin_assign_safety_triage_item_payload.schema.json",
     "adminCreateMarketingContentDraft": "https://catch.app/contracts/callables/admin_create_marketing_content_draft_payload.schema.json",
+    "adminCreateOrganizerDraftFromCandidate": "https://catch.app/contracts/callables/admin_create_organizer_draft_from_candidate_payload.schema.json",
     "adminDecideAccessApplication": "https://catch.app/contracts/callables/admin_decide_access_application_payload.schema.json",
     "adminDecideClubClaim": "https://catch.app/contracts/callables/admin_decide_club_claim_payload.schema.json",
     "adminDecideOrganizerEventCandidate": "https://catch.app/contracts/callables/admin_decide_organizer_event_candidate_payload.schema.json",
@@ -6112,6 +6258,7 @@ const model = {
   "responseSchemaIds": {
     "adminAssignSafetyTriageItem": "https://catch.app/contracts/callable_responses/admin_assign_safety_triage_item_response.schema.json",
     "adminCreateMarketingContentDraft": "https://catch.app/contracts/callable_responses/admin_create_marketing_content_draft_response.schema.json",
+    "adminCreateOrganizerDraftFromCandidate": "https://catch.app/contracts/callable_responses/admin_create_organizer_draft_from_candidate_response.schema.json",
     "adminDecideAccessApplication": "https://catch.app/contracts/callable_responses/admin_decide_access_application_response.schema.json",
     "adminDecideClubClaim": "https://catch.app/contracts/admin_runtime/adminDecideClubClaim_response.schema.json",
     "adminDecideOrganizerEventCandidate": "https://catch.app/contracts/admin_runtime/adminDecideOrganizerEventCandidate_response.schema.json",
@@ -6150,6 +6297,7 @@ const model = {
   "strictRequests": [
     "adminAssignSafetyTriageItem",
     "adminCreateMarketingContentDraft",
+    "adminCreateOrganizerDraftFromCandidate",
     "adminDecideAccessApplication",
     "adminDecideClubClaim",
     "adminDecideOrganizerEventCandidate",
@@ -6188,6 +6336,7 @@ const model = {
   "strictResponses": [
     "adminAssignSafetyTriageItem",
     "adminCreateMarketingContentDraft",
+    "adminCreateOrganizerDraftFromCandidate",
     "adminDecideAccessApplication",
     "adminDecideSafetyTriageItem",
     "adminGetHostAnalytics",

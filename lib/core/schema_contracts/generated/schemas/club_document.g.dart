@@ -1844,6 +1844,7 @@ const schemaClubDocumentSchema = <String, Object?>{
             'adminUpdateClubDetails',
             'adminSetClubIndexStatus',
             'adminOrganizerSearchBackfill',
+            'adminCreateOrganizerDraftFromCandidate',
           ],
         },
       },

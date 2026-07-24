@@ -431,6 +431,15 @@ search candidates therefore come from `operationRuns` and
 records; no operational JSON snapshot is retained or packaged. The browser
 does not upload a generated file or reconstruct a queue from repository state.
 
+For a reviewed candidate with no existing-entity match, the detail pane exposes
+a bounded organizer name, slug, type, description, and review-note form.
+`adminCreateOrganizerDraftFromCandidate` creates only the fail-closed canonical
+draft, then the route opens `/organizers/{organizerId}` for the separately
+governed publishing workflow. Intake reloads the callable-projected curation
+receipt and keeps that candidate in Ready. The candidate queue and detail pane
+scroll independently inside a viewport-bounded workbench so a 25-candidate
+market does not stretch the entire Admin page.
+
 ## Admin Agent Activity Monitor
 
 `/operations` is the read-only employee monitor for catalogued CLI/agent

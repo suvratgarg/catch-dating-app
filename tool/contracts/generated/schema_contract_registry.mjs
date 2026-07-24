@@ -5695,7 +5695,8 @@ export const clubDocumentSchema = {
           "enum": [
             "adminUpdateClubDetails",
             "adminSetClubIndexStatus",
-            "adminOrganizerSearchBackfill"
+            "adminOrganizerSearchBackfill",
+            "adminCreateOrganizerDraftFromCandidate"
           ]
         }
       },
@@ -7988,6 +7989,7 @@ export const organizerDocumentSchema = {
         "updatedBySource": {
           "type": "string",
           "enum": [
+            "adminCreateOrganizerDraftFromCandidate",
             "adminUpdateClubDetails",
             "adminSetClubIndexStatus",
             "adminOrganizerSearchBackfill"
@@ -18266,6 +18268,7 @@ export const publicRouteReservationDocumentSchema = {
         "adminSetClubIndexStatus",
         "adminUpdateOrganizerDetails",
         "adminSetOrganizerIndexStatus",
+        "adminCreateOrganizerDraftFromCandidate",
         "clubsToOrganizersMigration"
       ],
       "x-catch-ownership": "server-only"
@@ -18794,7 +18797,7 @@ export const organizerIntakeCurationDecisionDocumentSchema = {
   "x-firestore-collection": "organizerIntakeCurationDecisions",
   "x-firestore-path": "organizerIntakeCurationDecisions/{operationId}",
   "x-document-id-field": "operationId",
-  "x-owner": "adminRecordOrganizerCuration callable",
+  "x-owner": "adminRecordOrganizerCuration and adminCreateOrganizerDraftFromCandidate callables",
   "required": [
     "schemaVersion",
     "operationId",
@@ -18819,6 +18822,7 @@ export const organizerIntakeCurationDecisionDocumentSchema = {
       "type": "string",
       "enum": [
         "attach_surface",
+        "create_entity_draft",
         "merge_entity",
         "split_surface",
         "suppress_entity",
@@ -18861,6 +18865,17 @@ export const organizerIntakeCurationDecisionDocumentSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 240
+    },
+    "sourceWorkItemId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "sourceNormalizedKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
     },
     "decision": {
       "type": "string",
@@ -36707,6 +36722,126 @@ export const adminAssignSafetyTriageItemCallableResponseSchema = {
           ]
         }
       }
+    }
+  }
+};
+
+export const adminCreateOrganizerDraftFromCandidateCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_create_organizer_draft_from_candidate_payload.schema.json",
+  "title": "AdminCreateOrganizerDraftFromCandidateCallablePayload",
+  "description": "Creates one unclaimed, source-backed organizer draft from an exact reviewed Supply Intake work item. The callable cannot publish, index, expose in the app, enable crawling, or assign ownership.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "workItemId",
+    "candidateId",
+    "organizerId",
+    "name",
+    "description",
+    "organizerType",
+    "reviewNote"
+  ],
+  "properties": {
+    "workItemId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "candidateId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 64,
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "organizerType": {
+      "type": "string",
+      "enum": [
+        "club",
+        "community",
+        "individual",
+        "eventProducer",
+        "venue",
+        "brand"
+      ],
+      "description": "Canonical organizer classification. Club is one organizer subtype; missing legacy values normalize to club during migration."
+    },
+    "reviewNote": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 500
+    }
+  }
+};
+
+export const adminCreateOrganizerDraftFromCandidateCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_create_organizer_draft_from_candidate_response.schema.json",
+  "title": "AdminCreateOrganizerDraftFromCandidateCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "organizerPath",
+    "curationPath",
+    "created",
+    "appVisibility",
+    "ownershipState",
+    "claimState",
+    "publishStatus",
+    "indexStatus",
+    "crawlStatus"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 64
+    },
+    "organizerPath": {
+      "type": "string",
+      "pattern": "^organizers/[^/]+$"
+    },
+    "curationPath": {
+      "type": "string",
+      "pattern": "^organizerIntakeCurationDecisions/[^/]+$"
+    },
+    "created": {
+      "type": "boolean"
+    },
+    "appVisibility": {
+      "const": "hidden"
+    },
+    "ownershipState": {
+      "const": "programmatic"
+    },
+    "claimState": {
+      "const": "unclaimed"
+    },
+    "publishStatus": {
+      "const": "draft"
+    },
+    "indexStatus": {
+      "const": "noindex"
+    },
+    "crawlStatus": {
+      "const": "disabled"
     }
   }
 };

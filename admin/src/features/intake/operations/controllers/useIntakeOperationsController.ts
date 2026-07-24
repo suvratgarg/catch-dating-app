@@ -44,6 +44,10 @@ export async function loadCompleteIntakeOperations(
     item.workItemId,
     item,
   ]));
+  const organizerDraftLinks = new Map(first.organizerDraftLinks.map((link) => [
+    link.workItemId,
+    link,
+  ]));
   const seenCursors = new Set<string>();
   let cursor: string | null = first.nextWorkItemCursor;
   const pageLimit = Math.ceil(
@@ -68,6 +72,9 @@ export async function loadCompleteIntakeOperations(
     for (const item of page.workItems) {
       workItems.set(item.workItemId, item);
     }
+    for (const link of page.organizerDraftLinks) {
+      organizerDraftLinks.set(link.workItemId, link);
+    }
     cursor = page.nextWorkItemCursor;
     pageCount += 1;
   }
@@ -75,6 +82,7 @@ export async function loadCompleteIntakeOperations(
   const complete = {
     ...first,
     workItems: [...workItems.values()],
+    organizerDraftLinks: [...organizerDraftLinks.values()],
     nextWorkItemCursor: workItems.size === first.summary.workItemCount ?
       null : first.nextWorkItemCursor,
   };
@@ -102,7 +110,13 @@ export async function loadNextIntakeOperationsPage(
     item.workItemId,
     item,
   ]));
+  const organizerDraftLinks = new Map(
+    current.organizerDraftLinks.map((link) => [link.workItemId, link])
+  );
   for (const item of page.workItems) workItems.set(item.workItemId, item);
+  for (const link of page.organizerDraftLinks) {
+    organizerDraftLinks.set(link.workItemId, link);
+  }
   if (workItems.size > current.summary.workItemCount) {
     throw new Error(
       "Supply Intake pagination exceeded its persisted run summary."
@@ -120,6 +134,7 @@ export async function loadNextIntakeOperationsPage(
     ...current,
     generatedAt: page.generatedAt,
     workItems: [...workItems.values()],
+    organizerDraftLinks: [...organizerDraftLinks.values()],
     nextWorkItemCursor: workItems.size === current.summary.workItemCount ?
       null : page.nextWorkItemCursor,
   };

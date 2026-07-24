@@ -9,7 +9,7 @@ import {sampleOverview} from "../../shared/api/sampleData";
 
 describe("generated admin callable validators", () => {
   it("covers every callable used by adminApi", () => {
-    expect(adminCallableValidationCoverage.callables).toHaveLength(36);
+    expect(adminCallableValidationCoverage.callables).toHaveLength(37);
     expect(adminCallableValidationCoverage.strictRequests).toContain(
       "adminGetHostAnalytics"
     );
@@ -22,9 +22,10 @@ describe("generated admin callable validators", () => {
         "adminDecideSafetyTriageItem",
         "adminCreateMarketingContentDraft",
         "adminRecordMarketingReviewDecision",
+        "adminCreateOrganizerDraftFromCandidate",
       ])
     );
-    expect(adminCallableValidationCoverage.strictResponses).toHaveLength(11);
+    expect(adminCallableValidationCoverage.strictResponses).toHaveLength(12);
     expect(adminCallableValidationCoverage.strictResponses).toEqual(
       expect.arrayContaining([
         "adminGetOverview",
@@ -34,6 +35,7 @@ describe("generated admin callable validators", () => {
         "adminDecideSafetyTriageItem",
         "adminCreateMarketingContentDraft",
         "adminRecordMarketingReviewDecision",
+        "adminCreateOrganizerDraftFromCandidate",
       ])
     );
   });

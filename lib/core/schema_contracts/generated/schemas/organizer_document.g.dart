@@ -2032,6 +2032,7 @@ const schemaOrganizerDocumentSchema = <String, Object?>{
         'updatedBySource': <String, Object?>{
           'type': 'string',
           'enum': <Object?>[
+            'adminCreateOrganizerDraftFromCandidate',
             'adminUpdateClubDetails',
             'adminSetClubIndexStatus',
             'adminOrganizerSearchBackfill',

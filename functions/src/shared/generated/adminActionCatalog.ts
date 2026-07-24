@@ -142,6 +142,16 @@ export const ADMIN_ACTION_CATALOG = {
       "support"
     ]
   },
+  "organizer-intake.create-organizer-draft": {
+    "callable": "adminCreateOrganizerDraftFromCandidate",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support"
+    ]
+  },
   "organizer-intake.decide-publication": {
     "callable": "adminDecideOrganizerIntake",
     "controlPlane": false,

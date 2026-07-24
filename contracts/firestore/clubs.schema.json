@@ -573,7 +573,8 @@
           "enum": [
             "adminUpdateClubDetails",
             "adminSetClubIndexStatus",
-            "adminOrganizerSearchBackfill"
+            "adminOrganizerSearchBackfill",
+            "adminCreateOrganizerDraftFromCandidate"
           ]
         }
       },

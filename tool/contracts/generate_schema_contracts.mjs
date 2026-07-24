@@ -1254,6 +1254,32 @@ const schemaSpecs = [
     ],
   },
   {
+    name: "AdminCreateOrganizerDraftFromCandidateCallablePayload",
+    source:
+      "callables/" +
+      "admin_create_organizer_draft_from_candidate_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminCreateOrganizerDraftFromCandidateCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminCreateOrganizerDraftFromCandidateCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminCreateOrganizerDraftFromCandidateCallableResponse",
+    source:
+      "callable_responses/" +
+      "admin_create_organizer_draft_from_candidate_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminCreateOrganizerDraftFromCandidateCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminCreateOrganizerDraftFromCandidateCallableResponse.ts",
+    ],
+  },
+  {
     name: "AdminCreateMarketingContentDraftCallablePayload",
     source:
       "callables/admin_create_marketing_content_draft_payload.schema.json",

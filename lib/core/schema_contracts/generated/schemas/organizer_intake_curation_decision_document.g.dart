@@ -14,7 +14,7 @@ const schemaOrganizerIntakeCurationDecisionDocumentSchema = <String, Object?>{
   'x-firestore-collection': 'organizerIntakeCurationDecisions',
   'x-firestore-path': 'organizerIntakeCurationDecisions/{operationId}',
   'x-document-id-field': 'operationId',
-  'x-owner': 'adminRecordOrganizerCuration callable',
+  'x-owner': 'adminRecordOrganizerCuration and adminCreateOrganizerDraftFromCandidate callables',
   'required': <Object?>[
     'schemaVersion',
     'operationId',
@@ -39,6 +39,7 @@ const schemaOrganizerIntakeCurationDecisionDocumentSchema = <String, Object?>{
       'type': 'string',
       'enum': <Object?>[
         'attach_surface',
+        'create_entity_draft',
         'merge_entity',
         'split_surface',
         'suppress_entity',
@@ -81,6 +82,17 @@ const schemaOrganizerIntakeCurationDecisionDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 240,
+    },
+    'sourceWorkItemId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+    },
+    'sourceNormalizedKey': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 500,
     },
     'decision': <String, Object?>{
       'type': 'string',

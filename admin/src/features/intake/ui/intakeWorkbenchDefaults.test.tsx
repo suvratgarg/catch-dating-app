@@ -69,8 +69,15 @@ describe("Intake task-first defaults", () => {
       name: "Open source for Small World",
     })).toBeTruthy();
     expect(screen.getByText("Captured search context")).toBeTruthy();
+    expect(screen.getByRole("button", {
+      name: "Create organizer draft",
+    })).toBeTruthy();
+    expect((screen.getByLabelText("Organizer name") as HTMLInputElement).value)
+      .toBe("Small World");
+    expect((screen.getByLabelText("Draft slug") as HTMLInputElement).value)
+      .toBe("small-world");
     expect(screen.getByText(
-      /governed candidate-to-entity scaffolder is not implemented/u
+      /Publication, indexing, app visibility, crawling, and ownership remain disabled/u
     )).toBeTruthy();
 
     fireEvent.change(screen.getByLabelText("City"), {

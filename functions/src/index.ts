@@ -230,6 +230,9 @@ export {
   adminRecordOrganizerCuration,
 } from "./admin/organizerCuration";
 export {
+  adminCreateOrganizerDraftFromCandidate,
+} from "./admin/organizerDraftFromCandidate";
+export {
   adminRecordEventIntakeReviewDecision,
 } from "./admin/eventIntakeReview";
 export {

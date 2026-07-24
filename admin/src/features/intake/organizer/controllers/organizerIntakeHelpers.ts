@@ -1,6 +1,7 @@
 import type {
   AdminDecideOrganizerIntakeResponse,
   AdminDecideOrganizerPolicyGapResponse,
+  AdminCreateOrganizerDraftFromCandidatePayload,
   AdminRecordOrganizerCurationPayload,
   OrganizerCurationSurface,
   OrganizerEventCandidateDecision,
@@ -113,6 +114,66 @@ export function surfaceForCandidateCuration(
       candidate.suggestedSurface.notes,
       `Candidate title: ${candidate.title}`
     ),
+  };
+}
+
+export function organizerDraftFormFromCandidate(
+  candidate: Intake.OrganizerSearchCandidate
+): Intake.OrganizerDraftFormState {
+  const description = candidate.reviewContext?.reviewNotes?.trim() ||
+    candidate.snippet?.trim() ||
+    `Source-backed organizer candidate discovered from ${candidate.platform}.`;
+  return {
+    organizerId: organizerSlug(candidate.title),
+    name: candidate.title.trim(),
+    description,
+    organizerType: "community",
+    reviewNote:
+      `Create an unclaimed draft from reviewed candidate ${candidate.candidateId}.`,
+  };
+}
+
+export function organizerDraftPayloadForCandidate(
+  candidate: Intake.OrganizerSearchCandidate,
+  form: Intake.OrganizerDraftFormState
+): {ok: true; value: AdminCreateOrganizerDraftFromCandidatePayload} |
+  {ok: false; message: string} {
+  const organizerId = organizerSlug(form.organizerId);
+  const name = form.name.trim();
+  const description = form.description.trim();
+  const reviewNote = form.reviewNote.trim();
+  if (organizerId.length < 3 || organizerId.length > 64) {
+    return {
+      ok: false,
+      message: "Enter a 3–64 character lowercase organizer slug.",
+    };
+  }
+  if (!name || name.length > 120) {
+    return {ok: false, message: "Enter an organizer name under 120 characters."};
+  }
+  if (!description || description.length > 2000) {
+    return {
+      ok: false,
+      message: "Enter a source-backed description under 2,000 characters.",
+    };
+  }
+  if (reviewNote.length < 10 || reviewNote.length > 500) {
+    return {
+      ok: false,
+      message: "Add a review note between 10 and 500 characters.",
+    };
+  }
+  return {
+    ok: true,
+    value: {
+      workItemId: candidate.workItemId,
+      candidateId: candidate.candidateId,
+      organizerId,
+      name,
+      description,
+      organizerType: form.organizerType,
+      reviewNote,
+    },
   };
 }
 
@@ -387,4 +448,16 @@ function appendSentence(value: string, sentence: string) {
   if (!base) return next;
   if (!next) return base;
   return `${base} ${next}`;
+}
+
+function organizerSlug(value: string): string {
+  return value
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/gu, "")
+    .toLowerCase()
+    .replace(/&/gu, " and ")
+    .replace(/[^a-z0-9]+/gu, "-")
+    .replace(/^-+|-+$/gu, "")
+    .slice(0, 64)
+    .replace(/-+$/gu, "");
 }

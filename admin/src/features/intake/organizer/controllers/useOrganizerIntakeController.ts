@@ -1,9 +1,14 @@
-import {useMutation, useSuspenseQuery} from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import {useCallback, useMemo, useState} from "react";
 import {
   decideOrganizerEventCandidate,
   decideOrganizerIntake,
   decideOrganizerPolicyGap,
+  createOrganizerDraftFromCandidate,
   recordOrganizerCuration,
   resolveOrganizerEventLocation,
 } from "../api/organizerIntakeRepository";
@@ -19,6 +24,8 @@ import {
   intakeChecklistForDecision,
   locationResolutionFormFromTask,
   nullableInput,
+  organizerDraftFormFromCandidate,
+  organizerDraftPayloadForCandidate,
   organizerIntakeDecisionFromString,
   organizerPolicyGapDecisionFromString,
   policyGapChecklistForDecision,
@@ -34,6 +41,8 @@ import type {
   AdminDecideOrganizerIntakeResponse,
   AdminDecideOrganizerPolicyGapPayload,
   AdminDecideOrganizerPolicyGapResponse,
+  AdminCreateOrganizerDraftFromCandidatePayload,
+  AdminCreateOrganizerDraftFromCandidateResponse,
   AdminRecordOrganizerCurationPayload,
   AdminRecordOrganizerCurationResponse,
   AdminResolveOrganizerEventLocationPayload,
@@ -53,10 +62,13 @@ type LocationResolutionMutationPayload =
 export function useOrganizerIntakeController({
   onError,
   onNotice,
+  onOrganizerDraftCreated,
 }: {
   onError: (message: string | null) => void;
   onNotice: (message: string | null) => void;
+  onOrganizerDraftCreated?: (organizerId: string) => void;
 }) {
+  const queryClient = useQueryClient();
   const {data: intake} = useSuspenseQuery({
     queryKey: adminQueryKeys.organizerIntake.bridge(),
     queryFn: loadOrganizerIntakeBridge,
@@ -72,6 +84,12 @@ export function useOrganizerIntakeController({
     useState<Record<string, AdminDecideOrganizerIntakeResponse>>({});
   const [localCuration, setLocalCuration] =
     useState<Record<string, AdminRecordOrganizerCurationResponse>>({});
+  const [organizerDraftForms, setOrganizerDraftForms] =
+    useState<Record<string, Intake.OrganizerDraftFormState>>({});
+  const [localOrganizerDrafts, setLocalOrganizerDrafts] =
+    useState<Record<string, AdminCreateOrganizerDraftFromCandidateResponse>>(
+      {}
+    );
   const [curationForms, setCurationForms] =
     useState<Record<string, Intake.OrganizerCurationFormState>>({});
   const [eventDecisionNotes, setEventDecisionNotes] =
@@ -90,6 +108,8 @@ export function useOrganizerIntakeController({
     useState<Record<string, boolean>>({});
   const decisionMutationKey = adminQueryKeys.organizerIntake.decision();
   const curationMutationKey = adminQueryKeys.organizerIntake.curation();
+  const organizerDraftMutationKey =
+    adminQueryKeys.organizerIntake.createDraft();
   const eventDecisionMutationKey =
     adminQueryKeys.organizerIntake.eventDecision();
   const policyDecisionMutationKey =
@@ -112,6 +132,10 @@ export function useOrganizerIntakeController({
     mutationKey: curationMutationKey,
     mutationFn: recordOrganizerCuration,
   });
+  const createOrganizerDraftMutation = useMutation({
+    mutationKey: organizerDraftMutationKey,
+    mutationFn: createOrganizerDraftFromCandidate,
+  });
   const resolveOrganizerEventLocationMutation = useMutation({
     mutationKey: locationResolutionMutationKey,
     mutationFn: ({taskId: _taskId, ...payload}: LocationResolutionMutationPayload) =>
@@ -129,6 +153,13 @@ export function useOrganizerIntakeController({
     boolean
   >(curationMutationKey, (payload) => ({
     key: curationKeyForPayload(payload),
+    value: true,
+  }));
+  const organizerDraftInFlight = usePendingMutationRecord<
+    AdminCreateOrganizerDraftFromCandidatePayload,
+    boolean
+  >(organizerDraftMutationKey, (payload) => ({
+    key: payload.candidateId,
     value: true,
   }));
   const eventDecisionInFlight = usePendingMutationRecord<
@@ -321,6 +352,65 @@ export function useOrganizerIntakeController({
     onNotice,
     recordOrganizerCurationMutation,
   ]);
+
+  const handleCreateOrganizerDraft = useCallback(async (
+    candidate: Intake.OrganizerSearchCandidate
+  ) => {
+    const form = organizerDraftForms[candidate.candidateId] ??
+      organizerDraftFormFromCandidate(candidate);
+    const payload = organizerDraftPayloadForCandidate(candidate, form);
+    if (!payload.ok) {
+      onError(payload.message);
+      return;
+    }
+    const operation = beginOperation();
+    if (!operation) return;
+    onError(null);
+    onNotice(null);
+    try {
+      const response =
+        await createOrganizerDraftMutation.mutateAsync(payload.value);
+      setLocalOrganizerDrafts((current) => ({
+        ...current,
+        [candidate.candidateId]: response,
+      }));
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: adminQueryKeys.organizerIntake.bridge(),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: [...adminQueryKeys.all, "organizers"],
+        }),
+      ]);
+      onNotice(
+        response.created ?
+          `Created unclaimed organizer draft ${response.organizerId}.` :
+          `Opened existing organizer draft ${response.organizerId}.`
+      );
+      onOrganizerDraftCreated?.(response.organizerId);
+    } catch (draftError) {
+      onError(
+        draftError instanceof Error ?
+          draftError.message :
+          "Unable to create organizer draft."
+      );
+    } finally {
+      endOperation(operation);
+    }
+  }, [
+    beginOperation,
+    createOrganizerDraftMutation,
+    endOperation,
+    onError,
+    onNotice,
+    onOrganizerDraftCreated,
+    organizerDraftForms,
+    queryClient,
+  ]);
+
+  const handleOpenOrganizerDraft = useCallback((organizerId: string) => {
+    onOrganizerDraftCreated?.(organizerId);
+  }, [onOrganizerDraftCreated]);
 
   const handleItemCuration = useCallback(async (
     item: Intake.OrganizerIntakeItem,
@@ -631,21 +721,26 @@ export function useOrganizerIntakeController({
     eventDecisionInFlight,
     eventDecisionNotes,
     handleAttachCandidate,
+    handleCreateOrganizerDraft,
     handleDecision,
     handleEventDecision,
     handleItemCuration,
     handleLocationResolution,
+    handleOpenOrganizerDraft,
     handlePendingInputDecision,
     handlePolicyGapDecision,
     localCuration,
     localDecisions,
     localEventDecisions,
     localLocationResolutions,
+    localOrganizerDrafts,
     localPolicyDecisions,
     locationResolutionForms,
     locationResolutionInFlight,
     manualReportAcknowledgements,
     metrics,
+    organizerDraftForms,
+    organizerDraftInFlight,
     policyDecisionInFlight,
     policyDecisionNotes,
     publicationPacketByEntity,
@@ -654,6 +749,7 @@ export function useOrganizerIntakeController({
     setEventDecisionNotes,
     setLocationResolutionForms,
     setManualReportAcknowledgements,
+    setOrganizerDraftForms,
     setPolicyDecisionNotes,
   };
 }
