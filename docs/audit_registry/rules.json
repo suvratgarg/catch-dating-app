@@ -2040,7 +2040,7 @@
       ]
     },
     "FIRESTORE-INDEX-PARITY-001": {
-      "title": "Composite Firestore queries stay synchronized with deployed index configuration",
+      "title": "Composite Firestore queries stay synchronized with deployable index configuration",
       "status": "active",
       "kind": "scar",
       "introduced_in": {
@@ -2052,7 +2052,7 @@
         "firestore.indexes.json",
         "tool/contracts/check_firestore_query_indexes.mjs"
       ],
-      "instruction": "Every repository-owned composite query builder declares its ordered firestore-index contract beside the query. The checked index configuration must contain every declared contract, retired collection indexes must not survive renames, and the parity gate must run before deploy.",
+      "instruction": "Every repository-owned composite query builder declares its ordered firestore-index contract beside the query. The checked index configuration must contain every declared contract, retired collection indexes must not survive renames, non-deployable single-field plus __name__ pseudo-composites must be rejected, and the parity gate must run before deploy.",
       "sunset_when": [
         "The Firestore SDK or deployment platform provides equivalent compile-time query/index validation"
       ],

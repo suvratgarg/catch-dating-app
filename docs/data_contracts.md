@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.5.1
-updated: 2026-07-23
+version: 1.5.2
+updated: 2026-07-24
 owner: recursive_audit_loop
 status: active
 ---
@@ -560,7 +560,9 @@ Repository-owned composite query builders declare adjacent contracts using:
 
 `node tool/run.mjs check contracts:firestore-query-indexes` scans every
 handwritten repository source, rejects composite builders with no contract,
-and verifies each declared ordered field list against `firestore.indexes.json`.
+verifies each declared ordered field list against `firestore.indexes.json`,
+and rejects single-field plus `__name__` pseudo-composites that Firestore
+refuses to deploy because the built-in single-field index already owns them.
 The check also runs inside `./tool/check_data_contract.sh` and Tools CI whenever
 repository data code or the index file changes.
 
