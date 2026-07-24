@@ -422,6 +422,14 @@ remain in the active human-review lane. The live admin surface reads
 those durable records through `adminListIntakeOperations`; it cannot enqueue a
 run or mutate workflow state.
 
+Organizer discovery candidates are normalized into the bounded
+`normalizedPayload.intake` projection on organizer work items. The payload
+contains only the reviewed candidate fields required by the Admin queue; it is
+not a canonical `organizers/{id}` document and grants no publication,
+ownership, crawl, or app-visibility authority. Organizer-only shadow runs may
+omit an Event Intake bridge, but remain subject to the same immutable export,
+contract validation, and trusted importer.
+
 The trusted shadow-projection importer validates the export again, resets only
 the Firestore persistence revision to zero, and retains each local source
 revision plus the whole-export hash under reserved projection metadata. It

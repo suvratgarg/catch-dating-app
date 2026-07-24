@@ -1,8 +1,34 @@
 {
-  "version": 96,
+  "version": 97,
   "updated": "2026-07-24",
   "owner": "agent_operating_model",
   "entries": [
+    {
+      "id": "REG-ADMIN-LIVE-DATA-PARITY-001",
+      "title": "Admin live routes drift from Firestore callables or package generated operational fixtures",
+      "status": "active",
+      "applies_to": [
+        ".github/workflows/admin-website.yml",
+        "admin/scripts/checkBundleBudget.mjs",
+        "admin/src/features/**",
+        "admin/src/shared/api/adminApi.ts",
+        "contracts/admin/admin_live_data_sources.json",
+        "functions/src/index.ts",
+        "tool/web/check_admin_live_data_sources.mjs"
+      ],
+      "symptom": "A production Admin route reads generated repository JSON, a generated operational fixture survives in the live Vite manifest, or the frontend calls a source-exported callable that is absent or unreachable in the selected Firebase environment and surfaces only a generic internal error.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check web:admin-live-data-sources && VITE_ADMIN_DATA_MODE=live npm --workspace catch-admin run build && node tool/web/check_admin_live_data_sources.mjs --check --verify-live --environment prod --summary",
+        "guardEvidence": "the route inventory covers every Admin navigation and Intake workspace, generated operational JSON is sample-only, live builds reject generated operational assets, and the production preflight requires every declared callable to return a Firebase callable response"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "docs/release_operations.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "Operational queue content belongs in Firestore projections. Generated Event Intake, Organizer Intake, Marketing Ops, and external-event artifacts are retained only for explicit sample and Storybook builds."
+    },
     {
       "id": "REG-ADMIN-MOBILE-TOOLBAR-001",
       "title": "Admin toolbar search expands into a tall empty block on mobile",

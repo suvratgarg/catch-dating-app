@@ -14,12 +14,6 @@ import {
   sampleOverview,
   sampleUserAnalyticsReport,
 } from "./sampleData";
-import marketingOpsBridgeJson from "../../generated/marketingOpsBridge.json";
-import eventIntakeBridgeJson from "../../generated/eventIntakeBridge.json";
-import externalEventImportExecutionPlanJson
-  from "../../generated/externalEventImportExecutionPlan.json";
-import externalEventImportPlanJson
-  from "../../generated/externalEventImportPlan.json";
 import {sampleIntakeOperations} from
   "../operations/sampleIntakeOperations";
 import type {
@@ -830,18 +824,13 @@ export async function loadUserAnalytics(
   return result.data;
 }
 
-const sampleMarketingOpsBridge =
-  marketingOpsBridgeJson as unknown as MarketingOpsBridge;
-let sampleMarketingOpsBridgeState = sampleMarketingOpsBridge;
-const sampleEventIntakeBridge =
-  eventIntakeBridgeJson as unknown as EventIntakeBridge;
-let sampleEventIntakeBridgeState = sampleEventIntakeBridge;
+let sampleMarketingOpsBridgeState: MarketingOpsBridge | null = null;
 
 export async function loadMarketingOpsBridge():
   Promise<AdminGetMarketingOpsDashboardResponse> {
-  if (dataMode() === "sample") {
+  if (import.meta.env.VITE_ADMIN_DATA_MODE !== "live") {
     await new Promise((resolve) => window.setTimeout(resolve, 180));
-    return {bridge: sampleMarketingOpsBridgeState};
+    return {bridge: await loadSampleMarketingOpsBridge()};
   }
 
   const callable = httpsCallable<unknown, AdminGetMarketingOpsDashboardResponse>(
@@ -854,9 +843,12 @@ export async function loadMarketingOpsBridge():
 
 export async function loadEventIntakeDashboard():
   Promise<AdminGetEventIntakeDashboardResponse> {
-  if (dataMode() === "sample") {
+  if (import.meta.env.VITE_ADMIN_DATA_MODE !== "live") {
     await new Promise((resolve) => window.setTimeout(resolve, 180));
-    return {bridge: sampleEventIntakeBridgeState};
+    const {default: bridge} = await import(
+      "../../generated/eventIntakeBridge.json"
+    );
+    return {bridge: bridge as unknown as EventIntakeBridge};
   }
 
   const callable = httpsCallable<unknown, AdminGetEventIntakeDashboardResponse>(
@@ -905,14 +897,15 @@ export async function listActionExecutions(
 export async function createMarketingContentDraft(
   payload: AdminCreateMarketingContentDraftPayload
 ): Promise<AdminCreateMarketingContentDraftResponse> {
-  if (dataMode() === "sample") {
+  if (import.meta.env.VITE_ADMIN_DATA_MODE !== "live") {
     await new Promise((resolve) => window.setTimeout(resolve, 240));
+    const sampleBridge = await loadSampleMarketingOpsBridge();
     const draft = buildSampleMarketingDraft(
       payload,
-      sampleMarketingOpsBridgeState
+      sampleBridge
     );
     const bridge = appendSampleMarketingDraft(
-      sampleMarketingOpsBridgeState,
+      sampleBridge,
       draft
     );
     sampleMarketingOpsBridgeState = bridge;
@@ -929,6 +922,15 @@ export async function createMarketingContentDraft(
   >(functions, "adminCreateMarketingContentDraft");
   const result = await callable(payload);
   return result.data;
+}
+
+async function loadSampleMarketingOpsBridge(): Promise<MarketingOpsBridge> {
+  if (sampleMarketingOpsBridgeState) return sampleMarketingOpsBridgeState;
+  const {default: bridge} = await import(
+    "../../generated/marketingOpsBridge.json"
+  );
+  sampleMarketingOpsBridgeState = bridge as unknown as MarketingOpsBridge;
+  return sampleMarketingOpsBridgeState;
 }
 
 function buildSampleMarketingDraft(
@@ -1661,16 +1663,21 @@ export async function listExternalEventDetails(
 
 export async function loadEventSupplyReadiness():
   Promise<AdminGetEventSupplyReadinessResponse> {
-  if (dataMode() === "sample") {
+  if (import.meta.env.VITE_ADMIN_DATA_MODE !== "live") {
     await new Promise((resolve) => window.setTimeout(resolve, 120));
+    const [{default: importPlan}, {default: executionPlan}] =
+      await Promise.all([
+        import("../../generated/externalEventImportPlan.json"),
+        import("../../generated/externalEventImportExecutionPlan.json"),
+      ]);
     return {
       generatedAt: sampleGeneratedAt,
       source: "sample",
       importPlan:
-        externalEventImportPlanJson as
+        importPlan as
           AdminGetEventSupplyReadinessResponse["importPlan"],
       executionPlan:
-        externalEventImportExecutionPlanJson as
+        executionPlan as
           AdminGetEventSupplyReadinessResponse["executionPlan"],
     };
   }

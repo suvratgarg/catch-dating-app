@@ -48,6 +48,7 @@ function OrganizerTaskWorkbench({
 }) {
   const {
     bridge,
+    diagnosticsBridge,
     decisionInFlight,
     decisionNotes,
     curationInFlight,
@@ -208,10 +209,14 @@ function OrganizerTaskWorkbench({
           value={priority}
           onChange={setPriority}
         />
-        <AdminButton onClick={onShowDiagnostics}>Diagnostics</AdminButton>
-        <AdminButton variant="primary" onClick={onShowDiagnostics}>
-          Discovery plan
-        </AdminButton>
+        {diagnosticsBridge ? (
+          <>
+            <AdminButton onClick={onShowDiagnostics}>Diagnostics</AdminButton>
+            <AdminButton variant="primary" onClick={onShowDiagnostics}>
+              Discovery plan
+            </AdminButton>
+          </>
+        ) : null}
       </AdminIntakeTaskToolbar>
       <AdminIntakeStageRail<OrganizerWorkbenchStage>
         ariaLabel="Organizer intake stages"

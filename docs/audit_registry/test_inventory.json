@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 576,
+  "total": 578,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -403,7 +403,7 @@
       ]
     },
     "tooling": {
-      "count": 138,
+      "count": 139,
       "files": [
         "tool/admin/generate_admin_action_catalog.test.mjs",
         "tool/agent/check_agent_readiness.test.mjs",
@@ -541,12 +541,13 @@
         "tool/test/check_flutter_test_size.test.mjs",
         "tool/test/flutter_coverage_report.test.mjs",
         "tool/test_inventory.test.mjs",
+        "tool/web/check_admin_live_data_sources.test.mjs",
         "tool/web/react_dependency_graph.test.mjs",
         "tool/widget_dedupe/test/fingerprint_extractor_test.dart"
       ]
     },
     "web": {
-      "count": 65,
+      "count": 66,
       "files": [
         "admin/src/app/App.test.tsx",
         "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
@@ -559,6 +560,7 @@
         "admin/src/features/intake/events/controllers/useEventIntakeController.test.tsx",
         "admin/src/features/intake/operations/controllers/useIntakeOperationsController.test.tsx",
         "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.test.tsx",
+        "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.test.ts",
         "admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.test.ts",
         "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.test.tsx",
         "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",

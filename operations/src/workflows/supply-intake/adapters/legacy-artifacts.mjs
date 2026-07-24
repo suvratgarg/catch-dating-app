@@ -5,6 +5,7 @@ import {OperationsError, invariant} from "../../../platform/errors.mjs";
 
 export const LEGACY_ARTIFACTS = Object.freeze({
   organizerPublicationPackets: "tool/organizer_intake/generated/publication_review_packets.json",
+  organizerSearchCandidates: "tool/organizer_intake/generated/search_result_candidate_queue.json",
   organizerActionQueue: "tool/organizer_intake/generated/organizer_operator_action_queue.json",
   organizerHealth: "tool/organizer_intake/generated/organizer_operational_health.json",
   llmPromptQueue: "tool/organizer_intake/generated/source_mention_llm_prompt_queue.json",
@@ -22,10 +23,20 @@ export class LegacyIntakeArtifactAdapter {
     this.repoRoot = path.resolve(repoRoot);
   }
 
-  async snapshot({market}) {
-    const eventBridgePath = await this.latestEventBridgePath(market);
+  async snapshot({market, intakeScope = "all"}) {
+    const eventBridgePath = intakeScope === "organizer" ?
+      null : await this.latestEventBridgePath(market);
     const entries = await Promise.all([
-      this.readArtifact("eventIntakeBridge", eventBridgePath),
+      eventBridgePath ?
+        this.readArtifact("eventIntakeBridge", eventBridgePath) :
+        Promise.resolve({
+          id: "eventIntakeBridge",
+          status: "not_requested",
+          relativePath: null,
+          sha256: null,
+          sizeBytes: 0,
+          data: null,
+        }),
       ...Object.entries(LEGACY_ARTIFACTS).map(([id, relativePath]) => this.readArtifact(id, relativePath)),
     ]);
     return {
@@ -92,8 +103,10 @@ export class LegacyIntakeArtifactAdapter {
   }
 
   async reload(snapshot) {
-    const entries = await Promise.all(Object.values(snapshot.artifacts).map((artifact) =>
-      this.readArtifact(artifact.id, artifact.relativePath)
+    const entries = await Promise.all(Object.values(snapshot.artifacts).map(
+      (artifact) => artifact.status === "not_requested" ?
+        artifact :
+        this.readArtifact(artifact.id, artifact.relativePath)
     ));
     for (const entry of entries) {
       const planned = snapshot.artifacts[entry.id];
@@ -153,6 +166,12 @@ function artifactCounts(id, data, {market} = {}) {
     organizers: market ?
       (data.packets ?? []).filter((packet) => organizerPacketSupportsMarket(packet, market)).length :
       data.packets?.length ?? 0,
+  };
+  if (id === "organizerSearchCandidates") return {
+    organizers: market ?
+      (data.candidates ?? []).filter((candidate) =>
+        candidate?.queryIntent?.marketSlug === market).length :
+      data.candidates?.length ?? 0,
   };
   if (id === "organizerActionQueue") return {actions: data.actions?.length ?? 0};
   if (id === "llmPromptQueue") return {requests: data.requests?.length ?? 0};

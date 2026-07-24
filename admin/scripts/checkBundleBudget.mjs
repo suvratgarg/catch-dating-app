@@ -21,6 +21,10 @@ const result = validateBundleBudget({
 result.findings.push(...validateAppBoundary(
   fs.readFileSync(path.join(adminRoot, "src/app/App.tsx"), "utf8")
 ));
+result.findings.push(...validateLiveOperationalAssets({
+  dataMode: process.env.VITE_ADMIN_DATA_MODE,
+  manifest: readJson(manifestPath),
+}));
 
 if (result.findings.length > 0) {
   console.error("Admin bundle budget failed:");
@@ -89,6 +93,22 @@ export function validateAppBoundary(source) {
   return findings;
 }
 
+export function validateLiveOperationalAssets({dataMode, manifest}) {
+  if (dataMode !== "live") return [];
+  const serialized = JSON.stringify(manifest);
+  const fixtureNames = [
+    "eventIntakeBridge",
+    "externalEventImportExecutionPlan",
+    "externalEventImportPlan",
+    "marketingOpsBridge",
+    "organizerIntakeBridge",
+  ];
+  return fixtureNames
+    .filter((name) => serialized.includes(name))
+    .map((name) =>
+      `live Admin bundle contains generated operational fixture ${name}`);
+}
+
 function positiveInteger(value, label, findings) {
   if (!Number.isInteger(value) || value <= 0) {
     findings.push(`${label} must be a positive integer`);
@@ -133,6 +153,20 @@ function runSelfTest() {
   );
   if (!boundaryFindings.some((finding) => finding.includes("feature controller"))) {
     throw new Error("self-test failed to reject a feature controller in the app shell");
+  }
+  const liveFixtureFindings = validateLiveOperationalAssets({
+    dataMode: "live",
+    manifest: {
+      "src/generated/eventIntakeBridge.json": {
+        file: "assets/eventIntakeBridge-sample.json",
+      },
+    },
+  });
+  if (!liveFixtureFindings.some((finding) =>
+    finding.includes("eventIntakeBridge"))) {
+    throw new Error(
+      "self-test failed to reject a generated fixture in the live bundle"
+    );
   }
   console.log("Admin bundle budget self-test passed.");
 }

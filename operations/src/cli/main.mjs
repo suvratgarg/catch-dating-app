@@ -254,6 +254,7 @@ export function createCliClock(nowOverride, systemClock = () => new Date()) {
 async function createPlan(workflow, flags, now) {
   return workflow.createPlan({
     market: flags.market ?? "mumbai",
+    intakeScope: flags.intakeScope ?? "all",
     through: flags.through ?? defaultThrough(now),
     now,
   });
@@ -359,6 +360,7 @@ function parseFlags(argv) {
   const booleanFlags = new Set(["--pretty"]);
   const valueFlags = new Set([
     "--limit",
+    "--intake-scope",
     "--lifecycle",
     "--market",
     "--now",

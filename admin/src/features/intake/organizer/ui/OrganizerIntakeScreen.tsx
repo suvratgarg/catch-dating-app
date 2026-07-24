@@ -50,6 +50,14 @@ export function OrganizerIntakeWorkspace({
       />
     );
   }
+  if (!controller.diagnosticsBridge) {
+    return (
+      <organizerIntakeWorkbench.OrganizerTaskWorkbench
+        controller={controller}
+        onShowDiagnostics={() => setShowDiagnostics(false)}
+      />
+    );
+  }
   return (
     <>
       <AdminToolbar>
@@ -62,7 +70,10 @@ export function OrganizerIntakeWorkspace({
         </AdminButton>
       </AdminToolbar>
       <Suspense fallback={<AdminWorkbenchNote>Loading diagnostics...</AdminWorkbenchNote>}>
-        <LazyOrganizerIntakeDiagnostics controller={controller} />
+        <LazyOrganizerIntakeDiagnostics
+          bridge={controller.diagnosticsBridge}
+          controller={controller}
+        />
       </Suspense>
     </>
   );
