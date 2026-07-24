@@ -4,7 +4,6 @@ import {
   CalendarDays,
   CheckCircle2,
   Clock3,
-  Database,
   ExternalLink,
   FileWarning,
   FolderSearch,
@@ -139,70 +138,6 @@ interface EventImportReadinessRow {
   validationErrorCount: number;
   sourceActionId: string;
   publishReady: boolean;
-}
-
-function EventContractPanel({
-  externalListGeneratedAt,
-  listGeneratedAt,
-}: {
-  externalListGeneratedAt: string | null;
-  listGeneratedAt: string | null;
-}) {
-  return (
-    <Panel
-      icon={<Database size={18} strokeWidth={1.9} />}
-      title="Event contract"
-      action="events"
-    >
-      <QualityList>
-        <StateRow label="Source of truth" value="Cloud Firestore events/{id}" />
-        <StateRow
-          label="Search/list"
-          value="adminListEventDetails + startTime window + adminSearch.tokens"
-        />
-        <StateRow
-          label="Canonical snapshot"
-          value={eventPublishingEditorPanels.formatDateTime(listGeneratedAt)}
-        />
-        <StateRow
-          label="External snapshot"
-          value={eventPublishingEditorPanels.formatDateTime(externalListGeneratedAt)}
-        />
-        <StateRow
-          label="Default"
-          value="Upcoming active events in Indore and Mumbai"
-        />
-        <StateRow
-          label="External default"
-          value="Open review queue for Indore and Mumbai supply"
-        />
-        <StateRow
-          label="Safe writes"
-          value="description, photoUrl, format, distance, pace"
-        />
-        <StateRow
-          label="Read-only here"
-          value="schedule, capacity, price, status, cancellation"
-        />
-        <StateRow
-          label="App title"
-          value="Flutter derives title from time + eventFormat"
-        />
-        <StateRow
-          label="Intake handoff"
-          value="Approved external candidates target externalEvents/{id}, not events/{id}"
-        />
-        <StateRow
-          label="External events"
-          value="Read-only, outbound-only, no Catch booking/payments/waitlist"
-        />
-        <StateRow
-          label="External publish"
-          value="One preflight-ready row at a time through adminPublishExternalEvent"
-        />
-      </QualityList>
-    </Panel>
-  );
 }
 
 function EventDirectoryTable({
@@ -542,7 +477,6 @@ function ExternalEventImportReviewPanel({
 }
 
 export const eventPublishingSupplyPanels = {
-  EventContractPanel,
   EventDirectoryTable,
   ExternalEventSupplyTable,
   ExternalEventSupplyDetail,

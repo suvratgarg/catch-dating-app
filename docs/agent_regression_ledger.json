@@ -1,6 +1,6 @@
 {
-  "version": 100,
-  "updated": "2026-07-24",
+  "version": 101,
+  "updated": "2026-07-25",
   "owner": "agent_operating_model",
   "entries": [
     {
@@ -3175,6 +3175,31 @@
         "docs/backend_operation_catalog.md"
       ],
       "notes": "Low-volume governed mutations must register their action-specific defense-in-depth limit rather than rely on the warning-backed default."
+    },
+    {
+      "id": "REG-ADMIN-OPERATOR-IMPLEMENTATION-COPY-001",
+      "title": "Admin task flows expose backend publishing telemetry instead of operator guidance",
+      "status": "active",
+      "applies_to": [
+        "admin/src/features/organizers/ui/organizerDetailPanels.tsx",
+        "admin/src/features/events/ui/eventPublishingDirectoryPanels.tsx",
+        "admin/src/features/events/ui/eventPublishingEditorPanels.tsx",
+        "admin/src/features/events/ui/eventPublishingSupplyPanels.tsx",
+        "admin/src/features/intake/events/ui/EventIntakeWorkspace.tsx",
+        "admin/src/shared/ui/operatorFacingImplementationCopy.test.ts"
+      ],
+      "symptom": "An organizer, event, or event-intake task screen renders Firestore paths, callable names, route guards, audit collections, or a generic publishing-contract panel that does not help the operator complete the task.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin test -- --run src/shared/ui/operatorFacingImplementationCopy.test.ts src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
+        "guardEvidence": "normal organizer, event, and event-intake workflows reject backend identifiers and generic contract panels; operator-relevant read-only and review effects remain in reader-facing copy or secondary disclosure"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/data_contracts.md",
+        "docs/backend_operation_catalog.md"
+      ],
+      "notes": "Implementation contracts belong in repository docs. Explicit Diagnostics workspaces may retain technical evidence only when it is required to troubleshoot the workflow; primary task surfaces should explain outcomes, blockers, and next actions."
     }
   ]
 }

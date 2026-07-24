@@ -156,9 +156,6 @@ function OrganizerDetailView({
         onSave={() => void controller.save()}
         validationIssues={controller.validationIssues}
       />
-      <OrganizerPublishingContractPanel
-        generatedAt={controller.listGeneratedAt}
-      />
     </AdminDetailScreenStack>
   );
 }
@@ -287,47 +284,6 @@ function OrganizerDetailSummary({
         <StateRow label="Publish blockers" value={publishBlockers} />
         <StateRow label="Checklist tasks" value={checklistTaskCount} />
       </AdminStatusGrid>
-    </Panel>
-  );
-}
-
-function OrganizerPublishingContractPanel({
-  generatedAt,
-}: {
-  generatedAt: string | null;
-}) {
-  return (
-    <Panel
-      icon={<Database size={18} strokeWidth={1.9} />}
-      title="Publishing contract"
-      action="organizers"
-    >
-      <QualityList>
-        <StateRow
-          label="Source of truth"
-          value="Cloud Firestore organizers/{id}"
-        />
-        <StateRow
-          label="Search/list"
-          value="adminListOrganizerDetails + adminSearch.tokens"
-        />
-        <StateRow
-          label="Canonical snapshot"
-          value={formatDateTime(generatedAt)}
-        />
-        <StateRow
-          label="Writes"
-          value="Audited partial update + index publish callable"
-        />
-        <StateRow
-          label="Route guard"
-          value="canonicalPath shape + publicRouteReservations"
-        />
-        <StateRow
-          label="Action cardinality"
-          value="One publish state per organizer document"
-        />
-      </QualityList>
     </Panel>
   );
 }
@@ -1042,8 +998,8 @@ function AppListingPreview({
   return (
     <QualityList>
       <StateRow
-        label="Collection"
-        value={`organizers/${club?.clubId ?? ""}`}
+        label="Record ID"
+        value={club?.clubId}
       />
       <StateRow label="App visibility" value={form.appVisibility} />
       <StateRow label="Image" value={form.imageUrl ? "imageUrl set" : "missing"} />
@@ -1172,7 +1128,6 @@ export const organizerDetailPanels = {
   OrganizerDetailView,
   OrganizerDirectoryPanel,
   OrganizerDetailSummary,
-  OrganizerPublishingContractPanel,
   OrganizerDirectoryTable,
   OrganizerEditor,
   PublishingSidePanel,

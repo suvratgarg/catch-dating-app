@@ -13,6 +13,7 @@ import {
   AdminCard,
   AdminCardList,
   AdminLinkButton,
+  AdminSecondaryDisclosure,
   AdminStateRow,
   AdminStatGrid,
   AdminTag,
@@ -24,8 +25,6 @@ import {
   PageHeader,
   StatusChip,
   TagList,
-  AdminCommandRow,
-  AdminCommandStack,
   AdminEyebrow,
   AdminMarketingEditGrid,
   AdminMarketingGrid,
@@ -333,62 +332,37 @@ function EventIntakeRunPlanView({
       <AdminMarketingPanel
         span={2}
         icon={<ListChecks size={18} strokeWidth={1.9} />}
-        title="Event intake contract"
-        action={bridge.bridgeSource ?? "unknown"}
+        title="Review boundary"
+        action="No event publish"
       >
-        <AdminStatGrid>
-          <AdminStateRow
-            label="Dashboard"
-            value="eventIntakeDashboards/current"
-          />
-          <AdminStateRow
-            label="Decision writes"
-            value="eventIntakeReviewDecisions/{decisionId}"
-          />
-          <AdminStateRow
-            label="Callable read"
-            value="adminGetEventIntakeDashboard"
-          />
-          <AdminStateRow
-            label="Callable write"
-            value="adminRecordEventIntakeReviewDecision"
-          />
-          <AdminStateRow
-            label="Generated"
-            value={formatEventIntakeTimestamp(bridge.generatedAt)}
-          />
-          <AdminStateRow
-            label="Effect"
-            value="decision only, no canonical event publish"
-          />
-        </AdminStatGrid>
+        <AdminMarketingHelpText>
+          Decisions here classify source leads and prepare external-event import
+          work. They do not create or publish canonical events.
+        </AdminMarketingHelpText>
         <TagList>
           <AdminTag tone="muted">
-            downstream: externalEvents import planning
+            downstream: external-event import planning
           </AdminTag>
           <AdminTag tone="muted">
-            canonical events stay in events/{`{id}`}
-          </AdminTag>
-          <AdminTag tone="muted">
-            Firestore dashboard is private admin supply state
+            canonical events remain unchanged
           </AdminTag>
         </TagList>
-        <AdminIntakeSection>
-          <AdminIntakeSectionTitle>Operator Commands</AdminIntakeSectionTitle>
-          <AdminCommandStack>
-            {Object.entries(bridge.commands).length === 0 ? (
-              <AdminCommandRow>
-                <span>none</span>
-                <code>publish eventIntakeDashboards/current to enable commands</code>
-              </AdminCommandRow>
-            ) : Object.entries(bridge.commands).map(([label, command]) => (
-              <AdminCommandRow key={`${label}:${command}`}>
-                <span>{label}</span>
-                <code>{command}</code>
-              </AdminCommandRow>
-            ))}
-          </AdminCommandStack>
-        </AdminIntakeSection>
+        <AdminSecondaryDisclosure summary="How this review snapshot is derived">
+          <AdminStatGrid>
+            <AdminStateRow
+              label="Snapshot source"
+              value={bridge.bridgeSource ?? "unknown"}
+            />
+            <AdminStateRow
+              label="Generated"
+              value={formatEventIntakeTimestamp(bridge.generatedAt)}
+            />
+            <AdminStateRow
+              label="Result"
+              value="Review decisions and external-event planning only"
+            />
+          </AdminStatGrid>
+        </AdminSecondaryDisclosure>
       </AdminMarketingPanel>
     </AdminMarketingGrid>
   );

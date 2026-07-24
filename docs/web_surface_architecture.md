@@ -374,6 +374,16 @@ inferred, unknown, generated-at, loaded-at, and session-only state. Diagnostics,
 command material, unsupported actions, and source paths use secondary disclosure
 instead of occupying the primary task flow.
 
+Operator task surfaces describe outcomes, editable scope, blockers, and the
+next available action. They do not render Firestore paths, callable names,
+projection implementation, route-guard mechanics, or generic "publishing
+contract" panels. When a derived or read-only value needs explanation, use a
+short reader-facing disclosure beside that value; exact implementation
+contracts stay in this document, `docs/data_contracts.md`, and
+`docs/backend_operation_catalog.md`. Explicit Diagnostics workspaces may expose
+technical evidence only when that evidence is necessary to troubleshoot the
+workflow.
+
 Mutation interfaces may reuse the shared sticky decision footer only when the
 owning callable has validation, authorization, pending, success, and receipt
 behavior. The UI must not imply direct social publishing, money movement,

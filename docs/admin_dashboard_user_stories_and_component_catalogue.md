@@ -562,9 +562,10 @@ Current adherence:
   review note only when there are pending save changes or a publishing
   decision, and both organizer edit/index callables enforce review notes
   server-side before writing audit-logged mutations.
-- Good: the organizer directory exposes the callable `generatedAt` snapshot
-  timestamp in the publishing contract panel, matching the canonical Events
-  tab's operator snapshot pattern.
+- Good: the organizer directory exposes the list snapshot time in its scope
+  note. Backend paths, callable names, route-guard mechanics, and generic
+  publishing-contract telemetry stay out of the operator task flow; explanatory
+  derivation or read-only context uses secondary disclosure.
 - Good: route shape, duplicate canonical path checks, and durable
   `publicRouteReservations/{routeKey}` writes run server-side before save or
   index-ready publish. This prevents two `clubs` documents from owning the same

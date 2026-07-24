@@ -207,10 +207,6 @@ function EventDetailView({
         onLoad={() => void controller.selectEvent(controller.eventId)}
         onSave={() => void controller.save()}
       />
-      <eventPublishingSupplyPanels.EventContractPanel
-        externalListGeneratedAt={controller.externalListGeneratedAt}
-        listGeneratedAt={controller.listGeneratedAt}
-      />
     </AdminDetailScreenStack>
   );
 }
@@ -267,8 +263,8 @@ function ExternalEventInventoryView({
               variant="workbench"
               icon={<FileWarning size={16} strokeWidth={1.9} />}
             >
-              This record was not found in the current external-event source query.
-              A dedicated point-read contract is not available.
+              This record was not found in the current external-event inventory.
+              Refresh the inventory or return to the list and select another event.
             </EmptyState>
           </Panel>
         ) : (

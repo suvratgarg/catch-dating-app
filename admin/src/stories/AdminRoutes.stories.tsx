@@ -1624,6 +1624,14 @@ const renderEventPublishingWorkspace = () => (
   </AdminWorkspace>
 );
 
+const renderEventPublishingDetail = () => (
+  <AdminWorkspace>
+    <EventPublishingWorkspace
+      controller={{...eventController, view: "detail"}}
+    />
+  </AdminWorkspace>
+);
+
 const renderEventIntakeWorkspace = () => (
   <AdminWorkspace>
     <EventIntakePreviewWorkspace controller={eventIntakeController} />
@@ -1837,6 +1845,17 @@ export const EventPublishingWorkspaceStory: Story = {
     },
   },
   render: renderEventPublishingWorkspace,
+};
+
+export const EventPublishingDetailStory: Story = {
+  name: "Event detail",
+  parameters: {
+    catchComponent: {
+      id: "workspace_event_publishing",
+      states: ["canonical-detail"],
+    },
+  },
+  render: renderEventPublishingDetail,
 };
 
 export const IntakeWorkspaceRouteStory: Story = {

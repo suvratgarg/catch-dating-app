@@ -262,10 +262,11 @@
         "story": "admin/src/stories/AdminRoutes.stories.tsx",
         "exportName": "EventPublishingWorkspaceStory",
         "states": [
-          "canonical-directory"
+          "canonical-directory",
+          "canonical-detail"
         ]
       },
-      "notes": "Prop-driven Event Publishing workspace surface used by the route wrapper and deterministic Storybook previews; query/mutation logic stays in EventPublishingScreen."
+      "notes": "Prop-driven Event Publishing workspace surface used by the route wrapper and deterministic Storybook previews; canonical detail keeps lifecycle fields read-only with operator-facing rationale while backend paths and callable names stay in repository documentation."
     },
     {
       "id": "route_finance_ops",
@@ -557,7 +558,7 @@
           "blocked-draft"
         ]
       },
-      "notes": "Prop-driven Organizer Publishing workspace used by the route wrapper and deterministic Storybook previews; canonical directory rows, a stateful blocked-draft editor, route readiness, and publishing contract state come from shared sample organizer fixtures."
+      "notes": "Prop-driven Organizer Publishing workspace used by the route wrapper and deterministic Storybook previews; canonical directory rows, the stateful blocked-draft editor, route readiness, and actionable publishing blockers come from shared sample organizer fixtures without backend implementation telemetry."
     },
     {
       "id": "route_overview",
