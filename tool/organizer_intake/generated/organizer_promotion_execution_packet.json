@@ -76,7 +76,9 @@
       "status": "ready"
     },
     {
-      "blockers": [],
+      "blockers": [
+        "1 untriaged workstream(s) remain"
+      ],
       "command": "node tool/organizer_intake/run_promotion_pipeline.mjs",
       "executionMode": "local",
       "label": "Run local promotion preview",
@@ -89,7 +91,7 @@
         "fixture claim-target sync preview"
       ],
       "phaseId": "local_promotion_preview",
-      "status": "ready"
+      "status": "blocked_by_untriaged_work"
     },
     {
       "blockers": [],
@@ -144,9 +146,9 @@
   "schemaVersion": 1,
   "summary": {
     "approvedPublicProjections": 2,
-    "blockedPhases": 2,
+    "blockedPhases": 3,
     "canDeployNewPublicPages": true,
-    "canRunLocalPreview": true,
+    "canRunLocalPreview": false,
     "canWriteClaimTargets": true,
     "claimSyncReady": true,
     "claimTargetPreviewTargets": 2,
@@ -157,10 +159,11 @@
     "pendingAdminDecisions": 0,
     "pendingAnswerSlots": 4,
     "pendingPolicyDecisions": 4,
-    "pendingWorkUntriaged": 0,
+    "pendingWorkUntriaged": 1,
     "phases": 9,
     "phasesByStatus": {
-      "ready": 5,
+      "blocked_by_untriaged_work": 1,
+      "ready": 4,
       "ready_after_reviewed_firestore_dry_run": 1,
       "ready_for_firestore_dry_run": 1,
       "waiting_on_answer_packet": 1,
@@ -176,6 +179,6 @@
     "reviewedAnswerPacketsReady": 0,
     "reviewedAnswerPacketsStale": 0,
     "reviewedAnswerPacketStatus": "no_reviewed_packets",
-    "status": "waiting_on_policy_input"
+    "status": "untriaged_work"
   }
 }

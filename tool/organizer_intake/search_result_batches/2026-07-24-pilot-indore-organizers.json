@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "batchId": "2026-07-24-pilot-indore-organizers",
+  "createdAt": "2026-07-24",
+  "source": "manual_web_search",
+  "query": "Indore pilot organizer shortlist across run clubs, social sport, creator communities, technical communities, open mics, workshops, and youth events",
+  "queryIntent": {
+    "entityHint": null,
+    "marketSlug": "indore",
+    "activityKind": "multi-category-organizer-discovery"
+  },
+  "results": [
+    {
+      "resultId": "academy-of-indore-marathoners",
+      "rank": 1,
+      "title": "Academy of Indore Marathoners (AIM)",
+      "url": "https://indoremarathon.in/",
+      "snippet": "Official site lists Indore Rainathon on 1 August 2026 and establishes a local running-community identity. Resolve conflicting venue and start-time details before publishing the event.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "indore-toastmasters-meetup",
+      "rank": 2,
+      "title": "Indore Toastmasters' Meetup",
+      "url": "https://www.meetup.com/indore-toastmasters-meetup/",
+      "snippet": "Public community profile lists recurring weekend speaking and leadership sessions with many upcoming meetings. Preserve the specific underlying Toastmasters club on each event where applicable.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "student-activity-council-iim-indore",
+      "rank": 3,
+      "title": "Student Activity Council, IIM Indore",
+      "url": "https://www.i5summit.in/",
+      "snippet": "Official i5 Summit site schedules a public-facing entrepreneurship event for 21-23 August 2026 at IIM Indore. Review must use the Student Activity Council as organizer, retain i5 Summit as event brand, and verify public campus access.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "security-bsides-indore",
+      "rank": 4,
+      "title": "Security BSides Indore",
+      "url": "https://linktr.ee/Bsidesindore",
+      "snippet": "Local identity hub links the Indore cybersecurity community and its conference surfaces. Review the locally advertised September 2026 dates against the global calendar before publication.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "after-fly",
+      "rank": 5,
+      "title": "AFTER FLY",
+      "url": "https://www.instagram.com/afterfly.in/",
+      "snippet": "The existing first-party social identity plus hosted Luma event evidence identifies AFTER FLY as the Indore organizer of Run & Rave Vol. 6. This must attach to the existing AFTER FLY inventory; visible registration is closed, so do not invent a future event.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "indore-superchargers",
+      "rank": 6,
+      "title": "Indore SuperChargers",
+      "url": "https://indoresuperchargers.com/",
+      "snippet": "Official running-community site presents Indore races including a 2026 colour run. Verify the next registration window and distinguish the organizer from individual race brands.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "roadrunners",
+      "rank": 7,
+      "title": "Roadrunners",
+      "url": "https://www.roadrunners.in/",
+      "snippet": "Official site establishes an Indore running and fitness-community identity. The site rejected automated opening during research, so a human reviewer must confirm current city sessions and contact provenance.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "sync-pickleball",
+      "rank": 8,
+      "title": "Sync Pickleball",
+      "url": "https://www.syncpickleball.com/",
+      "snippet": "Official Indore pickleball-club site describes mixers and themed social nights. Confirm public availability, location, and whether Sync owns the events rather than only the courts.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "indore-design-community",
+      "rank": 9,
+      "title": "Indore Design Community",
+      "url": "https://luma.com/indoredesigncommunity",
+      "snippet": "Official hosted community page identifies Indore UI/UX meetups, workshops, and events. Verify the organizing team and the next public session.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "indore-technical-community",
+      "rank": 10,
+      "title": "Indore Technical Community",
+      "url": "https://www.meetup.com/indoretechcommunity/",
+      "snippet": "Public Meetup identity for an Indore technical community with event activity. Confirm a current upcoming offline event and avoid merging vendor-specific communities.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "gdg-indore",
+      "rank": 11,
+      "title": "GDG Indore",
+      "url": "https://gdg.community.dev/gdg-indore/",
+      "snippet": "Official Google Developer Groups chapter page shows frequent Indore meetups and a visible 25 July 2026 event. Strong freshness and city evidence; retain GDG chapter ownership.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "aws-user-group-indore",
+      "rank": 12,
+      "title": "AWS User Group Indore",
+      "url": "https://www.awsugindore.in/events",
+      "snippet": "Official community events page shows recent 2026 activity in Indore. Automated opening was limited, so verify the next offline date and chapter ownership manually.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "pydata-indore",
+      "rank": 13,
+      "title": "PyData Indore",
+      "url": "https://indore.pydata.org/",
+      "snippet": "Official PyData chapter site lists Indore events including 18 July 2026. Confirm the next session and model PyData Indore as the chapter organizer.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "indore-atlassian-community-events",
+      "rank": 14,
+      "title": "Indore Atlassian Community Events",
+      "url": "https://www.meetup.com/indore-atlassian-community-events/",
+      "snippet": "Public community profile lists an Indore event on 25 July 2026. Verify offline venue and whether the official Atlassian chapter surface provides the canonical identity.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "primewise-founders-club-indore",
+      "rank": 15,
+      "title": "Primewise Founders Club Indore",
+      "url": "https://www.meetup.com/primewise-founders-club-indore/",
+      "snippet": "Public Meetup profile lists a founders-community event in Indore on 25 July 2026. Confirm organizer ownership and recurring cadence beyond a single event.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "mystix",
+      "rank": 16,
+      "title": "Mystix",
+      "url": "https://www.mystix.in/",
+      "snippet": "Official site describes 2026 Indore Gen Z and community-first events. Verify current registration, responsible organizer identity, and age/access requirements.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "kalastambh",
+      "rank": 17,
+      "title": "Kalastambh",
+      "url": "https://kalastambh.com/",
+      "snippet": "Official arts-community site shows an Indore gathering in June 2026. Strong local identity, but the next public program must be refreshed before any event listing.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "studio-folklore",
+      "rank": 18,
+      "title": "Studio Folklore",
+      "url": "https://www.studiofolklore.in/",
+      "snippet": "Official Indore studio site describes community events and workshops. Verify upcoming public dates and distinguish studio-owned programming from visiting instructors.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "brhma",
+      "rank": 19,
+      "title": "Brhma",
+      "url": "https://www.brhma.in/",
+      "snippet": "Official Indore art-and-culture site describes workshops and gatherings. Automated opening was limited, so require manual confirmation of present cadence and ownership.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "leo-club-of-indore",
+      "rank": 20,
+      "title": "Leo Club of Indore",
+      "url": "https://www.leoclubofindore.com/",
+      "snippet": "Official site presents an Indore youth service and friendship community. Confirm upcoming public social or service events and any membership restrictions.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "priya-sarv-utthan-seva-sansthan",
+      "rank": 21,
+      "title": "Priya Sarv Utthan Seva Sansthan",
+      "url": "https://priyasarvutthan.org/events",
+      "snippet": "Official events page shows 2026 Indore community activity and participation calls. Review mission fit, public accessibility, and the next event before listing.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "kya-haal-indore",
+      "rank": 22,
+      "title": "Kya Haal Indore",
+      "url": "https://in.bookmyshow.com/events/open-mic-by-kya-haal-indore/ET00356701",
+      "snippet": "Ticketing evidence identifies an Indore open-mic and hobbies community. Because this is a third-party event page, find and verify a first-party organizer surface before approval.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "mafia-inc-championship",
+      "rank": 23,
+      "title": "Mafia Inc Championship",
+      "url": "https://www.mafiainc.in/",
+      "snippet": "Official site presents an Indore city-wide social role-playing tournament in 2026. Verify current schedule, responsible organizer, and whether the championship brand is durable beyond one event.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "shebright",
+      "rank": 24,
+      "title": "SheBright",
+      "url": "https://luma.com/llg3e8u9",
+      "snippet": "Hosted event evidence identifies SheBright in an Indore community-programming context. The result is not enough to prove durable organizer ownership; require a first-party identity and current cadence.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "art-factory-indore",
+      "rank": 25,
+      "title": "Art Factory Indore",
+      "url": "https://artfactory.org.in/workshop-register/",
+      "snippet": "Official 2026 workshop registration page includes an Indore address and active art programming. Verify the display identity, next public workshop, and whether instructors are separate organizers.",
+      "observedAt": "2026-07-24"
+    }
+  ],
+  "notes": "Private review evidence only. Search results do not publish organizer pages or write Firestore. Source freshness, entity ownership, claim state, and publication decisions remain mandatory."
+}

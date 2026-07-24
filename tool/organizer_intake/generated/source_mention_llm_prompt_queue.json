@@ -8,10 +8,311 @@
     "note": "This artifact is prompt preparation only. A backend runner must add cache reads/writes and explicit model-call approval.",
     "status": "model_calls_disabled"
   },
-  "requests": [],
+  "requests": [
+    {
+      "apiKeyEnv": "OPENAI_API_KEY",
+      "clusterId": "cluster:organizer-indore-indore-atlassian-community-events-resolution-organizer-2026-07-:e36afa8a",
+      "expectedJsonShape": {
+        "clusterId": "cluster:organizer-indore-indore-atlassian-community-events-resolution-organizer-2026-07-:e36afa8a",
+        "confidence": "high | medium | low",
+        "conflicts": [
+          {
+            "field": "string",
+            "values": [
+              "string"
+            ]
+          }
+        ],
+        "decision": "same_event | separate_events | needs_human_review",
+        "humanReviewChecklist": [
+          "string"
+        ],
+        "reasons": [
+          "string"
+        ],
+        "recommendedCanonicalMentionId": "string or null",
+        "schemaVersion": 1
+      },
+      "inputHash": "881c0145adb18bd2e38e3f4b50839b9ac4a57e3277ed9095012ec0a6b9b7e590",
+      "modelEnv": "LLM_DEDUPE_MODEL",
+      "payload": {
+        "clusterId": "cluster:organizer-indore-indore-atlassian-community-events-resolution-organizer-2026-07-:e36afa8a",
+        "deterministicScore": {
+          "conflictingSignals": [
+            "different_city"
+          ],
+          "hardSignals": [
+            "hard:surface:domain:meetup.com"
+          ],
+          "matchingSignals": [
+            "same_city",
+            "same_domain",
+            "similar_organizer_name"
+          ],
+          "reason": "LLM adjudication is disabled by policy.",
+          "score": 1,
+          "status": "eligible"
+        },
+        "mentions": [
+          {
+            "candidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-atlassian-community-events",
+            "canonicalUrl": "https://meetup.com/indore-atlassian-community-events",
+            "categoryId": "multi-category-organizer-discovery",
+            "citations": [
+              {
+                "field": "title",
+                "sourceUrl": "https://www.meetup.com/indore-atlassian-community-events/",
+                "spanId": "indore-atlassian-community-events"
+              },
+              {
+                "field": "officialUrl",
+                "sourceUrl": "https://www.meetup.com/indore-atlassian-community-events/",
+                "spanId": "indore-atlassian-community-events"
+              }
+            ],
+            "citySlug": "indore",
+            "date": null,
+            "displayName": "Indore Atlassian Community Events",
+            "entityType": "organizer",
+            "mentionId": "organizer:2026-07-24-pilot-indore-organizers:indore-atlassian-community-events",
+            "sourceType": "officialWebsite",
+            "sourceUrl": "https://www.meetup.com/indore-atlassian-community-events/"
+          },
+          {
+            "candidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-technical-community",
+            "canonicalUrl": "https://meetup.com/indoretechcommunity",
+            "categoryId": "multi-category-organizer-discovery",
+            "citations": [
+              {
+                "field": "title",
+                "sourceUrl": "https://www.meetup.com/indoretechcommunity/",
+                "spanId": "indore-technical-community"
+              },
+              {
+                "field": "officialUrl",
+                "sourceUrl": "https://www.meetup.com/indoretechcommunity/",
+                "spanId": "indore-technical-community"
+              }
+            ],
+            "citySlug": "indore",
+            "date": null,
+            "displayName": "Indore Technical Community",
+            "entityType": "organizer",
+            "mentionId": "organizer:2026-07-24-pilot-indore-organizers:indore-technical-community",
+            "sourceType": "officialWebsite",
+            "sourceUrl": "https://www.meetup.com/indoretechcommunity/"
+          },
+          {
+            "candidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-toastmasters-meetup",
+            "canonicalUrl": "https://meetup.com/indore-toastmasters-meetup",
+            "categoryId": "multi-category-organizer-discovery",
+            "citations": [
+              {
+                "field": "title",
+                "sourceUrl": "https://www.meetup.com/indore-toastmasters-meetup/",
+                "spanId": "indore-toastmasters-meetup"
+              },
+              {
+                "field": "officialUrl",
+                "sourceUrl": "https://www.meetup.com/indore-toastmasters-meetup/",
+                "spanId": "indore-toastmasters-meetup"
+              }
+            ],
+            "citySlug": "indore",
+            "date": null,
+            "displayName": "Indore Toastmasters' Meetup",
+            "entityType": "organizer",
+            "mentionId": "organizer:2026-07-24-pilot-indore-organizers:indore-toastmasters-meetup",
+            "sourceType": "officialWebsite",
+            "sourceUrl": "https://www.meetup.com/indore-toastmasters-meetup/"
+          },
+          {
+            "candidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:primewise-founders-club-indore",
+            "canonicalUrl": "https://meetup.com/primewise-founders-club-indore",
+            "categoryId": "multi-category-organizer-discovery",
+            "citations": [
+              {
+                "field": "title",
+                "sourceUrl": "https://www.meetup.com/primewise-founders-club-indore/",
+                "spanId": "primewise-founders-club-indore"
+              },
+              {
+                "field": "officialUrl",
+                "sourceUrl": "https://www.meetup.com/primewise-founders-club-indore/",
+                "spanId": "primewise-founders-club-indore"
+              }
+            ],
+            "citySlug": "indore",
+            "date": null,
+            "displayName": "Primewise Founders Club Indore",
+            "entityType": "organizer",
+            "mentionId": "organizer:2026-07-24-pilot-indore-organizers:primewise-founders-club-indore",
+            "sourceType": "officialWebsite",
+            "sourceUrl": "https://www.meetup.com/primewise-founders-club-indore/"
+          },
+          {
+            "candidateId": "resolution:organizer:2026-07-24-pilot-mumbai-organizers:link-and-chill",
+            "canonicalUrl": "https://meetup.com/linkandchillmumbai",
+            "categoryId": "multi-category-organizer-discovery",
+            "citations": [
+              {
+                "field": "title",
+                "sourceUrl": "https://www.meetup.com/linkandchillmumbai/",
+                "spanId": "link-and-chill"
+              },
+              {
+                "field": "officialUrl",
+                "sourceUrl": "https://www.meetup.com/linkandchillmumbai/",
+                "spanId": "link-and-chill"
+              }
+            ],
+            "citySlug": "mumbai",
+            "date": null,
+            "displayName": "Link & Chill",
+            "entityType": "organizer",
+            "mentionId": "organizer:2026-07-24-pilot-mumbai-organizers:link-and-chill",
+            "sourceType": "officialWebsite",
+            "sourceUrl": "https://www.meetup.com/linkandchillmumbai/"
+          }
+        ],
+        "promptVersion": "event-cluster-adjudicate-v1",
+        "task": "adjudicate_event_cluster"
+      },
+      "promptVersion": "event-cluster-adjudicate-v1",
+      "requestId": "llm-adjudication:cluster:organizer-indore-indore-atlassian-community-events-resolution-organizer-2026-07-:e36afa8a",
+      "status": "prompt_ready_model_call_disabled",
+      "system": "You review already-extracted source mentions. Deterministic rules are primary. Use the provided scorecard and evidence only. Return whether the cluster appears to describe one event, multiple events, or needs human review. Do not create new facts."
+    },
+    {
+      "apiKeyEnv": "OPENAI_API_KEY",
+      "clusterId": "cluster:organizer-indore-security-bsides-indore-resolution-organizer-2026-07-24-pilot-in:57de7d81",
+      "expectedJsonShape": {
+        "clusterId": "cluster:organizer-indore-security-bsides-indore-resolution-organizer-2026-07-24-pilot-in:57de7d81",
+        "confidence": "high | medium | low",
+        "conflicts": [
+          {
+            "field": "string",
+            "values": [
+              "string"
+            ]
+          }
+        ],
+        "decision": "same_event | separate_events | needs_human_review",
+        "humanReviewChecklist": [
+          "string"
+        ],
+        "reasons": [
+          "string"
+        ],
+        "recommendedCanonicalMentionId": "string or null",
+        "schemaVersion": 1
+      },
+      "inputHash": "1478007ea4542add46f73afa80a576af86285417e4ce7de7934f8936617e484b",
+      "modelEnv": "LLM_DEDUPE_MODEL",
+      "payload": {
+        "clusterId": "cluster:organizer-indore-security-bsides-indore-resolution-organizer-2026-07-24-pilot-in:57de7d81",
+        "deterministicScore": {
+          "conflictingSignals": [
+            "different_city"
+          ],
+          "hardSignals": [
+            "hard:surface:domain:linktr.ee"
+          ],
+          "matchingSignals": [
+            "same_city",
+            "same_domain",
+            "similar_organizer_name"
+          ],
+          "reason": "LLM adjudication is disabled by policy.",
+          "score": 1,
+          "status": "eligible"
+        },
+        "mentions": [
+          {
+            "candidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:security-bsides-indore",
+            "canonicalUrl": "https://linktr.ee/Bsidesindore",
+            "categoryId": "multi-category-organizer-discovery",
+            "citations": [
+              {
+                "field": "title",
+                "sourceUrl": "https://linktr.ee/Bsidesindore",
+                "spanId": "security-bsides-indore"
+              },
+              {
+                "field": "officialUrl",
+                "sourceUrl": "https://linktr.ee/Bsidesindore",
+                "spanId": "security-bsides-indore"
+              }
+            ],
+            "citySlug": "indore",
+            "date": null,
+            "displayName": "Security BSides Indore",
+            "entityType": "organizer",
+            "mentionId": "organizer:2026-07-24-pilot-indore-organizers:security-bsides-indore",
+            "sourceType": "officialWebsite",
+            "sourceUrl": "https://linktr.ee/Bsidesindore"
+          },
+          {
+            "candidateId": "resolution:organizer:2026-07-24-pilot-mumbai-organizers:base-camp-board-gaming-library",
+            "canonicalUrl": "https://linktr.ee/basecamp.bg",
+            "categoryId": "multi-category-organizer-discovery",
+            "citations": [
+              {
+                "field": "title",
+                "sourceUrl": "https://linktr.ee/basecamp.bg",
+                "spanId": "base-camp-board-gaming-library"
+              },
+              {
+                "field": "officialUrl",
+                "sourceUrl": "https://linktr.ee/basecamp.bg",
+                "spanId": "base-camp-board-gaming-library"
+              }
+            ],
+            "citySlug": "mumbai",
+            "date": null,
+            "displayName": "Base Camp Board Gaming Library",
+            "entityType": "organizer",
+            "mentionId": "organizer:2026-07-24-pilot-mumbai-organizers:base-camp-board-gaming-library",
+            "sourceType": "officialWebsite",
+            "sourceUrl": "https://linktr.ee/basecamp.bg"
+          },
+          {
+            "candidateId": "resolution:organizer:2026-07-24-pilot-mumbai-organizers:bombay-board-game-club",
+            "canonicalUrl": "https://linktr.ee/bbgc.creative",
+            "categoryId": "multi-category-organizer-discovery",
+            "citations": [
+              {
+                "field": "title",
+                "sourceUrl": "https://linktr.ee/bbgc.creative",
+                "spanId": "bombay-board-game-club"
+              },
+              {
+                "field": "officialUrl",
+                "sourceUrl": "https://linktr.ee/bbgc.creative",
+                "spanId": "bombay-board-game-club"
+              }
+            ],
+            "citySlug": "mumbai",
+            "date": null,
+            "displayName": "Bombay Board Game Club",
+            "entityType": "organizer",
+            "mentionId": "organizer:2026-07-24-pilot-mumbai-organizers:bombay-board-game-club",
+            "sourceType": "officialWebsite",
+            "sourceUrl": "https://linktr.ee/bbgc.creative"
+          }
+        ],
+        "promptVersion": "event-cluster-adjudicate-v1",
+        "task": "adjudicate_event_cluster"
+      },
+      "promptVersion": "event-cluster-adjudicate-v1",
+      "requestId": "llm-adjudication:cluster:organizer-indore-security-bsides-indore-resolution-organizer-2026-07-24-pilot-in:57de7d81",
+      "status": "prompt_ready_model_call_disabled",
+      "system": "You review already-extracted source mentions. Deterministic rules are primary. Use the provided scorecard and evidence only. Return whether the cluster appears to describe one event, multiple events, or needs human review. Do not create new facts."
+    }
+  ],
   "schemaVersion": 1,
   "summary": {
-    "promptReady": 0,
-    "requests": 0
+    "promptReady": 2,
+    "requests": 2
   }
 }

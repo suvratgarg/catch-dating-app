@@ -1,6 +1,1850 @@
 {
-  "candidatePairs": [],
-  "clusters": [],
+  "candidatePairs": [
+    {
+      "blockingKeys": [
+        "hard:surface:domain:meetup.com",
+        "organizer-domain:meetup.com",
+        "organizer-name-city:meetup com:indore"
+      ],
+      "conflictingSignals": [],
+      "entityType": "organizer",
+      "hardSignals": [
+        "hard:surface:domain:meetup.com"
+      ],
+      "leftCandidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-atlassian-community-events",
+      "matchingSignals": [
+        "same_city",
+        "same_domain",
+        "similar_organizer_name"
+      ],
+      "pairId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-atlassian-community-events::resolution:organizer:2026-07-24-pilot-indore-organizers:indore-technical-community",
+      "reason": "Hard key match: hard:surface:domain:meetup.com",
+      "rightCandidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-technical-community",
+      "score": 1,
+      "scoreBand": "auto_attach"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:meetup.com",
+        "organizer-domain:meetup.com",
+        "organizer-name-city:meetup com:indore"
+      ],
+      "conflictingSignals": [],
+      "entityType": "organizer",
+      "hardSignals": [
+        "hard:surface:domain:meetup.com"
+      ],
+      "leftCandidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-atlassian-community-events",
+      "matchingSignals": [
+        "same_city",
+        "same_domain",
+        "similar_organizer_name"
+      ],
+      "pairId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-atlassian-community-events::resolution:organizer:2026-07-24-pilot-indore-organizers:indore-toastmasters-meetup",
+      "reason": "Hard key match: hard:surface:domain:meetup.com",
+      "rightCandidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-toastmasters-meetup",
+      "score": 1,
+      "scoreBand": "auto_attach"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:meetup.com",
+        "organizer-domain:meetup.com",
+        "organizer-name-city:meetup com:indore"
+      ],
+      "conflictingSignals": [],
+      "entityType": "organizer",
+      "hardSignals": [
+        "hard:surface:domain:meetup.com"
+      ],
+      "leftCandidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-atlassian-community-events",
+      "matchingSignals": [
+        "same_city",
+        "same_domain",
+        "similar_organizer_name"
+      ],
+      "pairId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-atlassian-community-events::resolution:organizer:2026-07-24-pilot-indore-organizers:primewise-founders-club-indore",
+      "reason": "Hard key match: hard:surface:domain:meetup.com",
+      "rightCandidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:primewise-founders-club-indore",
+      "score": 1,
+      "scoreBand": "auto_attach"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:meetup.com",
+        "organizer-domain:meetup.com"
+      ],
+      "conflictingSignals": [
+        "different_city"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [
+        "hard:surface:domain:meetup.com"
+      ],
+      "leftCandidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-atlassian-community-events",
+      "matchingSignals": [
+        "same_domain",
+        "similar_organizer_name"
+      ],
+      "pairId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-atlassian-community-events::resolution:organizer:2026-07-24-pilot-mumbai-organizers:link-and-chill",
+      "reason": "Hard key match: hard:surface:domain:meetup.com",
+      "rightCandidateId": "resolution:organizer:2026-07-24-pilot-mumbai-organizers:link-and-chill",
+      "score": 1,
+      "scoreBand": "auto_attach"
+    },
+    {
+      "blockingKeys": [
+        "organizer-domain:luma.com"
+      ],
+      "conflictingSignals": [],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "leftCandidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-design-community",
+      "matchingSignals": [
+        "same_city",
+        "same_domain"
+      ],
+      "pairId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-design-community::resolution:organizer:2026-07-24-pilot-indore-organizers:shebright",
+      "reason": "1 from matches same_city, same_domain",
+      "rightCandidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:shebright",
+      "score": 1,
+      "scoreBand": "auto_attach"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:meetup.com",
+        "organizer-domain:meetup.com",
+        "organizer-name-city:meetup com:indore"
+      ],
+      "conflictingSignals": [],
+      "entityType": "organizer",
+      "hardSignals": [
+        "hard:surface:domain:meetup.com"
+      ],
+      "leftCandidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-technical-community",
+      "matchingSignals": [
+        "same_city",
+        "same_domain",
+        "similar_organizer_name"
+      ],
+      "pairId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-technical-community::resolution:organizer:2026-07-24-pilot-indore-organizers:indore-toastmasters-meetup",
+      "reason": "Hard key match: hard:surface:domain:meetup.com",
+      "rightCandidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-toastmasters-meetup",
+      "score": 1,
+      "scoreBand": "auto_attach"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:meetup.com",
+        "organizer-domain:meetup.com",
+        "organizer-name-city:meetup com:indore"
+      ],
+      "conflictingSignals": [],
+      "entityType": "organizer",
+      "hardSignals": [
+        "hard:surface:domain:meetup.com"
+      ],
+      "leftCandidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-technical-community",
+      "matchingSignals": [
+        "same_city",
+        "same_domain",
+        "similar_organizer_name"
+      ],
+      "pairId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-technical-community::resolution:organizer:2026-07-24-pilot-indore-organizers:primewise-founders-club-indore",
+      "reason": "Hard key match: hard:surface:domain:meetup.com",
+      "rightCandidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:primewise-founders-club-indore",
+      "score": 1,
+      "scoreBand": "auto_attach"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:meetup.com",
+        "organizer-domain:meetup.com"
+      ],
+      "conflictingSignals": [
+        "different_city"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [
+        "hard:surface:domain:meetup.com"
+      ],
+      "leftCandidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-technical-community",
+      "matchingSignals": [
+        "same_domain",
+        "similar_organizer_name"
+      ],
+      "pairId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-technical-community::resolution:organizer:2026-07-24-pilot-mumbai-organizers:link-and-chill",
+      "reason": "Hard key match: hard:surface:domain:meetup.com",
+      "rightCandidateId": "resolution:organizer:2026-07-24-pilot-mumbai-organizers:link-and-chill",
+      "score": 1,
+      "scoreBand": "auto_attach"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:meetup.com",
+        "organizer-domain:meetup.com",
+        "organizer-name-city:meetup com:indore"
+      ],
+      "conflictingSignals": [],
+      "entityType": "organizer",
+      "hardSignals": [
+        "hard:surface:domain:meetup.com"
+      ],
+      "leftCandidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-toastmasters-meetup",
+      "matchingSignals": [
+        "same_city",
+        "same_domain",
+        "similar_organizer_name"
+      ],
+      "pairId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-toastmasters-meetup::resolution:organizer:2026-07-24-pilot-indore-organizers:primewise-founders-club-indore",
+      "reason": "Hard key match: hard:surface:domain:meetup.com",
+      "rightCandidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:primewise-founders-club-indore",
+      "score": 1,
+      "scoreBand": "auto_attach"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:meetup.com",
+        "organizer-domain:meetup.com"
+      ],
+      "conflictingSignals": [
+        "different_city"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [
+        "hard:surface:domain:meetup.com"
+      ],
+      "leftCandidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-toastmasters-meetup",
+      "matchingSignals": [
+        "same_domain",
+        "similar_organizer_name"
+      ],
+      "pairId": "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-toastmasters-meetup::resolution:organizer:2026-07-24-pilot-mumbai-organizers:link-and-chill",
+      "reason": "Hard key match: hard:surface:domain:meetup.com",
+      "rightCandidateId": "resolution:organizer:2026-07-24-pilot-mumbai-organizers:link-and-chill",
+      "score": 1,
+      "scoreBand": "auto_attach"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:meetup.com",
+        "organizer-domain:meetup.com"
+      ],
+      "conflictingSignals": [
+        "different_city"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [
+        "hard:surface:domain:meetup.com"
+      ],
+      "leftCandidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:primewise-founders-club-indore",
+      "matchingSignals": [
+        "same_domain",
+        "similar_organizer_name"
+      ],
+      "pairId": "resolution:organizer:2026-07-24-pilot-indore-organizers:primewise-founders-club-indore::resolution:organizer:2026-07-24-pilot-mumbai-organizers:link-and-chill",
+      "reason": "Hard key match: hard:surface:domain:meetup.com",
+      "rightCandidateId": "resolution:organizer:2026-07-24-pilot-mumbai-organizers:link-and-chill",
+      "score": 1,
+      "scoreBand": "auto_attach"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:linktr.ee",
+        "organizer-domain:linktr.ee"
+      ],
+      "conflictingSignals": [
+        "different_city"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [
+        "hard:surface:domain:linktr.ee"
+      ],
+      "leftCandidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:security-bsides-indore",
+      "matchingSignals": [
+        "same_domain",
+        "similar_organizer_name"
+      ],
+      "pairId": "resolution:organizer:2026-07-24-pilot-indore-organizers:security-bsides-indore::resolution:organizer:2026-07-24-pilot-mumbai-organizers:base-camp-board-gaming-library",
+      "reason": "Hard key match: hard:surface:domain:linktr.ee",
+      "rightCandidateId": "resolution:organizer:2026-07-24-pilot-mumbai-organizers:base-camp-board-gaming-library",
+      "score": 1,
+      "scoreBand": "auto_attach"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:linktr.ee",
+        "organizer-domain:linktr.ee"
+      ],
+      "conflictingSignals": [
+        "different_city"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [
+        "hard:surface:domain:linktr.ee"
+      ],
+      "leftCandidateId": "resolution:organizer:2026-07-24-pilot-indore-organizers:security-bsides-indore",
+      "matchingSignals": [
+        "same_domain",
+        "similar_organizer_name"
+      ],
+      "pairId": "resolution:organizer:2026-07-24-pilot-indore-organizers:security-bsides-indore::resolution:organizer:2026-07-24-pilot-mumbai-organizers:bombay-board-game-club",
+      "reason": "Hard key match: hard:surface:domain:linktr.ee",
+      "rightCandidateId": "resolution:organizer:2026-07-24-pilot-mumbai-organizers:bombay-board-game-club",
+      "score": 1,
+      "scoreBand": "auto_attach"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:linktr.ee",
+        "organizer-domain:linktr.ee",
+        "organizer-name-city:linktr ee:mumbai"
+      ],
+      "conflictingSignals": [],
+      "entityType": "organizer",
+      "hardSignals": [
+        "hard:surface:domain:linktr.ee"
+      ],
+      "leftCandidateId": "resolution:organizer:2026-07-24-pilot-mumbai-organizers:base-camp-board-gaming-library",
+      "matchingSignals": [
+        "same_city",
+        "same_domain",
+        "similar_organizer_name"
+      ],
+      "pairId": "resolution:organizer:2026-07-24-pilot-mumbai-organizers:base-camp-board-gaming-library::resolution:organizer:2026-07-24-pilot-mumbai-organizers:bombay-board-game-club",
+      "reason": "Hard key match: hard:surface:domain:linktr.ee",
+      "rightCandidateId": "resolution:organizer:2026-07-24-pilot-mumbai-organizers:bombay-board-game-club",
+      "score": 1,
+      "scoreBand": "auto_attach"
+    }
+  ],
+  "clusters": [
+    {
+      "blockingKeys": [
+        "hard:surface:domain:meetup.com",
+        "organizer-domain:meetup.com",
+        "organizer-name-city:meetup com:indore",
+        "organizer-name-city:meetup com:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-atlassian-community-events",
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-technical-community",
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-toastmasters-meetup",
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:primewise-founders-club-indore",
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:link-and-chill"
+      ],
+      "cities": [
+        "indore",
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-indore-indore-atlassian-community-events-resolution-organizer-2026-07-:e36afa8a",
+      "conflictingSignals": [
+        "different_city"
+      ],
+      "dates": [],
+      "displayNames": [
+        "Indore Atlassian Community Events",
+        "Indore Technical Community",
+        "Indore Toastmasters' Meetup",
+        "Link & Chill",
+        "Primewise Founders Club Indore"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [
+        "hard:surface:domain:meetup.com"
+      ],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "eligible"
+      },
+      "matchingSignals": [
+        "same_city",
+        "same_domain",
+        "similar_organizer_name"
+      ],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-indore-organizers:indore-atlassian-community-events",
+        "organizer:2026-07-24-pilot-indore-organizers:indore-technical-community",
+        "organizer:2026-07-24-pilot-indore-organizers:indore-toastmasters-meetup",
+        "organizer:2026-07-24-pilot-indore-organizers:primewise-founders-club-indore",
+        "organizer:2026-07-24-pilot-mumbai-organizers:link-and-chill"
+      ],
+      "pairIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-atlassian-community-events::resolution:organizer:2026-07-24-pilot-indore-organizers:indore-technical-community",
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-atlassian-community-events::resolution:organizer:2026-07-24-pilot-indore-organizers:indore-toastmasters-meetup",
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-atlassian-community-events::resolution:organizer:2026-07-24-pilot-indore-organizers:primewise-founders-club-indore",
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-atlassian-community-events::resolution:organizer:2026-07-24-pilot-mumbai-organizers:link-and-chill",
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-technical-community::resolution:organizer:2026-07-24-pilot-indore-organizers:indore-toastmasters-meetup",
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-technical-community::resolution:organizer:2026-07-24-pilot-indore-organizers:primewise-founders-club-indore",
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-technical-community::resolution:organizer:2026-07-24-pilot-mumbai-organizers:link-and-chill",
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-toastmasters-meetup::resolution:organizer:2026-07-24-pilot-indore-organizers:primewise-founders-club-indore",
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-toastmasters-meetup::resolution:organizer:2026-07-24-pilot-mumbai-organizers:link-and-chill",
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:primewise-founders-club-indore::resolution:organizer:2026-07-24-pilot-mumbai-organizers:link-and-chill"
+      ],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "probable_duplicate",
+      "score": 1,
+      "scoreBand": "auto_attach"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:luma:event:indoredesigncommunity",
+        "hard:surface:luma:event:llg3e8u9",
+        "organizer-domain:luma.com",
+        "organizer-name-city:indoredesigncommunity:indore",
+        "organizer-name-city:llg3e8u9:indore"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-design-community",
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:shebright"
+      ],
+      "cities": [
+        "indore"
+      ],
+      "clusterId": "cluster:organizer-indore-indore-design-community-resolution-organizer-2026-07-24-pilot-i:aea8b6fc",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Indore Design Community",
+        "SheBright"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [
+        "same_city",
+        "same_domain"
+      ],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-indore-organizers:indore-design-community",
+        "organizer:2026-07-24-pilot-indore-organizers:shebright"
+      ],
+      "pairIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-design-community::resolution:organizer:2026-07-24-pilot-indore-organizers:shebright"
+      ],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "auto_attach",
+      "score": 1,
+      "scoreBand": "auto_attach"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:linktr.ee",
+        "organizer-domain:linktr.ee",
+        "organizer-name-city:linktr ee:indore",
+        "organizer-name-city:linktr ee:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:security-bsides-indore",
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:base-camp-board-gaming-library",
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:bombay-board-game-club"
+      ],
+      "cities": [
+        "indore",
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-indore-security-bsides-indore-resolution-organizer-2026-07-24-pilot-in:57de7d81",
+      "conflictingSignals": [
+        "different_city"
+      ],
+      "dates": [],
+      "displayNames": [
+        "Base Camp Board Gaming Library",
+        "Bombay Board Game Club",
+        "Security BSides Indore"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [
+        "hard:surface:domain:linktr.ee"
+      ],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "eligible"
+      },
+      "matchingSignals": [
+        "same_city",
+        "same_domain",
+        "similar_organizer_name"
+      ],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-indore-organizers:security-bsides-indore",
+        "organizer:2026-07-24-pilot-mumbai-organizers:base-camp-board-gaming-library",
+        "organizer:2026-07-24-pilot-mumbai-organizers:bombay-board-game-club"
+      ],
+      "pairIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:security-bsides-indore::resolution:organizer:2026-07-24-pilot-mumbai-organizers:base-camp-board-gaming-library",
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:security-bsides-indore::resolution:organizer:2026-07-24-pilot-mumbai-organizers:bombay-board-game-club",
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:base-camp-board-gaming-library::resolution:organizer:2026-07-24-pilot-mumbai-organizers:bombay-board-game-club"
+      ],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "probable_duplicate",
+      "score": 1,
+      "scoreBand": "auto_attach"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:indoremarathon.in",
+        "organizer-domain:indoremarathon.in",
+        "organizer-name-city:indoremarathon in:indore"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:academy-of-indore-marathoners"
+      ],
+      "cities": [
+        "indore"
+      ],
+      "clusterId": "cluster:organizer-indore-academy-of-indore-marathoners-aim-resolution-organizer-2026-07-:45e76504",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Academy of Indore Marathoners (AIM)"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-indore-organizers:academy-of-indore-marathoners"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:instagram:afterfly.in",
+        "organizer-domain:instagram.com",
+        "organizer-name-city:afterfly in:indore"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:after-fly"
+      ],
+      "cities": [
+        "indore"
+      ],
+      "clusterId": "cluster:organizer-indore-after-fly-resolution-organizer-2026-07-24-pilot-indore-organize:98fa99d3",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "AFTER FLY"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-indore-organizers:after-fly"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:artfactory.org.in",
+        "organizer-domain:artfactory.org.in",
+        "organizer-name-city:artfactory org in:indore"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:art-factory-indore"
+      ],
+      "cities": [
+        "indore"
+      ],
+      "clusterId": "cluster:organizer-indore-art-factory-indore-resolution-organizer-2026-07-24-pilot-indore:d6711395",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Art Factory Indore"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-indore-organizers:art-factory-indore"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:awsugindore.in",
+        "organizer-domain:awsugindore.in",
+        "organizer-name-city:awsugindore in:indore"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:aws-user-group-indore"
+      ],
+      "cities": [
+        "indore"
+      ],
+      "clusterId": "cluster:organizer-indore-aws-user-group-indore-resolution-organizer-2026-07-24-pilot-ind:fe034102",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "AWS User Group Indore"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-indore-organizers:aws-user-group-indore"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:brhma.in",
+        "organizer-domain:brhma.in",
+        "organizer-name-city:brhma in:indore"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:brhma"
+      ],
+      "cities": [
+        "indore"
+      ],
+      "clusterId": "cluster:organizer-indore-brhma-resolution-organizer-2026-07-24-pilot-indore-organizers-b:47e19b0b",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Brhma"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-indore-organizers:brhma"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:gdg.community.dev",
+        "organizer-domain:gdg.community.dev",
+        "organizer-name-city:gdg community dev:indore"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:gdg-indore"
+      ],
+      "cities": [
+        "indore"
+      ],
+      "clusterId": "cluster:organizer-indore-gdg-indore-resolution-organizer-2026-07-24-pilot-indore-organiz:405d6d2f",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "GDG Indore"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-indore-organizers:gdg-indore"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:indoresuperchargers.com",
+        "organizer-domain:indoresuperchargers.com",
+        "organizer-name-city:indoresuperchargers com:indore"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:indore-superchargers"
+      ],
+      "cities": [
+        "indore"
+      ],
+      "clusterId": "cluster:organizer-indore-indore-superchargers-resolution-organizer-2026-07-24-pilot-indo:f6e08bfa",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Indore SuperChargers"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-indore-organizers:indore-superchargers"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:kalastambh.com",
+        "organizer-domain:kalastambh.com",
+        "organizer-name-city:kalastambh com:indore"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:kalastambh"
+      ],
+      "cities": [
+        "indore"
+      ],
+      "clusterId": "cluster:organizer-indore-kalastambh-resolution-organizer-2026-07-24-pilot-indore-organiz:0e9a818e",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Kalastambh"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-indore-organizers:kalastambh"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:bookMyShow:event:open-mic-by-kya-haal-indore",
+        "organizer-domain:bookmyshow.com",
+        "organizer-name-city:open mic by kya haal indore:indore"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:kya-haal-indore"
+      ],
+      "cities": [
+        "indore"
+      ],
+      "clusterId": "cluster:organizer-indore-kya-haal-indore-resolution-organizer-2026-07-24-pilot-indore-or:d6ccae79",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Kya Haal Indore"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-indore-organizers:kya-haal-indore"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:leoclubofindore.com",
+        "organizer-domain:leoclubofindore.com",
+        "organizer-name-city:leoclubofindore com:indore"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:leo-club-of-indore"
+      ],
+      "cities": [
+        "indore"
+      ],
+      "clusterId": "cluster:organizer-indore-leo-club-of-indore-resolution-organizer-2026-07-24-pilot-indore:6b681eee",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Leo Club of Indore"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-indore-organizers:leo-club-of-indore"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:mafiainc.in",
+        "organizer-domain:mafiainc.in",
+        "organizer-name-city:mafiainc in:indore"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:mafia-inc-championship"
+      ],
+      "cities": [
+        "indore"
+      ],
+      "clusterId": "cluster:organizer-indore-mafia-inc-championship-resolution-organizer-2026-07-24-pilot-in:72a75e21",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Mafia Inc Championship"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-indore-organizers:mafia-inc-championship"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:mystix.in",
+        "organizer-domain:mystix.in",
+        "organizer-name-city:mystix in:indore"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:mystix"
+      ],
+      "cities": [
+        "indore"
+      ],
+      "clusterId": "cluster:organizer-indore-mystix-resolution-organizer-2026-07-24-pilot-indore-organizers-:f84a55e8",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Mystix"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-indore-organizers:mystix"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:priyasarvutthan.org",
+        "organizer-domain:priyasarvutthan.org",
+        "organizer-name-city:priyasarvutthan org:indore"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:priya-sarv-utthan-seva-sansthan"
+      ],
+      "cities": [
+        "indore"
+      ],
+      "clusterId": "cluster:organizer-indore-priya-sarv-utthan-seva-sansthan-resolution-organizer-2026-07-24:8544c393",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Priya Sarv Utthan Seva Sansthan"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-indore-organizers:priya-sarv-utthan-seva-sansthan"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:indore.pydata.org",
+        "organizer-domain:indore.pydata.org",
+        "organizer-name-city:indore pydata org:indore"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:pydata-indore"
+      ],
+      "cities": [
+        "indore"
+      ],
+      "clusterId": "cluster:organizer-indore-pydata-indore-resolution-organizer-2026-07-24-pilot-indore-orga:116cea6f",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "PyData Indore"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-indore-organizers:pydata-indore"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:roadrunners.in",
+        "organizer-domain:roadrunners.in",
+        "organizer-name-city:roadrunners in:indore"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:roadrunners"
+      ],
+      "cities": [
+        "indore"
+      ],
+      "clusterId": "cluster:organizer-indore-roadrunners-resolution-organizer-2026-07-24-pilot-indore-organi:2a028cf1",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Roadrunners"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-indore-organizers:roadrunners"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:i5summit.in",
+        "organizer-domain:i5summit.in",
+        "organizer-name-city:i5summit in:indore"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:student-activity-council-iim-indore"
+      ],
+      "cities": [
+        "indore"
+      ],
+      "clusterId": "cluster:organizer-indore-student-activity-council-iim-indore-resolution-organizer-2026-0:744b3ed5",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Student Activity Council, IIM Indore"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-indore-organizers:student-activity-council-iim-indore"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:studiofolklore.in",
+        "organizer-domain:studiofolklore.in",
+        "organizer-name-city:studiofolklore in:indore"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:studio-folklore"
+      ],
+      "cities": [
+        "indore"
+      ],
+      "clusterId": "cluster:organizer-indore-studio-folklore-resolution-organizer-2026-07-24-pilot-indore-or:832e9532",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Studio Folklore"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-indore-organizers:studio-folklore"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:syncpickleball.com",
+        "organizer-domain:syncpickleball.com",
+        "organizer-name-city:syncpickleball com:indore"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-indore-organizers:sync-pickleball"
+      ],
+      "cities": [
+        "indore"
+      ],
+      "clusterId": "cluster:organizer-indore-sync-pickleball-resolution-organizer-2026-07-24-pilot-indore-or:57b55688",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Sync Pickleball"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-indore-organizers:sync-pickleball"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:artandwonderment.in",
+        "organizer-domain:artandwonderment.in",
+        "organizer-name-city:artandwonderment in:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:art-and-wonderment"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-art-wonderment-resolution-organizer-2026-07-24-pilot-mumbai-org:8ac538af",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Art & Wonderment"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:art-and-wonderment"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:complexcity.in",
+        "organizer-domain:complexcity.in",
+        "organizer-name-city:complexcity in:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:complexcity"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-complexcity-resolution-organizer-2026-07-24-pilot-mumbai-organi:1216374b",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "ComplexCity"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:complexcity"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:viacourtside.com",
+        "organizer-domain:viacourtside.com",
+        "organizer-name-city:viacourtside com:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:courtside"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-courtside-resolution-organizer-2026-07-24-pilot-mumbai-organize:f0f0fd27",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Courtside"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:courtside"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:doolally.in",
+        "organizer-domain:doolally.in",
+        "organizer-name-city:doolally in:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:doolally"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-doolally-resolution-organizer-2026-07-24-pilot-mumbai-organizer:aea44cc7",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Doolally"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:doolally"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:fofmumbai.com",
+        "organizer-domain:fofmumbai.com",
+        "organizer-name-city:fofmumbai com:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:friends-of-figma-mumbai"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-friends-of-figma-mumbai-resolution-organizer-2026-07-24-pilot-m:dcd4c79f",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Friends of Figma Mumbai"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:friends-of-figma-mumbai"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:goosepick.com",
+        "organizer-domain:goosepick.com",
+        "organizer-name-city:goosepick com:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:goosepick-social"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-goosepick-social-resolution-organizer-2026-07-24-pilot-mumbai-o:c9504316",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Goosepick Social"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:goosepick-social"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:hostedtable.in",
+        "organizer-domain:hostedtable.in",
+        "organizer-name-city:hostedtable in:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:hosted-table"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-hosted-table-resolution-organizer-2026-07-24-pilot-mumbai-organ:6c999986",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Hosted Table"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:hosted-table"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:khakitours.com",
+        "organizer-domain:khakitours.com",
+        "organizer-name-city:khakitours com:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:khaki-tours"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-khaki-tours-resolution-organizer-2026-07-24-pilot-mumbai-organi:4c6c5b0d",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Khaki Tours"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:khaki-tours"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:kommuneity.com",
+        "organizer-domain:kommuneity.com",
+        "organizer-name-city:kommuneity com:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:kommune"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-kommune-resolution-organizer-2026-07-24-pilot-mumbai-organizers:ae40836b",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Kommune"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:kommune"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:macabo.in",
+        "organizer-domain:macabo.in",
+        "organizer-name-city:macabo in:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:macabo"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-macabo-resolution-organizer-2026-07-24-pilot-mumbai-organizers-:378374d6",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "MaCaBo"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:macabo"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:makesomeochha.com",
+        "organizer-domain:makesomeochha.com",
+        "organizer-name-city:makesomeochha com:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:make-some-ochha"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-make-some-ochha-resolution-organizer-2026-07-24-pilot-mumbai-or:227ee412",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Make Some Ochha"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:make-some-ochha"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:meeplecon.in",
+        "organizer-domain:meeplecon.in",
+        "organizer-name-city:meeplecon in:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:meeplecon"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-meeplecon-resolution-organizer-2026-07-24-pilot-mumbai-organize:0556602c",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Meeplecon"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:meeplecon"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:meetpeoplesocial.com",
+        "organizer-domain:meetpeoplesocial.com",
+        "organizer-name-city:meetpeoplesocial com:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:meet-people-social-mumbai"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-meet-people-social-mumbai-resolution-organizer-2026-07-24-pilot:a692ff99",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Meet People Social Mumbai"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:meet-people-social-mumbai"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:nfpexplore.com",
+        "organizer-domain:nfpexplore.com",
+        "organizer-name-city:nfpexplore com:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:no-footprints"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-no-footprints-resolution-organizer-2026-07-24-pilot-mumbai-orga:07a52048",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "No Footprints"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:no-footprints"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:padelpark.in",
+        "organizer-domain:padelpark.in",
+        "organizer-name-city:padelpark in:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:padelpark-india"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-padelpark-india-resolution-organizer-2026-07-24-pilot-mumbai-or:610e8f9b",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "PadelPark India"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:padelpark-india"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:playace.co",
+        "organizer-domain:playace.co",
+        "organizer-name-city:playace co:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:playace"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-playace-resolution-organizer-2026-07-24-pilot-mumbai-organizers:f35ebf1c",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Playace"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:playace"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:sacredspacewellness.in",
+        "organizer-domain:sacredspacewellness.in",
+        "organizer-name-city:sacredspacewellness in:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:sacred-space-run-club"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-sacred-space-run-club-resolution-organizer-2026-07-24-pilot-mum:6edf7632",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Sacred Space Run Club"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:sacred-space-run-club"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:smallworld.co",
+        "organizer-domain:smallworld.co",
+        "organizer-name-city:smallworld co:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:small-world"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-small-world-resolution-organizer-2026-07-24-pilot-mumbai-organi:408904a6",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Small World"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:small-world"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:jamwith.socialmonkey.club",
+        "organizer-domain:jamwith.socialmonkey.club",
+        "organizer-name-city:jamwith socialmonkey club:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:social-monkey"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-social-monkey-resolution-organizer-2026-07-24-pilot-mumbai-orga:d73a1b31",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Social Monkey"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:social-monkey"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:socialoffline.in",
+        "organizer-domain:socialoffline.in",
+        "organizer-name-city:socialoffline in:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:social-offline"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-social-resolution-organizer-2026-07-24-pilot-mumbai-organizers-:f1e0d7c5",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "SOCIAL"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:social-offline"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:striders.in",
+        "organizer-domain:striders.in",
+        "organizer-name-city:striders in:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:striders"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-striders-resolution-organizer-2026-07-24-pilot-mumbai-organizer:e19f7845",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "Striders"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:striders"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    },
+    {
+      "blockingKeys": [
+        "hard:surface:domain:indiehabitat.com",
+        "organizer-domain:indiehabitat.com",
+        "organizer-name-city:indiehabitat com:mumbai"
+      ],
+      "candidateIds": [
+        "resolution:organizer:2026-07-24-pilot-mumbai-organizers:the-habitat"
+      ],
+      "cities": [
+        "mumbai"
+      ],
+      "clusterId": "cluster:organizer-mumbai-the-habitat-resolution-organizer-2026-07-24-pilot-mumbai-organi:f44efb30",
+      "conflictingSignals": [],
+      "dates": [],
+      "displayNames": [
+        "The Habitat"
+      ],
+      "entityType": "organizer",
+      "hardSignals": [],
+      "llmReview": {
+        "reason": "LLM adjudication is disabled by policy.",
+        "status": "not_needed"
+      },
+      "matchingSignals": [],
+      "mentionIds": [
+        "organizer:2026-07-24-pilot-mumbai-organizers:the-habitat"
+      ],
+      "pairIds": [],
+      "publishBoundary": "Reviewed organizer clusters may project to clubs/{clubId} only through publication review and createClub-compatible contracts.",
+      "resolutionState": "singleton",
+      "score": 0,
+      "scoreBand": "low_signal"
+    }
+  ],
   "commands": {
     "llmPromptDryRun": "node tool/organizer_intake/llm_source_resolution.mjs --dry-run",
     "regenerate": "node tool/organizer_intake/organizer_intake.mjs",
@@ -10,16 +1854,37 @@
     "resolutionCandidates": "tool/organizer_intake/generated/source_mention_resolution_candidates.json",
     "resolutionPolicy": "tool/organizer_intake/generated/source_mention_resolution_policy.json"
   },
-  "llmReviewQueue": [],
+  "llmReviewQueue": [
+    {
+      "clusterId": "cluster:organizer-indore-indore-atlassian-community-events-resolution-organizer-2026-07-:e36afa8a",
+      "deterministicScore": 1,
+      "entityType": "organizer",
+      "inputHash": "881c0145adb18bd2e38e3f4b50839b9ac4a57e3277ed9095012ec0a6b9b7e590",
+      "mentions": 5,
+      "promptVersion": "event-cluster-adjudicate-v1",
+      "reason": "LLM adjudication is disabled by policy.",
+      "status": "eligible"
+    },
+    {
+      "clusterId": "cluster:organizer-indore-security-bsides-indore-resolution-organizer-2026-07-24-pilot-in:57de7d81",
+      "deterministicScore": 1,
+      "entityType": "organizer",
+      "inputHash": "1478007ea4542add46f73afa80a576af86285417e4ce7de7934f8936617e484b",
+      "mentions": 3,
+      "promptVersion": "event-cluster-adjudicate-v1",
+      "reason": "LLM adjudication is disabled by policy.",
+      "status": "eligible"
+    }
+  ],
   "schemaVersion": 1,
   "summary": {
-    "autoAttachClusters": 0,
-    "candidatePairs": 0,
-    "clusters": 0,
-    "llmReviewQueued": 0,
+    "autoAttachClusters": 1,
+    "candidatePairs": 14,
+    "clusters": 43,
+    "llmReviewQueued": 2,
     "needsHumanReviewClusters": 0,
-    "probableDuplicateClusters": 0,
-    "singletonClusters": 0,
+    "probableDuplicateClusters": 2,
+    "singletonClusters": 40,
     "warnings": 0
   },
   "warnings": []

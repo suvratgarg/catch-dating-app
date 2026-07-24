@@ -4,18 +4,18 @@
       "blockerClass": "requires_decision_input",
       "blockers": [
         "tool/organizer_intake/generated/event_crawl_plan.json",
-        "tool/organizer_intake/generated/external_event_import_plan.json",
-        "tool/organizer_intake/generated/external_event_location_resolution_queue.json",
         "tool/organizer_intake/generated/source_mention_resolution_clusters.json",
         "tool/organizer_intake/generated/source_mention_resolution_policy.json",
         "tool/organizer_intake/generated/source_mention_resolution_review_packets.json",
-        "tool/organizer_intake/llm_source_resolution.mjs"
+        "tool/organizer_intake/llm_source_resolution.mjs",
+        "tool/organizer_intake/generated/external_event_import_plan.json",
+        "tool/organizer_intake/generated/external_event_location_resolution_queue.json"
       ],
       "commands": [
         "node tool/organizer_intake/policy_gap_decision.mjs draft recurring_event_crawl_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run",
+        "node tool/organizer_intake/policy_gap_decision.mjs draft source_mention_resolution_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run",
         "node tool/organizer_intake/policy_gap_decision.mjs draft external_event_defaults_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run",
-        "node tool/organizer_intake/policy_gap_decision.mjs draft external_event_location_provider_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run",
-        "node tool/organizer_intake/policy_gap_decision.mjs draft source_mention_resolution_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run"
+        "node tool/organizer_intake/policy_gap_decision.mjs draft external_event_location_provider_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run"
       ],
       "coverageId": "pending-work:policy_decisions",
       "coverageStatus": "covered_by_input_request",
@@ -23,15 +23,15 @@
       "label": "Policy Decisions",
       "nextActions": [
         "Choose platform order, frequency, budget cap, and owner-safety rules before enabling scheduled crawls.",
+        "Review resolver thresholds, blocking keys, provider hard-key policy, and LLM cost caps before enabling model adjudication.",
         "Choose default capacity, admission, pricing, and activity-field policy before enabling imports.",
-        "Keep manual resolution as the default until provider, confidence, retention, and spend caps are approved.",
-        "Review resolver thresholds, blocking keys, provider hard-key policy, and LLM cost caps before enabling model adjudication."
+        "Keep manual resolution as the default until provider, confidence, retention, and spend caps are approved."
       ],
       "pendingRequestIds": [
         "policy:recurring_event_crawl_policy",
+        "policy:source_mention_resolution_policy",
         "policy:external_event_defaults_policy",
-        "policy:external_event_location_provider_policy",
-        "policy:source_mention_resolution_policy"
+        "policy:external_event_location_provider_policy"
       ],
       "priority": "p0",
       "status": "requires_policy_input",
@@ -134,6 +134,26 @@
       "priority": "p1",
       "status": "blocked_by_policy",
       "workstreamId": "raw_artifact_storage"
+    },
+    {
+      "blockerClass": "missing_pending_input",
+      "blockers": [
+        "duplicate_normalized_keys"
+      ],
+      "commands": [
+        "node tool/organizer_intake/ingest_search_results.mjs --check"
+      ],
+      "coverageId": "pending-work:search_intake",
+      "coverageStatus": "untriaged",
+      "followUpIds": [],
+      "label": "Search Intake",
+      "nextActions": [
+        "Attach, split, suppress, or reject candidate surfaces through curation."
+      ],
+      "pendingRequestIds": [],
+      "priority": "p2",
+      "status": "curation_needed",
+      "workstreamId": "search_intake"
     }
   ],
   "generatedFrom": {
@@ -149,21 +169,24 @@
   "summary": {
     "coverageByStatus": {
       "covered_by_follow_up": 4,
-      "covered_by_input_request": 1
+      "covered_by_input_request": 1,
+      "untriaged": 1
     },
     "coveredByFollowUp": 4,
     "coveredByInputRequest": 1,
     "coveredWorkstreams": 5,
     "highestPriority": "p0",
-    "status": "awaiting_required_input",
-    "unresolvedWorkstreams": 5,
-    "untriagedWorkstreams": 0,
+    "status": "untriaged_work",
+    "unresolvedWorkstreams": 6,
+    "untriagedWorkstreams": 1,
     "workstreamsByPriority": {
       "p0": 1,
-      "p1": 4
+      "p1": 4,
+      "p2": 1
     },
     "workstreamsByStatus": {
       "blocked_by_policy": 1,
+      "curation_needed": 1,
       "disabled_by_policy": 1,
       "dry_run_review_required": 1,
       "requires_policy_input": 1,

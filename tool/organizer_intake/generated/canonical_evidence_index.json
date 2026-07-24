@@ -520,6 +520,36 @@
       "source": "raw_artifact_storage_manifest",
       "storageAction": "not_required",
       "storageClass": "review_decision_state"
+    },
+    {
+      "artifactId": "search-result-batches-2026-07-24-pilot-indore-organizers-5385464a07f0",
+      "artifactKind": "reviewed_search_result_batch",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "forbidden_raw_or_source_payload",
+      "path": "tool/organizer_intake/search_result_batches/2026-07-24-pilot-indore-organizers.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/reviewed-source-batch/5385464a07f01805-2026-07-24-pilot-indore-organizers.json",
+      "retentionStatus": "repo_reviewed",
+      "sha256": "5385464a07f01805d7b103249d55e9c5288a4e6c13cfbd1f027a7eef0a26459b",
+      "sizeBytes": 10515,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "reviewed_source_batch"
+    },
+    {
+      "artifactId": "search-result-batches-2026-07-24-pilot-mumbai-organizers-f9397dd775ab",
+      "artifactKind": "reviewed_search_result_batch",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "forbidden_raw_or_source_payload",
+      "path": "tool/organizer_intake/search_result_batches/2026-07-24-pilot-mumbai-organizers.json",
+      "referencedByEvidenceIds": [],
+      "remoteObjectKey": "organizer-intake/reviewed-source-batch/f9397dd775aba50c-2026-07-24-pilot-mumbai-organizers.json",
+      "retentionStatus": "repo_reviewed",
+      "sha256": "f9397dd775aba50c504a356755788fa6032b1f313649bdefa49855c21bc8bfa3",
+      "sizeBytes": 10623,
+      "source": "raw_artifact_storage_manifest",
+      "storageAction": "not_required",
+      "storageClass": "reviewed_source_batch"
     }
   ],
   "generatedFrom": {
@@ -555,7 +585,9 @@
       "canonicalHostId": "afterfly",
       "correlatedCandidates": {
         "externalEventCandidateIds": [],
-        "searchCandidateIds": []
+        "searchCandidateIds": [
+          "2026-07-24-pilot-indore-organizers:after-fly"
+        ]
       },
       "displayName": "AFTER FLY",
       "entityId": "afterfly",
@@ -1050,6 +1082,7 @@
       "raw_provider_payload": 2,
       "referenced_evidence_file": 4,
       "review_decision_batch": 8,
+      "reviewed_search_result_batch": 2,
       "seed_intake_batch": 1
     },
     "evidenceByStatus": {

@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "batchId": "2026-07-24-pilot-mumbai-organizers",
+  "createdAt": "2026-07-24",
+  "source": "manual_web_search",
+  "query": "Mumbai pilot organizer shortlist across singles socials, run clubs, board games, creator communities, venue-led socials, supper clubs, racket sports, and city experiences",
+  "queryIntent": {
+    "entityHint": null,
+    "marketSlug": "mumbai",
+    "activityKind": "multi-category-organizer-discovery"
+  },
+  "results": [
+    {
+      "resultId": "small-world",
+      "rank": 1,
+      "title": "Small World",
+      "url": "https://smallworld.co/",
+      "snippet": "Official site presents a Mumbai-based community and experience operator running connection-led events, including singles programming, across Vashi, Vile Parle, and Thane. Current event dates must be attached during entity review.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "link-and-chill",
+      "rank": 2,
+      "title": "Link & Chill",
+      "url": "https://www.meetup.com/linkandchillmumbai/",
+      "snippet": "Public Meetup community evidence identifies a Mumbai operator for house parties, game nights, excursions, dinners, and social meetups, with a substantial past-event history. Verify the next in-city event and preserve excursion origin versus destination.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "base-camp-board-gaming-library",
+      "rank": 3,
+      "title": "Base Camp Board Gaming Library",
+      "url": "https://linktr.ee/basecamp.bg",
+      "snippet": "Public identity hub for a Mumbai board-game community associated with beginner meetups and play sessions. Dedupe Base Camp, Base Camp BG, and the full name; verify a current event before event publication.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "meeplecon",
+      "rank": 4,
+      "title": "Meeplecon",
+      "url": "https://meeplecon.in/",
+      "snippet": "Official site lists a tabletop convention at NESCO Goregaon on 17-18 October 2026. Review must distinguish the organizer identity from the event brand and resolve any alternate-date conflict.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "sacred-space-run-club",
+      "rank": 5,
+      "title": "Sacred Space Run Club",
+      "url": "https://www.sacredspacewellness.in/event-details/sacred-space-run-club-2026-06-05-22-00",
+      "snippet": "Official Sacred Space Wellness page describes a free recurring Friday-night run at Worli Promenade. The evidenced session is closed, so retain the organizer candidate but require a fresh session before publishing an event.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "playace",
+      "rank": 6,
+      "title": "Playace",
+      "url": "https://www.playace.co/",
+      "snippet": "Official product site and current app-store evidence describe a Mumbai social platform for house parties and meeting new people. Confirm present offline event cadence and the public organizer name before seeding.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "kommune",
+      "rank": 7,
+      "title": "Kommune",
+      "url": "https://www.kommuneity.com/",
+      "snippet": "Official community site describes storytelling, poetry, music, and conversation-led experiences with a Mumbai presence. Verify the next public Mumbai program and whether individual event brands should remain child events.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "doolally",
+      "rank": 8,
+      "title": "Doolally",
+      "url": "https://doolally.in/",
+      "snippet": "Official identity for a Mumbai venue brand with public evidence of community-oriented programming and board games. Review should establish whether Doolally owns the recurring guest journey or is only the venue for third-party hosts.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "bombay-board-game-club",
+      "rank": 9,
+      "title": "Bombay Board Game Club",
+      "url": "https://linktr.ee/bbgc.creative",
+      "snippet": "Public identity hub for a Mumbai board-game and creative social community. Verify a current official event surface and avoid merging unrelated venue-hosted board-game sessions.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "social-monkey",
+      "rank": 10,
+      "title": "Social Monkey",
+      "url": "https://jamwith.socialmonkey.club/",
+      "snippet": "Official site reports a growing social-events community with 29-plus events and 1,000-plus participants. Confirm Mumbai venue and event freshness in the review packet.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "khaki-tours",
+      "rank": 11,
+      "title": "Khaki Tours",
+      "url": "https://khakitours.com/",
+      "snippet": "Official Mumbai heritage-experience operator offering city walks and tours. Strong organizer identity; review the next bookable public experience and model tour products as events rather than separate organizers.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "no-footprints",
+      "rank": 12,
+      "title": "No Footprints",
+      "url": "https://nfpexplore.com/mumbai/",
+      "snippet": "Official Mumbai page lists current 2026 city tours and experiences. Strong first-party city and activity evidence; confirm the legal/display identity and attach individual tours as events.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "padelpark-india",
+      "rank": 13,
+      "title": "PadelPark India",
+      "url": "https://www.padelpark.in/",
+      "snippet": "Official racket-sport operator with Mumbai facilities and public social-play signals. Reviewer must separate ordinary court booking from organizer-owned mixers, leagues, or community events.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "courtside",
+      "rank": 14,
+      "title": "Courtside",
+      "url": "https://viacourtside.com/",
+      "snippet": "Official Mumbai padel social-club site describes events and tournaments. Confirm current public sessions and whether Courtside is both venue and organizer.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "goosepick-social",
+      "rank": 15,
+      "title": "Goosepick Social",
+      "url": "https://goosepick.com/products/goosepick-social",
+      "snippet": "Official product page documents a connection-led Mumbai pickleball social in February 2026. Organizer identity is credible but event cadence needs refresh before any event listing.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "art-and-wonderment",
+      "rank": 16,
+      "title": "Art & Wonderment",
+      "url": "https://www.artandwonderment.in/about-us",
+      "snippet": "Official site describes regular art and architecture walks in Mumbai. Strong experience-operator fit; verify current public dates and preserve Art Walks Mumbai as a program rather than a duplicate organizer.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "friends-of-figma-mumbai",
+      "rank": 17,
+      "title": "Friends of Figma Mumbai",
+      "url": "https://fofmumbai.com/",
+      "snippet": "Official community site lists multiple Mumbai design-community events in 2026. Review city chapter ownership and whether the chapter or global Figma community is the public organizer.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "make-some-ochha",
+      "rank": 18,
+      "title": "Make Some Ochha",
+      "url": "https://makesomeochha.com/",
+      "snippet": "Official open-mic and creator-community site identifies a Mumbai chapter. Verify recent Mumbai cadence, the chapter display name, and public registration before event publication.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "macabo",
+      "rank": 19,
+      "title": "MaCaBo",
+      "url": "https://macabo.in/",
+      "snippet": "Official site describes Mumbai art, community, and open-mic programming. Confirm current public dates and treat named shows as events under one organizer.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "meet-people-social-mumbai",
+      "rank": 20,
+      "title": "Meet People Social Mumbai",
+      "url": "https://meetpeoplesocial.com/events/social-events-in-mumbai",
+      "snippet": "Official city page lists recurring Mumbai social events, including a visible 31 July 2026 date. Strong freshness signal; confirm the multi-city organizer identity and city-specific event details.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "complexcity",
+      "rank": 21,
+      "title": "ComplexCity",
+      "url": "https://complexcity.in/",
+      "snippet": "Official Mumbai youth-community site shows festival, walk, and gathering activity spanning late 2025 through May 2026. Verify the next date and whether all programs share one organizer identity.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "the-habitat",
+      "rank": 22,
+      "title": "The Habitat",
+      "url": "https://indiehabitat.com/",
+      "snippet": "Correct official site for the Mumbai performance venue, with daily shows and recurring poetry and comedy open mics. This replaces the unrelated thehabitat.co.in URL found in older discovery data.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "hosted-table",
+      "rank": 23,
+      "title": "Hosted Table",
+      "url": "https://www.hostedtable.in/",
+      "snippet": "Official Mumbai supper-club site showed curated hosted-table events in May 2026. Strong format fit but requires a fresh upcoming date and confirmation that the brand owns the guest list.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "striders",
+      "rank": 24,
+      "title": "Striders",
+      "url": "https://striders.in/",
+      "snippet": "Official running-community site has a Mumbai address and describes group running and social meetups. Verify a current open public session and avoid treating coaching locations as separate organizers.",
+      "observedAt": "2026-07-24"
+    },
+    {
+      "resultId": "social-offline",
+      "rank": 25,
+      "title": "SOCIAL",
+      "url": "https://socialoffline.in/",
+      "snippet": "Official identity for the SOCIAL venue network with Mumbai locations and recurring programming. Review must prove organizer-owned social events rather than ordinary venue inventory before approval.",
+      "observedAt": "2026-07-24"
+    }
+  ],
+  "notes": "Private review evidence only. Search results do not publish organizer pages or write Firestore. Source freshness, entity ownership, claim state, and publication decisions remain mandatory."
+}
