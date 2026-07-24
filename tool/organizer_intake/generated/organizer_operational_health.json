@@ -26,12 +26,12 @@
   ],
   "schemaVersion": 1,
   "summary": {
-    "actionRequiredWorkstreams": 3,
+    "actionRequiredWorkstreams": 4,
     "adminDecisionsRequired": 0,
     "blockedWorkstreams": 2,
     "healthStatus": "p0_action_required",
     "highestPriority": "p0",
-    "idleWorkstreams": 2,
+    "idleWorkstreams": 1,
     "operatorActions": 4,
     "policyBlockedWorkstreams": 2,
     "policyInputsRequired": 4,
@@ -40,21 +40,22 @@
     "waitingWorkstreams": 0,
     "workflowBlocked": 0,
     "workflowPolicyNeeded": 4,
-    "workflowReady": 14,
+    "workflowReady": 13,
     "workflowWaiting": 0,
     "workstreams": 9,
     "workstreamsByPriority": {
       "p0": 1,
       "p1": 5,
-      "p2": 1,
-      "p3": 2
+      "p2": 2,
+      "p3": 1
     },
     "workstreamsByStatus": {
       "blocked_by_policy": 1,
       "clear": 1,
+      "curation_needed": 1,
       "disabled_by_policy": 1,
       "dry_run_review_required": 1,
-      "idle": 2,
+      "idle": 1,
       "ready": 1,
       "requires_policy_input": 1,
       "review_needed": 1
@@ -64,18 +65,18 @@
     {
       "blockers": [
         "tool/organizer_intake/generated/event_crawl_plan.json",
-        "tool/organizer_intake/generated/external_event_import_plan.json",
-        "tool/organizer_intake/generated/external_event_location_resolution_queue.json",
         "tool/organizer_intake/generated/source_mention_resolution_clusters.json",
         "tool/organizer_intake/generated/source_mention_resolution_policy.json",
         "tool/organizer_intake/generated/source_mention_resolution_review_packets.json",
-        "tool/organizer_intake/llm_source_resolution.mjs"
+        "tool/organizer_intake/llm_source_resolution.mjs",
+        "tool/organizer_intake/generated/external_event_import_plan.json",
+        "tool/organizer_intake/generated/external_event_location_resolution_queue.json"
       ],
       "commands": [
         "node tool/organizer_intake/policy_gap_decision.mjs draft recurring_event_crawl_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run",
+        "node tool/organizer_intake/policy_gap_decision.mjs draft source_mention_resolution_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run",
         "node tool/organizer_intake/policy_gap_decision.mjs draft external_event_defaults_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run",
-        "node tool/organizer_intake/policy_gap_decision.mjs draft external_event_location_provider_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run",
-        "node tool/organizer_intake/policy_gap_decision.mjs draft source_mention_resolution_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run"
+        "node tool/organizer_intake/policy_gap_decision.mjs draft external_event_location_provider_policy --decision hold --reviewer REVIEWER --date YYYY-MM-DD --note \"Policy still held.\" --dry-run"
       ],
       "id": "policy_decisions",
       "label": "Policy Decisions",
@@ -91,9 +92,9 @@
       },
       "nextActions": [
         "Choose platform order, frequency, budget cap, and owner-safety rules before enabling scheduled crawls.",
+        "Review resolver thresholds, blocking keys, provider hard-key policy, and LLM cost caps before enabling model adjudication.",
         "Choose default capacity, admission, pricing, and activity-field policy before enabling imports.",
-        "Keep manual resolution as the default until provider, confidence, retention, and spend caps are approved.",
-        "Review resolver thresholds, blocking keys, provider hard-key policy, and LLM cost caps before enabling model adjudication."
+        "Keep manual resolution as the default until provider, confidence, retention, and spend caps are approved."
       ],
       "priority": "p0",
       "sourceArtifacts": [
@@ -205,13 +206,13 @@
       "id": "raw_artifact_storage",
       "label": "Raw Artifact Storage",
       "metrics": {
-        "artifacts": 30,
+        "artifacts": 32,
         "firestoreRawStorageAllowed": false,
         "rawProviderPayloads": 2,
         "remoteUploadBlocked": 2,
         "remoteUploadReady": 0,
         "retentionDecisionRequired": 2,
-        "totalBytes": 71465
+        "totalBytes": 92603
       },
       "nextActions": [
         "Approve object storage bucket, retention, deletion, and crawl-cost policy before uploading raw payloads."
@@ -243,6 +244,31 @@
         "tool/organizer_intake/generated/publication_decision_impact_preview.json"
       ],
       "status": "clear"
+    },
+    {
+      "blockers": [
+        "duplicate_normalized_keys"
+      ],
+      "commands": [
+        "node tool/organizer_intake/ingest_search_results.mjs --check"
+      ],
+      "id": "search_intake",
+      "label": "Search Intake",
+      "metrics": {
+        "batches": 2,
+        "candidates": 50,
+        "duplicateNormalizedKeys": 2,
+        "matchedExistingEntities": 1,
+        "results": 50
+      },
+      "nextActions": [
+        "Attach, split, suppress, or reject candidate surfaces through curation."
+      ],
+      "priority": "p2",
+      "sourceArtifacts": [
+        "tool/organizer_intake/generated/search_result_candidate_queue.json"
+      ],
+      "status": "curation_needed"
     },
     {
       "blockers": [
@@ -301,27 +327,6 @@
         "tool/organizer_intake/generated/external_event_candidate_queue.json",
         "tool/organizer_intake/generated/external_event_import_plan.json",
         "tool/organizer_intake/generated/external_event_import_execution_plan.json"
-      ],
-      "status": "idle"
-    },
-    {
-      "blockers": [],
-      "commands": [
-        "node tool/organizer_intake/ingest_search_results.mjs --check"
-      ],
-      "id": "search_intake",
-      "label": "Search Intake",
-      "metrics": {
-        "batches": 0,
-        "candidates": 0,
-        "duplicateNormalizedKeys": 0,
-        "matchedExistingEntities": 0,
-        "results": 0
-      },
-      "nextActions": [],
-      "priority": "p3",
-      "sourceArtifacts": [
-        "tool/organizer_intake/generated/search_result_candidate_queue.json"
       ],
       "status": "idle"
     }

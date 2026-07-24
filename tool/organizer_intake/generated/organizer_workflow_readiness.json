@@ -36,14 +36,14 @@
       "status": "ready"
     },
     {
-      "detail": "0 captured surface candidate(s), 0 matched existing entities.",
+      "detail": "50 captured surface candidate(s), 1 matched existing entities.",
       "id": "search_capture_ingestion",
       "label": "Search capture ingestion",
-      "nextAction": "Capture provider search payloads when a new planned search run is reviewed.",
-      "status": "ready"
+      "nextAction": "Review captured surface candidates and attach, reject, split, or leave them as supporting evidence.",
+      "status": "review_needed"
     },
     {
-      "detail": "2 raw provider payload(s), 2 remote upload blocked, 71465 byte(s) inventoried.",
+      "detail": "2 raw provider payload(s), 2 remote upload blocked, 92603 byte(s) inventoried.",
       "id": "raw_artifact_storage",
       "label": "Raw artifact storage",
       "nextAction": "Choose object-storage bucket, retention days, and deletion policy before recurring crawls upload raw payloads.",
@@ -187,12 +187,12 @@
     "publicationReviewPackets": 2,
     "publicationReviewReady": 0,
     "publicProjectionReady": true,
-    "rawArtifacts": 30,
+    "rawArtifacts": 32,
     "rawArtifactStorageBlocked": 2,
     "rawProviderPayloads": 2,
-    "ready": 14,
+    "ready": 13,
     "recurringCrawlEnabled": false,
-    "reviewNeeded": 0,
+    "reviewNeeded": 1,
     "waiting": 0
   }
 }

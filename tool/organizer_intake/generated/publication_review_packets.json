@@ -89,7 +89,9 @@
             },
             "correlatedCandidates": {
               "externalEventCandidateIds": [],
-              "searchCandidateIds": []
+              "searchCandidateIds": [
+                "2026-07-24-pilot-indore-organizers:after-fly"
+              ]
             },
             "evidence": {
               "description": "Embedded Luma data listed instagram_handle afterfly.in.",

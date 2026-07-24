@@ -637,6 +637,48 @@
         "reason": "This artifact is a reviewed, fixture, decision, or seed file and is not a high-volume raw provider payload.",
         "remoteObjectKey": "organizer-intake/review-decision-state/e8ee0cf61cd1487e-2026-06-18-bhag-approve-public.json"
       }
+    },
+    {
+      "artifactId": "search-result-batches-2026-07-24-pilot-indore-organizers-5385464a07f0",
+      "artifactKind": "reviewed_search_result_batch",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "forbidden_raw_or_source_payload",
+      "path": "tool/organizer_intake/search_result_batches/2026-07-24-pilot-indore-organizers.json",
+      "retention": {
+        "deletionMode": "regenerate_or_git_history",
+        "retentionDays": null,
+        "status": "repo_reviewed"
+      },
+      "sha256": "5385464a07f01805d7b103249d55e9c5288a4e6c13cfbd1f027a7eef0a26459b",
+      "sizeBytes": 10515,
+      "storageClass": "reviewed_source_batch",
+      "storagePlan": {
+        "action": "not_required",
+        "blockedBy": [],
+        "reason": "This artifact is a reviewed, fixture, decision, or seed file and is not a high-volume raw provider payload.",
+        "remoteObjectKey": "organizer-intake/reviewed-source-batch/5385464a07f01805-2026-07-24-pilot-indore-organizers.json"
+      }
+    },
+    {
+      "artifactId": "search-result-batches-2026-07-24-pilot-mumbai-organizers-f9397dd775ab",
+      "artifactKind": "reviewed_search_result_batch",
+      "containsRawProviderPayload": false,
+      "firestoreMode": "forbidden_raw_or_source_payload",
+      "path": "tool/organizer_intake/search_result_batches/2026-07-24-pilot-mumbai-organizers.json",
+      "retention": {
+        "deletionMode": "regenerate_or_git_history",
+        "retentionDays": null,
+        "status": "repo_reviewed"
+      },
+      "sha256": "f9397dd775aba50c504a356755788fa6032b1f313649bdefa49855c21bc8bfa3",
+      "sizeBytes": 10623,
+      "storageClass": "reviewed_source_batch",
+      "storagePlan": {
+        "action": "not_required",
+        "blockedBy": [],
+        "reason": "This artifact is a reviewed, fixture, decision, or seed file and is not a high-volume raw provider payload.",
+        "remoteObjectKey": "organizer-intake/reviewed-source-batch/f9397dd775aba50c-2026-07-24-pilot-mumbai-organizers.json"
+      }
     }
   ],
   "generatedFrom": {
@@ -673,7 +715,7 @@
   },
   "schemaVersion": 1,
   "summary": {
-    "artifacts": 30,
+    "artifacts": 32,
     "blockers": {
       "object_storage_bucket_missing": 2,
       "remote_object_storage_disabled": 2,
@@ -686,14 +728,15 @@
     "remoteUploadBlocked": 2,
     "remoteUploadReady": 0,
     "retentionDecisionRequired": 2,
-    "reviewedSourceBatches": 0,
+    "reviewedSourceBatches": 2,
     "seedIntakeBatches": 1,
     "storageClasses": {
       "fixture_support": 19,
       "raw_private_payload": 2,
       "review_decision_state": 8,
+      "reviewed_source_batch": 2,
       "seed_intake_state": 1
     },
-    "totalBytes": 71465
+    "totalBytes": 92603
   }
 }

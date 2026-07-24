@@ -217,6 +217,66 @@
       ]
     },
     {
+      "id": "LAUNCH-SUPPLY-007",
+      "severity": "P1",
+      "status": "open",
+      "workstream": "supply",
+      "summary": "Organizer search-result dedupe collapses distinct Meetup and Linktree profiles to domain-only keys, producing false duplicate groups across unrelated organizers.",
+      "owner": "operations",
+      "nextAction": "Add profile-slug adapters and regression fixtures for Meetup and Linktree, then regenerate the 50-candidate queue before entity scaffolding.",
+      "evidence": [
+        "tool/organizer_intake/generated/search_result_candidate_queue.json",
+        "tool/organizer_intake/lib/platform_adapters.mjs",
+        "operations/launch/pilot_supply_intake_findings_2026-07-24.md",
+        "2026-07-24 queue: five unrelated Meetup profiles normalized to domain:meetup.com and three unrelated Linktree profiles normalized to domain:linktr.ee"
+      ]
+    },
+    {
+      "id": "LAUNCH-SUPPLY-008",
+      "severity": "P1",
+      "status": "open",
+      "workstream": "supply",
+      "summary": "Search evidence records capture date but not structured source freshness, event dates, closure state, or city and ownership confidence, so stale, closed, and wrong-entity results cannot fail closed automatically.",
+      "owner": "operations",
+      "nextAction": "Add structured freshness and identity-review fields to captured results and enforce expiry, closure, and city/ownership checks before candidate-to-entity scaffolding.",
+      "evidence": [
+        "tool/organizer_intake/schemas/organizer_search_result_batches.schema.json",
+        "tool/host_discovery/candidate_batches/2026-06-10-initial-organizer-targets.json",
+        "operations/launch/pilot_supply_intake_findings_2026-07-24.md",
+        "2026-07-24 review found Floh shut down, The Bohri Kitchen closed on 2026-01-31, and thehabitat.co.in belongs to an unrelated Hyderabad property"
+      ]
+    },
+    {
+      "id": "LAUNCH-SUPPLY-009",
+      "severity": "P2",
+      "status": "open",
+      "workstream": "supply",
+      "summary": "The legacy host-discovery validator applies its 50-candidate maximum across every stored batch, so the existing 35-candidate corpus cannot accept a new 50-organizer pilot batch without archival or bypassing that path.",
+      "owner": "operations",
+      "nextAction": "Scope target counts per active run or market and archive superseded discovery batches; keep search-result evidence as the governed path until the two acquisition systems converge.",
+      "evidence": [
+        "tool/host_discovery/validate_discovery_data.mjs",
+        "tool/host_discovery/target_categories.json",
+        "tool/host_discovery/candidate_batches/2026-06-10-initial-organizer-targets.json",
+        "operations/launch/pilot_supply_intake_findings_2026-07-24.md"
+      ]
+    },
+    {
+      "id": "LAUNCH-SUPPLY-010",
+      "severity": "P1",
+      "status": "open",
+      "workstream": "supply",
+      "summary": "A search queue that needs curation is visible in operational health but is omitted from workflow follow-ups, so the pending-work coverage gate reports search_intake as untriaged.",
+      "owner": "operations",
+      "nextAction": "Treat curation_needed as a governed workflow follow-up, add regression coverage, regenerate the admin bridge, and rerun pending_work_coverage with require-covered.",
+      "evidence": [
+        "tool/organizer_intake/lib/pending_input_request_core.mjs",
+        "tool/organizer_intake/generated/organizer_pending_work_coverage.json",
+        "operations/launch/pilot_supply_intake_findings_2026-07-24.md",
+        "2026-07-24 pending-work coverage check: 5/6 unresolved workstreams covered, search_intake untriaged"
+      ]
+    },
+    {
       "id": "LAUNCH-SECURITY-001",
       "severity": "P0",
       "status": "fixed",
@@ -413,9 +473,9 @@
       "id": "TASK-SUPPLY-50",
       "workstream": "supply",
       "title": "Research, review, and publish 50 pilot organizers plus their events",
-      "status": "todo",
+      "status": "in_progress",
       "priority": "P1",
-      "owner": "operations",
+      "owner": "codex/pilot-organizer-shortlist-20260724",
       "targetDate": "2026-07-27",
       "dependencies": ["TASK-PILOT-RUNS"],
       "acceptance": [
@@ -424,11 +484,16 @@
         "Unclaimed listings expose correction, claim, and takedown paths.",
         "Production count and sampled page checks match the approved publication receipt."
       ],
-      "nextAction": "After the three pilot runs pass, run the existing supply-intake workflow in review-first mode for 50 organizers and their events.",
+      "nextAction": "Human-review the 25 Mumbai and 25 Indore candidates, replace any rejected identities, then scaffold schema-complete organizer records and reviewed publication packets after the three pilot runs pass.",
       "evidence": [
-        "operations/src/workflows/supply-intake/manifest.json"
+        "operations/src/workflows/supply-intake/manifest.json",
+        "operations/launch/pilot_supply_shortlist.json",
+        "tool/organizer_intake/search_result_batches/2026-07-24-pilot-mumbai-organizers.json",
+        "tool/organizer_intake/search_result_batches/2026-07-24-pilot-indore-organizers.json",
+        "tool/organizer_intake/generated/search_result_candidate_queue.json",
+        "operations/launch/pilot_supply_intake_findings_2026-07-24.md"
       ],
-      "updatedAt": "2026-07-22T00:00:00+05:30"
+      "updatedAt": "2026-07-24T15:58:47+05:30"
     },
     {
       "id": "TASK-APP-LAUNCH",
