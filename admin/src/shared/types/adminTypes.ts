@@ -734,6 +734,12 @@ export interface AdminRecordOrganizerCurationResponse {
   decisionPath: string;
 }
 
+export type AdminCreateOrganizerDraftFromCandidatePayload =
+  AdminCreateOrganizerDraftFromCandidateCallablePayload;
+
+export type AdminCreateOrganizerDraftFromCandidateResponse =
+  AdminCreateOrganizerDraftFromCandidateCallableResponse;
+
 export interface AdminClubDetails {
   clubId: string;
   name: string;
@@ -1754,6 +1760,10 @@ import type {AdminAssignSafetyTriageItemCallableResponse} from
   "../../generated/contracts/adminAssignSafetyTriageItemCallableResponse";
 import type {AdminCreateMarketingContentDraftCallablePayload} from
   "../../generated/contracts/adminCreateMarketingContentDraftCallablePayload";
+import type {AdminCreateOrganizerDraftFromCandidateCallablePayload} from
+  "../../generated/contracts/adminCreateOrganizerDraftFromCandidateCallablePayload";
+import type {AdminCreateOrganizerDraftFromCandidateCallableResponse} from
+  "../../generated/contracts/adminCreateOrganizerDraftFromCandidateCallableResponse";
 import type {AdminRecordMarketingReviewDecisionCallablePayload} from
   "../../generated/contracts/adminRecordMarketingReviewDecisionCallablePayload";
 import type {AdminRecordMarketingReviewDecisionCallableResponse} from

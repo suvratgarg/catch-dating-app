@@ -3025,6 +3025,52 @@
         "docs/web_surface_architecture.md"
       ],
       "notes": "The committed hostListings files are deterministic production and Storybook build artifacts, not operational editing surfaces. Claim and review capabilities remain fail-closed until separately governed in Firestore."
+    },
+    {
+      "id": "REG-ADMIN-ORGANIZER-DRAFT-HANDOFF-001",
+      "title": "Organizer Intake draft handoff is local-only or silently publishes",
+      "status": "active",
+      "applies_to": [
+        "functions/src/admin/organizerDraftFromCandidate.ts",
+        "functions/src/admin/intakeOperations.ts",
+        "admin/src/features/intake/organizer",
+        "contracts/callables/admin_create_organizer_draft_from_candidate_payload.schema.json",
+        "contracts/callable_responses/admin_create_organizer_draft_from_candidate_response.schema.json"
+      ],
+      "symptom": "Creating a candidate appears successful only until refresh, or scaffolding a canonical organizer accidentally assigns ownership, exposes it in-app, enables crawling, publishes, or indexes the page.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions run build && node --test functions/lib/admin/organizerDraftFromCandidate.test.js functions/lib/admin/intakeOperations.test.js && npm --workspace catch-admin test -- --run src/features/intake/organizer/controllers",
+        "guardEvidence": "the callable creates only an unclaimed hidden draft with a deterministic curation receipt, exact retries are idempotent, and Intake rejoins the receipt as a durable Ready handoff"
+      },
+      "owner_docs": [
+        "docs/backend_operation_catalog.md",
+        "docs/data_contracts.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "Candidate-to-draft creation and organizer publication are separate authority boundaries. A draft creation response must never imply that the organizer is public, discoverable, crawl-enabled, or owned."
+    },
+    {
+      "id": "REG-ADMIN-ORGANIZER-QUEUE-SCROLL-001",
+      "title": "Organizer candidate queue stretches the full Admin page",
+      "status": "active",
+      "applies_to": [
+        "admin/src/styles.css",
+        "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx",
+        "admin/src/stories/AdminRoutes.stories.tsx",
+        "design/admin/components.json"
+      ],
+      "symptom": "A 25-candidate city queue expands the grid to the height of every card, pushing the selected-candidate detail off screen and forcing the entire browser page to scroll.",
+      "guard": {
+        "type": "visual",
+        "command": "npm --workspace catch-admin run build:storybook && npm --workspace catch-admin run test:storybook:a11y",
+        "guardEvidence": "the 30-candidate Organizer Intake story keeps a viewport-bounded workbench with independently scrollable queue and detail panes"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "design/admin/components.json"
+      ],
+      "notes": "Desktop constrains the workbench with a viewport-relative height; the mobile breakpoint deliberately returns to document flow."
     }
   ]
 }

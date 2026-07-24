@@ -51,6 +51,7 @@ export interface PublicRouteReservationDocument {
     | "adminSetClubIndexStatus"
     | "adminUpdateOrganizerDetails"
     | "adminSetOrganizerIndexStatus"
+    | "adminCreateOrganizerDraftFromCandidate"
     | "clubsToOrganizersMigration";
   releasedAt?: {
     _seconds: number;

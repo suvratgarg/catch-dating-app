@@ -1664,6 +1664,7 @@ export interface OrganizerSearchCandidateCommands {
 }
 
 export interface OrganizerSearchCandidate {
+  workItemId: string;
   candidateId: string;
   batchId: string;
   resultId: string;
@@ -1687,6 +1688,28 @@ export interface OrganizerSearchCandidate {
   reviewAction: string;
   diagnostics: string[];
   reviewContext?: OrganizerSearchCandidateReviewContext;
+  draftLink?: OrganizerCandidateDraftLink;
+}
+
+export interface OrganizerCandidateDraftLink {
+  workItemId: string;
+  candidateId: string;
+  organizerId: string;
+  curationPath: string;
+}
+
+export interface OrganizerDraftFormState {
+  organizerId: string;
+  name: string;
+  description: string;
+  organizerType:
+    | "club"
+    | "community"
+    | "individual"
+    | "eventProducer"
+    | "venue"
+    | "brand";
+  reviewNote: string;
 }
 
 export interface OrganizerSearchCandidateReviewContext {

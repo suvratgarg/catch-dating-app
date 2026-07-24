@@ -15,6 +15,7 @@
     "summary",
     "runs",
     "workItems",
+    "organizerDraftLinks",
     "nextRunCursor",
     "nextWorkItemCursor"
   ],
@@ -88,6 +89,35 @@
             }
           }
         ]
+      }
+    },
+    "organizerDraftLinks": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "workItemId",
+          "candidateId",
+          "organizerId",
+          "curationPath"
+        ],
+        "properties": {
+          "workItemId": {"type": "string", "minLength": 1, "maxLength": 200},
+          "candidateId": {"type": "string", "minLength": 1, "maxLength": 200},
+          "organizerId": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "curationPath": {
+            "type": "string",
+            "pattern": "^organizerIntakeCurationDecisions/[A-Za-z0-9_-]+$",
+            "maxLength": 300
+          }
+        }
       }
     },
     "nextRunCursor": {"type": ["string", "null"], "maxLength": 1000},

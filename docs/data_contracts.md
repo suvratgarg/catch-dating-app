@@ -437,6 +437,17 @@ ownership, crawl, or app-visibility authority. Organizer-only shadow runs may
 omit an Event Intake bridge, but remain subject to the same immutable export,
 contract validation, and trusted importer.
 
+`adminCreateOrganizerDraftFromCandidate` is the only candidate-to-entity
+scaffolder. It validates the exact work item and reviewed evidence, rejects
+existing-entity matches and duplicate identity receipts, and creates an
+unclaimed `organizers/{id}` draft with `appVisibility=hidden`,
+`publishStatus=draft`, and `indexStatus=noindex`. It also writes the legacy
+`clubs/{id}` compatibility shadow, reserves the canonical route, and records a
+deterministic `organizerIntakeCurationDecisions/{id}` receipt. The receipt
+contains the source work-item, candidate, and normalized identity keys and is
+returned by `adminListIntakeOperations` as a bounded draft link. No crawl
+enablement or owner binding is part of this contract.
+
 The trusted shadow-projection importer validates the export again, resets only
 the Firestore persistence revision to zero, and retains each local source
 revision plus the whole-export hash under reserved projection metadata. It

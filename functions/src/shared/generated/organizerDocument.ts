@@ -386,6 +386,7 @@ export interface OrganizerDocument {
       _nanoseconds: number;
     };
     updatedBySource:
+      | "adminCreateOrganizerDraftFromCandidate"
       | "adminUpdateClubDetails"
       | "adminSetClubIndexStatus"
       | "adminOrganizerSearchBackfill";

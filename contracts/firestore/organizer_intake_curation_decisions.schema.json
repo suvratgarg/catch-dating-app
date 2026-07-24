@@ -8,7 +8,7 @@
   "x-firestore-collection": "organizerIntakeCurationDecisions",
   "x-firestore-path": "organizerIntakeCurationDecisions/{operationId}",
   "x-document-id-field": "operationId",
-  "x-owner": "adminRecordOrganizerCuration callable",
+  "x-owner": "adminRecordOrganizerCuration and adminCreateOrganizerDraftFromCandidate callables",
   "required": [
     "schemaVersion",
     "operationId",
@@ -26,6 +26,7 @@
       "type": "string",
       "enum": [
         "attach_surface",
+        "create_entity_draft",
         "merge_entity",
         "split_surface",
         "suppress_entity",
@@ -39,6 +40,8 @@
     "surfaceId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "newEntityId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "sourceCandidateId": {"type": "string", "minLength": 1, "maxLength": 240},
+    "sourceWorkItemId": {"$ref": "../operations/common.schema.json#/definitions/id"},
+    "sourceNormalizedKey": {"type": "string", "minLength": 1, "maxLength": 500},
     "decision": {
       "type": "string",
       "enum": [

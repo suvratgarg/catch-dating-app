@@ -249,6 +249,7 @@
         "leaveClub",
         "archiveClub",
         "deleteClub",
+        "adminCreateOrganizerDraftFromCandidate",
         "syncClubMemberStats",
         "syncClubNextEvent",
         "syncClubReviewStats"
@@ -258,7 +259,8 @@
         "deleteClub hard-deletes only never-used clubs with no events, payments, reviews, or non-host members.",
         "Organizer posts live under clubs/{clubId}/posts/{postId} and are created only by createClubPost.",
         "memberCount is recomputed from active clubMemberships by syncClubMemberStats.",
-        "nextEventAt and nextEventLabel are recomputed from active future events by syncClubNextEvent."
+        "nextEventAt and nextEventLabel are recomputed from active future events by syncClubNextEvent.",
+        "adminCreateOrganizerDraftFromCandidate may create an unclaimed source-backed compatibility document only after a reviewed Supply Intake work item; it cannot publish, index, crawl, or assign ownership."
       ]
     },
     {

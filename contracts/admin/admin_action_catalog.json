@@ -185,6 +185,28 @@
       "example": {"workflowId": "supply-intake", "runLimit": 10, "workItemLimit": 50}
     },
     {
+      "actionId": "organizer-intake.create-organizer-draft",
+      "callable": "adminCreateOrganizerDraftFromCandidate",
+      "workflowIds": ["organizer-intake", "organizers"],
+      "guiPath": "/intake/organizers",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": ["admin", "adminOwner", "support"],
+      "confirmation": "action-and-target",
+      "targetField": "workItemId",
+      "requestSchema": "contracts/callables/admin_create_organizer_draft_from_candidate_payload.schema.json",
+      "summary": "Create one unclaimed, source-backed organizer draft from a reviewed Supply Intake candidate; publication, indexing, app visibility, crawling, and ownership remain disabled.",
+      "example": {
+        "workItemId": "example-organizer-work-item",
+        "candidateId": "example-organizer-candidate",
+        "organizerId": "example-organizer",
+        "name": "Example organizer",
+        "description": "Reviewed source-backed organizer draft.",
+        "organizerType": "community",
+        "reviewNote": "Fixture organizer draft; do not apply to production."
+      }
+    },
+    {
       "actionId": "organizer-intake.decide-publication",
       "callable": "adminDecideOrganizerIntake",
       "workflowIds": ["organizer-intake"],
@@ -491,10 +513,10 @@
     {"workflowId": "growth", "label": "Growth", "guiPath": "/growth", "actions": ["overview.get", "analytics.host"]},
     {"workflowId": "marketing", "label": "Marketing", "guiPath": "/marketing", "actions": ["marketing.get", "marketing.create-draft", "marketing.record-decision"]},
     {"workflowId": "event-intake", "label": "Event Intake", "guiPath": "/intake/events", "actions": ["event-intake.get", "event-intake.record-decision"]},
-    {"workflowId": "organizer-intake", "label": "Organizer Intake", "guiPath": "/intake/organizers", "actions": ["organizer-intake.record-curation", "organizer-intake.resolve-location", "organizer-intake.decide-event-candidate", "organizer-intake.decide-policy-gap", "organizer-intake.decide-publication"]},
+    {"workflowId": "organizer-intake", "label": "Organizer Intake", "guiPath": "/intake/organizers", "actions": ["organizer-intake.create-organizer-draft", "organizer-intake.record-curation", "organizer-intake.resolve-location", "organizer-intake.decide-event-candidate", "organizer-intake.decide-policy-gap", "organizer-intake.decide-publication"]},
     {"workflowId": "intake-operations", "label": "Intake Operations", "guiPath": "/intake/operations", "actions": ["intake-operations.list"]},
     {"workflowId": "organizer-claims", "label": "Organizer claims", "guiPath": "/organizers/claims", "actions": ["organizer-claims.list", "organizer-claims.get", "organizer-claims.decide"]},
-    {"workflowId": "organizers", "label": "Organizers", "guiPath": "/organizers", "actions": ["organizers.list", "organizers.get", "organizers.update", "organizers.set-index-status"]},
+    {"workflowId": "organizers", "label": "Organizers", "guiPath": "/organizers", "actions": ["organizer-intake.create-organizer-draft", "organizers.list", "organizers.get", "organizers.update", "organizers.set-index-status"]},
     {"workflowId": "events", "label": "Events", "guiPath": "/events", "actions": ["events.list", "events.get", "events.update"]},
     {"workflowId": "external-events", "label": "External events", "guiPath": "/events/external", "actions": ["external-events.list", "external-events.readiness", "external-events.publish"]},
     {"workflowId": "users", "label": "Users", "guiPath": "/users", "actions": ["analytics.user"]},

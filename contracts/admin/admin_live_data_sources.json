@@ -35,6 +35,7 @@
       "paths": ["/intake/organizers"],
       "liveReads": ["adminListIntakeOperations"],
       "liveMutations": [
+        "adminCreateOrganizerDraftFromCandidate",
         "adminDecideOrganizerEventCandidate",
         "adminDecideOrganizerIntake",
         "adminDecideOrganizerPolicyGap",

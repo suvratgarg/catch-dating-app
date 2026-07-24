@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 578,
+  "total": 579,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -308,7 +308,7 @@
       ]
     },
     "functions_source": {
-      "count": 90,
+      "count": 91,
       "files": [
         "functions/src/admin/accessApplications.test.ts",
         "functions/src/admin/adminActionExecutions.test.ts",
@@ -326,6 +326,7 @@
         "functions/src/admin/intakeOperations.test.ts",
         "functions/src/admin/marketingOps.test.ts",
         "functions/src/admin/organizerCuration.test.ts",
+        "functions/src/admin/organizerDraftFromCandidate.test.ts",
         "functions/src/admin/organizerEventIntake.test.ts",
         "functions/src/admin/organizerEventLocationResolution.test.ts",
         "functions/src/admin/organizerIntake.test.ts",

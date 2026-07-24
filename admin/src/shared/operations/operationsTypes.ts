@@ -163,6 +163,14 @@ export interface AdminListIntakeOperationsResponse {
   };
   runs: OperationRun[];
   workItems: OperationWorkItem[];
+  organizerDraftLinks: OrganizerDraftLink[];
   nextRunCursor: string | null;
   nextWorkItemCursor: string | null;
+}
+
+export interface OrganizerDraftLink {
+  workItemId: string;
+  candidateId: string;
+  organizerId: string;
+  curationPath: string;
 }

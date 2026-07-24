@@ -945,7 +945,8 @@ export interface ClubDocument {
     updatedBySource:
       | "adminUpdateClubDetails"
       | "adminSetClubIndexStatus"
-      | "adminOrganizerSearchBackfill";
+      | "adminOrganizerSearchBackfill"
+      | "adminCreateOrganizerDraftFromCandidate";
   };
   /**
    * Public, owner-safe organizer listing content derived from sources or owner edits. Raw scrape snapshots belong in private evidence collections.
@@ -1348,6 +1349,7 @@ export interface OrganizerDocument {
     sortKey: string;
     updatedAt: FirebaseFirestore.Timestamp;
     updatedBySource:
+      | "adminCreateOrganizerDraftFromCandidate"
       | "adminUpdateClubDetails"
       | "adminSetClubIndexStatus"
       | "adminOrganizerSearchBackfill";
@@ -2674,6 +2676,7 @@ export interface PublicRouteReservationDocument {
     | "adminSetClubIndexStatus"
     | "adminUpdateOrganizerDetails"
     | "adminSetOrganizerIndexStatus"
+    | "adminCreateOrganizerDraftFromCandidate"
     | "clubsToOrganizersMigration";
   releasedAt?: FirebaseFirestore.Timestamp | null;
   releasedByUid?: string | null;
@@ -2766,6 +2769,7 @@ export interface OrganizerIntakeCurationDecisionDocument {
   operationId: string;
   operationType:
     | "attach_surface"
+    | "create_entity_draft"
     | "merge_entity"
     | "split_surface"
     | "suppress_entity"
@@ -2777,6 +2781,8 @@ export interface OrganizerIntakeCurationDecisionDocument {
   surfaceId?: string;
   newEntityId?: string;
   sourceCandidateId?: string;
+  sourceWorkItemId?: string;
+  sourceNormalizedKey?: string;
   decision?:
     | "accept_primary"
     | "accept_secondary"

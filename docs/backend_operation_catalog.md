@@ -95,8 +95,14 @@ remain lifecycle state rather than additional tabs.
 
 Organizer Intake reads the latest immutable organizer-only run for each launch
 market through that callable. Search candidates remain review work items in
-`operationWorkItems`; they do not become `organizers/{id}` until a separate
-reviewed publication path acts. `contracts/admin/admin_live_data_sources.json`
+`operationWorkItems`. A reviewed, net-new candidate may cross the separate
+`adminCreateOrganizerDraftFromCandidate` boundary, which creates only an
+unclaimed, hidden, source-backed `organizers/{id}` draft plus a compatibility
+`clubs/{id}` document, canonical-route reservation, curation receipt, and audit
+record. It cannot publish, index, crawl, expose the organizer in-app, or assign
+ownership. Exact retries reuse the deterministic receipt. Organizer Intake
+joins those receipts through `adminListIntakeOperations`, so completed
+handoffs remain in Ready after refresh. `contracts/admin/admin_live_data_sources.json`
 is the checked route inventory for every Admin tab and sub-workspace.
 
 `functions/scripts/operations/import-shadow-projection.cjs` is the only shipped

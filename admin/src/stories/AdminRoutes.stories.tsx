@@ -349,9 +349,40 @@ const intakeOperationsController: IntakeOperationsController = {
 const organizerSampleOperations = sampleIntakeOperations({
   entityKind: "organizer",
 });
+const organizerPreviewWorkItems = Array.from({length: 30}, (_, index) => {
+  const base = structuredClone(
+    organizerSampleOperations.workItems[
+      index % organizerSampleOperations.workItems.length
+    ]
+  );
+  const candidateId = `preview-organizer-${index + 1}`;
+  const intake = base.normalizedPayload.intake as Record<string, unknown>;
+  const candidate = intake.candidate as Record<string, unknown>;
+  candidate.candidateId = candidateId;
+  candidate.resultId = candidateId;
+  candidate.rank = index + 1;
+  candidate.title = index === 9 ? "Courtside" :
+    `Organizer candidate ${index + 1}`;
+  candidate.canonicalUrl = `https://${candidateId}.example/`;
+  candidate.url = candidate.canonicalUrl;
+  candidate.normalizedKey = `domain:${candidateId}.example`;
+  candidate.existingEntityMatches = [];
+  candidate.reviewContext = {
+    recordStatus: "reviewed",
+    existingInventory: false,
+    formats: ["Social events"],
+    sources: ["officialWebsite"],
+    eventSignal: "Recent public event signal captured.",
+    reviewNotes: "Reviewed source-backed organizer candidate.",
+    verifiedAt: "2026-07-24",
+  };
+  base.workItemId = `work-${candidateId}`;
+  base.externalKey = candidateId;
+  return base;
+});
 const organizerIntakeBridge = organizerWorkbenchFromOperations(
   organizerSampleOperations,
-  organizerSampleOperations.workItems
+  organizerPreviewWorkItems
 );
 const organizerIntakeController: OrganizerIntakeController = {
   bridge: organizerIntakeBridge,
@@ -366,6 +397,9 @@ const organizerIntakeController: OrganizerIntakeController = {
   handleAttachCandidate: async (_candidate) => {
     noop();
   },
+  handleCreateOrganizerDraft: async (_candidate) => {
+    noop();
+  },
   handleDecision: async (_item, _decision) => {
     noop();
   },
@@ -378,6 +412,9 @@ const organizerIntakeController: OrganizerIntakeController = {
   handleLocationResolution: async (_task) => {
     noop();
   },
+  handleOpenOrganizerDraft: (_organizerId) => {
+    noop();
+  },
   handlePendingInputDecision: async (_input, _decision) => {
     noop();
   },
@@ -388,6 +425,7 @@ const organizerIntakeController: OrganizerIntakeController = {
   localDecisions: {},
   localEventDecisions: {},
   localLocationResolutions: {},
+  localOrganizerDrafts: {},
   localPolicyDecisions: {},
   locationResolutionForms: {},
   locationResolutionInFlight: {},
@@ -418,6 +456,8 @@ const organizerIntakeController: OrganizerIntakeController = {
       value: organizerIntakeBridge.summary.externalEventCandidates ?? 0,
     },
   ],
+  organizerDraftForms: {},
+  organizerDraftInFlight: {},
   policyDecisionInFlight: {},
   policyDecisionNotes: {},
   publicationPacketByEntity: new Map(
@@ -439,6 +479,9 @@ const organizerIntakeController: OrganizerIntakeController = {
     noop();
   },
   setManualReportAcknowledgements: (_value) => {
+    noop();
+  },
+  setOrganizerDraftForms: (_value) => {
     noop();
   },
   setPolicyDecisionNotes: (_value) => {
@@ -1803,7 +1846,13 @@ export const OrganizerIntakeRouteStory: Story = {
   parameters: {
     catchComponent: {
       id: "route_organizer_intake",
-      states: ["default", "workflow-readiness", "publication-packets"],
+      states: [
+        "default",
+        "workflow-readiness",
+        "publication-packets",
+        "scrollable-candidate-queue",
+        "organizer-draft-creation",
+      ],
     },
   },
   render: renderOrganizerIntakeWorkspace,
@@ -1814,7 +1863,13 @@ export const OrganizerIntakeWorkspaceStory: Story = {
   parameters: {
     catchComponent: {
       id: "workspace_organizer_intake",
-      states: ["default", "workflow-readiness", "publication-packets"],
+      states: [
+        "default",
+        "workflow-readiness",
+        "publication-packets",
+        "scrollable-candidate-queue",
+        "organizer-draft-creation",
+      ],
     },
   },
   render: renderOrganizerIntakeWorkspace,

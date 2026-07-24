@@ -21,6 +21,7 @@ import {
   OperationWorkItemRepository,
 } from "../operations/repositories";
 import {requireAdminRole} from "./adminAuth";
+import {organizerDraftOperationId} from "./organizerDraftIdentity";
 
 const intakeOperationsRoles = ["admin", "adminOwner", "support"] as const;
 const supplyIntakeWorkflowId = "supply-intake";
@@ -43,6 +44,10 @@ interface IntakeOperationsDeps {
     uid: string,
     action: string
   ) => Promise<void>;
+  loadOrganizerDraftLinks?: (
+    db: FirebaseFirestore.Firestore,
+    workItems: OperationWorkItem[]
+  ) => Promise<OrganizerDraftLink[]>;
 }
 
 const defaultDeps: IntakeOperationsDeps = {
@@ -72,8 +77,16 @@ export interface AdminListIntakeOperationsResponse {
   };
   runs: OperationRun[];
   workItems: OperationWorkItem[];
+  organizerDraftLinks: OrganizerDraftLink[];
   nextRunCursor: string | null;
   nextWorkItemCursor: string | null;
+}
+
+export interface OrganizerDraftLink {
+  workItemId: string;
+  candidateId: string;
+  organizerId: string;
+  curationPath: string;
 }
 
 /**
@@ -145,6 +158,11 @@ export async function adminListIntakeOperationsHandler(
         "projection aggregates."
     );
   }
+  const organizerDraftLinks = deps.loadOrganizerDraftLinks ?
+    await deps.loadOrganizerDraftLinks(db, workItems) :
+    deps.repository ?
+      [] :
+      await loadOrganizerDraftLinks(db, workItems);
 
   return {
     schemaVersion: 1,
@@ -172,9 +190,68 @@ export async function adminListIntakeOperationsHandler(
     },
     runs: shadowRuns,
     workItems,
+    organizerDraftLinks,
     nextRunCursor: runsPage.nextCursor,
     nextWorkItemCursor: workItemsPage.nextCursor,
   };
+}
+
+async function loadOrganizerDraftLinks(
+  db: FirebaseFirestore.Firestore,
+  workItems: OperationWorkItem[]
+): Promise<OrganizerDraftLink[]> {
+  const sources = workItems.flatMap((item) => {
+    if (item.entityKind !== "organizer") return [];
+    const intake = recordValue(item.normalizedPayload.intake);
+    const candidate = recordValue(intake?.candidate);
+    if (
+      intake?.recordType !== "organizer_search_candidate" ||
+      !candidate ||
+      typeof candidate.candidateId !== "string" ||
+      item.externalKey !== candidate.candidateId
+    ) {
+      return [];
+    }
+    const normalizedKey = nonEmptyString(candidate.normalizedKey) ??
+      nonEmptyString(candidate.canonicalUrl)?.toLowerCase();
+    if (!normalizedKey) return [];
+    return [{
+      workItemId: item.workItemId,
+      candidateId: candidate.candidateId,
+      normalizedKey,
+      operationId: organizerDraftOperationId(normalizedKey),
+    }];
+  });
+  if (sources.length === 0) return [];
+  const sourceByOperationId = new Map(sources.map((source) => [
+    source.operationId,
+    source,
+  ]));
+  const refs = Array.from(sourceByOperationId.keys()).map((operationId) =>
+    db.collection("organizerIntakeCurationDecisions").doc(operationId)
+  );
+  const snapshots = await db.getAll(...refs);
+  return snapshots.flatMap((snapshot) => {
+    if (!snapshot.exists) return [];
+    const source = sourceByOperationId.get(snapshot.id);
+    const value = snapshot.data();
+    if (
+      !source ||
+      value?.operationType !== "create_entity_draft" ||
+      value.sourceWorkItemId !== source.workItemId ||
+      value.sourceCandidateId !== source.candidateId ||
+      value.sourceNormalizedKey !== source.normalizedKey ||
+      typeof value.entityId !== "string"
+    ) {
+      return [];
+    }
+    return [{
+      workItemId: source.workItemId,
+      candidateId: source.candidateId,
+      organizerId: value.entityId,
+      curationPath: snapshot.ref.path,
+    }];
+  });
 }
 
 async function exactRunPage(
@@ -245,6 +322,18 @@ function projectionSummary(run: OperationRun): {
 function nonNegativeInteger(value: unknown): number | null {
   return Number.isInteger(value) && (value as number) >= 0 ?
     value as number : null;
+}
+
+function recordValue(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === "object" && !Array.isArray(value) ?
+    value as Record<string, unknown> :
+    null;
+}
+
+function nonEmptyString(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
 }
 
 function normalizePayload(value: unknown): unknown {

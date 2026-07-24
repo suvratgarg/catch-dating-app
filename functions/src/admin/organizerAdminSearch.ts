@@ -1,4 +1,7 @@
-import {ClubDocument} from "../shared/generated/firestoreAdminTypes";
+import {
+  ClubDocument,
+  OrganizerDocument,
+} from "../shared/generated/firestoreAdminTypes";
 
 const maxAdminSearchTokens = 120;
 const maxQueryTokens = 30;
@@ -21,6 +24,7 @@ const stopWords = new Set([
 ]);
 
 export type OrganizerAdminSearchSource =
+  "adminCreateOrganizerDraftFromCandidate" |
   "adminUpdateClubDetails" |
   "adminSetClubIndexStatus" |
   "adminOrganizerSearchBackfill";
@@ -42,7 +46,7 @@ export interface OrganizerAdminSearchProjection {
  */
 export function buildOrganizerAdminSearchProjection(
   clubId: string,
-  club: ClubDocument,
+  club: ClubDocument | OrganizerDocument,
   updatedAt: FirebaseFirestore.FieldValue,
   updatedBySource: OrganizerAdminSearchSource
 ): OrganizerAdminSearchProjection {
@@ -107,7 +111,7 @@ export function clubWithPublicPageForSearch(
  */
 function organizerSearchSourceText(
   clubId: string,
-  club: ClubDocument
+  club: ClubDocument | OrganizerDocument
 ): string[] {
   return compactStrings([
     clubId,

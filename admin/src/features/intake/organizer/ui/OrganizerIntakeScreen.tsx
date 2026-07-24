@@ -1,4 +1,5 @@
 import {lazy, Suspense, useState} from "react";
+import {useNavigate} from "react-router";
 
 import {
   AdminButton,
@@ -31,8 +32,14 @@ export function OrganizerIntakeScreen() {
 }
 
 function OrganizerIntakeLoadedScreen() {
+  const navigate = useNavigate();
   const {setError: onError, setNotice: onNotice} = useAdminFeedback();
-  const controller = useOrganizerIntakeController({onError, onNotice});
+  const controller = useOrganizerIntakeController({
+    onError,
+    onNotice,
+    onOrganizerDraftCreated: (organizerId) =>
+      navigate(`/organizers/${encodeURIComponent(organizerId)}`),
+  });
   return <OrganizerIntakeWorkspace controller={controller} />;
 }
 

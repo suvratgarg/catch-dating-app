@@ -3,6 +3,7 @@ import {useEffect, useMemo, useState} from "react";
 
 import {
   AdminButton,
+  AdminFieldGrid,
   AdminIntakeReviewWorkbench,
   AdminIntakeSection,
   AdminIntakeStageRail,
@@ -12,11 +13,13 @@ import {
   SearchField,
   SelectField,
   TextareaField,
+  TextField,
 } from "../../../../shared/ui/AdminPrimitives";
 import type {AdminDecideOrganizerIntakeResponse} from
   "../../../../shared/types/adminTypes";
 import {
   decisionLabel,
+  organizerDraftFormFromCandidate,
   publicationPacketReady,
 } from "../controllers/organizerIntakeHelpers";
 import type {OrganizerIntakeController} from
@@ -38,6 +41,14 @@ type OrganizerWorkbenchEntry =
   };
 
 const organizerWorkbenchStageKey = "catch-admin.organizer-intake-stage.v2";
+const organizerTypeOptions = [
+  {value: "community", label: "Community"},
+  {value: "club", label: "Club"},
+  {value: "eventProducer", label: "Event producer"},
+  {value: "venue", label: "Venue"},
+  {value: "brand", label: "Brand"},
+  {value: "individual", label: "Individual"},
+];
 
 function OrganizerTaskWorkbench({
   controller,
@@ -54,12 +65,18 @@ function OrganizerTaskWorkbench({
     curationInFlight,
     handleDecision,
     handleAttachCandidate,
+    handleCreateOrganizerDraft,
+    handleOpenOrganizerDraft,
     localDecisions,
     localCuration,
+    localOrganizerDrafts,
     manualReportAcknowledgements,
+    organizerDraftForms,
+    organizerDraftInFlight,
     publicationPacketByEntity,
     setDecisionNotes,
     setManualReportAcknowledgements,
+    setOrganizerDraftForms,
   } = controller;
   const [activeStage, setActiveStageState] = useState<OrganizerWorkbenchStage>(
     readOrganizerWorkbenchStage
@@ -73,13 +90,23 @@ function OrganizerTaskWorkbench({
     bridge.searchCandidates.duplicateKeys.flatMap((entry) => entry.candidateIds)
   ), [bridge.searchCandidates.duplicateKeys]);
 
+  const draftedCandidateCount = bridge.searchCandidates.candidates.filter(
+    (candidate) =>
+      Boolean(candidate.draftLink || localOrganizerDrafts[candidate.candidateId])
+  ).length;
   const stageCounts = useMemo(() => ({
     incoming: stageItems(bridge.items, publicationPacketByEntity, "incoming").length +
-      bridge.searchCandidates.candidates.length,
+      bridge.searchCandidates.candidates.length - draftedCandidateCount,
     verify: stageItems(bridge.items, publicationPacketByEntity, "verify").length,
     resolve: stageItems(bridge.items, publicationPacketByEntity, "resolve").length,
-    ready: stageItems(bridge.items, publicationPacketByEntity, "ready").length,
-  }), [bridge.items, bridge.searchCandidates.candidates.length, publicationPacketByEntity]);
+    ready: stageItems(bridge.items, publicationPacketByEntity, "ready").length +
+      draftedCandidateCount,
+  }), [
+    bridge.items,
+    bridge.searchCandidates.candidates.length,
+    draftedCandidateCount,
+    publicationPacketByEntity,
+  ]);
   const cityOptions = useMemo(() => [
     {value: "all", label: "All launch cities"},
     ...Array.from(new Set(
@@ -103,8 +130,15 @@ function OrganizerTaskWorkbench({
       kind: "entity" as const,
       item,
     }));
-    if (activeStage !== "incoming") return entityEntries;
-    const candidateEntries = bridge.searchCandidates.candidates.map((candidate) => ({
+    const candidateEntries = bridge.searchCandidates.candidates
+      .filter((candidate) => {
+        const hasDraft = Boolean(
+          candidate.draftLink || localOrganizerDrafts[candidate.candidateId]
+        );
+        return activeStage === "incoming" ? !hasDraft :
+          activeStage === "ready" ? hasDraft : false;
+      })
+      .map((candidate) => ({
       id: `candidate:${candidate.candidateId}`,
       kind: "candidate" as const,
       candidate,
@@ -114,6 +148,7 @@ function OrganizerTaskWorkbench({
     activeStage,
     bridge.items,
     bridge.searchCandidates.candidates,
+    localOrganizerDrafts,
     publicationPacketByEntity,
   ]);
   const filteredEntries = useMemo(() => {
@@ -176,6 +211,19 @@ function OrganizerTaskWorkbench({
     curationInFlight[candidate.candidateId] === true : false;
   const candidateCuration = candidate ?
     localCuration[candidate.candidateId] : undefined;
+  const candidateDraft = candidate ?
+    localOrganizerDrafts[candidate.candidateId] ?? candidate.draftLink :
+    undefined;
+  const candidateDraftForm = candidate ?
+    organizerDraftForms[candidate.candidateId] ??
+      organizerDraftFormFromCandidate(candidate) :
+    null;
+  const candidateDraftPending = candidate ?
+    organizerDraftInFlight[candidate.candidateId] === true :
+    false;
+  const candidateHasDuplicateKey = candidate ?
+    duplicateCandidateIds.has(candidate.candidateId) :
+    false;
 
   const setStage = (stage: OrganizerWorkbenchStage) => {
     setActiveStageState(stage);
@@ -335,14 +383,34 @@ function OrganizerTaskWorkbench({
             >
               {candidateCuration ? "Attach recorded" : "Attach to existing organizer"}
             </AdminButton>
+          ) : candidateDraft ? (
+            <AdminButton
+              variant="primary"
+              onClick={() =>
+                handleOpenOrganizerDraft(candidateDraft.organizerId)}
+            >
+              Open organizer draft
+            </AdminButton>
           ) : (
-            <AdminButton disabled>Create organizer draft unavailable</AdminButton>
+            <AdminButton
+              disabled={candidateDraftPending || candidateHasDuplicateKey}
+              loading={candidateDraftPending}
+              loadingLabel="Creating draft"
+              variant="primary"
+              onClick={() => void handleCreateOrganizerDraft(candidate)}
+            >
+              Create organizer draft
+            </AdminButton>
           ),
-          footerHint: candidateCuration ?
+          footerHint: candidateDraft ?
+            `Draft ${candidateDraft.organizerId} is unclaimed, hidden, noindex, and crawl-disabled.` :
+            candidateCuration ?
             `Recorded at ${candidateCuration.decisionPath}.` :
             candidate.existingEntityMatches.length > 0 ?
               "Attaching records curation only. Publication remains separately gated." :
-              "This lead is reviewable here, but the governed candidate-to-entity scaffolder is not implemented yet.",
+              candidateHasDuplicateKey ?
+                "Resolve the duplicate identity key before creating a canonical draft." :
+                "Creation opens an unclaimed draft in Organizers. Publication, indexing, app visibility, crawling, and ownership remain disabled.",
           impactRows: organizerCandidateImpactRows(candidate),
           impactTitle: "Intake impact",
           initials: initialsForLabel(candidate.title),
@@ -361,6 +429,79 @@ function OrganizerTaskWorkbench({
                   Formats: {candidate.reviewContext.formats.join(", ")}
                 </p>
               ) : null}
+              {candidate.existingEntityMatches.length === 0 &&
+                !candidateDraft &&
+                candidateDraftForm ? (
+                  <AdminIntakeSection>
+                    <AdminFieldGrid columns={2}>
+                      <TextField
+                        label="Organizer name"
+                        value={candidateDraftForm.name}
+                        onChange={(name) =>
+                          setOrganizerDraftForms((current) => ({
+                            ...current,
+                            [candidate.candidateId]: {
+                              ...candidateDraftForm,
+                              name,
+                            },
+                          }))}
+                      />
+                      <TextField
+                        label="Draft slug"
+                        value={candidateDraftForm.organizerId}
+                        onChange={(organizerId) =>
+                          setOrganizerDraftForms((current) => ({
+                            ...current,
+                            [candidate.candidateId]: {
+                              ...candidateDraftForm,
+                              organizerId,
+                            },
+                          }))}
+                      />
+                    </AdminFieldGrid>
+                    <SelectField
+                      label="Organizer type"
+                      options={organizerTypeOptions}
+                      value={candidateDraftForm.organizerType}
+                      onChange={(organizerType) =>
+                        setOrganizerDraftForms((current) => ({
+                          ...current,
+                          [candidate.candidateId]: {
+                            ...candidateDraftForm,
+                            organizerType:
+                              organizerType as
+                                Intake.OrganizerDraftFormState["organizerType"],
+                          },
+                        }))}
+                    />
+                    <TextareaField
+                      label="Draft description"
+                      rows={3}
+                      value={candidateDraftForm.description}
+                      onChange={(description) =>
+                        setOrganizerDraftForms((current) => ({
+                          ...current,
+                          [candidate.candidateId]: {
+                            ...candidateDraftForm,
+                            description,
+                          },
+                        }))}
+                    />
+                    <TextareaField
+                      label="Creation review note"
+                      rows={2}
+                      value={candidateDraftForm.reviewNote}
+                      onChange={(reviewNote) =>
+                        setOrganizerDraftForms((current) => ({
+                          ...current,
+                          [candidate.candidateId]: {
+                            ...candidateDraftForm,
+                            reviewNote,
+                          },
+                        }))}
+                    />
+                  </AdminIntakeSection>
+                ) : null}
             </AdminIntakeSection>
           ),
           noteTitle: candidate.reviewContext ?
@@ -373,10 +514,15 @@ function OrganizerTaskWorkbench({
             label: "Candidate readiness",
             total: candidateChecklist.length,
           },
-          status: organizerCandidateStatus(candidate, duplicateCandidateIds).label,
+          status: organizerCandidateStatus(
+            candidate,
+            duplicateCandidateIds,
+            Boolean(candidateDraft)
+          ).label,
           statusTone: organizerCandidateStatus(
             candidate,
-            duplicateCandidateIds
+            duplicateCandidateIds,
+            Boolean(candidateDraft)
           ).tone,
           subtitle:
             `Search candidate · ${candidateMarketLabel(candidate)} · observed ${candidate.observedAt}`,
@@ -395,7 +541,14 @@ function OrganizerTaskWorkbench({
               entry.item,
               publicationPacketByEntity.get(entry.item.entityId)
             ) :
-            organizerCandidateQueueItem(entry.candidate, duplicateCandidateIds))}
+            organizerCandidateQueueItem(
+              entry.candidate,
+              duplicateCandidateIds,
+              Boolean(
+                entry.candidate.draftLink ||
+                localOrganizerDrafts[entry.candidate.candidateId]
+              )
+            ))}
         queueMeta={`${filteredEntries.length} item${filteredEntries.length === 1 ? "" : "s"}`}
         queueTitle={stageTitle(activeStage)}
         selectedId={selectedEntryId}
@@ -627,6 +780,7 @@ function workbenchEntryNeedsAttention(
   duplicateCandidateIds: Set<string>
 ) {
   if (entry.kind === "candidate") {
+    if (entry.candidate.draftLink) return true;
     return organizerCandidateChecklistRows(
       entry.candidate,
       duplicateCandidateIds
@@ -677,9 +831,14 @@ function workbenchEntrySearchText(entry: OrganizerWorkbenchEntry) {
 
 function organizerCandidateQueueItem(
   candidate: Intake.OrganizerSearchCandidate,
-  duplicateCandidateIds: Set<string>
+  duplicateCandidateIds: Set<string>,
+  hasDraft = Boolean(candidate.draftLink)
 ) {
-  const status = organizerCandidateStatus(candidate, duplicateCandidateIds);
+  const status = organizerCandidateStatus(
+    candidate,
+    duplicateCandidateIds,
+    hasDraft
+  );
   return {
     description: `${candidate.platform} · ${candidateMarketLabel(candidate)}`,
     id: `candidate:${candidate.candidateId}`,
@@ -695,8 +854,12 @@ function organizerCandidateQueueItem(
 
 function organizerCandidateStatus(
   candidate: Intake.OrganizerSearchCandidate,
-  duplicateCandidateIds: Set<string>
+  duplicateCandidateIds: Set<string>,
+  hasDraft = Boolean(candidate.draftLink)
 ): {label: string; tone: "neutral" | "warning" | "danger" | "success"} {
+  if (hasDraft) {
+    return {label: "draft created", tone: "success"};
+  }
   if (duplicateCandidateIds.has(candidate.candidateId)) {
     return {label: "duplicate key", tone: "danger"};
   }

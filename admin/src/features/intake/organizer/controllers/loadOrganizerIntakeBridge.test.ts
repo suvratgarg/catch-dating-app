@@ -39,6 +39,12 @@ describe("loadOrganizerIntakeBridge", () => {
         runs: [runs.find((run) => run.runId === payload.runId)],
         workItems: Array.from({length: 25}, (_value, index) =>
           organizerWorkItem(market, index + 1)),
+        organizerDraftLinks: market === "mumbai" ? [{
+          workItemId: "wi-mumbai-candidate-10",
+          candidateId: "mumbai-candidate-10",
+          organizerId: "courtside",
+          curationPath: "organizerIntakeCurationDecisions/create-draft-test",
+        }] : [],
       });
     });
 
@@ -52,6 +58,13 @@ describe("loadOrganizerIntakeBridge", () => {
         candidate.queryIntent.marketSlug)
     )).toEqual(new Set(["indore", "mumbai"]));
     expect(mocks.listIntakeOperations).toHaveBeenCalledTimes(3);
+    expect(result.workbench.searchCandidates.candidates.find((candidate) =>
+      candidate.candidateId === "mumbai-candidate-10")).toMatchObject({
+      workItemId: "wi-mumbai-candidate-10",
+      draftLink: {
+        organizerId: "courtside",
+      },
+    });
     expect(mocks.listIntakeOperations).toHaveBeenNthCalledWith(1, {
       workflowId: "supply-intake",
       runStatus: "completed",
@@ -168,9 +181,11 @@ function organizerWorkItem(market: string, rank: number) {
 function operationResponse({
   runs,
   workItems,
+  organizerDraftLinks = [],
 }: {
   runs: unknown[];
   workItems: unknown[];
+  organizerDraftLinks?: unknown[];
 }) {
   return {
     schemaVersion: 1,
@@ -198,6 +213,7 @@ function operationResponse({
     },
     runs,
     workItems,
+    organizerDraftLinks,
     nextRunCursor: null,
     nextWorkItemCursor: null,
   };

@@ -374,7 +374,8 @@ export interface ClubDocument {
     updatedBySource:
       | "adminUpdateClubDetails"
       | "adminSetClubIndexStatus"
-      | "adminOrganizerSearchBackfill";
+      | "adminOrganizerSearchBackfill"
+      | "adminCreateOrganizerDraftFromCandidate";
   };
   /**
    * Public, owner-safe organizer listing content derived from sources or owner edits. Raw scrape snapshots belong in private evidence collections.
