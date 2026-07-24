@@ -11,6 +11,7 @@ import {
   validateOrganizerIntakeCurationDecisionDocument,
   schemaErrorMessages,
 } from "../shared/generated/schemaValidators";
+import {RATE_LIMITS} from "../shared/rateLimit";
 
 type FakeData = Record<string, unknown>;
 
@@ -320,6 +321,13 @@ test("creates a fail-closed organizer draft and curation receipt", async () => {
   assert.equal(h.reservedRoutes.length, 1);
   assert.equal(h.reservedRoutes[0].canonicalPath, "/organizers/courtside/");
   assert.equal(h.firestore.auditLogs().length, 1);
+});
+
+test("uses an explicit low-volume admin mutation rate limit", () => {
+  assert.deepEqual(
+    RATE_LIMITS.adminCreateOrganizerDraftFromCandidate,
+    {maxRequests: 10, windowMs: 60 * 1000}
+  );
 });
 
 test("exact retry reuses the organizer without duplicate audit", async () => {

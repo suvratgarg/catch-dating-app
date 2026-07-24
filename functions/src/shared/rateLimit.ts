@@ -165,6 +165,10 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   adminRecordActionExecution: {maxRequests: 120, windowMs: 60 * 1000},
   adminDecideOrganizerIntake: {maxRequests: 30, windowMs: 60 * 1000},
   adminRecordOrganizerCuration: {maxRequests: 30, windowMs: 60 * 1000},
+  adminCreateOrganizerDraftFromCandidate: {
+    maxRequests: 10,
+    windowMs: 60 * 1000,
+  },
   adminRecordEventIntakeReviewDecision: {
     maxRequests: 30,
     windowMs: 60 * 1000,

@@ -3113,6 +3113,25 @@
         "docs/backend_operation_catalog.md"
       ],
       "notes": "Firestore transforms are valid for top-level and nested map fields but not within array elements. Array timestamps must be concrete values before the transaction write."
+    },
+    {
+      "id": "REG-ADMIN-ORGANIZER-DRAFT-RATE-LIMIT-001",
+      "title": "Organizer draft callable silently inherits the default rate limit",
+      "status": "active",
+      "applies_to": [
+        "functions/src/shared/rateLimit.ts",
+        "functions/src/admin/organizerDraftFromCandidate.test.ts"
+      ],
+      "symptom": "The production callable logs a missing RATE_LIMITS registration warning and falls back to a generic limit instead of declaring the intended mutation budget.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions run build && node --test functions/lib/admin/organizerDraftFromCandidate.test.js",
+        "guardEvidence": "the draft callable has a tested explicit limit of 10 admin mutations per minute"
+      },
+      "owner_docs": [
+        "docs/backend_operation_catalog.md"
+      ],
+      "notes": "Low-volume governed mutations must register their action-specific defense-in-depth limit rather than rely on the warning-backed default."
     }
   ]
 }
