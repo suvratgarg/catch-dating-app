@@ -11,6 +11,10 @@ const workflow = fs.readFileSync(
   path.join(repoRoot, ".github", "workflows", "marketing-website.yml"),
   "utf8"
 );
+const surfaceValidationWorkflow = fs.readFileSync(
+  path.join(repoRoot, ".github", "workflows", "react-surface-validation.yml"),
+  "utf8"
+);
 const packageJson = JSON.parse(
   fs.readFileSync(path.join(websiteRoot, "package.json"), "utf8")
 );
@@ -40,4 +44,9 @@ test("production deploy materializes organizer projections from Firestore before
     /run: npm --workspace catch-marketing run materialize:organizer-listings:deploy/u
   );
   assert.doesNotMatch(materializeContract, /organizer-claim-target-readiness/u);
+  assert.doesNotMatch(
+    surfaceValidationWorkflow,
+    /check_promotion_bridge\.mjs/u,
+    "marketing validation must not invoke the retired repo-backed promotion bridge"
+  );
 });

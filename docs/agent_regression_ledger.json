@@ -3005,6 +3005,7 @@
       "status": "active",
       "applies_to": [
         ".github/workflows/marketing-website.yml",
+        ".github/workflows/react-surface-validation.yml",
         "contracts/firestore/organizers.schema.json",
         "website/package.json",
         "website/scripts/generateOrganizerListings.mjs",
