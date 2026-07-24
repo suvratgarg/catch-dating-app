@@ -26,21 +26,6 @@ export interface OrganizerIntakeLoadResult {
 
 export async function loadOrganizerIntakeBridge():
 Promise<OrganizerIntakeLoadResult> {
-  if (import.meta.env.VITE_ADMIN_DATA_MODE !== "live") {
-    const {loadSampleOrganizerIntakeBridge} = await import(
-      "../api/sampleOrganizerIntakeRepository"
-    );
-    const bridge = await loadSampleOrganizerIntakeBridge();
-    return {
-      source: "sample",
-      workbench: bridge,
-      diagnosticsBridge: bridge,
-    };
-  }
-  return loadLiveOrganizerIntake();
-}
-
-async function loadLiveOrganizerIntake(): Promise<OrganizerIntakeLoadResult> {
   const inventory = await listIntakeOperations({
     workflowId: "supply-intake",
     runStatus: "completed",
@@ -51,56 +36,64 @@ async function loadLiveOrganizerIntake(): Promise<OrganizerIntakeLoadResult> {
   const runs = latestRunPerLaunchMarket(inventory.runs);
   const pages = await Promise.all(runs.map(loadOrganizerRun));
   const workItems = pages.flatMap((page) => page.workItems);
+  const workbench = organizerWorkbenchFromOperations(inventory, workItems);
+  return {
+    source: inventory.source === "firestore" ? "firestore" : "sample",
+    diagnosticsBridge: null,
+    workbench,
+  };
+}
+
+export function organizerWorkbenchFromOperations(
+  inventory: AdminListIntakeOperationsResponse,
+  workItems: OperationWorkItem[]
+): OrganizerIntakeWorkbenchBridge {
   const candidates = workItems.flatMap(organizerCandidateFromWorkItem);
   const duplicateKeys = duplicateCandidateKeys(candidates);
   return {
-    source: "firestore",
-    diagnosticsBridge: null,
-    workbench: {
-      schemaVersion: 1,
-      summary: {
-        reviewItems: 0,
-        evidenceReview: 0,
-        promotionReview: 0,
-        blocked: workItems.filter((item) =>
-          item.blockerCodes.length > 0).length,
-        approvedPublic: 0,
-        appDiscoverable: 0,
-        searchResultCandidates: candidates.length,
-        duplicateSearchResultKeys: duplicateKeys.length,
-        matchedSearchResultCandidates: candidates.filter((candidate) =>
-          candidate.existingEntityMatches.length > 0).length,
-      },
-      publicationReviewPackets: emptyPublicationPackets(),
-      searchCandidates: {
-        summary: {
-          batches: new Set(candidates.map((candidate) =>
-            candidate.batchId)).size,
-          results: candidates.length,
-          candidates: candidates.length,
-          matchedExistingEntities: candidates.filter((candidate) =>
-            candidate.existingEntityMatches.length > 0).length,
-          duplicateNormalizedKeys: duplicateKeys.length,
-          platforms: countBy(candidates, (candidate) => candidate.platform),
-        },
-        generatedFrom: {
-          batches: Array.from(new Set(candidates.map((candidate) =>
-            candidate.batchId))).sort(),
-          dedupeIndexGeneratedAt: inventory.generatedAt,
-        },
-        candidates,
-        duplicateKeys,
-        warnings: [],
-        errors: [],
-        commands: {
-          capture: "Managed by the Supply Intake worker.",
-          curateSurface: "adminRecordOrganizerCuration",
-          ingest: "Managed by the Supply Intake worker.",
-          normalize: "Managed by the Supply Intake worker.",
-        },
-      },
-      items: [],
+    schemaVersion: 1,
+    summary: {
+      reviewItems: 0,
+      evidenceReview: 0,
+      promotionReview: 0,
+      blocked: workItems.filter((item) =>
+        item.blockerCodes.length > 0).length,
+      approvedPublic: 0,
+      appDiscoverable: 0,
+      searchResultCandidates: candidates.length,
+      duplicateSearchResultKeys: duplicateKeys.length,
+      matchedSearchResultCandidates: candidates.filter((candidate) =>
+        candidate.existingEntityMatches.length > 0).length,
     },
+    publicationReviewPackets: emptyPublicationPackets(),
+    searchCandidates: {
+      summary: {
+        batches: new Set(candidates.map((candidate) =>
+          candidate.batchId)).size,
+        results: candidates.length,
+        candidates: candidates.length,
+        matchedExistingEntities: candidates.filter((candidate) =>
+          candidate.existingEntityMatches.length > 0).length,
+        duplicateNormalizedKeys: duplicateKeys.length,
+        platforms: countBy(candidates, (candidate) => candidate.platform),
+      },
+      generatedFrom: {
+        batches: Array.from(new Set(candidates.map((candidate) =>
+          candidate.batchId))).sort(),
+        dedupeIndexGeneratedAt: inventory.generatedAt,
+      },
+      candidates,
+      duplicateKeys,
+      warnings: [],
+      errors: [],
+      commands: {
+        capture: "Managed by the Supply Intake worker.",
+        curateSurface: "adminRecordOrganizerCuration",
+        ingest: "Managed by the Supply Intake worker.",
+        normalize: "Managed by the Supply Intake worker.",
+      },
+    },
+    items: [],
   };
 }
 

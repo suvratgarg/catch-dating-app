@@ -1686,6 +1686,17 @@ export interface OrganizerSearchCandidate {
   existingEntityMatches: OrganizerExistingEntityMatch[];
   reviewAction: string;
   diagnostics: string[];
+  reviewContext?: OrganizerSearchCandidateReviewContext;
+}
+
+export interface OrganizerSearchCandidateReviewContext {
+  recordStatus: string;
+  existingInventory: boolean;
+  formats: string[];
+  sources: string[];
+  eventSignal: string | null;
+  reviewNotes: string | null;
+  verifiedAt: string | null;
 }
 
 export type OrganizerSuggestedSurface = OrganizerCurationSurface;

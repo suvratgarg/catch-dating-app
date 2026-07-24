@@ -1,18 +1,7 @@
 import {act, renderHook, waitFor} from "@testing-library/react";
-import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
+import {describe, expect, it, vi} from "vitest";
 import {createQueryHarness} from "../../../../shared/test/queryHarness";
-import organizerIntakeBridgeJson from
-  "../generated/organizerIntakeBridge.json";
 import {useOrganizerIntakeController} from "./useOrganizerIntakeController";
-
-beforeEach(() => {
-  vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-    json: async () => organizerIntakeBridgeJson,
-    ok: true,
-    status: 200,
-  }));
-});
-afterEach(() => vi.unstubAllGlobals());
 
 describe("useOrganizerIntakeController", () => {
   it("derives the intake metrics and retains explicit review notes", async () => {
@@ -23,9 +12,10 @@ describe("useOrganizerIntakeController", () => {
     }), {wrapper});
 
     await waitFor(() => expect(result.current).toBeTruthy());
-    expect(result.current.bridge.items.length).toBeGreaterThan(0);
-    expect(result.current.bridge.summary.reviewItems).toBe(result.current.bridge.items.length);
-    expect(result.current.metrics.length).toBeGreaterThan(10);
+    expect(result.current.source).toBe("sample");
+    expect(result.current.bridge.searchCandidates.candidates).toHaveLength(2);
+    expect(result.current.bridge.summary.searchResultCandidates).toBe(2);
+    expect(result.current.metrics.length).toBeGreaterThan(5);
     act(() => result.current.setDecisionNotes({"organizer-1": "Reviewed evidence."}));
     expect(result.current.decisionNotes["organizer-1"]).toBe("Reviewed evidence.");
   });

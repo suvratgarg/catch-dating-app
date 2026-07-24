@@ -231,9 +231,29 @@ test("organizer search candidates become database-ready organizer work items", a
     existingEntityMatches: [],
     reviewAction: "verify_ownership_before_attach",
     diagnostics: ["first_party_claim_requires_manual_confirmation"],
+    reviewContext: {
+      recordStatus: "review_now",
+      existingInventory: false,
+      formats: [market === "mumbai" ? "Speed dating" : "Social mixer"],
+      sources: [`https://${candidateId}.example/`],
+      eventSignal:
+        `A current ${market === "mumbai" ? "Mumbai" : "Indore"} event is visible.`,
+      reviewNotes: "Verify the organizer boundary.",
+      verifiedAt: "2026-07-14",
+    },
   });
   await fs.writeFile(queuePath, `${JSON.stringify({
     schemaVersion: 1,
+    reviewPolicy: {
+      shortlistId: "fixture-organizer-review",
+      generatedAt: NOW,
+      target: {organizers: 2, markets: {mumbai: 1, indore: 1}},
+      summary: {totalCandidates: 2, mumbai: 1, indore: 1},
+      publicationPolicy: "Human review remains required.",
+      recordStatusDefinitions: {
+        review_now: "Ready for human entity review.",
+      },
+    },
     candidates: [
       candidateFor("candidate-mumbai", "mumbai"),
       candidateFor("candidate-indore", "indore"),
@@ -296,6 +316,28 @@ test("organizer search candidates become database-ready organizer work items", a
     projection.items[0].normalizedPayload.intake.candidate.queryIntent.marketSlug,
     "mumbai"
   );
+  assert.deepEqual(
+    projection.items[0].normalizedPayload.intake.candidate.reviewContext,
+    {
+      recordStatus: "review_now",
+      existingInventory: false,
+      formats: ["Speed dating"],
+      sources: ["https://candidate-mumbai.example/"],
+      eventSignal: "A current Mumbai event is visible.",
+      reviewNotes: "Verify the organizer boundary.",
+      verifiedAt: "2026-07-14",
+    }
+  );
+  assert.deepEqual(projection.run.metadata.organizerReviewPolicy, {
+    shortlistId: "fixture-organizer-review",
+    generatedAt: NOW,
+    target: {organizers: 2, markets: {mumbai: 1, indore: 1}},
+    summary: {totalCandidates: 2, mumbai: 1, indore: 1},
+    publicationPolicy: "Human review remains required.",
+    recordStatusDefinitions: {
+      review_now: "Ready for human entity review.",
+    },
+  });
 });
 
 test("organizer-only plans do not require an Event Intake bridge", async () => {

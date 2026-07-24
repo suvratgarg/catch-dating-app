@@ -15,6 +15,7 @@ export function validateAdminLiveDataSources({
   apiSource,
   functionsIndexSource,
   featureFiles,
+  retainedOperationalSnapshots = [],
 }) {
   const violations = [];
   const routes = Array.isArray(contract?.routes) ? contract.routes : [];
@@ -67,12 +68,7 @@ export function validateAdminLiveDataSources({
     }
   }
 
-  const allowed = contract?.sampleOnlyImportRoots ?? [];
   for (const file of featureFiles) {
-    if (allowed.some((entry) =>
-      entry.endsWith("/") ? file.path.startsWith(entry) : file.path === entry)) {
-      continue;
-    }
     if (
       /(?:from\s+|import\()["'][^"']*generated\/[^"']+\.json(?:\?url)?["']/u
         .test(file.source)
@@ -81,6 +77,11 @@ export function validateAdminLiveDataSources({
         `${file.path}: production feature imports generated operational JSON`
       );
     }
+  }
+  for (const snapshot of retainedOperationalSnapshots) {
+    violations.push(
+      `${snapshot}: operational snapshots must be stored in Firestore, not retained in the repository`
+    );
   }
   return violations;
 }
@@ -199,6 +200,17 @@ async function main(argv) {
       "utf8"
     ),
     featureFiles: collectFeatureFiles(fromRepo("admin/src/features")),
+    retainedOperationalSnapshots: [
+      "admin/src/features/intake/organizer/generated/organizerIntakeBridge.json",
+      "admin/src/generated/eventIntakeBridge.json",
+      "admin/src/generated/externalEventImportExecutionPlan.json",
+      "admin/src/generated/externalEventImportPlan.json",
+      "admin/src/generated/marketingOpsBridge.json",
+      "tool/organizer_intake/generated/search_result_candidate_queue.json",
+      "tool/organizer_intake/search_result_batches/2026-07-24-pilot-indore-organizers.json",
+      "tool/organizer_intake/search_result_batches/2026-07-24-pilot-mumbai-organizers.json",
+      "operations/launch/pilot_supply_shortlist.json",
+    ].filter((file) => fs.existsSync(fromRepo(file))),
   });
   if (violations.length > 0) {
     console.error("Admin live-data source violations:");
@@ -239,7 +251,7 @@ async function main(argv) {
   }
   if (flags.has("--summary")) {
     console.log(
-      `Admin live-data source check passed: ${contract.routes.length} routes; generated operational JSON is sample-only.`
+      `Admin live-data source check passed: ${contract.routes.length} routes; operational state is Firestore-only.`
     );
   }
 }

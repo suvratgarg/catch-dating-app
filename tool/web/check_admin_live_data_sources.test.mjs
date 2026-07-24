@@ -31,7 +31,6 @@ const base = {
       paths: ["/intake/operations"],
       liveReads: ["adminGetOverview"],
     }],
-    sampleOnlyImportRoots: ["admin/src/features/sample.ts"],
   },
   appSource: `
     const navigation: AdminNavGroup[] = [
@@ -46,15 +45,24 @@ const base = {
   featureFiles: [],
 };
 
-test("accepts callable-backed routes with sample-only generated fixtures", () => {
-  assert.deepEqual(validateAdminLiveDataSources({
-    ...base,
-    featureFiles: [{
-      path: "admin/src/features/sample.ts",
-      source: `import fixture from "./generated/sample.json";`,
-    }],
-  }), []);
-});
+test("accepts callable-backed routes without retained operational snapshots",
+  () => {
+    assert.deepEqual(validateAdminLiveDataSources(base), []);
+  }
+);
+
+test("rejects retained operational snapshots even without feature imports",
+  () => {
+    const violations = validateAdminLiveDataSources({
+      ...base,
+      retainedOperationalSnapshots: [
+        "admin/src/generated/marketingOpsBridge.json",
+      ],
+    });
+    assert.ok(violations.some((violation) =>
+      violation.includes("operational snapshots must be stored in Firestore")));
+  }
+);
 
 test("rejects a production feature that imports generated operational JSON", () => {
   const violations = validateAdminLiveDataSources({

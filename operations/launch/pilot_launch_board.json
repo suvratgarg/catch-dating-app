@@ -187,7 +187,8 @@
       "owner": "operations",
       "nextAction": "Author the first 10-organizer batch manually, then add a reviewed candidate-to-entity scaffolding command after the pilot proves the required fields.",
       "evidence": [
-        "tool/organizer_intake/generated/search_result_candidate_queue.json",
+        "operationRuns/organizer-intake-mumbai-enriched-20260724",
+        "operationRuns/organizer-intake-indore-enriched-20260724",
         "tool/organizer_intake/batches/"
       ]
     },
@@ -223,9 +224,9 @@
       "workstream": "supply",
       "summary": "Organizer search-result dedupe collapses distinct Meetup and Linktree profiles to domain-only keys, producing false duplicate groups across unrelated organizers.",
       "owner": "operations",
-      "nextAction": "Add profile-slug adapters and regression fixtures for Meetup and Linktree, then regenerate the 50-candidate queue before entity scaffolding.",
+      "nextAction": "Add profile-slug adapters and regression fixtures for Meetup and Linktree, then write a new immutable Supply Intake run before entity scaffolding.",
       "evidence": [
-        "tool/organizer_intake/generated/search_result_candidate_queue.json",
+        "operationWorkItems where runId is organizer-intake-mumbai-enriched-20260724 or organizer-intake-indore-enriched-20260724",
         "tool/organizer_intake/lib/platform_adapters.mjs",
         "operations/launch/pilot_supply_intake_findings_2026-07-24.md",
         "2026-07-24 queue: five unrelated Meetup profiles normalized to domain:meetup.com and three unrelated Linktree profiles normalized to domain:linktr.ee"
@@ -287,7 +288,8 @@
       "evidence": [
         "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx",
         "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
-        "admin/src/features/intake/organizer/generated/organizerIntakeBridge.json",
+        "operationRuns/organizer-intake-mumbai-enriched-20260724",
+        "operationRuns/organizer-intake-indore-enriched-20260724",
         "operations/launch/pilot_supply_intake_findings_2026-07-24.md",
         "2026-07-24 local browser QA: Incoming 50; Mumbai 25; Indore 25; AFTER FLY attach action enabled"
       ]
@@ -481,7 +483,8 @@
         "tool/organizer_intake/generated/search_run_plan.json",
         "tool/organizer_intake/capture_search_results.mjs",
         "tool/organizer_intake/batches/",
-        "operations/launch/pilot_supply_shortlist.json: 5 Mumbai + 5 Indore, 6 review-now and 4 organizer-only pending event verification"
+        "operationRuns/organizer-intake-mumbai-enriched-20260724",
+        "operationRuns/organizer-intake-indore-enriched-20260724"
       ],
       "updatedAt": "2026-07-22T20:05:50+05:30"
     },
@@ -503,13 +506,12 @@
       "nextAction": "Human-review the 25 Mumbai and 25 Indore candidates, replace any rejected identities, then scaffold schema-complete organizer records and reviewed publication packets after the three pilot runs pass.",
       "evidence": [
         "operations/src/workflows/supply-intake/manifest.json",
-        "operations/launch/pilot_supply_shortlist.json",
-        "tool/organizer_intake/search_result_batches/2026-07-24-pilot-mumbai-organizers.json",
-        "tool/organizer_intake/search_result_batches/2026-07-24-pilot-indore-organizers.json",
-        "tool/organizer_intake/generated/search_result_candidate_queue.json",
+        "operationRuns/organizer-intake-mumbai-enriched-20260724: 25 candidates",
+        "operationRuns/organizer-intake-indore-enriched-20260724: 25 candidates plus one existing publication packet",
+        "operationWorkItems: all 50 candidates include reviewed sources, formats, event signal, review notes, status, and verifiedAt",
         "operations/launch/pilot_supply_intake_findings_2026-07-24.md"
       ],
-      "updatedAt": "2026-07-24T15:58:47+05:30"
+      "updatedAt": "2026-07-24T17:55:00+05:30"
     },
     {
       "id": "TASK-APP-LAUNCH",

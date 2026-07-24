@@ -842,7 +842,7 @@
       "command": "node tool/web/check_admin_live_data_sources.mjs --check",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Requires every Admin navigation and Intake workspace to declare callable-backed live reads, rejects generated operational JSON imports outside explicit sample-only modules, and can verify every declared callable against a deployed Firebase environment.",
+      "description": "Requires every Admin navigation and Intake workspace to declare callable-backed live reads, rejects retained operational JSON snapshots and generated operational imports, and can verify every declared callable against a deployed Firebase environment.",
       "checks": [
         "node --check tool/web/check_admin_live_data_sources.mjs",
         "node --test tool/web/check_admin_live_data_sources.test.mjs",

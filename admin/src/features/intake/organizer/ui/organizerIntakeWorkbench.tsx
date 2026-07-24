@@ -349,12 +349,22 @@ function OrganizerTaskWorkbench({
           note: (
             <AdminIntakeSection>
               <p>
-                {candidate.snippet ??
+                {candidate.reviewContext?.reviewNotes ??
+                  candidate.snippet ??
                   "No search-result snippet was captured for this candidate."}
               </p>
+              {candidate.reviewContext?.eventSignal ? (
+                <p>{candidate.reviewContext.eventSignal}</p>
+              ) : null}
+              {candidate.reviewContext?.formats.length ? (
+                <p>
+                  Formats: {candidate.reviewContext.formats.join(", ")}
+                </p>
+              ) : null}
             </AdminIntakeSection>
           ),
-          noteTitle: "Captured search context",
+          noteTitle: candidate.reviewContext ?
+            "Reviewed intake context" : "Captured search context",
           primaryRows: organizerCandidateEvidenceRows(candidate),
           primaryTitle: "Source evidence",
           readiness: {
@@ -657,6 +667,11 @@ function workbenchEntrySearchText(entry: OrganizerWorkbenchEntry) {
     candidate.queryIntent.activityKind,
     ...candidate.diagnostics,
     ...candidate.existingEntityMatches.map((match) => match.entityId),
+    candidate.reviewContext?.recordStatus,
+    candidate.reviewContext?.eventSignal,
+    candidate.reviewContext?.reviewNotes,
+    ...(candidate.reviewContext?.formats ?? []),
+    ...(candidate.reviewContext?.sources ?? []),
   ].filter(Boolean).join(" ").toLocaleLowerCase();
 }
 
@@ -669,7 +684,8 @@ function organizerCandidateQueueItem(
     description: `${candidate.platform} · ${candidateMarketLabel(candidate)}`,
     id: `candidate:${candidate.candidateId}`,
     initials: initialsForLabel(candidate.title),
-    meta:
+    meta: candidate.reviewContext ?
+      `${candidate.reviewContext.recordStatus.replaceAll("_", " ")} · verified ${candidate.reviewContext.verifiedAt ?? "date unavailable"}` :
       `#${candidate.rank} · ${candidate.reviewAction.replaceAll("_", " ")}`,
     status: status.label,
     statusTone: status.tone,
@@ -692,6 +708,9 @@ function organizerCandidateStatus(
   }
   if (candidate.diagnostics.length > 0) {
     return {label: "needs review", tone: "warning"};
+  }
+  if (candidate.reviewContext?.recordStatus === "review_now") {
+    return {label: "review now", tone: "success"};
   }
   return {label: "new lead", tone: "neutral"};
 }
@@ -730,22 +749,41 @@ function organizerCandidateChecklistRows(
       meta: ownershipConfirmed ? "confirmed" : "manual review required",
       passed: ownershipConfirmed,
     },
+    {
+      id: "review-context",
+      label: "Reviewed intake evidence",
+      meta: candidate.reviewContext?.verifiedAt ??
+        "No reviewed shortlist context",
+      passed: Boolean(candidate.reviewContext?.verifiedAt),
+    },
   ];
 }
 
 function organizerCandidateEvidenceRows(
   candidate: Intake.OrganizerSearchCandidate
 ) {
+  const primarySource = {
+    href: candidate.canonicalUrl,
+    id: "source",
+    meta: candidate.snippet ?? candidate.query,
+    status: `observed ${candidate.observedAt}`,
+    statusTone: "neutral" as const,
+    title:
+      `${candidate.platform} · ${candidate.surfaceKind.replaceAll("_", " ")}`,
+  };
+  const reviewedSources = (candidate.reviewContext?.sources ?? [])
+    .filter((source) => source !== candidate.canonicalUrl)
+    .map((source, index) => ({
+      href: source,
+      id: `review-source:${index}`,
+      meta: candidate.reviewContext?.eventSignal ?? "Reviewed source",
+      status: `verified ${candidate.reviewContext?.verifiedAt ?? "date unavailable"}`,
+      statusTone: "success" as const,
+      title: `Reviewed source ${index + 1}`,
+    }));
   return [
-    {
-      href: candidate.canonicalUrl,
-      id: "source",
-      meta: candidate.snippet ?? candidate.query,
-      status: `observed ${candidate.observedAt}`,
-      statusTone: "neutral" as const,
-      title:
-        `${candidate.platform} · ${candidate.surfaceKind.replaceAll("_", " ")}`,
-    },
+    primarySource,
+    ...reviewedSources,
     {
       id: "query",
       meta: candidate.query,
@@ -772,6 +810,15 @@ function organizerCandidateImpactRows(
     {id: "app", label: "App visibility", value: "Hidden"},
     {id: "crawl", label: "Recurring crawl", value: "Disabled"},
     {id: "market", label: "Pilot market", value: candidateMarketLabel(candidate)},
+    ...(candidate.reviewContext ? [{
+      id: "record-status",
+      label: "Review status",
+      value: candidate.reviewContext.recordStatus.replaceAll("_", " "),
+    }, {
+      id: "inventory",
+      label: "Existing inventory",
+      value: candidate.reviewContext.existingInventory ? "Attach" : "Net new",
+    }] : []),
   ];
 }
 

@@ -426,9 +426,9 @@ those artifacts cannot ship as dormant production assets.
 Organizer Intake live mode reads the latest completed organizer-only Supply
 Intake run for each launch market through `adminListIntakeOperations`. Its
 search candidates therefore come from `operationRuns` and
-`operationWorkItems`, while the generated organizer bridge remains a sample
-diagnostics fixture only. The browser does not upload a generated file or
-reconstruct a queue from repository state.
+`operationWorkItems`. Sample and Storybook views use typed synthetic operation
+records; no operational JSON snapshot is retained or packaged. The browser
+does not upload a generated file or reconstruct a queue from repository state.
 
 ## Admin Agent Activity Monitor
 

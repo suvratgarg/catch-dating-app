@@ -1,6 +1,7 @@
 import {act, renderHook, waitFor} from "@testing-library/react";
 import {beforeEach, describe, expect, it, vi} from "vitest";
-import marketingFixture from "../../../generated/marketingOpsBridge.json";
+import {sampleMarketingOpsBridge} from
+  "../../../shared/api/sampleOperationalData";
 import type {
   MarketingOpsBridge,
   MarketingOpsTargetType,
@@ -21,7 +22,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("../api/marketingRepository", () => mocks);
 
 function bridge(): MarketingOpsBridge {
-  return structuredClone(marketingFixture) as unknown as MarketingOpsBridge;
+  return structuredClone(sampleMarketingOpsBridge);
 }
 
 function decisionResponse(

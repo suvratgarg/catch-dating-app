@@ -71,6 +71,10 @@ export class SupplyIntakeWorkflow {
       });
     }
     const artifactSnapshot = stripArtifactData(artifactSnapshotWithData, {market});
+    const organizerReviewPolicy = organizerReviewPolicySnapshot(
+      artifactSnapshotWithData.artifacts.organizerSearchCandidates?.data
+        ?.reviewPolicy
+    );
     const plannedItems = plannedWorkItemCount(
       artifactSnapshot,
       profiles.length,
@@ -108,6 +112,7 @@ export class SupplyIntakeWorkflow {
         allowedTransitions: this.allowedTransitions,
       },
       artifactSnapshot,
+      organizerReviewPolicy,
       sourceProfiles,
       policy,
       promotionPolicyHash,
@@ -321,11 +326,13 @@ export class SupplyIntakeWorkflow {
     const organizerCandidateArtifact = artifacts.organizerSearchCandidates;
     for (const candidate of organizerCandidateArtifact?.data?.candidates ?? []) {
       if (candidate?.queryIntent?.marketSlug !== plan.market) continue;
+      const reviewContext = candidate.reviewContext ?? null;
       items.push(workItemForOrganizerCandidate(candidate, {
         runId,
         now,
         market: plan.market,
         artifact: organizerCandidateArtifact,
+        reviewContext,
       }));
     }
     return dedupeItems(items).sort((left, right) => left.workItemId.localeCompare(right.workItemId));
@@ -656,6 +663,13 @@ function workItemForOrganizer(packet, context) {
 }
 
 function workItemForOrganizerCandidate(candidate, context) {
+  const reviewContext = context.reviewContext ?? null;
+  const reviewArtifact = context.reviewArtifact;
+  const citations = [
+    candidate.canonicalUrl,
+    candidate.url,
+    ...(reviewContext?.sources ?? []),
+  ].filter(Boolean);
   return baseWorkItem({
     ...context,
     entityKind: "organizer",
@@ -667,21 +681,23 @@ function workItemForOrganizerCandidate(candidate, context) {
       url: candidate.canonicalUrl ?? candidate.url ?? null,
       artifactRef: context.artifact.relativePath,
     },
-    evidence: evidenceFor(
-      context.artifact,
+    evidence: evidenceForOrganizerCandidate({
+      candidateArtifact: context.artifact,
+      reviewArtifact,
       candidate,
-      [candidate.canonicalUrl, candidate.url].filter(Boolean)
-    ),
-    raw: candidate,
+      reviewContext,
+      citations,
+    }),
+    raw: reviewContext ? {...candidate, reviewContext} : candidate,
     adminProjection: {
       recordType: "organizer_search_candidate",
-      candidate: organizerCandidateProjection(candidate),
+      candidate: organizerCandidateProjection(candidate, reviewContext),
     },
     observedAt: dateAtUtc(candidate.observedAt),
   });
 }
 
-function organizerCandidateProjection(candidate) {
+function organizerCandidateProjection(candidate, reviewContext = null) {
   return {
     candidateId: candidate.candidateId,
     batchId: candidate.batchId,
@@ -701,6 +717,19 @@ function organizerCandidateProjection(candidate) {
     existingEntityMatches: candidate.existingEntityMatches ?? [],
     reviewAction: candidate.reviewAction,
     diagnostics: candidate.diagnostics ?? [],
+    ...(reviewContext ? {reviewContext} : {}),
+  };
+}
+
+function organizerReviewPolicySnapshot(reviewPolicy) {
+  if (!reviewPolicy) return null;
+  return {
+    shortlistId: reviewPolicy.shortlistId ?? null,
+    generatedAt: reviewPolicy.generatedAt ?? null,
+    target: reviewPolicy.target ?? null,
+    summary: reviewPolicy.summary ?? null,
+    publicationPolicy: reviewPolicy.publicationPolicy ?? null,
+    recordStatusDefinitions: reviewPolicy.recordStatusDefinitions ?? null,
   };
 }
 
@@ -886,6 +915,32 @@ function evidenceFor(artifact, raw, citations) {
     artifactHash: hashValue({artifactSha256: artifact.sha256, raw}),
     citations: uniqueSorted(citations),
     provenanceStatus: "legacy_artifact_snapshot",
+  };
+}
+
+function evidenceForOrganizerCandidate({
+  candidateArtifact,
+  reviewArtifact,
+  candidate,
+  reviewContext,
+  citations,
+}) {
+  const artifacts = [
+    {
+      relativePath: candidateArtifact.relativePath,
+      sha256: candidateArtifact.sha256,
+    },
+    ...(reviewContext && reviewArtifact ? [{
+      relativePath: reviewArtifact.relativePath,
+      sha256: reviewArtifact.sha256,
+    }] : []),
+  ];
+  return {
+    artifactRef: artifacts.map((artifact) => artifact.relativePath).join(" + "),
+    artifactHash: hashValue({artifacts, candidate, reviewContext}),
+    citations: uniqueSorted(citations),
+    provenanceStatus: reviewContext ?
+      "reviewed_artifact_snapshot" : "legacy_artifact_snapshot",
   };
 }
 

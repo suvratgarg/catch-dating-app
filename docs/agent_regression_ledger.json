@@ -20,14 +20,14 @@
       "guard": {
         "type": "command",
         "command": "node tool/run.mjs check web:admin-live-data-sources && VITE_ADMIN_DATA_MODE=live npm --workspace catch-admin run build && node tool/web/check_admin_live_data_sources.mjs --check --verify-live --environment prod --summary",
-        "guardEvidence": "the route inventory covers every Admin navigation and Intake workspace, generated operational JSON is sample-only, live builds reject generated operational assets, and the production preflight requires every declared callable to return a Firebase callable response"
+        "guardEvidence": "the route inventory covers every Admin navigation and Intake workspace, operational JSON snapshots are forbidden, previews use typed synthetic data, live builds reject generated operational assets, and the production preflight requires every declared callable to return a Firebase callable response"
       },
       "owner_docs": [
         "docs/operations_platform.md",
         "docs/release_operations.md",
         "docs/web_surface_architecture.md"
       ],
-      "notes": "Operational queue content belongs in Firestore projections. Generated Event Intake, Organizer Intake, Marketing Ops, and external-event artifacts are retained only for explicit sample and Storybook builds."
+      "notes": "Operational queue content belongs in Firestore projections. Admin previews use typed synthetic data and must not retain generated operational snapshots."
     },
     {
       "id": "REG-ADMIN-MOBILE-TOOLBAR-001",

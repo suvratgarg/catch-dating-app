@@ -1,0 +1,5 @@
+# Operational snapshots belong in Firestore. Build/test previews are TypeScript.
+eventIntakeBridge.json
+externalEventImportExecutionPlan.json
+externalEventImportPlan.json
+marketingOpsBridge.json

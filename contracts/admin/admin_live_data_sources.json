@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "purpose": "Every production Admin route reads operational state through an authenticated backend contract. Generated JSON is sample and Storybook data only.",
+  "purpose": "Every Admin route reads operational state through an authenticated backend contract. Operational snapshots are not retained in the repository; previews use typed synthetic fixtures.",
   "routes": [
     {
       "routeId": "overview",
@@ -129,9 +129,5 @@
       "paths": ["/operations"],
       "liveReads": ["adminListActionExecutions"]
     }
-  ],
-  "sampleOnlyImportRoots": [
-    "admin/src/features/intake/organizer/api/sampleOrganizerIntakeRepository.ts",
-    "admin/src/stories/"
   ]
 }

@@ -14,6 +14,11 @@ import {
   sampleOverview,
   sampleUserAnalyticsReport,
 } from "./sampleData";
+import {
+  sampleEventIntakeBridge,
+  sampleEventSupplyReadiness,
+  sampleMarketingOpsBridge,
+} from "./sampleOperationalData";
 import {sampleIntakeOperations} from
   "../operations/sampleIntakeOperations";
 import type {
@@ -845,10 +850,7 @@ export async function loadEventIntakeDashboard():
   Promise<AdminGetEventIntakeDashboardResponse> {
   if (import.meta.env.VITE_ADMIN_DATA_MODE !== "live") {
     await new Promise((resolve) => window.setTimeout(resolve, 180));
-    const {default: bridge} = await import(
-      "../../generated/eventIntakeBridge.json"
-    );
-    return {bridge: bridge as unknown as EventIntakeBridge};
+    return {bridge: structuredClone(sampleEventIntakeBridge)};
   }
 
   const callable = httpsCallable<unknown, AdminGetEventIntakeDashboardResponse>(
@@ -926,10 +928,7 @@ export async function createMarketingContentDraft(
 
 async function loadSampleMarketingOpsBridge(): Promise<MarketingOpsBridge> {
   if (sampleMarketingOpsBridgeState) return sampleMarketingOpsBridgeState;
-  const {default: bridge} = await import(
-    "../../generated/marketingOpsBridge.json"
-  );
-  sampleMarketingOpsBridgeState = bridge as unknown as MarketingOpsBridge;
+  sampleMarketingOpsBridgeState = structuredClone(sampleMarketingOpsBridge);
   return sampleMarketingOpsBridgeState;
 }
 
@@ -1665,21 +1664,7 @@ export async function loadEventSupplyReadiness():
   Promise<AdminGetEventSupplyReadinessResponse> {
   if (import.meta.env.VITE_ADMIN_DATA_MODE !== "live") {
     await new Promise((resolve) => window.setTimeout(resolve, 120));
-    const [{default: importPlan}, {default: executionPlan}] =
-      await Promise.all([
-        import("../../generated/externalEventImportPlan.json"),
-        import("../../generated/externalEventImportExecutionPlan.json"),
-      ]);
-    return {
-      generatedAt: sampleGeneratedAt,
-      source: "sample",
-      importPlan:
-        importPlan as
-          AdminGetEventSupplyReadinessResponse["importPlan"],
-      executionPlan:
-        executionPlan as
-          AdminGetEventSupplyReadinessResponse["executionPlan"],
-    };
+    return structuredClone(sampleEventSupplyReadiness);
   }
 
   const callable = httpsCallable<

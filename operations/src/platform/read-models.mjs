@@ -147,6 +147,9 @@ export function toCanonicalRunRecord(run, items = [], actions = [], checkpoints 
       localCounters: run.counters,
       capabilities: run.capabilities,
       localBudget: run.budget,
+      ...(run.plan?.organizerReviewPolicy ? {
+        organizerReviewPolicy: run.plan.organizerReviewPolicy,
+      } : {}),
     },
   };
 }

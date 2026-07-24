@@ -104,7 +104,7 @@ export function surfaceForCandidateCuration(
       ...candidate.suggestedSurface.evidenceRefs,
       {
         type: "manualNote",
-        ref: "admin/src/features/intake/organizer/generated/organizerIntakeBridge.json",
+        ref: "operationRuns + operationWorkItems",
         description:
           `Search candidate ${candidate.candidateId} observed ${candidate.observedAt}.`,
       },
