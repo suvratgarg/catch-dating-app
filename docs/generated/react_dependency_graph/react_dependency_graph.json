@@ -19,11 +19,11 @@
     "nonLiteralDynamicImports": "report"
   },
   "summary": {
-    "scannedSourceModules": 340,
+    "scannedSourceModules": 342,
     "dependencyLeafNodes": 18,
-    "moduleNodes": 358,
-    "moduleEdges": 1240,
-    "runtimeModuleEdges": 981,
+    "moduleNodes": 360,
+    "moduleEdges": 1242,
+    "runtimeModuleEdges": 983,
     "typeOnlyModuleEdges": 259,
     "dynamicImportEdges": 29,
     "reExportEdges": 65,
@@ -244,8 +244,8 @@
       "surface": "admin",
       "scope": "feature",
       "feature": "organizers",
-      "modules": 9,
-      "tests": 2,
+      "modules": 10,
+      "tests": 3,
       "stories": 0
     },
     {
@@ -280,8 +280,8 @@
       "surface": "admin",
       "scope": "shared",
       "feature": null,
-      "modules": 70,
-      "tests": 13,
+      "modules": 71,
+      "tests": 14,
       "stories": 0
     },
     {
@@ -1088,8 +1088,8 @@
       "targetSurface": "admin",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 21,
-      "runtimeEdges": 13,
+      "edges": 22,
+      "runtimeEdges": 14,
       "typeOnlyEdges": 8,
       "dynamicImports": 0,
       "reExports": 0,
@@ -3220,8 +3220,8 @@
       "sourceLayer": "feature",
       "targetSurface": "admin",
       "targetLayer": "shared",
-      "edges": 204,
-      "runtimeEdges": 139,
+      "edges": 205,
+      "runtimeEdges": 140,
       "typeOnlyEdges": 65,
       "dynamicImports": 0,
       "reExports": 5,
@@ -4395,14 +4395,16 @@
     },
     {
       "package": "node:fs",
-      "edges": 1,
-      "runtimeEdges": 1,
+      "edges": 2,
+      "runtimeEdges": 2,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "surfaces": [
+        "admin",
         "website"
       ],
       "sourceModules": [
+        "admin/src/shared/ui/operatorFacingImplementationCopy.test.ts",
         "website/src/features/organizers/publicSurfaceBehavior.test.ts"
       ]
     },
@@ -4421,8 +4423,8 @@
     },
     {
       "package": "react",
-      "edges": 123,
-      "runtimeEdges": 64,
+      "edges": 124,
+      "runtimeEdges": 65,
       "typeOnlyEdges": 59,
       "dynamicImports": 0,
       "surfaces": [
@@ -4493,6 +4495,7 @@
         "admin/src/shared/ui/AdminPrimitives/trends.tsx",
         "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
         "admin/src/stories/AdminPrimitives.stories.tsx",
+        "admin/src/stories/AdminRoutes.stories.tsx",
         "packages/web-ui/src/primitives.tsx",
         "website/src/app/App.tsx",
         "website/src/app/usePageLifecycle.ts",
@@ -4588,8 +4591,8 @@
     },
     {
       "package": "vitest",
-      "edges": 58,
-      "runtimeEdges": 58,
+      "edges": 60,
+      "runtimeEdges": 60,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "surfaces": [
@@ -4615,6 +4618,7 @@
         "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
         "admin/src/features/marketing/controllers/useMarketingOpsController.test.tsx",
         "admin/src/features/operations/controllers/useAdminActionExecutionsController.test.ts",
+        "admin/src/features/organizers/controllers/organizerPublishingHelpers.test.ts",
         "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.test.tsx",
         "admin/src/features/organizers/controllers/useOrganizerPublishingController.test.tsx",
         "admin/src/features/overview/controllers/useOverviewController.test.tsx",
@@ -4634,6 +4638,7 @@
         "admin/src/shared/ui/AdminPrimitives/overview.test.tsx",
         "admin/src/shared/ui/AdminPrimitives/shell.test.tsx",
         "admin/src/shared/ui/adminPresentation.test.ts",
+        "admin/src/shared/ui/operatorFacingImplementationCopy.test.ts",
         "packages/web-ui/src/primitives.test.tsx",
         "website/src/content/contentContracts.test.ts",
         "website/src/features/claims/claimRouting.test.ts",
@@ -5582,6 +5587,18 @@
       "extension": ".ts",
       "scanned": true,
       "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/features/organizers/controllers/organizerPublishingHelpers.test.ts",
+      "surface": "admin",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "organizers",
+      "group": "admin:feature:organizers",
+      "extension": ".ts",
+      "scanned": true,
+      "test": true,
       "story": false
     },
     {
@@ -6698,6 +6715,18 @@
       "extension": ".ts",
       "scanned": true,
       "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/shared/ui/operatorFacingImplementationCopy.test.ts",
+      "surface": "admin",
+      "layer": "shared",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": true,
       "story": false
     },
     {
@@ -9783,7 +9812,7 @@
       "specifier": "../../../shared/types/adminTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 19,
+      "line": 18,
       "column": 1
     },
     {
@@ -9792,7 +9821,7 @@
       "specifier": "../../../shared/ui/AdminPrimitives",
       "kind": "import",
       "typeOnly": false,
-      "line": 31,
+      "line": 30,
       "column": 1
     },
     {
@@ -9801,7 +9830,7 @@
       "specifier": "../controllers/useEventPublishingController",
       "kind": "import",
       "typeOnly": false,
-      "line": 89,
+      "line": 90,
       "column": 1
     },
     {
@@ -9810,7 +9839,7 @@
       "specifier": "../controllers/eventPublishingHelpers",
       "kind": "import",
       "typeOnly": false,
-      "line": 96,
+      "line": 97,
       "column": 1
     },
     {
@@ -9819,7 +9848,7 @@
       "specifier": "../../../shared/config/launchMarkets",
       "kind": "import",
       "typeOnly": false,
-      "line": 111,
+      "line": 112,
       "column": 1
     },
     {
@@ -9828,7 +9857,7 @@
       "specifier": "../../../shared/feedback/AdminFeedbackContext",
       "kind": "import",
       "typeOnly": false,
-      "line": 112,
+      "line": 113,
       "column": 1
     },
     {
@@ -9837,7 +9866,7 @@
       "specifier": "./eventPublishingDirectoryPanels",
       "kind": "import",
       "typeOnly": false,
-      "line": 113,
+      "line": 114,
       "column": 1
     },
     {
@@ -9846,7 +9875,7 @@
       "specifier": "./eventPublishingSupplyPanels",
       "kind": "import",
       "typeOnly": false,
-      "line": 114,
+      "line": 115,
       "column": 1
     },
     {
@@ -9855,7 +9884,7 @@
       "specifier": "./eventPublishingReadinessPanels",
       "kind": "import",
       "typeOnly": false,
-      "line": 115,
+      "line": 116,
       "column": 1
     },
     {
@@ -9945,7 +9974,7 @@
       "specifier": "../../../shared/types/adminTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 19,
+      "line": 18,
       "column": 1
     },
     {
@@ -9954,7 +9983,7 @@
       "specifier": "../../../shared/ui/AdminPrimitives",
       "kind": "import",
       "typeOnly": false,
-      "line": 31,
+      "line": 30,
       "column": 1
     },
     {
@@ -9963,7 +9992,7 @@
       "specifier": "../controllers/useEventPublishingController",
       "kind": "import",
       "typeOnly": false,
-      "line": 89,
+      "line": 88,
       "column": 1
     },
     {
@@ -9972,7 +10001,7 @@
       "specifier": "../controllers/eventPublishingHelpers",
       "kind": "import",
       "typeOnly": false,
-      "line": 96,
+      "line": 95,
       "column": 1
     },
     {
@@ -9981,7 +10010,7 @@
       "specifier": "../../../shared/config/launchMarkets",
       "kind": "import",
       "typeOnly": false,
-      "line": 111,
+      "line": 110,
       "column": 1
     },
     {
@@ -9990,7 +10019,7 @@
       "specifier": "../../../shared/feedback/AdminFeedbackContext",
       "kind": "import",
       "typeOnly": false,
-      "line": 112,
+      "line": 111,
       "column": 1
     },
     {
@@ -9999,7 +10028,7 @@
       "specifier": "./eventPublishingDirectoryPanels",
       "kind": "import",
       "typeOnly": false,
-      "line": 113,
+      "line": 112,
       "column": 1
     },
     {
@@ -10008,7 +10037,7 @@
       "specifier": "./eventPublishingReadinessPanels",
       "kind": "import",
       "typeOnly": false,
-      "line": 114,
+      "line": 113,
       "column": 1
     },
     {
@@ -10017,7 +10046,7 @@
       "specifier": "./eventPublishingEditorPanels",
       "kind": "import",
       "typeOnly": false,
-      "line": 115,
+      "line": 114,
       "column": 1
     },
     {
@@ -10314,7 +10343,7 @@
       "specifier": "../controllers/eventIntakeReviewDecisionHelpers",
       "kind": "import",
       "typeOnly": false,
-      "line": 45,
+      "line": 44,
       "column": 1
     },
     {
@@ -10323,7 +10352,7 @@
       "specifier": "../controllers/useEventIntakeController",
       "kind": "import",
       "typeOnly": false,
-      "line": 50,
+      "line": 49,
       "column": 1
     },
     {
@@ -10332,7 +10361,7 @@
       "specifier": "../../../../shared/types/adminTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 55,
+      "line": 54,
       "column": 1
     },
     {
@@ -10341,7 +10370,7 @@
       "specifier": "../../../../shared/feedback/AdminFeedbackContext",
       "kind": "import",
       "typeOnly": false,
-      "line": 62,
+      "line": 61,
       "column": 1
     },
     {
@@ -10350,7 +10379,7 @@
       "specifier": "./eventIntakeWorkbench",
       "kind": "import",
       "typeOnly": false,
-      "line": 63,
+      "line": 62,
       "column": 1
     },
     {
@@ -11875,12 +11904,30 @@
       "column": 1
     },
     {
+      "source": "admin/src/features/organizers/controllers/organizerPublishingHelpers.test.ts",
+      "target": "admin/src/features/organizers/controllers/organizerPublishingHelpers.ts",
+      "specifier": "./organizerPublishingHelpers",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
       "source": "admin/src/features/organizers/controllers/organizerPublishingHelpers.ts",
       "target": "admin/src/shared/types/adminTypes.ts",
       "specifier": "../../../shared/types/adminTypes",
       "kind": "import",
       "typeOnly": true,
       "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/organizers/controllers/organizerPublishingHelpers.ts",
+      "target": "admin/src/shared/config/launchMarkets.ts",
+      "specifier": "../../../shared/config/launchMarkets",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 11,
       "column": 1
     },
     {
@@ -12105,7 +12152,7 @@
       "specifier": "../controllers/useOrganizerPublishingController",
       "kind": "import",
       "typeOnly": false,
-      "line": 74,
+      "line": 76,
       "column": 1
     },
     {
@@ -12114,7 +12161,7 @@
       "specifier": "../controllers/useOrganizerClaimReviewController",
       "kind": "import",
       "typeOnly": false,
-      "line": 82,
+      "line": 84,
       "column": 1
     },
     {
@@ -12123,7 +12170,7 @@
       "specifier": "../controllers/organizerPublishingHelpers",
       "kind": "import",
       "typeOnly": true,
-      "line": 86,
+      "line": 88,
       "column": 1
     },
     {
@@ -12132,7 +12179,7 @@
       "specifier": "../controllers/organizerPublishingHelpers",
       "kind": "import",
       "typeOnly": false,
-      "line": 92,
+      "line": 94,
       "column": 1
     },
     {
@@ -12141,7 +12188,7 @@
       "specifier": "../../../shared/feedback/AdminFeedbackContext",
       "kind": "import",
       "typeOnly": false,
-      "line": 94,
+      "line": 108,
       "column": 1
     },
     {
@@ -12150,7 +12197,7 @@
       "specifier": "./organizerDirectoryPanels",
       "kind": "import",
       "typeOnly": false,
-      "line": 95,
+      "line": 109,
       "column": 1
     },
     {
@@ -13671,7 +13718,7 @@
       "specifier": "../features/overview/api/overviewRepository",
       "kind": "import",
       "typeOnly": false,
-      "line": 2,
+      "line": 3,
       "column": 1
     },
     {
@@ -13680,7 +13727,7 @@
       "specifier": "../features/access/controllers/useAccessReviewController",
       "kind": "import",
       "typeOnly": true,
-      "line": 6,
+      "line": 7,
       "column": 1
     },
     {
@@ -13689,7 +13736,7 @@
       "specifier": "../features/access/ui/AccessReviewScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 10,
+      "line": 11,
       "column": 1
     },
     {
@@ -13698,7 +13745,7 @@
       "specifier": "../features/admin-roles/controllers/useAdminRoleManagementController",
       "kind": "import",
       "typeOnly": false,
-      "line": 11,
+      "line": 12,
       "column": 1
     },
     {
@@ -13707,7 +13754,7 @@
       "specifier": "../features/admin-roles/ui/AdminRoleManagementScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 16,
+      "line": 17,
       "column": 1
     },
     {
@@ -13716,7 +13763,7 @@
       "specifier": "../features/admin-roles/controllers/adminRolePolicies",
       "kind": "import",
       "typeOnly": false,
-      "line": 17,
+      "line": 18,
       "column": 1
     },
     {
@@ -13725,7 +13772,7 @@
       "specifier": "../features/operations/controllers/useAdminActionExecutionsController",
       "kind": "import",
       "typeOnly": true,
-      "line": 18,
+      "line": 19,
       "column": 1
     },
     {
@@ -13734,7 +13781,7 @@
       "specifier": "../features/operations/ui/AdminActionExecutionsScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 20,
+      "line": 21,
       "column": 1
     },
     {
@@ -13743,7 +13790,7 @@
       "specifier": "../features/data-quality/controllers/useDataQualityController",
       "kind": "import",
       "typeOnly": true,
-      "line": 22,
+      "line": 23,
       "column": 1
     },
     {
@@ -13752,7 +13799,7 @@
       "specifier": "../features/data-quality/ui/DataQualityScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 27,
+      "line": 28,
       "column": 1
     },
     {
@@ -13761,7 +13808,7 @@
       "specifier": "../shared/api/sampleData",
       "kind": "import",
       "typeOnly": false,
-      "line": 28,
+      "line": 29,
       "column": 1
     },
     {
@@ -13770,7 +13817,7 @@
       "specifier": "../features/events/controllers/useEventPublishingController",
       "kind": "import",
       "typeOnly": true,
-      "line": 34,
+      "line": 35,
       "column": 1
     },
     {
@@ -13779,7 +13826,7 @@
       "specifier": "../features/events/controllers/eventPublishingHelpers",
       "kind": "import",
       "typeOnly": false,
-      "line": 35,
+      "line": 36,
       "column": 1
     },
     {
@@ -13788,7 +13835,7 @@
       "specifier": "../features/events/ui/EventPublishingScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 39,
+      "line": 40,
       "column": 1
     },
     {
@@ -13797,7 +13844,7 @@
       "specifier": "../shared/api/sampleOperationalData",
       "kind": "import",
       "typeOnly": false,
-      "line": 40,
+      "line": 41,
       "column": 1
     },
     {
@@ -13806,7 +13853,7 @@
       "specifier": "../features/intake/events/controllers/useEventIntakeController",
       "kind": "import",
       "typeOnly": true,
-      "line": 44,
+      "line": 45,
       "column": 1
     },
     {
@@ -13815,7 +13862,7 @@
       "specifier": "../features/intake/events/ui/EventIntakeWorkspace",
       "kind": "import",
       "typeOnly": false,
-      "line": 45,
+      "line": 46,
       "column": 1
     },
     {
@@ -13824,7 +13871,7 @@
       "specifier": "../features/intake/operations/controllers/useIntakeOperationsController",
       "kind": "import",
       "typeOnly": true,
-      "line": 46,
+      "line": 47,
       "column": 1
     },
     {
@@ -13833,7 +13880,7 @@
       "specifier": "../features/intake/operations/ui/IntakeOperationsWorkspace",
       "kind": "import",
       "typeOnly": false,
-      "line": 47,
+      "line": 48,
       "column": 1
     },
     {
@@ -13842,7 +13889,7 @@
       "specifier": "../features/intake/organizer/controllers/loadOrganizerIntakeBridge",
       "kind": "import",
       "typeOnly": false,
-      "line": 48,
+      "line": 49,
       "column": 1
     },
     {
@@ -13851,7 +13898,7 @@
       "specifier": "../features/intake/organizer/controllers/useOrganizerIntakeController",
       "kind": "import",
       "typeOnly": true,
-      "line": 50,
+      "line": 51,
       "column": 1
     },
     {
@@ -13860,7 +13907,7 @@
       "specifier": "../features/intake/organizer/ui/OrganizerIntakeScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 51,
+      "line": 52,
       "column": 1
     },
     {
@@ -13869,7 +13916,7 @@
       "specifier": "../features/intake/ui/IntakeWorkspaceScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 52,
+      "line": 53,
       "column": 1
     },
     {
@@ -13878,7 +13925,7 @@
       "specifier": "../shared/operations/sampleIntakeOperations",
       "kind": "import",
       "typeOnly": false,
-      "line": 53,
+      "line": 54,
       "column": 1
     },
     {
@@ -13887,7 +13934,7 @@
       "specifier": "../features/finance/controllers/useFinanceOpsController",
       "kind": "import",
       "typeOnly": false,
-      "line": 54,
+      "line": 55,
       "column": 1
     },
     {
@@ -13896,7 +13943,7 @@
       "specifier": "../features/finance/ui/FinanceOpsScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 60,
+      "line": 61,
       "column": 1
     },
     {
@@ -13905,7 +13952,7 @@
       "specifier": "../features/marketing/controllers/useMarketingOpsController",
       "kind": "import",
       "typeOnly": true,
-      "line": 61,
+      "line": 62,
       "column": 1
     },
     {
@@ -13914,7 +13961,7 @@
       "specifier": "../features/marketing/ui/MarketingOpsScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 62,
+      "line": 63,
       "column": 1
     },
     {
@@ -13923,7 +13970,7 @@
       "specifier": "../features/organizers/controllers/useOrganizerPublishingController",
       "kind": "import",
       "typeOnly": false,
-      "line": 63,
+      "line": 64,
       "column": 1
     },
     {
@@ -13932,7 +13979,7 @@
       "specifier": "../features/organizers/controllers/organizerPublishingHelpers",
       "kind": "import",
       "typeOnly": false,
-      "line": 67,
+      "line": 68,
       "column": 1
     },
     {
@@ -13941,7 +13988,7 @@
       "specifier": "../features/organizers/ui/OrganizerPublishingScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 73,
+      "line": 75,
       "column": 1
     },
     {
@@ -13950,7 +13997,7 @@
       "specifier": "../features/growth/controllers/useGrowthKpiController",
       "kind": "import",
       "typeOnly": true,
-      "line": 74,
+      "line": 76,
       "column": 1
     },
     {
@@ -13959,7 +14006,7 @@
       "specifier": "../features/growth/ui/GrowthKpiScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 80,
+      "line": 82,
       "column": 1
     },
     {
@@ -13968,7 +14015,7 @@
       "specifier": "../features/overview/ui/OverviewScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 81,
+      "line": 83,
       "column": 1
     },
     {
@@ -13977,7 +14024,7 @@
       "specifier": "../features/safety/controllers/useSafetyTriageController",
       "kind": "import",
       "typeOnly": true,
-      "line": 86,
+      "line": 88,
       "column": 1
     },
     {
@@ -13986,7 +14033,7 @@
       "specifier": "../features/safety/ui/SafetyTriageScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 87,
+      "line": 89,
       "column": 1
     },
     {
@@ -13995,7 +14042,7 @@
       "specifier": "../shared/types/adminTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 88,
+      "line": 90,
       "column": 1
     },
     {
@@ -14004,7 +14051,7 @@
       "specifier": "../features/users/controllers/useUserAnalyticsController",
       "kind": "import",
       "typeOnly": false,
-      "line": 112,
+      "line": 114,
       "column": 1
     },
     {
@@ -14013,7 +14060,7 @@
       "specifier": "../features/users/ui/UserAnalyticsScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 116,
+      "line": 118,
       "column": 1
     },
     {
@@ -14022,7 +14069,7 @@
       "specifier": "../shared/ui/AdminPrimitives",
       "kind": "import",
       "typeOnly": false,
-      "line": 117,
+      "line": 119,
       "column": 1
     },
     {
@@ -21075,6 +21122,15 @@
       "column": 1
     },
     {
+      "source": "admin/src/features/organizers/controllers/organizerPublishingHelpers.test.ts",
+      "package": "vitest",
+      "specifier": "vitest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
       "source": "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.test.tsx",
       "package": "@testing-library/react",
       "specifier": "@testing-library/react",
@@ -22002,6 +22058,24 @@
       "column": 1
     },
     {
+      "source": "admin/src/shared/ui/operatorFacingImplementationCopy.test.ts",
+      "package": "node:fs",
+      "specifier": "node:fs",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/ui/operatorFacingImplementationCopy.test.ts",
+      "package": "vitest",
+      "specifier": "vitest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
+      "column": 1
+    },
+    {
       "source": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
       "package": "@storybook/react-vite",
       "specifier": "@storybook/react-vite",
@@ -22089,6 +22163,15 @@
       "kind": "import",
       "typeOnly": true,
       "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/stories/AdminRoutes.stories.tsx",
+      "package": "react",
+      "specifier": "react",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 2,
       "column": 1
     },
     {
