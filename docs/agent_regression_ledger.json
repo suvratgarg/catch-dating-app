@@ -3071,6 +3071,67 @@
         "design/admin/components.json"
       ],
       "notes": "Desktop constrains the workbench with a viewport-relative height; the mobile breakpoint deliberately returns to document flow."
+    },
+    {
+      "id": "REG-ADMIN-CALLABLE-ROLLING-DEPLOY-001",
+      "title": "Admin intake blanks during callable contract rollout",
+      "status": "active",
+      "applies_to": [
+        "admin/src/features/intake/operations/controllers/useIntakeOperationsController.ts",
+        "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.ts",
+        ".github/workflows/admin-website.yml",
+        ".github/workflows/firebase-deploy.yml"
+      ],
+      "symptom": "The production Admin Intake route renders briefly and then becomes blank when a newly deployed bundle maps an additive response field that an older live callable has not started returning yet.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix admin test -- src/features/intake/operations/controllers/useIntakeOperationsController.test.tsx src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.test.ts",
+        "guardEvidence": "both intake loaders normalize an absent organizerDraftLinks projection to an empty collection while the callable rolls forward, and focused tests cover the legacy response shape"
+      },
+      "owner_docs": [
+        "docs/release_operations.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "Deploy response-producing callables before dependent Admin bundles. Additive response fields still require a client-side compatibility default so a partial or rolled-back deploy cannot crash the route."
+    },
+    {
+      "id": "REG-ADMIN-ORGANIZER-DRAFT-SOURCE-TIMESTAMP-001",
+      "title": "Organizer draft source timestamp uses an array transform",
+      "status": "active",
+      "applies_to": [
+        "functions/src/admin/organizerDraftFromCandidate.ts",
+        "functions/src/admin/organizerDraftFromCandidate.test.ts"
+      ],
+      "symptom": "Creating a reviewed organizer draft returns INTERNAL because Firestore rejects FieldValue.serverTimestamp() inside the publicSources array.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions run build && node --test functions/lib/admin/organizerDraftFromCandidate.test.js",
+        "guardEvidence": "publicSources.lastCheckedAt uses a concrete Firestore Timestamp derived from the reviewed-at date, while top-level write timestamps continue to use server transforms"
+      },
+      "owner_docs": [
+        "docs/data_contracts.md",
+        "docs/backend_operation_catalog.md"
+      ],
+      "notes": "Firestore transforms are valid for top-level and nested map fields but not within array elements. Array timestamps must be concrete values before the transaction write."
+    },
+    {
+      "id": "REG-ADMIN-ORGANIZER-DRAFT-RATE-LIMIT-001",
+      "title": "Organizer draft callable silently inherits the default rate limit",
+      "status": "active",
+      "applies_to": [
+        "functions/src/shared/rateLimit.ts",
+        "functions/src/admin/organizerDraftFromCandidate.test.ts"
+      ],
+      "symptom": "The production callable logs a missing RATE_LIMITS registration warning and falls back to a generic limit instead of declaring the intended mutation budget.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions run build && node --test functions/lib/admin/organizerDraftFromCandidate.test.js",
+        "guardEvidence": "the draft callable has a tested explicit limit of 10 admin mutations per minute"
+      },
+      "owner_docs": [
+        "docs/backend_operation_catalog.md"
+      ],
+      "notes": "Low-volume governed mutations must register their action-specific defense-in-depth limit rather than rely on the warning-backed default."
     }
   ]
 }

@@ -11,6 +11,7 @@ import {
   validateOrganizerIntakeCurationDecisionDocument,
   schemaErrorMessages,
 } from "../shared/generated/schemaValidators";
+import {RATE_LIMITS} from "../shared/rateLimit";
 
 type FakeData = Record<string, unknown>;
 
@@ -140,6 +141,9 @@ function harness(
       serverTimestamp: () =>
         ({_seconds: 1784881800, _nanoseconds: 0}) as unknown as
           FirebaseFirestore.FieldValue,
+      sourceTimestamp: () =>
+        ({_seconds: 1784851200, _nanoseconds: 0}) as unknown as
+          FirebaseFirestore.Timestamp,
       reserveCanonicalRoute: async (
         _tx: FirebaseFirestore.Transaction,
         _db: FirebaseFirestore.Firestore,
@@ -291,6 +295,10 @@ test("creates a fail-closed organizer draft and curation receipt", async () => {
   assert.equal((organizer?.publicPage as FakeData).indexStatus, "noindex");
   assert.equal((organizer?.provenance as FakeData).verificationStatus,
     "sourceBacked");
+  assert.deepEqual(
+    ((organizer?.publicSources as FakeData[])[0] as FakeData).lastCheckedAt,
+    {_seconds: 1784851200, _nanoseconds: 0}
+  );
   assert.equal((organizer?.adminSearch as FakeData).updatedBySource,
     "adminCreateOrganizerDraftFromCandidate");
   const legacyClub = h.firestore.get("clubs/courtside");
@@ -313,6 +321,13 @@ test("creates a fail-closed organizer draft and curation receipt", async () => {
   assert.equal(h.reservedRoutes.length, 1);
   assert.equal(h.reservedRoutes[0].canonicalPath, "/organizers/courtside/");
   assert.equal(h.firestore.auditLogs().length, 1);
+});
+
+test("uses an explicit low-volume admin mutation rate limit", () => {
+  assert.deepEqual(
+    RATE_LIMITS.adminCreateOrganizerDraftFromCandidate,
+    {maxRequests: 10, windowMs: 60 * 1000}
+  );
 });
 
 test("exact retry reuses the organizer without duplicate audit", async () => {
