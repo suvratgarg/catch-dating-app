@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Callable payload accepted by adminRecordOrganizerCuration. This records one low-volume manual organizer-intake curation operation for deterministic export into repo-backed curation batches.
+ * Callable payload accepted by adminRecordOrganizerCuration. This records one durable low-volume manual organizer-intake curation operation in Firestore.
  */
 export interface AdminRecordOrganizerCurationCallablePayload {
   operationId?: string;

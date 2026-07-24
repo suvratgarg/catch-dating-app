@@ -48,15 +48,16 @@ describe("Intake task-first defaults", () => {
     expect(screen.queryByRole("button", {name: "Diagnostics"})).toBeNull();
   });
 
-  it("shows captured organizer search candidates in the Incoming review stage", async () => {
-    window.localStorage.setItem(
-      "catch-admin.organizer-intake-stage.v1",
-      "incoming"
-    );
+  it("opens captured organizer search candidates in the Incoming review stage", async () => {
     const {wrapper} = createQueryHarness();
     render(<OrganizerHarness />, {wrapper});
 
-    expect(await screen.findByText("2 new leads")).toBeTruthy();
+    const stageNavigation = await screen.findByRole("navigation", {
+      name: "Organizer intake stages",
+    });
+    expect(stageNavigation.querySelector("[aria-current='step']")?.textContent)
+      .toContain("Incoming");
+    expect(screen.getByText("2 new leads")).toBeTruthy();
     expect(screen.getByText("2 items")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", {name: /Small World/u}));

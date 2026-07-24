@@ -1,5 +1,5 @@
 {
-  "version": 98,
+  "version": 99,
   "updated": "2026-07-24",
   "owner": "agent_operating_model",
   "entries": [
@@ -14,23 +14,25 @@
         "admin/src/shared/api/adminApi.ts",
         "contracts/admin/admin_live_data_sources.json",
         "functions/src/index.ts",
+        "operations/launch/**",
         "tool/organizer_intake/check_admin_review_bridge.mjs",
+        "tool/organizer_intake/{generated,batches,answer_packets,review_decisions,curation_decisions,event_review_decisions,event_location_resolutions,policy_gap_decisions,search_result_batches,event_source_batches,raw_artifacts}/**",
         "tool/run.mjs",
         "tool/tools_manifest.json",
         "tool/web/check_admin_live_data_sources.mjs"
       ],
-      "symptom": "A production Admin route reads generated repository JSON, a generated operational fixture survives in the live Vite manifest, or the frontend calls a source-exported callable that is absent or unreachable in the selected Firebase environment and surfaces only a generic internal error.",
+      "symptom": "A production Admin route reads generated repository JSON, mutable launch or organizer workflow JSON is retained in the repository, a generated operational fixture survives in the live Vite manifest, or the frontend calls a source-exported callable that is absent or unreachable in the selected Firebase environment and surfaces only a generic internal error.",
       "guard": {
         "type": "command",
         "command": "node tool/run.mjs check web:admin-live-data-sources && node tool/run.mjs check --category host-discovery && VITE_ADMIN_DATA_MODE=live npm --workspace catch-admin run build && node tool/web/check_admin_live_data_sources.mjs --check --verify-live --environment prod --summary",
-        "guardEvidence": "the route inventory covers every Admin navigation and Intake workspace, operational JSON snapshots are forbidden, previews use typed synthetic data, category CI executes active tools only, the Firestore organizer path is enforced, live builds reject generated operational assets, and the production preflight requires every declared callable to return a Firebase callable response"
+        "guardEvidence": "the route inventory covers every Admin navigation and Intake workspace, operational JSON snapshots and legacy organizer or launch-board state are forbidden, previews use typed synthetic data, category CI executes active tools only, the Firestore organizer path is enforced, live builds reject generated operational assets, and the production preflight requires every declared callable to return a Firebase callable response"
       },
       "owner_docs": [
         "docs/operations_platform.md",
         "docs/release_operations.md",
         "docs/web_surface_architecture.md"
       ],
-      "notes": "Operational queue content belongs in Firestore projections. Admin previews use typed synthetic data and must not retain generated operational snapshots."
+      "notes": "Mutable queue, review, curation, policy, dashboard, and launch-board content belongs in Firestore. Admin previews use typed synthetic data; contracts, explicit fixtures, configuration, and deterministic public build projections are not operational state."
     },
     {
       "id": "REG-ADMIN-MOBILE-TOOLBAR-001",

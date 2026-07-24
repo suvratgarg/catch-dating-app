@@ -1,2 +1,2 @@
-# Candidate queues are transient compatibility inputs. Firestore owns review state.
-search_result_candidate_queue.json
+# Repository-generated operational state is retired. Firestore owns it.
+*.json

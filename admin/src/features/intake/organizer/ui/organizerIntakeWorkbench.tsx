@@ -857,7 +857,7 @@ function stageTitle(stage: OrganizerWorkbenchStage) {
 }
 
 function readOrganizerWorkbenchStage(): OrganizerWorkbenchStage {
-  if (typeof window === "undefined") return "verify";
+  if (typeof window === "undefined") return "incoming";
   try {
     const value = window.localStorage.getItem(organizerWorkbenchStageKey);
     if (value === "incoming" || value === "verify" || value === "resolve" || value === "ready") {
@@ -866,7 +866,7 @@ function readOrganizerWorkbenchStage(): OrganizerWorkbenchStage {
   } catch {
     // Fall through to the review-first default.
   }
-  return "verify";
+  return "incoming";
 }
 
 export const organizerIntakeWorkbench = {OrganizerTaskWorkbench};

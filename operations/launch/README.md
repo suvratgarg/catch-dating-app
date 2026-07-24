@@ -1,12 +1,15 @@
 # Catch launch operations board
 
-This folder is the business launch control surface. It is deliberately outside
-`docs/`: technical architecture remains in the repository documentation, while
-launch decisions, owners, blockers, issues, next actions, and evidence live here.
+This folder documents the business launch control surface. Technical
+architecture remains in repository documentation, while mutable launch
+decisions, owners, blockers, issues, next actions, and evidence live in
+Firestore.
 
-`pilot_launch_board.json` is the canonical board. It is plain JSON so people,
-Codex, and other agents can update it without a paid project-management tool.
-Git history is the audit trail.
+The canonical pilot board is
+`launchBoards/catch-pilot-launch-2026-07` in the production Firebase project.
+Repository launch-board JSON is retired. Database history and
+`adminAuditLogs` are the audit trail; an operational update must never require a
+Git commit.
 
 ## Agent update contract
 

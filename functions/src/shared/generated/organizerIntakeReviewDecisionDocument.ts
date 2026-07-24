@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Latest admin review decision stored at organizerIntakeReviewDecisions/{entityId}. Raw scrape/search evidence is not stored here.
+ * Latest admin review decision stored at organizerIntakeReviewDecisions/{entityId}. Candidate evidence remains in operationRuns and operationWorkItems.
  */
 export interface OrganizerIntakeReviewDecisionDocument {
   schemaVersion: 1;
@@ -19,7 +19,7 @@ export interface OrganizerIntakeReviewDecisionDocument {
     mediaRightsReviewed: boolean;
     crawlDisabledReviewed: boolean;
     /**
-     * True when the reviewer explicitly inspected manual reports that have no local raw artifact. Raw evidence remains outside Firestore; projection replay decides when this acknowledgement is required.
+     * True when the reviewer explicitly inspected manual reports that have no stored source artifact. Projection replay decides when this acknowledgement is required.
      */
     manualReportsReviewed?: boolean;
   };

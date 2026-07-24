@@ -370,7 +370,7 @@ function EventIntakeRunPlanView({
             canonical events stay in events/{`{id}`}
           </AdminTag>
           <AdminTag tone="muted">
-            generated bridge is private admin supply state
+            Firestore dashboard is private admin supply state
           </AdminTag>
         </TagList>
         <AdminIntakeSection>

@@ -5,7 +5,7 @@
 // Typed callable request DTO emitted from callables/admin_record_organizer_curation_payload.schema.json.
 // Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
 
-/// Callable payload accepted by adminRecordOrganizerCuration. This records one low-volume manual organizer-intake curation operation for deterministic export into repo-backed curation batches.
+/// Callable payload accepted by adminRecordOrganizerCuration. This records one durable low-volume manual organizer-intake curation operation in Firestore.
 final class AdminRecordOrganizerCurationCallableRequest {
   const AdminRecordOrganizerCurationCallableRequest({
     this.operationId,

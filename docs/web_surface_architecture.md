@@ -404,10 +404,11 @@ trusted operator, not a browser route or callable.
 
 An exception is resolved in the owning Event or Organizer Intake surface. The
 Automation workspace does not write an `OperationDecision` or resume the same
-run; a later Supply Intake run can see that decision only after the owning
-compatibility artifact is regenerated. Reconciliation creates a separate
-immutable child run for expiry and stale-evidence changes rather than editing an
-already imported run.
+run. The owning review decision stays durable in its audited Firestore
+collection; no repository artifact regeneration is part of the live workflow.
+Any later Supply Intake reconciliation must read that persisted decision
+explicitly and create a separate immutable child run for expiry and
+stale-evidence changes rather than editing an already imported run.
 
 ## Admin Live Data Source Contract
 

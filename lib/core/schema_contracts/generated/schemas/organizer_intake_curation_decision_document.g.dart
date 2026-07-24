@@ -8,7 +8,7 @@ const schemaOrganizerIntakeCurationDecisionDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/organizer_intake_curation_decisions.schema.json',
   'title': 'OrganizerIntakeCurationDecisionDocument',
-  'description': 'One manual organizer-intake curation operation stored at organizerIntakeCurationDecisions/{operationId}. Raw scrape/search evidence is not stored here.',
+  'description': 'One manual organizer-intake curation operation stored at organizerIntakeCurationDecisions/{operationId}. Candidate evidence remains in operationRuns and operationWorkItems.',
   'type': 'object',
   'additionalProperties': false,
   'x-firestore-collection': 'organizerIntakeCurationDecisions',

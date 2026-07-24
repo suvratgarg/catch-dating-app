@@ -4,7 +4,7 @@ import {createQueryHarness} from "../../../../shared/test/queryHarness";
 import {useEventIntakeController} from "./useEventIntakeController";
 
 describe("useEventIntakeController", () => {
-  it("loads the generated bridge and keeps candidate edits in the query cache", async () => {
+  it("loads the Firestore dashboard and keeps candidate edits in the query cache", async () => {
     const {wrapper} = createQueryHarness();
     const {result} = renderHook(() => useEventIntakeController({
       onError: vi.fn(),

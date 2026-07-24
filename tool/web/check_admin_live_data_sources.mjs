@@ -151,6 +151,24 @@ function collectFeatureFiles(root) {
   return files;
 }
 
+function collectOperationalJson(roots) {
+  const files = [];
+  for (const root of roots) {
+    if (!fs.existsSync(root)) continue;
+    for (const entry of fs.readdirSync(root, {withFileTypes: true})) {
+      const absolute = path.join(root, entry.name);
+      if (entry.isDirectory()) {
+        files.push(...collectOperationalJson([absolute]));
+      } else if (entry.name.endsWith(".json")) {
+        files.push(
+          path.relative(fromRepo("."), absolute).split(path.sep).join("/")
+        );
+      }
+    }
+  }
+  return files;
+}
+
 function parseArgs(argv) {
   const values = {};
   const flags = new Set();
@@ -210,7 +228,22 @@ async function main(argv) {
       "tool/organizer_intake/search_result_batches/2026-07-24-pilot-indore-organizers.json",
       "tool/organizer_intake/search_result_batches/2026-07-24-pilot-mumbai-organizers.json",
       "operations/launch/pilot_supply_shortlist.json",
-    ].filter((file) => fs.existsSync(fromRepo(file))),
+    ].filter((file) => fs.existsSync(fromRepo(file))).concat(
+      collectOperationalJson([
+        "generated",
+        "batches",
+        "answer_packets",
+        "review_decisions",
+        "curation_decisions",
+        "event_review_decisions",
+        "event_location_resolutions",
+        "policy_gap_decisions",
+        "search_result_batches",
+        "event_source_batches",
+        "raw_artifacts",
+      ].map((directory) => fromRepo(`tool/organizer_intake/${directory}`)))
+        .concat(collectOperationalJson([fromRepo("operations/launch")])),
+    ),
   });
   if (violations.length > 0) {
     console.error("Admin live-data source violations:");

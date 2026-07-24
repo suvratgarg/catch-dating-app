@@ -8,7 +8,7 @@ const schemaOrganizerIntakeReviewDecisionDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/organizer_intake_review_decisions.schema.json',
   'title': 'OrganizerIntakeReviewDecisionDocument',
-  'description': 'Latest admin review decision stored at organizerIntakeReviewDecisions/{entityId}. Raw scrape/search evidence is not stored here.',
+  'description': 'Latest admin review decision stored at organizerIntakeReviewDecisions/{entityId}. Candidate evidence remains in operationRuns and operationWorkItems.',
   'type': 'object',
   'additionalProperties': false,
   'x-firestore-collection': 'organizerIntakeReviewDecisions',
@@ -93,7 +93,7 @@ const schemaOrganizerIntakeReviewDecisionDocumentSchema = <String, Object?>{
         },
         'manualReportsReviewed': <String, Object?>{
           'type': 'boolean',
-          'description': 'True when the reviewer explicitly inspected manual reports that have no local raw artifact. Raw evidence remains outside Firestore; projection replay decides when this acknowledgement is required.',
+          'description': 'True when the reviewer explicitly inspected manual reports that have no stored source artifact. Projection replay decides when this acknowledgement is required.',
         },
       },
     },
