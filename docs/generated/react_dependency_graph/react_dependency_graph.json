@@ -19,12 +19,12 @@
     "nonLiteralDynamicImports": "report"
   },
   "summary": {
-    "scannedSourceModules": 335,
-    "dependencyLeafNodes": 23,
-    "moduleNodes": 358,
+    "scannedSourceModules": 338,
+    "dependencyLeafNodes": 18,
+    "moduleNodes": 356,
     "moduleEdges": 1238,
-    "runtimeModuleEdges": 985,
-    "typeOnlyModuleEdges": 253,
+    "runtimeModuleEdges": 981,
+    "typeOnlyModuleEdges": 257,
     "dynamicImportEdges": 29,
     "reExportEdges": 65,
     "featureGroups": 33,
@@ -217,8 +217,8 @@
       "surface": "admin",
       "scope": "feature",
       "feature": "intake",
-      "modules": 28,
-      "tests": 7,
+      "modules": 29,
+      "tests": 8,
       "stories": 0
     },
     {
@@ -280,7 +280,7 @@
       "surface": "admin",
       "scope": "shared",
       "feature": null,
-      "modules": 71,
+      "modules": 68,
       "tests": 13,
       "stories": 0
     },
@@ -836,8 +836,8 @@
       "targetSurface": "admin",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 12,
-      "runtimeEdges": 9,
+      "edges": 9,
+      "runtimeEdges": 6,
       "typeOnlyEdges": 3,
       "dynamicImports": 0,
       "reExports": 0,
@@ -848,12 +848,9 @@
         "admin/src/features/data-quality/ui/DataQualityScreen.tsx"
       ],
       "targetModules": [
-        "admin/src/generated/eventIntakeBridge.json",
-        "admin/src/generated/externalEventImportExecutionPlan.json",
-        "admin/src/generated/externalEventImportPlan.json",
-        "admin/src/generated/marketingOpsBridge.json",
         "admin/src/shared/api/adminApi.ts",
         "admin/src/shared/api/sampleData.ts",
+        "admin/src/shared/api/sampleOperationalData.ts",
         "admin/src/shared/query/queryKeys.ts",
         "admin/src/shared/test/queryHarness.tsx",
         "admin/src/shared/types/adminTypes.ts",
@@ -965,9 +962,9 @@
       "targetSurface": "admin",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 53,
-      "runtimeEdges": 37,
-      "typeOnlyEdges": 16,
+      "edges": 56,
+      "runtimeEdges": 39,
+      "typeOnlyEdges": 17,
       "dynamicImports": 0,
       "reExports": 4,
       "sourceModules": [
@@ -984,6 +981,7 @@
         "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.test.tsx",
         "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.tsx",
         "admin/src/features/intake/organizer/api/organizerIntakeRepository.ts",
+        "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.ts",
         "admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.ts",
         "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.test.tsx",
         "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
@@ -1000,6 +998,7 @@
       ],
       "targetModules": [
         "admin/src/shared/api/adminApi.ts",
+        "admin/src/shared/config/launchMarkets.ts",
         "admin/src/shared/feedback/AdminFeedbackContext.tsx",
         "admin/src/shared/operations/operationSelectors.ts",
         "admin/src/shared/operations/operationsTypes.ts",
@@ -1039,8 +1038,8 @@
         "admin/src/features/marketing/ui/marketingWorkflowPanels.tsx"
       ],
       "targetModules": [
-        "admin/src/generated/marketingOpsBridge.json",
         "admin/src/shared/api/adminApi.ts",
+        "admin/src/shared/api/sampleOperationalData.ts",
         "admin/src/shared/controllers/marketingReviewDecisionHelpers.ts",
         "admin/src/shared/pendingOperation.tsx",
         "admin/src/shared/query/queryKeys.ts",
@@ -1427,8 +1426,8 @@
         "admin/src/features/intake/events/ui/EventIntakeWorkspace.tsx",
         "admin/src/features/intake/operations/controllers/useIntakeOperationsController.ts",
         "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.tsx",
+        "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.ts",
         "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
-        "admin/src/features/intake/organizer/generated/organizerIntakeBridge.json",
         "admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx",
         "admin/src/features/intake/ui/IntakeWorkspaceScreen.tsx"
       ]
@@ -1582,8 +1581,8 @@
       "targetSurface": "admin",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 10,
-      "runtimeEdges": 9,
+      "edges": 9,
+      "runtimeEdges": 8,
       "typeOnlyEdges": 1,
       "dynamicImports": 0,
       "reExports": 0,
@@ -1595,9 +1594,8 @@
         "admin/src/stories/AdminRoutes.stories.tsx"
       ],
       "targetModules": [
-        "admin/src/generated/eventIntakeBridge.json",
-        "admin/src/generated/marketingOpsBridge.json",
         "admin/src/shared/api/sampleData.ts",
+        "admin/src/shared/api/sampleOperationalData.ts",
         "admin/src/shared/operations/sampleIntakeOperations.ts",
         "admin/src/shared/types/adminTypes.ts",
         "admin/src/shared/ui/AdminPrimitives/index.ts"
@@ -3202,22 +3200,16 @@
       "sourceLayer": "feature",
       "targetSurface": "admin",
       "targetLayer": "generated",
-      "edges": 6,
-      "runtimeEdges": 6,
+      "edges": 1,
+      "runtimeEdges": 1,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "reExports": 0,
       "sourceModules": [
-        "admin/src/features/data-quality/controllers/useDataQualityController.test.tsx",
-        "admin/src/features/marketing/controllers/useMarketingOpsController.test.tsx",
         "admin/src/features/operations/ui/AdminActionExecutionsScreen.tsx"
       ],
       "targetModules": [
-        "admin/src/generated/adminActionCatalog.ts",
-        "admin/src/generated/eventIntakeBridge.json",
-        "admin/src/generated/externalEventImportExecutionPlan.json",
-        "admin/src/generated/externalEventImportPlan.json",
-        "admin/src/generated/marketingOpsBridge.json"
+        "admin/src/generated/adminActionCatalog.ts"
       ]
     },
     {
@@ -3228,9 +3220,9 @@
       "sourceLayer": "feature",
       "targetSurface": "admin",
       "targetLayer": "shared",
-      "edges": 199,
-      "runtimeEdges": 135,
-      "typeOnlyEdges": 64,
+      "edges": 204,
+      "runtimeEdges": 139,
+      "typeOnlyEdges": 65,
       "dynamicImports": 0,
       "reExports": 5,
       "sourceModules": [
@@ -3277,6 +3269,7 @@
         "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.test.tsx",
         "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.tsx",
         "admin/src/features/intake/organizer/api/organizerIntakeRepository.ts",
+        "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.ts",
         "admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.ts",
         "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.test.tsx",
         "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
@@ -3331,6 +3324,7 @@
         "admin/src/shared/api/adminApi.ts",
         "admin/src/shared/api/dataMode.ts",
         "admin/src/shared/api/sampleData.ts",
+        "admin/src/shared/api/sampleOperationalData.ts",
         "admin/src/shared/config/launchMarkets.ts",
         "admin/src/shared/controllers/marketingReviewDecisionHelpers.ts",
         "admin/src/shared/feedback/AdminFeedbackContext.tsx",
@@ -3374,8 +3368,8 @@
       "sourceLayer": "shared",
       "targetSurface": "admin",
       "targetLayer": "generated",
-      "edges": 18,
-      "runtimeEdges": 6,
+      "edges": 14,
+      "runtimeEdges": 2,
       "typeOnlyEdges": 12,
       "dynamicImports": 0,
       "reExports": 0,
@@ -3397,10 +3391,6 @@
         "admin/src/generated/contracts/adminRecordMarketingReviewDecisionCallableResponse.ts",
         "admin/src/generated/contracts/adminSetAdminUserRolesCallablePayload.ts",
         "admin/src/generated/contracts/adminSetAdminUserRolesCallableResponse.ts",
-        "admin/src/generated/eventIntakeBridge.json",
-        "admin/src/generated/externalEventImportExecutionPlan.json",
-        "admin/src/generated/externalEventImportPlan.json",
-        "admin/src/generated/marketingOpsBridge.json",
         "admin/src/generated/validators/adminCallableValidators.ts"
       ]
     },
@@ -3488,8 +3478,8 @@
         "admin/src/features/intake/events/ui/EventIntakeWorkspace.tsx",
         "admin/src/features/intake/operations/controllers/useIntakeOperationsController.ts",
         "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.tsx",
+        "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.ts",
         "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
-        "admin/src/features/intake/organizer/generated/organizerIntakeBridge.json",
         "admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx",
         "admin/src/features/intake/ui/IntakeWorkspaceScreen.tsx",
         "admin/src/features/marketing/controllers/useMarketingOpsController.ts",
@@ -3508,27 +3498,6 @@
       ]
     },
     {
-      "id": "admin:story->admin:generated",
-      "source": "admin:story",
-      "target": "admin:generated",
-      "sourceSurface": "admin",
-      "sourceLayer": "story",
-      "targetSurface": "admin",
-      "targetLayer": "generated",
-      "edges": 2,
-      "runtimeEdges": 2,
-      "typeOnlyEdges": 0,
-      "dynamicImports": 0,
-      "reExports": 0,
-      "sourceModules": [
-        "admin/src/stories/AdminRoutes.stories.tsx"
-      ],
-      "targetModules": [
-        "admin/src/generated/eventIntakeBridge.json",
-        "admin/src/generated/marketingOpsBridge.json"
-      ]
-    },
-    {
       "id": "admin:story->admin:shared",
       "source": "admin:story",
       "target": "admin:shared",
@@ -3536,8 +3505,8 @@
       "sourceLayer": "story",
       "targetSurface": "admin",
       "targetLayer": "shared",
-      "edges": 8,
-      "runtimeEdges": 7,
+      "edges": 9,
+      "runtimeEdges": 8,
       "typeOnlyEdges": 1,
       "dynamicImports": 0,
       "reExports": 0,
@@ -3550,6 +3519,7 @@
       ],
       "targetModules": [
         "admin/src/shared/api/sampleData.ts",
+        "admin/src/shared/api/sampleOperationalData.ts",
         "admin/src/shared/operations/sampleIntakeOperations.ts",
         "admin/src/shared/types/adminTypes.ts",
         "admin/src/shared/ui/AdminPrimitives/index.ts"
@@ -4615,8 +4585,8 @@
     },
     {
       "package": "vitest",
-      "edges": 57,
-      "runtimeEdges": 57,
+      "edges": 58,
+      "runtimeEdges": 58,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "surfaces": [
@@ -4636,6 +4606,7 @@
         "admin/src/features/intake/events/controllers/useEventIntakeController.test.tsx",
         "admin/src/features/intake/operations/controllers/useIntakeOperationsController.test.tsx",
         "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.test.tsx",
+        "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.test.ts",
         "admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.test.ts",
         "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.test.tsx",
         "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
@@ -5239,6 +5210,30 @@
       "story": false
     },
     {
+      "id": "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.test.ts",
+      "surface": "admin",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "intake",
+      "group": "admin:feature:intake",
+      "extension": ".ts",
+      "scanned": true,
+      "test": true,
+      "story": false
+    },
+    {
+      "id": "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.ts",
+      "surface": "admin",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "intake",
+      "group": "admin:feature:intake",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
       "id": "admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.test.ts",
       "surface": "admin",
       "layer": "feature",
@@ -5283,18 +5278,6 @@
       "group": "admin:feature:intake",
       "extension": ".ts",
       "scanned": true,
-      "test": false,
-      "story": false
-    },
-    {
-      "id": "admin/src/features/intake/organizer/generated/organizerIntakeBridge.json",
-      "surface": "admin",
-      "layer": "feature",
-      "scope": "feature",
-      "feature": "intake",
-      "group": "admin:feature:intake",
-      "extension": ".json",
-      "scanned": false,
       "test": false,
       "story": false
     },
@@ -6055,54 +6038,6 @@
       "story": false
     },
     {
-      "id": "admin/src/generated/eventIntakeBridge.json",
-      "surface": "admin",
-      "layer": "generated",
-      "scope": "shared",
-      "feature": null,
-      "group": "admin:shared",
-      "extension": ".json",
-      "scanned": false,
-      "test": false,
-      "story": false
-    },
-    {
-      "id": "admin/src/generated/externalEventImportExecutionPlan.json",
-      "surface": "admin",
-      "layer": "generated",
-      "scope": "shared",
-      "feature": null,
-      "group": "admin:shared",
-      "extension": ".json",
-      "scanned": false,
-      "test": false,
-      "story": false
-    },
-    {
-      "id": "admin/src/generated/externalEventImportPlan.json",
-      "surface": "admin",
-      "layer": "generated",
-      "scope": "shared",
-      "feature": null,
-      "group": "admin:shared",
-      "extension": ".json",
-      "scanned": false,
-      "test": false,
-      "story": false
-    },
-    {
-      "id": "admin/src/generated/marketingOpsBridge.json",
-      "surface": "admin",
-      "layer": "generated",
-      "scope": "shared",
-      "feature": null,
-      "group": "admin:shared",
-      "extension": ".json",
-      "scanned": false,
-      "test": false,
-      "story": false
-    },
-    {
       "id": "admin/src/generated/validators/adminCallableValidators.test.ts",
       "surface": "admin",
       "layer": "generated",
@@ -6236,6 +6171,18 @@
     },
     {
       "id": "admin/src/shared/api/sampleData.ts",
+      "surface": "admin",
+      "layer": "shared",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/shared/api/sampleOperationalData.ts",
       "surface": "admin",
       "layer": "shared",
       "scope": "shared",
@@ -9436,8 +9383,8 @@
     },
     {
       "source": "admin/src/features/data-quality/controllers/useDataQualityController.test.tsx",
-      "target": "admin/src/generated/eventIntakeBridge.json",
-      "specifier": "../../../generated/eventIntakeBridge.json",
+      "target": "admin/src/shared/api/sampleData.ts",
+      "specifier": "../../../shared/api/sampleData",
       "kind": "import",
       "typeOnly": false,
       "line": 3,
@@ -9445,38 +9392,11 @@
     },
     {
       "source": "admin/src/features/data-quality/controllers/useDataQualityController.test.tsx",
-      "target": "admin/src/generated/externalEventImportExecutionPlan.json",
-      "specifier": "../../../generated/externalEventImportExecutionPlan.json",
+      "target": "admin/src/shared/api/sampleOperationalData.ts",
+      "specifier": "../../../shared/api/sampleOperationalData",
       "kind": "import",
       "typeOnly": false,
       "line": 4,
-      "column": 1
-    },
-    {
-      "source": "admin/src/features/data-quality/controllers/useDataQualityController.test.tsx",
-      "target": "admin/src/generated/externalEventImportPlan.json",
-      "specifier": "../../../generated/externalEventImportPlan.json",
-      "kind": "import",
-      "typeOnly": false,
-      "line": 5,
-      "column": 1
-    },
-    {
-      "source": "admin/src/features/data-quality/controllers/useDataQualityController.test.tsx",
-      "target": "admin/src/generated/marketingOpsBridge.json",
-      "specifier": "../../../generated/marketingOpsBridge.json",
-      "kind": "import",
-      "typeOnly": false,
-      "line": 6,
-      "column": 1
-    },
-    {
-      "source": "admin/src/features/data-quality/controllers/useDataQualityController.test.tsx",
-      "target": "admin/src/shared/api/sampleData.ts",
-      "specifier": "../../../shared/api/sampleData",
-      "kind": "import",
-      "typeOnly": false,
-      "line": 7,
       "column": 1
     },
     {
@@ -9485,7 +9405,7 @@
       "specifier": "../../../shared/test/queryHarness",
       "kind": "import",
       "typeOnly": false,
-      "line": 8,
+      "line": 9,
       "column": 1
     },
     {
@@ -9494,7 +9414,7 @@
       "specifier": "../../../shared/types/adminTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 9,
+      "line": 10,
       "column": 1
     },
     {
@@ -9503,7 +9423,7 @@
       "specifier": "./useDataQualityController",
       "kind": "import",
       "typeOnly": false,
-      "line": 14,
+      "line": 15,
       "column": 1
     },
     {
@@ -10587,6 +10507,51 @@
       "column": 1
     },
     {
+      "source": "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.test.ts",
+      "target": "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.ts",
+      "specifier": "./loadOrganizerIntakeBridge",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 11,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.ts",
+      "target": "admin/src/shared/api/adminApi.ts",
+      "specifier": "../../../../shared/api/adminApi",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.ts",
+      "target": "admin/src/shared/config/launchMarkets.ts",
+      "specifier": "../../../../shared/config/launchMarkets",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.ts",
+      "target": "admin/src/shared/operations/operationsTypes.ts",
+      "specifier": "../../../../shared/operations/operationsTypes",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 5,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.ts",
+      "target": "admin/src/features/intake/organizer/types/organizerIntakeTypes.ts",
+      "specifier": "../types/organizerIntakeTypes",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 10,
+      "column": 1
+    },
+    {
       "source": "admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.test.ts",
       "target": "admin/src/features/intake/organizer/types/organizerIntakeTypes.ts",
       "specifier": "../types/organizerIntakeTypes",
@@ -10642,20 +10607,11 @@
     },
     {
       "source": "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
-      "target": "admin/src/features/intake/organizer/generated/organizerIntakeBridge.json",
-      "specifier": "../generated/organizerIntakeBridge.json",
-      "kind": "import",
-      "typeOnly": false,
-      "line": 3,
-      "column": 1
-    },
-    {
-      "source": "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
       "target": "admin/src/features/intake/organizer/api/organizerIntakeRepository.ts",
       "specifier": "../api/organizerIntakeRepository",
       "kind": "import",
       "typeOnly": false,
-      "line": 4,
+      "line": 3,
       "column": 1
     },
     {
@@ -10664,7 +10620,16 @@
       "specifier": "./organizerIntakeHelpers",
       "kind": "import",
       "typeOnly": false,
-      "line": 11,
+      "line": 10,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
+      "target": "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.ts",
+      "specifier": "./loadOrganizerIntakeBridge",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 29,
       "column": 1
     },
     {
@@ -10795,11 +10760,20 @@
     },
     {
       "source": "admin/src/features/intake/organizer/ui/organizerIntakeDiagnostics.tsx",
+      "target": "admin/src/features/intake/organizer/types/organizerIntakeTypes.ts",
+      "specifier": "../types/organizerIntakeTypes",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 40,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/ui/organizerIntakeDiagnostics.tsx",
       "target": "admin/src/features/intake/organizer/ui/organizerIntakeDiscoveryPanels.tsx",
       "specifier": "./organizerIntakeDiscoveryPanels",
       "kind": "import",
       "typeOnly": false,
-      "line": 40,
+      "line": 42,
       "column": 1
     },
     {
@@ -10808,7 +10782,7 @@
       "specifier": "./organizerIntakeEventPanels",
       "kind": "import",
       "typeOnly": false,
-      "line": 41,
+      "line": 43,
       "column": 1
     },
     {
@@ -10817,7 +10791,7 @@
       "specifier": "./organizerIntakeEvidencePanels",
       "kind": "import",
       "typeOnly": false,
-      "line": 42,
+      "line": 44,
       "column": 1
     },
     {
@@ -10826,7 +10800,7 @@
       "specifier": "./organizerIntakeReadinessPanels",
       "kind": "import",
       "typeOnly": false,
-      "line": 43,
+      "line": 45,
       "column": 1
     },
     {
@@ -11299,8 +11273,8 @@
     },
     {
       "source": "admin/src/features/marketing/controllers/useMarketingOpsController.test.tsx",
-      "target": "admin/src/generated/marketingOpsBridge.json",
-      "specifier": "../../../generated/marketingOpsBridge.json",
+      "target": "admin/src/shared/api/sampleOperationalData.ts",
+      "specifier": "../../../shared/api/sampleOperationalData",
       "kind": "import",
       "typeOnly": false,
       "line": 3,
@@ -11312,7 +11286,7 @@
       "specifier": "../../../shared/types/adminTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 4,
+      "line": 5,
       "column": 1
     },
     {
@@ -11321,7 +11295,7 @@
       "specifier": "../../../shared/test/queryHarness",
       "kind": "import",
       "typeOnly": false,
-      "line": 8,
+      "line": 9,
       "column": 1
     },
     {
@@ -11330,7 +11304,7 @@
       "specifier": "./useMarketingOpsController",
       "kind": "import",
       "typeOnly": false,
-      "line": 9,
+      "line": 10,
       "column": 1
     },
     {
@@ -12685,38 +12659,11 @@
     },
     {
       "source": "admin/src/shared/api/adminApi.ts",
-      "target": "admin/src/generated/marketingOpsBridge.json",
-      "specifier": "../../generated/marketingOpsBridge.json",
+      "target": "admin/src/shared/api/sampleOperationalData.ts",
+      "specifier": "./sampleOperationalData",
       "kind": "import",
       "typeOnly": false,
       "line": 17,
-      "column": 1
-    },
-    {
-      "source": "admin/src/shared/api/adminApi.ts",
-      "target": "admin/src/generated/eventIntakeBridge.json",
-      "specifier": "../../generated/eventIntakeBridge.json",
-      "kind": "import",
-      "typeOnly": false,
-      "line": 18,
-      "column": 1
-    },
-    {
-      "source": "admin/src/shared/api/adminApi.ts",
-      "target": "admin/src/generated/externalEventImportExecutionPlan.json",
-      "specifier": "../../generated/externalEventImportExecutionPlan.json",
-      "kind": "import",
-      "typeOnly": false,
-      "line": 19,
-      "column": 1
-    },
-    {
-      "source": "admin/src/shared/api/adminApi.ts",
-      "target": "admin/src/generated/externalEventImportPlan.json",
-      "specifier": "../../generated/externalEventImportPlan.json",
-      "kind": "import",
-      "typeOnly": false,
-      "line": 21,
       "column": 1
     },
     {
@@ -12725,7 +12672,7 @@
       "specifier": "../operations/sampleIntakeOperations",
       "kind": "import",
       "typeOnly": false,
-      "line": 23,
+      "line": 22,
       "column": 1
     },
     {
@@ -12734,7 +12681,7 @@
       "specifier": "../operations/operationsTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 25,
+      "line": 24,
       "column": 1
     },
     {
@@ -12743,7 +12690,7 @@
       "specifier": "../types/adminTypes",
       "kind": "import",
       "typeOnly": false,
-      "line": 29,
+      "line": 28,
       "column": 1
     },
     {
@@ -12806,6 +12753,15 @@
       "specifier": "../types/adminTypes",
       "kind": "import",
       "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/api/sampleOperationalData.ts",
+      "target": "admin/src/shared/types/adminTypes.ts",
+      "specifier": "../types/adminTypes",
+      "kind": "import",
+      "typeOnly": true,
       "line": 1,
       "column": 1
     },
@@ -13792,8 +13748,8 @@
     },
     {
       "source": "admin/src/stories/AdminRoutes.stories.tsx",
-      "target": "admin/src/generated/eventIntakeBridge.json",
-      "specifier": "../generated/eventIntakeBridge.json",
+      "target": "admin/src/shared/api/sampleOperationalData.ts",
+      "specifier": "../shared/api/sampleOperationalData",
       "kind": "import",
       "typeOnly": false,
       "line": 40,
@@ -13805,7 +13761,7 @@
       "specifier": "../features/intake/events/controllers/useEventIntakeController",
       "kind": "import",
       "typeOnly": true,
-      "line": 41,
+      "line": 44,
       "column": 1
     },
     {
@@ -13814,7 +13770,7 @@
       "specifier": "../features/intake/events/ui/EventIntakeWorkspace",
       "kind": "import",
       "typeOnly": false,
-      "line": 42,
+      "line": 45,
       "column": 1
     },
     {
@@ -13823,7 +13779,7 @@
       "specifier": "../features/intake/operations/controllers/useIntakeOperationsController",
       "kind": "import",
       "typeOnly": true,
-      "line": 43,
+      "line": 46,
       "column": 1
     },
     {
@@ -13832,16 +13788,16 @@
       "specifier": "../features/intake/operations/ui/IntakeOperationsWorkspace",
       "kind": "import",
       "typeOnly": false,
-      "line": 44,
+      "line": 47,
       "column": 1
     },
     {
       "source": "admin/src/stories/AdminRoutes.stories.tsx",
-      "target": "admin/src/features/intake/organizer/generated/organizerIntakeBridge.json",
-      "specifier": "../features/intake/organizer/generated/organizerIntakeBridge.json",
+      "target": "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.ts",
+      "specifier": "../features/intake/organizer/controllers/loadOrganizerIntakeBridge",
       "kind": "import",
       "typeOnly": false,
-      "line": 45,
+      "line": 48,
       "column": 1
     },
     {
@@ -13850,7 +13806,7 @@
       "specifier": "../features/intake/organizer/controllers/useOrganizerIntakeController",
       "kind": "import",
       "typeOnly": true,
-      "line": 46,
+      "line": 50,
       "column": 1
     },
     {
@@ -13859,7 +13815,7 @@
       "specifier": "../features/intake/organizer/ui/OrganizerIntakeScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 47,
+      "line": 51,
       "column": 1
     },
     {
@@ -13868,7 +13824,7 @@
       "specifier": "../features/intake/ui/IntakeWorkspaceScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 48,
+      "line": 52,
       "column": 1
     },
     {
@@ -13877,7 +13833,7 @@
       "specifier": "../shared/operations/sampleIntakeOperations",
       "kind": "import",
       "typeOnly": false,
-      "line": 49,
+      "line": 53,
       "column": 1
     },
     {
@@ -13886,7 +13842,7 @@
       "specifier": "../features/finance/controllers/useFinanceOpsController",
       "kind": "import",
       "typeOnly": false,
-      "line": 50,
+      "line": 54,
       "column": 1
     },
     {
@@ -13895,16 +13851,7 @@
       "specifier": "../features/finance/ui/FinanceOpsScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 56,
-      "column": 1
-    },
-    {
-      "source": "admin/src/stories/AdminRoutes.stories.tsx",
-      "target": "admin/src/generated/marketingOpsBridge.json",
-      "specifier": "../generated/marketingOpsBridge.json",
-      "kind": "import",
-      "typeOnly": false,
-      "line": 57,
+      "line": 60,
       "column": 1
     },
     {
@@ -13913,7 +13860,7 @@
       "specifier": "../features/marketing/controllers/useMarketingOpsController",
       "kind": "import",
       "typeOnly": true,
-      "line": 58,
+      "line": 61,
       "column": 1
     },
     {
@@ -13922,7 +13869,7 @@
       "specifier": "../features/marketing/ui/MarketingOpsScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 59,
+      "line": 62,
       "column": 1
     },
     {
@@ -13931,7 +13878,7 @@
       "specifier": "../features/organizers/controllers/useOrganizerPublishingController",
       "kind": "import",
       "typeOnly": false,
-      "line": 60,
+      "line": 63,
       "column": 1
     },
     {
@@ -13940,7 +13887,7 @@
       "specifier": "../features/organizers/controllers/organizerPublishingHelpers",
       "kind": "import",
       "typeOnly": false,
-      "line": 64,
+      "line": 67,
       "column": 1
     },
     {
@@ -13949,7 +13896,7 @@
       "specifier": "../features/organizers/ui/OrganizerPublishingScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 70,
+      "line": 73,
       "column": 1
     },
     {
@@ -13958,7 +13905,7 @@
       "specifier": "../features/growth/controllers/useGrowthKpiController",
       "kind": "import",
       "typeOnly": true,
-      "line": 71,
+      "line": 74,
       "column": 1
     },
     {
@@ -13967,7 +13914,7 @@
       "specifier": "../features/growth/ui/GrowthKpiScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 77,
+      "line": 80,
       "column": 1
     },
     {
@@ -13976,7 +13923,7 @@
       "specifier": "../features/overview/ui/OverviewScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 78,
+      "line": 81,
       "column": 1
     },
     {
@@ -13985,7 +13932,7 @@
       "specifier": "../features/safety/controllers/useSafetyTriageController",
       "kind": "import",
       "typeOnly": true,
-      "line": 83,
+      "line": 86,
       "column": 1
     },
     {
@@ -13994,7 +13941,7 @@
       "specifier": "../features/safety/ui/SafetyTriageScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 84,
+      "line": 87,
       "column": 1
     },
     {
@@ -14003,7 +13950,7 @@
       "specifier": "../shared/types/adminTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 85,
+      "line": 88,
       "column": 1
     },
     {
@@ -14012,7 +13959,7 @@
       "specifier": "../features/users/controllers/useUserAnalyticsController",
       "kind": "import",
       "typeOnly": false,
-      "line": 109,
+      "line": 112,
       "column": 1
     },
     {
@@ -14021,7 +13968,7 @@
       "specifier": "../features/users/ui/UserAnalyticsScreen",
       "kind": "import",
       "typeOnly": false,
-      "line": 113,
+      "line": 116,
       "column": 1
     },
     {
@@ -14030,7 +13977,7 @@
       "specifier": "../shared/ui/AdminPrimitives",
       "kind": "import",
       "typeOnly": false,
-      "line": 114,
+      "line": 117,
       "column": 1
     },
     {
@@ -20756,6 +20703,15 @@
       "kind": "import",
       "typeOnly": false,
       "line": 2,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.test.ts",
+      "package": "vitest",
+      "specifier": "vitest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
       "column": 1
     },
     {
