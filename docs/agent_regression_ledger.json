@@ -3095,6 +3095,49 @@
       "notes": "Deploy response-producing callables before dependent Admin bundles. Additive response fields still require a client-side compatibility default so a partial or rolled-back deploy cannot crash the route."
     },
     {
+      "id": "REG-ADMIN-ORGANIZER-MARKET-PROJECTION-001",
+      "title": "Organizer market projections can be edited into inconsistent combinations",
+      "status": "active",
+      "applies_to": [
+        "admin/src/shared/config/launchMarkets.ts",
+        "admin/src/features/organizers/controllers/organizerPublishingHelpers.ts",
+        "admin/src/features/organizers/ui/organizerDetailPanels.tsx"
+      ],
+      "symptom": "The organizer editor exposes location market ID, city, region, country, and public-page city slug as independent text fields, allowing an operator to save invalid cross-market combinations.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix admin test -- src/features/organizers/controllers/organizerPublishingHelpers.test.ts",
+        "guardEvidence": "the governed launch-market selector projects Mumbai or Indore metadata as one update, rejects unsupported markets, and reports mismatched derived fields before publication"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "design/admin/components.json"
+      ],
+      "notes": "Closed-set domain values use selects. Market-derived location fields are read-only projections and the server remains authoritative for the persisted projection."
+    },
+    {
+      "id": "REG-ADMIN-ORGANIZER-PUBLISH-TASKS-001",
+      "title": "Disabled organizer publication action hides the work required to enable it",
+      "status": "active",
+      "applies_to": [
+        "admin/src/features/organizers/controllers/organizerPublishingHelpers.ts",
+        "admin/src/features/organizers/ui/organizerDetailPanels.tsx",
+        "admin/src/stories/AdminRoutes.stories.tsx"
+      ],
+      "symptom": "The organizer editor reports an undifferentiated blocker count below a long form while Save + publish is disabled, so operators cannot tell which fields or evidence checks remain or navigate to them.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix admin test -- src/features/organizers/controllers/organizerPublishingHelpers.test.ts && npm --prefix admin run build:storybook",
+        "guardEvidence": "validation issues carry stable field targets, the detail layout keeps readiness beside the editor, the footer routes to remaining work, and the stateful blocked-draft story covers checklist and field-blocker states"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/admin_dashboard_user_stories_and_component_catalogue.md",
+        "design/admin/components.json"
+      ],
+      "notes": "Field blockers and checklist tasks remain distinct counts because they require different operator actions."
+    },
+    {
       "id": "REG-ADMIN-ORGANIZER-DRAFT-SOURCE-TIMESTAMP-001",
       "title": "Organizer draft source timestamp uses an array transform",
       "status": "active",

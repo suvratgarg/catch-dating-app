@@ -291,14 +291,26 @@ export function AdminRoadmapList({
 }
 
 export function AdminRoadmapListItem({
+  actionable = false,
   children,
   className = "",
+  tone = "default",
   ...props
 }: HTMLAttributes<HTMLDivElement> & {
+  actionable?: boolean;
   children: ReactNode;
+  tone?: "default" | "blocker" | "warning";
 }) {
   return (
-    <div {...props} className={classNames("roadmap-list-item", className)}>
+    <div
+      {...props}
+      className={classNames(
+        "roadmap-list-item",
+        actionable && "actionable",
+        tone !== "default" && tone,
+        className
+      )}
+    >
       {children}
     </div>
   );

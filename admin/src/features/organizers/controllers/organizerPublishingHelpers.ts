@@ -8,6 +8,10 @@ import type {
   OrganizerSourceConfidence,
   OrganizerVerificationStatus,
 } from "../../../shared/types/adminTypes";
+import {
+  launchMarketForId,
+  launchMarkets,
+} from "../../../shared/config/launchMarkets";
 
 export interface OrganizerPublishingFormState {
   clubId: string;
@@ -57,6 +61,7 @@ export interface OrganizerValidationIssue {
   label: string;
   detail: string;
   severity: "blocker" | "warning";
+  targetId?: string;
 }
 
 export interface OrganizerValidationOptions {
@@ -72,6 +77,93 @@ export interface OrganizerDiffRow {
 
 const organizerPathPattern =
   /^\/organizers\/([a-z0-9-]+)(?:\/([a-z0-9-]+))?\/$/;
+const organizerSlugPattern = /^[a-z0-9-]+$/;
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export const organizerPublishingFieldIds = {
+  area: "organizer-area",
+  canonicalPath: "organizer-canonical-path",
+  description: "organizer-description",
+  email: "organizer-email",
+  headline: "organizer-headline",
+  imageUrl: "organizer-image-url",
+  launchMarket: "organizer-launch-market",
+  logoUrl: "organizer-logo-url",
+  name: "organizer-name",
+  publicPageSlug: "organizer-public-page-slug",
+  reviewNote: "organizer-review-note",
+  sourceConfidence: "organizer-source-confidence",
+  summary: "organizer-summary",
+  verificationStatus: "organizer-verification-status",
+} as const;
+
+export const organizerTypeOptions = [
+  {value: "club", label: "Club"},
+  {value: "community", label: "Community"},
+  {value: "individual", label: "Individual organizer"},
+  {value: "eventProducer", label: "Event producer"},
+  {value: "venue", label: "Venue"},
+  {value: "brand", label: "Brand"},
+] as const;
+
+export const organizerAppVisibilityOptions = [
+  {value: "hidden", label: "Hidden — not discoverable in the app"},
+  {value: "discoverable", label: "Discoverable — visible to members"},
+] as const;
+
+export const organizerPublishStatusOptions = [
+  {value: "draft", label: "Draft — private"},
+  {value: "qa", label: "QA — internal review"},
+  {value: "published", label: "Published — public web"},
+  {value: "suppressed", label: "Suppressed — temporarily hidden"},
+  {value: "removed", label: "Removed — retired"},
+] as const;
+
+export const organizerSourceConfidenceOptions = [
+  {value: "seedOnly", label: "Seed only — evidence not reviewed"},
+  {value: "low", label: "Low — weak source match"},
+  {value: "medium", label: "Medium — evidence needs review"},
+  {value: "high", label: "High — strong current public evidence"},
+  {value: "ownerVerified", label: "Owner verified — confirmed by organizer"},
+] as const;
+
+export const organizerVerificationStatusOptions = [
+  {value: "unverified", label: "Unverified"},
+  {value: "sourceBacked", label: "Source backed"},
+  {value: "ownerVerified", label: "Owner verified"},
+] as const;
+
+export const organizerLaunchMarketOptions = launchMarkets.map((market) => ({
+  value: market.id,
+  label: market.label,
+}));
+
+export const publishChecklistItems = [
+  {
+    key: "sourceEvidenceVerified",
+    label: "Source evidence verified",
+    detail: "The official source matches this organizer identity and current details.",
+  },
+  {
+    key: "mediaRightsVerified",
+    label: "Media rights verified",
+    detail: "Every image or logo is approved for public use.",
+  },
+  {
+    key: "cadenceVerified",
+    label: "Cadence and crawl fit verified",
+    detail: "A current public session or repeatable event cadence is confirmed.",
+  },
+  {
+    key: "ownerContactVerified",
+    label: "Owner contact or claim path verified",
+    detail: "There is a reviewed owner contact or a safe public claim path.",
+  },
+] as const satisfies ReadonlyArray<{
+  key: keyof PublishChecklistState;
+  label: string;
+  detail: string;
+}>;
 
 export const emptyPublishChecklist: PublishChecklistState = {
   sourceEvidenceVerified: false,
@@ -87,6 +179,34 @@ export function completePublishChecklist(
     checklist.mediaRightsVerified &&
     checklist.cadenceVerified &&
     checklist.ownerContactVerified;
+}
+
+export function countIncompletePublishChecklist(
+  checklist: PublishChecklistState
+): number {
+  return publishChecklistItems.filter((item) => !checklist[item.key]).length;
+}
+
+export function updateOrganizerLaunchMarket(
+  form: OrganizerPublishingFormState,
+  marketId: string
+): OrganizerPublishingFormState {
+  const market = launchMarketForId(marketId);
+  if (!market) return {...form, location: marketId};
+  const routeMatch = organizerPathPattern.exec(form.canonicalPath.trim());
+  const canonicalPath = routeMatch?.[2] ?
+    `/organizers/${market.publicPageCitySlug}/${form.publicPageSlug.trim()}/` :
+    form.canonicalPath;
+  return {
+    ...form,
+    location: market.id,
+    cityName: market.cityName,
+    regionName: market.regionName,
+    countryCode: market.countryCode,
+    countryName: market.countryName,
+    publicPageCitySlug: market.publicPageCitySlug,
+    canonicalPath,
+  };
 }
 
 export function formFromOrganizerProfile(
@@ -281,39 +401,103 @@ export function validateOrganizerPublishingForm(
     }];
   }
   const issues: OrganizerValidationIssue[] = [];
-  requireText(issues, "name", "Name", form.name);
-  requireText(issues, "description", "Description", form.description);
-  requireText(issues, "area", "Area", form.area);
-  requireText(issues, "slug", "Slug", form.publicPageSlug);
-  requireText(issues, "canonical-path", "Canonical path", form.canonicalPath);
+  requireText(
+    issues,
+    "name",
+    "Name",
+    form.name,
+    organizerPublishingFieldIds.name
+  );
+  requireText(
+    issues,
+    "description",
+    "Description",
+    form.description,
+    organizerPublishingFieldIds.description
+  );
+  requireText(
+    issues,
+    "area",
+    "Area / locality",
+    form.area,
+    organizerPublishingFieldIds.area
+  );
+  requireText(
+    issues,
+    "slug",
+    "Public page slug",
+    form.publicPageSlug,
+    organizerPublishingFieldIds.publicPageSlug
+  );
+  requireText(
+    issues,
+    "canonical-path",
+    "Canonical path",
+    form.canonicalPath,
+    organizerPublishingFieldIds.canonicalPath
+  );
+  validateLaunchMarket(issues, form, options.publishing === true);
+  validateSlug(issues, form.publicPageSlug);
+  validateOptionalUrl(
+    issues,
+    "image-url",
+    "Image URL",
+    form.imageUrl,
+    organizerPublishingFieldIds.imageUrl
+  );
+  validateOptionalUrl(
+    issues,
+    "logo-url",
+    "Logo URL",
+    form.profileImageUrl,
+    organizerPublishingFieldIds.logoUrl
+  );
+  validateOptionalEmail(issues, form.email);
   const routeIssue = validateCanonicalPath(form);
   if (routeIssue) issues.push(routeIssue);
   if (options.requireReviewNote && !form.reviewNote.trim()) {
     issues.push({
       id: "review-note",
       label: "Review note",
-      detail: "Add a review note so the audited save has operator context.",
+      detail: "Explain what you verified or changed; this becomes the audited operator context.",
       severity: "blocker",
+      targetId: organizerPublishingFieldIds.reviewNote,
     });
   }
   if (options.publishing) {
-    requireText(issues, "headline", "Headline", form.headline);
-    requireText(issues, "summary", "Summary", form.summary);
+    requireText(
+      issues,
+      "headline",
+      "Headline",
+      form.headline,
+      organizerPublishingFieldIds.headline,
+      "Add the short member-facing promise shown at the top of the listing."
+    );
+    requireText(
+      issues,
+      "summary",
+      "Summary",
+      form.summary,
+      organizerPublishingFieldIds.summary,
+      "Add a concise member-facing summary of the organizer and its formats."
+    );
     if (form.sourceConfidence !== "high" &&
         form.sourceConfidence !== "ownerVerified") {
       issues.push({
         id: "source-confidence",
         label: "Source confidence",
-        detail: "Publishing requires high or owner-verified source confidence.",
+        detail: "Select High for strong current official evidence, or Owner verified after direct confirmation.",
         severity: "blocker",
+        targetId: organizerPublishingFieldIds.sourceConfidence,
       });
     }
     if (form.verificationStatus === "unverified") {
       issues.push({
         id: "verification",
         label: "Verification",
-        detail: "Publishing requires source-backed or owner-verified status.",
+        detail: "Select Source backed after checking an official source, or Owner verified after direct confirmation.",
         severity: "blocker",
+        targetId: organizerPublishingFieldIds.verificationStatus,
       });
     }
   }
@@ -342,6 +526,7 @@ function validateCanonicalPath(
       label: "Canonical path",
       detail: "Use /organizers/{slug}/ or /organizers/{citySlug}/{slug}/.",
       severity: "blocker",
+      targetId: organizerPublishingFieldIds.canonicalPath,
     };
   }
   const firstSegment = match[1];
@@ -354,6 +539,7 @@ function validateCanonicalPath(
       label: "Canonical path",
       detail: "The final route segment must match the public page slug.",
       severity: "blocker",
+      targetId: organizerPublishingFieldIds.canonicalPath,
     };
   }
   if (routeCity &&
@@ -364,6 +550,7 @@ function validateCanonicalPath(
       label: "Canonical path",
       detail: "The route city segment must match the page city slug.",
       severity: "blocker",
+      targetId: organizerPublishingFieldIds.canonicalPath,
     };
   }
   return null;
@@ -373,14 +560,102 @@ function requireText(
   issues: OrganizerValidationIssue[],
   id: string,
   label: string,
-  value: string
+  value: string,
+  targetId: string,
+  detail = `${label} is required for a canonical organizer listing.`
 ) {
   if (value.trim()) return;
   issues.push({
     id,
     label,
-    detail: `${label} is required for a canonical organizer listing.`,
+    detail,
     severity: "blocker",
+    targetId,
+  });
+}
+
+function validateLaunchMarket(
+  issues: OrganizerValidationIssue[],
+  form: OrganizerPublishingFormState,
+  publishing: boolean
+) {
+  const market = launchMarketForId(form.location);
+  if (!market) {
+    issues.push({
+      id: "launch-market",
+      label: "Launch market",
+      detail: "Choose Mumbai or Indore so city, region, country, and route metadata stay consistent.",
+      severity: publishing ? "blocker" : "warning",
+      targetId: organizerPublishingFieldIds.launchMarket,
+    });
+    return;
+  }
+  const mismatchedProjection =
+    form.cityName !== market.cityName ||
+    form.regionName !== market.regionName ||
+    form.countryCode !== market.countryCode ||
+    form.countryName !== market.countryName ||
+    form.publicPageCitySlug !== market.publicPageCitySlug;
+  if (!mismatchedProjection) return;
+  issues.push({
+    id: "launch-market-projection",
+    label: "Launch market",
+    detail: "Re-select the launch market to repair its city, region, country, and page-city projection.",
+    severity: "blocker",
+    targetId: organizerPublishingFieldIds.launchMarket,
+  });
+}
+
+function validateSlug(
+  issues: OrganizerValidationIssue[],
+  value: string
+) {
+  if (!value.trim() || organizerSlugPattern.test(value.trim())) return;
+  issues.push({
+    id: "slug-shape",
+    label: "Public page slug",
+    detail: "Use lowercase letters, numbers, and hyphens only.",
+    severity: "blocker",
+    targetId: organizerPublishingFieldIds.publicPageSlug,
+  });
+}
+
+function validateOptionalUrl(
+  issues: OrganizerValidationIssue[],
+  id: string,
+  label: string,
+  value: string,
+  targetId: string
+) {
+  const trimmed = value.trim();
+  if (!trimmed) return;
+  try {
+    const url = new URL(trimmed);
+    if (url.protocol === "https:" || url.protocol === "http:") return;
+  } catch {
+    // Report the same actionable issue for malformed URLs.
+  }
+  issues.push({
+    id,
+    label,
+    detail: "Enter a complete http:// or https:// URL.",
+    severity: "blocker",
+    targetId,
+  });
+}
+
+function validateOptionalEmail(
+  issues: OrganizerValidationIssue[],
+  value: string
+) {
+  const trimmed = value.trim();
+  if (!trimmed || emailPattern.test(trimmed)) return;
+  issues.push({
+    id: "email-shape",
+    label: "Email",
+    detail: "Enter a complete email address or leave the field empty.",
+    severity: "blocker",
+    targetId: organizerPublishingFieldIds.email,
   });
 }
 

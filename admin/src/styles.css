@@ -1158,6 +1158,74 @@ select {
   color: var(--green);
 }
 
+.workbench-stack.align-start {
+  align-self: start;
+}
+
+.roadmap-list-item.actionable {
+  grid-template-columns: 16px minmax(0, 1fr);
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfbfa;
+}
+
+.roadmap-list-item.actionable.blocker {
+  border-color: #edc99a;
+  background: var(--amber-soft);
+  color: var(--ink);
+}
+
+.roadmap-list-item.actionable.blocker svg {
+  color: #a76318;
+}
+
+.link-button {
+  grid-column: 2;
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--green);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.link-button:hover,
+.link-button:focus-visible {
+  color: var(--ink);
+}
+
+.checklist-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.checklist-heading span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.checklist-copy {
+  display: grid;
+  gap: 3px;
+}
+
+.checklist-copy small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
 .checklist-stack {
   display: grid;
   gap: 8px;
@@ -3499,6 +3567,22 @@ th {
   backdrop-filter: blur(8px);
 }
 
+.admin-decision-footer.publishing-actions {
+  grid-template-columns: minmax(220px, 1fr) auto auto auto;
+  align-items: center;
+}
+
+.admin-decision-footer.publishing-actions > div:first-child {
+  display: grid;
+  gap: 2px;
+}
+
+.admin-decision-footer.publishing-actions > div:first-child span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
 .marketing-empty-state {
   display: flex;
   align-items: center;
@@ -3891,6 +3975,19 @@ th {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .admin-decision-footer.publishing-actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .admin-decision-footer.publishing-actions > div:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .admin-decision-footer.publishing-actions > .ghost-button,
+  .admin-decision-footer.publishing-actions > .primary-button {
+    width: 100%;
+  }
+
   .workbench-toolbar {
     align-items: stretch;
     flex-direction: column;
@@ -3967,6 +4064,14 @@ th {
 
   .workspace {
     padding: 16px;
+  }
+
+  .admin-decision-footer.publishing-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-decision-footer.publishing-actions > div:first-child {
+    grid-column: 1;
   }
 
   .topbar {

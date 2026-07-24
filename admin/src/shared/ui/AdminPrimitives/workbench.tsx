@@ -104,18 +104,25 @@ export function AdminWorkbenchNote({
 }
 
 export function AdminWorkbenchStack({
+  alignStart = false,
   children,
   className = "",
   compact = false,
   ...props
 }: HTMLAttributes<HTMLDivElement> & {
+  alignStart?: boolean;
   children: ReactNode;
   compact?: boolean;
 }) {
   return (
     <div
       {...props}
-      className={classNames("workbench-stack", compact && "compact-stack", className)}
+      className={classNames(
+        "workbench-stack",
+        compact && "compact-stack",
+        alignStart && "align-start",
+        className
+      )}
     >
       {children}
     </div>
@@ -153,6 +160,36 @@ export function AdminChecklistStack({
     <div {...props} className={classNames("checklist-stack", className)}>
       {children}
     </div>
+  );
+}
+
+export function AdminChecklistHeader({
+  detail,
+  label,
+}: {
+  detail: ReactNode;
+  label: ReactNode;
+}) {
+  return (
+    <div className="checklist-heading">
+      <strong>{label}</strong>
+      <span>{detail}</span>
+    </div>
+  );
+}
+
+export function AdminChecklistCopy({
+  detail,
+  label,
+}: {
+  detail: ReactNode;
+  label: ReactNode;
+}) {
+  return (
+    <span className="checklist-copy">
+      <strong>{label}</strong>
+      <small>{detail}</small>
+    </span>
   );
 }
 
