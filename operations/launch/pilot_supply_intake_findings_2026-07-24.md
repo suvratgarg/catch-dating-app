@@ -125,6 +125,25 @@ a regression fixture for a non-empty search queue, regenerate the admin bridge,
 and require the coverage gate to pass before handoff from future discovery
 runs.
 
+### P1 — generated candidates were counted but not rendered (`LAUNCH-SUPPLY-011`)
+
+The organizer intake workbench added the generated search-candidate total to
+the Incoming stage count, but built the review queue only from canonical
+`OrganizerIntakeItem` records. A generated discovery run could therefore
+report candidates in the bridge without giving operators a card to select,
+filter, inspect, or attach.
+
+The local fix presents generated candidates as first-class Incoming entries,
+keeps them visibly separate from canonical organizer records, and preserves
+the existing publication boundary. Mumbai and Indore filters each return 25
+candidates; source evidence and search context are reviewable; the existing
+AFTER FLY entity exposes the governed attach action.
+
+The production issue remains `in_progress` until the branch is merged, the
+admin workflow deploys the regenerated bridge and UI, and the authenticated
+console is verified live. Net-new candidates also remain deliberately
+non-writable until a governed candidate-to-entity draft scaffolder exists.
+
 ## Publication blockers that remain
 
 Even after human approval, public listing and event publication remain blocked

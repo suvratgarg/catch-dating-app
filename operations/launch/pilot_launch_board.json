@@ -277,6 +277,22 @@
       ]
     },
     {
+      "id": "LAUNCH-SUPPLY-011",
+      "severity": "P1",
+      "status": "in_progress",
+      "workstream": "supply",
+      "summary": "Generated organizer search candidates were included in the Incoming stage count but omitted from the selectable admin review queue.",
+      "owner": "codex/pilot-organizer-shortlist-20260724",
+      "nextAction": "Merge and deploy the candidate-aware workbench, then verify the authenticated production console shows 50 Incoming candidates with 25 per pilot city.",
+      "evidence": [
+        "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx",
+        "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
+        "admin/src/features/intake/organizer/generated/organizerIntakeBridge.json",
+        "operations/launch/pilot_supply_intake_findings_2026-07-24.md",
+        "2026-07-24 local browser QA: Incoming 50; Mumbai 25; Indore 25; AFTER FLY attach action enabled"
+      ]
+    },
+    {
       "id": "LAUNCH-SECURITY-001",
       "severity": "P0",
       "status": "fixed",

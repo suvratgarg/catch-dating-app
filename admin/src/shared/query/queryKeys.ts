@@ -52,6 +52,7 @@ export const adminQueryKeys = {
     decision: () => [...adminQueryKeys.all, "marketing", "decision"] as const,
   },
   organizerIntake: {
+    bridge: () => [...adminQueryKeys.all, "organizer-intake", "bridge"] as const,
     curation: () => [...adminQueryKeys.all, "organizer-intake", "curation"] as const,
     decision: () => [...adminQueryKeys.all, "organizer-intake", "decision"] as const,
     eventDecision: () =>

@@ -1,5 +1,5 @@
 {
-  "version": 95,
+  "version": 96,
   "updated": "2026-07-24",
   "owner": "agent_operating_model",
   "entries": [
@@ -2944,6 +2944,29 @@
         "docs/release_operations.md"
       ],
       "notes": "Firestore automatically adds __name__ ordering to single-field indexes. Keep explicit composite entries only when at least two user fields require a composite."
+    },
+    {
+      "id": "REG-ADMIN-ORGANIZER-SEARCH-QUEUE-001",
+      "title": "Organizer search candidates are counted but absent from the admin queue",
+      "status": "active",
+      "applies_to": [
+        "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx",
+        "admin/src/features/intake/organizer/generated/organizerIntakeBridge.json",
+        "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
+        "tool/organizer_intake/generated/search_result_candidate_queue.json"
+      ],
+      "symptom": "The generated bridge reports captured organizer candidates and the Incoming stage count includes them, but the selectable queue is built only from canonical intake entities, leaving operators no path to review discovery output in the console.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin run test -- --run src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
+        "guardEvidence": "the organizer intake route renders 50 Incoming candidate cards, preserves the 25-per-market filter split, exposes captured source context, and offers the existing-entity attach action without inventing a net-new publication writer"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/operations_platform.md",
+        "operations/launch/pilot_supply_intake_findings_2026-07-24.md"
+      ],
+      "notes": "Discovery candidates and canonical organizer entities remain distinct entry kinds. Net-new draft creation stays disabled until the candidate-to-entity scaffolder is governed and callable-backed."
     }
   ]
 }
