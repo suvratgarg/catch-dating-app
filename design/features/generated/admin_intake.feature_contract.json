@@ -2,9 +2,9 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/admin_intake.feature.json",
-  "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:38a2af696b8163eb71efaa719228084450f30dcebb91c66cd5bc5e54ed59f433",
-  "resolvedDigest": "sha256:6829a3011ad9cc02f5895887001fc48b4b83f6f4989700d52d12ee952eba6096",
+  "generatedFor": "2026-07-24",
+  "sourceDigest": "sha256:5e974479315f552ede797d07eebd1de3effdd0af3311a7dd7ee62d698ab39df7",
+  "resolvedDigest": "sha256:9c387562a86658de3c00b718af93c153f4ce60b0a6c094e0ed36d6684b30a4ab",
   "feature": {
     "id": "feature.admin_intake",
     "name": "Admin Supply Intake",
@@ -14,13 +14,13 @@
   },
   "coverage": {
     "surfaces": 2,
-    "states": 4,
-    "scenarios": 4,
-    "actionCases": 12,
-    "actions": 15,
+    "states": 6,
+    "scenarios": 6,
+    "actionCases": 15,
+    "actions": 16,
     "captures": 0,
     "previews": 2,
-    "testFiles": 8,
+    "testFiles": 9,
     "evidenceExceptions": 0
   },
   "surfaces": [
@@ -505,10 +505,11 @@
         "id": "route_organizer_intake"
       },
       "actionScope": {
-        "included": "Switching review and diagnostics, deciding organizer intake, attaching or curating candidates, deciding event candidates and policy gaps, classifying pending inputs, resolving event locations, and freezing the complete Admin workspace during any organizer-intake write.",
+        "included": "Switching review and diagnostics, scrolling the bounded candidate queue independently from review detail, deciding organizer intake, creating fail-closed organizer drafts from reviewed candidates, attaching or curating candidates, deciding event candidates and policy gaps, classifying pending inputs, resolving event locations, and freezing the complete Admin workspace during any organizer-intake write.",
         "excluded": [
           "Decision notes, curation fields, manual-report acknowledgement, and location fields remain form data.",
-          "Approval creates a publishing handoff; ownership, app visibility, claims, crawling, and canonical publication remain separately gated."
+          "Approval creates a publishing handoff; ownership, app visibility, claims, crawling, and canonical publication remain separately gated.",
+          "Candidate draft creation reserves a canonical identity but cannot claim, publish, index, crawl, or expose the organizer in-app."
         ]
       },
       "bindings": {
@@ -536,8 +537,10 @@
           "contracts/callables/admin_decide_organizer_intake_payload.schema.json",
           "contracts/callables/admin_decide_organizer_event_candidate_payload.schema.json",
           "contracts/callables/admin_decide_organizer_policy_gap_payload.schema.json",
+          "contracts/callables/admin_create_organizer_draft_from_candidate_payload.schema.json",
           "contracts/callables/admin_record_organizer_curation_payload.schema.json",
           "contracts/callables/admin_resolve_organizer_event_location_payload.schema.json",
+          "contracts/callable_responses/admin_create_organizer_draft_from_candidate_response.schema.json",
           "contracts/firestore/organizer_intake_review_decisions.schema.json",
           "contracts/firestore/organizer_event_candidate_review_decisions.schema.json",
           "contracts/firestore/organizer_policy_gap_review_decisions.schema.json",
@@ -569,6 +572,13 @@
           {
             "kind": "admin_callable",
             "registry": "admin/src/generated/validators/adminCallableValidators.ts",
+            "callable": "adminCreateOrganizerDraftFromCandidate",
+            "requestValidation": "strict_schema",
+            "responseValidation": "strict_schema"
+          },
+          {
+            "kind": "admin_callable",
+            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
             "callable": "adminRecordOrganizerCuration",
             "requestValidation": "strict_schema",
             "responseValidation": "structural_object"
@@ -596,17 +606,26 @@
             "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.test.tsx",
             "admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.test.ts",
             "admin/src/shared/pendingOperation.test.tsx"
+          ],
+          "scrollable-candidate-queue": [
+            "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
+            "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.test.tsx"
+          ],
+          "organizer-draft-creation": [
+            "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.test.tsx",
+            "admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.test.ts",
+            "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.test.ts"
           ]
         }
       },
       "coverage": {
-        "states": 3,
-        "scenarios": 3,
-        "actionCases": 6,
-        "actions": 8,
+        "states": 5,
+        "scenarios": 5,
+        "actionCases": 9,
+        "actions": 9,
         "captures": 0,
         "previews": 1,
-        "testFiles": 3,
+        "testFiles": 5,
         "evidenceExceptions": 0
       },
       "dimensions": {
@@ -699,6 +718,31 @@
             }
           ],
           "description": "Records a candidate-to-organizer attachment curation decision.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "create_organizer_draft_from_candidate",
+          "owner": "controller",
+          "codeValue": "handleCreateOrganizerDraft",
+          "cardinality": "singleton",
+          "scopeKeys": [
+            "reviewerUid",
+            "sourceNormalizedKey"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default",
+                "organizer-draft-creation"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "admin.organizer_draft_created"
+            }
+          ],
+          "description": "Creates one deterministic source-backed organizer draft while ownership, publication, indexing, crawling, and app visibility remain disabled.",
           "implementationStatus": "implemented"
         },
         {
@@ -862,6 +906,7 @@
                   "toggle_organizer_intake_diagnostics",
                   "decide_organizer_intake",
                   "attach_organizer_candidate",
+                  "create_organizer_draft_from_candidate",
                   "record_organizer_curation"
                 ],
                 "disabled": [],
@@ -885,6 +930,7 @@
                   "toggle_organizer_intake_diagnostics",
                   "decide_organizer_intake",
                   "attach_organizer_candidate",
+                  "create_organizer_draft_from_candidate",
                   "record_organizer_curation"
                 ],
                 "notAllowed": [
@@ -909,6 +955,7 @@
                 "notAllowed": [
                   "decide_organizer_intake",
                   "attach_organizer_candidate",
+                  "create_organizer_draft_from_candidate",
                   "record_organizer_curation",
                   "decide_organizer_event_candidate",
                   "decide_organizer_policy_gap",
@@ -958,6 +1005,7 @@
                 "notAllowed": [
                   "decide_organizer_intake",
                   "attach_organizer_candidate",
+                  "create_organizer_draft_from_candidate",
                   "record_organizer_curation"
                 ]
               }
@@ -980,6 +1028,7 @@
                 "notAllowed": [
                   "decide_organizer_intake",
                   "attach_organizer_candidate",
+                  "create_organizer_draft_from_candidate",
                   "record_organizer_curation"
                 ]
               }
@@ -1022,6 +1071,121 @@
                 "disabled": [],
                 "notAllowed": [
                   "attach_organizer_candidate",
+                  "create_organizer_draft_from_candidate",
+                  "decide_organizer_event_candidate",
+                  "decide_organizer_policy_gap",
+                  "decide_pending_intake_input",
+                  "resolve_organizer_event_location"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "scrollable_candidate_queue",
+          "stateId": "scrollable-candidate-queue",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "view": "review",
+            "mutation": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_organizer_intake/OrganizerIntakeRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
+              "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "long_review_queue",
+              "dimensions": {
+                "view": "review",
+                "mutation": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "toggle_organizer_intake_diagnostics",
+                  "create_organizer_draft_from_candidate"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "decide_organizer_intake",
+                  "attach_organizer_candidate",
+                  "record_organizer_curation",
+                  "decide_organizer_event_candidate",
+                  "decide_organizer_policy_gap",
+                  "decide_pending_intake_input",
+                  "resolve_organizer_event_location"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "organizer_draft_creation",
+          "stateId": "organizer-draft-creation",
+          "kind": "route_state",
+          "status": "ready",
+          "dimensions": {
+            "view": "review",
+            "mutation": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_organizer_intake/OrganizerIntakeRouteStory"
+            ],
+            "tests": [
+              "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.test.tsx",
+              "admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.test.ts",
+              "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.test.ts"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "reviewed_candidate",
+              "dimensions": {
+                "view": "review",
+                "mutation": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "toggle_organizer_intake_diagnostics",
+                  "create_organizer_draft_from_candidate"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "decide_organizer_intake",
+                  "attach_organizer_candidate",
+                  "record_organizer_curation",
+                  "decide_organizer_event_candidate",
+                  "decide_organizer_policy_gap",
+                  "decide_pending_intake_input",
+                  "resolve_organizer_event_location"
+                ]
+              }
+            },
+            {
+              "id": "draft_creation_pending_frozen_workspace",
+              "dimensions": {
+                "view": "review",
+                "mutation": "pending"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [
+                  "toggle_organizer_intake_diagnostics",
+                  "create_organizer_draft_from_candidate"
+                ],
+                "notAllowed": [
+                  "decide_organizer_intake",
+                  "attach_organizer_candidate",
+                  "record_organizer_curation",
                   "decide_organizer_event_candidate",
                   "decide_organizer_policy_gap",
                   "decide_pending_intake_input",
@@ -1051,7 +1215,9 @@
               "states": [
                 "default",
                 "workflow-readiness",
-                "publication-packets"
+                "publication-packets",
+                "scrollable-candidate-queue",
+                "organizer-draft-creation"
               ]
             }
           }

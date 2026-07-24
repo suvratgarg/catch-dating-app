@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-07-23",
+  "updated": "2026-07-24",
   "id": "feature.admin_intake",
   "name": "Admin Supply Intake",
   "owner": "admin_console",
@@ -88,10 +88,11 @@
       "runtime": "react_admin",
       "authority": {"registry": "admin_routes", "id": "route_organizer_intake"},
       "actionScope": {
-        "included": "Switching review and diagnostics, deciding organizer intake, attaching or curating candidates, deciding event candidates and policy gaps, classifying pending inputs, resolving event locations, and freezing the complete Admin workspace during any organizer-intake write.",
+        "included": "Switching review and diagnostics, scrolling the bounded candidate queue independently from review detail, deciding organizer intake, creating fail-closed organizer drafts from reviewed candidates, attaching or curating candidates, deciding event candidates and policy gaps, classifying pending inputs, resolving event locations, and freezing the complete Admin workspace during any organizer-intake write.",
         "excluded": [
           "Decision notes, curation fields, manual-report acknowledgement, and location fields remain form data.",
-          "Approval creates a publishing handoff; ownership, app visibility, claims, crawling, and canonical publication remain separately gated."
+          "Approval creates a publishing handoff; ownership, app visibility, claims, crawling, and canonical publication remain separately gated.",
+          "Candidate draft creation reserves a canonical identity but cannot claim, publish, index, crawl, or expose the organizer in-app."
         ]
       },
       "bindings": {
@@ -105,8 +106,10 @@
           "contracts/callables/admin_decide_organizer_intake_payload.schema.json",
           "contracts/callables/admin_decide_organizer_event_candidate_payload.schema.json",
           "contracts/callables/admin_decide_organizer_policy_gap_payload.schema.json",
+          "contracts/callables/admin_create_organizer_draft_from_candidate_payload.schema.json",
           "contracts/callables/admin_record_organizer_curation_payload.schema.json",
           "contracts/callables/admin_resolve_organizer_event_location_payload.schema.json",
+          "contracts/callable_responses/admin_create_organizer_draft_from_candidate_response.schema.json",
           "contracts/firestore/organizer_intake_review_decisions.schema.json",
           "contracts/firestore/organizer_event_candidate_review_decisions.schema.json",
           "contracts/firestore/organizer_policy_gap_review_decisions.schema.json",
@@ -117,6 +120,7 @@
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminDecideOrganizerIntake", "requestValidation": "strict_schema", "responseValidation": "structural_object"},
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminDecideOrganizerEventCandidate", "requestValidation": "strict_schema", "responseValidation": "structural_object"},
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminDecideOrganizerPolicyGap", "requestValidation": "strict_schema", "responseValidation": "structural_object"},
+          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminCreateOrganizerDraftFromCandidate", "requestValidation": "strict_schema", "responseValidation": "strict_schema"},
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminRecordOrganizerCuration", "requestValidation": "strict_schema", "responseValidation": "structural_object"},
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminResolveOrganizerEventLocation", "requestValidation": "strict_schema", "responseValidation": "structural_object"}
         ],
@@ -135,6 +139,15 @@
             "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.test.tsx",
             "admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.test.ts",
             "admin/src/shared/pendingOperation.test.tsx"
+          ],
+          "scrollable-candidate-queue": [
+            "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
+            "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.test.tsx"
+          ],
+          "organizer-draft-creation": [
+            "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.test.tsx",
+            "admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.test.ts",
+            "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.test.ts"
           ]
         }
       },
@@ -146,6 +159,7 @@
         {"id": "toggle_organizer_intake_diagnostics", "owner": "screen", "codeValue": "setShowDiagnostics", "cardinality": "unbounded", "scopeKeys": ["adminSessionId", "viewVersion"], "outcomes": [{"kind": "surface_state", "stateIds": ["default", "workflow-readiness", "publication-packets"]}], "description": "Switches between daily review work and generated diagnostics without losing controller evidence."},
         {"id": "decide_organizer_intake", "owner": "controller", "codeValue": "handleDecision", "cardinality": "singleton", "scopeKeys": ["reviewerUid", "entityId", "decisionVersion"], "outcomes": [{"kind": "surface_state", "stateIds": ["default", "publication-packets"]}, {"kind": "side_effect", "id": "admin.organizer_intake_decided"}], "description": "Records approve-public, hold, or suppress with a publication handoff rather than direct visibility."},
         {"id": "attach_organizer_candidate", "owner": "controller", "codeValue": "handleAttachCandidate", "cardinality": "singleton", "scopeKeys": ["reviewerUid", "candidateId", "targetOrganizerId"], "outcomes": [{"kind": "surface_state", "stateIds": ["default"]}, {"kind": "side_effect", "id": "admin.organizer_candidate_attached"}], "description": "Records a candidate-to-organizer attachment curation decision."},
+        {"id": "create_organizer_draft_from_candidate", "owner": "controller", "codeValue": "handleCreateOrganizerDraft", "cardinality": "singleton", "scopeKeys": ["reviewerUid", "sourceNormalizedKey"], "outcomes": [{"kind": "surface_state", "stateIds": ["default", "organizer-draft-creation"]}, {"kind": "side_effect", "id": "admin.organizer_draft_created"}], "description": "Creates one deterministic source-backed organizer draft while ownership, publication, indexing, crawling, and app visibility remain disabled."},
         {"id": "record_organizer_curation", "owner": "controller", "codeValue": "handleItemCuration", "cardinality": "singleton", "scopeKeys": ["reviewerUid", "operationId", "curationVersion"], "outcomes": [{"kind": "surface_state", "stateIds": ["default", "publication-packets"]}, {"kind": "side_effect", "id": "admin.organizer_curation_recorded"}], "description": "Persists one explicit merge, create, hide, or projection curation operation."},
         {"id": "decide_organizer_event_candidate", "owner": "controller", "codeValue": "handleEventDecision", "cardinality": "singleton", "scopeKeys": ["reviewerUid", "candidateId", "decisionVersion"], "outcomes": [{"kind": "surface_state", "stateIds": ["workflow-readiness"]}, {"kind": "side_effect", "id": "admin.organizer_event_candidate_decided"}], "description": "Records import readiness for one organizer event candidate without publishing it."},
         {"id": "decide_organizer_policy_gap", "owner": "controller", "codeValue": "handlePolicyGapDecision", "cardinality": "singleton", "scopeKeys": ["reviewerUid", "gapId", "decisionVersion"], "outcomes": [{"kind": "surface_state", "stateIds": ["workflow-readiness"]}, {"kind": "side_effect", "id": "admin.organizer_policy_gap_decided"}], "description": "Records accept, hold, or reject for one unencoded policy gap."},
@@ -159,8 +173,8 @@
           "stateId": "default",
           "dimensions": {},
           "actionCases": [
-            {"id": "review_queue", "enabledActions": ["toggle_organizer_intake_diagnostics", "decide_organizer_intake", "attach_organizer_candidate", "record_organizer_curation"]},
-            {"id": "decision_pending_frozen_workspace", "dimensions": {"mutation": "pending"}, "disabledActions": ["toggle_organizer_intake_diagnostics", "decide_organizer_intake", "attach_organizer_candidate", "record_organizer_curation"]},
+            {"id": "review_queue", "enabledActions": ["toggle_organizer_intake_diagnostics", "decide_organizer_intake", "attach_organizer_candidate", "create_organizer_draft_from_candidate", "record_organizer_curation"]},
+            {"id": "decision_pending_frozen_workspace", "dimensions": {"mutation": "pending"}, "disabledActions": ["toggle_organizer_intake_diagnostics", "decide_organizer_intake", "attach_organizer_candidate", "create_organizer_draft_from_candidate", "record_organizer_curation"]},
             {"id": "diagnostics", "dimensions": {"view": "diagnostics"}, "enabledActions": ["toggle_organizer_intake_diagnostics"]}
           ]
         },
@@ -179,6 +193,23 @@
           "dimensions": {},
           "actionCases": [
             {"id": "handoff_packets", "enabledActions": ["toggle_organizer_intake_diagnostics", "decide_organizer_intake", "record_organizer_curation"]}
+          ]
+        },
+        {
+          "id": "scrollable_candidate_queue",
+          "stateId": "scrollable-candidate-queue",
+          "dimensions": {},
+          "actionCases": [
+            {"id": "long_review_queue", "enabledActions": ["toggle_organizer_intake_diagnostics", "create_organizer_draft_from_candidate"]}
+          ]
+        },
+        {
+          "id": "organizer_draft_creation",
+          "stateId": "organizer-draft-creation",
+          "dimensions": {},
+          "actionCases": [
+            {"id": "reviewed_candidate", "enabledActions": ["toggle_organizer_intake_diagnostics", "create_organizer_draft_from_candidate"]},
+            {"id": "draft_creation_pending_frozen_workspace", "dimensions": {"mutation": "pending"}, "disabledActions": ["toggle_organizer_intake_diagnostics", "create_organizer_draft_from_candidate"]}
           ]
         }
       ],
