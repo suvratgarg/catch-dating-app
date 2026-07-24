@@ -1,6 +1,5 @@
-import {useMutation} from "@tanstack/react-query";
+import {useMutation, useSuspenseQuery} from "@tanstack/react-query";
 import {useCallback, useMemo, useState} from "react";
-import organizerIntakeBridgeJson from "../generated/organizerIntakeBridge.json";
 import {
   decideOrganizerEventCandidate,
   decideOrganizerIntake,
@@ -27,6 +26,7 @@ import {
   publicationPacketReady,
   surfaceForCandidateCuration,
 } from "./organizerIntakeHelpers";
+import {loadOrganizerIntakeBridge} from "./loadOrganizerIntakeBridge";
 import type {
   AdminDecideOrganizerEventCandidatePayload,
   AdminDecideOrganizerEventCandidateResponse,
@@ -47,9 +47,6 @@ import {adminQueryKeys} from "../../../../shared/query/queryKeys";
 import {usePendingMutationRecord} from "../../../../shared/query/usePendingMutationRecord";
 import {useAdminPendingOperationGuard} from "../../../../shared/pendingOperation";
 
-const organizerIntakeBridge =
-  organizerIntakeBridgeJson as unknown as Intake.OrganizerIntakeBridge;
-
 type LocationResolutionMutationPayload =
   AdminResolveOrganizerEventLocationPayload & {taskId: string};
 
@@ -60,7 +57,11 @@ export function useOrganizerIntakeController({
   onError: (message: string | null) => void;
   onNotice: (message: string | null) => void;
 }) {
-  const bridge = organizerIntakeBridge;
+  const {data: bridge} = useSuspenseQuery({
+    queryKey: adminQueryKeys.organizerIntake.bridge(),
+    queryFn: loadOrganizerIntakeBridge,
+    staleTime: Infinity,
+  });
   const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const [decisionNotes, setDecisionNotes] = useState<Record<string, string>>(
     {}
