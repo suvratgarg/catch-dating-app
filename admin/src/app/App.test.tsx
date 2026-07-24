@@ -10,7 +10,6 @@ const mocks = vi.hoisted(() => ({
   confirmPhoneSignInCode: vi.fn(),
   requestPhoneSignInCode: vi.fn(),
   resetPhoneSignIn: vi.fn(),
-  signInWithGoogle: vi.fn(),
   signOutAdmin: vi.fn(),
 }));
 
@@ -28,7 +27,6 @@ vi.mock("../shared/api/firebase", () => ({
   confirmPhoneSignInCode: mocks.confirmPhoneSignInCode,
   requestPhoneSignInCode: mocks.requestPhoneSignInCode,
   resetPhoneSignIn: mocks.resetPhoneSignIn,
-  signInWithGoogle: mocks.signInWithGoogle,
   signOutAdmin: mocks.signOutAdmin,
 }));
 
@@ -42,24 +40,20 @@ describe("App live deep-link ownership", () => {
     mocks.confirmPhoneSignInCode.mockReset();
     mocks.requestPhoneSignInCode.mockReset();
     mocks.resetPhoneSignIn.mockReset();
-    mocks.signInWithGoogle.mockReset();
     mocks.signOutAdmin.mockReset();
     window.history.replaceState({}, "", "/overview");
   });
 
-  it("keeps both production sign-in providers and completes the phone OTP flow", async () => {
+  it("supports only phone OTP and completes the sign-in flow", async () => {
     const user = userEvent.setup();
     mocks.onAuthStateChanged.mockImplementation(() => () => undefined);
     mocks.requestPhoneSignInCode.mockResolvedValue(undefined);
     mocks.confirmPhoneSignInCode.mockResolvedValue(undefined);
-    mocks.signInWithGoogle.mockResolvedValue(undefined);
 
     render(<App />);
 
-    await user.click(
-      await screen.findByRole("button", {name: "Sign in with Google"})
-    );
-    expect(mocks.signInWithGoogle).toHaveBeenCalledOnce();
+    expect(screen.queryByRole("button", {name: "Sign in with Google"}))
+      .toBeNull();
     await user.type(
       screen.getByRole("textbox", {name: "Phone number"}),
       "+91 90000 00000"
@@ -86,8 +80,10 @@ describe("App live deep-link ownership", () => {
 
     render(<App />);
 
-    expect(await screen.findByRole("button", {name: "Sign in with Google"}))
+    expect(await screen.findByRole("button", {name: "Send verification code"}))
       .not.toBeNull();
+    expect(screen.queryByRole("button", {name: "Sign in with Google"}))
+      .toBeNull();
     expect(window.location.pathname).toBe("/safety/reports%2Freport-1");
   });
 

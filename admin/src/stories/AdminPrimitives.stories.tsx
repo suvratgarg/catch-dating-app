@@ -616,7 +616,6 @@ export const AdminSignInScreenStory: Story = {
         />
         <AdminSignInActions>
           <AdminButton variant="primary">Send verification code</AdminButton>
-          <AdminButton>Sign in with Google</AdminButton>
         </AdminSignInActions>
       </AdminSignInPanel>
     </AdminSignInScreen>

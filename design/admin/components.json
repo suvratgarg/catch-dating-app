@@ -1,6 +1,6 @@
 {
   "$schema": "./admin.components.schema.json",
-  "version": 35,
+  "version": 36,
   "updated": "2026-07-23",
   "owner": "admin_dashboard",
   "sourceOfTruth": {
@@ -4360,7 +4360,7 @@
           "phone-otp"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Phone-only admin authentication shell with deterministic phone-entry and phone-otp preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
     },
     {
       "id": "shared_admin_state_row",

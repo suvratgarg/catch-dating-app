@@ -21,11 +21,11 @@ The app starts in `sample` data mode by default so the UI can be reviewed before
 admin claims and App Check are configured. The account menu discloses that
 local sample data is active and that Firebase authentication is bypassed; no
 sign-out action is shown because no Firebase session is required.
-In live mode the shell supports phone OTP sign-in for claimed app accounts and
-Google sign-in for separately claimed internal accounts before any callable
-data loads. It shows the signed-in email/uid and custom admin claims after Auth
-resolves, blocks signed-in users with no Catch admin claim before dashboard
-data loads, and surfaces sign-in, claim refresh, and sign-out errors in the UI.
+In live mode the shell supports phone OTP sign-in for claimed accounts before
+any callable data loads. Google sign-in is intentionally unsupported. The shell
+shows the signed-in uid and custom admin claims after Auth resolves, blocks
+signed-in users with no Catch admin claim before dashboard data loads, and
+surfaces sign-in, claim refresh, and sign-out errors in the UI.
 
 For live Firebase calls, create a local `.env.local` from `env.example` and set:
 
@@ -43,7 +43,7 @@ analytics workspace; access decisions, organizer claim decisions, and organizer
 indexing decisions are handled in their owning tabs where the operator must
 select a row and enter a review note.
 
-The app shell owns shared navigation, dual-provider auth, role gating, the
+The app shell owns shared navigation, phone-only auth, role gating, the
 plain route title, and feature composition. Overview range state, refresh,
 analytics loading, and queue triage live in
 `admin/src/features/overview/controllers`.

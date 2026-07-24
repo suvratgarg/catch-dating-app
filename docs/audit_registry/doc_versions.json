@@ -85,7 +85,7 @@
   },
   "agent_regression_ledger": {
     "path": "docs/agent_regression_ledger.json",
-    "version": "93",
+    "version": "94",
     "updated": "2026-07-24",
     "status": "active",
     "read_policy": "Use before touching a scope with hard-won prior fixes; context packs surface matching active/watch regression guards, including section-ownership drift, parallel-delegation ownership, enforcement-integrity drift, and reconciliation merges that can hide dropped conflict-resolution intent."
@@ -282,7 +282,7 @@
   },
   "release_operations": {
     "path": "docs/release_operations.md",
-    "version": "1.11.4",
+    "version": "1.11.5",
     "updated": "2026-07-24",
     "status": "active",
     "read_policy": "Read before changing CI workflows, Firebase deploy ordering, release gates, environment setup, store readiness, app-shell integration coverage, host TestFlight setup, or release evidence."
@@ -408,7 +408,7 @@
   },
   "admin_dashboard_user_stories_and_component_catalogue": {
     "path": "docs/admin_dashboard_user_stories_and_component_catalogue.md",
-    "version": "0.2.26",
+    "version": "0.2.27",
     "updated": "2026-07-23",
     "status": "active",
     "read_policy": "Read before redesigning admin dashboard tabs, user stories, workflow fit, or React admin primitive/component migration. React admin feature export boundary scanner obligations. Admin component registry scanner obligations. Admin Storybook preview coverage obligations."
@@ -427,11 +427,11 @@
     "status": "implemented",
     "read_policy": "Historical implementation closeout only. Current root ownership, relationship, cleanup, retention, portability, test-inventory, and worktree policy lives in executable tooling and its owning active docs."
   },
-  "version": "4.7.2",
+  "version": "4.7.3",
   "admin_components": {
     "path": "design/admin/components.json",
-    "version": "34",
-    "updated": "2026-07-19",
+    "version": "36",
+    "updated": "2026-07-23",
     "status": "active",
     "read_policy": "Use before exporting, renaming, or previewing admin route/workspace entries, shared admin primitives, or admin feedback providers; enforced by web:admin-components. Admin Storybook preview coverage obligations."
   },

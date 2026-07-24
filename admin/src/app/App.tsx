@@ -62,7 +62,6 @@ import {
   confirmPhoneSignInCode,
   requestPhoneSignInCode,
   resetPhoneSignIn,
-  signInWithGoogle,
   signOutAdmin,
 } from "../shared/api/firebase";
 import {dataMode} from "../shared/api/dataMode";
@@ -404,22 +403,6 @@ function AdminRouteApp() {
     writeAdminSidebarPreference(collapsed);
   }, []);
 
-  const handleSignIn = useCallback(async () => {
-    setAuthError(null);
-    setIsAuthActionPending(true);
-    try {
-      await signInWithGoogle();
-    } catch (signInError) {
-      setAuthError(
-        signInError instanceof Error ?
-          signInError.message :
-          "Unable to sign in with Google."
-      );
-    } finally {
-      setIsAuthActionPending(false);
-    }
-  }, []);
-
   const handleRequestPhoneCode = useCallback(async () => {
     const normalizedPhoneNumber = normalizeAdminPhoneNumber(phoneNumber);
     if (!normalizedPhoneNumber) {
@@ -582,7 +565,6 @@ function AdminRouteApp() {
         onPhoneNumberChange={setPhoneNumber}
         onRequestPhoneCode={() => void handleRequestPhoneCode()}
         onResetPhoneSignIn={handleResetPhoneSignIn}
-        onSignIn={() => void handleSignIn()}
         onVerifyPhoneCode={() => void handleVerifyPhoneCode()}
       />
     );
@@ -1131,7 +1113,6 @@ function SignInScreen({
   onPhoneNumberChange,
   onRequestPhoneCode,
   onResetPhoneSignIn,
-  onSignIn,
   onVerifyPhoneCode,
   phoneCode,
   phoneNumber,
@@ -1143,7 +1124,6 @@ function SignInScreen({
   onPhoneNumberChange: (value: string) => void;
   onRequestPhoneCode: () => void;
   onResetPhoneSignIn: () => void;
-  onSignIn: () => void;
   onVerifyPhoneCode: () => void;
   phoneCode: string;
   phoneNumber: string;
@@ -1222,14 +1202,6 @@ function SignInScreen({
             ) : null}
           </AdminSignInActions>
         </AdminForm>
-        <AdminSignInMeta>
-          Google sign-in remains available for separately claimed admin accounts.
-        </AdminSignInMeta>
-        <AdminSignInActions>
-          <AdminButton disabled={isSigningIn} onClick={onSignIn}>
-            Sign in with Google
-          </AdminButton>
-        </AdminSignInActions>
         <div id="admin-phone-recaptcha" />
       </AdminSignInPanel>
     </AdminSignInScreen>

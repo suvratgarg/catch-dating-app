@@ -1,6 +1,6 @@
 ---
 doc_id: admin_dashboard_user_stories_and_component_catalogue
-version: 0.2.26
+version: 0.2.27
 updated: 2026-07-23
 owner: admin_console
 status: active
@@ -181,12 +181,12 @@ Current implementation:
   live callable role allowlists. Overview remains available to every admin
   claim; host analytics are replaced with a restricted empty response when the
   current role cannot call `adminGetHostAnalytics`.
-- Sign-in, claim refresh, and sign-out actions now expose pending state and
-  visible errors instead of silently swallowing popup or Firebase Auth failures.
+- Sign-in, claim refresh, and sign-out actions expose pending state and visible
+  Firebase Auth errors.
 - `admin/src/app/App.test.tsx` and `admin/src/shared/api/firebase.test.ts` are
-  the executable dual-provider guard: the rendered live sign-in screen must
-  expose Google and phone entry, phone submission must normalize E.164 input,
-  and the adapter must retain both Firebase provider integrations.
+  the executable phone-only guard: the rendered live sign-in screen must expose
+  phone entry without a Google action, phone submission must normalize E.164
+  input, and the adapter must retain the Firebase phone OTP integration.
 - Backend authorization is enforced by callable functions, not by the React
   shell. `functions/src/admin/adminAuth.ts` accepts these custom claims:
   `admin`, `adminOwner`, `safetyReviewer`, `support`, `finance`,
