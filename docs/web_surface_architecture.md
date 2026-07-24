@@ -548,11 +548,11 @@ pipeline:
   Storybook stories through a Playwright Chromium axe gate;
 - pushes to `main` that touch marketing-site inputs deploy only
   `hosting:marketing` to the production Firebase project;
-- the deploy job reads canonical organizer claim-target readiness from
-  production, materializes receipt-aware production and demo projections in
-  the ephemeral runner checkout, and verifies both before Firebase invokes the
-  normal predeploy build; committed receipt-free projections remain the stable
-  PR validation source rather than being mistaken for production readiness;
+- the deploy job reads canonical `organizers/{id}` documents from production
+  Firestore and materializes the production-only organizer projection in the
+  ephemeral runner checkout before Firebase invokes the normal predeploy
+  build; pull requests validate the committed build projection without
+  treating it as mutable operational state;
 - generated public routes are served as static files; only explicit host,
   claim, and API rewrites remain, so unknown paths use `dist/404.html` with an
   actual HTTP 404 instead of the root SPA shell;

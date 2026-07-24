@@ -439,12 +439,22 @@
         "citySlug": {
           "$ref": "../shared/event_common.schema.json#/definitions/strictCitySlug"
         },
-        "canonicalPath": {
+      "canonicalPath": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 240
+      },
+      "legacyPaths": {
+        "type": "array",
+        "maxItems": 12,
+        "uniqueItems": true,
+        "items": {
           "type": "string",
           "minLength": 1,
           "maxLength": 240
-        },
-        "publishStatus": {
+        }
+      },
+      "publishStatus": {
           "type": "string",
           "enum": ["draft", "qa", "published", "suppressed", "removed"]
         },

@@ -328,6 +328,10 @@ export interface OrganizerDocument {
     slug: string;
     citySlug: string;
     canonicalPath: string;
+    /**
+     * @maxItems 12
+     */
+    legacyPaths?: string[];
     publishStatus: "draft" | "qa" | "published" | "suppressed" | "removed";
     indexStatus: "noindex" | "indexReady" | "indexed";
     robots: "noindex, follow" | "index, follow";

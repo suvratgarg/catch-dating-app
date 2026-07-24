@@ -1,5 +1,5 @@
 {
-  "version": 99,
+  "version": 100,
   "updated": "2026-07-24",
   "owner": "agent_operating_model",
   "entries": [
@@ -2982,9 +2982,9 @@
       "status": "active",
       "applies_to": [
         "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx",
-        "admin/src/features/intake/organizer/generated/organizerIntakeBridge.json",
         "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
-        "tool/organizer_intake/generated/search_result_candidate_queue.json"
+        "operations/src/platform/read-models.mjs",
+        "tool/organizer_intake/check_admin_review_bridge.mjs"
       ],
       "symptom": "The generated bridge reports captured organizer candidates and the Incoming stage count includes them, but the selectable queue is built only from canonical intake entities, leaving operators no path to review discovery output in the console.",
       "guard": {
@@ -2998,6 +2998,32 @@
         "operations/launch/pilot_supply_intake_findings_2026-07-24.md"
       ],
       "notes": "Discovery candidates and canonical organizer entities remain distinct entry kinds. Net-new draft creation stays disabled until the candidate-to-entity scaffolder is governed and callable-backed."
+    },
+    {
+      "id": "REG-WEBSITE-ORGANIZER-FIRESTORE-PROJECTION-001",
+      "title": "Marketing deploy regenerates organizer pages from retired repository state",
+      "status": "active",
+      "applies_to": [
+        ".github/workflows/marketing-website.yml",
+        "contracts/firestore/organizers.schema.json",
+        "website/package.json",
+        "website/scripts/generateOrganizerListings.mjs",
+        "website/scripts/generateOrganizerListings.test.mjs",
+        "website/scripts/marketingDeployWorkflow.test.mjs",
+        "website/src/generated/hostListings.json"
+      ],
+      "symptom": "Deleting repo-backed organizer intake JSON leaves the committed public listing stale and makes production materialization silently fall back to seed files, so CI fails or a deploy can drop the canonical organizer page.",
+      "guard": {
+        "type": "command",
+        "command": "node --test website/scripts/generateOrganizerListings.test.mjs website/scripts/marketingDeployWorkflow.test.mjs && npm --workspace catch-marketing run check:organizer-listings",
+        "guardEvidence": "pull requests validate the static build projection, while the production workflow is contract-tested to read canonical organizer documents from Firestore before Firebase predeploy"
+      },
+      "owner_docs": [
+        "docs/data_contracts.md",
+        "docs/marketing_website_architecture.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "The committed hostListings files are deterministic production and Storybook build artifacts, not operational editing surfaces. Claim and review capabilities remain fail-closed until separately governed in Firestore."
     }
   ]
 }

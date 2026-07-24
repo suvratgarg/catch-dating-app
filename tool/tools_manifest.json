@@ -3088,8 +3088,8 @@
       "path": "tool/organizer_intake/check_promotion_bridge.mjs",
       "command": "node tool/organizer_intake/check_promotion_bridge.mjs",
       "safety": "local",
-      "status": "active",
-      "description": "Validates approved organizer projections are backed by canonical host entities, website listings, Firestore claim targets, and matching claim-target sync previews without legacy duplicate pages.",
+      "status": "retired",
+      "description": "Legacy fixture checker for the retired repo-backed organizer promotion projection. Production organizer listings now materialize directly from canonical Firestore organizer documents.",
       "checks": [
         "node --check tool/organizer_intake/check_promotion_bridge.mjs",
         "node --test tool/organizer_intake/check_promotion_bridge.test.mjs",

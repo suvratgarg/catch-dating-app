@@ -153,19 +153,11 @@ jobs:
           VITE_FIREBASE_MEASUREMENT_ID: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
         run: node tool/env/check_web_hosting_env.mjs marketing --expected-project-id catch-dating-app-64e51
 
-      - name: Read production organizer claim readiness
-        run: node tool/organizer_intake/sync_claim_targets_to_firestore.mjs --env prod --receipt /tmp/organizer-claim-target-readiness.json --json
-
-      - name: Materialize verified production organizer listings
-        env:
-          ORGANIZER_CLAIM_TARGET_PROJECT_ID: catch-dating-app-64e51
-          ORGANIZER_CLAIM_TARGET_RECEIPT: /tmp/organizer-claim-target-readiness.json
+      - name: Materialize production organizer listings from Firestore
         run: npm --workspace catch-marketing run materialize:organizer-listings:deploy
 
       - name: Deploy production marketing site
         env:
-          ORGANIZER_CLAIM_TARGET_PROJECT_ID: catch-dating-app-64e51
-          ORGANIZER_CLAIM_TARGET_RECEIPT: /tmp/organizer-claim-target-readiness.json
           VITE_GTM_ID: ${{ vars.VITE_GTM_ID || 'GTM-K7KLNQXP' }}
           VITE_STORE_LINKS_MODE: ${{ vars.VITE_STORE_LINKS_MODE || 'prelaunch' }}
           VITE_APP_STORE_URL: ${{ vars.VITE_APP_STORE_URL }}

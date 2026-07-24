@@ -17749,6 +17749,22 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const organizerDocumentPublicPageLegacyPaths = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicPage.legacyPaths',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 12,
+    uniqueItems: true,
+  );
+
+  static const organizerDocumentPublicPageLegacyPathsItems = CatchContractFieldConstraints(
+    path: 'organizerDocument.publicPage.legacyPaths.items',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerDocumentPublicPagePublishStatus = CatchContractFieldConstraints(
     path: 'organizerDocument.publicPage.publishStatus',
     required: true,
@@ -28493,6 +28509,8 @@ abstract final class CatchContractConstraints {
     'organizerDocument.publicPage.indexStatus': organizerDocumentPublicPageIndexStatus,
     'organizerDocument.publicPage.lastRenderedAt._nanoseconds': organizerDocumentPublicPageLastRenderedAtNanoseconds,
     'organizerDocument.publicPage.lastRenderedAt._seconds': organizerDocumentPublicPageLastRenderedAtSeconds,
+    'organizerDocument.publicPage.legacyPaths': organizerDocumentPublicPageLegacyPaths,
+    'organizerDocument.publicPage.legacyPaths.items': organizerDocumentPublicPageLegacyPathsItems,
     'organizerDocument.publicPage.publishStatus': organizerDocumentPublicPagePublishStatus,
     'organizerDocument.publicPage.robots': organizerDocumentPublicPageRobots,
     'organizerDocument.publicPage.seoDescription': organizerDocumentPublicPageSeoDescription,

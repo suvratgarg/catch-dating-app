@@ -6,7 +6,7 @@
   "scripts": {
     "generate:organizer-listings": "node scripts/generateOrganizerListings.mjs",
     "generate:organizer-listings:demo": "node scripts/generateOrganizerListings.mjs --include-demo --output src/generated/hostListings.demo.json",
-    "materialize:organizer-listings:deploy": "npm run generate:organizer-listings && npm run generate:organizer-listings:demo && npm run check:organizer-listings",
+    "materialize:organizer-listings:deploy": "node scripts/generateOrganizerListings.mjs --firestore-project catch-dating-app-64e51 --no-seeds && npm run check:organizer-listings",
     "check:organizer-listings": "node scripts/generateOrganizerListings.mjs --check && node scripts/generateOrganizerListings.mjs --include-demo --output src/generated/hostListings.demo.json --check",
     "check:routes": "node ../tool/marketing/check_website_routes.mjs --check",
     "check:components": "node ../tool/marketing/check_website_components.mjs --check",

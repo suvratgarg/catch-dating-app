@@ -7711,6 +7711,16 @@ export const organizerDocumentSchema = {
           "minLength": 1,
           "maxLength": 240
         },
+        "legacyPaths": {
+          "type": "array",
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
         "publishStatus": {
           "type": "string",
           "enum": [
