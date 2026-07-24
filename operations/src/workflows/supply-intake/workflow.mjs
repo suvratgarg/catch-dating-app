@@ -24,6 +24,7 @@ export const MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN = MAX_WORK_ITEMS_PER_RUN;
 export const SUPPLY_INTAKE_WORKFLOW_ID = "supply-intake";
 export const SUPPLY_INTAKE_WORKFLOW_VERSION = "0.1.0";
 const SUPPLY_INTAKE_STALE_AFTER_HOURS = 168;
+const SUPPLY_INTAKE_SCOPES = Object.freeze(["all", "organizer"]);
 
 export class SupplyIntakeWorkflow {
   constructor({
@@ -42,19 +43,39 @@ export class SupplyIntakeWorkflow {
     this.sourceProfilesLoader = sourceProfilesLoader;
   }
 
-  async createPlan({market = "mumbai", through, now}) {
+  async createPlan({
+    market = "mumbai",
+    through,
+    now,
+    intakeScope = "all",
+  }) {
     invariant(/^[a-z][a-z0-9-]{1,49}$/.test(market), "INVALID_MARKET", "Market must be a lowercase slug.", {market});
     invariant(/^\d{4}-\d{2}-\d{2}$/.test(through ?? ""), "INVALID_THROUGH", "--through YYYY-MM-DD is required.", {through});
+    invariant(
+      SUPPLY_INTAKE_SCOPES.includes(intakeScope),
+      "INVALID_INTAKE_SCOPE",
+      "--intake-scope must be all or organizer.",
+      {intakeScope}
+    );
     const generatedAt = new Date(now).toISOString();
     const profiles = await this.sourceProfilesLoader();
-    const artifactSnapshotWithData = await this.adapter.snapshot({market});
-    assertEventBridgeCompatibility(artifactSnapshotWithData, {
+    const artifactSnapshotWithData = await this.adapter.snapshot({
       market,
-      generatedAt,
-      staleAfterHours: SUPPLY_INTAKE_STALE_AFTER_HOURS,
+      intakeScope,
     });
+    if (intakeScope !== "organizer") {
+      assertEventBridgeCompatibility(artifactSnapshotWithData, {
+        market,
+        generatedAt,
+        staleAfterHours: SUPPLY_INTAKE_STALE_AFTER_HOURS,
+      });
+    }
     const artifactSnapshot = stripArtifactData(artifactSnapshotWithData, {market});
-    const plannedItems = plannedWorkItemCount(artifactSnapshot, profiles.length);
+    const plannedItems = plannedWorkItemCount(
+      artifactSnapshot,
+      profiles.length,
+      intakeScope
+    );
     invariant(
       plannedItems <= MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN,
       "RUN_SHARD_REQUIRED",
@@ -74,6 +95,7 @@ export class SupplyIntakeWorkflow {
       workflowId: this.workflowId,
       workflowVersion: this.version,
       market,
+      intakeScope,
       through,
       mode: "shadow",
       workflowContract: {
@@ -207,7 +229,13 @@ export class SupplyIntakeWorkflow {
     }
     const plannedItems = plannedWorkItemCount(
       plan.artifactSnapshot,
-      Array.isArray(plan.sourceProfiles) ? plan.sourceProfiles.length : NaN
+      Array.isArray(plan.sourceProfiles) ? plan.sourceProfiles.length : NaN,
+      plan.intakeScope ?? "all"
+    );
+    invariant(
+      SUPPLY_INTAKE_SCOPES.includes(plan.intakeScope ?? "all"),
+      "INVALID_INTAKE_SCOPE",
+      "Supply Intake plan has an invalid intake scope."
     );
     invariant(
       plannedItems <= MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN,
@@ -276,20 +304,40 @@ export class SupplyIntakeWorkflow {
         items.push(workItemForEvent(event, {runId, now, market: plan.market, artifact: eventBridge}));
       }
     }
-    for (const profile of profiles) {
-      items.push(workItemForOperationsSourceProfile(profile, {runId, now, market: plan.market}));
+    if (plan.intakeScope !== "organizer") {
+      for (const profile of profiles) {
+        items.push(workItemForOperationsSourceProfile(profile, {
+          runId,
+          now,
+          market: plan.market,
+        }));
+      }
     }
     const organizerArtifact = artifacts.organizerPublicationPackets;
     for (const packet of organizerArtifact?.data?.packets ?? []) {
       if (!organizerPacketSupportsMarket(packet, plan.market)) continue;
       items.push(workItemForOrganizer(packet, {runId, now, market: plan.market, artifact: organizerArtifact}));
     }
+    const organizerCandidateArtifact = artifacts.organizerSearchCandidates;
+    for (const candidate of organizerCandidateArtifact?.data?.candidates ?? []) {
+      if (candidate?.queryIntent?.marketSlug !== plan.market) continue;
+      items.push(workItemForOrganizerCandidate(candidate, {
+        runId,
+        now,
+        market: plan.market,
+        artifact: organizerCandidateArtifact,
+      }));
+    }
     return dedupeItems(items).sort((left, right) => left.workItemId.localeCompare(right.workItemId));
   }
 
   review(item, {now}) {
     if (item.entityKind === "event") return reviewEvent(item, now);
-    if (item.entityKind === "organizer") return reviewOrganizer(item, now);
+    if (item.entityKind === "organizer") {
+      return item.adminProjection?.recordType === "organizer_search_candidate" ?
+        reviewOrganizerCandidate(item, now) :
+        reviewOrganizer(item, now);
+    }
     if (item.entityKind === "source_result") return reviewSourceResult(item, now);
     return reviewSourceProfile(item, now);
   }
@@ -407,15 +455,22 @@ function assertEventBridgeCompatibility(snapshot, {market, generatedAt, staleAft
   );
 }
 
-function plannedWorkItemCount(artifactSnapshot, sourceProfileCount) {
+function plannedWorkItemCount(
+  artifactSnapshot,
+  sourceProfileCount,
+  intakeScope = "all"
+) {
   const eventCounts = artifactSnapshot?.artifacts?.eventIntakeBridge?.counts ?? {};
   const organizerCounts = artifactSnapshot?.artifacts?.organizerPublicationPackets?.counts ?? {};
+  const organizerCandidateCounts =
+    artifactSnapshot?.artifacts?.organizerSearchCandidates?.counts ?? {};
   const counts = [
-    eventCounts.sourceProfiles,
-    eventCounts.sourceResults,
-    eventCounts.eventCandidates,
+    intakeScope === "organizer" ? 0 : eventCounts.sourceProfiles,
+    intakeScope === "organizer" ? 0 : eventCounts.sourceResults,
+    intakeScope === "organizer" ? 0 : eventCounts.eventCandidates,
     organizerCounts.organizers,
-    sourceProfileCount,
+    organizerCandidateCounts.organizers,
+    intakeScope === "organizer" ? 0 : sourceProfileCount,
   ].map((count) => count ?? 0);
   invariant(
     counts.every((count) => Number.isSafeInteger(count) && count >= 0),
@@ -439,7 +494,20 @@ function snapshotSourceProfile(profile) {
   };
 }
 
-function baseWorkItem({runId, now, market, entityKind, id, title, source, evidence, raw, observedAt = null, expiresAt = null}) {
+function baseWorkItem({
+  runId,
+  now,
+  market,
+  entityKind,
+  id,
+  title,
+  source,
+  evidence,
+  raw,
+  adminProjection = null,
+  observedAt = null,
+  expiresAt = null,
+}) {
   const workItemId = safeId(`wi-${shortHash({runId, entityKind, id})}-${entityKind}-${id}`);
   return {
     schemaVersion: 1,
@@ -455,6 +523,7 @@ function baseWorkItem({runId, now, market, entityKind, id, title, source, eviden
     taskFlags: [],
     blockers: [],
     source,
+    adminProjection,
     decisionProvenance: {
       actorKind: "legacy_projection",
       actorId: "supply-intake-v0.1.0",
@@ -579,7 +648,60 @@ function workItemForOrganizer(packet, context) {
       (packet.evidenceReview?.records ?? []).map((record) => record.surface?.url).filter(Boolean)
     ),
     raw: packet,
+    adminProjection: {
+      recordType: "organizer_publication_packet",
+      entityId: packet.entityId ?? packet.canonicalHostId,
+    },
   });
+}
+
+function workItemForOrganizerCandidate(candidate, context) {
+  return baseWorkItem({
+    ...context,
+    entityKind: "organizer",
+    id: candidate.candidateId,
+    title: candidate.title,
+    source: {
+      sourceProfileId: `organizer_discovery:${candidate.platform}`,
+      label: candidate.platform,
+      url: candidate.canonicalUrl ?? candidate.url ?? null,
+      artifactRef: context.artifact.relativePath,
+    },
+    evidence: evidenceFor(
+      context.artifact,
+      candidate,
+      [candidate.canonicalUrl, candidate.url].filter(Boolean)
+    ),
+    raw: candidate,
+    adminProjection: {
+      recordType: "organizer_search_candidate",
+      candidate: organizerCandidateProjection(candidate),
+    },
+    observedAt: dateAtUtc(candidate.observedAt),
+  });
+}
+
+function organizerCandidateProjection(candidate) {
+  return {
+    candidateId: candidate.candidateId,
+    batchId: candidate.batchId,
+    resultId: candidate.resultId,
+    rank: candidate.rank,
+    query: candidate.query,
+    queryIntent: candidate.queryIntent,
+    observedAt: candidate.observedAt,
+    title: candidate.title,
+    snippet: candidate.snippet ?? null,
+    url: candidate.url,
+    canonicalUrl: candidate.canonicalUrl,
+    platform: candidate.platform,
+    surfaceKind: candidate.surfaceKind,
+    normalizedKey: candidate.normalizedKey ?? null,
+    suggestedSurface: candidate.suggestedSurface,
+    existingEntityMatches: candidate.existingEntityMatches ?? [],
+    reviewAction: candidate.reviewAction,
+    diagnostics: candidate.diagnostics ?? [],
+  };
 }
 
 function reviewEvent(item, now) {
@@ -645,6 +767,34 @@ function reviewOrganizer(item, now) {
     basis: approved ? "legacy_admin_approval" : "legacy_publication_packet",
     ruleIds: ["organizer-publication-packet-v1"],
     reason: blockers.length > 0 ? "organizer_packet_blocked" : approved ? "legacy_approval_verified" : "organizer_decision_pending",
+    now,
+  });
+}
+
+function reviewOrganizerCandidate(item, now) {
+  const candidate = item.raw;
+  const blockers = [];
+  const taskFlags = ["organizer_candidate_review"];
+  if (!candidate.canonicalUrl) blockers.push("source_url_missing");
+  if (!candidate.normalizedKey) blockers.push("organizer_identity_missing");
+  if ((candidate.diagnostics ?? []).length > 0) {
+    taskFlags.push("source_verification");
+  }
+  if ((candidate.existingEntityMatches ?? []).length > 0) {
+    taskFlags.push("possible_existing_organizer");
+  }
+  const primaryStage = blockers.length > 0 ? "resolve" : "incoming";
+  return outcome(item, {
+    primaryStage,
+    blockers,
+    taskFlags,
+    owner: "human",
+    overall: candidate.normalizedKey && candidate.canonicalUrl ? 0.55 : 0.25,
+    basis: "normalized_organizer_search_candidate",
+    ruleIds: ["organizer-search-candidate-v1"],
+    reason: blockers.length > 0 ?
+      "organizer_candidate_blocked" :
+      "organizer_candidate_review_pending",
     now,
   });
 }
@@ -753,6 +903,11 @@ function sourceProfileForEvent(event) {
 function endOfDate(value) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value ?? "")) return null;
   return `${value}T23:59:59.999Z`;
+}
+
+function dateAtUtc(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value ?? "")) return value ?? null;
+  return `${value}T00:00:00.000Z`;
 }
 
 function addHours(value, hours) {

@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.4.1
-updated: 2026-07-23
+version: 1.4.2
+updated: 2026-07-24
 owner: recursive_audit_loop
 status: active
 ---
@@ -92,6 +92,12 @@ target before deciding whether a retry is safe.
 public-write capability. The four persisted primary stages are exactly
 `incoming`, `verify`, `resolve`, and `ready`; publication and terminal outcomes
 remain lifecycle state rather than additional tabs.
+
+Organizer Intake reads the latest immutable organizer-only run for each launch
+market through that callable. Search candidates remain review work items in
+`operationWorkItems`; they do not become `organizers/{id}` until a separate
+reviewed publication path acts. `contracts/admin/admin_live_data_sources.json`
+is the checked route inventory for every Admin tab and sub-workspace.
 
 `functions/scripts/operations/import-shadow-projection.cjs` is the only shipped
 local-to-Firestore bridge. It is dry-run by default and requires explicit apply,

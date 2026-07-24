@@ -57,11 +57,13 @@ export function useOrganizerIntakeController({
   onError: (message: string | null) => void;
   onNotice: (message: string | null) => void;
 }) {
-  const {data: bridge} = useSuspenseQuery({
+  const {data: intake} = useSuspenseQuery({
     queryKey: adminQueryKeys.organizerIntake.bridge(),
     queryFn: loadOrganizerIntakeBridge,
     staleTime: Infinity,
   });
+  const bridge = intake.workbench;
+  const diagnosticsBridge = intake.diagnosticsBridge;
   const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const [decisionNotes, setDecisionNotes] = useState<Record<string, string>>(
     {}
@@ -620,6 +622,8 @@ export function useOrganizerIntakeController({
 
   return {
     bridge,
+    diagnosticsBridge,
+    source: intake.source,
     curationForms,
     curationInFlight,
     decisionInFlight,

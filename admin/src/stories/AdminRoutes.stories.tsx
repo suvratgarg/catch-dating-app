@@ -347,6 +347,10 @@ const organizerIntakeBridge =
   organizerIntakeBridgeFixture as unknown as OrganizerIntakeController["bridge"];
 const organizerIntakeController: OrganizerIntakeController = {
   bridge: organizerIntakeBridge,
+  diagnosticsBridge:
+    organizerIntakeBridgeFixture as unknown as
+      OrganizerIntakeController["diagnosticsBridge"],
+  source: "sample",
   curationForms: {},
   curationInFlight: {},
   decisionInFlight: {},

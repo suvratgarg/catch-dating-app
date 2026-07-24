@@ -37,18 +37,21 @@ import {
 } from "../controllers/organizerIntakeHelpers";
 import type {OrganizerIntakeController} from
   "../controllers/useOrganizerIntakeController";
+import type {OrganizerIntakeBridge} from
+  "../types/organizerIntakeTypes";
 import {organizerIntakeDiscoveryPanels} from "./organizerIntakeDiscoveryPanels";
 import {organizerIntakeEventPanels} from "./organizerIntakeEventPanels";
 import {organizerIntakeEvidencePanels} from "./organizerIntakeEvidencePanels";
 import {organizerIntakeReadinessPanels} from "./organizerIntakeReadinessPanels";
 
 function OrganizerIntakeDiagnostics({
+  bridge,
   controller,
 }: {
+  bridge: OrganizerIntakeBridge;
   controller: OrganizerIntakeController;
 }) {
   const {
-    bridge,
     curationForms,
     curationInFlight,
     decisionInFlight,

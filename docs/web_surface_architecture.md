@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.9.2
+version: 0.9.3
 updated: 2026-07-24
 owner: web_platform
 status: active
@@ -408,6 +408,27 @@ run; a later Supply Intake run can see that decision only after the owning
 compatibility artifact is regenerated. Reconciliation creates a separate
 immutable child run for expiry and stale-evidence changes rather than editing an
 already imported run.
+
+## Admin Live Data Source Contract
+
+`contracts/admin/admin_live_data_sources.json` inventories every Admin route,
+including the three Intake workspaces, and names its authenticated live reads
+and mutations. `web:admin-live-data-sources` reconciles that inventory with the
+navigation, Admin API boundary, and Functions exports. It also rejects
+generated operational JSON imports from production feature code; such imports
+are allowed only in explicitly named sample or Storybook modules. Its
+`--verify-live` mode probes every declared callable in the selected Firebase
+environment and fails when a Hosting build would depend on an absent or
+unreachable backend. The live Admin bundle gate also rejects generated Event
+Intake, Organizer Intake, Marketing Ops, and external-event plan fixtures, so
+those artifacts cannot ship as dormant production assets.
+
+Organizer Intake live mode reads the latest completed organizer-only Supply
+Intake run for each launch market through `adminListIntakeOperations`. Its
+search candidates therefore come from `operationRuns` and
+`operationWorkItems`, while the generated organizer bridge remains a sample
+diagnostics fixture only. The browser does not upload a generated file or
+reconstruct a queue from repository state.
 
 ## Admin Agent Activity Monitor
 

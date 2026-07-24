@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 1.11.4
+version: 1.11.5
 updated: 2026-07-24
 owner: recursive_audit_loop
 status: active
@@ -415,7 +415,11 @@ rollback duplicates in `prod` follow the cutover cleanup above.
 
 The production admin Hosting target has its own `Admin Website` workflow. It
 validates `npm run web:admin:build`, checks live prod Vite Firebase/App Check
-env, then deploys only `hosting:admin` after matching changes land on `main`.
+env, probes every callable declared in
+`contracts/admin/admin_live_data_sources.json`, then deploys only
+`hosting:admin` after matching changes land on `main`. A missing production
+callable therefore blocks Hosting before a frontend can ship a dead Admin
+route.
 The same validation runs the admin unit suite, including the dual-provider
 guard in `admin/src/app/App.test.tsx` and
 `admin/src/shared/api/firebase.test.ts`; a refactor that removes either phone

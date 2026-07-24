@@ -132,6 +132,9 @@ jobs:
           VITE_FIREBASE_MEASUREMENT_ID: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
         run: node tool/env/check_web_hosting_env.mjs admin --expected-firebase-env prod --expected-project-id catch-dating-app-64e51
 
+      - name: Verify production Admin callable dependencies
+        run: node tool/web/check_admin_live_data_sources.mjs --check --verify-live --environment prod --summary
+
       - name: Deploy production admin site
         env:
           VITE_ADMIN_DATA_MODE: ${{ vars.VITE_ADMIN_DATA_MODE }}
