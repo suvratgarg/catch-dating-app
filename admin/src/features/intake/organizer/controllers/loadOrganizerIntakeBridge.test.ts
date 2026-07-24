@@ -52,6 +52,13 @@ describe("loadOrganizerIntakeBridge", () => {
         candidate.queryIntent.marketSlug)
     )).toEqual(new Set(["indore", "mumbai"]));
     expect(mocks.listIntakeOperations).toHaveBeenCalledTimes(3);
+    expect(mocks.listIntakeOperations).toHaveBeenNthCalledWith(1, {
+      workflowId: "supply-intake",
+      runStatus: "completed",
+      entityKind: "organizer",
+      runLimit: 25,
+      workItemLimit: 1,
+    });
     expect(mocks.listIntakeOperations).not.toHaveBeenCalledWith(
       expect.objectContaining({runId: "newer-general-indore-run"})
     );

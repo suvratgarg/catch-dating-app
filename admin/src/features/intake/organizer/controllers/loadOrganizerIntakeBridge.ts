@@ -30,7 +30,7 @@ Promise<OrganizerIntakeLoadResult> {
     workflowId: "supply-intake",
     runStatus: "completed",
     entityKind: "organizer",
-    runLimit: 50,
+    runLimit: 25,
     workItemLimit: 1,
   });
   const runs = latestRunPerLaunchMarket(inventory.runs);
