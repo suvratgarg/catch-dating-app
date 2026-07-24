@@ -76,6 +76,30 @@ describe("loadOrganizerIntakeBridge", () => {
       expect.objectContaining({runId: "newer-general-indore-run"})
     );
   });
+
+  it("tolerates list responses from before draft-link projection", async () => {
+    const run = operationRun(
+      "mumbai-run",
+      "mumbai",
+      "2026-07-24T12:01:00.000Z"
+    );
+    mocks.listIntakeOperations.mockImplementation(async (
+      payload: {runId?: string}
+    ) => {
+      const response = operationResponse({
+        runs: [run],
+        workItems: payload.runId ? [organizerWorkItem("mumbai", 1)] : [],
+      }) as {organizerDraftLinks?: unknown[]};
+      delete response.organizerDraftLinks;
+      return response;
+    });
+
+    const result = await loadOrganizerIntakeBridge();
+
+    expect(result.workbench.searchCandidates.summary.candidates).toBe(1);
+    expect(result.workbench.searchCandidates.candidates[0]?.draftLink)
+      .toBeUndefined();
+  });
 });
 
 function operationRun(runId: string, market: string, updatedAt: string) {

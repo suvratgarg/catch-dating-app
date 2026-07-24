@@ -30,7 +30,7 @@ export async function loadCompleteIntakeOperations(
   loader: IntakeOperationsLoader = listIntakeOperations,
   payload: AdminListIntakeOperationsPayload = defaultPayload
 ): Promise<AdminListIntakeOperationsResponse> {
-  const first = await loader(payload);
+  const first = withOrganizerDraftLinks(await loader(payload));
   assertInventoryCardinality(first);
   const runId = first.runs[0]?.runId ?? null;
   if (!isWholeRunInventoryRequest(payload)) return first;
@@ -44,10 +44,9 @@ export async function loadCompleteIntakeOperations(
     item.workItemId,
     item,
   ]));
-  const organizerDraftLinks = new Map(first.organizerDraftLinks.map((link) => [
-    link.workItemId,
-    link,
-  ]));
+  const organizerDraftLinks = new Map(
+    organizerDraftLinksOf(first).map((link) => [link.workItemId, link])
+  );
   const seenCursors = new Set<string>();
   let cursor: string | null = first.nextWorkItemCursor;
   const pageLimit = Math.ceil(
@@ -72,7 +71,7 @@ export async function loadCompleteIntakeOperations(
     for (const item of page.workItems) {
       workItems.set(item.workItemId, item);
     }
-    for (const link of page.organizerDraftLinks) {
+    for (const link of organizerDraftLinksOf(page)) {
       organizerDraftLinks.set(link.workItemId, link);
     }
     cursor = page.nextWorkItemCursor;
@@ -97,24 +96,26 @@ export async function loadNextIntakeOperationsPage(
   payload: AdminListIntakeOperationsPayload = defaultPayload
 ): Promise<AdminListIntakeOperationsResponse> {
   const runId = current.runs[0]?.runId ?? null;
-  if (!runId || !current.nextWorkItemCursor) return current;
-  const page = await loader({
+  if (!runId || !current.nextWorkItemCursor) {
+    return withOrganizerDraftLinks(current);
+  }
+  const page = withOrganizerDraftLinks(await loader({
     ...payload,
     runId,
     runCursor: null,
     workItemCursor: current.nextWorkItemCursor,
     humanReviewRequired: false,
-  });
+  }));
   assertPageForRun(page, current, runId, false);
   const workItems = new Map(current.workItems.map((item) => [
     item.workItemId,
     item,
   ]));
   const organizerDraftLinks = new Map(
-    current.organizerDraftLinks.map((link) => [link.workItemId, link])
+    organizerDraftLinksOf(current).map((link) => [link.workItemId, link])
   );
   for (const item of page.workItems) workItems.set(item.workItemId, item);
-  for (const link of page.organizerDraftLinks) {
+  for (const link of organizerDraftLinksOf(page)) {
     organizerDraftLinks.set(link.workItemId, link);
   }
   if (workItems.size > current.summary.workItemCount) {
@@ -210,6 +211,19 @@ function countHumanReviewItems(items: Iterable<OperationWorkItem>): number {
     if (operationNeedsHumanReview(item)) count += 1;
   }
   return count;
+}
+
+function organizerDraftLinksOf(
+  response: AdminListIntakeOperationsResponse
+) {
+  return response.organizerDraftLinks ?? [];
+}
+
+function withOrganizerDraftLinks(
+  response: AdminListIntakeOperationsResponse
+): AdminListIntakeOperationsResponse {
+  if (response.organizerDraftLinks) return response;
+  return {...response, organizerDraftLinks: []};
 }
 
 export function useIntakeOperationsController({

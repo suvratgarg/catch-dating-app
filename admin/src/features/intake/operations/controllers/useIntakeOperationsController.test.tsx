@@ -36,6 +36,18 @@ describe("useIntakeOperationsController", () => {
     expect(onError).toHaveBeenLastCalledWith(null);
   });
 
+  it("tolerates a rolling-deploy response without organizer draft links", async () => {
+    const sample = sampleIntakeOperations();
+    const legacyResponse = structuredClone(sample) as
+      Partial<typeof sample>;
+    delete legacyResponse.organizerDraftLinks;
+    const loader = vi.fn(async () => legacyResponse as typeof sample);
+
+    const result = await loadCompleteIntakeOperations(loader);
+
+    expect(result.organizerDraftLinks).toEqual([]);
+  });
+
   it("drains the selected run so a later-page human exception is accessible", async () => {
     const sample = sampleIntakeOperations();
     const ordinary = sample.workItems.find((item) =>

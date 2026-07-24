@@ -37,7 +37,7 @@ Promise<OrganizerIntakeLoadResult> {
   const runs = latestRunPerLaunchMarket(inventory.runs);
   const pages = await Promise.all(runs.map(loadOrganizerRun));
   const workItems = pages.flatMap((page) => page.workItems);
-  const draftLinks = pages.flatMap((page) => page.organizerDraftLinks);
+  const draftLinks = pages.flatMap(organizerDraftLinksOf);
   const workbench = organizerWorkbenchFromOperations(
     inventory,
     workItems,
@@ -53,7 +53,7 @@ Promise<OrganizerIntakeLoadResult> {
 export function organizerWorkbenchFromOperations(
   inventory: AdminListIntakeOperationsResponse,
   workItems: OperationWorkItem[],
-  organizerDraftLinks: OrganizerDraftLink[] = inventory.organizerDraftLinks
+  organizerDraftLinks: OrganizerDraftLink[] = organizerDraftLinksOf(inventory)
 ): OrganizerIntakeWorkbenchBridge {
   const draftLinkByWorkItem = new Map(organizerDraftLinks.map((link) => [
     link.workItemId,
@@ -138,10 +138,9 @@ async function loadOrganizerRun(
     item.workItemId,
     item,
   ]));
-  const organizerDraftLinks = new Map(page.organizerDraftLinks.map((link) => [
-    link.workItemId,
-    link,
-  ]));
+  const organizerDraftLinks = new Map(
+    organizerDraftLinksOf(page).map((link) => [link.workItemId, link])
+  );
   const cursors = new Set<string>();
   while (page.nextWorkItemCursor) {
     if (cursors.has(page.nextWorkItemCursor)) {
@@ -161,7 +160,7 @@ async function loadOrganizerRun(
     for (const item of page.workItems) {
       workItems.set(item.workItemId, item);
     }
-    for (const link of page.organizerDraftLinks) {
+    for (const link of organizerDraftLinksOf(page)) {
       organizerDraftLinks.set(link.workItemId, link);
     }
   }
@@ -170,6 +169,12 @@ async function loadOrganizerRun(
     workItems: Array.from(workItems.values()),
     organizerDraftLinks: Array.from(organizerDraftLinks.values()),
   };
+}
+
+function organizerDraftLinksOf(
+  response: AdminListIntakeOperationsResponse
+): OrganizerDraftLink[] {
+  return response.organizerDraftLinks ?? [];
 }
 
 function organizerCandidateFromWorkItem(
