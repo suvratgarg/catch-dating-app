@@ -3061,6 +3061,11 @@
           "docAnchor": "docs/operations_platform.md#admin-projection-bridge"
         },
         {
+          "tool": "web:admin-live-data-sources",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/operations_platform.md#admin-projection-bridge"
+        },
+        {
           "stage": "manual",
           "docAnchor": "docs/operations_platform.md#activation-checklist"
         }

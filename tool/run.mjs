@@ -306,6 +306,7 @@ function selectTools(manifest, {category, ids = []} = {}) {
   return manifest.tools.filter((tool) => {
     if (category && tool.category !== category) return false;
     if (ids.length > 0 && !ids.includes(tool.id)) return false;
+    if (ids.length === 0 && tool.status !== "active") return false;
     return true;
   });
 }

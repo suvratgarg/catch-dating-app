@@ -22,6 +22,14 @@ test("filtered checks fail when a category matches no tools", () => {
   assert.match(result.stderr, /No active tools matched category definitely-missing/);
 });
 
+test("category checks select active tools only", () => {
+  const result = run(["list", "--category", "marketing", "--json"]);
+  assert.equal(result.status, 0, result.stderr);
+  const tools = JSON.parse(result.stdout);
+  assert.ok(tools.length > 0);
+  assert.ok(tools.every((tool) => tool.status === "active"));
+});
+
 test("platform-specific tools run only on declared operating systems", () => {
   const tool = {id: "fixture:darwin-only", platforms: ["darwin"]};
   assert.equal(toolSupportsPlatform(tool, "darwin"), true);

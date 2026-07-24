@@ -1,5 +1,5 @@
 {
-  "version": 97,
+  "version": 98,
   "updated": "2026-07-24",
   "owner": "agent_operating_model",
   "entries": [
@@ -14,13 +14,16 @@
         "admin/src/shared/api/adminApi.ts",
         "contracts/admin/admin_live_data_sources.json",
         "functions/src/index.ts",
+        "tool/organizer_intake/check_admin_review_bridge.mjs",
+        "tool/run.mjs",
+        "tool/tools_manifest.json",
         "tool/web/check_admin_live_data_sources.mjs"
       ],
       "symptom": "A production Admin route reads generated repository JSON, a generated operational fixture survives in the live Vite manifest, or the frontend calls a source-exported callable that is absent or unreachable in the selected Firebase environment and surfaces only a generic internal error.",
       "guard": {
         "type": "command",
-        "command": "node tool/run.mjs check web:admin-live-data-sources && VITE_ADMIN_DATA_MODE=live npm --workspace catch-admin run build && node tool/web/check_admin_live_data_sources.mjs --check --verify-live --environment prod --summary",
-        "guardEvidence": "the route inventory covers every Admin navigation and Intake workspace, operational JSON snapshots are forbidden, previews use typed synthetic data, live builds reject generated operational assets, and the production preflight requires every declared callable to return a Firebase callable response"
+        "command": "node tool/run.mjs check web:admin-live-data-sources && node tool/run.mjs check --category host-discovery && VITE_ADMIN_DATA_MODE=live npm --workspace catch-admin run build && node tool/web/check_admin_live_data_sources.mjs --check --verify-live --environment prod --summary",
+        "guardEvidence": "the route inventory covers every Admin navigation and Intake workspace, operational JSON snapshots are forbidden, previews use typed synthetic data, category CI executes active tools only, the Firestore organizer path is enforced, live builds reject generated operational assets, and the production preflight requires every declared callable to return a Firebase callable response"
       },
       "owner_docs": [
         "docs/operations_platform.md",

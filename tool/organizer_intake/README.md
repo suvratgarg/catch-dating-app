@@ -7,6 +7,18 @@ surfaces. Raw candidates, external profiles, social accounts, platform pages,
 and future crawl settings are modeled here before anything is promoted into
 `clubs`, the website, or the app.
 
+## Retirement boundary
+
+The repo-backed operational pipeline in this folder is retired. Live Organizer
+Intake state belongs in Firestore `operationRuns` and `operationWorkItems`;
+review and curation decisions belong in their callable-owned Firestore
+collections. Do not create new generated, batch, answer-packet, or decision JSON
+as operational state. The remaining JSON is historical compatibility input,
+configuration, schema, or explicit test-fixture data and is never an Admin
+runtime source. Only the pure URL normalizer and the Firestore/promotion
+boundary checks remain active in category CI; retired commands are available
+only for inspecting or replaying a bounded migration.
+
 ## Naming
 
 - `OrganizerEntity`: the canonical public/business entity. This can be a brand,
