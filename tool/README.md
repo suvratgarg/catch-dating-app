@@ -323,7 +323,11 @@ Every signed artifact is also checked by
 `platform:mobile-package-policy`. The JSON receipt records compressed and
 uncompressed size, archive entries, and compiled app-binary hashes. The policy
 rejects fixture/demo assets, role-forbidden native plugins, size regressions,
-and byte-identical Consumer/Host products.
+and byte-identical Consumer/Host products. Its compressed-archive and expanded
+payload budgets are deliberately separate, calibrated to signed integration
+artifacts, and limited to 20% headroom. Neither number is an App Store Connect
+or Play processed download/install estimate; store-displayed sizes must be
+recorded as separate release evidence.
 
 ### Firebase deploy and client-callable gates
 

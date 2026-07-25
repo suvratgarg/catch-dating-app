@@ -1,10 +1,16 @@
 {
-  "$schema": "catch.mobile-package-policy/v1",
-  "schemaVersion": 1,
+  "$schema": "catch.mobile-package-policy/v2",
+  "schemaVersion": 2,
   "baseline": {
     "measuredAt": "2026-07-25",
-    "mode": "Flutter release builds from independent apps/consumer and apps/host package roots",
-    "policy": "Budgets include narrow headroom above measured role-specific artifacts and fail on regression."
+    "sourceRun": "https://github.com/suvratgarg/catch-dating-app/actions/runs/30171284485",
+    "mode": "Signed production IPA and AAB archives from independent apps/consumer and apps/host package roots",
+    "artifactBytesDefinition": "Compressed signed archive bytes on disk.",
+    "uncompressedBytesDefinition": "Sum of raw member lengths in the signed archive.",
+    "storeDisplaySizeDefinition": "Excluded from this policy because processed store download/install estimates are not the same metric.",
+    "requireSignedArtifactMeasurements": true,
+    "maxBudgetHeadroomRatio": 0.2,
+    "policy": "Every role/platform budget is calibrated to a recorded signed integration artifact, permits at most 20 percent headroom, and fails on regression."
   },
   "forbiddenEntries": [
     "flutter_assets/assets/fixtures/"
@@ -12,13 +18,17 @@
   "platforms": {
     "ios": {
       "consumer": {
-        "maxArtifactBytes": 55000000,
-        "maxUncompressedBytes": 92000000,
+        "baselineArtifactBytes": 47588470,
+        "maxArtifactBytes": 53000000,
+        "baselineUncompressedBytes": 164123489,
+        "maxUncompressedBytes": 181000000,
         "forbiddenNativeEntries": []
       },
       "host": {
-        "maxArtifactBytes": 55000000,
-        "maxUncompressedBytes": 88000000,
+        "baselineArtifactBytes": 46103406,
+        "maxArtifactBytes": 52000000,
+        "baselineUncompressedBytes": 159600632,
+        "maxUncompressedBytes": 176000000,
         "forbiddenNativeEntries": [
           "Frameworks/health.framework/",
           "Frameworks/razorpay_flutter.framework/"
@@ -27,12 +37,16 @@
     },
     "android": {
       "consumer": {
+        "baselineArtifactBytes": 90560568,
         "maxArtifactBytes": 96000000,
+        "baselineUncompressedBytes": 278677595,
         "maxUncompressedBytes": 300000000,
         "forbiddenNativeEntries": []
       },
       "host": {
+        "baselineArtifactBytes": 88631505,
         "maxArtifactBytes": 94000000,
+        "baselineUncompressedBytes": 268490197,
         "maxUncompressedBytes": 290000000,
         "forbiddenNativeEntries": [
           "libhealth",

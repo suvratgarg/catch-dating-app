@@ -115,6 +115,53 @@ export function evaluatePackageReport({report, policy}) {
   return findings;
 }
 
+export function validatePackagePolicy(policy) {
+  const findings = [];
+  const requireBaselines =
+    policy.baseline?.requireSignedArtifactMeasurements === true;
+  const maxHeadroomRatio = policy.baseline?.maxBudgetHeadroomRatio;
+
+  for (const [platform, roles] of Object.entries(policy.platforms ?? {})) {
+    for (const [role, rolePolicy] of Object.entries(roles ?? {})) {
+      for (const metric of ["ArtifactBytes", "UncompressedBytes"]) {
+        const budgetKey = `max${metric}`;
+        const baselineKey = `baseline${metric}`;
+        const budget = rolePolicy[budgetKey];
+        const baseline = rolePolicy[baselineKey];
+
+        if (!Number.isFinite(budget) || budget <= 0) {
+          findings.push(
+            `${platform}/${role} ${budgetKey} must be a positive byte count.`,
+          );
+          continue;
+        }
+        if (requireBaselines && (!Number.isFinite(baseline) || baseline <= 0)) {
+          findings.push(
+            `${platform}/${role} ${baselineKey} must record a signed integration artifact.`,
+          );
+          continue;
+        }
+        if (!Number.isFinite(baseline) || baseline <= 0) continue;
+        if (baseline > budget) {
+          findings.push(
+            `${platform}/${role} ${baselineKey} ${baseline} exceeds ${budgetKey} ${budget}.`,
+          );
+          continue;
+        }
+        if (
+          Number.isFinite(maxHeadroomRatio) &&
+          budget / baseline - 1 > maxHeadroomRatio
+        ) {
+          findings.push(
+            `${platform}/${role} ${budgetKey} has more than ${Math.round(maxHeadroomRatio * 100)}% headroom over ${baselineKey}.`,
+          );
+        }
+      }
+    }
+  }
+  return findings;
+}
+
 export function comparePackageReports({consumer, host, policy}) {
   const findings = [];
   if (policy.comparison?.requireDifferentAppBinary) {
@@ -153,11 +200,21 @@ export function inspectArtifact({artifactPath, role, platform, policy}) {
       : entry
   );
   const report = {
-    schemaVersion: "1.0.0",
+    schemaVersion: "1.1.0",
     role,
     platform,
     artifact: path.basename(artifactPath),
     artifactKind: stats.isFile() ? "archive" : "expandedDirectory",
+    sizeMetricDefinitions: {
+      artifactBytes:
+        stats.isFile()
+          ? "Bytes in the signed compressed IPA or AAB archive."
+          : "Sum of file bytes in the expanded directory; no archive was supplied.",
+      uncompressedBytes:
+        "Sum of the raw file lengths recorded in the archive or expanded directory.",
+      storeDisplaySize:
+        "Not measured. App Store and Play processed download/install estimates are not interchangeable with either repository metric.",
+    },
     artifactBytes: stats.isFile()
       ? stats.size
       : entries.reduce((sum, entry) => sum + entry.bytes, 0),
@@ -181,6 +238,14 @@ function main() {
   const args = process.argv.slice(2);
   const policyPath = valueAfter(args, "--policy") ?? defaultPolicyPath;
   const policy = JSON.parse(fs.readFileSync(policyPath, "utf8"));
+  const policyFindings = validatePackagePolicy(policy);
+  if (policyFindings.length > 0) {
+    console.error(
+      JSON.stringify({policy: policyPath, findings: policyFindings}, null, 2),
+    );
+    process.exitCode = 1;
+    return;
+  }
   const compare = valueAfter(args, "--compare");
 
   if (compare) {

@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   comparePackageReports,
   evaluatePackageReport,
+  validatePackagePolicy,
 } from "./check_mobile_package.mjs";
 
 const policy = {
@@ -67,4 +68,31 @@ test("cross-role comparison rejects identical compiled products", () => {
       "Consumer and Host package entry sets are identical.",
     ],
   );
+});
+
+test("signed-package baselines must fit inside bounded budget headroom", () => {
+  const calibratedPolicy = {
+    baseline: {
+      requireSignedArtifactMeasurements: true,
+      maxBudgetHeadroomRatio: 0.2,
+    },
+    platforms: {
+      ios: {
+        host: {
+          baselineArtifactBytes: 100,
+          maxArtifactBytes: 130,
+          baselineUncompressedBytes: 200,
+          maxUncompressedBytes: 199,
+        },
+      },
+    },
+  };
+  assert.deepEqual(validatePackagePolicy(calibratedPolicy), [
+    "ios/host maxArtifactBytes has more than 20% headroom over baselineArtifactBytes.",
+    "ios/host baselineUncompressedBytes 200 exceeds maxUncompressedBytes 199.",
+  ]);
+});
+
+test("legacy test policies may omit signed baselines", () => {
+  assert.deepEqual(validatePackagePolicy(policy), []);
 });
