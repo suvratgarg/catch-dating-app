@@ -1,5 +1,5 @@
 {
-  "version": 111,
+  "version": 112,
   "updated": "2026-07-25",
   "owner": "agent_operating_model",
   "entries": [
@@ -3462,6 +3462,26 @@
         "docs/release_operations.md"
       ],
       "notes": "Authenticated shell captures must stub side-effecting platform services at the capture composition boundary instead of depending on a developer machine's Firebase initialization state."
+    },
+    {
+      "id": "REG-PROVIDER-GRAPH-ROUTER-REFRESH-001",
+      "title": "Router dependency changes leave provider-graph reviews and projections stale",
+      "status": "active",
+      "applies_to": [
+        "lib/routing/**",
+        "tool/architecture/provider_graph_reviews.json",
+        "docs/generated/provider_graph/**"
+      ],
+      "symptom": "Architecture CI reports stale provider-graph artifacts or a stale review decision after router providers or their dependencies are removed.",
+      "guard": {
+        "type": "command",
+        "command": "dart run tool/architecture/provider_graph.dart --check",
+        "guardEvidence": "the generated provider graph matches current Dart sources and every architecture review decision still maps to a live candidate"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md"
+      ],
+      "notes": "Removing a dependency is an architecture change too. Regenerate all provider-graph projections and retire review decisions whose relationship no longer exists."
     }
   ]
 }
