@@ -99,15 +99,14 @@ describe("organizer intake helpers", () => {
     } as Intake.OrganizerSearchCandidate;
     const form = organizerDraftFormFromCandidate(candidate);
 
-    expect(form.organizerId).toBe("courtside-mumbai");
+    expect(form.publicSlug).toBe("courtside-mumbai");
     expect(organizerDraftPayloadForCandidate(candidate, form)).toEqual({
       ok: true,
       value: {
         workItemId: "work-courtside",
         candidateId: "candidate-courtside",
-        organizerId: "courtside-mumbai",
+        publicSlug: "courtside-mumbai",
         name: "Courtside Mumbai",
-        description: "Racket sports and social events.",
         organizerType: "community",
         reviewNote:
           "Create an unclaimed draft from reviewed candidate candidate-courtside.",

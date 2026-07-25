@@ -780,6 +780,9 @@ export interface HostProfileDocument {
  */
 export interface ClubDocument {
   name: string;
+  /**
+   * Member-facing organizer description. May be empty on hidden intake drafts until an operator supplies source-backed copy.
+   */
   description: string;
   /**
    * Canonical launch market id. Public URL slugs live under publicPage.citySlug.
@@ -787,6 +790,9 @@ export interface ClubDocument {
   location: string;
   locationCityId: string;
   locationMarketId: string;
+  /**
+   * Verified locality within the canonical market. May be empty when intake evidence establishes only the city.
+   */
   area: string;
   /**
    * Legacy primary host user id. Null for programmatically generated, unclaimed organizer profiles.
@@ -1008,6 +1014,9 @@ export interface ClubDocument {
  */
 export interface OrganizerDocument {
   name: string;
+  /**
+   * Member-facing organizer description. May be empty on hidden intake drafts until an operator supplies source-backed copy.
+   */
   description: string;
   /**
    * Canonical launch market id. Public URL slugs live under publicPage.citySlug.
@@ -1015,6 +1024,9 @@ export interface OrganizerDocument {
   location: string;
   locationCityId: string;
   locationMarketId: string;
+  /**
+   * Verified locality within the canonical market. May be empty when intake evidence establishes only the city.
+   */
   area: string;
   /**
    * Legacy primary host user id. Null for programmatically generated, unclaimed organizer profiles.
@@ -2677,6 +2689,7 @@ export interface PublicRouteReservationDocument {
     | "adminUpdateOrganizerDetails"
     | "adminSetOrganizerIndexStatus"
     | "adminCreateOrganizerDraftFromCandidate"
+    | "createOrganizer"
     | "clubsToOrganizersMigration";
   releasedAt?: FirebaseFirestore.Timestamp | null;
   releasedByUid?: string | null;
@@ -2783,6 +2796,24 @@ export interface OrganizerIntakeCurationDecisionDocument {
   sourceCandidateId?: string;
   sourceWorkItemId?: string;
   sourceNormalizedKey?: string;
+  /**
+   * Public route slug reserved when a candidate becomes an organizer draft. It is intentionally separate from entityId.
+   */
+  publicSlug?: string;
+  /**
+   * Source artifact lineage for each field projected into the organizer draft.
+   *
+   * @maxItems 200
+   */
+  fieldProvenance?: {
+    field: string;
+    artifactId: string;
+    contentHash: string;
+    locator: string | null;
+    extractedBy: "deterministic" | "model" | "human";
+    extractorVersion: string;
+    confidence: number | null;
+  }[];
   decision?:
     | "accept_primary"
     | "accept_secondary"

@@ -619,14 +619,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const adminCreateOrganizerDraftFromCandidateCallablePayloadDescription = CatchContractFieldConstraints(
-    path: 'adminCreateOrganizerDraftFromCandidateCallablePayload.description',
-    maxLength: 2000,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const adminCreateOrganizerDraftFromCandidateCallablePayloadName = CatchContractFieldConstraints(
     path: 'adminCreateOrganizerDraftFromCandidateCallablePayload.name',
     maxLength: 120,
@@ -635,20 +627,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const adminCreateOrganizerDraftFromCandidateCallablePayloadOrganizerId = CatchContractFieldConstraints(
-    path: 'adminCreateOrganizerDraftFromCandidateCallablePayload.organizerId',
-    maxLength: 64,
-    minLength: 3,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])\$',
-  );
-
   static const adminCreateOrganizerDraftFromCandidateCallablePayloadOrganizerType = CatchContractFieldConstraints(
     path: 'adminCreateOrganizerDraftFromCandidateCallablePayload.organizerType',
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['club', 'community', 'individual', 'eventProducer', 'venue', 'brand'],
+  );
+
+  static const adminCreateOrganizerDraftFromCandidateCallablePayloadPublicSlug = CatchContractFieldConstraints(
+    path: 'adminCreateOrganizerDraftFromCandidateCallablePayload.publicSlug',
+    maxLength: 64,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])\$',
   );
 
   static const adminCreateOrganizerDraftFromCandidateCallablePayloadReviewNote = CatchContractFieldConstraints(
@@ -3680,7 +3672,6 @@ abstract final class CatchContractConstraints {
   static const clubDocumentArea = CatchContractFieldConstraints(
     path: 'clubDocument.area',
     maxLength: 120,
-    minLength: 1,
     required: true,
     valueTypes: <String>['string'],
   );
@@ -3872,7 +3863,6 @@ abstract final class CatchContractConstraints {
   static const clubDocumentDescription = CatchContractFieldConstraints(
     path: 'clubDocument.description',
     maxLength: 2000,
-    minLength: 1,
     required: true,
     valueTypes: <String>['string'],
   );
@@ -5781,10 +5771,8 @@ abstract final class CatchContractConstraints {
 
   static const createClubCallablePayloadClubId = CatchContractFieldConstraints(
     path: 'createClubCallablePayload.clubId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9]{20}\$',
   );
 
   static const createClubCallablePayloadClubPhotos = CatchContractFieldConstraints(
@@ -7740,10 +7728,8 @@ abstract final class CatchContractConstraints {
 
   static const createOrganizerCallablePayloadOrganizerId = CatchContractFieldConstraints(
     path: 'createOrganizerCallablePayload.organizerId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9]{20}\$',
   );
 
   static const createOrganizerCallablePayloadOrganizerPhotos = CatchContractFieldConstraints(
@@ -16728,7 +16714,6 @@ abstract final class CatchContractConstraints {
   static const organizerDocumentArea = CatchContractFieldConstraints(
     path: 'organizerDocument.area',
     maxLength: 120,
-    minLength: 1,
     required: true,
     valueTypes: <String>['string'],
   );
@@ -16920,7 +16905,6 @@ abstract final class CatchContractConstraints {
   static const organizerDocumentDescription = CatchContractFieldConstraints(
     path: 'organizerDocument.description',
     maxLength: 2000,
-    minLength: 1,
     required: true,
     valueTypes: <String>['string'],
   );
@@ -18549,6 +18533,65 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerIntakeCurationDecisionDocumentFieldProvenance = CatchContractFieldConstraints(
+    path: 'organizerIntakeCurationDecisionDocument.fieldProvenance',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 200,
+  );
+
+  static const organizerIntakeCurationDecisionDocumentFieldProvenanceItemsArtifactId = CatchContractFieldConstraints(
+    path: 'organizerIntakeCurationDecisionDocument.fieldProvenance.items.artifactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const organizerIntakeCurationDecisionDocumentFieldProvenanceItemsConfidence = CatchContractFieldConstraints(
+    path: 'organizerIntakeCurationDecisionDocument.fieldProvenance.items.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const organizerIntakeCurationDecisionDocumentFieldProvenanceItemsContentHash = CatchContractFieldConstraints(
+    path: 'organizerIntakeCurationDecisionDocument.fieldProvenance.items.contentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerIntakeCurationDecisionDocumentFieldProvenanceItemsExtractedBy = CatchContractFieldConstraints(
+    path: 'organizerIntakeCurationDecisionDocument.fieldProvenance.items.extractedBy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['deterministic', 'model', 'human'],
+  );
+
+  static const organizerIntakeCurationDecisionDocumentFieldProvenanceItemsExtractorVersion = CatchContractFieldConstraints(
+    path: 'organizerIntakeCurationDecisionDocument.fieldProvenance.items.extractorVersion',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerIntakeCurationDecisionDocumentFieldProvenanceItemsField = CatchContractFieldConstraints(
+    path: 'organizerIntakeCurationDecisionDocument.fieldProvenance.items.field',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerIntakeCurationDecisionDocumentFieldProvenanceItemsLocator = CatchContractFieldConstraints(
+    path: 'organizerIntakeCurationDecisionDocument.fieldProvenance.items.locator',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerIntakeCurationDecisionDocumentNewEntityId = CatchContractFieldConstraints(
     path: 'organizerIntakeCurationDecisionDocument.newEntityId',
     maxLength: 180,
@@ -18577,6 +18620,15 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['attach_surface', 'create_entity_draft', 'merge_entity', 'split_surface', 'suppress_entity', 'surface_decision'],
+  );
+
+  static const organizerIntakeCurationDecisionDocumentPublicSlug = CatchContractFieldConstraints(
+    path: 'organizerIntakeCurationDecisionDocument.publicSlug',
+    maxLength: 64,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])\$',
   );
 
   static const organizerIntakeCurationDecisionDocumentReason = CatchContractFieldConstraints(
@@ -20276,7 +20328,7 @@ abstract final class CatchContractConstraints {
     path: 'publicRouteReservationDocument.lastVerifiedSource',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['adminUpdateClubDetails', 'adminSetClubIndexStatus', 'adminUpdateOrganizerDetails', 'adminSetOrganizerIndexStatus', 'adminCreateOrganizerDraftFromCandidate', 'clubsToOrganizersMigration'],
+    enumValues: <String>['adminUpdateClubDetails', 'adminSetClubIndexStatus', 'adminUpdateOrganizerDetails', 'adminSetOrganizerIndexStatus', 'adminCreateOrganizerDraftFromCandidate', 'createOrganizer', 'clubsToOrganizersMigration'],
   );
 
   static const publicRouteReservationDocumentOwnerCollection = CatchContractFieldConstraints(
@@ -26240,10 +26292,9 @@ abstract final class CatchContractConstraints {
     'adminCreateMarketingContentDraftCallableResponse.dashboardPath': adminCreateMarketingContentDraftCallableResponseDashboardPath,
     'adminCreateMarketingContentDraftCallableResponse.draft': adminCreateMarketingContentDraftCallableResponseDraft,
     'adminCreateOrganizerDraftFromCandidateCallablePayload.candidateId': adminCreateOrganizerDraftFromCandidateCallablePayloadCandidateId,
-    'adminCreateOrganizerDraftFromCandidateCallablePayload.description': adminCreateOrganizerDraftFromCandidateCallablePayloadDescription,
     'adminCreateOrganizerDraftFromCandidateCallablePayload.name': adminCreateOrganizerDraftFromCandidateCallablePayloadName,
-    'adminCreateOrganizerDraftFromCandidateCallablePayload.organizerId': adminCreateOrganizerDraftFromCandidateCallablePayloadOrganizerId,
     'adminCreateOrganizerDraftFromCandidateCallablePayload.organizerType': adminCreateOrganizerDraftFromCandidateCallablePayloadOrganizerType,
+    'adminCreateOrganizerDraftFromCandidateCallablePayload.publicSlug': adminCreateOrganizerDraftFromCandidateCallablePayloadPublicSlug,
     'adminCreateOrganizerDraftFromCandidateCallablePayload.reviewNote': adminCreateOrganizerDraftFromCandidateCallablePayloadReviewNote,
     'adminCreateOrganizerDraftFromCandidateCallablePayload.workItemId': adminCreateOrganizerDraftFromCandidateCallablePayloadWorkItemId,
     'adminCreateOrganizerDraftFromCandidateCallableResponse.appVisibility': adminCreateOrganizerDraftFromCandidateCallableResponseAppVisibility,
@@ -28754,10 +28805,19 @@ abstract final class CatchContractConstraints {
     'organizerFollowDocument.unfollowedAt._seconds': organizerFollowDocumentUnfollowedAtSeconds,
     'organizerIntakeCurationDecisionDocument.decision': organizerIntakeCurationDecisionDocumentDecision,
     'organizerIntakeCurationDecisionDocument.entityId': organizerIntakeCurationDecisionDocumentEntityId,
+    'organizerIntakeCurationDecisionDocument.fieldProvenance': organizerIntakeCurationDecisionDocumentFieldProvenance,
+    'organizerIntakeCurationDecisionDocument.fieldProvenance.items.artifactId': organizerIntakeCurationDecisionDocumentFieldProvenanceItemsArtifactId,
+    'organizerIntakeCurationDecisionDocument.fieldProvenance.items.confidence': organizerIntakeCurationDecisionDocumentFieldProvenanceItemsConfidence,
+    'organizerIntakeCurationDecisionDocument.fieldProvenance.items.contentHash': organizerIntakeCurationDecisionDocumentFieldProvenanceItemsContentHash,
+    'organizerIntakeCurationDecisionDocument.fieldProvenance.items.extractedBy': organizerIntakeCurationDecisionDocumentFieldProvenanceItemsExtractedBy,
+    'organizerIntakeCurationDecisionDocument.fieldProvenance.items.extractorVersion': organizerIntakeCurationDecisionDocumentFieldProvenanceItemsExtractorVersion,
+    'organizerIntakeCurationDecisionDocument.fieldProvenance.items.field': organizerIntakeCurationDecisionDocumentFieldProvenanceItemsField,
+    'organizerIntakeCurationDecisionDocument.fieldProvenance.items.locator': organizerIntakeCurationDecisionDocumentFieldProvenanceItemsLocator,
     'organizerIntakeCurationDecisionDocument.newEntityId': organizerIntakeCurationDecisionDocumentNewEntityId,
     'organizerIntakeCurationDecisionDocument.operationId': organizerIntakeCurationDecisionDocumentOperationId,
     'organizerIntakeCurationDecisionDocument.operationStatus': organizerIntakeCurationDecisionDocumentOperationStatus,
     'organizerIntakeCurationDecisionDocument.operationType': organizerIntakeCurationDecisionDocumentOperationType,
+    'organizerIntakeCurationDecisionDocument.publicSlug': organizerIntakeCurationDecisionDocumentPublicSlug,
     'organizerIntakeCurationDecisionDocument.reason': organizerIntakeCurationDecisionDocumentReason,
     'organizerIntakeCurationDecisionDocument.reviewedAt._nanoseconds': organizerIntakeCurationDecisionDocumentReviewedAtNanoseconds,
     'organizerIntakeCurationDecisionDocument.reviewedAt._seconds': organizerIntakeCurationDecisionDocumentReviewedAtSeconds,

@@ -92,8 +92,9 @@ export async function adminCreateOrganizerDraftFromCandidateHandler(
   );
 
   const workItemRef = db.collection("operationWorkItems").doc(data.workItemId);
-  const organizerRef = db.collection("organizers").doc(data.organizerId);
-  const legacyClubRef = db.collection("clubs").doc(data.organizerId);
+  const allocatedOrganizerRef = db.collection("organizers").doc();
+  let organizerId = "";
+  let organizerPath = "";
   let curationPath = "";
   let created = false;
 
@@ -110,32 +111,48 @@ export async function adminCreateOrganizerDraftFromCandidateHandler(
       data.workItemId
     );
     const candidate = requireOrganizerCandidate(workItem, data.candidateId);
+    if (data.name !== candidate.title.trim()) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Draft name must match the reviewed source title; edit it after " +
+          "creation with an audited organizer update."
+      );
+    }
     const sourceNormalizedKey = candidate.normalizedKey?.trim() ||
       candidate.canonicalUrl.trim().toLowerCase();
     const operationId = organizerDraftOperationId(sourceNormalizedKey);
     const operationRef = db.collection(curationCollection).doc(operationId);
     curationPath = operationRef.path;
-
-    const [
-      operationSnap,
-      organizerSnap,
-      legacyClubSnap,
-    ] = await Promise.all([
-      tx.get(operationRef),
-      tx.get(organizerRef),
-      tx.get(legacyClubRef),
-    ]);
     assertCandidateCanCreateDraft(candidate);
+    const operationSnap = await tx.get(operationRef);
     assertExistingReceiptMatches(
       operationSnap.data(),
       data,
       sourceNormalizedKey
     );
-    if (!operationSnap.exists &&
-      (organizerSnap.exists || legacyClubSnap.exists)) {
+    organizerId = nullableString(operationSnap.data()?.entityId) ??
+      allocatedOrganizerRef.id;
+    const organizerRef = db.collection("organizers").doc(organizerId);
+    const legacyClubRef = db.collection("clubs").doc(organizerId);
+    organizerPath = organizerRef.path;
+    const [organizerSnap, legacyClubSnap] = await Promise.all([
+      tx.get(organizerRef),
+      tx.get(legacyClubRef),
+    ]);
+    if (operationSnap.exists) {
+      if (!organizerSnap.exists) {
+        throw new HttpsError(
+          "failed-precondition",
+          "Organizer draft receipt exists but its canonical organizer is " +
+            "missing."
+        );
+      }
+      return;
+    }
+    if (organizerSnap.exists || legacyClubSnap.exists) {
       throw new HttpsError(
         "already-exists",
-        `Organizer id ${data.organizerId} is already in use.`
+        "Allocated organizer id is already in use; retry draft creation."
       );
     }
 
@@ -147,7 +164,15 @@ export async function adminCreateOrganizerDraftFromCandidateHandler(
       );
     }
     const timestamp = deps.serverTimestamp();
-    const canonicalPath = `/organizers/${data.organizerId}/`;
+    const canonicalPath = `/organizers/${data.publicSlug}/`;
+    const fieldProvenance = draftFieldProvenance(workItem, candidate);
+    if (fieldProvenance.length < 3) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Candidate evidence does not contain enough field provenance to " +
+          "create a draft."
+      );
+    }
     const organizer = buildOrganizerDraft({
       adminUid: adminContext.uid,
       candidate,
@@ -159,7 +184,7 @@ export async function adminCreateOrganizerDraftFromCandidateHandler(
       ),
     });
     organizer.adminSearch = buildOrganizerAdminSearchProjection(
-      data.organizerId,
+      organizerId,
       organizer,
       timestamp,
       "adminCreateOrganizerDraftFromCandidate"
@@ -169,9 +194,9 @@ export async function adminCreateOrganizerDraftFromCandidateHandler(
       tx,
       db,
       {
-        clubId: data.organizerId,
+        clubId: organizerId,
         canonicalPath,
-        slug: data.organizerId,
+        slug: data.publicSlug,
         citySlug: market.slug,
         adminUid: adminContext.uid,
         source: "adminCreateOrganizerDraftFromCandidate",
@@ -179,57 +204,54 @@ export async function adminCreateOrganizerDraftFromCandidateHandler(
       }
     );
 
-    if (!organizerSnap.exists) {
-      tx.create(organizerRef, organizer);
-      created = true;
-    }
-    if (!legacyClubSnap.exists) {
-      const legacyOrganizer = Object.fromEntries(
-        Object.entries(organizer).filter(([key]) =>
-          key !== "organizerPhotos" && key !== "followerCount")
-      );
-      tx.create(legacyClubRef, {
-        ...legacyOrganizer,
-        clubPhotos: organizer.organizerPhotos,
-        memberCount: 0,
-      });
-    }
-    if (!operationSnap.exists) {
-      const operation: OrganizerIntakeCurationDecisionDocument = {
-        schemaVersion: 1,
-        operationId,
-        operationType: "create_entity_draft",
-        operationStatus: "active",
-        entityId: data.organizerId,
+    tx.create(organizerRef, organizer);
+    created = true;
+    const legacyOrganizer = Object.fromEntries(
+      Object.entries(organizer).filter(([key]) =>
+        key !== "organizerPhotos" && key !== "followerCount")
+    );
+    tx.create(legacyClubRef, {
+      ...legacyOrganizer,
+      clubPhotos: organizer.organizerPhotos,
+      memberCount: 0,
+    });
+    const operation: OrganizerIntakeCurationDecisionDocument = {
+      schemaVersion: 1,
+      operationId,
+      operationType: "create_entity_draft",
+      operationStatus: "active",
+      entityId: organizerId,
+      sourceCandidateId: data.candidateId,
+      sourceWorkItemId: data.workItemId,
+      sourceNormalizedKey,
+      publicSlug: data.publicSlug,
+      fieldProvenance: fieldProvenance as never,
+      reason: data.reviewNote,
+      reviewedByUid: adminContext.uid,
+      reviewedAt: timestamp as never,
+      updatedAt: timestamp as never,
+    };
+    tx.create(operationRef, operation);
+    setAdminAuditLogInTransaction(tx, db, adminContext, {
+      action: "adminCreateOrganizerDraftFromCandidate",
+      targetPath: organizerRef.path,
+      request,
+      before: {},
+      after: {
+        organizerId,
+        publicSlug: data.publicSlug,
         sourceCandidateId: data.candidateId,
         sourceWorkItemId: data.workItemId,
-        sourceNormalizedKey,
-        reason: data.reviewNote,
-        reviewedByUid: adminContext.uid,
-        reviewedAt: timestamp as never,
-        updatedAt: timestamp as never,
-      };
-      tx.create(operationRef, operation);
-      setAdminAuditLogInTransaction(tx, db, adminContext, {
-        action: "adminCreateOrganizerDraftFromCandidate",
-        targetPath: organizerRef.path,
-        request,
-        before: {},
-        after: {
-          organizerId: data.organizerId,
-          sourceCandidateId: data.candidateId,
-          sourceWorkItemId: data.workItemId,
-          appVisibility: "hidden",
-          ownershipState: "programmatic",
-          claimState: "unclaimed",
-          publishStatus: "draft",
-          indexStatus: "noindex",
-          crawlStatus: "disabled",
-        },
-        note: data.reviewNote,
-        serverTimestamp: deps.serverTimestamp,
-      });
-    }
+        appVisibility: "hidden",
+        ownershipState: "programmatic",
+        claimState: "unclaimed",
+        publishStatus: "draft",
+        indexStatus: "noindex",
+        crawlStatus: "disabled",
+      },
+      note: data.reviewNote,
+      serverTimestamp: deps.serverTimestamp,
+    });
   });
 
   if (!curationPath) {
@@ -238,9 +260,12 @@ export async function adminCreateOrganizerDraftFromCandidateHandler(
       "Organizer draft receipt was not created."
     );
   }
+  if (!organizerId || !organizerPath) {
+    throw new HttpsError("internal", "Organizer draft identity was not set.");
+  }
   return {
-    organizerId: data.organizerId,
-    organizerPath: organizerRef.path,
+    organizerId,
+    organizerPath,
     curationPath,
     created,
     appVisibility: "hidden",
@@ -272,12 +297,9 @@ function buildOrganizerDraft({
   timestamp: FirebaseFirestore.FieldValue;
   sourceTimestamp: FirebaseFirestore.Timestamp;
 }): OrganizerDocument {
-  const sourceDetail = boundedText(
-    candidate.reviewContext?.reviewNotes ??
-      candidate.snippet ??
-      `Reviewed ${candidate.platform} source for ${candidate.title}.`,
-    600
-  );
+  const sourceDetail = candidate.snippet ?
+    boundedText(candidate.snippet, 600) :
+    "Source captured during reviewed organizer intake.";
   const formats = uniqueStrings(
     candidate.reviewContext?.formats ?? [],
     12,
@@ -285,11 +307,11 @@ function buildOrganizerDraft({
   );
   return {
     name: data.name,
-    description: data.description,
+    description: "",
     location: market.marketId,
     locationCityId: market.cityId,
     locationMarketId: market.marketId,
-    area: market.cityLabel,
+    area: "",
     hostUserId: null,
     hostName: null,
     hostAvatarUrl: null,
@@ -306,7 +328,7 @@ function buildOrganizerDraft({
     organizerType: data.organizerType,
     organizerTypeUpdatedAt: timestamp as never,
     organizerTypeUpdatedByUid: adminUid,
-    publicCategoryLabel: formats[0] ?? null,
+    publicCategoryLabel: null,
     rating: 0,
     reviewCount: 0,
     nextEventAt: null,
@@ -337,9 +359,9 @@ function buildOrganizerDraft({
       lastClaimRequestId: null,
     },
     publicPage: {
-      slug: data.organizerId,
+      slug: data.publicSlug,
       citySlug: market.slug,
-      canonicalPath: `/organizers/${data.organizerId}/`,
+      canonicalPath: `/organizers/${data.publicSlug}/`,
       publishStatus: "draft",
       indexStatus: "noindex",
       robots: "noindex, follow",
@@ -351,16 +373,21 @@ function buildOrganizerDraft({
       origin: "import",
       sourceConfidence: "medium",
       verificationStatus: "sourceBacked",
-      lastVerifiedAt: timestamp as never,
+      lastVerifiedAt: sourceTimestamp as never,
     },
     publicProfile: {
       headline: null,
       summary: null,
-      sourceSummary: boundedText(sourceDetail, 800),
+      sourceSummary: candidate.snippet ?
+        boundedText(candidate.snippet, 800) :
+        null,
       formats,
       facts: [],
       fitNotes: [],
       missingEvidence: [
+        "Member-facing description is not established by intake evidence.",
+        "Locality within the launch market is not established.",
+        "Public listing descriptor requires editorial review.",
         "Organizer ownership is not confirmed.",
         "Publication evidence requires final admin review.",
       ],
@@ -375,6 +402,65 @@ function buildOrganizerDraft({
       lastCheckedAt: sourceTimestamp as never,
     }],
   };
+}
+
+function draftFieldProvenance(
+  workItem: OperationWorkItem,
+  candidate: OrganizerCandidate
+): OperationWorkItem["fieldProvenance"] {
+  const evidence = workItem.evidenceRefs[0];
+  if (!evidence) return [];
+  const mappings: Array<{
+    target: string;
+    source: string;
+    present: boolean;
+  }> = [
+    {
+      target: "name",
+      source: "intake.candidate.title",
+      present: true,
+    },
+    {
+      target: "location",
+      source: "intake.candidate.queryIntent.marketSlug",
+      present: true,
+    },
+    {
+      target: "publicSources[0].href",
+      source: "intake.candidate.canonicalUrl",
+      present: true,
+    },
+    {
+      target: "publicProfile.sourceSummary",
+      source: "intake.candidate.snippet",
+      present: candidate.snippet !== null,
+    },
+    {
+      target: "publicProfile.formats",
+      source: "intake.candidate.reviewContext.formats",
+      present: (candidate.reviewContext?.formats.length ?? 0) > 0,
+    },
+    {
+      target: "tags",
+      source: "intake.candidate.reviewContext.formats",
+      present: (candidate.reviewContext?.formats.length ?? 0) > 0,
+    },
+  ];
+  return mappings.flatMap((mapping) => {
+    if (!mapping.present) return [];
+    const source = workItem.fieldProvenance.find((entry) =>
+      entry.field === mapping.source);
+    if (!source) return [];
+    return [{
+      field: mapping.target,
+      artifactId: source.artifactId,
+      contentHash: source.contentHash,
+      locator: source.locator,
+      extractedBy: source.extractedBy,
+      extractorVersion: source.extractorVersion,
+      confidence: source.confidence,
+    }];
+  });
 }
 
 function sourceTimestampFromVerifiedAt(
@@ -478,6 +564,12 @@ function assertCandidateCanCreateDraft(candidate: OrganizerCandidate) {
       "Candidate evidence must be reviewed before creating a draft."
     );
   }
+  if (!Number.isFinite(Date.parse(candidate.reviewContext.verifiedAt))) {
+    throw new HttpsError(
+      "failed-precondition",
+      "Candidate evidence review timestamp is invalid."
+    );
+  }
 }
 
 function assertExistingReceiptMatches(
@@ -488,7 +580,6 @@ function assertExistingReceiptMatches(
   if (!value) return;
   if (
     value.operationType !== "create_entity_draft" ||
-    value.entityId !== data.organizerId ||
     value.sourceCandidateId !== data.candidateId ||
     value.sourceWorkItemId !== data.workItemId ||
     value.sourceNormalizedKey !== sourceNormalizedKey
@@ -507,9 +598,8 @@ function normalizePayload(value: unknown): unknown {
     ...data,
     workItemId: trimmedString(data.workItemId),
     candidateId: trimmedString(data.candidateId),
-    organizerId: slugString(data.organizerId),
+    publicSlug: slugString(data.publicSlug),
     name: trimmedString(data.name),
-    description: trimmedString(data.description),
     organizerType: trimmedString(data.organizerType),
     reviewNote: trimmedString(data.reviewNote),
   };

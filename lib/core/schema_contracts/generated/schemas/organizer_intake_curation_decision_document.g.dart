@@ -94,6 +94,76 @@ const schemaOrganizerIntakeCurationDecisionDocumentSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 500,
     },
+    'publicSlug': <String, Object?>{
+      'type': 'string',
+      'minLength': 3,
+      'maxLength': 64,
+      'pattern': '^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])\$',
+      'description': 'Public route slug reserved when a candidate becomes an organizer draft. It is intentionally separate from entityId.',
+    },
+    'fieldProvenance': <String, Object?>{
+      'type': 'array',
+      'maxItems': 200,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'field',
+          'artifactId',
+          'contentHash',
+          'locator',
+          'extractedBy',
+          'extractorVersion',
+          'confidence',
+        ],
+        'properties': <String, Object?>{
+          'field': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 160,
+          },
+          'artifactId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+            'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+          },
+          'contentHash': <String, Object?>{
+            'type': 'string',
+            'pattern': '^[a-f0-9]{64}\$',
+          },
+          'locator': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+            'maxLength': 1000,
+          },
+          'extractedBy': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'deterministic',
+              'model',
+              'human',
+            ],
+          },
+          'extractorVersion': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 160,
+          },
+          'confidence': <String, Object?>{
+            'type': <Object?>[
+              'number',
+              'null',
+            ],
+            'minimum': 0,
+            'maximum': 1,
+          },
+        },
+      },
+      'description': 'Source artifact lineage for each field projected into the organizer draft.',
+    },
     'decision': <String, Object?>{
       'type': 'string',
       'enum': <Object?>[

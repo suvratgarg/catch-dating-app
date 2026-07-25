@@ -74,7 +74,7 @@ describe("Intake task-first defaults", () => {
     })).toBeTruthy();
     expect((screen.getByLabelText("Organizer name") as HTMLInputElement).value)
       .toBe("Small World");
-    expect((screen.getByLabelText("Draft slug") as HTMLInputElement).value)
+    expect((screen.getByLabelText("Public page slug") as HTMLInputElement).value)
       .toBe("small-world");
     expect(screen.getByText(
       /Publication, indexing, app visibility, crawling, and ownership remain disabled/u

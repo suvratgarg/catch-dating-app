@@ -14,9 +14,8 @@ const schemaAdminCreateOrganizerDraftFromCandidateCallablePayloadSchema = <Strin
   'required': <Object?>[
     'workItemId',
     'candidateId',
-    'organizerId',
+    'publicSlug',
     'name',
-    'description',
     'organizerType',
     'reviewNote',
   ],
@@ -32,21 +31,17 @@ const schemaAdminCreateOrganizerDraftFromCandidateCallablePayloadSchema = <Strin
       'minLength': 1,
       'maxLength': 240,
     },
-    'organizerId': <String, Object?>{
+    'publicSlug': <String, Object?>{
       'type': 'string',
       'minLength': 3,
       'maxLength': 64,
       'pattern': '^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])\$',
+      'description': 'Human-readable public route slug. The callable allocates a separate opaque Firestore organizer document id.',
     },
     'name': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 120,
-    },
-    'description': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 2000,
     },
     'organizerType': <String, Object?>{
       'type': 'string',

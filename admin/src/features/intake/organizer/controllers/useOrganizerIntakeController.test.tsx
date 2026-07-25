@@ -43,13 +43,14 @@ describe("useOrganizerIntakeController", () => {
 
       expect(result.current.localOrganizerDrafts[candidate.candidateId])
         .toMatchObject({
-          organizerId: "small-world",
+          organizerId: "sampleOrg00000000001",
           appVisibility: "hidden",
           claimState: "unclaimed",
           publishStatus: "draft",
           indexStatus: "noindex",
           crawlStatus: "disabled",
         });
-      expect(onOrganizerDraftCreated).toHaveBeenCalledWith("small-world");
+      expect(onOrganizerDraftCreated)
+        .toHaveBeenCalledWith("sampleOrg00000000001");
     });
 });

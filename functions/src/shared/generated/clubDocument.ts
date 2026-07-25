@@ -9,6 +9,9 @@ import {UploadedPhoto} from "./uploadedPhoto";
  */
 export interface ClubDocument {
   name: string;
+  /**
+   * Member-facing organizer description. May be empty on hidden intake drafts until an operator supplies source-backed copy.
+   */
   description: string;
   /**
    * Canonical launch market id. Public URL slugs live under publicPage.citySlug.
@@ -16,6 +19,9 @@ export interface ClubDocument {
   location: string;
   locationCityId: string;
   locationMarketId: string;
+  /**
+   * Verified locality within the canonical market. May be empty when intake evidence establishes only the city.
+   */
   area: string;
   /**
    * Legacy primary host user id. Null for programmatically generated, unclaimed organizer profiles.

@@ -1325,9 +1325,10 @@ export async function createOrganizerDraftFromCandidate(
 ): Promise<AdminCreateOrganizerDraftFromCandidateResponse> {
   if (dataMode() === "sample") {
     await new Promise((resolve) => window.setTimeout(resolve, 240));
+    const organizerId = "sampleOrg00000000001";
     return {
-      organizerId: payload.organizerId,
-      organizerPath: `organizers/${payload.organizerId}`,
+      organizerId,
+      organizerPath: `organizers/${organizerId}`,
       curationPath:
         `organizerIntakeCurationDecisions/sample-${payload.candidateId}`,
       created: true,

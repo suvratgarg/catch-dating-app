@@ -1,5 +1,5 @@
 {
-  "version": 101,
+  "version": 102,
   "updated": "2026-07-25",
   "owner": "agent_operating_model",
   "entries": [
@@ -3049,6 +3049,34 @@
         "docs/web_surface_architecture.md"
       ],
       "notes": "Candidate-to-draft creation and organizer publication are separate authority boundaries. A draft creation response must never imply that the organizer is public, discoverable, crawl-enabled, or owned."
+    },
+    {
+      "id": "REG-ORGANIZER-IDENTITY-PROVENANCE-001",
+      "title": "Organizer document ids become public slugs or unsupported intake text becomes public copy",
+      "status": "active",
+      "applies_to": [
+        "contracts/callables/create_organizer_payload.schema.json",
+        "contracts/callables/admin_create_organizer_draft_from_candidate_payload.schema.json",
+        "contracts/firestore/organizer_intake_curation_decisions.schema.json",
+        "functions/src/organizers/organizerIdentity.ts",
+        "functions/src/organizers/createOrganizer.ts",
+        "functions/src/admin/organizerDraftFromCandidate.ts",
+        "operations/src/platform/read-models.mjs",
+        "admin/src/features/intake/organizer"
+      ],
+      "symptom": "An app or Admin creation path uses a name-derived slug as organizers/{id}, a public URL is inferred from the document id, an intake review instruction is copied into member-facing copy, or a city/formats fallback is presented as verified locality/category data.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions run build && node --test functions/lib/organizers/createOrganizer.test.js functions/lib/organizers/organizerIdentity.test.js functions/lib/admin/organizerDraftFromCandidate.test.js && node --test operations/test/workflow.test.mjs && npm --workspace catch-admin test -- --run src/features/intake/organizer/controllers",
+        "guardEvidence": "app and Admin creation allocate opaque Firestore identities, public slugs are separate route-reserved fields, candidate projections carry artifact-bound field provenance, curation receipts preserve target-field lineage, and unsupported description/locality/descriptor fields remain blank"
+      },
+      "owner_docs": [
+        "docs/data_contracts.md",
+        "docs/operations_platform.md",
+        "docs/web_surface_architecture.md",
+        "docs/marketing_website_architecture.md"
+      ],
+      "notes": "Field provenance records extraction lineage, not truth or publication authority. Existing legacy semantic ids remain stable references; all newly created organizer identities use the auto-id convention."
     },
     {
       "id": "REG-ADMIN-ORGANIZER-QUEUE-SCROLL-001",

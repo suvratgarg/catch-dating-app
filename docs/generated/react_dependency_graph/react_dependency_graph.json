@@ -22,9 +22,9 @@
     "scannedSourceModules": 342,
     "dependencyLeafNodes": 18,
     "moduleNodes": 360,
-    "moduleEdges": 1242,
+    "moduleEdges": 1243,
     "runtimeModuleEdges": 983,
-    "typeOnlyModuleEdges": 259,
+    "typeOnlyModuleEdges": 260,
     "dynamicImportEdges": 29,
     "reExportEdges": 65,
     "featureGroups": 33,
@@ -962,9 +962,9 @@
       "targetSurface": "admin",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 56,
+      "edges": 57,
       "runtimeEdges": 39,
-      "typeOnlyEdges": 17,
+      "typeOnlyEdges": 18,
       "dynamicImports": 0,
       "reExports": 4,
       "sourceModules": [
@@ -3220,9 +3220,9 @@
       "sourceLayer": "feature",
       "targetSurface": "admin",
       "targetLayer": "shared",
-      "edges": 205,
+      "edges": 206,
       "runtimeEdges": 140,
-      "typeOnlyEdges": 65,
+      "typeOnlyEdges": 66,
       "dynamicImports": 0,
       "reExports": 5,
       "sourceModules": [
@@ -10743,6 +10743,15 @@
       "column": 1
     },
     {
+      "source": "admin/src/features/intake/organizer/types/organizerIntakeTypes.ts",
+      "target": "admin/src/shared/operations/operationsTypes.ts",
+      "specifier": "../../../../shared/operations/operationsTypes",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 17,
+      "column": 1
+    },
+    {
       "source": "admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx",
       "target": "admin/src/shared/ui/AdminPrimitives/index.ts",
       "specifier": "../../../../shared/ui/AdminPrimitives",
@@ -11198,7 +11207,7 @@
       "specifier": "../../../../shared/types/adminTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 18,
+      "line": 19,
       "column": 1
     },
     {
@@ -11207,7 +11216,7 @@
       "specifier": "../controllers/organizerIntakeHelpers",
       "kind": "import",
       "typeOnly": false,
-      "line": 20,
+      "line": 21,
       "column": 1
     },
     {
@@ -11216,7 +11225,7 @@
       "specifier": "../controllers/useOrganizerIntakeController",
       "kind": "import",
       "typeOnly": true,
-      "line": 25,
+      "line": 26,
       "column": 1
     },
     {
@@ -11225,7 +11234,7 @@
       "specifier": "../types/organizerIntakeTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 27,
+      "line": 28,
       "column": 1
     },
     {

@@ -20,8 +20,8 @@ const schemaCreateOrganizerCallablePayloadSchema = <String, Object?>{
   'properties': <String, Object?>{
     'organizerId': <String, Object?>{
       'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
+      'pattern': '^[A-Za-z0-9]{20}\$',
+      'description': 'Optional Firestore auto-id reserved by the client before media upload. Human-readable slugs are server-owned publicPage fields.',
     },
     'name': <String, Object?>{
       'type': 'string',

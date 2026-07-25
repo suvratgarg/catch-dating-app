@@ -1714,6 +1714,20 @@
       "role": "generator"
     },
     {
+      "id": "data:backfill-organizer-candidate-provenance",
+      "category": "data",
+      "path": "tool/data/backfill_organizer_candidate_provenance.mjs",
+      "command": "node tool/data/backfill_organizer_candidate_provenance.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Backfills artifact-bound field provenance on persisted Supply Intake organizer candidates without repository operational JSON.",
+      "checks": [
+        "node --check tool/data/backfill_organizer_candidate_provenance.mjs",
+        "node --test tool/data/backfill_organizer_candidate_provenance.test.mjs"
+      ],
+      "role": "generator"
+    },
+    {
       "id": "data:backfill-algolia-explore-search",
       "category": "data",
       "path": "tool/data/backfill_algolia_explore_search.mjs",

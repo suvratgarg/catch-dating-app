@@ -23,6 +23,10 @@ import {
 } from "../shared/hostProfiles";
 import {normalizeCreateClubPayload} from "./clubPayloadNormalization";
 import {marketForIdOrAlias} from "../locations/marketConfig";
+import {
+  defaultOrganizerPublicSlug,
+  requireFirestoreAutoId,
+} from "../organizers/organizerIdentity";
 
 interface CreateClubDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -41,19 +45,13 @@ const defaultDeps: CreateClubDeps = {
 };
 
 /**
- * A client may choose the new club's id (it becomes the public slug/path), so
- * constrain it to a safe URL slug rather than any 180-char documentId string.
+ * A legacy client may reserve a Firestore auto-id before uploading media.
+ * Human-readable public slugs remain a separate field.
  * @param {string} clubId Client-supplied club id.
  * @return {string} The validated club id.
  */
 function assertSafeNewClubId(clubId: string): string {
-  if (!/^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])?$/.test(clubId)) {
-    throw new HttpsError(
-      "invalid-argument",
-      "Club id must be 3-64 lowercase letters, numbers, or hyphens."
-    );
-  }
-  return clubId;
+  return requireFirestoreAutoId(clubId, "Club id");
 }
 
 /**
@@ -84,6 +82,7 @@ export async function createClubHandler(
   const clubRef = data.clubId ?
     db.collection("clubs").doc(assertSafeNewClubId(data.clubId)) :
     db.collection("clubs").doc();
+  const publicSlug = defaultOrganizerPublicSlug(data.name, clubRef.id);
   const hostClaimRef = db.collection("clubHostClaims").doc(hostUserId);
   const membershipRef = db
     .collection("clubMemberships")
@@ -204,9 +203,9 @@ export async function createClubHandler(
         lastClaimRequestId: null,
       },
       publicPage: {
-        slug: clubRef.id,
+        slug: publicSlug,
         citySlug: market.slug,
-        canonicalPath: `/organizers/${clubRef.id}/`,
+        canonicalPath: `/organizers/${publicSlug}/`,
         publishStatus: "draft",
         indexStatus: "noindex",
         robots: "noindex, follow",

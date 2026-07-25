@@ -221,8 +221,10 @@ their source evidence or backed decision callables.
 Organizer discovery can run with `--intake-scope organizer`. This scope does
 not require or project an Event Intake bridge, so each launch market can
 produce an immutable organizer queue independently. Normalized organizer
-candidate fields are carried in the work item's bounded Admin projection;
-private raw-provider payloads remain excluded. The live Organizer Intake tab
+candidate fields are carried in the work item's bounded Admin projection.
+Supply Intake `0.1.1` also emits content-hash-bound field provenance for each
+candidate value that can participate in the organizer-draft handoff; private
+raw-provider payloads remain excluded. The live Organizer Intake tab
 selects the newest completed organizer run per launch market and ignores
 historical runs rather than merging duplicate snapshots.
 

@@ -199,6 +199,11 @@ export function toCanonicalWorkItemRecord(item, {
     fieldProvenance: [
       fieldProvenance("sourceEntity.title", item, artifactId, confidence),
       fieldProvenance("source.url", item, artifactId, boundedConfidence(item.confidence.fieldConfidence?.source)),
+      ...organizerCandidateFieldProvenance(
+        item,
+        artifactId,
+        confidence
+      ),
     ],
     normalizedPayload: {
       title: item.sourceEntity.title,
@@ -338,16 +343,62 @@ function schemaErrors(errors) {
   }));
 }
 
-function fieldProvenance(field, item, artifactId, confidence) {
+function fieldProvenance(
+  field,
+  item,
+  artifactId,
+  confidence,
+  locator = item.evidence.artifactRef ?? null
+) {
   return {
     field,
     artifactId,
     contentHash: item.evidence.artifactHash,
-    locator: item.evidence.artifactRef ?? null,
+    locator,
     extractedBy: item.decisionProvenance.actorKind === "human" ? "human" : "deterministic",
-    extractorVersion: `${item.workflowId}-v0.1.0`,
+    extractorVersion: `${item.workflowId}-v0.1.1`,
     confidence,
   };
+}
+
+function organizerCandidateFieldProvenance(item, artifactId, confidence) {
+  const intake = item.adminProjection;
+  const candidate = intake?.recordType === "organizer_search_candidate" ?
+    intake.candidate :
+    null;
+  if (!candidate) return [];
+  const base = item.evidence.artifactRef ?? "supply-intake-artifact";
+  const fields = [
+    ["intake.candidate.title", candidate.title],
+    ["intake.candidate.canonicalUrl", candidate.canonicalUrl],
+    ["intake.candidate.snippet", candidate.snippet],
+    [
+      "intake.candidate.queryIntent.marketSlug",
+      candidate.queryIntent?.marketSlug,
+    ],
+    [
+      "intake.candidate.reviewContext.formats",
+      candidate.reviewContext?.formats,
+    ],
+    [
+      "intake.candidate.reviewContext.reviewNotes",
+      candidate.reviewContext?.reviewNotes,
+    ],
+    [
+      "intake.candidate.reviewContext.verifiedAt",
+      candidate.reviewContext?.verifiedAt,
+    ],
+  ].filter(([, value]) =>
+    value !== null &&
+    value !== undefined &&
+    (!Array.isArray(value) || value.length > 0));
+  return fields.map(([field]) => fieldProvenance(
+    field,
+    item,
+    artifactId,
+    confidence,
+    `${base}#normalizedPayload.${field}`
+  ));
 }
 
 function canonicalLifecycleStatus(item, contract) {
