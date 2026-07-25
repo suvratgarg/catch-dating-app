@@ -151,7 +151,7 @@ void main() {
       _expectValid(
         'CreateClubCallablePayload',
         const CreateClubCallableRequest(
-          clubId: 'club-1',
+          clubId: 'AbCdEfGhIjKlMnOpQrSt',
           name: 'Cubbon Runners',
           description: 'Weekly social runs.',
           location: 'in-ka-bengaluru',

@@ -522,21 +522,23 @@ function OrganizerEditor({
                   value={form.organizerType}
                 />
                 <TextField
-                  label="Public category label"
+                  label="Public listing descriptor (optional)"
                   onChange={(value) => update("publicCategoryLabel", value)}
                   value={form.publicCategoryLabel}
                 />
                 <TextField
                   id={organizerPublishingFieldIds.area}
                   invalid={hasTargetIssue(organizerPublishingFieldIds.area)}
-                  label="Area / locality"
+                  label="Verified area / locality"
                   onChange={(value) => update("area", value)}
                   value={form.area}
                 />
               </AdminFieldGrid>
               <AdminWorkbenchNote>
-                Organizer type is the governed classification. Public category
-                label is optional reader-facing copy.
+                Organizer type is the governed classification. The public
+                listing descriptor is optional reader-facing copy, not a
+                grouping category. Leave locality blank until a source
+                establishes an area within the launch market.
               </AdminWorkbenchNote>
               <TextareaField
                 id={organizerPublishingFieldIds.description}

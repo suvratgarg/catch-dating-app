@@ -8,6 +8,9 @@ import {UploadedPhoto} from "./uploadedPhoto";
  * Callable payload accepted by createClub.
  */
 export interface CreateClubCallablePayload {
+  /**
+   * Optional Firestore auto-id reserved by a legacy client. Human-readable slugs are separate publicPage fields.
+   */
   clubId?: string;
   name: string;
   description: string;

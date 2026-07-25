@@ -2,8 +2,15 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {createClubHandler} from "./createClub";
+import {defaultOrganizerPublicSlug} from
+  "../organizers/organizerIdentity";
 
 type FakeData = Record<string, unknown>;
+const reservedClubId = "clubId00000000000001";
+const reservedClubSlug = defaultOrganizerPublicSlug(
+  "Morning Miles",
+  reservedClubId
+);
 
 class FakeDocRef {
   readonly id: string;
@@ -225,7 +232,7 @@ function profile(overrides: FakeData = {}): FakeData {
 
 function payload(overrides: FakeData = {}): FakeData {
   return {
-    clubId: "club-1",
+    clubId: reservedClubId,
     name: "Morning Miles",
     description: "Easy weekday events.",
     location: "in-mh-mumbai",
@@ -252,9 +259,9 @@ test("createClubHandler creates a club and host membership edge",
       h.deps
     );
 
-    assert.deepEqual(result, {clubId: "club-1"});
+    assert.deepEqual(result, {clubId: reservedClubId});
     assert.deepEqual(h.rateLimitCalls, ["host-1:createClub"]);
-    assert.deepEqual(h.firestore.get("clubs/club-1"), {
+    assert.deepEqual(h.firestore.get(`clubs/${reservedClubId}`), {
       name: "Morning Miles",
       description: "Easy weekday events.",
       location: "in-mh-mumbai",
@@ -346,9 +353,9 @@ test("createClubHandler creates a club and host membership edge",
         lastClaimRequestId: null,
       },
       publicPage: {
-        slug: "club-1",
+        slug: reservedClubSlug,
         citySlug: "mumbai",
-        canonicalPath: "/organizers/club-1/",
+        canonicalPath: `/organizers/${reservedClubSlug}/`,
         publishStatus: "draft",
         indexStatus: "noindex",
         robots: "noindex, follow",
@@ -376,13 +383,21 @@ test("createClubHandler creates a club and host membership edge",
     });
     assert.deepEqual(
       {
-        clubId: h.firestore.get("clubMemberships/club-1_host-1")?.clubId,
-        uid: h.firestore.get("clubMemberships/club-1_host-1")?.uid,
-        role: h.firestore.get("clubMemberships/club-1_host-1")?.role,
-        status: h.firestore.get("clubMemberships/club-1_host-1")?.status,
+        clubId: h.firestore.get(
+          `clubMemberships/${reservedClubId}_host-1`
+        )?.clubId,
+        uid: h.firestore.get(
+          `clubMemberships/${reservedClubId}_host-1`
+        )?.uid,
+        role: h.firestore.get(
+          `clubMemberships/${reservedClubId}_host-1`
+        )?.role,
+        status: h.firestore.get(
+          `clubMemberships/${reservedClubId}_host-1`
+        )?.status,
       },
       {
-        clubId: "club-1",
+        clubId: reservedClubId,
         uid: "host-1",
         role: "owner",
         status: "active",
@@ -390,7 +405,7 @@ test("createClubHandler creates a club and host membership edge",
     );
     assert.deepEqual(h.firestore.get("clubHostClaims/host-1"), {
       uid: "host-1",
-      clubId: "club-1",
+      clubId: reservedClubId,
       createdAt: {kind: "serverTimestamp"},
     });
     assert.deepEqual(h.firestore.get("hostProfiles/host-1"), {
@@ -414,9 +429,12 @@ test("createClubHandler uses host profile without dating profile", async () => {
 
   await createClubHandler(request("host-1", payload()), h.deps);
 
-  assert.equal(h.firestore.get("clubs/club-1")?.hostName, "Asha Studio");
   assert.equal(
-    h.firestore.get("clubs/club-1")?.hostAvatarUrl,
+    h.firestore.get(`clubs/${reservedClubId}`)?.hostName,
+    "Asha Studio"
+  );
+  assert.equal(
+    h.firestore.get(`clubs/${reservedClubId}`)?.hostAvatarUrl,
     "https://example.com/host.jpg"
   );
   assert.equal(h.firestore.get("users/host-1"), undefined);
@@ -453,8 +471,9 @@ test("createClubHandler can generate the club id server-side", async () => {
 });
 
 test("createClubHandler rejects unsafe creation states", async () => {
+  const existingClubId = "existingClub00000001";
   const h = harness({
-    "clubs/existing": {name: "Existing"},
+    [`clubs/${existingClubId}`]: {name: "Existing"},
     "users/host-1": profile(),
     "users/deleted": profile(),
     "deletedUsers/deleted": {deletedAt: "now"},
@@ -466,7 +485,7 @@ test("createClubHandler rejects unsafe creation states", async () => {
   );
   await assert.rejects(
     () => createClubHandler(
-      request("host-1", payload({clubId: "existing"})),
+      request("host-1", payload({clubId: existingClubId})),
       h.deps
     ),
     (error) => assertHttpsCode(error, "already-exists")

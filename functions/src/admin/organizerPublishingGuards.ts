@@ -14,6 +14,7 @@ export type OrganizerRouteReservationStatus =
   "missing" | "reserved" | "conflict";
 
 type OrganizerRouteReservationSource =
+  "createOrganizer" |
   "adminCreateOrganizerDraftFromCandidate" |
   "adminUpdateClubDetails" | "adminSetClubIndexStatus";
 

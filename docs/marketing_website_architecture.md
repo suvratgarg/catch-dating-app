@@ -90,6 +90,10 @@ The website is already split out of the old monolithic shell:
   Firestore organizer documents; the committed JSON is a static build
   projection, never the operational source of truth. The pretypecheck gate
   validates both outputs.
+- Organizer website URLs come from the canonical document's
+  `publicPage.canonicalPath`; the Firestore `organizers/{organizerId}` auto-id
+  is an internal identity and is not a URL convention. Route reservations make
+  slugs unique independently of document creation.
 - `design/public_surface_behavior.json` is the cross-surface authority and
   action matrix described by
   `docs/web_surface_architecture.md#public-viewer-and-listing-authority-matrix`.

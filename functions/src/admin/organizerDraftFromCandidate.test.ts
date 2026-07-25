@@ -72,7 +72,7 @@ class FakeFirestore {
 
   autoId(): string {
     this.nextAutoId += 1;
-    return `auto-${this.nextAutoId}`;
+    return `autoId${String(this.nextAutoId).padStart(14, "0")}`;
   }
 
   get(path: string): FakeData | undefined {
@@ -177,13 +177,34 @@ function payload(overrides: FakeData = {}) {
   return {
     workItemId: "work-courtside",
     candidateId: "candidate-courtside",
-    organizerId: "courtside",
+    publicSlug: "courtside",
     name: "Courtside",
-    description: "Reviewed source-backed sports and social community.",
     organizerType: "community",
     reviewNote: "Reviewed the official source before creating this draft.",
     ...overrides,
   };
+}
+
+function candidateFieldProvenance(): FakeData[] {
+  return [
+    "title",
+    "canonicalUrl",
+    "snippet",
+    "queryIntent.marketSlug",
+    "reviewContext.formats",
+    "reviewContext.reviewNotes",
+    "reviewContext.verifiedAt",
+  ].map((field) => ({
+    field: `intake.candidate.${field}`,
+    artifactId: "artifact-organizer-candidates",
+    contentHash: "a".repeat(64),
+    locator:
+      "firestore:organizerSearchCandidates/courtside" +
+      `#normalizedPayload.intake.candidate.${field}`,
+    extractedBy: "deterministic",
+    extractorVersion: "supply-intake-v0.1.1",
+    confidence: 0.9,
+  }));
 }
 
 function workItem(overrides: FakeData = {}): FakeData {
@@ -204,8 +225,13 @@ function workItem(overrides: FakeData = {}): FakeData {
     warningCodes: [],
     priority: 10,
     attemptCount: 1,
-    evidenceRefs: [],
-    fieldProvenance: [],
+    evidenceRefs: [{
+      artifactId: "artifact-organizer-candidates",
+      contentHash: "a".repeat(64),
+      observedAt: "2026-07-24T08:00:00.000Z",
+      locator: "firestore:organizerSearchCandidates/courtside",
+    }],
+    fieldProvenance: candidateFieldProvenance(),
     normalizedPayload: {
       intake: {
         recordType: "organizer_search_candidate",
@@ -251,7 +277,7 @@ test("creates a fail-closed organizer draft and curation receipt", async () => {
     h.deps
   );
 
-  assert.equal(result.organizerId, "courtside");
+  assert.equal(result.organizerId, "autoId00000000000001");
   assert.equal(result.created, true);
   assert.equal(
     validateAdminCreateOrganizerDraftFromCandidateCallableResponse(result),
@@ -275,7 +301,7 @@ test("creates a fail-closed organizer draft and curation receipt", async () => {
     indexStatus: "noindex",
     crawlStatus: "disabled",
   });
-  const organizer = h.firestore.get("organizers/courtside");
+  const organizer = h.firestore.get(`organizers/${result.organizerId}`);
   assert.equal(
     validateOrganizerDocument(organizer),
     true,
@@ -295,13 +321,22 @@ test("creates a fail-closed organizer draft and curation receipt", async () => {
   assert.equal((organizer?.publicPage as FakeData).indexStatus, "noindex");
   assert.equal((organizer?.provenance as FakeData).verificationStatus,
     "sourceBacked");
+  assert.deepEqual((organizer?.provenance as FakeData).lastVerifiedAt,
+    {_seconds: 1784851200, _nanoseconds: 0});
+  assert.equal(organizer?.description, "");
+  assert.equal(organizer?.area, "");
+  assert.equal(organizer?.publicCategoryLabel, null);
+  assert.equal(
+    ((organizer?.publicProfile as FakeData).sourceSummary),
+    "Sports and social community in Mumbai."
+  );
   assert.deepEqual(
     ((organizer?.publicSources as FakeData[])[0] as FakeData).lastCheckedAt,
     {_seconds: 1784851200, _nanoseconds: 0}
   );
   assert.equal((organizer?.adminSearch as FakeData).updatedBySource,
     "adminCreateOrganizerDraftFromCandidate");
-  const legacyClub = h.firestore.get("clubs/courtside");
+  const legacyClub = h.firestore.get(`clubs/${result.organizerId}`);
   assert.equal(
     validateClubDocument(legacyClub),
     true,
@@ -318,6 +353,19 @@ test("creates a fail-closed organizer draft and curation receipt", async () => {
   assert.equal(curation?.operationType, "create_entity_draft");
   assert.equal(curation?.sourceWorkItemId, "work-courtside");
   assert.equal(curation?.sourceCandidateId, "candidate-courtside");
+  assert.equal(curation?.entityId, result.organizerId);
+  assert.equal(curation?.publicSlug, "courtside");
+  assert.deepEqual(
+    (curation?.fieldProvenance as FakeData[]).map((entry) => entry.field),
+    [
+      "name",
+      "location",
+      "publicSources[0].href",
+      "publicProfile.sourceSummary",
+      "publicProfile.formats",
+      "tags",
+    ]
+  );
   assert.equal(h.reservedRoutes.length, 1);
   assert.equal(h.reservedRoutes[0].canonicalPath, "/organizers/courtside/");
   assert.equal(h.firestore.auditLogs().length, 1);
@@ -350,6 +398,17 @@ test("exact retry reuses the organizer without duplicate audit", async () => {
 
 test("blocks matched, unreviewed, and viewer-only candidate creation",
   async () => {
+    const renamed = harness({
+      "operationWorkItems/work-courtside": workItem(),
+    });
+    await assert.rejects(
+      adminCreateOrganizerDraftFromCandidateHandler(
+        callableRequest(payload({name: "Courtside Mumbai"})),
+        renamed.deps
+      ),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
+
     const matched = harness({
       "operationWorkItems/work-courtside": workItem({
         normalizedPayload: {
@@ -403,5 +462,18 @@ test("blocks matched, unreviewed, and viewer-only candidate creation",
         viewer.deps
       ),
       (error) => assertHttpsCode(error, "permission-denied")
+    );
+
+    const missingExactProvenance = harness({
+      "operationWorkItems/work-courtside": workItem({
+        fieldProvenance: [],
+      }),
+    });
+    await assert.rejects(
+      adminCreateOrganizerDraftFromCandidateHandler(
+        callableRequest(payload()),
+        missingExactProvenance.deps
+      ),
+      (error) => assertHttpsCode(error, "failed-precondition")
     );
   });

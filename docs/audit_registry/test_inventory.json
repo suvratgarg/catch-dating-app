@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 581,
+  "total": 584,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -308,7 +308,7 @@
       ]
     },
     "functions_source": {
-      "count": 91,
+      "count": 93,
       "files": [
         "functions/src/admin/accessApplications.test.ts",
         "functions/src/admin/adminActionExecutions.test.ts",
@@ -375,6 +375,8 @@
         "functions/src/operations/projectionImporter.test.ts",
         "functions/src/operations/reducers.test.ts",
         "functions/src/operations/validation.test.ts",
+        "functions/src/organizers/createOrganizer.test.ts",
+        "functions/src/organizers/organizerIdentity.test.ts",
         "functions/src/organizers/organizerPayloadNormalization.test.ts",
         "functions/src/payments/createRazorpayOrder.test.ts",
         "functions/src/payments/createStripeCheckoutSession.test.ts",
@@ -404,7 +406,7 @@
       ]
     },
     "tooling": {
-      "count": 139,
+      "count": 140,
       "files": [
         "tool/admin/generate_admin_action_catalog.test.mjs",
         "tool/agent/check_agent_readiness.test.mjs",
@@ -430,6 +432,7 @@
         "tool/data/backfill_event_meeting_locations.test.mjs",
         "tool/data/backfill_location_market_fields.test.mjs",
         "tool/data/backfill_organizer_admin_search.test.mjs",
+        "tool/data/backfill_organizer_candidate_provenance.test.mjs",
         "tool/data/backfill_profile_photos.test.mjs",
         "tool/data/migrate_clubs_to_organizers.test.mjs",
         "tool/data/profile_projection_parity.test.mjs",

@@ -10,6 +10,7 @@ import {
   AdminIntakeTaskToolbar,
   AdminLinkButton,
   AdminOrganizerIntakeCheckboxField,
+  AdminWorkbenchNote,
   SearchField,
   SelectField,
   TextareaField,
@@ -436,25 +437,19 @@ function OrganizerTaskWorkbench({
                     <AdminFieldGrid columns={2}>
                       <TextField
                         label="Organizer name"
+                        readOnly
                         value={candidateDraftForm.name}
-                        onChange={(name) =>
-                          setOrganizerDraftForms((current) => ({
-                            ...current,
-                            [candidate.candidateId]: {
-                              ...candidateDraftForm,
-                              name,
-                            },
-                          }))}
+                        onChange={() => undefined}
                       />
                       <TextField
-                        label="Draft slug"
-                        value={candidateDraftForm.organizerId}
-                        onChange={(organizerId) =>
+                        label="Public page slug"
+                        value={candidateDraftForm.publicSlug}
+                        onChange={(publicSlug) =>
                           setOrganizerDraftForms((current) => ({
                             ...current,
                             [candidate.candidateId]: {
                               ...candidateDraftForm,
-                              organizerId,
+                              publicSlug,
                             },
                           }))}
                       />
@@ -474,19 +469,13 @@ function OrganizerTaskWorkbench({
                           },
                         }))}
                     />
-                    <TextareaField
-                      label="Draft description"
-                      rows={3}
-                      value={candidateDraftForm.description}
-                      onChange={(description) =>
-                        setOrganizerDraftForms((current) => ({
-                          ...current,
-                          [candidate.candidateId]: {
-                            ...candidateDraftForm,
-                            description,
-                          },
-                        }))}
-                    />
+                    <AdminWorkbenchNote>
+                      The organizer record receives a separate opaque document
+                      ID. The source title is copied unchanged; corrections use
+                      the audited organizer editor. Member-facing description,
+                      locality, and listing descriptor stay blank until they
+                      are verified.
+                    </AdminWorkbenchNote>
                     <TextareaField
                       label="Creation review note"
                       rows={2}
@@ -954,6 +943,16 @@ function organizerCandidateEvidenceRows(
       statusTone: candidate.existingEntityMatches.length > 0 ?
         "success" as const : "warning" as const,
       title: "Discovery query",
+    },
+    {
+      id: "provenance",
+      meta: "Only source-linked values are projected into the draft.",
+      status:
+        `${candidate.fieldProvenance?.length ?? 0} mapped source fields`,
+      statusTone: candidate.fieldProvenance?.length ?
+        "success" as const :
+        "warning" as const,
+      title: "Field provenance",
     },
   ];
 }

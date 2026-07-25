@@ -196,6 +196,7 @@ function organizerCandidateFromWorkItem(
       "workItemId" | "draftLink"
     >),
     workItemId: item.workItemId,
+    fieldProvenance: item.fieldProvenance,
     ...(draftLink ? {draftLink} : {}),
   }];
 }

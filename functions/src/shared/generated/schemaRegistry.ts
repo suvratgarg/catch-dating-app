@@ -3915,8 +3915,8 @@ export const clubDocumentSchema: Record<string, unknown> = {
     },
     "description": {
       "type": "string",
-      "minLength": 1,
       "maxLength": 2000,
+      "description": "Member-facing organizer description. May be empty on hidden intake drafts until an operator supplies source-backed copy.",
       "x-catch-ownership": "callable-owned"
     },
     "location": {
@@ -3943,8 +3943,8 @@ export const clubDocumentSchema: Record<string, unknown> = {
     },
     "area": {
       "type": "string",
-      "minLength": 1,
       "maxLength": 120,
+      "description": "Verified locality within the canonical market. May be empty when intake evidence establishes only the city.",
       "x-catch-ownership": "callable-owned"
     },
     "hostUserId": {
@@ -6022,8 +6022,8 @@ export const organizerDocumentSchema: Record<string, unknown> = {
     },
     "description": {
       "type": "string",
-      "minLength": 1,
       "maxLength": 2000,
+      "description": "Member-facing organizer description. May be empty on hidden intake drafts until an operator supplies source-backed copy.",
       "x-catch-ownership": "callable-owned"
     },
     "location": {
@@ -6050,8 +6050,8 @@ export const organizerDocumentSchema: Record<string, unknown> = {
     },
     "area": {
       "type": "string",
-      "minLength": 1,
       "maxLength": 120,
+      "description": "Verified locality within the canonical market. May be empty when intake evidence establishes only the city.",
       "x-catch-ownership": "callable-owned"
     },
     "hostUserId": {
@@ -18270,6 +18270,7 @@ export const publicRouteReservationDocumentSchema: Record<string, unknown> = {
         "adminUpdateOrganizerDetails",
         "adminSetOrganizerIndexStatus",
         "adminCreateOrganizerDraftFromCandidate",
+        "createOrganizer",
         "clubsToOrganizersMigration"
       ],
       "x-catch-ownership": "server-only"
@@ -18877,6 +18878,76 @@ export const organizerIntakeCurationDecisionDocumentSchema: Record<string, unkno
       "type": "string",
       "minLength": 1,
       "maxLength": 500
+    },
+    "publicSlug": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 64,
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])$",
+      "description": "Public route slug reserved when a candidate becomes an organizer draft. It is intentionally separate from entityId."
+    },
+    "fieldProvenance": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "field",
+          "artifactId",
+          "contentHash",
+          "locator",
+          "extractedBy",
+          "extractorVersion",
+          "confidence"
+        ],
+        "properties": {
+          "field": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "artifactId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "contentHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "locator": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 1000
+          },
+          "extractedBy": {
+            "type": "string",
+            "enum": [
+              "deterministic",
+              "model",
+              "human"
+            ]
+          },
+          "extractorVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "confidence": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      },
+      "description": "Source artifact lineage for each field projected into the organizer draft."
     },
     "decision": {
       "type": "string",
@@ -20451,8 +20522,8 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
   "properties": {
     "clubId": {
       "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "pattern": "^[A-Za-z0-9]{20}$",
+      "description": "Optional Firestore auto-id reserved by a legacy client. Human-readable slugs are separate publicPage fields."
     },
     "name": {
       "type": "string",
@@ -21413,8 +21484,8 @@ export const createOrganizerCallablePayloadSchema: Record<string, unknown> = {
   "properties": {
     "organizerId": {
       "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "pattern": "^[A-Za-z0-9]{20}$",
+      "description": "Optional Firestore auto-id reserved by the client before media upload. Human-readable slugs are server-owned publicPage fields."
     },
     "name": {
       "type": "string",
@@ -36737,9 +36808,8 @@ export const adminCreateOrganizerDraftFromCandidateCallablePayloadSchema: Record
   "required": [
     "workItemId",
     "candidateId",
-    "organizerId",
+    "publicSlug",
     "name",
-    "description",
     "organizerType",
     "reviewNote"
   ],
@@ -36755,21 +36825,17 @@ export const adminCreateOrganizerDraftFromCandidateCallablePayloadSchema: Record
       "minLength": 1,
       "maxLength": 240
     },
-    "organizerId": {
+    "publicSlug": {
       "type": "string",
       "minLength": 3,
       "maxLength": 64,
-      "pattern": "^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])$"
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])$",
+      "description": "Human-readable public route slug. The callable allocates a separate opaque Firestore organizer document id."
     },
     "name": {
       "type": "string",
       "minLength": 1,
       "maxLength": 120
-    },
-    "description": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 2000
     },
     "organizerType": {
       "type": "string",

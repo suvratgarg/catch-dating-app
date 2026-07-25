@@ -108,6 +108,15 @@ provide the owner-safe projection inputs. Production Hosting exports those
 fields from Firestore at build time. Repository JSON must not be used as the
 editing or approval surface.
 
+Organizer document identity and public routing are separate contracts.
+`organizers/{organizerId}` uses an opaque Firestore auto-id. A client may
+reserve that auto-id before uploading media, but a name or URL slug is never
+accepted as the document id. `publicPage.slug` owns the human-readable route
+segment, `publicPage.canonicalPath` owns the website URL, and
+`publicRouteReservations` transactionally enforces route uniqueness. Renaming
+or rerouting an organizer therefore does not require changing its document id
+or relationship references.
+
 ### Required Event Meeting Location
 
 Every persisted `events/{eventId}` and published external event must have a
@@ -437,16 +446,28 @@ ownership, crawl, or app-visibility authority. Organizer-only shadow runs may
 omit an Event Intake bridge, but remain subject to the same immutable export,
 contract validation, and trusted importer.
 
+Supply Intake `0.1.1` records exact field provenance for the candidate title,
+canonical URL, snippet, market, reviewed formats, review note, and review
+timestamp. Each entry binds the projected field to an evidence artifact,
+content hash, locator, extraction method, extractor version, and confidence.
+This is deterministic extraction metadata; it grants no truth, ownership, or
+publication authority.
+
 `adminCreateOrganizerDraftFromCandidate` is the only candidate-to-entity
 scaffolder. It validates the exact work item and reviewed evidence, rejects
-existing-entity matches and duplicate identity receipts, and creates an
-unclaimed `organizers/{id}` draft with `appVisibility=hidden`,
+existing-entity matches and duplicate identity receipts, allocates an opaque
+Firestore organizer id, and separately reserves the reviewed public slug. It
+creates an unclaimed `organizers/{id}` draft with `appVisibility=hidden`,
 `publishStatus=draft`, and `indexStatus=noindex`. It also writes the legacy
 `clubs/{id}` compatibility shadow, reserves the canonical route, and records a
 deterministic `organizerIntakeCurationDecisions/{id}` receipt. The receipt
-contains the source work-item, candidate, and normalized identity keys and is
-returned by `adminListIntakeOperations` as a bounded draft link. No crawl
-enablement or owner binding is part of this contract.
+contains the source work-item, candidate, normalized identity key, public slug,
+and target-field provenance and is returned by `adminListIntakeOperations` as
+a bounded draft link. Intake review notes remain audited operator context; they
+are never copied into member-facing description or source summary. Unknown
+description, locality, and public listing descriptor values remain empty until
+an operator supplies verified content. No crawl enablement or owner binding is
+part of this contract.
 
 The trusted shadow-projection importer validates the export again, resets only
 the Firestore persistence revision to zero, and retains each local source

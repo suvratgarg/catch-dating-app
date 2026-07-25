@@ -10,27 +10,24 @@ final class AdminCreateOrganizerDraftFromCandidateCallableRequest {
   const AdminCreateOrganizerDraftFromCandidateCallableRequest({
     required this.workItemId,
     required this.candidateId,
-    required this.organizerId,
+    required this.publicSlug,
     required this.name,
-    required this.description,
     required this.organizerType,
     required this.reviewNote,
   });
 
   final String workItemId;
   final String candidateId;
-  final String organizerId;
+  final String publicSlug;
   final String name;
-  final String description;
   final String organizerType;
   final String reviewNote;
 
   Map<String, Object?> toJson() => {
     'workItemId': workItemId,
     'candidateId': candidateId,
-    'organizerId': organizerId,
+    'publicSlug': publicSlug,
     'name': name,
-    'description': description,
     'organizerType': organizerType,
     'reviewNote': reviewNote,
   };

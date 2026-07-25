@@ -42,6 +42,17 @@
     "sourceCandidateId": {"type": "string", "minLength": 1, "maxLength": 240},
     "sourceWorkItemId": {"$ref": "../operations/common.schema.json#/definitions/id"},
     "sourceNormalizedKey": {"type": "string", "minLength": 1, "maxLength": 500},
+    "publicSlug": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 64,
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])$",
+      "description": "Public route slug reserved when a candidate becomes an organizer draft. It is intentionally separate from entityId."
+    },
+    "fieldProvenance": {
+      "$ref": "../operations/work_item.schema.json#/properties/fieldProvenance",
+      "description": "Source artifact lineage for each field projected into the organizer draft."
+    },
     "decision": {
       "type": "string",
       "enum": [

@@ -7,7 +7,11 @@
   "additionalProperties": false,
   "required": ["name", "description", "location", "area"],
   "properties": {
-    "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "clubId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9]{20}$",
+      "description": "Optional Firestore auto-id reserved by a legacy client. Human-readable slugs are separate publicPage fields."
+    },
     "name": {"type": "string", "minLength": 1, "maxLength": 120},
     "description": {"type": "string", "minLength": 1, "maxLength": 2000},
     "location": {"$ref": "../shared/event_common.schema.json#/definitions/marketId"},

@@ -24,6 +24,24 @@ export interface OrganizerIntakeCurationDecisionDocument {
   sourceCandidateId?: string;
   sourceWorkItemId?: string;
   sourceNormalizedKey?: string;
+  /**
+   * Public route slug reserved when a candidate becomes an organizer draft. It is intentionally separate from entityId.
+   */
+  publicSlug?: string;
+  /**
+   * Source artifact lineage for each field projected into the organizer draft.
+   *
+   * @maxItems 200
+   */
+  fieldProvenance?: {
+    field: string;
+    artifactId: string;
+    contentHash: string;
+    locator: string | null;
+    extractedBy: "deterministic" | "model" | "human";
+    extractorVersion: string;
+    confidence: number | null;
+  }[];
   decision?:
     | "accept_primary"
     | "accept_secondary"

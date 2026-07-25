@@ -120,13 +120,9 @@ export function surfaceForCandidateCuration(
 export function organizerDraftFormFromCandidate(
   candidate: Intake.OrganizerSearchCandidate
 ): Intake.OrganizerDraftFormState {
-  const description = candidate.reviewContext?.reviewNotes?.trim() ||
-    candidate.snippet?.trim() ||
-    `Source-backed organizer candidate discovered from ${candidate.platform}.`;
   return {
-    organizerId: organizerSlug(candidate.title),
+    publicSlug: organizerSlug(candidate.title),
     name: candidate.title.trim(),
-    description,
     organizerType: "community",
     reviewNote:
       `Create an unclaimed draft from reviewed candidate ${candidate.candidateId}.`,
@@ -138,11 +134,10 @@ export function organizerDraftPayloadForCandidate(
   form: Intake.OrganizerDraftFormState
 ): {ok: true; value: AdminCreateOrganizerDraftFromCandidatePayload} |
   {ok: false; message: string} {
-  const organizerId = organizerSlug(form.organizerId);
+  const publicSlug = organizerSlug(form.publicSlug);
   const name = form.name.trim();
-  const description = form.description.trim();
   const reviewNote = form.reviewNote.trim();
-  if (organizerId.length < 3 || organizerId.length > 64) {
+  if (publicSlug.length < 3 || publicSlug.length > 64) {
     return {
       ok: false,
       message: "Enter a 3–64 character lowercase organizer slug.",
@@ -150,12 +145,6 @@ export function organizerDraftPayloadForCandidate(
   }
   if (!name || name.length > 120) {
     return {ok: false, message: "Enter an organizer name under 120 characters."};
-  }
-  if (!description || description.length > 2000) {
-    return {
-      ok: false,
-      message: "Enter a source-backed description under 2,000 characters.",
-    };
   }
   if (reviewNote.length < 10 || reviewNote.length > 500) {
     return {
@@ -168,9 +157,8 @@ export function organizerDraftPayloadForCandidate(
     value: {
       workItemId: candidate.workItemId,
       candidateId: candidate.candidateId,
-      organizerId,
+      publicSlug,
       name,
-      description,
       organizerType: form.organizerType,
       reviewNote,
     },

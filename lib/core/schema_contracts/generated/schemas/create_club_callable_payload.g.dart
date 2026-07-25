@@ -20,8 +20,8 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
   'properties': <String, Object?>{
     'clubId': <String, Object?>{
       'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
+      'pattern': '^[A-Za-z0-9]{20}\$',
+      'description': 'Optional Firestore auto-id reserved by a legacy client. Human-readable slugs are separate publicPage fields.',
     },
     'name': <String, Object?>{
       'type': 'string',

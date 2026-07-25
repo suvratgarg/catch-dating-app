@@ -14,6 +14,8 @@ import type {
   OrganizerSurfaceDecision,
   OrganizerVerificationStatus,
 } from "../../../../shared/types/adminTypes";
+import type {OperationFieldProvenance} from
+  "../../../../shared/operations/operationsTypes";
 
 export interface OrganizerIntakeBridge {
   schemaVersion: number;
@@ -1687,6 +1689,7 @@ export interface OrganizerSearchCandidate {
   existingEntityMatches: OrganizerExistingEntityMatch[];
   reviewAction: string;
   diagnostics: string[];
+  fieldProvenance?: OperationFieldProvenance[];
   reviewContext?: OrganizerSearchCandidateReviewContext;
   draftLink?: OrganizerCandidateDraftLink;
 }
@@ -1699,9 +1702,8 @@ export interface OrganizerCandidateDraftLink {
 }
 
 export interface OrganizerDraftFormState {
-  organizerId: string;
+  publicSlug: string;
   name: string;
-  description: string;
   organizerType:
     | "club"
     | "community"

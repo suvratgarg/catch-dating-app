@@ -292,7 +292,7 @@ test("organizer search candidates become database-ready organizer work items", a
     schemaVersion: 1,
     runId: "run-organizer-candidates",
     workflowId: "supply-intake",
-    workflowVersion: "0.1.0",
+    workflowVersion: "0.1.1",
     revision: 0,
     mode: "shadow",
     status: "completed",
@@ -328,6 +328,24 @@ test("organizer search candidates become database-ready organizer work items", a
       verifiedAt: "2026-07-14",
     }
   );
+  assert.deepEqual(
+    projection.items[0].fieldProvenance.map((entry) => entry.field),
+    [
+      "sourceEntity.title",
+      "source.url",
+      "intake.candidate.title",
+      "intake.candidate.canonicalUrl",
+      "intake.candidate.snippet",
+      "intake.candidate.queryIntent.marketSlug",
+      "intake.candidate.reviewContext.formats",
+      "intake.candidate.reviewContext.reviewNotes",
+      "intake.candidate.reviewContext.verifiedAt",
+    ]
+  );
+  assert.ok(projection.items[0].fieldProvenance.slice(2).every((entry) =>
+    entry.extractedBy === "deterministic" &&
+    entry.locator?.includes("#normalizedPayload.intake.candidate")
+  ));
   assert.deepEqual(projection.run.metadata.organizerReviewPolicy, {
     shortlistId: "fixture-organizer-review",
     generatedAt: NOW,

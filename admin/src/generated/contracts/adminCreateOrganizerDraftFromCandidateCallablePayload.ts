@@ -8,9 +8,11 @@
 export interface AdminCreateOrganizerDraftFromCandidateCallablePayload {
   workItemId: string;
   candidateId: string;
-  organizerId: string;
+  /**
+   * Human-readable public route slug. The callable allocates a separate opaque Firestore organizer document id.
+   */
+  publicSlug: string;
   name: string;
-  description: string;
   /**
    * Canonical organizer classification. Club is one organizer subtype; missing legacy values normalize to club during migration.
    */

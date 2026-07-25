@@ -199,9 +199,8 @@
       "example": {
         "workItemId": "example-organizer-work-item",
         "candidateId": "example-organizer-candidate",
-        "organizerId": "example-organizer",
+        "publicSlug": "example-organizer",
         "name": "Example organizer",
-        "description": "Reviewed source-backed organizer draft.",
         "organizerType": "community",
         "reviewNote": "Fixture organizer draft; do not apply to production."
       }

@@ -22,7 +22,7 @@ import {
 
 export const MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN = MAX_WORK_ITEMS_PER_RUN;
 export const SUPPLY_INTAKE_WORKFLOW_ID = "supply-intake";
-export const SUPPLY_INTAKE_WORKFLOW_VERSION = "0.1.0";
+export const SUPPLY_INTAKE_WORKFLOW_VERSION = "0.1.1";
 const SUPPLY_INTAKE_STALE_AFTER_HOURS = 168;
 const SUPPLY_INTAKE_SCOPES = Object.freeze(["all", "organizer"]);
 
@@ -533,7 +533,7 @@ function baseWorkItem({
     adminProjection,
     decisionProvenance: {
       actorKind: "legacy_projection",
-      actorId: "supply-intake-v0.1.0",
+      actorId: "supply-intake-v0.1.1",
       decision: "pending_deterministic_review",
       decidedAt: now,
       inputHash: hashValue(raw),
@@ -891,7 +891,7 @@ function outcome(item, {primaryStage, lifecycleStatus = "active", blockers, task
     },
     decisionProvenance: {
       actorKind: "deterministic_rule_engine",
-      actorId: "supply-intake-v0.1.0",
+      actorId: "supply-intake-v0.1.1",
       decision: `${primaryStage}:${lifecycleStatus}`,
       decidedAt: now,
       inputHash: hashValue(item.raw),

@@ -8,6 +8,9 @@ import {UploadedPhoto} from "./uploadedPhoto";
  * Callable payload accepted by createOrganizer.
  */
 export interface CreateOrganizerCallablePayload {
+  /**
+   * Optional Firestore auto-id reserved by the client before media upload. Human-readable slugs are server-owned publicPage fields.
+   */
   organizerId?: string;
   name: string;
   description: string;

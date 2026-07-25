@@ -25,6 +25,12 @@ import {
 import {marketForIdOrAlias} from "../locations/marketConfig";
 import {normalizeCreateOrganizerPayload} from
   "./organizerPayloadNormalization";
+import {
+  defaultOrganizerPublicSlug,
+  requireFirestoreAutoId,
+} from "./organizerIdentity";
+import {reserveOrganizerCanonicalRoute} from
+  "../admin/organizerPublishingGuards";
 
 interface CreateOrganizerDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -34,12 +40,14 @@ interface CreateOrganizerDeps {
     uid: string,
     action: string
   ) => Promise<void>;
+  reserveCanonicalRoute?: typeof reserveOrganizerCanonicalRoute;
 }
 
 const defaultDeps: CreateOrganizerDeps = {
   firestore: () => admin.firestore(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   checkRateLimit: defaultCheckRateLimit,
+  reserveCanonicalRoute: reserveOrganizerCanonicalRoute,
 };
 
 /** Creates the canonical organizer and a temporary legacy club shadow. */
@@ -64,9 +72,11 @@ export async function createOrganizerHandler(
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, ownerUid, "createOrganizer");
   const organizerRef = data.organizerId ?
-    db.collection("organizers").doc(assertSafeOrganizerId(data.organizerId)) :
+    db.collection("organizers").doc(requireFirestoreAutoId(data.organizerId)) :
     db.collection("organizers").doc();
   const organizerId = organizerRef.id;
+  const publicSlug = defaultOrganizerPublicSlug(data.name, organizerId);
+  const canonicalPath = `/organizers/${publicSlug}/`;
   const legacyClubRef = db.collection("clubs").doc(organizerId);
   const teamRef = db.collection("organizerTeamMemberships")
     .doc(organizerRelationshipId(organizerId, ownerUid));
@@ -113,6 +123,19 @@ export async function createOrganizerHandler(
       data.logoPhoto
     );
     const timestamp = deps.serverTimestamp();
+    await (deps.reserveCanonicalRoute ?? reserveOrganizerCanonicalRoute)(
+      tx,
+      db,
+      {
+        clubId: organizerId,
+        canonicalPath,
+        slug: publicSlug,
+        citySlug: market.slug,
+        adminUid: ownerUid,
+        source: "createOrganizer",
+        serverTimestamp: deps.serverTimestamp,
+      }
+    );
     const common = {
       name: data.name,
       description: data.description,
@@ -167,9 +190,9 @@ export async function createOrganizerHandler(
         lastClaimRequestId: null,
       },
       publicPage: {
-        slug: organizerId,
+        slug: publicSlug,
         citySlug: market.slug,
-        canonicalPath: `/organizers/${organizerId}/`,
+        canonicalPath,
         publishStatus: "draft",
         indexStatus: "noindex",
         robots: "noindex, follow",
@@ -234,16 +257,6 @@ export const createOrganizer = onCall(
   appCheckCallableOptions,
   (request) => createOrganizerHandler(request)
 );
-
-function assertSafeOrganizerId(organizerId: string): string {
-  if (!/^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])?$/.test(organizerId)) {
-    throw new HttpsError(
-      "invalid-argument",
-      "Organizer id must be 3-64 lowercase letters, numbers, or hyphens."
-    );
-  }
-  return organizerId;
-}
 
 function primaryPhotoUrl(photos: unknown[] | undefined): string | null {
   if (!Array.isArray(photos) || photos.length === 0) return null;

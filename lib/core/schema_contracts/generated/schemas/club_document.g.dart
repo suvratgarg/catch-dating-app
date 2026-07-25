@@ -62,8 +62,8 @@ const schemaClubDocumentSchema = <String, Object?>{
     },
     'description': <String, Object?>{
       'type': 'string',
-      'minLength': 1,
       'maxLength': 2000,
+      'description': 'Member-facing organizer description. May be empty on hidden intake drafts until an operator supplies source-backed copy.',
       'x-catch-ownership': 'callable-owned',
     },
     'location': <String, Object?>{
@@ -90,8 +90,8 @@ const schemaClubDocumentSchema = <String, Object?>{
     },
     'area': <String, Object?>{
       'type': 'string',
-      'minLength': 1,
       'maxLength': 120,
+      'description': 'Verified locality within the canonical market. May be empty when intake evidence establishes only the city.',
       'x-catch-ownership': 'callable-owned',
     },
     'hostUserId': <String, Object?>{
