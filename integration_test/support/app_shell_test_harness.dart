@@ -365,7 +365,11 @@ List<Object> appShellTestOverrides({
     ),
     if (imageUploadRepository != null)
       imageUploadRepositoryProvider.overrideWithValue(imageUploadRepository),
-    if (fcmService != null) fcmServiceProvider.overrideWithValue(fcmService),
+    fcmServiceProvider.overrideWithValue(
+      initializeFcm && fcmService != null
+          ? fcmService
+          : UnsupportedTestFcmService(),
+    ),
     for (final club in clubs) ...[
       watchClubProvider(club.id).overrideWith((ref) => Stream.value(club)),
       watchEventsForClubProvider(club.id).overrideWithValue(
@@ -451,8 +455,6 @@ List<Object> appShellTestOverrides({
       const _FakeEventCheckInLocationService(),
     ),
     if (uid != null) ...[
-      if (!initializeFcm)
-        appShellFcmInitializationProvider(uid).overrideWith((ref) async {}),
       watchSignedUpEventsProvider(
         uid,
       ).overrideWithValue(AsyncData<List<Event>>(signedUpEvents)),
@@ -608,6 +610,14 @@ class RecordingFcmService extends FcmService {
   }) async {
     initializedUids.add(uid);
   }
+}
+
+class UnsupportedTestFcmService extends FcmService {
+  UnsupportedTestFcmService()
+    : super(FakeFirebaseFirestore(), ErrorLogger.silent());
+
+  @override
+  bool get isSupportedPlatform => false;
 }
 
 class RecordingCrashReporter implements CrashReporter {

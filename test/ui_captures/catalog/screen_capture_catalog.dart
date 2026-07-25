@@ -40,7 +40,6 @@ import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
-import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
@@ -2664,7 +2663,6 @@ List<Object> _hostShellCaptureOverrides(String uid, {int unreadCount = 0}) {
       (ref) =>
           Stream.value(const <ConnectivityResult>[ConnectivityResult.wifi]),
     ),
-    appShellFcmInitializationProvider(uid).overrideWith((ref) async {}),
     totalUnreadCountProvider(uid).overrideWithValue(unreadCount),
   ];
 }

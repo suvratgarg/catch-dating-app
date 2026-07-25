@@ -3231,7 +3231,7 @@ class _MyAppScopeState extends State<_MyAppScope> {
           (ref) => Stream<UserProfile?>.value(null),
         ),
       ],
-      child: const MyApp(),
+      child: MyApp(routerProvider: goRouterProvider),
     );
   }
 }

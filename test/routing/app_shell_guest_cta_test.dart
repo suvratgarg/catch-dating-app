@@ -3,16 +3,19 @@ import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -197,6 +200,7 @@ void main() {
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
           appShellFcmInitializationProvider(
             'runner-1',
+            router,
           ).overrideWith((ref) async {}),
           watchMatchesForUserProvider(
             'runner-1',
@@ -507,10 +511,7 @@ Widget _authenticatedShellProviderScope({
           initialAppLocationProvider.overrideWith((ref) => initialLocation),
         // ignore: scoped_providers_should_specify_dependencies
         uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-        // ignore: scoped_providers_should_specify_dependencies
-        appShellFcmInitializationProvider(
-          'runner-1',
-        ).overrideWith((ref) async {}),
+        fcmServiceProvider.overrideWithValue(_UnsupportedFcmService()),
         // ignore: scoped_providers_should_specify_dependencies
         watchMatchesForUserProvider(
           'runner-1',
@@ -565,4 +566,12 @@ final class _NoOpAnalyticsReporter implements AnalyticsReporter {
 
   @override
   Future<void> setUserId(String? userId) async {}
+}
+
+class _UnsupportedFcmService extends FcmService {
+  _UnsupportedFcmService()
+    : super(FakeFirebaseFirestore(), ErrorLogger.silent());
+
+  @override
+  bool get isSupportedPlatform => false;
 }

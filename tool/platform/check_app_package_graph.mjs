@@ -98,20 +98,23 @@ export function scanAppPackageGraphs({
       findings.push(`${role}: missing ${path.relative(root, pubspecPath)}.`);
       continue;
     }
-    if (!fs.existsSync(pluginsPath)) {
-      findings.push(
-        `${role}: missing ${path.relative(root, pluginsPath)}; run flutter pub get.`,
-      );
-      continue;
-    }
     const pubspecSource = fs.readFileSync(pubspecPath, "utf8");
     if (!/^resolution:\s+workspace\s*$/mu.test(pubspecSource)) {
       findings.push(`${role}: pubspec must use the repository workspace lock.`);
     }
     const declaredPackages = declaredPackageNamesFromPubspec(pubspecSource);
-    const pluginPackages = pluginNamesFromMetadata(
-      fs.readFileSync(pluginsPath, "utf8"),
-    );
+    const policyPluginNames = new Set([
+      ...contract.requiredPlugins,
+      ...contract.forbiddenPlugins,
+    ]);
+    const hasGeneratedPluginMetadata = fs.existsSync(pluginsPath);
+    const pluginPackages = hasGeneratedPluginMetadata
+      ? pluginNamesFromMetadata(fs.readFileSync(pluginsPath, "utf8"))
+      : new Set(
+          [...declaredPackages].filter((packageName) =>
+            policyPluginNames.has(packageName)
+          ),
+        );
     findings.push(
       ...validateRoleGraph({
         role,
@@ -124,6 +127,9 @@ export function scanAppPackageGraphs({
       projectRoot: contract.projectRoot,
       declaredPackageCount: declaredPackages.size,
       pluginCount: pluginPackages.size,
+      pluginMetadataSource: hasGeneratedPluginMetadata
+        ? "flutter-generated"
+        : "declared-policy-plugins",
       hasHealth: declaredPackages.has("health"),
       hasRazorpay: declaredPackages.has("razorpay_flutter"),
     };

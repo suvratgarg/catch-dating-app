@@ -132,6 +132,12 @@ output boundary. Do not expand the per-file plan into an environment variable:
 large pull requests can exceed the operating system argument limit before the
 summary shell even starts.
 
+The app package-graph gate must also work in a clean checkout before
+`flutter pub get`. It validates governed native-package declarations directly
+from each app package and enriches the report with Flutter-generated plugin
+metadata when available. Release receipt checks remain the authoritative proof
+that forbidden native frameworks are absent from the compiled Host payload.
+
 The current workflows are:
 
 | Workflow | Purpose |

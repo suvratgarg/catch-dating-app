@@ -49,7 +49,10 @@ void main() {
           appConnectivityProvider.overrideWith(
             (ref) => Stream.value(const [ConnectivityResult.wifi]),
           ),
-          appShellFcmInitializationProvider(_uid).overrideWith((ref) async {}),
+          appShellFcmInitializationProvider(
+            _uid,
+            router,
+          ).overrideWith((ref) async {}),
           errorLoggerProvider.overrideWithValue(ErrorLogger()),
           appAnalyticsProvider.overrideWithValue(AppAnalytics()),
         ],
@@ -135,6 +138,7 @@ void main() {
             ),
             appShellFcmInitializationProvider(
               _uid,
+              router,
             ).overrideWith((ref) async {}),
             errorLoggerProvider.overrideWithValue(ErrorLogger()),
             appAnalyticsProvider.overrideWithValue(AppAnalytics()),

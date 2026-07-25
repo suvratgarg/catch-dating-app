@@ -90,6 +90,11 @@
           "docAnchor": "docs/audit_registry/README.md#workflow"
         },
         {
+          "tool": "docs:build-state",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/release_operations.md#required-pr-checks"
+        },
+        {
           "stage": "manual",
           "docAnchor": "docs/audit_registry/rules.json"
         }
@@ -203,6 +208,11 @@
           "tool": "agent:readiness",
           "stage": "scanner-gate",
           "docAnchor": "docs/agent_operating_model.md#done-criteria-for-this-harness"
+        },
+        {
+          "tool": "ci:plan",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/release_operations.md#required-pr-checks"
         },
         {
           "tool": "design:feature-coverage",
@@ -2691,6 +2701,16 @@
         },
         {
           "tool": "platform:flutter-target-wrapper",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#installable-app-target-contract"
+        },
+        {
+          "tool": "platform:app-package-graphs",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#installable-app-target-contract"
+        },
+        {
+          "tool": "platform:mobile-package-policy",
           "stage": "scanner-gate",
           "docAnchor": "docs/app_architecture.md#installable-app-target-contract"
         },

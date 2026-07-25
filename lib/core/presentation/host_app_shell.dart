@@ -41,8 +41,10 @@ class HostAppShell extends ConsumerWidget {
     if (isAuthenticated) {
       // Reuse the shared FCM-init provider so host and consumer shells cannot
       // drift apart.
-      ref.watch(appShellFcmInitializationProvider(uid));
-      ref.listen(appShellFcmInitializationProvider(uid), (previous, next) {
+      final router = GoRouter.of(context);
+      final fcmInitialization = appShellFcmInitializationProvider(uid, router);
+      ref.watch(fcmInitialization);
+      ref.listen(fcmInitialization, (previous, next) {
         if (!next.hasError) return;
         FlutterError.reportError(
           FlutterErrorDetails(

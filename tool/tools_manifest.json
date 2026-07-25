@@ -199,7 +199,7 @@
         "path": "tool/flutter_with_env.test.sh",
         "contains": [
           "resolves flavor 'host-prod'; caller supplied 'prod'",
-          "resolves entrypoint 'lib/main_host_prod.dart'; caller supplied 'lib/main_consumer_prod.dart'"
+          "resolves entrypoint 'lib/main_prod.dart'; caller supplied 'lib/main_consumer_prod.dart'"
         ]
       }
     },
@@ -2133,7 +2133,7 @@
       "command": "node tool/platform/check_app_package_graph.mjs",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Verifies Consumer-only native SDKs are declared and registered for Consumer while absent from the Host package declaration and generated plugin graph; both apps share one repository workspace lock.",
+      "description": "Verifies Consumer-only native SDK declarations in clean checkouts, enriches reports with generated plugin metadata when available, and keeps both apps on one repository workspace lock.",
       "checks": [
         "node --check tool/platform/check_app_package_graph.mjs",
         "node --test tool/platform/check_app_package_graph.test.mjs",
@@ -3602,10 +3602,10 @@
       "id": "ui-capture:route-inventory",
       "category": "ui-capture",
       "path": "tool/ui_capture/check_route_inventory.mjs",
-      "command": "node tool/ui_capture/check_route_inventory.mjs",
+      "command": "node tool/ui_capture/check_route_inventory.mjs --check",
       "safety": "local-writes-generated",
       "status": "active",
-      "description": "Generates and checks the named route inventory that keeps UI captures aligned with go_router.dart, including semantic nested-path checks and a redirect-only exception for retired raw legacy paths.",
+      "description": "Generates and checks the named route inventory against route_contract.dart identities and go_router.dart runtime wiring, including semantic nested-path checks and a redirect-only exception for retired raw legacy paths.",
       "checks": [
         "node --check tool/ui_capture/check_route_inventory.mjs",
         "node --test tool/ui_capture/check_route_inventory_test.mjs",

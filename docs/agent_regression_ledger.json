@@ -1,5 +1,5 @@
 {
-  "version": 107,
+  "version": 109,
   "updated": "2026-07-25",
   "owner": "agent_operating_model",
   "entries": [
@@ -3347,6 +3347,74 @@
         "docs/agent_operating_model.md"
       ],
       "notes": "Use files or artifacts for unbounded structured data. GitHub step and job outputs are control signals, not a transport for full monorepo inventories."
+    },
+    {
+      "id": "REG-CI-CLEAN-CHECKOUT-PACKAGE-GRAPH-001",
+      "title": "Static app package checks depend on ignored Flutter output",
+      "status": "active",
+      "applies_to": [
+        ".github/workflows/app-build-matrix.yml",
+        "tool/platform/check_app_package_graph.mjs",
+        "tool/platform/check_app_package_graph.test.mjs"
+      ],
+      "symptom": "The app-target contract passes locally after Flutter tooling has run but fails immediately in CI because ignored .flutter-plugins-dependencies files do not exist in a clean checkout.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/platform/check_app_package_graph.test.mjs && node tool/platform/check_app_package_graph.mjs",
+        "guardEvidence": "a clean-checkout fixture proves the static declaration boundary without generated files, optional Flutter metadata enriches local reports, and compiled release receipts enforce actual native payload contents"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/release_operations.md"
+      ],
+      "notes": "CI contract checks must not rely on ignored local state. Source declarations provide the pre-resolution policy boundary; built artifact inspection provides the final native-payload boundary."
+    },
+    {
+      "id": "REG-ROUTE-CONTRACT-INVENTORY-SOURCE-001",
+      "title": "Route inventory scanners read runtime router wiring as the route contract",
+      "status": "active",
+      "applies_to": [
+        "design/public_surface_behavior.json",
+        "lib/routing/route_contract.dart",
+        "lib/routing/go_router.dart",
+        "tool/ui_capture/check_route_inventory.mjs",
+        "tool/ui_capture/route_inventory.json"
+      ],
+      "symptom": "Marketing or visual-integration CI reports missing routes after route constants move into the canonical route contract while runtime guards remain in go_router.dart.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/design/check_public_surface_behavior.mjs && node tool/ui_capture/check_route_inventory.mjs --check",
+        "guardEvidence": "route identity and enum inventory come from route_contract.dart while runtime redirect and navigator evidence continue to come from go_router.dart"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/release_operations.md"
+      ],
+      "notes": "Scanners must follow source-of-truth ownership instead of assuming one implementation file owns both stable route identity and runtime routing behavior."
+    },
+    {
+      "id": "REG-SHELL-ROUTER-SCOPE-001",
+      "title": "Shell services rely on a router provider override beneath MaterialApp.router",
+      "status": "active",
+      "applies_to": [
+        "lib/app.dart",
+        "lib/core/presentation/app_shell.dart",
+        "lib/core/presentation/host_app_shell.dart",
+        "lib/core/fcm_service.dart",
+        "test/integration/app_shell_smoke_test.dart",
+        "test/routing/app_shell_guest_cta_test.dart",
+        "test/routing/host_shell_navigation_test.dart"
+      ],
+      "symptom": "A shell-mounted service resolves the default router provider or fails in tests because GoRouter navigator content is built outside the nested ProviderScope expected by the service.",
+      "guard": {
+        "type": "command",
+        "command": "flutter test --concurrency=1 test/integration/app_shell_smoke_test.dart test/routing/app_shell_guest_cta_test.dart test/routing/host_shell_navigation_test.dart",
+        "guardEvidence": "the Consumer and Host shells pass GoRouter.of(context) explicitly to FCM initialization, and authenticated production-router tests prove the dependency survives real navigator construction"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md"
+      ],
+      "notes": "UI-bound navigation dependencies belong at the shell composition boundary. A hidden global provider override is both harder to reason about and unreliable across router-owned navigator trees."
     }
   ]
 }

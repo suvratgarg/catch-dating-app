@@ -1804,9 +1804,11 @@ Rules:
   Shared product code remains in `catch_dating_app`, but native SDKs belong to
   the app package that uses them. Health and Razorpay adapters are Consumer
   dependencies; Host must compile without either plugin.
-- Shared services navigate through `activeGoRouterProvider`, which is
-  overridden below the selected app root. Importing a product router from a
-  shared service is a composition-boundary violation.
+- Shared services that need navigation receive the active `GoRouter`
+  explicitly from the Consumer or Host shell. A provider override below
+  `MaterialApp.router` is not a reliable navigation dependency boundary because
+  `GoRouter` owns navigator construction. Importing a product router from a
+  shared service remains a composition-boundary violation.
 - Consumer routing must not mount host create/edit/manage screens. Consumer
   surfaces may show host identity and public event/organizer information, but not
   host-management affordances.

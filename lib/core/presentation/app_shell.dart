@@ -19,7 +19,6 @@ import 'package:catch_dating_app/events/data/event_participation_repository.dart
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
-import 'package:catch_dating_app/routing/active_router.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/cupertino.dart';
@@ -36,14 +35,15 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'app_shell.g.dart';
 
 @riverpod
-Future<void> appShellFcmInitialization(Ref ref, String uid) async {
+Future<void> appShellFcmInitialization(
+  Ref ref,
+  String uid,
+  GoRouter router,
+) async {
   final fcmService = ref.watch(fcmServiceProvider);
   if (!fcmService.isSupportedPlatform) return;
 
-  await fcmService.initialize(
-    uid: uid,
-    router: ref.read(activeGoRouterProvider),
-  );
+  await fcmService.initialize(uid: uid, router: router);
 }
 
 class AppShell extends ConsumerWidget {
@@ -72,8 +72,10 @@ class AppShell extends ConsumerWidget {
     final analytics = ref.read(appAnalyticsProvider);
 
     if (isAuthenticated) {
-      ref.watch(appShellFcmInitializationProvider(uid));
-      ref.listen(appShellFcmInitializationProvider(uid), (previous, next) {
+      final router = GoRouter.of(context);
+      final fcmInitialization = appShellFcmInitializationProvider(uid, router);
+      ref.watch(fcmInitialization);
+      ref.listen(fcmInitialization, (previous, next) {
         if (!next.hasError) return;
         FlutterError.reportError(
           FlutterErrorDetails(

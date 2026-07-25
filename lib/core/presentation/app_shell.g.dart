@@ -17,7 +17,7 @@ final class AppShellFcmInitializationProvider
     with $FutureModifier<void>, $FutureProvider<void> {
   AppShellFcmInitializationProvider._({
     required AppShellFcmInitializationFamily super.from,
-    required String super.argument,
+    required (String, GoRouter) super.argument,
   }) : super(
          retry: null,
          name: r'appShellFcmInitializationProvider',
@@ -33,7 +33,7 @@ final class AppShellFcmInitializationProvider
   String toString() {
     return r'appShellFcmInitializationProvider'
         ''
-        '($argument)';
+        '$argument';
   }
 
   @$internal
@@ -43,8 +43,8 @@ final class AppShellFcmInitializationProvider
 
   @override
   FutureOr<void> create(Ref ref) {
-    final argument = this.argument as String;
-    return appShellFcmInitialization(ref, argument);
+    final argument = this.argument as (String, GoRouter);
+    return appShellFcmInitialization(ref, argument.$1, argument.$2);
   }
 
   @override
@@ -60,10 +60,10 @@ final class AppShellFcmInitializationProvider
 }
 
 String _$appShellFcmInitializationHash() =>
-    r'a38ecd719e871d59e6343383445db2805e6574ca';
+    r'413f4a2549affd193ee65ae82094f97e0a293f37';
 
 final class AppShellFcmInitializationFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<void>, String> {
+    with $FunctionalFamilyOverride<FutureOr<void>, (String, GoRouter)> {
   AppShellFcmInitializationFamily._()
     : super(
         retry: null,
@@ -73,8 +73,8 @@ final class AppShellFcmInitializationFamily extends $Family
         isAutoDispose: true,
       );
 
-  AppShellFcmInitializationProvider call(String uid) =>
-      AppShellFcmInitializationProvider._(argument: uid, from: this);
+  AppShellFcmInitializationProvider call(String uid, GoRouter router) =>
+      AppShellFcmInitializationProvider._(argument: (uid, router), from: this);
 
   @override
   String toString() => r'appShellFcmInitializationProvider';
