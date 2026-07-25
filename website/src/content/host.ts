@@ -1,5 +1,11 @@
 import type {FaqItem, PlaybookModule, PlaybookStage, SectionCopy} from "./types";
 
+export const hostHeroCopy = {
+  kicker: "Catch for hosts",
+  stageCaption:
+    "The host console: check-in, live modules, and the roster in one screen.",
+} as const;
+
 export const playbook = {
   eyebrow: "THE PLAYBOOK",
   title: "A better room, without more work for the host.",

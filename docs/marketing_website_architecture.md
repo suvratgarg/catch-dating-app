@@ -372,6 +372,22 @@ The website is already split out of the old monolithic shell:
   uses the shared event-detail primitives for a ticket plus organizer/action
   rail at wide viewports and a single-column, app-aligned stack on mobile;
   shared Catch tokens own its type, color, spacing, radius, and activity accent.
+- `website/src/styles/catch-language.css` is the single design-language layer,
+  imported in `styles.css` immediately after `base.css`. It owns the motion
+  duration/easing tokens, the Archivo `font-stretch: 78%` voice axis, the
+  `.catch-kicker`/`.catch-data` helpers, the `.catch-dark` dark-surface
+  variable remap (including derived `color-mix` values and focus ring), the
+  `[data-activity]` pigment map, and the warm matte photo grade. Route
+  stylesheets consume the generated `--catch-*` tokens and these helpers rather
+  than re-declaring design values. The former `organizer-public.css` aggregate
+  was folded into `home.css`, `organizers.css`, and `flows.css` and deleted.
+- Home and Host heroes are dark "wow" surfaces: their shells add `.catch-dark`,
+  `SiteHeader` accepts a `tone="dark"` prop so chrome reads correctly over them,
+  and hero stages show real app captures in the shared phone-capture frame
+  instead of invented product mock panels or metrics. `SiteHeader` also owns
+  the mobile menu dialog; its labels arrive via the required `menuCopy` prop
+  from `content/site.ts` (`siteMenuCopy`) so shared chrome never imports
+  route-specific content.
 
 The next refactor should focus on page and style decomposition, not another
 top-level framework rewrite. The largest current files are page or style
@@ -727,13 +743,13 @@ website/src/
     hostListings.json
   styles/
     base.css
+    catch-language.css
     site-shell.css
     site-footer.css
     home.css
     host-foundation.css
     host.css
     organizers.css
-    organizer-public.css
     flows.css
     reveal.css
     responsive.css

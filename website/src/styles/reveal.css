@@ -1,11 +1,33 @@
+/*
+ * Scroll reveal choreography. Driven by the IntersectionObserver in
+ * usePageLifecycle.ts, which adds .is-visible when [data-reveal] enters the
+ * viewport. Stagger with an inline --reveal-delay (ms) on siblings.
+ * Motion uses the Catch tokens and is fully disabled for reduced motion.
+ */
 
 [data-reveal] {
   opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 520ms ease, transform 520ms ease;
+  transform: translateY(22px);
+  transition:
+    opacity var(--catch-motion-slow) var(--catch-ease-standard),
+    transform var(--catch-motion-slow) var(--catch-ease-standard);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+[data-reveal="scale"] {
+  transform: translateY(14px) scale(0.975);
 }
 
 [data-reveal].is-visible {
   opacity: 1;
   transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }

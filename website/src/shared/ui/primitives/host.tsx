@@ -39,7 +39,7 @@ export function HostHeroShell({
   children: ReactNode;
 }) {
   return (
-    <section {...props} className={classNames("host-hero", className)}>
+    <section {...props} className={classNames("host-hero catch-dark", className)}>
       {children}
     </section>
   );

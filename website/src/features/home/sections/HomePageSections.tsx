@@ -1,3 +1,4 @@
+import type {CSSProperties} from "react";
 import {websiteCopy} from "@content/generated";
 import {SectionHeader} from "../../../shared/site";
 import {
@@ -8,37 +9,33 @@ import {
   CaptureGrid,
   type CaptureRecord,
   ContentGrid,
-  ControlRow,
   EmptyState,
-  EventTicketMeta,
-  EventTicketStatus,
   FeaturedOrganizerCardGrid,
   FeaturedOrganizersCta,
+  HeroAccent,
   HomeHeroBody,
   HomeHeroCopy,
   HomeHeroInner,
-  HomeHeroMedia,
   HomeHeroShell,
-  LiveMeter,
+  HomeHeroStage,
+  MarketingFormatCard,
   MarketingInfoCardGrid,
   MarketingLoopList,
-  MarketingFormatCard,
   MarketingSection,
   MarketingSectionCopy,
-  PanelShell,
+  PhoneCaptureShell,
   PublicEventCard,
   PublicSearchBar,
   type PublicEventCardModel,
   type PublicSearchSuggestion,
-  ProductBoardCard,
-  ProductBoardMain,
-  ProductBoardNav,
-  ProductShell,
   UiLabel,
   WaitlistSection,
 } from "../../../shared/ui/primitives";
 import {
+  capturesFallbackSteps,
   formatCards,
+  homeDiscoveryEmptyCopy,
+  homeHeroCopy,
   memberLoop,
   trustItems,
 } from "@content/marketing";
@@ -56,29 +53,28 @@ import {
 } from "../../organizers/selectors";
 import {WaitlistForm} from "../../waitlist/WaitlistForm";
 
-export function HomeHeroSection() {
+export function HomeHeroSection({captures}: {captures: Record<string, CaptureRecord>}) {
   const appDownloadCtas = useAppDownloadCtas({placement: "home_hero"});
+  const stageCapture = captures["member-event-discovery"];
 
   return (
     <HomeHeroShell>
-      <HomeHeroMedia aria-hidden="true">
-        <img
-          src="/assets/marketing/catch-hero-event-1280.jpg"
-          srcSet="/assets/marketing/catch-hero-event-960.jpg 960w, /assets/marketing/catch-hero-event-1280.jpg 1280w, /assets/marketing/catch-hero-event-1680.jpg 1680w"
-          sizes="100vw"
-          width="1681"
-          height="936"
-          fetchPriority="high"
-          decoding="async"
-          alt=""
-        />
-      </HomeHeroMedia>
-
       <HomeHeroInner>
         <HomeHeroCopy>
-          <h1 data-reveal>{websiteCopy["homepagesections_0157"]}</h1>
-          <HomeHeroBody reveal>{websiteCopy["homepagesections_0138"]}</HomeHeroBody>
-          <ActionGroup variant="hero" reveal>
+          <UiLabel>{homeHeroCopy.kicker}</UiLabel>
+          <h1 data-reveal style={{"--reveal-delay": "70ms"} as CSSProperties}>
+            {homeHeroCopy.titleBefore}
+            <HeroAccent>{homeHeroCopy.titleAccent}</HeroAccent>
+            {homeHeroCopy.titleAfter}
+          </h1>
+          <HomeHeroBody reveal style={{"--reveal-delay": "150ms"} as CSSProperties}>
+            {websiteCopy["homepagesections_0138"]}
+          </HomeHeroBody>
+          <ActionGroup
+            reveal
+            style={{"--reveal-delay": "230ms"} as CSSProperties}
+            variant="hero"
+          >
             <ButtonLink
               href="/organizers/"
               onClick={() => trackCtaClick("home_hero_browse_events", "/organizers/")}
@@ -92,21 +88,18 @@ export function HomeHeroSection() {
           <AppDownloadCtaGroup {...appDownloadCtas} />
         </HomeHeroCopy>
 
-        <PanelShell variant="hero" as="aside" aria-label={websiteCopy["homepagesections_0127"]} reveal>
-          <PanelShell variant="event-ticket">
-            <div>
-              <UiLabel>{websiteCopy["homepagesections_0167"]}</UiLabel>
-              <h2>{websiteCopy["homepagesections_0137"]}</h2>
-            </div>
-            <EventTicketStatus>{websiteCopy["homepagesections_0156"]}</EventTicketStatus>
-          </PanelShell>
-          <EventTicketMeta>
-            <span>{websiteCopy["homepagesections_0134"]}</span>
-            <span>{websiteCopy["homepagesections_0162"]}</span>
-            <span>{websiteCopy["homepagesections_0144"]}</span>
-            <span>{websiteCopy["homepagesections_0168"]}</span>
-          </EventTicketMeta>
-        </PanelShell>
+        <HomeHeroStage data-reveal="scale" style={{"--reveal-delay": "300ms"} as CSSProperties}>
+          <PhoneCaptureShell
+            caption={stageCapture?.caption ?? homeHeroCopy.stageCaption}
+            captureSlotId="member-event-discovery"
+          >
+            <img
+              src={stageCapture?.webPath ?? "/assets/app-screenshots/placeholders/member-event-discovery.svg"}
+              alt={stageCapture?.alt ?? homeHeroCopy.stageCaption}
+              decoding="async"
+            />
+          </PhoneCaptureShell>
+        </HomeHeroStage>
       </HomeHeroInner>
     </HomeHeroShell>
   );
@@ -138,17 +131,18 @@ export function HomeDiscoverySection({
       />
       <ContentGrid variant="public-event">
         {visibleEvents.length ? (
-          visibleEvents.map((event) => (
+          visibleEvents.map((event, index) => (
             <PublicEventCard
               event={event}
               key={event.id}
               onCardClick={trackPublicEventCardClick}
+              style={{"--reveal-delay": `${index * 90}ms`} as CSSProperties}
             />
           ))
         ) : (
           <EmptyState variant="public-event" reveal>
-            <strong>{websiteCopy["homepagesections_0149"]}</strong>
-            <p>{websiteCopy["homepagesections_0123"]}</p>
+            <strong>{homeDiscoveryEmptyCopy.title}</strong>
+            <p>{homeDiscoveryEmptyCopy.body}</p>
             <ButtonLink variant="ghost" href="/organizers/">{websiteCopy["homepagesections_0152"]}</ButtonLink>
           </EmptyState>
         )}
@@ -242,7 +236,7 @@ export function HomeMemberLoopSection() {
   );
 }
 
-export function HomeHostProofSection() {
+export function HomeHostProofSection({captures}: {captures: Record<string, CaptureRecord>}) {
   return (
     <MarketingSection variant="proof" id="hosts">
       <MarketingSectionCopy
@@ -257,7 +251,11 @@ export function HomeHostProofSection() {
         >{websiteCopy["homepagesections_0160"]}</ButtonLink>
       </MarketingSectionCopy>
 
-      <HostProductBoard />
+      <CaptureGrid>
+        <CaptureCard id="host-event-setup" fallbackStep={capturesFallbackSteps.setup} captures={captures} />
+        <CaptureCard id="host-live-console" fallbackStep={capturesFallbackSteps.live} captures={captures} />
+        <CaptureCard id="host-post-event-report" fallbackStep={capturesFallbackSteps.report} captures={captures} />
+      </CaptureGrid>
     </MarketingSection>
   );
 }
@@ -272,9 +270,9 @@ export function HomeCapturesSection({captures}: {captures: Record<string, Captur
       />
 
       <CaptureGrid>
-        <CaptureCard id="member-event-discovery" fallbackStep={websiteCopy["homepagesections_0135"]} captures={captures} />
-        <CaptureCard id="post-run-catch-window" fallbackStep={websiteCopy["homepagesections_0126"]} captures={captures} />
-        <CaptureCard id="host-live-console" fallbackStep={websiteCopy["homepagesections_0142"]} captures={captures} />
+        <CaptureCard id="member-event-discovery" fallbackStep={capturesFallbackSteps.discover} captures={captures} />
+        <CaptureCard id="post-run-catch-window" fallbackStep={capturesFallbackSteps.unlock} captures={captures} />
+        <CaptureCard id="match-chat-context" fallbackStep={capturesFallbackSteps.match} captures={captures} />
       </CaptureGrid>
     </MarketingSection>
   );
@@ -317,37 +315,9 @@ export function HomeWaitlistSection() {
       titleId="waitlist-title"
       title={websiteCopy["homepagesections_0122"]}
       body={websiteCopy["homepagesections_0145"]}
+      tone="dark"
     >
       <WaitlistForm variant="member" />
     </WaitlistSection>
-  );
-}
-
-function HostProductBoard() {
-  return (
-    <ProductShell variant="product-board" aria-label={websiteCopy["homepagesections_0129"]} reveal>
-      <ProductBoardNav
-        items={["Format", "Admission", "Live", "Report"].map((item) => ({
-          key: item,
-          label: item,
-        }))}
-      />
-      <ProductBoardMain>
-        <ProductBoardCard>
-          <UiLabel>{websiteCopy["homepagesections_0132"]}</UiLabel>
-          <h3>{websiteCopy["homepagesections_0155"]}</h3>
-          <p>{websiteCopy["homepagesections_0154"]}</p>
-          <ControlRow label={websiteCopy["homepagesections_0141"]} value="Racket sports" />
-          <ControlRow label={websiteCopy["homepagesections_0120"]} value="Invite code + public waitlist" />
-          <ControlRow label={websiteCopy["homepagesections_0147"]} value="Partner switch" />
-        </ProductBoardCard>
-        <ProductBoardCard tone="dark">
-          <UiLabel>{websiteCopy["homepagesections_0146"]}</UiLabel>
-          <h3>{websiteCopy["homepagesections_0143"]}</h3>
-          <p>{websiteCopy["homepagesections_0131"]}</p>
-          <LiveMeter items={["Arrival", "Prompt", "Reveal"]} />
-        </ProductBoardCard>
-      </ProductBoardMain>
-    </ProductShell>
   );
 }

@@ -1,5 +1,5 @@
 import {websiteCopy} from "@content/generated";
-import {siteFooterLegalLinks} from "@content/site";
+import {siteFooterLegalLinks, siteMenuCopy} from "@content/site";
 import {SiteFooter, SiteHeader} from "../../shared/site";
 import {ClaimFlowMain} from "../../shared/ui/primitives";
 import {
@@ -18,6 +18,7 @@ export function ClaimPage({routeState}: {routeState: ClaimRouteState}) {
     <>
       <SiteHeader
         brandHref="/"
+        menuCopy={siteMenuCopy}
         nav={[
           {href: "/organizers/", label: websiteCopy["claimpage_0025"]},
           {href: "/host/", label: websiteCopy["claimpage_0027"]},

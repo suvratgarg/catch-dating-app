@@ -1,4 +1,7 @@
 :root {
+  --website-gutter: var(--catch-space-s5);
+  --website-content: var(--catch-website-content-max);
+  --website-header-height: var(--catch-website-header-height);
   --website-bg: var(--catch-color-light-bg);
   --website-surface: var(--catch-color-light-surface);
   --website-raised: var(--catch-color-light-raised);

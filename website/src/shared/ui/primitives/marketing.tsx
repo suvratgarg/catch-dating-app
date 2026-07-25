@@ -12,9 +12,37 @@ export function HomeHeroShell({
   children: ReactNode;
 }) {
   return (
-    <section {...props} className={classNames("hero hero--home", className)}>
+    <section {...props} className={classNames("hero hero--home catch-dark", className)}>
       {children}
     </section>
+  );
+}
+
+export function HomeHeroStage({
+  children,
+  className,
+  ...props
+}: HTMLAttributes<HTMLElement> & {
+  children: ReactNode;
+}) {
+  return (
+    <div {...props} className={classNames("hero__stage", className)}>
+      {children}
+    </div>
+  );
+}
+
+export function HeroAccent({
+  children,
+  className,
+  ...props
+}: HTMLAttributes<HTMLElement> & {
+  children: ReactNode;
+}) {
+  return (
+    <span {...props} className={classNames("hero__accent", className)}>
+      {children}
+    </span>
   );
 }
 

@@ -28,16 +28,22 @@ export function WaitlistSection({
   introReveal = true,
   title,
   titleId,
+  tone,
 }: HTMLAttributes<HTMLElement> & {
   body: ReactNode;
   children: ReactNode;
   introReveal?: boolean;
   title: ReactNode;
   titleId: string;
+  tone?: "dark";
 }) {
   return (
     <section
-      className={classNames("waitlist-section", className)}
+      className={classNames(
+        "waitlist-section",
+        tone === "dark" && "waitlist-section--dark",
+        className
+      )}
       id={id}
       aria-labelledby={titleId}
     >

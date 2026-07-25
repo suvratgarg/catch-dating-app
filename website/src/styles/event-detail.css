@@ -9,7 +9,7 @@
     var(--activity, var(--website-accent)) 78%,
     var(--website-text)
   );
-  padding: calc(var(--header-height) + var(--catch-space-s6)) var(--gutter)
+  padding: calc(var(--website-header-height) + var(--catch-space-s6)) var(--website-gutter)
     var(--catch-space-s16);
   border-bottom: 1px solid var(--website-line);
   background: var(--website-bg);
@@ -190,7 +190,7 @@
 
 .event-detail-hero__rail {
   position: sticky;
-  top: calc(var(--header-height) + var(--catch-space-s5));
+  top: calc(var(--website-header-height) + var(--catch-space-s5));
   display: grid;
   gap: var(--catch-space-s5);
 }
@@ -329,7 +329,7 @@
 }
 
 .event-detail-section {
-  padding: clamp(var(--catch-space-s12), 7vw, 88px) var(--gutter);
+  padding: clamp(var(--catch-space-s12), 7vw, 88px) var(--website-gutter);
   border-bottom: 1px solid var(--website-line);
 }
 
@@ -440,7 +440,7 @@
 
 @media (max-width: 640px) {
   .event-detail-hero {
-    padding: calc(var(--header-height) + var(--catch-space-s3))
+    padding: calc(var(--website-header-height) + var(--catch-space-s3))
       var(--catch-space-s3) var(--catch-space-s10);
   }
 

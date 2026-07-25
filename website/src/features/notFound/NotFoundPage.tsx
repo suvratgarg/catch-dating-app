@@ -1,5 +1,5 @@
 import {websiteCopy} from "@content/generated";
-import {siteFooterLegalLinks} from "@content/site";
+import {siteFooterLegalLinks, siteMenuCopy} from "@content/site";
 import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
 import {ProcessStatusPanel} from "../../shared/ui/primitives";
 
@@ -8,6 +8,7 @@ export function NotFoundPage() {
     <>
       <SiteHeader
         brandHref="/"
+        menuCopy={siteMenuCopy}
         nav={[
           {href: "/organizers/", label: websiteCopy["notfoundpage_0339"]},
           {href: "/host/", label: websiteCopy["notfoundpage_0334"]},

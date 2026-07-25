@@ -1,5 +1,5 @@
 import {websiteCopy} from "@content/generated";
-import {siteFooterLegalLinks} from "@content/site";
+import {siteFooterLegalLinks, siteMenuCopy} from "@content/site";
 import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
 import type {HostCaptureMap} from "./sections/CaptureFrames";
 import {CreateEventWalkthrough} from "./sections/CreateEventWalkthrough";
@@ -13,7 +13,6 @@ import {
 import {
   HostApplySection,
   HostCapturesSection,
-  HostEvidenceSection,
   HostFillRoomSection,
   HostHeroSection,
   HostLiveModulesSection,
@@ -27,6 +26,8 @@ export function HostPage({captures}: {captures: HostCaptureMap}) {
     <>
       <SiteHeader
         brandHref="/"
+        menuCopy={siteMenuCopy}
+        tone="dark"
         nav={[
           {href: "#workflow", label: websiteCopy["hostpage_0275"]},
           {href: "#fill-room", label: websiteCopy["hostpage_0269"]},
@@ -39,9 +40,8 @@ export function HostPage({captures}: {captures: HostCaptureMap}) {
         ctaLabel={websiteCopy["hostpage_0268"]}
       />
       <WebsitePageMain id="top">
-        <HostHeroSection />
+        <HostHeroSection captures={captures} />
         <HostFoundingOfferSection />
-        <HostEvidenceSection />
         <HostWorkflowSection />
         <CreateEventWalkthrough captures={captures} />
         <HostSurfaceSection />

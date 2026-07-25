@@ -30,6 +30,30 @@ export interface HostCreateStep {
   }>;
 }
 
+export const homeHeroCopy = {
+  kicker: "The event before the match",
+  titleBefore: "Real events. Real hosts. The ",
+  titleAccent: "match",
+  titleAfter: " comes after.",
+  stageCaption:
+    "The Catch app: members browse real hosted events before any dating surface opens.",
+} as const;
+
+export const homeDiscoveryEmptyCopy = {
+  title: "Your city is still being mapped.",
+  body:
+    "We publish organizer pages and hosted events as we verify them — no filler listings. Browse the directory to see who is already on Catch.",
+} as const;
+
+export const capturesFallbackSteps = {
+  discover: "Discover",
+  unlock: "Unlock",
+  match: "Match",
+  setup: "Setup",
+  live: "Live",
+  report: "Report",
+} as const;
+
 export const formatCards = [
   {
     mark: "SR",
@@ -151,15 +175,6 @@ export const hostModules = [
   },
 ];
 
-export const hostEvidenceMetrics = [
-  {value: "64", label: "invite activity"},
-  {value: "24", label: "demand signals"},
-  {value: "17", label: "booked guests"},
-  {value: "13", label: "checked in"},
-  {value: "11", label: "caught someone"},
-  {value: "18", label: "mutual matches"},
-];
-
 export const hostSurfaceCards = [
   {
     label: "Bookings",
@@ -213,7 +228,7 @@ export const hostFillRoomModules = [
       "Use cohorts for tables, teams, pods, courts, or rotations.",
       "Keep host reporting aggregate-safe before, during, and after the event.",
     ],
-    activityToken: "var(--catch-activity-racket-accent)",
+    activityToken: "var(--catch-activity-padel-accent)",
   },
 ];
 

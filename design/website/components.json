@@ -1,6 +1,6 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 89,
+  "version": 91,
   "updated": "2026-07-24",
   "owner": "marketing_website",
   "sourceOfTruth": {
@@ -127,7 +127,6 @@
       "exportName": "HomeDiscoverySection",
       "css": [
         "website/src/styles/flows.css",
-        "website/src/styles/organizer-public.css",
         "website/src/styles/home.css",
         "website/src/styles/responsive.css"
       ],
@@ -176,7 +175,6 @@
       "source": "website/src/features/home/sections/HomePageSections.tsx",
       "exportName": "HomeFeaturedOrganizersSection",
       "css": [
-        "website/src/styles/organizer-public.css",
         "website/src/styles/home.css",
         "website/src/styles/responsive.css"
       ],
@@ -233,10 +231,10 @@
         "exportName": "HomeHostProofSectionStory",
         "states": [
           "host-cta",
-          "product-board"
+          "capture-grid"
         ]
       },
-      "notes": "Home route host-tools proof section with product board shell."
+      "notes": "Home route host-tools proof section with real app capture grid."
     },
     {
       "id": "home_captures_section",
@@ -303,7 +301,7 @@
       "source": "website/src/shared/ui/primitives/media.tsx",
       "exportName": "ActivityMark",
       "css": [
-        "website/src/styles/organizer-public.css",
+        "website/src/styles/organizers.css",
         "website/src/styles/host.css",
         "website/src/styles/responsive.css"
       ],
@@ -427,7 +425,7 @@
       "css": [
         "website/src/styles/home.css",
         "website/src/styles/host.css",
-        "website/src/styles/organizer-public.css",
+        "website/src/styles/organizers.css",
         "website/src/styles/responsive.css"
       ],
       "storybook": {
@@ -540,7 +538,6 @@
       "exportName": "FeaturedOrganizerCardGrid",
       "css": [
         "website/src/styles/home.css",
-        "website/src/styles/organizer-public.css",
         "website/src/styles/host.css",
         "website/src/styles/responsive.css"
       ],
@@ -568,7 +565,6 @@
       "css": [
         "website/src/styles/home.css",
         "website/src/styles/organizers.css",
-        "website/src/styles/organizer-public.css",
         "website/src/styles/responsive.css"
       ],
       "storybook": {
@@ -703,7 +699,6 @@
       "exportName": "ReviewSignalLane",
       "css": [
         "website/src/styles/organizers.css",
-        "website/src/styles/organizer-public.css",
         "website/src/styles/responsive.css"
       ],
       "storybook": {
@@ -729,7 +724,6 @@
       "exportName": "OrganizerResultCardShell",
       "css": [
         "website/src/styles/organizers.css",
-        "website/src/styles/organizer-public.css",
         "website/src/styles/responsive.css"
       ],
       "storybook": {
@@ -793,34 +787,10 @@
         "exportName": "HostHeroSectionStory",
         "states": [
           "default",
-          "host-console"
+          "capture-stage"
         ]
       },
-      "notes": "Host route hero section; route-level composition imports this section instead of owning hero/product markup."
-    },
-    {
-      "id": "host_evidence_section",
-      "kind": "section",
-      "routeIds": [
-        "host"
-      ],
-      "owner": "features/host/sections",
-      "source": "website/src/features/host/sections/HostPageSections.tsx",
-      "exportName": "HostEvidenceSection",
-      "css": [
-        "website/src/styles/host.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/HostSections.stories.tsx",
-        "exportName": "HostEvidenceSectionStory",
-        "states": [
-          "default",
-          "evidence-strip"
-        ]
-      },
-      "notes": "Host route evidence section backed by shared EvidenceStrip."
+      "notes": "Host route hero section; route-level composition imports this section instead of owning hero/product markup. Hero stage shows a real app capture."
     },
     {
       "id": "host_workflow_section",
@@ -1701,7 +1671,6 @@
       "css": [
         "website/src/styles/home.css",
         "website/src/styles/flows.css",
-        "website/src/styles/organizer-public.css",
         "website/src/styles/organizers.css",
         "website/src/styles/responsive.css"
       ],
@@ -1737,7 +1706,7 @@
       "css": [
         "website/src/styles/home.css",
         "website/src/styles/host.css",
-        "website/src/styles/organizer-public.css",
+        "website/src/styles/organizers.css",
         "website/src/styles/responsive.css"
       ],
       "storybook": {
@@ -1789,7 +1758,7 @@
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/feedback.tsx",
       "css": [
-        "website/src/styles/organizer-public.css",
+        "website/src/styles/home.css",
         "website/src/styles/flows.css"
       ],
       "storybook": {
@@ -1869,7 +1838,6 @@
       "css": [
         "website/src/styles/site-shell.css",
         "website/src/styles/organizers.css",
-        "website/src/styles/organizer-public.css",
         "website/src/styles/flows.css",
         "website/src/styles/responsive.css"
       ],
@@ -1895,7 +1863,7 @@
       "source": "website/src/shared/ui/primitives/layout2.tsx",
       "exportName": "FilterRail",
       "css": [
-        "website/src/styles/organizer-public.css",
+        "website/src/styles/organizers.css",
         "website/src/styles/host.css"
       ],
       "storybook": {
@@ -2029,7 +1997,7 @@
       "exportName": "WaitlistFormShell",
       "css": [
         "website/src/styles/organizers.css",
-        "website/src/styles/organizer-public.css",
+        "website/src/styles/flows.css",
         "website/src/styles/responsive.css"
       ],
       "storybook": {
@@ -2103,7 +2071,6 @@
       "css": [
         "website/src/styles/home.css",
         "website/src/styles/organizers.css",
-        "website/src/styles/organizer-public.css",
         "website/src/styles/responsive.css"
       ],
       "storybook": {
@@ -2159,7 +2126,6 @@
       "exportName": "ContentGrid",
       "css": [
         "website/src/styles/home.css",
-        "website/src/styles/organizer-public.css",
         "website/src/styles/organizers.css",
         "website/src/styles/flows.css",
         "website/src/styles/responsive.css"
@@ -2191,7 +2157,6 @@
       "exportName": "PanelShell",
       "css": [
         "website/src/styles/home.css",
-        "website/src/styles/organizer-public.css",
         "website/src/styles/organizers.css",
         "website/src/styles/responsive.css"
       ],
@@ -2222,7 +2187,7 @@
         "website/src/styles/home.css",
         "website/src/styles/host-foundation.css",
         "website/src/styles/host.css",
-        "website/src/styles/organizer-public.css",
+        "website/src/styles/organizers.css",
         "website/src/styles/responsive.css"
       ],
       "storybook": {
@@ -2250,7 +2215,7 @@
       "exportName": "EvidenceStrip",
       "css": [
         "website/src/styles/home.css",
-        "website/src/styles/organizer-public.css",
+        "website/src/styles/organizers.css",
         "website/src/styles/responsive.css"
       ],
       "storybook": {
@@ -2837,7 +2802,6 @@
       "source": "website/src/features/organizers/OrganizerIdentity.tsx",
       "exportName": "ActivityMark",
       "css": [
-        "website/src/styles/organizer-public.css",
         "website/src/styles/home.css"
       ],
       "storybook": {
@@ -2866,7 +2830,6 @@
       "source": "website/src/features/organizers/OrganizerIdentity.tsx",
       "exportName": "StatusBadge",
       "css": [
-        "website/src/styles/organizer-public.css",
         "website/src/styles/home.css"
       ],
       "storybook": {
@@ -2892,7 +2855,7 @@
       "source": "website/src/features/organizers/sections/ListingEventsSections.tsx",
       "exportName": "ListingExternalEventsSection",
       "css": [
-        "website/src/styles/organizer-public.css",
+        "website/src/styles/organizers.css",
         "website/src/styles/site-shell.css"
       ],
       "storybook": {
@@ -2916,7 +2879,7 @@
       "source": "website/src/features/organizers/sections/ListingEventsSections.tsx",
       "exportName": "ListingEventEvidenceSection",
       "css": [
-        "website/src/styles/organizer-public.css",
+        "website/src/styles/organizers.css",
         "website/src/styles/site-shell.css"
       ],
       "storybook": {

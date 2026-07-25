@@ -1,5 +1,5 @@
 import type {PublishedLegalPage} from "../../content/types";
-import {siteFooterLegalLinks} from "../../content/site";
+import {siteFooterLegalLinks, siteMenuCopy} from "../../content/site";
 import {publishedLegalContent} from "../../content/legal";
 import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
 import {
@@ -22,6 +22,7 @@ export function LegalPage({page, effectiveDate}: {
     <>
       <SiteHeader
         brandHref="/"
+        menuCopy={siteMenuCopy}
         nav={[
           {href: "/", label: ui.homeLabel},
           {href: "/organizers/", label: ui.organizersLabel},

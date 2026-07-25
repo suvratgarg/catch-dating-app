@@ -1,0 +1,339 @@
+/*
+ * Catch design language — web foundation.
+ *
+ * Ports the locked app design language (docs/design_language.md) onto the
+ * website: Archivo voice type locked to 78% width, tracked IBM Plex Mono
+ * kickers, dark "wow" surfaces, activity pigments as the only chroma,
+ * app motion tokens, and the warm matte photo grade.
+ *
+ * Everything here derives from generated tokens
+ * (packages/web-config/generated/catch-tokens.css) or the canonical derived
+ * palette (design_context_pack/design_system/activity_palette.json).
+ */
+
+:root {
+  /* Motion (mirrors lib/core/theme CatchMotion). */
+  --catch-motion-fast: 120ms;
+  --catch-motion-micro: 180ms;
+  --catch-motion-base: 220ms;
+  --catch-motion-page: 280ms;
+  --catch-motion-slow: 420ms;
+  --catch-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --catch-ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  /* Voice type: the 78% width lock is the Catch signature. */
+  --catch-voice-stretch: 78%;
+
+  /* Hairline-first elevation (mirrors CatchElevation.card). */
+  --catch-shadow-card:
+    0 4px 14px rgba(26, 20, 16, 0.06),
+    0 1px 2px rgba(26, 20, 16, 0.04);
+  --catch-shadow-raised:
+    0 8px 24px rgba(26, 20, 16, 0.10),
+    0 1px 2px rgba(26, 20, 16, 0.04);
+  --catch-shadow-overlay: 0 16px 40px rgba(26, 20, 16, 0.18);
+
+  /* Activity deep/soft derivations (light surfaces) + lifted dark accents.
+     Values: design_context_pack/design_system/activity_palette.json. */
+  --catch-activity-social-run-deep: #B33B1F;
+  --catch-activity-social-run-soft: #F4E9E7;
+  --catch-activity-social-run-accent-dark: #DE735A;
+  --catch-activity-social-run-soft-dark: #4B2D25;
+  --catch-activity-running-deep: #97321E;
+  --catch-activity-running-soft: #F3E9E7;
+  --catch-activity-running-accent-dark: #D55E46;
+  --catch-activity-running-soft-dark: #4A2C26;
+  --catch-activity-walking-deep: #4F743E;
+  --catch-activity-walking-soft: #ECF0EB;
+  --catch-activity-walking-accent-dark: #81AA6E;
+  --catch-activity-walking-soft-dark: #353F31;
+  --catch-activity-pickleball-deep: #1D6E54;
+  --catch-activity-pickleball-soft: #E8F2EF;
+  --catch-activity-pickleball-accent-dark: #37BA8F;
+  --catch-activity-pickleball-soft-dark: #29473D;
+  --catch-activity-padel-deep: #1C6B6F;
+  --catch-activity-padel-soft: #E8F2F3;
+  --catch-activity-padel-accent-dark: #36B5BC;
+  --catch-activity-padel-soft-dark: #294648;
+  --catch-activity-tennis-deep: #347134;
+  --catch-activity-tennis-soft: #EAF0EA;
+  --catch-activity-tennis-accent-dark: #5EAE5E;
+  --catch-activity-tennis-soft-dark: #2F412F;
+  --catch-activity-badminton-deep: #2E4FA6;
+  --catch-activity-badminton-soft: #E8EBF2;
+  --catch-activity-badminton-accent-dark: #6A86D1;
+  --catch-activity-badminton-soft-dark: #293147;
+  --catch-activity-cycling-deep: #2251A5;
+  --catch-activity-cycling-soft: #E7EBF3;
+  --catch-activity-cycling-accent-dark: #5784D7;
+  --catch-activity-cycling-soft-dark: #273349;
+  --catch-activity-spin-class-deep: #2A3C92;
+  --catch-activity-spin-class-soft: #E8EAF2;
+  --catch-activity-spin-class-accent-dark: #586CC9;
+  --catch-activity-spin-class-soft-dark: #2A2F46;
+  --catch-activity-yoga-deep: #69408D;
+  --catch-activity-yoga-soft: #EDEAF0;
+  --catch-activity-yoga-accent-dark: #9B77BC;
+  --catch-activity-yoga-soft-dark: #392F42;
+  --catch-activity-strength-training-deep: #823D28;
+  --catch-activity-strength-training-soft: #F2EBE8;
+  --catch-activity-strength-training-accent-dark: #C2694D;
+  --catch-activity-strength-training-soft-dark: #46312A;
+  --catch-activity-pub-quiz-deep: #2D3C7C;
+  --catch-activity-pub-quiz-soft: #E9EBF1;
+  --catch-activity-pub-quiz-accent-dark: #5467BB;
+  --catch-activity-pub-quiz-soft-dark: #2C3144;
+  --catch-activity-bar-crawl-deep: #852E64;
+  --catch-activity-bar-crawl-soft: #F2E9EE;
+  --catch-activity-bar-crawl-accent-dark: #BF5999;
+  --catch-activity-bar-crawl-soft-dark: #452C3B;
+  --catch-activity-dinner-deep: #9F2F4B;
+  --catch-activity-dinner-soft: #F2E8EB;
+  --catch-activity-dinner-accent-dark: #CD6880;
+  --catch-activity-dinner-soft-dark: #462A31;
+  --catch-activity-singles-mixer-deep: #C72942;
+  --catch-activity-singles-mixer-soft: #F3E7E9;
+  --catch-activity-singles-mixer-accent-dark: #DF7787;
+  --catch-activity-singles-mixer-soft-dark: #49272C;
+  --catch-activity-open-activity-deep: #595045;
+  --catch-activity-open-activity-soft: #EEEDEC;
+  --catch-activity-open-activity-accent-dark: #8D8377;
+  --catch-activity-open-activity-soft-dark: #3B3836;
+}
+
+/* Voice type: every Archivo role renders at the locked 78% width. */
+h1,
+h2,
+h3,
+.catch-voice {
+  font-stretch: var(--catch-voice-stretch);
+}
+
+/* Kicker: tracked uppercase mono for labels, eyebrows, and section marks. */
+.catch-kicker {
+  color: var(--website-text-muted);
+  font-family: var(--catch-font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.catch-kicker--lg {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+}
+
+/* Data role: tabular mono for stats, dates, and counts. */
+.catch-data {
+  font-family: var(--catch-font-mono), ui-monospace, monospace;
+  font-feature-settings: "tnum" 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * Dark wow surface. Scope any section with .catch-dark to flip the shared
+ * --website-* vocabulary (including the derived color-mix values, which are
+ * re-declared here so they resolve against the dark primitives).
+ */
+.catch-dark {
+  --website-bg: var(--catch-color-dark-bg);
+  --website-surface: var(--catch-color-dark-surface);
+  --website-raised: var(--catch-color-dark-raised);
+  --website-text: var(--catch-color-dark-ink);
+  --website-text-muted: var(--catch-color-dark-ink2);
+  --website-text-faint: var(--catch-color-dark-ink3);
+  --website-line: var(--catch-color-dark-line);
+  --website-line-strong: var(--catch-color-dark-line2);
+  --website-accent: var(--catch-color-dark-primary);
+  --website-accent-muted: var(--catch-color-dark-ink2);
+  --website-danger: var(--catch-color-dark-danger);
+  --website-copy: color-mix(in srgb, var(--website-text) 78%, transparent);
+  --website-copy-muted: color-mix(in srgb, var(--website-text) 72%, transparent);
+  --website-copy-faint: color-mix(in srgb, var(--website-text) 68%, transparent);
+  --website-copy-label: color-mix(in srgb, var(--website-text) 70%, transparent);
+  --website-copy-meta: color-mix(in srgb, var(--website-text) 76%, transparent);
+  --website-nav-muted: color-mix(in srgb, var(--website-text) 74%, transparent);
+  --website-header-bg: color-mix(in srgb, var(--website-bg) 92%, transparent);
+  --website-panel-bg: color-mix(in srgb, var(--website-surface) 88%, transparent);
+  --website-panel-bg-strong: color-mix(in srgb, var(--website-surface) 96%, transparent);
+  --website-ghost-border: color-mix(in srgb, var(--website-text) 42%, transparent);
+  --website-ghost-bg: color-mix(in srgb, var(--website-text) 4%, transparent);
+  --website-ghost-hover-bg: color-mix(in srgb, var(--website-accent) 8%, transparent);
+  --website-accent-border: color-mix(in srgb, var(--website-accent) 50%, transparent);
+  --website-input-border: color-mix(in srgb, var(--website-text) 24%, transparent);
+  --website-card-wash: color-mix(in srgb, var(--website-text) 6%, transparent);
+  --website-shadow-soft: 0 18px 44px rgba(0, 0, 0, 0.35);
+  background: var(--website-bg);
+  color: var(--website-text);
+  --catch-focus-ring-color: var(--catch-color-dark-primary);
+}
+
+/* Activity pigments: set data-activity on a card/section to recolor its
+   kickers, rails, marks, and CTAs. Components read --activity plus the
+   derived --activity-deep/--activity-soft. */
+[data-activity="social-run"],
+[data-activity="socialRun"] {
+  --activity: var(--catch-activity-social-run-accent);
+  --activity-deep: var(--catch-activity-social-run-deep);
+  --activity-soft: var(--catch-activity-social-run-soft);
+  --activity-accent-dark: var(--catch-activity-social-run-accent-dark);
+  --activity-soft-dark: var(--catch-activity-social-run-soft-dark);
+}
+
+[data-activity="running"] {
+  --activity: var(--catch-activity-running-accent);
+  --activity-deep: var(--catch-activity-running-deep);
+  --activity-soft: var(--catch-activity-running-soft);
+  --activity-accent-dark: var(--catch-activity-running-accent-dark);
+  --activity-soft-dark: var(--catch-activity-running-soft-dark);
+}
+
+[data-activity="walking"] {
+  --activity: var(--catch-activity-walking-accent);
+  --activity-deep: var(--catch-activity-walking-deep);
+  --activity-soft: var(--catch-activity-walking-soft);
+  --activity-accent-dark: var(--catch-activity-walking-accent-dark);
+  --activity-soft-dark: var(--catch-activity-walking-soft-dark);
+}
+
+[data-activity="pickleball"] {
+  --activity: var(--catch-activity-pickleball-accent);
+  --activity-deep: var(--catch-activity-pickleball-deep);
+  --activity-soft: var(--catch-activity-pickleball-soft);
+  --activity-accent-dark: var(--catch-activity-pickleball-accent-dark);
+  --activity-soft-dark: var(--catch-activity-pickleball-soft-dark);
+}
+
+[data-activity="padel"],
+[data-activity="racket"] {
+  --activity: var(--catch-activity-padel-accent);
+  --activity-deep: var(--catch-activity-padel-deep);
+  --activity-soft: var(--catch-activity-padel-soft);
+  --activity-accent-dark: var(--catch-activity-padel-accent-dark);
+  --activity-soft-dark: var(--catch-activity-padel-soft-dark);
+}
+
+[data-activity="tennis"] {
+  --activity: var(--catch-activity-tennis-accent);
+  --activity-deep: var(--catch-activity-tennis-deep);
+  --activity-soft: var(--catch-activity-tennis-soft);
+  --activity-accent-dark: var(--catch-activity-tennis-accent-dark);
+  --activity-soft-dark: var(--catch-activity-tennis-soft-dark);
+}
+
+[data-activity="badminton"] {
+  --activity: var(--catch-activity-badminton-accent);
+  --activity-deep: var(--catch-activity-badminton-deep);
+  --activity-soft: var(--catch-activity-badminton-soft);
+  --activity-accent-dark: var(--catch-activity-badminton-accent-dark);
+  --activity-soft-dark: var(--catch-activity-badminton-soft-dark);
+}
+
+[data-activity="cycling"] {
+  --activity: var(--catch-activity-cycling-accent);
+  --activity-deep: var(--catch-activity-cycling-deep);
+  --activity-soft: var(--catch-activity-cycling-soft);
+  --activity-accent-dark: var(--catch-activity-cycling-accent-dark);
+  --activity-soft-dark: var(--catch-activity-cycling-soft-dark);
+}
+
+[data-activity="spin-class"] {
+  --activity: var(--catch-activity-spin-class-accent);
+  --activity-deep: var(--catch-activity-spin-class-deep);
+  --activity-soft: var(--catch-activity-spin-class-soft);
+  --activity-accent-dark: var(--catch-activity-spin-class-accent-dark);
+  --activity-soft-dark: var(--catch-activity-spin-class-soft-dark);
+}
+
+[data-activity="yoga"] {
+  --activity: var(--catch-activity-yoga-accent);
+  --activity-deep: var(--catch-activity-yoga-deep);
+  --activity-soft: var(--catch-activity-yoga-soft);
+  --activity-accent-dark: var(--catch-activity-yoga-accent-dark);
+  --activity-soft-dark: var(--catch-activity-yoga-soft-dark);
+}
+
+[data-activity="strength-training"] {
+  --activity: var(--catch-activity-strength-training-accent);
+  --activity-deep: var(--catch-activity-strength-training-deep);
+  --activity-soft: var(--catch-activity-strength-training-soft);
+  --activity-accent-dark: var(--catch-activity-strength-training-accent-dark);
+  --activity-soft-dark: var(--catch-activity-strength-training-soft-dark);
+}
+
+[data-activity="dinner"] {
+  --activity: var(--catch-activity-dinner-accent);
+  --activity-deep: var(--catch-activity-dinner-deep);
+  --activity-soft: var(--catch-activity-dinner-soft);
+  --activity-accent-dark: var(--catch-activity-dinner-accent-dark);
+  --activity-soft-dark: var(--catch-activity-dinner-soft-dark);
+}
+
+[data-activity="pub-quiz"] {
+  --activity: var(--catch-activity-pub-quiz-accent);
+  --activity-deep: var(--catch-activity-pub-quiz-deep);
+  --activity-soft: var(--catch-activity-pub-quiz-soft);
+  --activity-accent-dark: var(--catch-activity-pub-quiz-accent-dark);
+  --activity-soft-dark: var(--catch-activity-pub-quiz-soft-dark);
+}
+
+[data-activity="bar-crawl"] {
+  --activity: var(--catch-activity-bar-crawl-accent);
+  --activity-deep: var(--catch-activity-bar-crawl-deep);
+  --activity-soft: var(--catch-activity-bar-crawl-soft);
+  --activity-accent-dark: var(--catch-activity-bar-crawl-accent-dark);
+  --activity-soft-dark: var(--catch-activity-bar-crawl-soft-dark);
+}
+
+[data-activity="singles-mixer"] {
+  --activity: var(--catch-activity-singles-mixer-accent);
+  --activity-deep: var(--catch-activity-singles-mixer-deep);
+  --activity-soft: var(--catch-activity-singles-mixer-soft);
+  --activity-accent-dark: var(--catch-activity-singles-mixer-accent-dark);
+  --activity-soft-dark: var(--catch-activity-singles-mixer-soft-dark);
+}
+
+[data-activity="open-activity"],
+[data-activity="open"] {
+  --activity: var(--catch-activity-open-activity-accent);
+  --activity-deep: var(--catch-activity-open-activity-deep);
+  --activity-soft: var(--catch-activity-open-activity-soft);
+  --activity-accent-dark: var(--catch-activity-open-activity-accent-dark);
+  --activity-soft-dark: var(--catch-activity-open-activity-soft-dark);
+}
+
+/* Inside dark surfaces, activity accents lift to their dark variants. */
+.catch-dark [data-activity],
+.catch-dark[data-activity] {
+  --activity: var(--activity-accent-dark);
+  --activity-soft: var(--activity-soft-dark);
+}
+
+/* Warm matte photo grade (mirrors CatchGradedImage on light surfaces). */
+.catch-graded {
+  filter: saturate(0.78) contrast(1.04) brightness(0.97);
+}
+
+.catch-graded-frame {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.catch-graded-frame img {
+  filter: saturate(0.78) contrast(1.04) brightness(0.97);
+}
+
+.catch-graded-frame::after {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(180deg, rgba(255, 236, 210, 0.06), transparent 34%),
+    linear-gradient(0deg, rgba(43, 28, 16, 0.10), transparent 42%);
+  content: "";
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
