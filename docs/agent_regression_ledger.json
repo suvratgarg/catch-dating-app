@@ -1,5 +1,5 @@
 {
-  "version": 110,
+  "version": 111,
   "updated": "2026-07-25",
   "owner": "agent_operating_model",
   "entries": [
@@ -3440,6 +3440,28 @@
         "docs/design_parity/README.md"
       ],
       "notes": "Installable app roots are real public widget boundaries even when they contain only role-specific dependency injection. Adding or renaming one requires the full widget-governance generation chain."
+    },
+    {
+      "id": "REG-HOST-CAPTURE-FCM-OVERRIDE-001",
+      "title": "Authenticated Host shell captures resolve production Firebase Messaging",
+      "status": "active",
+      "applies_to": [
+        "lib/core/presentation/host_app_shell.dart",
+        "lib/core/fcm_service.dart",
+        "test/ui_captures/catalog/screen_capture_catalog.dart",
+        ".github/workflows/app-build-matrix.yml"
+      ],
+      "symptom": "Clean-checkout Host reference captures fail before the iOS build because the authenticated shell resolves the production FCM service without an initialized Firebase app.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/ui_capture/run_captures.mjs --ids host_home_dashboard,host_home_events_list,host_inbox_queries,host_clubs_management --output-dir build/host-shell-reference-captures --output-layout capture-first",
+        "guardEvidence": "Host shell capture fixtures explicitly inject an unsupported-platform FCM service while preserving the production shell lifecycle"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/release_operations.md"
+      ],
+      "notes": "Authenticated shell captures must stub side-effecting platform services at the capture composition boundary instead of depending on a developer machine's Firebase initialization state."
     }
   ]
 }
