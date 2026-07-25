@@ -107,7 +107,7 @@ function validateRequiredSourceContracts() {
       includes: ["role=\"region\"", "ariaLabel", "aria-busy", "aria-invalid"],
     },
     {
-      path: "website/src/styles/organizer-public.css",
+      path: "website/src/styles/home.css",
       includes: [".public-search__input:focus-within"],
     },
     {
