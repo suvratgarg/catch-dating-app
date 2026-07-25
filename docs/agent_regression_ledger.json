@@ -1,5 +1,5 @@
 {
-  "version": 106,
+  "version": 107,
   "updated": "2026-07-25",
   "owner": "agent_operating_model",
   "entries": [
@@ -3326,6 +3326,27 @@
         "docs/agent_operating_model.md"
       ],
       "notes": "Called workflows observe the caller name through github.workflow. One top-level run-scoped concurrency boundary safely cancels stale runs without making affected sibling lanes compete for the same key."
+    },
+    {
+      "id": "REG-CI-PLAN-HANDOFF-001",
+      "title": "Large impact plans exceed the Actions process argument limit",
+      "status": "active",
+      "applies_to": [
+        ".github/workflows/ci.yml",
+        "tool/ci/plan_ci.mjs",
+        "tool/ci/plan_ci.test.mjs"
+      ],
+      "symptom": "Planning succeeds for a large monorepo pull request, but the next step cannot start its shell because the complete per-file JSON plan is expanded through a GitHub output into an environment variable and the operating system reports Argument list too long.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/ci/plan_ci.test.mjs",
+        "guardEvidence": "the complete impact plan is a workspace file while GitHub outputs remain bounded to booleans and short role arrays even for 5000 changed paths"
+      },
+      "owner_docs": [
+        "docs/release_operations.md",
+        "docs/agent_operating_model.md"
+      ],
+      "notes": "Use files or artifacts for unbounded structured data. GitHub step and job outputs are control signals, not a transport for full monorepo inventories."
     }
   ]
 }

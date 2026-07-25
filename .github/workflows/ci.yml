@@ -40,7 +40,6 @@ jobs:
       functions: ${{ steps.plan.outputs.functions }}
       marketing: ${{ steps.plan.outputs.marketing }}
       operations: ${{ steps.plan.outputs.operations }}
-      plan: ${{ steps.plan.outputs.plan }}
       tools: ${{ steps.plan.outputs.tools }}
       visual_integration: ${{ steps.plan.outputs.visual_integration }}
 
@@ -59,6 +58,7 @@ jobs:
           REQUEST_FULL: ${{ github.event_name == 'schedule' || inputs.full }}
         run: |
           set -euo pipefail
+          mkdir -p build/ci
           base_sha="${PR_BASE_SHA:-${MERGE_GROUP_BASE_SHA:-${BEFORE_SHA:-}}}"
           full_flag=()
           if [[ "$REQUEST_FULL" == "true" || -z "$base_sha" || "$base_sha" =~ ^0+$ ]]; then
@@ -70,17 +70,15 @@ jobs:
             --head "$HEAD_SHA" \
             "${full_flag[@]}" \
             --github-output "$GITHUB_OUTPUT" \
-            --json
+            --json > build/ci/impact-plan.json
 
       - name: Publish impact summary
-        env:
-          CI_PLAN: ${{ steps.plan.outputs.plan }}
         run: |
           {
             echo "## Monorepo CI plan"
             echo
             echo '```json'
-            echo "$CI_PLAN" | jq .
+            jq . build/ci/impact-plan.json
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 

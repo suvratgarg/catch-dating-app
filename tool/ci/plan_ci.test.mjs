@@ -1,7 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import {planCi, validateCiPlanning} from "./plan_ci.mjs";
+import os from "node:os";
+import path from "node:path";
+import {
+  planCi,
+  validateCiPlanning,
+  writeGithubOutputs,
+} from "./plan_ci.mjs";
 
 const manifest = JSON.parse(
   fs.readFileSync("tool/repository_root_manifest.json", "utf8"),
@@ -125,6 +131,27 @@ test("unknown paths fail closed", () => {
     ciPlanning: planning,
   });
   assert.deepEqual(plan.unmatchedPaths, ["unowned/example.txt"]);
+});
+
+test("GitHub outputs stay bounded for large monorepo diffs", () => {
+  const plan = planCi({
+    changedPaths: Array.from(
+      {length: 5000},
+      (_, index) => `admin/src/generated/file_${index}.tsx`,
+    ),
+    ciPlanning: planning,
+  });
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-ci-plan-"));
+  const outputPath = path.join(directory, "github-output.txt");
+  try {
+    writeGithubOutputs(outputPath, plan);
+    const output = fs.readFileSync(outputPath, "utf8");
+    assert.ok(output.length < 4096);
+    assert.doesNotMatch(output, /file_4999/);
+    assert.doesNotMatch(output, /^plan=/m);
+  } finally {
+    fs.rmSync(directory, {recursive: true, force: true});
+  }
 });
 
 test("reusable fanout workflows do not cancel sibling lanes", () => {

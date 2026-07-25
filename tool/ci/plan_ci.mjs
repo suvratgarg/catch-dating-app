@@ -166,9 +166,8 @@ function parseArgs(args) {
   };
 }
 
-function writeGithubOutputs(outputPath, plan) {
+export function writeGithubOutputs(outputPath, plan) {
   const lines = [
-    `plan=${JSON.stringify(plan)}`,
     `app_roles=${plan.appRolesJson}`,
     `mobile_release_roles=${plan.mobileReleaseRolesJson}`,
     `has_mobile_release_roles=${plan.mobileReleaseRoles.length > 0}`,

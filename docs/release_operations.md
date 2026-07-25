@@ -126,6 +126,12 @@ that value is the caller name, so sibling lanes would share one key and cancel
 one another. Standalone/manual workflow dispatches may add a distinct
 workflow-specific key, but normal CI fanout inherits the orchestrator boundary.
 
+The complete impact plan is written to `build/ci/impact-plan.json` and rendered
+from that file. Only bounded booleans and role arrays cross the GitHub step/job
+output boundary. Do not expand the per-file plan into an environment variable:
+large pull requests can exceed the operating system argument limit before the
+summary shell even starts.
+
 The current workflows are:
 
 | Workflow | Purpose |
