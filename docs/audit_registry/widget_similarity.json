@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-07-23",
+  "updated": "2026-07-25",
   "sourceOfTruth": {
     "generator": "tool/design/build_widget_similarity.mjs",
     "fingerprints": "artifacts/widget_dedupe/fingerprints.json",
@@ -147,7 +147,7 @@
     }
   ],
   "summary": {
-    "widgets": 966,
+    "widgets": 968,
     "fingerprintFailures": 1,
     "exactClusters": 2,
     "clusters": 43,
@@ -157,7 +157,7 @@
     "nameFamilies": 198,
     "relatedEdges": 21,
     "screenClusters": 10,
-    "skippedTrivial": 113,
+    "skippedTrivial": 115,
     "absorbCandidates": 7,
     "ledgerDecisions": 315,
     "exactClusterDecisionCoverage": 41,
@@ -298,6 +298,7 @@
     "ClubTextLoadingSkeleton",
     "CompanionLoading",
     "CompatibilitySignalHostCard",
+    "ConsumerApp",
     "ControlLabel",
     "CreateEventStepHeader",
     "CreateEventUnsavedChangesDialog",
@@ -321,6 +322,7 @@
     "GuestBookCta",
     "HostActionRow",
     "HostActivitySummary",
+    "HostApp",
     "HostAuthRequiredScreen",
     "HostClubDefaultsEditor",
     "HostClubOrganizerOverviewController",
@@ -4869,6 +4871,19 @@
       "hasWidgetHelpers": false
     },
     {
+      "name": "ConsumerApp",
+      "file": "lib/consumer_app.dart",
+      "role": "screen",
+      "shapeHash": "e2686925d8474926b56a99f3200c7b954732bafe0bc5004f7a75434e8682c87b",
+      "coarseShapeHash": "e2686925d8474926b56a99f3200c7b954732bafe0bc5004f7a75434e8682c87b",
+      "simhash128": "6570a30c53c6198b327634f639de9cbf",
+      "tokenStreamLength": 2,
+      "coarseTokenStreamLength": 2,
+      "usageCountRaw": 4,
+      "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
+      "hasWidgetHelpers": false
+    },
+    {
       "name": "ControlLabel",
       "file": "lib/event_success/presentation/event_success_manual_qa_screen.dart",
       "role": "screen",
@@ -7859,6 +7874,19 @@
       "hasWidgetHelpers": false
     },
     {
+      "name": "HostApp",
+      "file": "lib/host_app.dart",
+      "role": "screen",
+      "shapeHash": "e2686925d8474926b56a99f3200c7b954732bafe0bc5004f7a75434e8682c87b",
+      "coarseShapeHash": "e2686925d8474926b56a99f3200c7b954732bafe0bc5004f7a75434e8682c87b",
+      "simhash128": "6570a30c53c6198b327634f639de9cbf",
+      "tokenStreamLength": 2,
+      "coarseTokenStreamLength": 2,
+      "usageCountRaw": 4,
+      "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
+      "hasWidgetHelpers": false
+    },
+    {
       "name": "HostAppShell",
       "file": "lib/core/presentation/host_app_shell.dart",
       "role": "composition",
@@ -9635,7 +9663,7 @@
       "simhash128": "2679aa2a04c070c39a0a2f35f6f5abee",
       "tokenStreamLength": 14,
       "coarseTokenStreamLength": 14,
-      "usageCountRaw": 4,
+      "usageCountRaw": 5,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
     },

@@ -1,5 +1,5 @@
 {
-  "version": 109,
+  "version": 110,
   "updated": "2026-07-25",
   "owner": "agent_operating_model",
   "entries": [
@@ -3415,6 +3415,31 @@
         "docs/app_architecture.md"
       ],
       "notes": "UI-bound navigation dependencies belong at the shell composition boundary. A hidden global provider override is both harder to reason about and unreliable across router-owned navigator trees."
+    },
+    {
+      "id": "REG-APP-ROOT-WIDGET-CLASSIFICATION-001",
+      "title": "New installable app roots bypass widget governance registries",
+      "status": "active",
+      "applies_to": [
+        "lib/consumer_app.dart",
+        "lib/host_app.dart",
+        "docs/audit_registry/widget_classification.json",
+        "docs/audit_registry/widget_similarity.json",
+        "docs/audit_registry/widget_concept_metrics.json",
+        "docs/audit_registry/widget_concept_report.md",
+        "tool/design/generate_widget_classification.mjs"
+      ],
+      "symptom": "Consumer or Host app-root widgets compile and test locally but the design-parity gate reports missing classification or stale widget-governance artifacts.",
+      "guard": {
+        "type": "command",
+        "command": "npm run design:parity:check",
+        "guardEvidence": "generated widget classification includes both installable role roots and the dependent similarity and concept reports are regenerated together"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/design_parity/README.md"
+      ],
+      "notes": "Installable app roots are real public widget boundaries even when they contain only role-specific dependency injection. Adding or renaming one requires the full widget-governance generation chain."
     }
   ]
 }
