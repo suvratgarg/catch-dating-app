@@ -4423,9 +4423,9 @@
     },
     {
       "package": "react",
-      "edges": 124,
+      "edges": 127,
       "runtimeEdges": 65,
-      "typeOnlyEdges": 59,
+      "typeOnlyEdges": 62,
       "dynamicImports": 0,
       "surfaces": [
         "admin",
@@ -4504,10 +4504,12 @@
         "website/src/features/claims/useClaimRequestMutation.test.tsx",
         "website/src/features/claims/useClaimRequestMutation.ts",
         "website/src/features/claims/useListingClaimController.ts",
+        "website/src/features/home/sections/HomePageSections.tsx",
         "website/src/features/host/application/useHostApplicationController.test.tsx",
         "website/src/features/host/application/useHostApplicationController.ts",
         "website/src/features/host/sections/CreateEventWalkthrough.tsx",
         "website/src/features/host/sections/HostComparisonSection.tsx",
+        "website/src/features/host/sections/HostPageSections.tsx",
         "website/src/features/host/sections/PlaybookShowcase.tsx",
         "website/src/features/marketing/MarketingConsentBanner.tsx",
         "website/src/features/marketing/useAppDownloadCtas.ts",
@@ -15419,7 +15421,7 @@
       "specifier": "@content/generated",
       "kind": "import",
       "typeOnly": false,
-      "line": 1,
+      "line": 2,
       "column": 1
     },
     {
@@ -15428,7 +15430,7 @@
       "specifier": "../../../shared/site",
       "kind": "import",
       "typeOnly": false,
-      "line": 2,
+      "line": 3,
       "column": 1
     },
     {
@@ -15437,7 +15439,7 @@
       "specifier": "../../../shared/ui/primitives",
       "kind": "import",
       "typeOnly": false,
-      "line": 3,
+      "line": 4,
       "column": 1
     },
     {
@@ -15446,7 +15448,7 @@
       "specifier": "@content/marketing",
       "kind": "import",
       "typeOnly": false,
-      "line": 40,
+      "line": 34,
       "column": 1
     },
     {
@@ -15455,7 +15457,7 @@
       "specifier": "../../marketing/tracking",
       "kind": "import",
       "typeOnly": false,
-      "line": 45,
+      "line": 42,
       "column": 1
     },
     {
@@ -15464,7 +15466,7 @@
       "specifier": "../../marketing/useAppDownloadCtas",
       "kind": "import",
       "typeOnly": false,
-      "line": 46,
+      "line": 43,
       "column": 1
     },
     {
@@ -15473,7 +15475,7 @@
       "specifier": "../../organizers/data",
       "kind": "import",
       "typeOnly": false,
-      "line": 47,
+      "line": 44,
       "column": 1
     },
     {
@@ -15482,7 +15484,7 @@
       "specifier": "../../organizers/featuredOrganizerCardItem",
       "kind": "import",
       "typeOnly": false,
-      "line": 48,
+      "line": 45,
       "column": 1
     },
     {
@@ -15491,7 +15493,7 @@
       "specifier": "../../organizers/publicDiscoveryData",
       "kind": "import",
       "typeOnly": false,
-      "line": 49,
+      "line": 46,
       "column": 1
     },
     {
@@ -15500,7 +15502,7 @@
       "specifier": "../../organizers/selectors",
       "kind": "import",
       "typeOnly": false,
-      "line": 53,
+      "line": 50,
       "column": 1
     },
     {
@@ -15509,7 +15511,7 @@
       "specifier": "../../waitlist/WaitlistForm",
       "kind": "import",
       "typeOnly": false,
-      "line": 57,
+      "line": 54,
       "column": 1
     },
     {
@@ -15860,22 +15862,13 @@
       "specifier": "@content/generated",
       "kind": "import",
       "typeOnly": false,
-      "line": 1,
+      "line": 2,
       "column": 1
     },
     {
       "source": "website/src/features/host/sections/HostPageSections.tsx",
       "target": "website/src/shared/site/index.ts",
       "specifier": "../../../shared/site",
-      "kind": "import",
-      "typeOnly": false,
-      "line": 2,
-      "column": 1
-    },
-    {
-      "source": "website/src/features/host/sections/HostPageSections.tsx",
-      "target": "website/src/content/markets/index.ts",
-      "specifier": "@content/markets",
       "kind": "import",
       "typeOnly": false,
       "line": 3,
@@ -15896,7 +15889,16 @@
       "specifier": "@content/marketing",
       "kind": "import",
       "typeOnly": false,
-      "line": 26,
+      "line": 23,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/host/sections/HostPageSections.tsx",
+      "target": "website/src/content/host.ts",
+      "specifier": "@content/host",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 30,
       "column": 1
     },
     {
@@ -15905,7 +15907,7 @@
       "specifier": "../../marketing/tracking",
       "kind": "import",
       "typeOnly": false,
-      "line": 34,
+      "line": 31,
       "column": 1
     },
     {
@@ -15914,7 +15916,7 @@
       "specifier": "../application/HostApplicationFlow",
       "kind": "import",
       "typeOnly": false,
-      "line": 35,
+      "line": 32,
       "column": 1
     },
     {
@@ -15923,7 +15925,7 @@
       "specifier": "./CaptureFrames",
       "kind": "import",
       "typeOnly": false,
-      "line": 36,
+      "line": 33,
       "column": 1
     },
     {
@@ -18245,7 +18247,7 @@
       "specifier": "../ui/primitives",
       "kind": "import",
       "typeOnly": false,
-      "line": 2,
+      "line": 3,
       "column": 1
     },
     {
@@ -18254,7 +18256,7 @@
       "specifier": "./siteTracking",
       "kind": "import",
       "typeOnly": false,
-      "line": 3,
+      "line": 4,
       "column": 1
     },
     {
@@ -19595,7 +19597,7 @@
       "specifier": "../features/host/sections/HostSupportingSections",
       "kind": "import",
       "typeOnly": false,
-      "line": 17,
+      "line": 16,
       "column": 1
     },
     {
@@ -19604,7 +19606,7 @@
       "specifier": "../shared/ui/primitives",
       "kind": "import",
       "typeOnly": false,
-      "line": 22,
+      "line": 21,
       "column": 1
     },
     {
@@ -19613,7 +19615,7 @@
       "specifier": "./fixtures/marketingCaptures",
       "kind": "import",
       "typeOnly": false,
-      "line": 23,
+      "line": 22,
       "column": 1
     },
     {
@@ -22400,6 +22402,15 @@
       "column": 1
     },
     {
+      "source": "website/src/features/home/sections/HomePageSections.tsx",
+      "package": "react",
+      "specifier": "react",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1,
+      "column": 1
+    },
+    {
       "source": "website/src/features/host/application/applicationModel.test.ts",
       "package": "vitest",
       "specifier": "vitest",
@@ -22478,6 +22489,15 @@
       "kind": "import",
       "typeOnly": false,
       "line": 3,
+      "column": 1
+    },
+    {
+      "source": "website/src/features/host/sections/HostPageSections.tsx",
+      "package": "react",
+      "specifier": "react",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1,
       "column": 1
     },
     {
@@ -23018,6 +23038,15 @@
       "kind": "import",
       "typeOnly": false,
       "line": 1,
+      "column": 1
+    },
+    {
+      "source": "website/src/shared/site/SiteHeader.tsx",
+      "package": "react",
+      "specifier": "react",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 2,
       "column": 1
     },
     {
