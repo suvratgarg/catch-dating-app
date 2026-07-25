@@ -5,7 +5,7 @@
     "manifest": "docs/audit_registry/flutter_field_surface_adoption.json",
     "manifestSha256": "3557928e192754aea43616bd99b41ddaef91d848f7227abad3bad3952c7865cf",
     "routeInventory": "tool/ui_capture/route_inventory.json",
-    "routeInventorySha256": "f92fe6fc7058c567b3603d9fa3ae46f122871a70ded3aa43eb17017b6470e245",
+    "routeInventorySha256": "b605280f1f822c4d88fc38d301700d18a7694a9aef8fa4f3ca8dd0aa31c6ace7",
     "screenContracts": "design/screens/catch.screens.json",
     "screenContractsSha256": "b9f6955dfdd6d1bea7299cc4f30a477541d18ff6ad773d2f2f1a5e69f87f3ed3"
   },
