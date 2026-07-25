@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ $# -lt 1 || $# -gt 2 ]]; then
-  echo "Usage: ./tool/use_firebase_environment.sh <dev|staging|prod> [consumer|host]"
+if [[ $# -lt 1 || $# -gt 3 ]]; then
+  echo "Usage: ./tool/use_firebase_environment.sh <dev|staging|prod> [consumer|host] [project-root]"
   exit 1
 fi
 
 environment="$1"
 app_role="${2:-consumer}"
+project_root="${3:-.}"
 
 case "$environment" in
   dev|staging|prod) ;;
@@ -27,6 +28,11 @@ esac
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
+destination_root="$repo_root/$project_root"
+if [[ ! -f "$destination_root/pubspec.yaml" ]]; then
+  echo "Flutter project root has no pubspec.yaml: $project_root"
+  exit 1
+fi
 
 IFS=$'\t' read -r android_config ios_config macos_config web_config <<<"$(
   node "$repo_root/tool/platform/resolve_app_target.mjs" \
@@ -45,10 +51,15 @@ copy_specs=(
 missing=0
 for spec in "${copy_specs[@]}"; do
   source_rel="${spec%%|*}"
+  dest_rel="${spec##*|}"
   source_path="$repo_root/$source_rel"
+  destination_path="$destination_root/$dest_rel"
+  destination_parent="$(dirname "$destination_path")"
   if [[ ! -f "$source_path" ]]; then
     echo "Missing Firebase config file: $source_rel"
     missing=1
+  elif [[ ! -d "$destination_parent" ]]; then
+    continue
   fi
 done
 
@@ -60,10 +71,17 @@ fi
 for spec in "${copy_specs[@]}"; do
   source_rel="${spec%%|*}"
   dest_rel="${spec##*|}"
-  cp "$repo_root/$source_rel" "$repo_root/$dest_rel"
-  echo "Applied $source_rel -> $dest_rel"
+  destination_path="$destination_root/$dest_rel"
+  if [[ ! -d "$(dirname "$destination_path")" ]]; then
+    continue
+  fi
+  cp "$repo_root/$source_rel" "$destination_path"
+  echo "Applied $source_rel -> $project_root/$dest_rel"
 done
 
-bash "$repo_root/tool/validate_firebase_environment.sh" "$environment" "$app_role" >/dev/null
+bash "$repo_root/tool/validate_firebase_environment.sh" \
+  "$environment" \
+  "$app_role" \
+  "$project_root" >/dev/null
 
 echo "Active Firebase environment: $environment ($app_role)"

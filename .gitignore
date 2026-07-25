@@ -28,7 +28,7 @@ migrate_working_dir/
 .env.*
 !.env.example
 *.local
-ios/Flutter/GoogleMapsKeys.xcconfig
+**/ios/Flutter/GoogleMapsKeys.xcconfig
 .runtimeconfig.json
 service-account*.json
 *-service-account.json

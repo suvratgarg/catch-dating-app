@@ -56,6 +56,8 @@ test("impact routing reports the owning relationship and checks", () => {
   const payload = JSON.parse(result.stdout);
   assert.ok(payload.relationships.includes("backend-contracts"));
   assert.ok(payload.toolIds.includes("contracts:validate-schemas"));
+  assert.ok(payload.ciTargets.includes("contracts"));
+  assert.deepEqual(payload.mobileReleaseRoles, []);
   assert.deepEqual(payload.unmatchedPaths, []);
 });
 
@@ -65,6 +67,31 @@ test("impact routing includes field inventory for Flutter design consumers", () 
   const payload = JSON.parse(result.stdout);
   assert.ok(payload.relationships.includes("design-system"));
   assert.ok(payload.toolIds.includes("design:flutter-field-surface-inventory"));
+  assert.deepEqual(payload.mobileReleaseRoles, ["consumer", "host"]);
+  assert.deepEqual(payload.unmatchedPaths, []);
+});
+
+test("impact routing keeps admin-only work out of Flutter and mobile release lanes", () => {
+  const result = run(["impacted", "--paths", "admin/src/app/App.tsx", "--json"]);
+  assert.equal(result.status, 0, result.stderr);
+  const payload = JSON.parse(result.stdout);
+  assert.ok(payload.ciTargets.includes("admin"));
+  assert.ok(!payload.ciTargets.includes("flutter"));
+  assert.deepEqual(payload.mobileReleaseRoles, []);
+});
+
+test("impact routing preserves role ownership for independent app packages", () => {
+  const result = run([
+    "impacted",
+    "--paths",
+    "apps/host/lib/host_platform_app.dart",
+    "--json",
+  ]);
+  assert.equal(result.status, 0, result.stderr);
+  const payload = JSON.parse(result.stdout);
+  assert.ok(payload.relationships.includes("flutter-app"));
+  assert.deepEqual(payload.appRoles, ["host"]);
+  assert.deepEqual(payload.mobileReleaseRoles, ["host"]);
   assert.deepEqual(payload.unmatchedPaths, []);
 });
 

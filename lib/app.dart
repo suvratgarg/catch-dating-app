@@ -14,12 +14,13 @@ import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/force_update/presentation/force_update_diagnostics.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/routing/active_router.dart';
 import 'package:catch_dating_app/user_profile/data/profile_location_initializer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app.g.dart';
@@ -38,52 +39,57 @@ typedef ForceUpdateRefresh =
 ForceUpdateRefresh forceUpdateRefresh(Ref ref) => _refreshForceUpdateGate;
 
 class MyApp extends ConsumerWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, required this.routerProvider});
+
+  final ProviderListenable<GoRouter> routerProvider;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final goRouter = ref.watch(goRouterProvider);
+    final goRouter = ref.watch(routerProvider);
     final forceUpdate = ref.watch(forceUpdateRequiredProvider);
     ref.watch(profileLocationInitializerProvider);
 
-    return MaterialApp.router(
-      onGenerateTitle: (context) {
-        final l10n = context.l10n;
-        return AppConfig.appTitleFor(
-          consumerTitle: l10n.appTitleConsumer,
-          hostTitle: l10n.appTitleHost,
-        );
-      },
-      debugShowCheckedModeBanner: false,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      routerConfig: goRouter,
-      builder: (context, child) {
-        final content = ForceUpdateGate(
-          forceUpdate: forceUpdate,
-          onRetry: () {
-            unawaited(
-              ref.read(forceUpdateRefreshProvider)(
-                ref,
-                invalidatePackageInfo: true,
-              ),
-            );
-          },
-          child: child ?? const SizedBox.shrink(),
-        );
+    return ProviderScope(
+      overrides: [activeGoRouterProvider.overrideWithValue(goRouter)],
+      child: MaterialApp.router(
+        onGenerateTitle: (context) {
+          final l10n = context.l10n;
+          return AppConfig.appTitleFor(
+            consumerTitle: l10n.appTitleConsumer,
+            hostTitle: l10n.appTitleHost,
+          );
+        },
+        debugShowCheckedModeBanner: false,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        routerConfig: goRouter,
+        builder: (context, child) {
+          final content = ForceUpdateGate(
+            forceUpdate: forceUpdate,
+            onRetry: () {
+              unawaited(
+                ref.read(forceUpdateRefreshProvider)(
+                  ref,
+                  invalidatePackageInfo: true,
+                ),
+              );
+            },
+            child: child ?? const SizedBox.shrink(),
+          );
 
-        if (!AppConfig.shouldShowEnvironmentBanner) {
-          return content;
-        }
+          if (!AppConfig.shouldShowEnvironmentBanner) {
+            return content;
+          }
 
-        return Banner(
-          location: BannerLocation.topStart,
-          message: AppConfig.environmentBannerLabel,
-          child: content,
-        );
-      },
+          return Banner(
+            location: BannerLocation.topStart,
+            message: AppConfig.environmentBannerLabel,
+            child: content,
+          );
+        },
+      ),
     );
   }
 }

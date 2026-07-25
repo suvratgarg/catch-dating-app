@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.5.13
-updated: 2026-07-24
+version: 1.6.0
+updated: 2026-07-25
 owner: recursive_audit_loop
 status: active
 ---
@@ -1795,6 +1795,18 @@ Rules:
 - App role selection belongs in bootstrap/entrypoint configuration and route
   graph wiring. Feature widgets should not infer role from bundle ids,
   Firebase project ids, or platform flavor strings.
+- Every installable entrypoint must install a role-specific app root:
+  `apps/consumer` installs `ConsumerPlatformApp` and
+  `consumerGoRouterProvider`, while `apps/host` installs `HostPlatformApp` and
+  `hostGoRouterProvider`. Shared bootstrap and `MyApp` receive the selected
+  root/router as dependencies and must not infer a product from a bundle id.
+- `apps/consumer` and `apps/host` are independent Flutter/native package roots.
+  Shared product code remains in `catch_dating_app`, but native SDKs belong to
+  the app package that uses them. Health and Razorpay adapters are Consumer
+  dependencies; Host must compile without either plugin.
+- Shared services navigate through `activeGoRouterProvider`, which is
+  overridden below the selected app root. Importing a product router from a
+  shared service is a composition-boundary violation.
 - Consumer routing must not mount host create/edit/manage screens. Consumer
   surfaces may show host identity and public event/organizer information, but not
   host-management affordances.
@@ -1868,15 +1880,17 @@ tool/app_targets.json
 
 Current native policy:
 
-- Android uses six explicit app-target flavors rather than an environment
-  flavor plus a mutable global role property. Release manifests embed checked
-  target/role and Firebase app/project markers; the signed-AAB gate compares
-  those markers, Maps key, debug policy, package/version, and upload
-  certificate against the target contract.
-- Apple may continue using one `Runner` native target while each scheme has an
-  explicit bundle id, Firebase role, icon, and role-specific entitlements. A
-  second Xcode target becomes required if capabilities or build phases can no
-  longer remain safely scheme/configuration driven.
+- Android uses six explicit app-target flavors across two role-pinned Gradle
+  projects rather than an environment flavor plus a mutable global role
+  property. Each project exposes only its three environments and compiles the
+  package-local entrypoint. Release manifests embed checked target/role and
+  Firebase app/project markers; the signed-AAB gate compares those markers,
+  Maps key, debug policy, package/version, and upload certificate against the
+  target contract.
+- Apple uses one role-specific Xcode project per package root. Each project may
+  keep one `Runner` native target while its three schemes own explicit bundle
+  ids, Firebase configuration, icons, and entitlements. Consumer and Host
+  CocoaPods graphs must stay independent.
 - Consumer owns HealthKit/Health Connect and the current public event-link
   association. Host must not inherit those capabilities until a Host-specific
   product contract requires them.
@@ -1884,8 +1898,9 @@ Current native policy:
   temporarily fall back to the legacy unprefixed remote values during rollout;
   Host never does.
 - GitHub Actions is the routine mobile release owner for both roles. One
-  approval-free merge-driven workflow fans out by role: iOS archives upload to
-  TestFlight and Android produces signed AABs for Play internal testing. Its
+  approval-free merge-driven workflow fans out only for impacted roles and
+  produces verified iOS/Android artifacts. TestFlight or Play mutation requires
+  an explicit manual dispatch and recorded release reason. Its
   credentials live in the main-only `prod-mobile` environment, not the shared
   backend/data `prod` environment. Each ephemeral iOS runner imports the same
   dedicated, fingerprint-checked CI Apple Development identity before invoking
@@ -1896,9 +1911,19 @@ Current native policy:
   `APP-TARGET-ANDROID-PLAY-001` until console enrollment and publisher access
   are proven.
 
-Run `node tool/run.mjs check platform:app-targets` whenever app identity,
-native configuration, Firebase registration, links, force-update policy, or
-release ownership changes.
+Run
+`node tool/run.mjs check platform:app-targets platform:app-package-graphs`
+whenever app identity, package roots, native configuration, Firebase
+registration, links, force-update policy, or release ownership changes.
+
+Package separation is measured, not inferred. Every production IPA/AAB emits a
+`platform:mobile-package-policy` receipt with compressed/uncompressed size,
+entry inventory, compiled app-binary hashes, forbidden production assets, and
+role-forbidden native plugins. Consumer and Host release builds must prove
+distinct binaries and package entry sets. Local release evidence from
+2026-07-25 also proves Host excludes Health and Razorpay while Consumer retains
+them; exact TestFlight display size alone is not evidence of duplicate Dart
+code.
 
 ### Exhibit ARCH-APP-TARGET-001: Installable App Target Resolution
 
@@ -1908,11 +1933,11 @@ The build wrapper resolves entrypoint and native identity from the target
 contract before it activates Firebase or invokes Flutter:
 
 ```bash
-IFS=$'\t' read -r target_entrypoint ios_flavor android_flavor <<<"$(
+IFS=$'\t' read -r project_root package_entrypoint ios_flavor android_flavor <<<"$(
   node "$repo_root/tool/platform/resolve_app_target.mjs" \
     --role "$app_role" \
     --environment "$environment" \
-    --fields 'entrypoint,ios.scheme,android.flavor'
+    --fields 'projectRoot,packageEntrypoint,ios.scheme,android.flavor'
 )"
 ```
 

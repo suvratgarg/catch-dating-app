@@ -75,9 +75,9 @@ export function collectReleaseIdentityFindings({
   expectEqual(findings, "bundle identifier", bundleId, target.ios.bundleId);
   expectEqual(findings, "display name", displayName, target.displayName);
   expectEqual(findings, "app target marker", appTargetId, target.id);
-  if (!flutterTarget.endsWith(`/${target.entrypoint}`)) {
+  if (!flutterTarget.endsWith(`/${target.packageEntrypoint}`)) {
     findings.push(
-      `Flutter target '${flutterTarget}' did not resolve to '${target.entrypoint}'`,
+      `Flutter target '${flutterTarget}' did not resolve to '${target.packageEntrypoint}'`,
     );
   }
   if (!urlSchemes.includes(target.ios.urlScheme)) {

@@ -13,8 +13,18 @@ import {resolveAppTarget, valueAtPath} from "./resolve_app_target.mjs";
 
 function validManifest() {
   const roles = {
-    consumer: {storeProduct: {appStoreConnectAppId: "consumer-app"}},
-    host: {storeProduct: {appStoreConnectAppId: "host-app"}},
+    consumer: {
+      projectRoot: "apps/consumer",
+      entrypoint: "apps/consumer/lib/main.dart",
+      packageEntrypoint: "lib/main.dart",
+      storeProduct: {appStoreConnectAppId: "consumer-app"},
+    },
+    host: {
+      projectRoot: "apps/host",
+      entrypoint: "apps/host/lib/main.dart",
+      packageEntrypoint: "lib/main.dart",
+      storeProduct: {appStoreConnectAppId: "host-app"},
+    },
   };
   const environments = {
     dev: {},
@@ -28,7 +38,9 @@ function validManifest() {
         id: `${role}-${environment}`,
         role,
         environment,
-        entrypoint: `lib/main_${role}_${environment}.dart`,
+        projectRoot: `apps/${role}`,
+        entrypoint: `apps/${role}/lib/main_${environment}.dart`,
+        packageEntrypoint: `lib/main_${environment}.dart`,
         ios: {bundleId: `com.catch.${role}.${environment}`},
         android: {applicationId: `com.catch.${role}.${environment}`},
       });
@@ -159,14 +171,14 @@ function unifiedReleaseManifest() {
   manifest.releasePolicy = {
     owner: "github-actions",
     workflow: ".github/workflows/mobile-internal-release.yml",
-    trigger: "app-relevant-main-push",
+    trigger: "role-impacted-main-push-for-artifacts",
     environment: "prod-mobile",
-    approvalMode: "none-after-main-merge",
+    approvalMode: "manual-dispatch-for-store-mutation",
     branchPolicy: "main-only",
     roles: ["consumer", "host"],
     ios: {
       channel: "testflight",
-      uploadMode: "automatic-main",
+      uploadMode: "manual-dispatch",
       signingStyle: "automatic",
       developmentIdentitySource: "reusable-ci-p12",
       distributionSigningStage: "export",
@@ -185,7 +197,7 @@ function unifiedReleaseManifest() {
   for (const target of manifest.targets.filter((candidate) => candidate.environment === "prod")) {
     target.release = {
       owner: "github-actions",
-      githubMode: "automatic-main",
+      githubMode: "automatic-artifact-manual-upload",
       githubWorkflow: ".github/workflows/mobile-internal-release.yml",
       googlePlayPackageName: target.android.applicationId,
       legacyXcodeCloudWorkflow: `${target.role} legacy`,
@@ -207,7 +219,12 @@ concurrency:
   cancel-in-progress: false
 jobs:
   resolve:
-    run: echo refs/heads/main; roles='["consumer","host"]'
+    run: |
+      echo refs/heads/main
+      roles='["consumer","host"]'
+      if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+        upload_to_testflight="false"
+      fi
   prod-ios:
     environment: prod-mobile
     strategy:
@@ -223,7 +240,7 @@ jobs:
         run: |
           security import "$p12_path" -k "$keychain_path" -f pkcs12 -P "$PASSWORD" -x -T /usr/bin/codesign
           certificate_subject="CN=Apple Development: CI,OU=$expected_team_id"
-          expected_team_id="$(/usr/libexec/PlistBuddy -c 'Print :teamID' ios/ExportOptions.prod.plist)"
+          expected_team_id="$(/usr/libexec/PlistBuddy -c 'Print :teamID' "$APP_PROJECT_ROOT/ios/ExportOptions.prod.plist")"
           if [[ "$certificate_subject" != *"CN=Apple Development:"* || "$certificate_subject" != *"OU=$expected_team_id"* ]]; then exit 1; fi
           expected_sha256="$IOS_CI_DEVELOPMENT_CERTIFICATE_SHA256"
           actual_sha256="$(openssl x509 -in "$certificate_pem_path" -noout -fingerprint -sha256)"
@@ -234,8 +251,13 @@ jobs:
           openssl x509 -in "$certificate_pem_path" -checkend 2592000 -noout
           security find-identity -v -p codesigning "$keychain_path"
       - name: Upload to TestFlight
+        if: \${{ github.event_name == 'workflow_dispatch' && inputs.upload_to_internal }}
       - run: xcodebuild \\
-          -exportArchive
+          -workspace "$APP_PROJECT_ROOT/ios/Runner.xcworkspace" \\
+          archive
+      - run: xcodebuild \\
+          -exportArchive \\
+          -exportOptionsPlist "$APP_PROJECT_ROOT/ios/ExportOptions.prod.plist"
       - run: node tool/platform/verify_ios_release_identity.mjs \\
           --app path/to/exported.app
       - run: /usr/bin/shasum -a 256 --check evidence/consumer-ipa.sha256
@@ -259,8 +281,12 @@ jobs:
         app_role: roles
     steps:
       - run: echo BUNDLETOOL_SHA256
+      - run: echo "$APP_PROJECT_ROOT/android/key.properties"
+      - run: find "$APP_PROJECT_ROOT/build/app/outputs/bundle" -name '*.aab'
       - run: node tool/platform/verify_android_release_bundle.mjs --track qa
-      - run: node tool/platform/upload_google_play_bundle.mjs --track qa
+      - name: Upload to Play internal testing
+        if: \${{ github.event_name == 'workflow_dispatch' && inputs.upload_to_internal }}
+        run: node tool/platform/upload_google_play_bundle.mjs --track qa
   probe-play:
     run: node tool/platform/probe_google_play_access.mjs --track qa
   retire:

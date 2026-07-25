@@ -1,6 +1,6 @@
 {
-  "version": "4.5.166",
-  "updated": "2026-07-24",
+  "version": "4.6.0",
+  "updated": "2026-07-25",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -37,13 +37,14 @@
       ]
     },
     "docs/agent_operating_model.md": {
-      "purpose": "Canonical agent operating model for execution modes, broad cleanup contracts, reference-pattern rollouts, enforcement-integrity metadata, parent-led parallel worktree delegation, regression ledger policy, skill freshness, and workflow-quality measurement.",
+      "purpose": "Canonical agent operating model for execution modes, broad cleanup contracts, reference-pattern rollouts, authored semantic document versions versus integration-derived Git state, enforcement-integrity metadata, parent-led parallel worktree delegation, regression ledger policy, skill freshness, and workflow-quality measurement.",
       "read_when": [
         "Starting broad cleanup, refactor, docs consolidation, design implementation, or workflow-harness changes",
         "Using subagents, disposable Git worktrees, or parallel branch proposals",
         "Updating workflow-quality metrics or project-local agent skills",
         "Changing rule/tool enforcement mappings, vacuity proof metadata, or ratchet baselines",
-        "Changing runtime-checked tool role requirements or allowedFindings baseline receipt validation"
+        "Changing runtime-checked tool role requirements or allowedFindings baseline receipt validation",
+        "Changing document semantic-version policy or CI-derived integration state"
       ],
       "skip_when": [
         "A trivial one-off command does not touch repo workflow"
@@ -94,7 +95,7 @@
       ]
     },
     "docs/app_architecture.md": {
-      "purpose": "Canonical Flutter app architecture spec for dependency-direction seams, generated Riverpod provider topology and reviewed relationship candidates, Firebase/domain boundaries, mutation-cardinality grain, pending request snapshot integrity, app-role boundaries, feature/layer/screen/controller/repository/widget ownership, exhaustive screen-chrome role contracts, async state boundaries, error-surface taxonomy, logging test seams, coverage and test-spec maintainability, UI layout/scroll/sizing, routing/navigation constants, realtime stream lifecycle, reference implementation exhibits, exhibit-freshness markers, and enforcement policy.",
+      "purpose": "Canonical Flutter app architecture spec for dependency-direction seams, independent Consumer and Host package roots, role-specific native capabilities, generated Riverpod provider topology and reviewed relationship candidates, Firebase/domain boundaries, mutation-cardinality grain, pending request snapshot integrity, app-role boundaries, feature/layer/screen/controller/repository/widget ownership, exhaustive screen-chrome role contracts, async state boundaries, error-surface taxonomy, logging test seams, coverage and test-spec maintainability, UI layout/scroll/sizing, routing/navigation constants, realtime stream lifecycle, reference implementation exhibits, exhibit-freshness markers, and enforcement policy.",
       "read_when": [
         "Changing code organization under lib/",
         "Starting or continuing an architecture migration rollout",
@@ -388,13 +389,14 @@
       ]
     },
     "docs/release_operations.md": {
-      "purpose": "Consolidated CI, release, deploy, environment, Flutter coverage evidence, app-shell headless/native integration, smoke-test, store-readiness, host TestFlight, and release-evidence runbook.",
+      "purpose": "Consolidated impact-aware monorepo CI, stable required-check aggregation, integration-derived document state, role-specific mobile artifact policy, release, deploy, environment, Flutter coverage evidence, app-shell headless/native integration, smoke-test, store-readiness, host TestFlight, and release-evidence runbook.",
       "read_when": [
         "Changing GitHub Actions release gates",
         "Deploying Firebase/Functions/rules/storage changes",
         "Preparing TestFlight, Play, or production release evidence",
         "Checking environment setup or deploy order",
-        "Checking host TestFlight setup or app-shell integration coverage"
+        "Checking host TestFlight setup or app-shell integration coverage",
+        "Changing path-to-CI ownership, app-role package boundaries, or document-state artifact generation"
       ],
       "skip_when": [
         "No CI, deploy, release, environment, integration-smoke, or store behavior is touched"
@@ -639,7 +641,7 @@
       ]
     },
     "docs/README.md": {
-      "purpose": "Canonical documentation index, lifecycle policy, source-of-truth routing, and the reviewed 99-file feature-contract retirement boundary with 11 retirement-ready documents.",
+      "purpose": "Canonical documentation index, lifecycle policy, source-of-truth routing, authored semantic-version policy, integration-derived document-state policy, and the reviewed 99-file feature-contract retirement boundary with 11 retirement-ready documents.",
       "read_when": [
         "Adding, deleting, consolidating, or routing documentation",
         "Checking whether a feature spec or completed handoff is retirement-ready"

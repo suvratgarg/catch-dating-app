@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/app.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
@@ -27,6 +26,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Future<void> runCatchApp({
   required AppRole appRole,
+  required Widget app,
   AppEnvironment? environment,
 }) async {
   AppConfig.configureEntrypointRole(appRole);
@@ -84,7 +84,7 @@ Future<void> runCatchApp({
               },
         ),
       ],
-      child: const MyApp(),
+      child: app,
     ),
   );
 }

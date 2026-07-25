@@ -95,7 +95,7 @@ Future<void> pumpCatchAppShell(
         initialAppLocationProvider.overrideWithValue(initialRoute),
         ...overrides.cast(),
       ],
-      child: const MyApp(),
+      child: MyApp(routerProvider: goRouterProvider),
     ),
   );
   await pumpAppShellFrames(tester);

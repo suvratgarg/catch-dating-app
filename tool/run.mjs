@@ -7,6 +7,7 @@ import {
   toolSupportsPlatform,
   validateToolPlatforms,
 } from "./lib/tool_platform.mjs";
+import {planCi} from "./ci/plan_ci.mjs";
 
 const manifestPath = fromRepo("tool/tools_manifest.json");
 
@@ -138,13 +139,23 @@ function impactedTools(args) {
   const ciWorkflows = [...new Set(matchedRelationships.flatMap(
     (relationship) => relationship.ciWorkflows ?? [],
   ))].sort();
-  const unmatchedPaths = changedPaths.filter((changedPath) => !matchedPaths.has(changedPath));
+  const ciPlan = planCi({
+    changedPaths,
+    ciPlanning: rootManifest.ciPlanning,
+  });
+  const unmatchedPaths = [...new Set([
+    ...changedPaths.filter((changedPath) => !matchedPaths.has(changedPath)),
+    ...ciPlan.unmatchedPaths,
+  ])].sort();
   const result = {
     base: options.base,
     changedPaths,
     relationships: matchedRelationships.map((relationship) => relationship.id).sort(),
     toolIds,
     ciWorkflows,
+    ciTargets: ciPlan.targets,
+    appRoles: ciPlan.appRoles,
+    mobileReleaseRoles: ciPlan.mobileReleaseRoles,
     unmatchedPaths,
   };
 
@@ -154,6 +165,11 @@ function impactedTools(args) {
     console.log(`Impacted relationships: ${result.relationships.join(", ") || "none"}`);
     console.log(`Impacted tool checks: ${toolIds.join(", ") || "none"}`);
     console.log(`CI workflows: ${ciWorkflows.join(", ") || "none"}`);
+    console.log(`CI targets: ${ciPlan.targets.join(", ") || "none"}`);
+    console.log(`App roles: ${ciPlan.appRoles.join(", ") || "none"}`);
+    console.log(
+      `Mobile release roles: ${ciPlan.mobileReleaseRoles.join(", ") || "none"}`,
+    );
   }
 
   if (unmatchedPaths.length > 0) {

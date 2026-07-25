@@ -22,6 +22,7 @@ const manifest = {
       environment: "prod",
       displayName: "Catch",
       entrypoint: "lib/main_consumer_prod.dart",
+      packageEntrypoint: "lib/main_prod.dart",
       firebase: {
         projectId: "catch-prod",
         ios: {appId: "consumer-firebase-app"},
@@ -38,6 +39,7 @@ const manifest = {
       environment: "prod",
       displayName: "Catch Host",
       entrypoint: "lib/main_host_prod.dart",
+      packageEntrypoint: "lib/main_prod.dart",
       firebase: {
         projectId: "catch-prod",
         ios: {appId: "host-firebase-app"},
@@ -84,7 +86,7 @@ function appInfoFor(target) {
     CFBundleIdentifier: target.ios.bundleId,
     CFBundleDisplayName: target.displayName,
     CatchAppTargetID: target.id,
-    CatchFlutterTarget: `/repo/${target.entrypoint}`,
+    CatchFlutterTarget: `/repo/${target.packageEntrypoint}`,
     CFBundleURLTypes: [{CFBundleURLSchemes: [target.ios.urlScheme]}],
     CFBundleShortVersionString: "1.2.3",
     CFBundleVersion: "202607101",

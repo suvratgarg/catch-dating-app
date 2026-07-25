@@ -1,0 +1,5 @@
+// Firebase 12's CocoaPods sources still contain Swift Package Manager-only
+// split-module imports behind conditional compilation. Xcode 26's explicit
+// module scanner can resolve those names before CocoaPods' COCOAPODS flag is
+// applied, so keep app targets on the legacy Swift module path for now.
+SWIFT_ENABLE_EXPLICIT_MODULES=NO

@@ -60,7 +60,7 @@ final class AppShellFcmInitializationProvider
 }
 
 String _$appShellFcmInitializationHash() =>
-    r'312e963b1cb0760e18f06a2477debb8a3c678626';
+    r'a38ecd719e871d59e6343383445db2805e6574ca';
 
 final class AppShellFcmInitializationFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<void>, String> {

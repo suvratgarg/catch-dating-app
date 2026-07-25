@@ -1,0 +1,48 @@
+{
+  "$schema": "catch.mobile-package-policy/v1",
+  "schemaVersion": 1,
+  "baseline": {
+    "measuredAt": "2026-07-25",
+    "mode": "Flutter release builds from independent apps/consumer and apps/host package roots",
+    "policy": "Budgets include narrow headroom above measured role-specific artifacts and fail on regression."
+  },
+  "forbiddenEntries": [
+    "flutter_assets/assets/fixtures/"
+  ],
+  "platforms": {
+    "ios": {
+      "consumer": {
+        "maxArtifactBytes": 55000000,
+        "maxUncompressedBytes": 92000000,
+        "forbiddenNativeEntries": []
+      },
+      "host": {
+        "maxArtifactBytes": 55000000,
+        "maxUncompressedBytes": 88000000,
+        "forbiddenNativeEntries": [
+          "Frameworks/health.framework/",
+          "Frameworks/razorpay_flutter.framework/"
+        ]
+      }
+    },
+    "android": {
+      "consumer": {
+        "maxArtifactBytes": 96000000,
+        "maxUncompressedBytes": 300000000,
+        "forbiddenNativeEntries": []
+      },
+      "host": {
+        "maxArtifactBytes": 94000000,
+        "maxUncompressedBytes": 290000000,
+        "forbiddenNativeEntries": [
+          "libhealth",
+          "razorpay"
+        ]
+      }
+    }
+  },
+  "comparison": {
+    "requireDifferentAppBinary": true,
+    "requireDifferentEntrySet": true
+  }
+}

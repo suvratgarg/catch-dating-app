@@ -747,7 +747,7 @@
 				FIREBASE_ROLE = host;
 				FIREBASE_ROLE_PATH = host/;
 				FLAVOR = "host-dev";
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_host_dev.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/host/lib/main_dev.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -779,7 +779,7 @@
 				FIREBASE_ROLE = consumer;
 				FIREBASE_ROLE_PATH = "";
 				FLAVOR = dev;
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_consumer_dev.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/consumer/lib/main_dev.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -810,7 +810,7 @@
 				FIREBASE_ROLE = host;
 				FIREBASE_ROLE_PATH = host/;
 				FLAVOR = "host-prod";
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_host_prod.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/host/lib/main_prod.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -914,7 +914,7 @@
 				FIREBASE_ROLE = host;
 				FIREBASE_ROLE_PATH = host/;
 				FLAVOR = "host-dev";
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_host_dev.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/host/lib/main_dev.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1025,7 +1025,7 @@
 				FIREBASE_ROLE = consumer;
 				FIREBASE_ROLE_PATH = "";
 				FLAVOR = staging;
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_consumer_staging.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/consumer/lib/main_staging.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1750,7 +1750,7 @@
 				FIREBASE_ROLE = host;
 				FIREBASE_ROLE_PATH = host/;
 				FLAVOR = "host-dev";
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_host_dev.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/host/lib/main_dev.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1889,7 +1889,7 @@
 				FIREBASE_ROLE = host;
 				FIREBASE_ROLE_PATH = host/;
 				FLAVOR = "host-prod";
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_host_prod.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/host/lib/main_prod.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1940,7 +1940,7 @@
 				FIREBASE_ROLE = consumer;
 				FIREBASE_ROLE_PATH = "";
 				FLAVOR = staging;
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_consumer_staging.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/consumer/lib/main_staging.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2006,7 +2006,7 @@
 				FIREBASE_ROLE = host;
 				FIREBASE_ROLE_PATH = host/;
 				FLAVOR = "host-staging";
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_host_staging.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/host/lib/main_staging.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2129,7 +2129,7 @@
 				FIREBASE_ROLE = consumer;
 				FIREBASE_ROLE_PATH = "";
 				FLAVOR = dev;
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_consumer_dev.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/consumer/lib/main_dev.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2162,7 +2162,7 @@
 				FIREBASE_ROLE = consumer;
 				FIREBASE_ROLE_PATH = "";
 				FLAVOR = staging;
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_consumer_staging.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/consumer/lib/main_staging.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2300,7 +2300,7 @@
 				FIREBASE_ROLE = host;
 				FIREBASE_ROLE_PATH = host/;
 				FLAVOR = "host-staging";
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_host_staging.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/host/lib/main_staging.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2498,7 +2498,7 @@
 				FIREBASE_ROLE = consumer;
 				FIREBASE_ROLE_PATH = "";
 				FLAVOR = dev;
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_consumer_dev.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/consumer/lib/main_dev.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2529,7 +2529,7 @@
 				FIREBASE_ROLE = host;
 				FIREBASE_ROLE_PATH = host/;
 				FLAVOR = "host-staging";
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_host_staging.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/host/lib/main_staging.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2632,7 +2632,7 @@
 				FIREBASE_ROLE = consumer;
 				FIREBASE_ROLE_PATH = "";
 				FLAVOR = prod;
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_consumer_prod.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/consumer/lib/main_prod.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2683,7 +2683,7 @@
 				FIREBASE_ROLE = consumer;
 				FIREBASE_ROLE_PATH = "";
 				FLAVOR = prod;
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_consumer_prod.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/consumer/lib/main_prod.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2778,7 +2778,7 @@
 				FIREBASE_ROLE = consumer;
 				FIREBASE_ROLE_PATH = "";
 				FLAVOR = prod;
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_consumer_prod.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/consumer/lib/main_prod.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2809,7 +2809,7 @@
 				FIREBASE_ROLE = host;
 				FIREBASE_ROLE_PATH = host/;
 				FLAVOR = "host-prod";
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_host_prod.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/host/lib/main_prod.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

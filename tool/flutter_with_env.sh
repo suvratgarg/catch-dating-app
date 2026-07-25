@@ -143,12 +143,17 @@ load_local_env_file "$repo_root/.env.local"
 flutter_args=("$@")
 target_device="$(extract_target_device)"
 
-IFS=$'\t' read -r target_entrypoint ios_flavor android_flavor <<<"$(
+IFS=$'\t' read -r target_project_root target_entrypoint ios_flavor android_flavor <<<"$(
   node "$repo_root/tool/platform/resolve_app_target.mjs" \
     --role "$app_role" \
     --environment "$environment" \
-    --fields 'entrypoint,ios.scheme,android.flavor'
+    --fields 'projectRoot,packageEntrypoint,ios.scheme,android.flavor'
 )"
+app_project_root="$repo_root/$target_project_root"
+if [[ ! -f "$app_project_root/pubspec.yaml" ]]; then
+  echo "App target $app_role/$environment has no Flutter project at $target_project_root."
+  exit 1
+fi
 
 native_flavor="$ios_flavor"
 if [[ ${#flutter_args[@]} -ge 2 && "${flutter_args[0]}" == "build" ]]; then
@@ -231,7 +236,10 @@ if [[ -n "$supplied_target" && "$supplied_target" != "$target_entrypoint" ]]; th
   exit 1
 fi
 
-bash "$repo_root/tool/use_firebase_environment.sh" "$environment" "$app_role" >/dev/null
+bash "$repo_root/tool/use_firebase_environment.sh" \
+  "$environment" \
+  "$app_role" \
+  "$target_project_root" >/dev/null
 
 if [[ $has_target -eq 0 && ${#flutter_args[@]} -ge 1 ]]; then
   case "${flutter_args[0]}" in
@@ -280,7 +288,8 @@ fi
 if [[ -n "$maps_platform" ]]; then
   node "$repo_root/tool/firebase/validate_google_maps_config.mjs" \
     --env "$environment" \
-    --platform "$maps_platform"
+    --platform "$maps_platform" \
+    --project-root "$target_project_root"
 fi
 
 supports_dart_defines=0
@@ -371,13 +380,16 @@ if [[ -n "${EMIT_OBSERVABILITY_SMOKE_EVENT:-}" ]]; then
 fi
 
 if [[ $supports_dart_defines -eq 0 ]]; then
+  cd "$app_project_root"
   exec flutter "${flutter_args[@]}"
 fi
 
 if [[ ${#extra_dart_defines[@]} -gt 0 ]]; then
+  cd "$app_project_root"
   exec flutter "${flutter_args[@]}" \
     --dart-define-from-file="$define_file" \
     "${extra_dart_defines[@]}"
 fi
 
+cd "$app_project_root"
 exec flutter "${flutter_args[@]}" --dart-define-from-file="$define_file"

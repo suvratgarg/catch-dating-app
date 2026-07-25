@@ -10,6 +10,7 @@ const placesSecretName = "GOOGLE_MAPS_PLACES_API_KEY";
 const supportedPlacesRegionCodes = ["in", "np", "au", "us"];
 
 const args = parseArgs(process.argv.slice(2));
+const appRoot = resolveAppRoot(args.projectRoot);
 const envs = args.env ? [args.env] : ["dev", "staging", "prod"];
 const platforms = args.platform === "all" ? ["ios", "android"] : [args.platform];
 const errors = [];
@@ -46,6 +47,7 @@ function parseArgs(argv) {
     iosBuiltPlist: null,
     platform: "all",
     project: null,
+    projectRoot: "",
   };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -56,6 +58,8 @@ function parseArgs(argv) {
       parsed.iosBuiltPlist = requireValue(argv, ++i, arg);
     } else if (arg === "--project") {
       parsed.project = requireValue(argv, ++i, arg);
+    } else if (arg === "--project-root") {
+      parsed.projectRoot = requireValue(argv, ++i, arg);
     } else if (arg === "--platform") {
       parsed.platform = requireValue(argv, ++i, arg);
     } else if (arg === "--help" || arg === "-h") {
@@ -74,6 +78,15 @@ function parseArgs(argv) {
   return parsed;
 }
 
+function resolveAppRoot(projectRoot) {
+  const resolved = path.resolve(repoRoot, projectRoot || ".");
+  const relative = path.relative(repoRoot, resolved);
+  if (relative.startsWith("..") || path.isAbsolute(relative)) {
+    throw new Error(`--project-root must stay inside the repository: ${projectRoot}`);
+  }
+  return resolved;
+}
+
 function requireValue(argv, index, flag) {
   const value = argv[index];
   if (!value || value.startsWith("--")) {
@@ -83,14 +96,15 @@ function requireValue(argv, index, flag) {
 }
 
 function validateIos(targetEnvs) {
-  const filePath = path.join(repoRoot, "ios/Flutter/GoogleMapsKeys.xcconfig");
+  const filePath = path.join(appRoot, "ios/Flutter/GoogleMapsKeys.xcconfig");
+  const sourcePath = path.relative(repoRoot, filePath);
   const values = readKeyValueFile(filePath, "iOS Google Maps key file");
   for (const env of targetEnvs) {
     const key = `GOOGLE_MAPS_IOS_API_KEY_${env.toUpperCase()}`;
     validateApiKey({
       label: `ios ${key}`,
       value: values.get(key),
-      source: "ios/Flutter/GoogleMapsKeys.xcconfig",
+      source: sourcePath,
     });
   }
 }
@@ -135,7 +149,7 @@ function validateIosBuiltPlist(plistPath, targetEnv) {
 
   if (!targetEnv) return;
   const values = readKeyValueFile(
-    path.join(repoRoot, "ios/Flutter/GoogleMapsKeys.xcconfig"),
+    path.join(appRoot, "ios/Flutter/GoogleMapsKeys.xcconfig"),
     "iOS Google Maps key file"
   );
   const expectedKey = `GOOGLE_MAPS_IOS_API_KEY_${targetEnv.toUpperCase()}`;
@@ -143,13 +157,17 @@ function validateIosBuiltPlist(plistPath, targetEnv) {
   if (expectedValue && builtValue !== expectedValue) {
     errors.push(
       `built ios GoogleMapsApiKey in ${path.relative(repoRoot, resolvedPath)} ` +
-        `does not match ${expectedKey} from ios/Flutter/GoogleMapsKeys.xcconfig.`
+        `does not match ${expectedKey} from ${path.relative(
+          repoRoot,
+          path.join(appRoot, "ios/Flutter/GoogleMapsKeys.xcconfig"),
+        )}.`
     );
   }
 }
 
 function validateAndroid(targetEnvs) {
-  const filePath = path.join(repoRoot, "android/local.properties");
+  const filePath = path.join(appRoot, "android/local.properties");
+  const sourcePath = path.relative(repoRoot, filePath);
   const values = readKeyValueFile(filePath, "Android local.properties");
   for (const env of targetEnvs) {
     const specificKey = `GOOGLE_MAPS_ANDROID_API_KEY_${env.toUpperCase()}`;
@@ -158,7 +176,7 @@ function validateAndroid(targetEnvs) {
     validateApiKey({
       label: `android ${specificKey} or ${fallbackKey}`,
       value,
-      source: "android/local.properties",
+      source: sourcePath,
     });
   }
 }
@@ -340,6 +358,8 @@ Options:
                                  from Secret Manager via gcloud.
   --project <project-id>         Override the Firebase project used for the
                                  Places secret check.
+  --project-root <path>          Resolve native Maps files below an app package
+                                 root. Defaults to the repository root.
 
 The validator never prints API key values. It checks that local ignored config
 files contain raw Google Maps API keys, not placeholders or keyString wrappers.`);

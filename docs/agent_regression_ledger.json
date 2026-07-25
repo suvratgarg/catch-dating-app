@@ -1,5 +1,5 @@
 {
-  "version": 102,
+  "version": 105,
   "updated": "2026-07-25",
   "owner": "agent_operating_model",
   "entries": [
@@ -3228,6 +3228,79 @@
         "docs/backend_operation_catalog.md"
       ],
       "notes": "Implementation contracts belong in repository docs. Explicit Diagnostics workspaces may retain technical evidence only when it is required to troubleshoot the workflow; primary task surfaces should explain outcomes, blockers, and next actions."
+    },
+    {
+      "id": "REG-CI-IMPACT-BOUNDARY-001",
+      "title": "Unrelated monorepo changes trigger full mobile builds or store releases",
+      "status": "active",
+      "applies_to": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/app-build-matrix.yml",
+        ".github/workflows/mobile-internal-release.yml",
+        "tool/ci/plan_ci.mjs",
+        "tool/repository_root_manifest.json"
+      ],
+      "symptom": "An Admin, marketing, documentation, or backend-only pull request compiles iOS and Android, or a main-branch push uploads a mobile build to TestFlight or Play without an explicit store-release request.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/ci/plan_ci.test.mjs && node tool/ci/plan_ci.mjs --paths admin/src/app/App.tsx --json",
+        "guardEvidence": "ordered path ownership selects only affected validation lanes and app roles, unknown paths fail closed, CI-control changes run the full matrix, the stable Required CI aggregate always reports, and store mutation is manual-dispatch-only"
+      },
+      "owner_docs": [
+        "docs/release_operations.md",
+        "docs/agent_operating_model.md"
+      ],
+      "notes": "Validation impact and release authorization are separate. Contracts may validate mobile consumers without authorizing a store build, while shared mobile runtime changes select both app roles."
+    },
+    {
+      "id": "REG-DOC-INTEGRATION-STATE-001",
+      "title": "Parallel branches conflict on generated document version and integration timestamps",
+      "status": "active",
+      "applies_to": [
+        ".github/workflows/ci.yml",
+        "docs/README.md",
+        "docs/agent_operating_model.md",
+        "docs/audit_registry/doc_versions.json",
+        "tool/docs/build_doc_state.mjs"
+      ],
+      "symptom": "Every prose edit bumps a checked-in version/date or a CI bot commits generated repository state to main, producing avoidable branch conflicts and follow-up workflow runs.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/docs/build_doc_state.test.mjs && node tool/docs/build_doc_state.mjs --ref HEAD --output build/doc-state/doc-state.json",
+        "guardEvidence": "semantic versions remain authored contract metadata while per-document content revisions, last integrated commits, integration timestamps, and source SHA are immutable CI artifacts derived from Git without repository writes"
+      },
+      "owner_docs": [
+        "docs/README.md",
+        "docs/agent_operating_model.md",
+        "docs/release_operations.md"
+      ],
+      "notes": "Cloud integration state is authoritative for what landed and when. Intentional semantic contract changes remain reviewable source changes and ordinary prose fixes need no version bump."
+    },
+    {
+      "id": "REG-MOBILE-ROLE-PACKAGE-BOUNDARY-001",
+      "title": "Consumer-only native SDKs leak into the Host package",
+      "status": "active",
+      "applies_to": [
+        "apps/consumer/**",
+        "apps/host/**",
+        "lib/health_activity/**",
+        "lib/payments/**",
+        "tool/app_targets.json",
+        "tool/platform/check_app_package_graph.mjs",
+        "tool/platform/check_mobile_package.mjs",
+        "tool/platform/mobile_package_policy.json"
+      ],
+      "symptom": "Consumer and Host resolve the same native plugin graph, Host contains Health or Razorpay frameworks, both role binaries are byte-identical, or release payload growth is accepted without an explicit budget change.",
+      "guard": {
+        "type": "command",
+        "command": "node tool/run.mjs check platform:app-package-graphs platform:mobile-package-policy && node tool/platform/check_mobile_package.mjs --compare consumer-package.json,host-package.json",
+        "guardEvidence": "independent package roots keep Health and Razorpay direct dependencies and native plugin registrations Consumer-only, size budgets are role/platform specific, forbidden Host entries fail, and paired releases require distinct compiled binaries and package entry sets"
+      },
+      "owner_docs": [
+        "docs/app_architecture.md",
+        "docs/release_operations.md"
+      ],
+      "notes": "Similar TestFlight display sizes are expected when both apps share Flutter, Firebase, assets, and most domain code. Package boundaries are proven by native plugin contents and compiled binary hashes, not size alone."
     }
   ]
 }

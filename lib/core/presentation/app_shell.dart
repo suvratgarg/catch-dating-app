@@ -19,7 +19,8 @@ import 'package:catch_dating_app/events/data/event_participation_repository.dart
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/routing/active_router.dart';
+import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -39,7 +40,10 @@ Future<void> appShellFcmInitialization(Ref ref, String uid) async {
   final fcmService = ref.watch(fcmServiceProvider);
   if (!fcmService.isSupportedPlatform) return;
 
-  await fcmService.initialize(uid: uid, router: ref.read(goRouterProvider));
+  await fcmService.initialize(
+    uid: uid,
+    router: ref.read(activeGoRouterProvider),
+  );
 }
 
 class AppShell extends ConsumerWidget {

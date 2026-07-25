@@ -1,0 +1,211 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  merge_group:
+  schedule:
+    - cron: "23 2 * * 1"
+  workflow_dispatch:
+    inputs:
+      full:
+        description: Run every validation lane regardless of changed paths.
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'push' }}
+
+jobs:
+  plan:
+    name: Plan affected targets
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      admin: ${{ steps.plan.outputs.admin }}
+      app_roles: ${{ steps.plan.outputs.app_roles }}
+      contracts: ${{ steps.plan.outputs.contracts }}
+      doc_state: ${{ steps.plan.outputs.doc_state }}
+      firestore_rules: ${{ steps.plan.outputs.firestore_rules }}
+      flutter: ${{ steps.plan.outputs.flutter }}
+      flutter_build_android: ${{ steps.plan.outputs.flutter_build_android }}
+      flutter_build_ios: ${{ steps.plan.outputs.flutter_build_ios }}
+      flutter_build_web: ${{ steps.plan.outputs.flutter_build_web }}
+      functions: ${{ steps.plan.outputs.functions }}
+      marketing: ${{ steps.plan.outputs.marketing }}
+      operations: ${{ steps.plan.outputs.operations }}
+      plan: ${{ steps.plan.outputs.plan }}
+      tools: ${{ steps.plan.outputs.tools }}
+      visual_integration: ${{ steps.plan.outputs.visual_integration }}
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - id: plan
+        name: Resolve fail-closed impact plan
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+          MERGE_GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          REQUEST_FULL: ${{ github.event_name == 'schedule' || inputs.full }}
+        run: |
+          set -euo pipefail
+          base_sha="${PR_BASE_SHA:-${MERGE_GROUP_BASE_SHA:-${BEFORE_SHA:-}}}"
+          full_flag=()
+          if [[ "$REQUEST_FULL" == "true" || -z "$base_sha" || "$base_sha" =~ ^0+$ ]]; then
+            full_flag=(--full)
+            base_sha="$HEAD_SHA"
+          fi
+          node tool/ci/plan_ci.mjs \
+            --base "$base_sha" \
+            --head "$HEAD_SHA" \
+            "${full_flag[@]}" \
+            --github-output "$GITHUB_OUTPUT" \
+            --json
+
+      - name: Publish impact summary
+        env:
+          CI_PLAN: ${{ steps.plan.outputs.plan }}
+        run: |
+          {
+            echo "## Monorepo CI plan"
+            echo
+            echo '```json'
+            echo "$CI_PLAN" | jq .
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  tools:
+    needs: plan
+    if: ${{ needs.plan.outputs.tools == 'true' }}
+    uses: ./.github/workflows/tools-ci.yml
+    secrets: inherit
+
+  contracts:
+    needs: plan
+    if: ${{ needs.plan.outputs.contracts == 'true' }}
+    uses: ./.github/workflows/contracts-ci.yml
+    secrets: inherit
+
+  functions:
+    needs: plan
+    if: ${{ needs.plan.outputs.functions == 'true' }}
+    uses: ./.github/workflows/functions-ci.yml
+    secrets: inherit
+
+  firestore-rules:
+    needs: plan
+    if: ${{ needs.plan.outputs.firestore_rules == 'true' }}
+    uses: ./.github/workflows/firestore-rules-ci.yml
+    secrets: inherit
+
+  flutter:
+    needs: plan
+    if: ${{ needs.plan.outputs.flutter == 'true' }}
+    uses: ./.github/workflows/flutter-ci.yml
+    secrets: inherit
+
+  visual-integration:
+    needs: plan
+    if: ${{ needs.plan.outputs.visual_integration == 'true' }}
+    uses: ./.github/workflows/visual-integration-ci.yml
+    secrets: inherit
+
+  admin:
+    needs: plan
+    if: ${{ needs.plan.outputs.admin == 'true' }}
+    uses: ./.github/workflows/react-surface-validation.yml
+    with:
+      surface: admin
+    secrets: inherit
+
+  marketing:
+    needs: plan
+    if: ${{ needs.plan.outputs.marketing == 'true' }}
+    uses: ./.github/workflows/react-surface-validation.yml
+    with:
+      surface: marketing
+    secrets: inherit
+
+  operations:
+    needs: plan
+    if: ${{ needs.plan.outputs.operations == 'true' }}
+    uses: ./.github/workflows/operations-ci.yml
+    secrets: inherit
+
+  doc-state:
+    needs: plan
+    if: ${{ needs.plan.outputs.doc_state == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Build Git-derived document state
+        run: node tool/docs/build_doc_state.mjs --ref "$GITHUB_SHA" --output build/ci/doc-state.json
+      - name: Upload immutable document state
+        uses: actions/upload-artifact@v7
+        with:
+          name: document-state-${{ github.sha }}
+          path: build/ci/doc-state.json
+          if-no-files-found: error
+          retention-days: 30
+
+  app-builds:
+    needs: plan
+    if: >-
+      needs.plan.outputs.flutter_build_android == 'true' ||
+      needs.plan.outputs.flutter_build_ios == 'true' ||
+      needs.plan.outputs.flutter_build_web == 'true'
+    uses: ./.github/workflows/app-build-matrix.yml
+    with:
+      app_roles: ${{ needs.plan.outputs.app_roles }}
+      build_android: ${{ needs.plan.outputs.flutter_build_android == 'true' }}
+      build_ios: ${{ needs.plan.outputs.flutter_build_ios == 'true' }}
+      build_web: ${{ needs.plan.outputs.flutter_build_web == 'true' }}
+    secrets: inherit
+
+  required:
+    name: Required CI
+    if: ${{ always() }}
+    needs:
+      - plan
+      - tools
+      - contracts
+      - functions
+      - firestore-rules
+      - flutter
+      - visual-integration
+      - admin
+      - marketing
+      - operations
+      - doc-state
+      - app-builds
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require every selected lane
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: |
+          set -euo pipefail
+          failures="$(
+            echo "$NEEDS_JSON" |
+              jq -r 'to_entries[] | select(.value.result != "success" and .value.result != "skipped") | "\(.key)=\(.value.result)"'
+          )"
+          if [[ -n "$failures" ]]; then
+            echo "Selected CI lanes did not pass:"
+            echo "$failures"
+            exit 1
+          fi
+          echo "Every selected CI lane passed; unaffected lanes were explicitly skipped."

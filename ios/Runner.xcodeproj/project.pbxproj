@@ -605,14 +605,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		C0DEC0DE0000000000000011 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C0DEC0DE0000000000000010 /* en */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
 		97C146FA1CF9000F007C117D /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -627,6 +619,14 @@
 				97C147001CF9000F007C117D /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		C0DEC0DE0000000000000011 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C0DEC0DE0000000000000010 /* en */,
+			);
+			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -769,7 +769,7 @@
 				FIREBASE_ROLE = consumer;
 				FIREBASE_ROLE_PATH = "";
 				FLAVOR = staging;
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_consumer_staging.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/consumer/lib/main_staging.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -848,7 +848,7 @@
 				FIREBASE_ROLE = consumer;
 				FIREBASE_ROLE_PATH = "";
 				FLAVOR = prod;
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_consumer_prod.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/consumer/lib/main_prod.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1176,7 +1176,7 @@
 				FIREBASE_ROLE = host;
 				FIREBASE_ROLE_PATH = host/;
 				FLAVOR = "host-staging";
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_host_staging.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/host/lib/main_staging.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1296,7 +1296,7 @@
 				FIREBASE_ROLE = consumer;
 				FIREBASE_ROLE_PATH = "";
 				FLAVOR = dev;
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_consumer_dev.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/consumer/lib/main_dev.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1466,7 +1466,7 @@
 				FIREBASE_ROLE = host;
 				FIREBASE_ROLE_PATH = host/;
 				FLAVOR = "host-staging";
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_host_staging.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/host/lib/main_staging.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1559,7 +1559,7 @@
 				FIREBASE_ROLE = host;
 				FIREBASE_ROLE_PATH = host/;
 				FLAVOR = "host-dev";
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_host_dev.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/host/lib/main_dev.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1659,7 +1659,7 @@
 				FIREBASE_ROLE = host;
 				FIREBASE_ROLE_PATH = host/;
 				FLAVOR = "host-staging";
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_host_staging.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/host/lib/main_staging.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1717,7 +1717,7 @@
 				FIREBASE_ROLE = host;
 				FIREBASE_ROLE_PATH = host/;
 				FLAVOR = "host-dev";
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_host_dev.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/host/lib/main_dev.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1988,7 +1988,7 @@
 				FIREBASE_ROLE = host;
 				FIREBASE_ROLE_PATH = host/;
 				FLAVOR = "host-prod";
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_host_prod.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/host/lib/main_prod.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2026,7 +2026,7 @@
 				FIREBASE_ROLE = host;
 				FIREBASE_ROLE_PATH = host/;
 				FLAVOR = "host-dev";
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_host_dev.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/host/lib/main_dev.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2119,7 +2119,7 @@
 				FIREBASE_ROLE = consumer;
 				FIREBASE_ROLE_PATH = "";
 				FLAVOR = dev;
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_consumer_dev.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/consumer/lib/main_dev.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2157,7 +2157,7 @@
 				FIREBASE_ROLE = consumer;
 				FIREBASE_ROLE_PATH = "";
 				FLAVOR = prod;
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_consumer_prod.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/consumer/lib/main_prod.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2377,7 +2377,7 @@
 				FIREBASE_ROLE = consumer;
 				FIREBASE_ROLE_PATH = "";
 				FLAVOR = prod;
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_consumer_prod.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/consumer/lib/main_prod.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2545,7 +2545,7 @@
 				FIREBASE_ROLE = consumer;
 				FIREBASE_ROLE_PATH = "";
 				FLAVOR = staging;
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_consumer_staging.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/consumer/lib/main_staging.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2680,7 +2680,7 @@
 				FIREBASE_ROLE = host;
 				FIREBASE_ROLE_PATH = host/;
 				FLAVOR = "host-prod";
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_host_prod.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/host/lib/main_prod.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2718,7 +2718,7 @@
 				FIREBASE_ROLE = host;
 				FIREBASE_ROLE_PATH = host/;
 				FLAVOR = "host-prod";
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_host_prod.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/host/lib/main_prod.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2852,7 +2852,7 @@
 				FIREBASE_ROLE = consumer;
 				FIREBASE_ROLE_PATH = "";
 				FLAVOR = dev;
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_consumer_dev.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/consumer/lib/main_dev.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2985,7 +2985,7 @@
 				FIREBASE_ROLE = consumer;
 				FIREBASE_ROLE_PATH = "";
 				FLAVOR = staging;
-				FLUTTER_TARGET = "$(SRCROOT)/../lib/main_consumer_staging.dart";
+				FLUTTER_TARGET = "$(SRCROOT)/../apps/consumer/lib/main_staging.dart";
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (

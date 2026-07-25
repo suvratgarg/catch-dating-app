@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 584,
+  "total": 588,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -406,7 +406,7 @@
       ]
     },
     "tooling": {
-      "count": 140,
+      "count": 144,
       "files": [
         "tool/admin/generate_admin_action_catalog.test.mjs",
         "tool/agent/check_agent_readiness.test.mjs",
@@ -421,6 +421,7 @@
         "tool/check_organizer_nomenclature.test.mjs",
         "tool/check_repository_root_hygiene.test.mjs",
         "tool/ci/check_tool_category_coverage.test.mjs",
+        "tool/ci/plan_ci.test.mjs",
         "tool/contracts/check_firestore_query_indexes.test.mjs",
         "tool/contracts/check_firestore_read_limits.test.mjs",
         "tool/contracts/check_migration_contracts.test.mjs",
@@ -471,6 +472,7 @@
         "tool/design/context_pack_builder_test.dart",
         "tool/design/generate_field_inventory.test.mjs",
         "tool/design/generate_flutter_field_surface_inventory.test.mjs",
+        "tool/docs/build_doc_state.test.mjs",
         "tool/docs/check_doc_version_monotonic.test.mjs",
         "tool/env/check_web_hosting_env.test.mjs",
         "tool/firebase/check_client_callable_dependencies.test.mjs",
@@ -531,7 +533,9 @@
         "tool/organizer_intake/search_result_ingest_core.test.mjs",
         "tool/organizer_intake/source_mention_resolution_core.test.mjs",
         "tool/organizer_intake/sync_claim_targets_to_firestore.test.mjs",
+        "tool/platform/check_app_package_graph.test.mjs",
         "tool/platform/check_app_targets.test.mjs",
+        "tool/platform/check_mobile_package.test.mjs",
         "tool/platform/compute_mobile_build_number.test.mjs",
         "tool/platform/probe_google_play_access.test.mjs",
         "tool/platform/set_xcode_cloud_workflow_state.test.mjs",

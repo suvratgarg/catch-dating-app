@@ -44,6 +44,7 @@ import 'package:catch_dating_app/payments/presentation/payment_history_screen.da
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
+import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
@@ -56,128 +57,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+export 'route_contract.dart';
+
 part 'go_router.g.dart';
-
-enum AppRouteAudience { shared, consumer, host }
-
-enum Routes {
-  loadingScreen('/loading', AppRouteAudience.shared),
-  startScreen('/start', AppRouteAudience.shared),
-  authScreen('/auth', AppRouteAudience.shared),
-  onboardingScreen('/onboarding', AppRouteAudience.consumer),
-  calendarScreen('/calendar', AppRouteAudience.consumer),
-  calendarEventDetailScreen(
-    '/calendar/organizers/:clubId/events/:eventId',
-    AppRouteAudience.consumer,
-  ),
-  savedEventsScreen('/saved-events', AppRouteAudience.consumer),
-  savedEventDetailScreen(
-    '/saved-events/organizers/:clubId/events/:eventId',
-    AppRouteAudience.consumer,
-  ),
-  filtersScreen('/filters', AppRouteAudience.consumer),
-  dashboardEventDetailScreen(
-    '/dashboard/organizers/:clubId/events/:eventId',
-    AppRouteAudience.consumer,
-  ),
-  eventLocationMapScreen('/events/:eventId/location', AppRouteAudience.shared),
-  // Home / Dashboard branch (index 0)
-  dashboardScreen('/', AppRouteAudience.consumer),
-  notificationsScreen('/notifications', AppRouteAudience.consumer),
-  // Explore branch (index 1). Organizer is the parent entity; club is one
-  // organizer subtype and no longer owns the public route namespace.
-  exploreScreen('/organizers', AppRouteAudience.consumer),
-  exploreMapScreen('/organizers/map', AppRouteAudience.consumer),
-  clubDetailScreen('/organizers/:clubId', AppRouteAudience.consumer),
-  eventDetailScreen(
-    '/organizers/:clubId/events/:eventId',
-    AppRouteAudience.consumer,
-  ),
-  eventSuccessCompanionScreen(
-    '/organizers/:clubId/events/:eventId/companion',
-    AppRouteAudience.consumer,
-  ),
-  // Legacy Catches hub path; redirects into Home after tab retirement.
-  swipeHubScreen('/catches', AppRouteAudience.consumer),
-  swipeEventScreen('/catches/:eventId', AppRouteAudience.consumer),
-  eventRecapScreen('/catches/:eventId/recap', AppRouteAudience.consumer),
-  // Chats branch (index 2)
-  matchesListScreen('/chats', AppRouteAudience.consumer),
-  chatScreen('/chats/:matchId', AppRouteAudience.consumer),
-  // Profile branch (index 3)
-  profileScreen('/you', AppRouteAudience.consumer),
-  reviewsHistoryScreen('/you/reviews', AppRouteAudience.consumer),
-  publicProfileScreen('/profiles/:uid', AppRouteAudience.consumer),
-  settingsScreen('/settings', AppRouteAudience.consumer),
-  paymentHistoryScreen('/payment-history', AppRouteAudience.consumer),
-  paymentConfirmationScreen('/payment-confirmation', AppRouteAudience.consumer),
-  hostHomeScreen('/host', AppRouteAudience.host),
-  hostEventsScreen('/host/events', AppRouteAudience.host),
-  hostOrganizerScreen('/host/organizer', AppRouteAudience.host),
-  hostClubsScreen('/host/organizers', AppRouteAudience.host),
-  hostClubEventDefaultsScreen(
-    '/host/organizers/event-defaults',
-    AppRouteAudience.host,
-  ),
-  hostClubLiveGuideScreen('/host/organizers/live-guide', AppRouteAudience.host),
-  hostClubTeamScreen('/host/organizers/team', AppRouteAudience.host),
-  hostClubPaymentsScreen('/host/organizers/payments', AppRouteAudience.host),
-  hostClubDetailScreen('/host/organizers/:clubId', AppRouteAudience.host),
-  hostCreateClubScreen(
-    '/host/organizers/create-organizer',
-    AppRouteAudience.host,
-  ),
-  hostEditClubScreen('/host/organizers/:clubId/edit', AppRouteAudience.host),
-  hostCreateEventScreen(
-    '/host/organizers/:clubId/create-event',
-    AppRouteAudience.host,
-  ),
-  hostAppEventDetailScreen(
-    '/host/organizers/:clubId/events/:eventId',
-    AppRouteAudience.host,
-  ),
-  hostAppEventManageScreen(
-    '/host/organizers/:clubId/events/:eventId/manage',
-    AppRouteAudience.host,
-  ),
-  hostAppEditEventScreen(
-    '/host/organizers/:clubId/events/:eventId/edit',
-    AppRouteAudience.host,
-  ),
-  hostAppAttendanceSheet(
-    '/host/organizers/:clubId/events/:eventId/attendance',
-    AppRouteAudience.host,
-  ),
-  hostAppEventSuccessScreen(
-    '/host/organizers/:clubId/events/:eventId/success',
-    AppRouteAudience.host,
-  ),
-  hostInboxScreen('/host/inbox', AppRouteAudience.host),
-  hostChatScreen('/host/inbox/:matchId', AppRouteAudience.host),
-  eventPolicyLabScreen('/dev/event-policy-lab', AppRouteAudience.shared),
-  eventSuccessLabScreen('/dev/event-success-lab', AppRouteAudience.shared),
-  eventSuccessManualQaScreen(
-    '/dev/event-success-manual-qa',
-    AppRouteAudience.shared,
-  ),
-  eventSuccessPreviewScreen(
-    '/dev/event-success-preview/:clubId/:eventId',
-    AppRouteAudience.shared,
-  );
-
-  const Routes(this.path, this.audience);
-  final String path;
-  final AppRouteAudience audience;
-}
-
-@visibleForTesting
-bool routeAvailableForAppRole(Routes route, AppRole role) {
-  return switch (route.audience) {
-    AppRouteAudience.shared => true,
-    AppRouteAudience.consumer => !role.isHost,
-    AppRouteAudience.host => role.isHost,
-  };
-}
 
 HostEventManageSection _hostManageSectionFromState(GoRouterState state) {
   return switch (state.uri.queryParameters['section']) {
@@ -331,11 +213,22 @@ String initialAppLocation(Ref ref) => _initialLocationFromPlatform();
 // keepalive: GoRouter is the app-wide navigation graph and owns route refresh
 // listeners for auth/update state.
 @Riverpod(keepAlive: true)
+GoRouter consumerGoRouter(Ref ref) => _buildGoRouter(ref, isHostApp: false);
+
+@Riverpod(keepAlive: true)
+GoRouter hostGoRouter(Ref ref) => _buildGoRouter(ref, isHostApp: true);
+
+/// Compatibility provider for test harnesses that intentionally exercise both
+/// role graphs in one Dart process. Installable app roots use one of the two
+/// compile-time role providers above.
+@Riverpod(keepAlive: true)
 GoRouter goRouter(Ref ref) {
+  return _buildGoRouter(ref, isHostApp: AppConfig.appRole.isHost);
+}
+
+GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
   final notifier = _RouterRefreshNotifier();
   final analytics = ref.read(appAnalyticsProvider);
-  final appRole = AppConfig.appRole;
-  final isHostApp = appRole.isHost;
   final keys = _RouterNavigatorKeys();
 
   ref.listen(uidProvider, (_, _) => notifier.notify());

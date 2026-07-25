@@ -2,7 +2,7 @@
   "$schema": "catch.app-targets/v1",
   "schemaVersion": 1,
   "logicalName": "catch-installable-app-targets",
-  "currentPhase": "unified-mobile-release",
+  "currentPhase": "independent-package-roots",
   "reason": "Catch ships Consumer and Host as independent store products. Their runtime composition, native identity, Firebase registration, capabilities, links, force-update policy, and release ownership must resolve from one checked contract.",
   "phases": [
     {
@@ -27,9 +27,24 @@
       "status": "complete_local",
       "evidence": [
         "six role/environment entrypoints",
+        "compile-time ConsumerApp and HostApp roots",
+        "role-selected router providers",
+        "independent apps/consumer and apps/host Flutter package roots",
+        "role-specific native plugin dependency graphs",
         "native target-to-entrypoint bindings",
         "release archive composition markers",
-        "role-exclusive route graphs"
+        "role-selected route graphs"
+      ]
+    },
+    {
+      "id": "package-boundaries",
+      "status": "complete_local",
+      "evidence": [
+        "tool/platform/check_app_package_graph.mjs",
+        "tool/platform/mobile_package_policy.json",
+        "role-specific Android App Bundles",
+        "role-specific iOS app products",
+        "Host excludes Health and Razorpay native SDKs"
       ]
     },
     {
@@ -53,9 +68,9 @@
   "releasePolicy": {
     "owner": "github-actions",
     "workflow": ".github/workflows/mobile-internal-release.yml",
-    "trigger": "app-relevant-main-push",
+    "trigger": "role-impacted-main-push-for-artifacts",
     "environment": "prod-mobile",
-    "approvalMode": "none-after-main-merge",
+    "approvalMode": "manual-dispatch-for-store-mutation",
     "branchPolicy": "main-only",
     "roles": [
       "consumer",
@@ -63,7 +78,8 @@
     ],
     "ios": {
       "channel": "testflight",
-      "uploadMode": "automatic-main",
+      "artifactMode": "automatic-role-impacted-main",
+      "uploadMode": "manual-dispatch",
       "signingStyle": "automatic",
       "developmentIdentitySource": "reusable-ci-p12",
       "distributionSigningStage": "export",
@@ -73,7 +89,8 @@
     "android": {
       "channel": "play-internal",
       "track": "qa",
-      "uploadMode": "gated-until-play-ready",
+      "artifactMode": "automatic-role-impacted-main",
+      "uploadMode": "manual-dispatch-and-gated-until-play-ready",
       "publisherAuth": "github-oidc",
       "publisherServiceAccount": "github-actions-play-publisher@catch-dating-app-64e51.iam.gserviceaccount.com",
       "uploadCertificateSha256": "3088F763A60FD9F7CA99204D6A68EF93A30263A697E563EF883B29DBBC7AE23E"
@@ -81,7 +98,12 @@
   },
   "roles": {
     "consumer": {
-      "entrypoint": "lib/main_consumer.dart",
+      "projectRoot": "apps/consumer",
+      "entrypoint": "apps/consumer/lib/main.dart",
+      "packageEntrypoint": "lib/main.dart",
+      "appRoot": "apps/consumer/lib/consumer_platform_app.dart",
+      "appWidget": "ConsumerPlatformApp",
+      "routerProvider": "consumerGoRouterProvider",
       "legacyEntrypoints": [
         "lib/main.dart"
       ],
@@ -104,7 +126,12 @@
       }
     },
     "host": {
-      "entrypoint": "lib/main_host.dart",
+      "projectRoot": "apps/host",
+      "entrypoint": "apps/host/lib/main.dart",
+      "packageEntrypoint": "lib/main.dart",
+      "appRoot": "apps/host/lib/host_platform_app.dart",
+      "appWidget": "HostPlatformApp",
+      "routerProvider": "hostGoRouterProvider",
       "legacyEntrypoints": [],
       "shell": "HostAppShell",
       "initialRoute": "/host",
@@ -143,7 +170,9 @@
       "role": "consumer",
       "environment": "dev",
       "displayName": "Catch Dev",
-      "entrypoint": "lib/main_consumer_dev.dart",
+      "projectRoot": "apps/consumer",
+      "entrypoint": "apps/consumer/lib/main_dev.dart",
+      "packageEntrypoint": "lib/main_dev.dart",
       "firebase": {
         "projectId": "catchdates-dev",
         "dartOptionsFile": "lib/firebase_options_dev.dart",
@@ -193,7 +222,9 @@
       "role": "host",
       "environment": "dev",
       "displayName": "Catch Host Dev",
-      "entrypoint": "lib/main_host_dev.dart",
+      "projectRoot": "apps/host",
+      "entrypoint": "apps/host/lib/main_dev.dart",
+      "packageEntrypoint": "lib/main_dev.dart",
       "firebase": {
         "projectId": "catchdates-dev",
         "dartOptionsFile": "lib/firebase_options_dev.dart",
@@ -243,7 +274,9 @@
       "role": "consumer",
       "environment": "staging",
       "displayName": "Catch Staging",
-      "entrypoint": "lib/main_consumer_staging.dart",
+      "projectRoot": "apps/consumer",
+      "entrypoint": "apps/consumer/lib/main_staging.dart",
+      "packageEntrypoint": "lib/main_staging.dart",
       "firebase": {
         "projectId": "catchdates-staging",
         "dartOptionsFile": "lib/firebase_options_staging.dart",
@@ -293,7 +326,9 @@
       "role": "host",
       "environment": "staging",
       "displayName": "Catch Host Staging",
-      "entrypoint": "lib/main_host_staging.dart",
+      "projectRoot": "apps/host",
+      "entrypoint": "apps/host/lib/main_staging.dart",
+      "packageEntrypoint": "lib/main_staging.dart",
       "firebase": {
         "projectId": "catchdates-staging",
         "dartOptionsFile": "lib/firebase_options_staging.dart",
@@ -343,7 +378,9 @@
       "role": "consumer",
       "environment": "prod",
       "displayName": "Catch",
-      "entrypoint": "lib/main_consumer_prod.dart",
+      "projectRoot": "apps/consumer",
+      "entrypoint": "apps/consumer/lib/main_prod.dart",
+      "packageEntrypoint": "lib/main_prod.dart",
       "firebase": {
         "projectId": "catch-dating-app-64e51",
         "dartOptionsFile": "lib/firebase_options_prod.dart",
@@ -389,7 +426,7 @@
       },
       "release": {
         "owner": "github-actions",
-        "githubMode": "automatic-main",
+        "githubMode": "automatic-artifact-manual-upload",
         "githubWorkflow": ".github/workflows/mobile-internal-release.yml",
         "appStoreConnectAppId": "6765646860",
         "googlePlayPackageName": "com.catchdates.app",
@@ -405,7 +442,9 @@
       "role": "host",
       "environment": "prod",
       "displayName": "Catch Host",
-      "entrypoint": "lib/main_host_prod.dart",
+      "projectRoot": "apps/host",
+      "entrypoint": "apps/host/lib/main_prod.dart",
+      "packageEntrypoint": "lib/main_prod.dart",
       "firebase": {
         "projectId": "catch-dating-app-64e51",
         "dartOptionsFile": "lib/firebase_options_prod.dart",
@@ -451,7 +490,7 @@
       },
       "release": {
         "owner": "github-actions",
-        "githubMode": "automatic-main",
+        "githubMode": "automatic-artifact-manual-upload",
         "githubWorkflow": ".github/workflows/mobile-internal-release.yml",
         "appStoreConnectAppId": "6778927317",
         "googlePlayPackageName": "com.catchdates.host",

@@ -1,7 +1,7 @@
 ---
 doc_id: agent_operating_model
-version: 1.4.0
-updated: 2026-07-16
+version: 1.5.0
+updated: 2026-07-25
 owner: agent_operating_model
 status: active
 ---
@@ -132,12 +132,29 @@ node tool/git/audit_merge_drops.mjs \
 ```
 
 `both-diverged` paths still require semantic review; exact blob classification
-cannot prove that one side's behavior was incorporated. Governed document
-versions must also move monotonically:
+cannot prove that one side's behavior was incorporated.
+
+Governed document metadata has two deliberately separate clocks:
+
+- `docs/audit_registry/doc_versions.json` stores authored semantic versions,
+  ownership, status, and read policy. Change a semantic version only when the
+  document's contract, schema, protocol, or reader workflow changes. Ordinary
+  prose corrections do not require a version bump.
+- `tool/docs/build_doc_state.mjs` derives content revision, last integrated
+  commit, and integration timestamp from Git. CI publishes that state as an
+  immutable artifact for the integrated SHA; it never commits generated
+  version/date churn back to an author branch.
+
+Authored versions may stay unchanged or move monotonically:
 
 ```sh
 node tool/docs/check_doc_version_monotonic.mjs --base origin/main
+node tool/docs/build_doc_state.mjs --ref HEAD --output build/ci/doc-state.json
 ```
+
+Do not use a CI bot to push version bumps to `main`. Integration metadata is a
+derived receipt, while intentional semantic version changes remain normal
+reviewed source edits.
 
 After a squash/merge is proven on `origin/main`, delete its remote branch,
 remove its disposable worktree, and prune local tracking refs. Do not reuse it
