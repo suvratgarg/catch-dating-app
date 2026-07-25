@@ -7,7 +7,7 @@ trap 'rm -rf "$stub_dir"' EXIT
 
 printf '%s\n' \
   '#!/usr/bin/env bash' \
-  'printf "lib/main_host_prod.dart\thost-prod\thostProd\n"' \
+  'printf "apps/host\tlib/main_prod.dart\thost-prod\thostProd\n"' \
   >"$stub_dir/node"
 chmod +x "$stub_dir/node"
 
@@ -30,7 +30,7 @@ expect_rejected \
   "resolves flavor 'host-prod'; caller supplied 'prod'" \
   prod --role host build ios --flavor prod
 expect_rejected \
-  "resolves entrypoint 'lib/main_host_prod.dart'; caller supplied 'lib/main_consumer_prod.dart'" \
+  "resolves entrypoint 'lib/main_prod.dart'; caller supplied 'lib/main_consumer_prod.dart'" \
   prod --role host build ios -t lib/main_consumer_prod.dart
 
 echo "flutter_with_env app-target argument checks passed."

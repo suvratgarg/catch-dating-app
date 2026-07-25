@@ -11,7 +11,7 @@ flowchart LR
   f8["exceptions<br/>1 providers"]
   f9["explore<br/>17 providers"]
   f10["force_update<br/>4 providers"]
-  f11["health_activity<br/>2 providers"]
+  f11["health_activity<br/>3 providers"]
   f12["hosts<br/>16 providers"]
   f13["image_uploads<br/>2 providers"]
   f14["launch_access<br/>4 providers"]
@@ -19,10 +19,10 @@ flowchart LR
   f16["matches<br/>4 providers"]
   f17["notifications<br/>2 providers"]
   f18["onboarding<br/>2 providers"]
-  f19["payments<br/>8 providers"]
+  f19["payments<br/>9 providers"]
   f20["public_profile<br/>5 providers"]
   f21["reviews<br/>6 providers"]
-  f22["routing<br/>2 providers"]
+  f22["routing<br/>4 providers"]
   f23["safety<br/>3 providers"]
   f24["swipes<br/>6 providers"]
   f25["user_analytics<br/>2 providers"]
@@ -45,7 +45,6 @@ flowchart LR
   f3 -->|"1"| f21
   f3 -->|"1"| f26
   f4 -->|"3"| f8
-  f4 -->|"1"| f22
   f5 -->|"1"| f3
   f5 -->|"2"| f7
   f5 -->|"2"| f17
@@ -90,9 +89,6 @@ flowchart LR
   f20 -->|"1"| f23
   f20 -->|"1"| f26
   f21 -->|"2"| f4
-  f22 -->|"2"| f1
-  f22 -->|"1"| f4
-  f22 -->|"1"| f26
   f23 -->|"2"| f1
   f23 -->|"3"| f4
   f23 -->|"1"| f26

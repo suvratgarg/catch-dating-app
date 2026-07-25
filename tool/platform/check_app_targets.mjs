@@ -18,7 +18,16 @@ export function validateManifestShape(manifest) {
     findings.push("logicalName must be catch-installable-app-targets");
   }
   for (const role of expectedRoles) {
-    if (!manifest?.roles?.[role]) findings.push(`missing role ${role}`);
+    const roleConfig = manifest?.roles?.[role];
+    if (!roleConfig) {
+      findings.push(`missing role ${role}`);
+      continue;
+    }
+    if (!roleConfig.projectRoot) findings.push(`${role}: projectRoot is required`);
+    if (!roleConfig.entrypoint) findings.push(`${role}: entrypoint is required`);
+    if (!roleConfig.packageEntrypoint) {
+      findings.push(`${role}: packageEntrypoint is required`);
+    }
   }
   for (const environment of expectedEnvironments) {
     if (!manifest?.environments?.[environment]) {
@@ -33,7 +42,11 @@ export function validateManifestShape(manifest) {
   const iosBundleIds = new Set();
   const androidApplicationIds = new Set();
   for (const target of targets) {
+    if (!target.projectRoot) findings.push(`${target.id}: projectRoot is required`);
     if (!target.entrypoint) findings.push(`${target.id}: entrypoint is required`);
+    if (!target.packageEntrypoint) {
+      findings.push(`${target.id}: packageEntrypoint is required`);
+    }
     if (ids.has(target.id)) findings.push(`duplicate target id ${target.id}`);
     ids.add(target.id);
     const pair = `${target.role}/${target.environment}`;
@@ -155,12 +168,16 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
   for (const [label, actual, expected] of [
     ["release owner", policy.owner, "github-actions"],
     ["release workflow", policy.workflow, workflow],
-    ["release trigger", policy.trigger, "app-relevant-main-push"],
+    ["release trigger", policy.trigger, "role-impacted-main-push-for-artifacts"],
     ["release environment", policy.environment, "prod-mobile"],
-    ["release approval mode", policy.approvalMode, "none-after-main-merge"],
+    [
+      "release approval mode",
+      policy.approvalMode,
+      "manual-dispatch-for-store-mutation",
+    ],
     ["release branch policy", policy.branchPolicy, "main-only"],
     ["iOS channel", policy.ios?.channel, "testflight"],
-    ["iOS upload mode", policy.ios?.uploadMode, "automatic-main"],
+    ["iOS upload mode", policy.ios?.uploadMode, "manual-dispatch"],
     ["iOS signing style", policy.ios?.signingStyle, "automatic"],
     [
       "iOS development identity source",
@@ -193,8 +210,10 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
     if (target.release?.owner !== "github-actions") {
       findings.push(`${target.id}: release owner must be github-actions`);
     }
-    if (target.release?.githubMode !== "automatic-main") {
-      findings.push(`${target.id}: githubMode must be automatic-main`);
+    if (target.release?.githubMode !== "automatic-artifact-manual-upload") {
+      findings.push(
+        `${target.id}: githubMode must be automatic-artifact-manual-upload`,
+      );
     }
     if (target.release?.githubWorkflow !== workflow) {
       findings.push(`${target.id}: release workflow must be ${workflow}`);
@@ -235,7 +254,7 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
     ],
     [
       "reusable iOS identity team validation",
-      /PlistBuddy -c 'Print :teamID' ios\/ExportOptions\.prod\.plist/u,
+      /PlistBuddy -c 'Print :teamID' "\$APP_PROJECT_ROOT\/ios\/ExportOptions\.prod\.plist"/u,
     ],
     [
       "reusable iOS identity certificate subject validation",
@@ -266,13 +285,41 @@ export function validateReleaseOwnership({manifest, workflowSource}) {
       /Remove ephemeral iOS signing material[\s\S]*?if:\s*\$\{\{ always\(\) \}\}[\s\S]*?security delete-keychain/u,
     ],
     ["TestFlight upload", /Upload to TestFlight/u],
+    [
+      "push builds artifacts without TestFlight mutation",
+      /if \[\[ "\$GITHUB_EVENT_NAME" == "push" \]\]; then\s*upload_to_testflight="false"/u,
+    ],
+    [
+      "manual TestFlight upload guard",
+      /Upload to TestFlight[\s\S]*?if:\s*\$\{\{\s*github\.event_name == 'workflow_dispatch' && inputs\.upload_to_internal\s*\}\}/u,
+    ],
     ["automatic iOS distribution export", /xcodebuild\s*\\\s*\n\s*-exportArchive/u],
+    [
+      "role-specific iOS workspace",
+      /-workspace "\$APP_PROJECT_ROOT\/ios\/Runner\.xcworkspace"/u,
+    ],
+    [
+      "role-specific iOS export options",
+      /-exportOptionsPlist "\$APP_PROJECT_ROOT\/ios\/ExportOptions\.prod\.plist"/u,
+    ],
     ["post-export iOS identity verification", /verify_ios_release_identity\.mjs\s*\\[\s\S]*?--app/u],
     ["verified IPA checksum", /shasum\s+-a\s+256\s+--check/u],
     ["verified IPA TestFlight upload", /xcrun\s+altool[\s\S]*?--upload-package\s+"\$IPA_PATH"/u],
     ["App Store team-key upload authentication", /--api-key\s+"\$ASC_KEY_ID"[\s\S]*?--api-issuer\s+"\$ASC_ISSUER_ID"/u],
     ["App Store upload identity metadata", /--platform\s+ios[\s\S]*?--apple-id\s+"\$APP_STORE_CONNECT_APP_ID"[\s\S]*?--bundle-id\s+"\$EXPECTED_BUNDLE_ID"[\s\S]*?--bundle-version\s+"\$FLUTTER_BUILD_NUMBER"[\s\S]*?--bundle-short-version-string\s+"\$FLUTTER_BUILD_NAME"/u],
     ["signed Android identity verification", /verify_android_release_bundle\.mjs/u],
+    [
+      "role-specific Android signing root",
+      /"\$APP_PROJECT_ROOT\/android\/key\.properties"/u,
+    ],
+    [
+      "role-specific Android bundle output",
+      /find "\$APP_PROJECT_ROOT\/build\/app\/outputs\/bundle"/u,
+    ],
+    [
+      "manual Play upload guard",
+      /Upload to Play internal testing[\s\S]*?if:\s*\$\{\{\s*github\.event_name == 'workflow_dispatch' && inputs\.upload_to_internal/u,
+    ],
     ["Play internal track", /--track qa/u],
     ["non-committing Play access probe", /probe_google_play_access\.mjs/u],
     ["legacy Xcode Cloud retirement", /set_xcode_cloud_workflow_state\.mjs/u],
@@ -320,7 +367,18 @@ export function scanAppTargets({root = defaultRepoRoot} = {}) {
   for (const role of expectedRoles) {
     const roleConfig = manifest.roles?.[role];
     if (!roleConfig) continue;
-    for (const field of ["entrypoint", "iosEntitlements", "androidManifestOverlay"]) {
+    checkRepoFile(
+      root,
+      `${roleConfig.projectRoot}/pubspec.yaml`,
+      `${role}.projectRoot`,
+      findings,
+    );
+    for (const field of [
+      "entrypoint",
+      "appRoot",
+      "iosEntitlements",
+      "androidManifestOverlay",
+    ]) {
       checkRepoFile(root, roleConfig[field], `${role}.${field}`, findings);
     }
     const entrypointPath = resolveRepoPath(root, roleConfig.entrypoint, findings);
@@ -328,6 +386,25 @@ export function scanAppTargets({root = defaultRepoRoot} = {}) {
       const source = fs.readFileSync(entrypointPath, "utf8");
       if (!source.includes(`AppRole.${role}`)) {
         findings.push(`${role}.entrypoint does not install AppRole.${role}`);
+      }
+      if (!source.includes(roleConfig.appWidget ?? "<missing-app-widget>")) {
+        findings.push(`${role}.entrypoint does not install ${roleConfig.appWidget}`);
+      }
+    }
+    const appRootPath = resolveRepoPath(root, roleConfig.appRoot, findings);
+    if (fs.existsSync(appRootPath)) {
+      const source = fs.readFileSync(appRootPath, "utf8");
+      if (!source.includes(roleConfig.routerProvider ?? "<missing-router-provider>")) {
+        findings.push(
+          `${role}.appRoot does not select ${roleConfig.routerProvider}`,
+        );
+      }
+      const oppositeRole = role === "consumer" ? "host" : "consumer";
+      const oppositeProvider = manifest.roles?.[oppositeRole]?.routerProvider;
+      if (oppositeProvider && source.includes(oppositeProvider)) {
+        findings.push(
+          `${role}.appRoot imports the ${oppositeRole} router provider`,
+        );
       }
     }
   }
@@ -338,36 +415,57 @@ export function scanAppTargets({root = defaultRepoRoot} = {}) {
     : "";
   if (
     !appleGenerator.includes("APP_TARGETS_PATH") ||
-    !appleGenerator.includes("app_targets.json")
+    !appleGenerator.includes("app_targets.json") ||
+    !appleGenerator.includes("package_entrypoints") ||
+    !appleGenerator.includes("projectRoot")
   ) {
-    findings.push("Apple flavor generator does not read tool/app_targets.json");
-  }
-
-  const androidBuildPath = path.join(root, "android/app/build.gradle.kts");
-  const androidBuild = fs.existsSync(androidBuildPath)
-    ? fs.readFileSync(androidBuildPath, "utf8")
-    : "";
-  if (androidBuild.includes("catchAppRole")) {
-    findings.push("Android still selects product identity through catchAppRole");
-  }
-  findings.push(...validateAndroidBuildSource(androidBuild));
-
-  const sharedAndroidManifestPath = path.join(root, "android/app/src/main/AndroidManifest.xml");
-  if (fs.existsSync(sharedAndroidManifestPath)) {
     findings.push(
-      ...validateSharedAndroidManifestSource(
-        fs.readFileSync(sharedAndroidManifestPath, "utf8"),
+      "Apple flavor generator does not bind projectRoot and packageEntrypoint from tool/app_targets.json",
+    );
+  }
+
+  for (const role of expectedRoles) {
+    const projectRoot = manifest.roles?.[role]?.projectRoot;
+    if (!projectRoot) continue;
+    const androidBuildPath = path.join(
+      root,
+      projectRoot,
+      "android/app/build.gradle.kts",
+    );
+    const androidBuild = fs.existsSync(androidBuildPath)
+      ? fs.readFileSync(androidBuildPath, "utf8")
+      : "";
+    if (androidBuild.includes("catchAppRole")) {
+      findings.push(`${role}: Android still selects product identity through catchAppRole`);
+    }
+    findings.push(
+      ...validateAndroidBuildSource(androidBuild).map(
+        (finding) => `${role}: ${finding}`,
       ),
     );
-  } else {
-    findings.push("missing Android shared base manifest");
+    if (!androidBuild.includes(`appProjectRole = "${role}"`)) {
+      findings.push(`${role}: Android project does not pin appProjectRole`);
+    }
+    if (!androidBuild.includes('jsonString(target, "packageEntrypoint"')) {
+      findings.push(`${role}: Android project does not compile packageEntrypoint`);
+    }
+
+    const sharedAndroidManifestPath = path.join(
+      root,
+      projectRoot,
+      "android/app/src/main/AndroidManifest.xml",
+    );
+    if (fs.existsSync(sharedAndroidManifestPath)) {
+      findings.push(
+        ...validateSharedAndroidManifestSource(
+          fs.readFileSync(sharedAndroidManifestPath, "utf8"),
+        ).map((finding) => `${role}: ${finding}`),
+      );
+    } else {
+      findings.push(`${role}: missing Android shared base manifest`);
+    }
   }
 
-  const appleProjectPath = path.join(root, "ios/Runner.xcodeproj/project.pbxproj");
-  const appleProject = fs.existsSync(appleProjectPath)
-    ? fs.readFileSync(appleProjectPath, "utf8")
-    : "";
-  const appleConfigurations = parseAppleBuildConfigurations(appleProject);
   const macosProjectPath = path.join(root, "macos/Runner.xcodeproj/project.pbxproj");
   const macosProject = fs.existsSync(macosProjectPath)
     ? fs.readFileSync(macosProjectPath, "utf8")
@@ -375,6 +473,14 @@ export function scanAppTargets({root = defaultRepoRoot} = {}) {
   const macosConfigurations = parseAppleBuildConfigurations(macosProject);
 
   for (const target of manifest.targets ?? []) {
+    const appleProjectPath = path.join(
+      root,
+      target.projectRoot,
+      "ios/Runner.xcodeproj/project.pbxproj",
+    );
+    const appleProject = fs.existsSync(appleProjectPath)
+      ? fs.readFileSync(appleProjectPath, "utf8")
+      : "";
     validateTarget({
       root,
       manifest,
@@ -382,7 +488,7 @@ export function scanAppTargets({root = defaultRepoRoot} = {}) {
       findings,
       read,
       appleGenerator,
-      appleConfigurations,
+      appleConfigurations: parseAppleBuildConfigurations(appleProject),
       macosConfigurations,
     });
   }
@@ -423,6 +529,12 @@ function validateTarget({
   }
 
   checkRepoFile(root, target.entrypoint, `${label}.entrypoint`, findings);
+  checkRepoFile(
+    root,
+    `${target.projectRoot}/${target.packageEntrypoint}`,
+    `${label}.packageEntrypoint`,
+    findings,
+  );
   const entrypointPath = resolveRepoPath(root, target.entrypoint, findings);
   if (fs.existsSync(entrypointPath)) {
     const source = fs.readFileSync(entrypointPath, "utf8");
@@ -501,7 +613,13 @@ function validateTarget({
     }
   }
 
-  validateAppleScheme({root, target, platform: "ios", findings});
+  validateAppleScheme({
+    root,
+    projectRoot: target.projectRoot,
+    target,
+    platform: "ios",
+    findings,
+  });
   validateAppleScheme({root, target, platform: "macos", findings});
 
   validateAppleTargetConfigurations({
@@ -519,8 +637,10 @@ function validateTarget({
     findings,
   });
   for (const platform of ["ios", "macos"]) {
+    const platformRoot = platform === "ios" ? target.projectRoot : "";
     const iconPath = path.join(
       root,
+      platformRoot,
       platform,
       "Runner/Assets.xcassets",
       `${target.ios.iconSet}.appiconset/Contents.json`,
@@ -531,8 +651,14 @@ function validateTarget({
   }
 
   const androidResRoot = target.android.iconSourceSet === "main"
-    ? path.join(root, "android/app/src/main/res")
-    : path.join(root, "android/app/src", target.android.iconSourceSet, "res");
+    ? path.join(root, target.projectRoot, "android/app/src/main/res")
+    : path.join(
+        root,
+        target.projectRoot,
+        "android/app/src",
+        target.android.iconSourceSet,
+        "res",
+      );
   for (const icon of ["ic_launcher.png", "ic_launcher_round.png"]) {
     if (!findFile(androidResRoot, icon)) {
       findings.push(`${label}: ${target.android.iconSourceSet} is missing ${icon}`);
@@ -544,9 +670,16 @@ function validateTarget({
   }
 }
 
-function validateAppleScheme({root, target, platform, findings}) {
+function validateAppleScheme({
+  root,
+  projectRoot = "",
+  target,
+  platform,
+  findings,
+}) {
   const schemePath = path.join(
     root,
+    projectRoot,
     `${platform}/Runner.xcodeproj/xcshareddata/xcschemes`,
     `${target.ios.scheme}.xcscheme`,
   );
@@ -578,7 +711,10 @@ function validateAppleTargetConfigurations({
     PRODUCT_NAME: target.displayName,
     ASSETCATALOG_COMPILER_APPICON_NAME: target.ios.iconSet,
     CATCH_APP_TARGET_ID: target.id,
-    FLUTTER_TARGET: `$(SRCROOT)/../${target.entrypoint}`,
+    FLUTTER_TARGET:
+      platform === "ios"
+        ? `$(SRCROOT)/../${target.packageEntrypoint}`
+        : `$(SRCROOT)/../${target.entrypoint}`,
     FLAVOR: target.ios.scheme,
     FIREBASE_ENV: target.environment,
     FIREBASE_ROLE: target.role,

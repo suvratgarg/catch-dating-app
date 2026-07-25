@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
+import 'package:catch_dating_app/payments/data/razorpay_checkout.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../test_pump_helpers.dart';
@@ -46,20 +46,19 @@ class TestHttpsCallableResult<T> extends Fake
   T get data => dataValue;
 }
 
-class FakeRazorpay extends Fake implements Razorpay {
-  Future<void> Function(PaymentSuccessResponse response)? successHandler;
-  void Function(PaymentFailureResponse response)? errorHandler;
+class FakeRazorpay implements RazorpayCheckout {
+  RazorpaySuccessHandler? successHandler;
+  RazorpayFailureHandler? errorHandler;
   final openCalls = <Map<String, dynamic>>[];
   bool cleared = false;
 
   @override
-  void on(String event, Function handler) {
-    if (event == Razorpay.EVENT_PAYMENT_SUCCESS) {
-      successHandler =
-          handler as Future<void> Function(PaymentSuccessResponse response);
-    } else if (event == Razorpay.EVENT_PAYMENT_ERROR) {
-      errorHandler = handler as void Function(PaymentFailureResponse response);
-    }
+  void configure({
+    required RazorpaySuccessHandler onSuccess,
+    required RazorpayFailureHandler onFailure,
+  }) {
+    successHandler = onSuccess;
+    errorHandler = onFailure;
   }
 
   @override
@@ -72,11 +71,11 @@ class FakeRazorpay extends Fake implements Razorpay {
     cleared = true;
   }
 
-  void emitSuccess(PaymentSuccessResponse response) {
+  void emitSuccess(RazorpaySuccessResponse response) {
     successHandler?.call(response);
   }
 
-  void emitError(PaymentFailureResponse response) {
+  void emitError(RazorpayFailureResponse response) {
     errorHandler?.call(response);
   }
 }
@@ -134,7 +133,11 @@ void main() {
         expect(razorpay.openCalls.single['currency'], 'INR');
 
         razorpay.emitSuccess(
-          PaymentSuccessResponse('pay_123', 'order_123', 'sig_123', {}),
+          const RazorpaySuccessResponse(
+            paymentId: 'pay_123',
+            orderId: 'order_123',
+            signature: 'sig_123',
+          ),
         );
         await future;
 
@@ -386,7 +389,11 @@ void main() {
         await flushTestEventQueue();
 
         razorpay.emitSuccess(
-          PaymentSuccessResponse('pay_123', 'order_123', null, {}),
+          const RazorpaySuccessResponse(
+            paymentId: 'pay_123',
+            orderId: 'order_123',
+            signature: null,
+          ),
         );
 
         await expectLater(
@@ -416,10 +423,9 @@ void main() {
       await flushTestEventQueue();
 
       razorpay.emitError(
-        PaymentFailureResponse(
-          Razorpay.PAYMENT_CANCELLED,
-          'Cancelled by user',
-          null,
+        const RazorpayFailureResponse(
+          isCancelled: true,
+          message: 'Cancelled by user',
         ),
       );
 
@@ -454,7 +460,11 @@ void main() {
         await flushTestEventQueue();
 
         razorpay.emitSuccess(
-          PaymentSuccessResponse('pay_123', 'order_123', 'sig_123', {}),
+          const RazorpaySuccessResponse(
+            paymentId: 'pay_123',
+            orderId: 'order_123',
+            signature: 'sig_123',
+          ),
         );
 
         await expectLater(

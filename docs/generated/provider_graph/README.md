@@ -8,12 +8,12 @@ Open [provider_graph.html](provider_graph.html) for the interactive feature/prov
 
 | Measure | Count |
 |---|---:|
-| Handwritten Dart files | 795 |
-| Providers | 214 |
+| Handwritten Dart files | 798 |
+| Providers | 218 |
 | Mutations | 83 |
-| Unique provider relationships | 328 |
-| Cross-feature relationships | 168 |
-| Consumer callsites | 748 |
+| Unique provider relationships | 324 |
+| Cross-feature relationships | 163 |
+| Consumer callsites | 752 |
 | Reactive cycles | 0 |
 
 ## Architecture review
@@ -30,7 +30,6 @@ Open [provider_graph.html](provider_graph.html) for the interactive feature/prov
 | high-fan-out:eventDetailViewModelProvider | accepted | The eight dependencies form one Event Detail route projection: auth resolution, event and organizer authority, viewer profile, reviews, saved state, participation, and organizer membership. Their loading and error precedence is intentionally centralized so Event Detail and its map route cannot render inconsistent visibility or viewer actions. |
 | high-fan-out:exploreFeedViewModelProvider | watch | The eighteen dependencies are a cohesive discovery aggregate spanning filters, viewer eligibility, memberships, participations, saves, internal and external supply, search, and club names. Splitting now would duplicate partial-loading and precedence logic; revisit if a second route needs a stable subset or fan-out rises above twenty. |
 | manual-provider:_hostClubsForUserProvider | accepted-exception | This is a private auto-dispose adapter in a part file that narrows a Host route provider result. Moving it only to satisfy code generation would add a public generated symbol and another ownership file without changing the dependency boundary. |
-| routing-to-presentation:goRouterProvider->authControllerProvider | accepted | GoRouter is the app integration root and listens only to the auth verification gate needed to refresh redirects. It does not import auth widgets or perform auth mutations. |
 
 ## Refresh and check
 

@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ $# -lt 1 || $# -gt 2 ]]; then
-  echo "Usage: ./tool/validate_firebase_environment.sh <dev|staging|prod> [consumer|host]"
+if [[ $# -lt 1 || $# -gt 3 ]]; then
+  echo "Usage: ./tool/validate_firebase_environment.sh <dev|staging|prod> [consumer|host] [project-root]"
   exit 1
 fi
 
 environment="$1"
 app_role="${2:-consumer}"
+project_root="${3:-.}"
 
 case "$environment" in
   dev|staging|prod) ;;
@@ -27,6 +28,7 @@ esac
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
+destination_root="$repo_root/$project_root"
 define_file="$repo_root/tool/env/dart_defines/$environment.json"
 
 if [[ ! -f "$define_file" ]]; then
@@ -79,7 +81,10 @@ for spec in "${copy_specs[@]}"; do
   source_rel="${spec%%|*}"
   dest_rel="${spec##*|}"
   source_path="$repo_root/$source_rel"
-  dest_path="$repo_root/$dest_rel"
+  dest_path="$destination_root/$dest_rel"
+  if [[ ! -d "$(dirname "$dest_path")" ]]; then
+    continue
+  fi
 
   if [[ ! -f "$source_path" ]]; then
     echo "Missing canonical Firebase config file: $source_rel"
@@ -100,7 +105,7 @@ for spec in "${copy_specs[@]}"; do
 done
 
 if [[ $status -ne 0 ]]; then
-  echo "Run ./tool/use_firebase_environment.sh $environment $app_role to refresh active config files."
+  echo "Run ./tool/use_firebase_environment.sh $environment $app_role $project_root to refresh active config files."
   exit "$status"
 fi
 

@@ -114,6 +114,56 @@
       }
     },
     {
+      "id": "docs:build-state",
+      "category": "audit",
+      "path": "tool/docs/build_doc_state.mjs",
+      "command": "node tool/docs/build_doc_state.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Builds immutable Git-derived document revision state without committing integration-time metadata back to authored docs.",
+      "checks": [
+        "node --check tool/docs/build_doc_state.mjs",
+        "node --test tool/docs/build_doc_state.test.mjs"
+      ],
+      "role": "generator",
+      "rules": [
+        "DOC-HYGIENE-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/docs/build_doc_state.test.mjs",
+        "contains": [
+          "derived document state keeps semantic metadata separate from Git state",
+          "derived document state rejects duplicate catalog paths"
+        ]
+      }
+    },
+    {
+      "id": "ci:plan",
+      "category": "meta",
+      "path": "tool/ci/plan_ci.mjs",
+      "command": "node tool/ci/plan_ci.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Plans fail-closed monorepo CI targets and mobile release roles from the canonical repository impact graph.",
+      "checks": [
+        "node --check tool/ci/plan_ci.mjs",
+        "node --test tool/ci/plan_ci.test.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "AGENT-HARNESS-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/plan_ci.test.mjs",
+        "contains": [
+          "admin-only changes do not invoke Flutter or mobile releases",
+          "unknown paths fail closed"
+        ]
+      }
+    },
+    {
       "id": "agent:context-pack",
       "category": "agent",
       "path": "tool/agent/context_pack.mjs",
@@ -149,7 +199,7 @@
         "path": "tool/flutter_with_env.test.sh",
         "contains": [
           "resolves flavor 'host-prod'; caller supplied 'prod'",
-          "resolves entrypoint 'lib/main_host_prod.dart'; caller supplied 'lib/main_consumer_prod.dart'"
+          "resolves entrypoint 'lib/main_prod.dart'; caller supplied 'lib/main_consumer_prod.dart'"
         ]
       }
     },
@@ -2052,6 +2102,56 @@
       "role": "generator"
     },
     {
+      "id": "platform:mobile-package-policy",
+      "category": "platform",
+      "path": "tool/platform/check_mobile_package.mjs",
+      "command": "node tool/platform/check_mobile_package.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Produces mobile package size/payload receipts and rejects budget, forbidden-asset, forbidden-plugin, or cross-role identity regressions.",
+      "checks": [
+        "node --check tool/platform/check_mobile_package.mjs",
+        "node --test tool/platform/check_mobile_package.test.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "APP-TARGET-IDENTITY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/platform/check_mobile_package.test.mjs",
+        "contains": [
+          "package policy enforces budgets and role-forbidden payload",
+          "cross-role comparison rejects identical compiled products"
+        ]
+      }
+    },
+    {
+      "id": "platform:app-package-graphs",
+      "category": "platform",
+      "path": "tool/platform/check_app_package_graph.mjs",
+      "command": "node tool/platform/check_app_package_graph.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Verifies Consumer-only native SDK declarations in clean checkouts, enriches reports with generated plugin metadata when available, and keeps both apps on one repository workspace lock.",
+      "checks": [
+        "node --check tool/platform/check_app_package_graph.mjs",
+        "node --test tool/platform/check_app_package_graph.test.mjs",
+        "node tool/platform/check_app_package_graph.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "APP-TARGET-IDENTITY-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/platform/check_app_package_graph.test.mjs",
+        "contains": [
+          "rejects consumer SDKs in the Host graph"
+        ]
+      }
+    },
+    {
       "id": "env:firebase",
       "category": "env",
       "path": "tool/firebase_with_env.sh",
@@ -3502,10 +3602,10 @@
       "id": "ui-capture:route-inventory",
       "category": "ui-capture",
       "path": "tool/ui_capture/check_route_inventory.mjs",
-      "command": "node tool/ui_capture/check_route_inventory.mjs",
+      "command": "node tool/ui_capture/check_route_inventory.mjs --check",
       "safety": "local-writes-generated",
       "status": "active",
-      "description": "Generates and checks the named route inventory that keeps UI captures aligned with go_router.dart, including semantic nested-path checks and a redirect-only exception for retired raw legacy paths.",
+      "description": "Generates and checks the named route inventory against route_contract.dart identities and go_router.dart runtime wiring, including semantic nested-path checks and a redirect-only exception for retired raw legacy paths.",
       "checks": [
         "node --check tool/ui_capture/check_route_inventory.mjs",
         "node --test tool/ui_capture/check_route_inventory_test.mjs",

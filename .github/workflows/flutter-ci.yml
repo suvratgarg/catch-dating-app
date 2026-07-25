@@ -1,13 +1,8 @@
 name: Flutter CI
 
 on:
-  pull_request:
-  push:
-    branches: [main]
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  workflow_call:
+  workflow_dispatch:
 
 jobs:
   analysis-gates:

@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/app_error_context.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_client.dart';
-import 'package:catch_dating_app/health_activity/data/health_activity_client_factory.dart';
+import 'package:catch_dating_app/health_activity/data/health_activity_client_provider.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -145,7 +145,7 @@ class HealthActivityRepository {
 @riverpod
 HealthActivityRepository healthActivityRepository(Ref ref) {
   return HealthActivityRepository(
-    createHealthActivityClient(),
+    ref.watch(healthActivityClientProvider),
     errorLogger: ref.watch(errorLoggerProvider),
   );
 }

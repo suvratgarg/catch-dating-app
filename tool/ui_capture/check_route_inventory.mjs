@@ -6,6 +6,7 @@ import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 
 const routerPath = fromRepo("lib/routing/go_router.dart");
+const routeContractPath = fromRepo("lib/routing/route_contract.dart");
 const inventoryPath = fromRepo("tool/ui_capture/route_inventory.json");
 const args = process.argv.slice(2);
 const command = args[0] ?? "--help";
@@ -66,10 +67,16 @@ function listInventory() {
 }
 
 function buildInventory() {
-  const source = fs.readFileSync(routerPath, "utf8");
-  const enumBlock = extractBalancedBlock(source, "enum Routes", "{", "}");
-  const goRouterBlock = extractGoRouterConfigurationBlock(source);
-  const routeGraph = extractRuntimeRouteGraph(source, goRouterBlock);
+  const routeContractSource = fs.readFileSync(routeContractPath, "utf8");
+  const routerSource = fs.readFileSync(routerPath, "utf8");
+  const enumBlock = extractBalancedBlock(
+    routeContractSource,
+    "enum Routes",
+    "{",
+    "}",
+  );
+  const goRouterBlock = extractGoRouterConfigurationBlock(routerSource);
+  const routeGraph = extractRuntimeRouteGraph(routerSource, goRouterBlock);
   const routes = extractRouteEnumEntries(enumBlock.body);
   const runtimeRoutes = extractRuntimeRouteEntries(routeGraph.text, routes);
   validateRuntimeRoutes(routes, runtimeRoutes);
@@ -88,8 +95,11 @@ function buildInventory() {
     version: 1,
     generatedBy: "tool/ui_capture/check_route_inventory.mjs",
     source: {
-      path: "lib/routing/go_router.dart",
-      normalizedFileSha256: sha256(normalizeRouteContract(source)),
+      path: "lib/routing/route_contract.dart",
+      runtimePath: "lib/routing/go_router.dart",
+      normalizedFileSha256: sha256(
+        normalizeRouteContract(`${routeContractSource}\n${routerSource}`),
+      ),
       routeContractSha256: sha256(routeContract),
       goRouteCount: countMatches(routeGraph.text, /\bGoRoute\s*\(/g),
       shellBranchCount: countMatches(routeGraph.text, /\bStatefulShellBranch\s*\(/g),
@@ -694,7 +704,7 @@ function printHelp() {
   console.log(`Usage: node tool/ui_capture/check_route_inventory.mjs <command>
 
 Commands:
-  --update  Regenerate tool/ui_capture/route_inventory.json from lib/routing/go_router.dart.
+  --update  Regenerate tool/ui_capture/route_inventory.json from the route contract and runtime router.
   --check   Fail if the route inventory is stale.
   --list    Print the current route ids and paths.
 `);

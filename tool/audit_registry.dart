@@ -21,6 +21,7 @@ const trackedPaths = [
   'analysis_options.yaml',
   'admin',
   'analytics',
+  'apps',
   'contracts',
   'design',
   'design_context_pack',

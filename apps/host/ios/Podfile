@@ -1,0 +1,125 @@
+# Uncomment this line to define a global platform for your project
+platform :ios, '15.0'
+
+# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+project 'Runner', {
+  'Debug' => :debug,
+  'Debug-dev' => :debug,
+  'Debug-host-dev' => :debug,
+  'Debug-host-staging' => :debug,
+  'Debug-host-prod' => :debug,
+  'Debug-staging' => :debug,
+  'Debug-prod' => :debug,
+  'Profile' => :release,
+  'Profile-dev' => :release,
+  'Profile-host-dev' => :release,
+  'Profile-host-staging' => :release,
+  'Profile-host-prod' => :release,
+  'Profile-staging' => :release,
+  'Profile-prod' => :release,
+  'Release' => :release,
+  'Release-dev' => :release,
+  'Release-host-dev' => :release,
+  'Release-host-staging' => :release,
+  'Release-host-prod' => :release,
+  'Release-staging' => :release,
+  'Release-prod' => :release,
+}
+
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  unless File.exist?(generated_xcode_build_settings_path)
+    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+  end
+
+  File.foreach(generated_xcode_build_settings_path) do |line|
+    matches = line.match(/FLUTTER_ROOT\=(.*)/)
+    return matches[1].strip if matches
+  end
+  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+end
+
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+
+flutter_ios_podfile_setup
+
+def normalize_versioned_sdk_framework_paths(pods_project)
+  pods_project.objects.each do |object|
+    next unless object.respond_to?(:source_tree) && object.respond_to?(:path)
+    next unless object.source_tree == 'DEVELOPER_DIR' && object.path
+
+    object.path = object.path
+      .gsub(%r{Platforms/iPhoneOS\.platform/Developer/SDKs/iPhoneOS[^/]*\.sdk}, 'Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk')
+      .gsub(%r{Platforms/iPhoneSimulator\.platform/Developer/SDKs/iPhoneSimulator[^/]*\.sdk}, 'Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk')
+  end
+end
+
+def enforce_minimum_deployment_target(config, key, minimum_version)
+  current_version = config.build_settings[key]
+  if current_version.nil? || Gem::Version.new(current_version) < Gem::Version.new(minimum_version)
+    config.build_settings[key] = minimum_version
+  end
+rescue ArgumentError
+  config.build_settings[key] = minimum_version
+end
+
+def add_preprocessor_definition(config, definition)
+  definitions = config.build_settings['GCC_PREPROCESSOR_DEFINITIONS']
+  definitions = ['$(inherited)'] if definitions.nil?
+  definitions = definitions.split(' ') if definitions.is_a?(String)
+  definitions << definition unless definitions.include?(definition)
+  config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = definitions
+end
+
+def disable_explicit_swift_modules(config)
+  # Xcode's explicit module scanner can resolve Firebase's SPM-only import names
+  # before CocoaPods' COCOAPODS Swift flag is applied. Keep CocoaPods targets on
+  # the legacy Swift module path until Firebase's pod module maps catch up.
+  config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES'] = 'NO'
+end
+
+target 'Runner' do
+  use_frameworks!
+
+  # Silence compiler warnings from third-party pods (Flutter plugins, Firebase,
+  # health, etc.). These warnings are upstream code we cannot act on, and they
+  # bury the Runner target's own warnings in build/TestFlight logs. This does
+  # NOT affect the Runner target — the app's own warnings still surface.
+  inhibit_all_warnings!
+
+  # Prebuilt Firestore frameworks (much faster CI/local builds than compiling
+  # the gRPC/abseil source). The :tag MUST match the Firebase iOS SDK version
+  # that the installed cloud_firestore plugin expects — bump this whenever
+  # cloud_firestore is upgraded in pubspec.yaml, or pod install / linking will
+  # silently desync. The expected version is in the cloud_firestore podspec.
+  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => '12.14.0'
+
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+  target 'RunnerTests' do
+    inherit! :search_paths
+  end
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+    target.build_configurations.each do |config|
+      enforce_minimum_deployment_target(config, 'IPHONEOS_DEPLOYMENT_TARGET', '15.0')
+      disable_explicit_swift_modules(config)
+
+      # Catch only requests foreground positions, so compile out geolocator's
+      # unused Always-location path to avoid App Store static-analysis warnings.
+      if target.name == 'geolocator_apple'
+        add_preprocessor_definition(config, 'BYPASS_PERMISSION_LOCATION_ALWAYS=1')
+      end
+      # Per-pod SWIFT_SUPPRESS_WARNINGS is no longer needed — inhibit_all_warnings!
+      # on the Runner target covers every pod.
+    end
+  end
+
+  # CocoaPods/xcodeproj 1.27 emits versioned SDK framework paths that can lag
+  # behind the installed Xcode SDK and make the workspace lose iOS destinations.
+  normalize_versioned_sdk_framework_paths(installer.pods_project)
+end

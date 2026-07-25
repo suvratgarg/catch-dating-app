@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 4.8.1
-updated: 2026-07-23
+version: 4.9.0
+updated: 2026-07-25
 owner: recursive_audit_loop
 status: active
 ---
@@ -31,6 +31,10 @@ section unless the task requires a full historical audit.
   live here after their durable decisions or backlog items have been migrated.
 - Date-stamped audits are snapshots. Re-verify counts, statuses, and code paths
   before treating them as current.
+- Treat semantic document versions as authored contract metadata, not an edit
+  counter. CI derives per-SHA content revisions and integration timestamps with
+  `tool/docs/build_doc_state.mjs` and publishes them as artifacts; it does not
+  push generated version/date commits back to `main`.
 
 ## Current Source Of Truth
 

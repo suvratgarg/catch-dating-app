@@ -1,6 +1,6 @@
 {
-  "version": "1.2.1",
-  "updated": "2026-07-23",
+  "version": "1.3.0",
+  "updated": "2026-07-25",
   "ownerVocabulary": [
     "agent_operating_model",
     "app_platform",
@@ -25,7 +25,7 @@
     {"names": ["functions", "contracts", "analytics"], "kind": "source", "expectation": "tracked", "owner": "backend_platform", "recovery": "Restore from Git and regenerate contract outputs when required."},
     {"names": ["firebase", "extensions"], "kind": "config", "expectation": "tracked", "owner": "backend_platform", "consumer": "firebase.json", "recovery": "Restore from Git and validate the selected Firebase environment."},
     {"names": ["operations"], "kind": "source", "expectation": "tracked", "owner": "operations_platform", "consumer": "docs/operations_platform.md", "recovery": "Restore from Git and run npm --prefix operations test."},
-    {"names": ["android", "ios", "macos", "web", "lib", "assets", "integration_test", "test"], "kind": "source", "expectation": "tracked", "owner": "app_platform", "recovery": "Restore from Git and run flutter pub get."},
+    {"names": ["apps", "android", "ios", "macos", "web", "lib", "assets", "integration_test", "test"], "kind": "source", "expectation": "tracked", "owner": "app_platform", "recovery": "Restore from Git and run flutter pub get."},
     {"names": ["copy"], "kind": "source", "expectation": "tracked", "owner": "content_system", "consumer": "docs/app_architecture.md", "recovery": "Restore from Git and run the owning copy generator."},
     {"names": ["design", "widgetbook"], "kind": "source", "expectation": "tracked", "owner": "design_system", "consumer": "docs/design_parity/README.md", "recovery": "Restore from Git and run the owning design or Widgetbook generator."},
     {"names": ["docs"], "kind": "documentation", "expectation": "tracked", "owner": "documentation", "consumer": "docs/README.md", "recovery": "Restore from Git and refresh governed documentation registries when required."},
@@ -40,7 +40,7 @@
     {
       "id": "flutter-app",
       "owner": "app_platform",
-      "sources": ["lib/**", "assets/**", "android/**", "ios/**", "macos/**", "web/**", "pubspec.yaml", "pubspec.lock", "analysis_options.yaml", "build.yaml", "l10n.yaml"],
+      "sources": ["apps/**", "lib/**", "assets/**", "android/**", "ios/**", "macos/**", "web/**", "pubspec.yaml", "pubspec.lock", "analysis_options.yaml", "build.yaml", "l10n.yaml"],
       "generatedOutputs": ["lib/l10n/**", "lib/core/schema_contracts/generated/**"],
       "consumers": ["test/**", "integration_test/**"],
       "checks": ["meta:test-inventory", "design:tokens", "design:parity-gate"],
@@ -101,10 +101,492 @@
       "ciWorkflows": [".github/workflows/tools-ci.yml", ".github/workflows/visual-integration-ci.yml"]
     }
   ],
+  "ciPlanning": {
+    "version": "1.0.0",
+    "targets": [
+      "admin",
+      "contracts",
+      "doc_state",
+      "firestore_rules",
+      "flutter",
+      "flutter_build_android",
+      "flutter_build_ios",
+      "flutter_build_web",
+      "functions",
+      "marketing",
+      "operations",
+      "tools",
+      "visual_integration"
+    ],
+    "fullValidationTargets": [
+      "admin",
+      "contracts",
+      "doc_state",
+      "firestore_rules",
+      "flutter",
+      "flutter_build_android",
+      "flutter_build_ios",
+      "flutter_build_web",
+      "functions",
+      "marketing",
+      "operations",
+      "tools",
+      "visual_integration"
+    ],
+    "rules": [
+      {
+        "id": "ci-control-plane",
+        "patterns": [
+          ".github/**",
+          "tool/ci/**",
+          "tool/repository_root_manifest.json"
+        ],
+        "targets": [
+          "admin",
+          "contracts",
+          "doc_state",
+          "firestore_rules",
+          "flutter",
+          "flutter_build_android",
+          "flutter_build_ios",
+          "flutter_build_web",
+          "functions",
+          "marketing",
+          "operations",
+          "tools",
+          "visual_integration"
+        ]
+      },
+      {
+        "id": "admin-react",
+        "patterns": [
+          "admin/**",
+          "design/admin/**"
+        ],
+        "targets": [
+          "admin"
+        ]
+      },
+      {
+        "id": "marketing-react",
+        "patterns": [
+          "website/**",
+          "design/website/**",
+          "packages/web-config/**"
+        ],
+        "targets": [
+          "marketing"
+        ]
+      },
+      {
+        "id": "shared-react",
+        "patterns": [
+          "packages/web-ui/**",
+          "design/web-ui/**",
+          "design/components/**"
+        ],
+        "targets": [
+          "admin",
+          "marketing",
+          "tools"
+        ]
+      },
+      {
+        "id": "functions",
+        "patterns": [
+          "functions/**"
+        ],
+        "targets": [
+          "functions"
+        ]
+      },
+      {
+        "id": "firestore-rules",
+        "patterns": [
+          "firestore.rules",
+          "storage.rules",
+          "firestore.indexes.json",
+          "extensions/**"
+        ],
+        "targets": [
+          "contracts",
+          "firestore_rules",
+          "functions"
+        ]
+      },
+      {
+        "id": "host-mobile-firebase-android",
+        "patterns": [
+          "firebase/*/host/android/**"
+        ],
+        "targets": [
+          "flutter_build_android",
+          "tools"
+        ],
+        "mobileRoles": [
+          "host"
+        ]
+      },
+      {
+        "id": "host-mobile-firebase-ios",
+        "patterns": [
+          "firebase/*/host/ios/**"
+        ],
+        "targets": [
+          "flutter_build_ios",
+          "tools"
+        ],
+        "mobileRoles": [
+          "host"
+        ]
+      },
+      {
+        "id": "consumer-mobile-firebase-android",
+        "patterns": [
+          "firebase/*/android/**"
+        ],
+        "targets": [
+          "flutter_build_android",
+          "tools"
+        ],
+        "mobileRoles": [
+          "consumer"
+        ]
+      },
+      {
+        "id": "consumer-mobile-firebase-ios",
+        "patterns": [
+          "firebase/*/ios/**"
+        ],
+        "targets": [
+          "flutter_build_ios",
+          "tools"
+        ],
+        "mobileRoles": [
+          "consumer"
+        ]
+      },
+      {
+        "id": "firebase-config",
+        "patterns": [
+          ".firebaserc",
+          "firebase.json",
+          "firebase/**"
+        ],
+        "targets": [
+          "admin",
+          "contracts",
+          "firestore_rules",
+          "functions",
+          "marketing"
+        ]
+      },
+      {
+        "id": "contracts",
+        "patterns": [
+          "contracts/**"
+        ],
+        "targets": [
+          "admin",
+          "contracts",
+          "firestore_rules",
+          "flutter",
+          "functions",
+          "marketing",
+          "operations"
+        ]
+      },
+      {
+        "id": "operations",
+        "patterns": [
+          "operations/**"
+        ],
+        "targets": [
+          "functions",
+          "operations",
+          "tools"
+        ]
+      },
+      {
+        "id": "host-flutter-source",
+        "patterns": [
+          "apps/host/**",
+          "lib/hosts/**",
+          "lib/main_host*.dart"
+        ],
+        "targets": [
+          "flutter",
+          "flutter_build_android",
+          "flutter_build_ios",
+          "flutter_build_web",
+          "visual_integration"
+        ],
+        "mobileRoles": [
+          "host"
+        ]
+      },
+      {
+        "id": "consumer-flutter-source",
+        "patterns": [
+          "apps/consumer/**",
+          "lib/main_consumer*.dart"
+        ],
+        "targets": [
+          "flutter",
+          "flutter_build_android",
+          "flutter_build_ios",
+          "flutter_build_web",
+          "visual_integration"
+        ],
+        "mobileRoles": [
+          "consumer"
+        ]
+      },
+      {
+        "id": "shared-flutter-source",
+        "patterns": [
+          "lib/**",
+          "copy/**"
+        ],
+        "targets": [
+          "flutter",
+          "flutter_build_android",
+          "flutter_build_ios",
+          "flutter_build_web",
+          "functions",
+          "visual_integration"
+        ],
+        "mobileRoles": [
+          "consumer",
+          "host"
+        ]
+      },
+      {
+        "id": "flutter-tests",
+        "patterns": [
+          "test/**",
+          "integration_test/**"
+        ],
+        "targets": [
+          "flutter",
+          "visual_integration"
+        ]
+      },
+      {
+        "id": "flutter-design",
+        "patterns": [
+          "design/**",
+          "design_context_pack/**",
+          "widgetbook/**",
+          "artifacts/**"
+        ],
+        "targets": [
+          "flutter",
+          "tools",
+          "visual_integration"
+        ]
+      },
+      {
+        "id": "host-android",
+        "patterns": [
+          "android/app/src/host*/**"
+        ],
+        "targets": [
+          "flutter_build_android"
+        ],
+        "mobileRoles": [
+          "host"
+        ]
+      },
+      {
+        "id": "consumer-android",
+        "patterns": [
+          "android/app/src/consumer*/**"
+        ],
+        "targets": [
+          "flutter_build_android"
+        ],
+        "mobileRoles": [
+          "consumer"
+        ]
+      },
+      {
+        "id": "shared-android",
+        "patterns": [
+          "android/**"
+        ],
+        "targets": [
+          "flutter_build_android"
+        ],
+        "mobileRoles": [
+          "consumer",
+          "host"
+        ]
+      },
+      {
+        "id": "ios-native",
+        "patterns": [
+          "ios/**"
+        ],
+        "targets": [
+          "flutter_build_ios"
+        ],
+        "mobileRoles": [
+          "consumer",
+          "host"
+        ]
+      },
+      {
+        "id": "other-flutter-platforms",
+        "patterns": [
+          "macos/**",
+          "web/**"
+        ],
+        "targets": [
+          "flutter",
+          "flutter_build_web",
+          "visual_integration"
+        ]
+      },
+      {
+        "id": "mobile-assets-and-dependencies",
+        "patterns": [
+          "assets/**",
+          "packages/phosphor_flutter/**",
+          "pubspec.yaml",
+          "pubspec.lock"
+        ],
+        "targets": [
+          "flutter",
+          "flutter_build_android",
+          "flutter_build_ios",
+          "flutter_build_web",
+          "visual_integration"
+        ],
+        "mobileRoles": [
+          "consumer",
+          "host"
+        ]
+      },
+      {
+        "id": "flutter-tooling-packages",
+        "patterns": [
+          "packages/catch_ui_lints/**"
+        ],
+        "targets": [
+          "flutter",
+          "tools"
+        ]
+      },
+      {
+        "id": "other-packages",
+        "patterns": [
+          "packages/**"
+        ],
+        "targets": [
+          "admin",
+          "flutter",
+          "marketing",
+          "tools"
+        ],
+        "mobileRoles": [
+          "consumer",
+          "host"
+        ]
+      },
+      {
+        "id": "web-node-workspace",
+        "patterns": [
+          "package.json",
+          "package-lock.json"
+        ],
+        "targets": [
+          "admin",
+          "functions",
+          "marketing",
+          "operations",
+          "tools"
+        ]
+      },
+      {
+        "id": "flutter-root-config",
+        "patterns": [
+          "analysis_options.yaml",
+          "build.yaml",
+          "dart_test.yaml",
+          "l10n.yaml",
+          ".metadata"
+        ],
+        "targets": [
+          "flutter",
+          "tools"
+        ]
+      },
+      {
+        "id": "mobile-build-control",
+        "patterns": [
+          "build.yaml",
+          "l10n.yaml",
+          "tool/app_targets.json",
+          "tool/env/dart_defines/**",
+          "tool/flutter_with_env.sh",
+          "tool/platform/configure_apple_flavors.rb",
+          "tool/use_firebase_environment.sh",
+          "tool/validate_firebase_environment.sh"
+        ],
+        "targets": [
+          "flutter",
+          "flutter_build_android",
+          "flutter_build_ios",
+          "flutter_build_web",
+          "tools",
+          "visual_integration"
+        ],
+        "mobileRoles": [
+          "consumer",
+          "host"
+        ]
+      },
+      {
+        "id": "tooling",
+        "patterns": [
+          "tool/**"
+        ],
+        "targets": [
+          "tools"
+        ]
+      },
+      {
+        "id": "documentation",
+        "patterns": [
+          "docs/**",
+          "**/*.md"
+        ],
+        "targets": [
+          "doc_state",
+          "tools"
+        ]
+      },
+      {
+        "id": "repository-metadata",
+        "patterns": [
+          ".editorconfig",
+          ".env.example",
+          ".gitignore",
+          "AGENTS.md"
+        ],
+        "targets": [
+          "tools"
+        ]
+      }
+    ]
+  },
   "auditPolicies": [
     {"pattern": "design/visual_baselines/**", "review": "aggregate", "kind": "generated_evidence", "owner": "design_system"},
     {"pattern": "android/app/src/*/res/**", "review": "aggregate", "kind": "platform_scaffold", "owner": "app_platform"},
+    {"pattern": "apps/*/android/app/src/*/res/**", "review": "aggregate", "kind": "platform_scaffold", "owner": "app_platform"},
     {"pattern": "ios/Runner/Assets.xcassets/**", "review": "aggregate", "kind": "platform_scaffold", "owner": "app_platform"},
+    {"pattern": "apps/*/ios/Runner/Assets.xcassets/**", "review": "aggregate", "kind": "platform_scaffold", "owner": "app_platform"},
     {"pattern": "macos/Runner/Assets.xcassets/**", "review": "aggregate", "kind": "platform_scaffold", "owner": "app_platform"},
     {"pattern": "web/icons/**", "review": "aggregate", "kind": "platform_scaffold", "owner": "app_platform"},
     {"pattern": "packages/phosphor_flutter/**", "review": "aggregate", "kind": "vendored_package", "owner": "repository_tooling"}
@@ -123,6 +605,12 @@
     {"path": "coverage", "scope": "flutter", "reason": "Generated test coverage"},
     {"path": "ios/Pods", "scope": "native", "reason": "CocoaPods dependencies"},
     {"path": "ios/.symlinks", "scope": "native", "reason": "Generated Flutter iOS links"},
+    {"path": "apps/consumer/build", "scope": "flutter", "reason": "Consumer Flutter build output"},
+    {"path": "apps/consumer/ios/Pods", "scope": "native", "reason": "Consumer CocoaPods dependencies"},
+    {"path": "apps/consumer/ios/.symlinks", "scope": "native", "reason": "Generated Consumer Flutter iOS links"},
+    {"path": "apps/host/build", "scope": "flutter", "reason": "Host Flutter build output"},
+    {"path": "apps/host/ios/Pods", "scope": "native", "reason": "Host CocoaPods dependencies"},
+    {"path": "apps/host/ios/.symlinks", "scope": "native", "reason": "Generated Host Flutter iOS links"},
     {"path": "macos/Pods", "scope": "native", "reason": "CocoaPods dependencies"},
     {"path": "macos/Flutter/ephemeral", "scope": "native", "reason": "Generated Flutter macOS files"},
     {"path": "android/.gradle", "scope": "native", "reason": "Gradle project cache"},

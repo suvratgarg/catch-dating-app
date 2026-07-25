@@ -62,11 +62,6 @@
       "id": "manual-provider:_hostClubsForUserProvider",
       "status": "accepted-exception",
       "rationale": "This is a private auto-dispose adapter in a part file that narrows a Host route provider result. Moving it only to satisfy code generation would add a public generated symbol and another ownership file without changing the dependency boundary."
-    },
-    {
-      "id": "routing-to-presentation:goRouterProvider->authControllerProvider",
-      "status": "accepted",
-      "rationale": "GoRouter is the app integration root and listens only to the auth verification gate needed to refresh redirects. It does not import auth widgets or perform auth mutations."
     }
   ]
 }

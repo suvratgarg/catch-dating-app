@@ -1,9 +1,8 @@
 name: Contracts CI
 
 on:
-  pull_request:
-  push:
-    branches: [main]
+  workflow_call:
+  workflow_dispatch:
 
 jobs:
   schema-contracts:

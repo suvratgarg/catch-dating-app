@@ -1,14 +1,44 @@
 name: App Build Matrix
 
 on:
-  pull_request:
-  push:
-    branches: [main]
+  workflow_call:
+    inputs:
+      app_roles:
+        description: JSON array of installable roles to compile.
+        required: false
+        type: string
+        default: '["consumer","host"]'
+      build_web:
+        required: false
+        type: boolean
+        default: true
+      build_android:
+        required: false
+        type: boolean
+        default: true
+      build_ios:
+        required: false
+        type: boolean
+        default: true
   workflow_dispatch:
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+    inputs:
+      app_roles:
+        description: JSON array of installable roles to compile.
+        required: false
+        type: string
+        default: '["consumer","host"]'
+      build_web:
+        required: false
+        type: boolean
+        default: true
+      build_android:
+        required: false
+        type: boolean
+        default: true
+      build_ios:
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   app-targets:
@@ -26,11 +56,12 @@ jobs:
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
 
-      - run: node tool/run.mjs check platform:app-targets platform:verify-ios-release-identity
+      - run: node tool/run.mjs check platform:app-targets platform:app-package-graphs platform:verify-ios-release-identity
 
   web:
     name: Web build
     needs: app-targets
+    if: ${{ inputs.build_web }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -49,22 +80,27 @@ jobs:
       - run: flutter pub get
 
       - name: Build dev web artifact
+        if: ${{ contains(fromJSON(inputs.app_roles), 'consumer') }}
         run: ./tool/flutter_with_env.sh dev build web --debug
 
       - name: Build dev host web artifact
+        if: ${{ contains(fromJSON(inputs.app_roles), 'host') }}
         run: ./tool/flutter_with_env.sh dev --role host build web --debug
 
       # Also compile the prod config (prod dart-defines + prod Firebase
       # options) so a prod-only build break is caught on PRs, not at release.
       - name: Build prod web artifact
+        if: ${{ contains(fromJSON(inputs.app_roles), 'consumer') }}
         run: ./tool/flutter_with_env.sh prod build web --release
 
       - name: Build prod host web artifact
+        if: ${{ contains(fromJSON(inputs.app_roles), 'host') }}
         run: ./tool/flutter_with_env.sh prod --role host build web --release
 
   android:
     name: Android debug APK
     needs: app-targets
+    if: ${{ inputs.build_android }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
@@ -87,7 +123,8 @@ jobs:
 
       - run: flutter pub get
 
-      - name: Write dev Android Maps key
+      - name: Write Consumer dev Android Maps key
+        if: ${{ contains(fromJSON(inputs.app_roles), 'consumer') }}
         env:
           GOOGLE_MAPS_ANDROID_API_KEY_DEV: ${{ secrets.GOOGLE_MAPS_ANDROID_API_KEY_DEV }}
         run: |
@@ -96,17 +133,32 @@ jobs:
             echo "Missing GOOGLE_MAPS_ANDROID_API_KEY_DEV secret."
             exit 1
           fi
-          printf '\nGOOGLE_MAPS_ANDROID_API_KEY_DEV=%s\n' "$key" >> android/local.properties
+          printf '\nGOOGLE_MAPS_ANDROID_API_KEY_DEV=%s\n' "$key" >> apps/consumer/android/local.properties
+
+      - name: Write Host dev Android Maps key
+        if: ${{ contains(fromJSON(inputs.app_roles), 'host') }}
+        env:
+          GOOGLE_MAPS_ANDROID_API_KEY_DEV: ${{ secrets.GOOGLE_MAPS_ANDROID_API_KEY_DEV }}
+        run: |
+          key="${GOOGLE_MAPS_ANDROID_API_KEY_DEV:-}"
+          if [[ -z "$key" ]]; then
+            echo "Missing GOOGLE_MAPS_ANDROID_API_KEY_DEV secret."
+            exit 1
+          fi
+          printf '\nGOOGLE_MAPS_ANDROID_API_KEY_DEV=%s\n' "$key" >> apps/host/android/local.properties
 
       - name: Build dev Android debug artifact
+        if: ${{ contains(fromJSON(inputs.app_roles), 'consumer') }}
         run: ./tool/flutter_with_env.sh dev build apk --debug
 
       - name: Build dev host Android debug artifact
+        if: ${{ contains(fromJSON(inputs.app_roles), 'host') }}
         run: ./tool/flutter_with_env.sh dev --role host build apk --debug
 
   ios:
     name: iOS simulator build
     needs: app-targets
+    if: ${{ inputs.build_ios }}
     runs-on: macos-26
     timeout-minutes: 50
 
@@ -125,6 +177,7 @@ jobs:
       - run: flutter pub get
 
       - name: Verify Host v2 full-shell regression baselines
+        if: ${{ contains(fromJSON(inputs.app_roles), 'host') }}
         run: |
           node tool/ui_capture/run_captures.mjs \
             --ids host_home_dashboard,host_home_events_list,host_inbox_queries,host_clubs_management \
@@ -137,13 +190,22 @@ jobs:
             --ids host_home_dashboard,host_home_events_list,host_inbox_queries,host_clubs_management \
             --strict
 
-      - name: Write dev iOS Maps key
+      - name: Write Consumer dev iOS Maps key
+        if: ${{ contains(fromJSON(inputs.app_roles), 'consumer') }}
         env:
           GOOGLE_MAPS_IOS_API_KEY_DEV: ${{ secrets.GOOGLE_MAPS_IOS_API_KEY_DEV }}
-        run: ./tool/write_ios_maps_key_xcconfig.sh dev
+        run: ./tool/write_ios_maps_key_xcconfig.sh dev apps/consumer/ios/Flutter/GoogleMapsKeys.xcconfig
+
+      - name: Write Host dev iOS Maps key
+        if: ${{ contains(fromJSON(inputs.app_roles), 'host') }}
+        env:
+          GOOGLE_MAPS_IOS_API_KEY_DEV: ${{ secrets.GOOGLE_MAPS_IOS_API_KEY_DEV }}
+        run: ./tool/write_ios_maps_key_xcconfig.sh dev apps/host/ios/Flutter/GoogleMapsKeys.xcconfig
 
       - name: Build dev iOS simulator artifact
+        if: ${{ contains(fromJSON(inputs.app_roles), 'consumer') }}
         run: ./tool/flutter_with_env.sh dev build ios --debug --simulator --no-codesign
 
       - name: Build dev host iOS simulator artifact
+        if: ${{ contains(fromJSON(inputs.app_roles), 'host') }}
         run: ./tool/flutter_with_env.sh dev --role host build ios --debug --simulator --no-codesign

@@ -7,27 +7,27 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_callable_requests.dart';
 import 'package:catch_dating_app/payments/data/payment_callable_responses.dart';
+import 'package:catch_dating_app/payments/data/razorpay_checkout.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/payments/env/env.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
-import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 part 'payment_repository.g.dart';
 
-typedef RazorpayFactory = Razorpay Function();
-
 class PaymentRepository {
   PaymentRepository(
     this._functions, {
-    RazorpayFactory? razorpayFactory,
+    RazorpayCheckoutFactory? razorpayFactory,
     ExternalUrlLauncher? externalUrlLauncher,
     bool? isWebOverride,
     TargetPlatform? targetPlatformOverride,
-  }) : _razorpayFactory = razorpayFactory ?? Razorpay.new,
+  }) : // Keep the public adapter-factory name stable for app-package injection.
+       // ignore: prefer_initializing_formals
+       _razorpayFactory = razorpayFactory,
        _externalUrlLauncher =
            externalUrlLauncher ??
            ((uri, {mode = LaunchMode.platformDefault}) =>
@@ -39,11 +39,11 @@ class PaymentRepository {
        _targetPlatformOverride = targetPlatformOverride;
 
   final FirebaseFunctions _functions;
-  final RazorpayFactory _razorpayFactory;
+  final RazorpayCheckoutFactory? _razorpayFactory;
   final ExternalUrlLauncher _externalUrlLauncher;
   final bool? _isWebOverride;
   final TargetPlatform? _targetPlatformOverride;
-  Razorpay? _razorpay;
+  RazorpayCheckout? _razorpay;
 
   Completer<PaymentConfirmationData>? _completer;
 
@@ -58,7 +58,7 @@ class PaymentRepository {
     final platform = _targetPlatformOverride ?? defaultTargetPlatform;
 
     return switch (platform) {
-      TargetPlatform.android || TargetPlatform.iOS => true,
+      TargetPlatform.android || TargetPlatform.iOS => _razorpayFactory != null,
       _ => false,
     };
   }
@@ -259,7 +259,7 @@ class PaymentRepository {
 
   // ── Razorpay callbacks ────────────────────────────────────────────────────
 
-  Future<void> _onSuccess(PaymentSuccessResponse response) async {
+  Future<void> _onSuccess(RazorpaySuccessResponse response) async {
     final completer = _takeCompleter();
     if (completer == null || completer.isCompleted) return;
 
@@ -312,19 +312,22 @@ class PaymentRepository {
     }
   }
 
-  void _onError(PaymentFailureResponse response) {
+  void _onError(RazorpayFailureResponse response) {
     final completer = _takeCompleter();
     if (completer == null || completer.isCompleted) return;
     completer.completeError(_mapCheckoutFailure(response));
   }
 
-  Razorpay _ensureRazorpay() {
+  RazorpayCheckout _ensureRazorpay() {
     final existing = _razorpay;
     if (existing != null) return existing;
 
-    final razorpay = _razorpayFactory();
-    razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _onSuccess);
-    razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _onError);
+    final factory = _razorpayFactory;
+    if (factory == null) {
+      throw const PaidBookingUnsupportedException();
+    }
+    final razorpay = factory();
+    razorpay.configure(onSuccess: _onSuccess, onFailure: _onError);
     _razorpay = razorpay;
     return razorpay;
   }
@@ -423,8 +426,8 @@ class PaymentRepository {
     );
   }
 
-  AppException _mapCheckoutFailure(PaymentFailureResponse response) {
-    if (response.code == Razorpay.PAYMENT_CANCELLED) {
+  AppException _mapCheckoutFailure(RazorpayFailureResponse response) {
+    if (response.isCancelled) {
       return const PaymentCancelledException(
         context: BackendErrorContext(
           service: BackendService.payments,
@@ -503,6 +506,7 @@ BackendErrorMapper _eventBookingErrorMapper({required String fallbackMessage}) {
 PaymentRepository paymentRepository(Ref ref) {
   final repo = PaymentRepository(
     ref.watch(firebaseFunctionsProvider),
+    razorpayFactory: ref.watch(razorpayCheckoutFactoryProvider),
     externalUrlLauncher: ref.watch(externalUrlLauncherProvider),
   );
   ref.onDispose(repo.dispose);

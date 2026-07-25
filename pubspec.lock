@@ -1015,7 +1015,7 @@ packages:
     source: hosted
     version: "0.2.8"
   health:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: health
       sha256: "2d9e119f3a1d281139f93149b41032b9f80b759960875bc784c5a25dd3c17524"
@@ -1515,7 +1515,7 @@ packages:
     source: hosted
     version: "3.2.2"
   razorpay_flutter:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: razorpay_flutter
       sha256: a9026acf004df802128be6996a9397f5e9c20f32dd12ab215fd1659e0233c9f0

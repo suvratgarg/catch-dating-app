@@ -39,8 +39,8 @@ import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
-import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
@@ -200,6 +200,7 @@ import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -1927,6 +1928,14 @@ class _CaptureSilentErrorLogger extends ErrorLogger {
   }) {}
 }
 
+class _CaptureUnsupportedFcmService extends FcmService {
+  _CaptureUnsupportedFcmService()
+    : super(FakeFirebaseFirestore(), _CaptureSilentErrorLogger());
+
+  @override
+  bool get isSupportedPlatform => false;
+}
+
 List<Object> _publicProfileProviderOverrides({
   String uid = ProfileSurfaceFixtures.targetUid,
   PublicProfile? profile,
@@ -2660,11 +2669,11 @@ List<Object> _hostShellCaptureOverrides(String uid, {int unreadCount = 0}) {
   return [
     _captureAnalyticsOverride,
     errorLoggerProvider.overrideWithValue(_CaptureSilentErrorLogger()),
+    fcmServiceProvider.overrideWithValue(_CaptureUnsupportedFcmService()),
     appConnectivityProvider.overrideWith(
       (ref) =>
           Stream.value(const <ConnectivityResult>[ConnectivityResult.wifi]),
     ),
-    appShellFcmInitializationProvider(uid).overrideWith((ref) async {}),
     totalUnreadCountProvider(uid).overrideWithValue(unreadCount),
   ];
 }

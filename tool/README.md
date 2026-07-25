@@ -39,7 +39,18 @@ executing a platform-incompatible command.
 `tool/repository_root_manifest.json#relationships` to their source, generated
 output, and consumer surfaces. It reports the owning checks and workflows,
 fails when any changed path is unmapped, and runs the union of manifest checks
-with `--check`. This graph is the canonical cross-root integration map.
+with `--check`. The same manifest's `ciPlanning` section resolves stable CI
+targets, role-selective app builds, and mobile-release eligibility:
+
+```sh
+node tool/ci/plan_ci.mjs --base origin/main --head HEAD --json
+node tool/ci/plan_ci.mjs --full --json
+```
+
+The planner uses first-match rules so a Host-only source can select Host while
+shared Flutter source selects both roles. CI-control changes run the full
+validation matrix. Unmapped paths fail before any conditional lane can be
+mistaken for success. This graph is the canonical cross-root integration map.
 
 ## Layout
 
@@ -229,6 +240,15 @@ node tool/docs/check_doc_version_monotonic.mjs --self-test
 node --test tool/docs/check_doc_version_monotonic.test.mjs
 ```
 
+Semantic versions describe authored contract changes; Git describes integration
+state. Build the immutable per-SHA projection without modifying source:
+
+```sh
+node tool/docs/build_doc_state.mjs \
+  --ref HEAD \
+  --output build/ci/doc-state.json
+```
+
 ## Remote Ops Manifest
 
 `tool/remote_ops_manifest.json` is the remote-operations index. It does not
@@ -265,9 +285,10 @@ OAuth URL scheme, plus role-specific signed entitlements. GitHub and Xcode
 Cloud run it before distribution and persist JSON receipts.
 
 `Mobile Internal Release` is the canonical merge-driven internal store workflow. Its iOS
-and Android jobs both resolve Consumer/Host identity from the manifest. Android
-release jobs additionally run `platform:verify-android-release-identity` before
-any guarded `qa`-track upload:
+and Android jobs resolve only impacted Consumer/Host roles from the CI impact
+plan. Main pushes produce signed, verified artifacts; TestFlight and Play
+uploads require explicit manual dispatch. Android release jobs additionally run
+`platform:verify-android-release-identity` before any guarded `qa`-track upload:
 
 ```sh
 node tool/run.mjs check \
@@ -297,6 +318,12 @@ for each `qa` track; it never uploads a bundle or commits a release.
 Do not add a bundle id, Firebase app id, native flavor, or store product only to
 a workflow or platform file. Add it to the target contract and make the
 consumer query or checker change in the same pass.
+
+Every signed artifact is also checked by
+`platform:mobile-package-policy`. The JSON receipt records compressed and
+uncompressed size, archive entries, and compiled app-binary hashes. The policy
+rejects fixture/demo assets, role-forbidden native plugins, size regressions,
+and byte-identical Consumer/Host products.
 
 ### Firebase deploy and client-callable gates
 

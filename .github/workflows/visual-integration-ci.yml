@@ -1,40 +1,8 @@
 name: Flutter Visual & Integration CI
 
 on:
-  pull_request:
-    paths:
-      - "assets/**"
-      - "integration_test/**"
-      - "lib/**"
-      - "test/goldens/**"
-      - "test/integration/**"
-      - "tool/test_app_shell_integration.sh"
-      - "tool/ci/check_toolchain_consistency.sh"
-      - "tool/ci/toolchain.env"
-      - "pubspec.yaml"
-      - "pubspec.lock"
-      - ".github/workflows/visual-integration-ci.yml"
-  push:
-    branches: [main]
-    paths:
-      - "assets/**"
-      - "integration_test/**"
-      - "lib/**"
-      - "test/goldens/**"
-      - "test/integration/**"
-      - "tool/test_app_shell_integration.sh"
-      - "tool/ci/check_toolchain_consistency.sh"
-      - "tool/ci/toolchain.env"
-      - "pubspec.yaml"
-      - "pubspec.lock"
-      - ".github/workflows/visual-integration-ci.yml"
-  schedule:
-    - cron: "17 3 * * 1-5"
+  workflow_call:
   workflow_dispatch:
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
 
 jobs:
   visual-and-integration:

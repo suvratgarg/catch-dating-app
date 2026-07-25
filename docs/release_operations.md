@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.11.5
-updated: 2026-07-24
+version: 1.12.0
+updated: 2026-07-25
 owner: recursive_audit_loop
 status: active
 ---
@@ -108,33 +108,54 @@ Swift generator and `flutter_native_splash:create`.
 
 ## Required PR Checks
 
-Configure GitHub branch protection for `main` to require:
+Configure GitHub branch protection for `main` to require the single stable
+`CI / Required CI` result. That aggregate always exists for pull requests,
+pushes, and merge queues. It fails when planning fails or any selected lane
+fails; unaffected lanes are explicit skips, so path scoping never leaves a
+required check permanently pending.
 
-- Flutter analysis and tests.
-- Functions lint/build/tests.
-- Firestore rules emulator tests.
-- Schema contract validation (the `contracts/` source of truth).
-- Sizing doctrine check (`tool/check_sizing.sh` exits 0).
-- Web build.
-- Android debug APK build.
-- iOS simulator build.
+`.github/workflows/ci.yml` is the orchestration owner. Its planner reads
+`tool/repository_root_manifest.json#ciPlanning`, fails closed for an unmapped
+path, and invokes reusable validation workflows only for affected targets.
+Changes to the CI control plane intentionally run the full matrix. A weekly
+scheduled full run catches drift hidden by ordinary impact routing.
+
+The orchestrator also owns cancellation. Reusable fanout workflows must not
+derive a concurrency group from `github.workflow`: inside a called workflow
+that value is the caller name, so sibling lanes would share one key and cancel
+one another. Standalone/manual workflow dispatches may add a distinct
+workflow-specific key, but normal CI fanout inherits the orchestrator boundary.
+
+The complete impact plan is written to `build/ci/impact-plan.json` and rendered
+from that file. Only bounded booleans and role arrays cross the GitHub step/job
+output boundary. Do not expand the per-file plan into an environment variable:
+large pull requests can exceed the operating system argument limit before the
+summary shell even starts.
+
+The app package-graph gate must also work in a clean checkout before
+`flutter pub get`. It validates governed native-package declarations directly
+from each app package and enriches the report with Flutter-generated plugin
+metadata when available. Release receipt checks remain the authoritative proof
+that forbidden native frameworks are absent from the compiled Host payload.
 
 The current workflows are:
 
 | Workflow | Purpose |
 |---|---|
-| `.github/workflows/flutter-ci.yml` | Design parity gate, Flutter analysis, unit/widget tests, and UI lint smoke checks. |
+| `.github/workflows/ci.yml` | Always-running impact planner, reusable-workflow fanout, scheduled full matrix, and stable required aggregate. |
+| `.github/workflows/flutter-ci.yml` | Reusable design parity, Flutter analysis, unit/widget tests, and UI lint smoke checks. |
 | `.github/workflows/functions-ci.yml` | Functions lint/test plus Firestore contract check on Node 24. |
 | `.github/workflows/firestore-rules-ci.yml` | Firestore contract check plus emulator-backed rules tests. |
 | `.github/workflows/contracts-ci.yml` | Validates the `contracts/` schema source of truth: source validity, generated-output freshness, schema/type boundaries, path literals, and rules semantics. |
-| `.github/workflows/app-build-matrix.yml` | Dev web, Android debug APK, and iOS simulator build gates. |
+| `.github/workflows/operations-ci.yml` | Reusable Operations platform contracts, tests, boundaries, and CLI smoke lane, selected independently from general repository tooling. |
+| `.github/workflows/app-build-matrix.yml` | Reusable role/platform-selective dev web, Android debug APK, and iOS simulator build gates. |
 | `.github/workflows/firebase-dev-deploy.yml` | Automatic dev Firebase deploy after `main` is green. |
 | `.github/workflows/firebase-deploy.yml` | Manual deploy of selected Firebase targets to dev, staging, or prod. Keep staging/prod explicit. |
 | `.github/workflows/data-validation.yml` | Read-only Firestore data validation, nightly and manual. |
 | `.github/workflows/marketing-website.yml` | Validates the marketing build and Playwright/axe Storybook accessibility contract, deploys the production Firebase Hosting `marketing` target, then requires a unique unknown production URL to return HTTP 404. |
 | `.github/workflows/admin-website.yml` | Validates and deploys the production Firebase Hosting `admin` target after matching changes land on `main`. |
 | `.github/workflows/release-readiness.yml` | Manual staging/prod release gate. |
-| `.github/workflows/mobile-internal-release.yml` | Canonical Consumer/Host mobile release matrix: signed iOS uploads to TestFlight and signed Android AABs with guarded Play internal upload. |
+| `.github/workflows/mobile-internal-release.yml` | Impact-routed Consumer/Host signed artifact matrix; explicit manual dispatch owns TestFlight/Play mutation. |
 | `.github/workflows/observability-evidence.yml` | Manual Crashlytics and Analytics evidence capture. |
 | `.github/workflows/website-production-observability.yml` | Scheduled and manual production website status, canonical-metadata, and launch-content probes. |
 
@@ -385,14 +406,19 @@ Firebase CD is intentionally asymmetric by environment:
 - `prod` backend deploys only through the manual `Firebase Deploy` workflow and
   retains required-reviewer approval.
 
-The automatic dev deploy is a backend deploy, not a store release. It deploys
-Functions, Firestore indexes, Firestore rules, and Storage rules in the safe
-order. Mobile binaries remain separate from backend deployment. App-relevant
-pushes to `main` start `.github/workflows/mobile-internal-release.yml` for both
-roles. The approval-free, main-only `prod-mobile` environment supplies the
-matrix credentials; iOS uploads to
-TestFlight, while Android builds and verifies signed AABs and uploads to Play's
-`qa` internal track only after `GOOGLE_PLAY_UPLOAD_ENABLED=true`.
+The automatic dev deploy is a backend deploy, not a store release. It starts
+only after the aggregate CI result succeeds and only when the same impact plan
+selects Functions, contracts, or Firestore/rules. It deploys Functions,
+Firestore indexes, Firestore rules, and Storage rules in the safe order.
+
+Mobile artifacts remain separate from backend deployment. App-impacting pushes
+to `main` start `.github/workflows/mobile-internal-release.yml` only for the
+affected Consumer/Host roles. The approval-free, main-only `prod-mobile`
+environment supplies signing credentials and produces verified IPAs/AABs plus
+package-policy receipts. A push never uploads to TestFlight or Play. Store
+mutation requires a manual dispatch, `upload_to_internal=true`, and a recorded
+release reason; Play additionally requires `GOOGLE_PLAY_UPLOAD_ENABLED=true`
+and remains restricted to the `qa` internal track.
 
 Marketing and admin Hosting deploys require explicit Vite Firebase/App Check
 environment variables. Firebase Hosting predeploy runs
@@ -1054,10 +1080,12 @@ workflow and two platform channels:
 - Android: Consumer and Host build signed AABs; Play upload targets the `qa`
   internal-testing track only when the Play readiness flag is enabled.
 
-App-relevant `main` pushes create role matrices on separate runners under the
-approval-free `prod-mobile` environment. A workflow-level non-cancelling concurrency
-group prevents overlapping store edits, and both the workflow and environment
-reject any ref other than `refs/heads/main`. Manual dispatch can select one role/platform,
+Role-impacting `main` pushes create only the affected role matrix on separate
+runners under the approval-free `prod-mobile` environment. They build, sign,
+verify, size-audit, and retain artifacts without editing a store. A
+workflow-level non-cancelling concurrency group prevents overlapping signed
+artifact or store work, and both the workflow and environment reject any ref
+other than `refs/heads/main`. Manual dispatch can select one role/platform,
 build without uploading, or explicitly upload with a recorded reason. Public
 App Store or Play production promotion is never automatic in this workflow.
 
@@ -1263,8 +1291,8 @@ check will reject any later build number that is not above the resulting build.
 
 ## GitHub-Only Migration Status
 
-The repo migration is implemented: one Actions workflow owns both roles, both
-iOS uploads, both signed Android bundles, and guarded Play internal uploads.
+The repo migration is implemented: one Actions workflow owns both roles,
+role-impacted signed iOS/Android artifacts, and manual guarded internal uploads.
 
 iOS upload, processing, and legacy-owner retirement are externally complete.
 `APP-TARGET-IOS-GITHUB-CUTOVER-001` remains open only for TestFlight group plus

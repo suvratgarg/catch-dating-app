@@ -69,27 +69,27 @@ code { color: var(--fg); }
     "lib"
   ],
   "summary": {
-    "dartSourceFiles": 795,
-    "providerNodes": 214,
-    "generatedProviderNodes": 210,
+    "dartSourceFiles": 798,
+    "providerNodes": 218,
+    "generatedProviderNodes": 214,
     "manualProviderNodes": 4,
     "aliasProviderNodes": 0,
-    "keepAliveNodes": 62,
+    "keepAliveNodes": 66,
     "familyNodes": 83,
     "mutationNodes": 83,
-    "consumerNodes": 250,
-    "providerToProviderCallsites": 415,
-    "uniqueProviderToProviderPairs": 328,
-    "uniqueCrossFeatureProviderPairs": 168,
-    "consumerToStateCallsites": 748,
+    "consumerNodes": 251,
+    "providerToProviderCallsites": 408,
+    "uniqueProviderToProviderPairs": 324,
+    "uniqueCrossFeatureProviderPairs": 163,
+    "consumerToStateCallsites": 752,
     "mutationReferenceCallsites": 204,
-    "unresolvedRefOperations": 10,
+    "unresolvedRefOperations": 14,
     "unresolvedInsideProviders": 0,
     "duplicateProviderNames": 0,
     "danglingProviderTargets": 0,
     "reactiveCycles": 0,
     "allOperationCycles": 0,
-    "architectureCandidates": 11,
+    "architectureCandidates": 10,
     "unreviewedArchitectureCandidates": 0,
     "staleArchitectureReviews": 0
   },
@@ -111,7 +111,7 @@ code { color: var(--fg); }
     "explore": 17,
     "hosts": 16,
     "chats": 10,
-    "payments": 8,
+    "payments": 9,
     "auth": 6,
     "reviews": 6,
     "swipes": 6,
@@ -121,39 +121,39 @@ code { color: var(--fg); }
     "force_update": 4,
     "launch_access": 4,
     "matches": 4,
+    "routing": 4,
+    "health_activity": 3,
     "safety": 3,
-    "health_activity": 2,
     "image_uploads": 2,
     "notifications": 2,
     "onboarding": 2,
-    "routing": 2,
     "user_analytics": 2,
     "app": 1,
     "exceptions": 1,
     "locations": 1
   },
   "providersByLayer": {
-    "data": 123,
+    "data": 125,
     "presentation": 63,
     "core": 19,
+    "routing": 4,
     "shared": 3,
     "event_success": 2,
-    "routing": 2,
     "app": 1,
     "exceptions": 1
   },
   "providerEdgesByOperation": {
-    "watch": 254,
-    "read": 150,
+    "watch": 255,
+    "read": 145,
     "invalidate": 6,
-    "listen": 5
+    "listen": 2
   },
   "consumerEdgesByOperation": {
-    "watch": 258,
-    "read": 204,
+    "watch": 257,
+    "read": 208,
     "invalidate": 155,
     "mutation-run": 90,
-    "listen": 21,
+    "listen": 22,
     "override": 20
   },
   "featurePairCounts": {
@@ -170,6 +170,7 @@ code { color: var(--fg); }
     "events -> core": 6,
     "clubs -> core": 5,
     "explore -> core": 5,
+    "payments -> payments": 5,
     "reviews -> reviews": 5,
     "user_profile -> user_profile": 5,
     "auth -> explore": 4,
@@ -177,7 +178,6 @@ code { color: var(--fg); }
     "explore -> auth": 4,
     "explore -> user_profile": 4,
     "hosts -> clubs": 4,
-    "payments -> payments": 4,
     "swipes -> events": 4,
     "swipes -> swipes": 4,
     "user_profile -> core": 4,
@@ -204,6 +204,7 @@ code { color: var(--fg); }
     "events -> user_profile": 2,
     "force_update -> core": 2,
     "force_update -> force_update": 2,
+    "health_activity -> health_activity": 2,
     "hosts -> core": 2,
     "hosts -> image_uploads": 2,
     "launch_access -> core": 2,
@@ -212,7 +213,6 @@ code { color: var(--fg); }
     "onboarding -> core": 2,
     "onboarding -> user_profile": 2,
     "reviews -> core": 2,
-    "routing -> auth": 2,
     "safety -> auth": 2,
     "safety -> safety": 2,
     "swipes -> auth": 2,
@@ -225,7 +225,6 @@ code { color: var(--fg); }
     "clubs -> events": 1,
     "clubs -> reviews": 1,
     "clubs -> user_profile": 1,
-    "core -> routing": 1,
     "dashboard -> clubs": 1,
     "dashboard -> reviews": 1,
     "dashboard -> user_profile": 1,
@@ -235,7 +234,6 @@ code { color: var(--fg); }
     "events -> payments": 1,
     "events -> reviews": 1,
     "health_activity -> exceptions": 1,
-    "health_activity -> health_activity": 1,
     "image_uploads -> core": 1,
     "image_uploads -> exceptions": 1,
     "image_uploads -> image_uploads": 1,
@@ -250,9 +248,6 @@ code { color: var(--fg); }
     "public_profile -> core": 1,
     "public_profile -> safety": 1,
     "public_profile -> user_profile": 1,
-    "routing -> core": 1,
-    "routing -> routing": 1,
-    "routing -> user_profile": 1,
     "safety -> user_profile": 1,
     "swipes -> public_profile": 1,
     "swipes -> safety": 1,
@@ -264,7 +259,7 @@ code { color: var(--fg); }
   },
   "layerPairCounts": {
     "presentation -> data": 116,
-    "data -> data": 96,
+    "data -> data": 98,
     "data -> core": 44,
     "presentation -> presentation": 33,
     "presentation -> core": 10,
@@ -273,12 +268,7 @@ code { color: var(--fg); }
     "data -> exceptions": 4,
     "presentation -> exceptions": 4,
     "core -> exceptions": 2,
-    "routing -> data": 2,
-    "presentation -> routing": 1,
     "presentation -> shared": 1,
-    "routing -> core": 1,
-    "routing -> presentation": 1,
-    "routing -> routing": 1,
     "shared -> exceptions": 1
   },
   "topUniqueFanOut": [
@@ -327,10 +317,6 @@ code { color: var(--fg); }
       "degree": 5
     },
     {
-      "name": "goRouterProvider",
-      "degree": 5
-    },
-    {
       "name": "swipeCandidateRepositoryProvider",
       "degree": 5
     },
@@ -361,6 +347,10 @@ code { color: var(--fg); }
     {
       "name": "eventBookingControllerProvider",
       "degree": 3
+    },
+    {
+      "name": "eventDetailControllerProvider",
+      "degree": 3
     }
   ],
   "topUniqueFanIn": [
@@ -377,10 +367,6 @@ code { color: var(--fg); }
       "degree": 15
     },
     {
-      "name": "uidProvider",
-      "degree": 15
-    },
-    {
       "name": "clubsRepositoryProvider",
       "degree": 14
     },
@@ -389,8 +375,12 @@ code { color: var(--fg); }
       "degree": 14
     },
     {
-      "name": "watchUserProfileProvider",
+      "name": "uidProvider",
       "degree": 14
+    },
+    {
+      "name": "watchUserProfileProvider",
+      "degree": 13
     },
     {
       "name": "errorLoggerProvider",
@@ -515,7 +505,7 @@ code { color: var(--fg); }
       },
       {
         "id": "health_activity",
-        "providers": 2,
+        "providers": 3,
         "mutations": 0,
         "consumers": 0
       },
@@ -563,7 +553,7 @@ code { color: var(--fg); }
       },
       {
         "id": "payments",
-        "providers": 8,
+        "providers": 9,
         "mutations": 0,
         "consumers": 7
       },
@@ -581,9 +571,9 @@ code { color: var(--fg); }
       },
       {
         "id": "routing",
-        "providers": 2,
+        "providers": 4,
         "mutations": 0,
-        "consumers": 0
+        "consumers": 1
       },
       {
         "id": "safety",
@@ -720,11 +710,6 @@ code { color: var(--fg); }
         "source": "core",
         "target": "exceptions",
         "uniqueProviderPairs": 3
-      },
-      {
-        "source": "core",
-        "target": "routing",
-        "uniqueProviderPairs": 1
       },
       {
         "source": "dashboard",
@@ -869,7 +854,7 @@ code { color: var(--fg); }
       {
         "source": "health_activity",
         "target": "health_activity",
-        "uniqueProviderPairs": 1
+        "uniqueProviderPairs": 2
       },
       {
         "source": "hosts",
@@ -989,7 +974,7 @@ code { color: var(--fg); }
       {
         "source": "payments",
         "target": "payments",
-        "uniqueProviderPairs": 4
+        "uniqueProviderPairs": 5
       },
       {
         "source": "public_profile",
@@ -1020,26 +1005,6 @@ code { color: var(--fg); }
         "source": "reviews",
         "target": "reviews",
         "uniqueProviderPairs": 5
-      },
-      {
-        "source": "routing",
-        "target": "auth",
-        "uniqueProviderPairs": 2
-      },
-      {
-        "source": "routing",
-        "target": "core",
-        "uniqueProviderPairs": 1
-      },
-      {
-        "source": "routing",
-        "target": "routing",
-        "uniqueProviderPairs": 1
-      },
-      {
-        "source": "routing",
-        "target": "user_profile",
-        "uniqueProviderPairs": 1
       },
       {
         "source": "safety",
@@ -1279,21 +1244,6 @@ code { color: var(--fg); }
           "id": "manual-provider:_hostClubsForUserProvider",
           "status": "accepted-exception",
           "rationale": "This is a private auto-dispose adapter in a part file that narrows a Host route provider result. Moving it only to satisfy code generation would add a public generated symbol and another ownership file without changing the dependency boundary."
-        }
-      },
-      {
-        "id": "routing-to-presentation:goRouterProvider->authControllerProvider",
-        "kind": "routing-to-presentation",
-        "severity": "review",
-        "subject": "goRouterProvider -> authControllerProvider",
-        "reason": "The router observes presentation state and therefore participates in that feature lifecycle.",
-        "recommendation": "Keep only app-gate state at this integration root and document why redirect refresh needs it.",
-        "source": "goRouterProvider",
-        "target": "authControllerProvider",
-        "review": {
-          "id": "routing-to-presentation:goRouterProvider->authControllerProvider",
-          "status": "accepted",
-          "rationale": "GoRouter is the app integration root and listens only to the auth verification gate needed to refresh redirects. It does not import auth widgets or perform auth mutations."
         }
       }
     ]
@@ -1727,6 +1677,18 @@ code { color: var(--fg); }
       "keepAlive": true,
       "family": false,
       "returnType": "ClubsRepository"
+    },
+    {
+      "id": "provider:consumerGoRouterProvider",
+      "name": "consumerGoRouterProvider",
+      "kind": "generated-function",
+      "path": "lib/routing/go_router.dart",
+      "line": 215,
+      "feature": "routing",
+      "layer": "routing",
+      "keepAlive": true,
+      "family": false,
+      "returnType": "GoRouter"
     },
     {
       "id": "provider:conversationRepositoryProvider",
@@ -2476,12 +2438,24 @@ code { color: var(--fg); }
       "name": "goRouterProvider",
       "kind": "generated-function",
       "path": "lib/routing/go_router.dart",
-      "line": 333,
+      "line": 222,
       "feature": "routing",
       "layer": "routing",
       "keepAlive": true,
       "family": false,
       "returnType": "GoRouter"
+    },
+    {
+      "id": "provider:healthActivityClientProvider",
+      "name": "healthActivityClientProvider",
+      "kind": "generated-function",
+      "path": "lib/health_activity/data/health_activity_client_provider.dart",
+      "line": 7,
+      "feature": "health_activity",
+      "layer": "data",
+      "keepAlive": true,
+      "family": false,
+      "returnType": "HealthActivityClient"
     },
     {
       "id": "provider:healthActivityRepositoryProvider",
@@ -2566,6 +2540,18 @@ code { color: var(--fg); }
       "keepAlive": false,
       "family": false,
       "returnType": "HostEventManageActions"
+    },
+    {
+      "id": "provider:hostGoRouterProvider",
+      "name": "hostGoRouterProvider",
+      "kind": "generated-function",
+      "path": "lib/routing/go_router.dart",
+      "line": 219,
+      "feature": "routing",
+      "layer": "routing",
+      "keepAlive": true,
+      "family": false,
+      "returnType": "GoRouter"
     },
     {
       "id": "provider:hostOperableClubsProvider",
@@ -2656,7 +2642,7 @@ code { color: var(--fg); }
       "name": "initialAppLocationProvider",
       "kind": "generated-function",
       "path": "lib/routing/go_router.dart",
-      "line": 325,
+      "line": 207,
       "feature": "routing",
       "layer": "routing",
       "keepAlive": true,
@@ -2812,7 +2798,7 @@ code { color: var(--fg); }
       "name": "paymentRepositoryProvider",
       "kind": "generated-function",
       "path": "lib/payments/data/payment_repository.dart",
-      "line": 502,
+      "line": 505,
       "feature": "payments",
       "layer": "data",
       "keepAlive": true,
@@ -2914,6 +2900,18 @@ code { color: var(--fg); }
       "keepAlive": false,
       "family": true,
       "returnType": "Future<Map<String, PublicProfile>>"
+    },
+    {
+      "id": "provider:razorpayCheckoutFactoryProvider",
+      "name": "razorpayCheckoutFactoryProvider",
+      "kind": "generated-function",
+      "path": "lib/payments/data/razorpay_checkout.dart",
+      "line": 46,
+      "feature": "payments",
+      "layer": "data",
+      "keepAlive": true,
+      "family": false,
+      "returnType": "RazorpayCheckoutFactory?"
     },
     {
       "id": "provider:recommendedEventsProvider",
@@ -4535,7 +4533,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/app.dart#MyApp.build",
       "owner": "MyApp.build",
       "path": "lib/app.dart",
-      "line": 43,
+      "line": 45,
       "feature": "app",
       "layer": "app"
     },
@@ -4543,7 +4541,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/app.dart#_ForceUpdateGateState.didChangeAppLifecycleState",
       "owner": "_ForceUpdateGateState.didChangeAppLifecycleState",
       "path": "lib/app.dart",
-      "line": 125,
+      "line": 127,
       "feature": "app",
       "layer": "app"
     },
@@ -4551,7 +4549,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/app.dart#_refreshForceUpdateGate",
       "owner": "_refreshForceUpdateGate",
       "path": "lib/app.dart",
-      "line": 170,
+      "line": 172,
       "feature": "app",
       "layer": "app"
     },
@@ -4559,7 +4557,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/app_bootstrap.dart#runCatchApp",
       "owner": "runCatchApp",
       "path": "lib/app_bootstrap.dart",
-      "line": 28,
+      "line": 27,
       "feature": "app",
       "layer": "app"
     },
@@ -4791,7 +4789,7 @@ code { color: var(--fg); }
       "id": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
       "owner": "AppShell.build",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 50,
+      "line": 54,
       "feature": "core",
       "layer": "presentation"
     },
@@ -6332,6 +6330,14 @@ code { color: var(--fg); }
       "layer": "shared"
     },
     {
+      "id": "consumer:lib/routing/go_router.dart#_buildGoRouter",
+      "owner": "_buildGoRouter",
+      "path": "lib/routing/go_router.dart",
+      "line": 231,
+      "feature": "routing",
+      "layer": "routing"
+    },
+    {
       "id": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._confirmDeleteAccount",
       "owner": "_SettingsScreenState._confirmDeleteAccount",
       "path": "lib/safety/presentation/settings_screen.dart",
@@ -6567,16 +6573,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 39
-    },
-    {
-      "source": "appShellFcmInitializationProvider",
-      "sourceKind": "provider",
-      "target": "goRouterProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/core/presentation/app_shell.dart",
-      "line": 42
+      "line": 43
     },
     {
       "source": "appVersionConfigProvider",
@@ -8568,78 +8565,6 @@ code { color: var(--fg); }
       "line": 27
     },
     {
-      "source": "goRouterProvider",
-      "sourceKind": "provider",
-      "target": "appAnalyticsProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/routing/go_router.dart",
-      "line": 336
-    },
-    {
-      "source": "goRouterProvider",
-      "sourceKind": "provider",
-      "target": "authControllerProvider",
-      "targetKind": "provider",
-      "operation": "listen",
-      "path": "lib/routing/go_router.dart",
-      "line": 342
-    },
-    {
-      "source": "goRouterProvider",
-      "sourceKind": "provider",
-      "target": "authControllerProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/routing/go_router.dart",
-      "line": 364
-    },
-    {
-      "source": "goRouterProvider",
-      "sourceKind": "provider",
-      "target": "initialAppLocationProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/routing/go_router.dart",
-      "line": 355
-    },
-    {
-      "source": "goRouterProvider",
-      "sourceKind": "provider",
-      "target": "uidProvider",
-      "targetKind": "provider",
-      "operation": "listen",
-      "path": "lib/routing/go_router.dart",
-      "line": 341
-    },
-    {
-      "source": "goRouterProvider",
-      "sourceKind": "provider",
-      "target": "uidProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/routing/go_router.dart",
-      "line": 360
-    },
-    {
-      "source": "goRouterProvider",
-      "sourceKind": "provider",
-      "target": "watchUserProfileProvider",
-      "targetKind": "provider",
-      "operation": "listen",
-      "path": "lib/routing/go_router.dart",
-      "line": 348
-    },
-    {
-      "source": "goRouterProvider",
-      "sourceKind": "provider",
-      "target": "watchUserProfileProvider",
-      "targetKind": "provider",
-      "operation": "read",
-      "path": "lib/routing/go_router.dart",
-      "line": 363
-    },
-    {
       "source": "healthActivityRepositoryProvider",
       "sourceKind": "provider",
       "target": "errorLoggerProvider",
@@ -8647,6 +8572,15 @@ code { color: var(--fg); }
       "operation": "watch",
       "path": "lib/health_activity/data/health_activity_repository.dart",
       "line": 149
+    },
+    {
+      "source": "healthActivityRepositoryProvider",
+      "sourceKind": "provider",
+      "target": "healthActivityClientProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/health_activity/data/health_activity_repository.dart",
+      "line": 148
     },
     {
       "source": "hostAnalyticsProvider",
@@ -9105,7 +9039,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/payments/data/payment_repository.dart",
-      "line": 506
+      "line": 510
     },
     {
       "source": "paymentRepositoryProvider",
@@ -9114,7 +9048,16 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/payments/data/payment_repository.dart",
-      "line": 505
+      "line": 508
+    },
+    {
+      "source": "paymentRepositoryProvider",
+      "sourceKind": "provider",
+      "target": "razorpayCheckoutFactoryProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/payments/data/payment_repository.dart",
+      "line": 509
     },
     {
       "source": "photoUploadControllerProvider",
@@ -10277,7 +10220,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/app.dart",
-      "line": 68
+      "line": 70
     },
     {
       "source": "consumer:lib/app.dart#MyApp.build",
@@ -10286,21 +10229,21 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/app.dart",
-      "line": 46
-    },
-    {
-      "source": "consumer:lib/app.dart#MyApp.build",
-      "sourceKind": "consumer",
-      "target": "goRouterProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/app.dart",
-      "line": 45
+      "line": 48
     },
     {
       "source": "consumer:lib/app.dart#MyApp.build",
       "sourceKind": "consumer",
       "target": "profileLocationInitializerProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/app.dart",
+      "line": 49
+    },
+    {
+      "source": "consumer:lib/app.dart#MyApp.build",
+      "sourceKind": "consumer",
+      "target": "routerProvider",
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/app.dart",
@@ -10313,7 +10256,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/app.dart",
-      "line": 132
+      "line": 134
     },
     {
       "source": "consumer:lib/app.dart#_refreshForceUpdateGate",
@@ -10322,7 +10265,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/app.dart",
-      "line": 197
+      "line": 199
     },
     {
       "source": "consumer:lib/app.dart#_refreshForceUpdateGate",
@@ -10331,7 +10274,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/app.dart",
-      "line": 195
+      "line": 197
     },
     {
       "source": "consumer:lib/app.dart#_refreshForceUpdateGate",
@@ -10340,7 +10283,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/app.dart",
-      "line": 189
+      "line": 191
     },
     {
       "source": "consumer:lib/app.dart#_refreshForceUpdateGate",
@@ -10349,7 +10292,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/app.dart",
-      "line": 176
+      "line": 178
     },
     {
       "source": "consumer:lib/app.dart#_refreshForceUpdateGate",
@@ -10358,7 +10301,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/app.dart",
-      "line": 199
+      "line": 201
     },
     {
       "source": "consumer:lib/app_bootstrap.dart#runCatchApp",
@@ -11033,7 +10976,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 68
+      "line": 72
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -11042,25 +10985,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 60
-    },
-    {
-      "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
-      "sourceKind": "consumer",
-      "target": "appShellFcmInitializationProvider",
-      "targetKind": "provider",
-      "operation": "listen",
-      "path": "lib/core/presentation/app_shell.dart",
-      "line": 72
-    },
-    {
-      "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
-      "sourceKind": "consumer",
-      "target": "appShellFcmInitializationProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/core/presentation/app_shell.dart",
-      "line": 71
+      "line": 64
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -11069,7 +10994,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 67
+      "line": 71
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -11078,7 +11003,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 86
+      "line": 92
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -11087,7 +11012,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 119
+      "line": 125
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -11096,7 +11021,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 122
+      "line": 128
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -11105,7 +11030,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 58
+      "line": 62
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -11114,7 +11039,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "listen",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 111
+      "line": 117
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -11123,7 +11048,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "watch",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 52
+      "line": 56
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -11132,7 +11057,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "listen",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 83
+      "line": 89
     },
     {
       "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
@@ -11141,7 +11066,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "invalidate",
       "path": "lib/core/presentation/app_shell.dart",
-      "line": 123
+      "line": 129
     },
     {
       "source": "consumer:lib/core/presentation/host_app_shell.dart#HostAppShell.build",
@@ -11164,24 +11089,6 @@ code { color: var(--fg); }
     {
       "source": "consumer:lib/core/presentation/host_app_shell.dart#HostAppShell.build",
       "sourceKind": "consumer",
-      "target": "appShellFcmInitializationProvider",
-      "targetKind": "provider",
-      "operation": "listen",
-      "path": "lib/core/presentation/host_app_shell.dart",
-      "line": 45
-    },
-    {
-      "source": "consumer:lib/core/presentation/host_app_shell.dart#HostAppShell.build",
-      "sourceKind": "consumer",
-      "target": "appShellFcmInitializationProvider",
-      "targetKind": "provider",
-      "operation": "watch",
-      "path": "lib/core/presentation/host_app_shell.dart",
-      "line": 44
-    },
-    {
-      "source": "consumer:lib/core/presentation/host_app_shell.dart#HostAppShell.build",
-      "sourceKind": "consumer",
       "target": "errorLoggerProvider",
       "targetKind": "provider",
       "operation": "read",
@@ -11195,7 +11102,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "read",
       "path": "lib/core/presentation/host_app_shell.dart",
-      "line": 68
+      "line": 70
     },
     {
       "source": "consumer:lib/core/presentation/host_app_shell.dart#HostAppShell.build",
@@ -11213,7 +11120,7 @@ code { color: var(--fg); }
       "targetKind": "provider",
       "operation": "listen",
       "path": "lib/core/presentation/host_app_shell.dart",
-      "line": 62
+      "line": 64
     },
     {
       "source": "consumer:lib/core/presentation/host_app_shell.dart#HostAppShell.build",
@@ -16517,6 +16424,78 @@ code { color: var(--fg); }
       "line": 132
     },
     {
+      "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
+      "sourceKind": "consumer",
+      "target": "appAnalyticsProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/routing/go_router.dart",
+      "line": 233
+    },
+    {
+      "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
+      "sourceKind": "consumer",
+      "target": "authControllerProvider",
+      "targetKind": "provider",
+      "operation": "listen",
+      "path": "lib/routing/go_router.dart",
+      "line": 237
+    },
+    {
+      "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
+      "sourceKind": "consumer",
+      "target": "authControllerProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/routing/go_router.dart",
+      "line": 259
+    },
+    {
+      "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
+      "sourceKind": "consumer",
+      "target": "initialAppLocationProvider",
+      "targetKind": "provider",
+      "operation": "watch",
+      "path": "lib/routing/go_router.dart",
+      "line": 250
+    },
+    {
+      "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
+      "sourceKind": "consumer",
+      "target": "uidProvider",
+      "targetKind": "provider",
+      "operation": "listen",
+      "path": "lib/routing/go_router.dart",
+      "line": 236
+    },
+    {
+      "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
+      "sourceKind": "consumer",
+      "target": "uidProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/routing/go_router.dart",
+      "line": 255
+    },
+    {
+      "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
+      "sourceKind": "consumer",
+      "target": "watchUserProfileProvider",
+      "targetKind": "provider",
+      "operation": "listen",
+      "path": "lib/routing/go_router.dart",
+      "line": 243
+    },
+    {
+      "source": "consumer:lib/routing/go_router.dart#_buildGoRouter",
+      "sourceKind": "consumer",
+      "target": "watchUserProfileProvider",
+      "targetKind": "provider",
+      "operation": "read",
+      "path": "lib/routing/go_router.dart",
+      "line": 258
+    },
+    {
       "source": "consumer:lib/safety/presentation/settings_screen.dart#_SettingsScreenState._confirmDeleteAccount",
       "sourceKind": "consumer",
       "target": "SettingsController.requestAccountDeletionMutation",
@@ -18849,6 +18828,38 @@ code { color: var(--fg); }
       "reference": "mutation",
       "path": "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart",
       "line": 144
+    },
+    {
+      "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
+      "sourceKind": "consumer",
+      "operation": "watch",
+      "reference": "fcmInitialization",
+      "path": "lib/core/presentation/app_shell.dart",
+      "line": 77
+    },
+    {
+      "source": "consumer:lib/core/presentation/app_shell.dart#AppShell.build",
+      "sourceKind": "consumer",
+      "operation": "listen",
+      "reference": "fcmInitialization",
+      "path": "lib/core/presentation/app_shell.dart",
+      "line": 78
+    },
+    {
+      "source": "consumer:lib/core/presentation/host_app_shell.dart#HostAppShell.build",
+      "sourceKind": "consumer",
+      "operation": "watch",
+      "reference": "fcmInitialization",
+      "path": "lib/core/presentation/host_app_shell.dart",
+      "line": 46
+    },
+    {
+      "source": "consumer:lib/core/presentation/host_app_shell.dart#HostAppShell.build",
+      "sourceKind": "consumer",
+      "operation": "listen",
+      "reference": "fcmInitialization",
+      "path": "lib/core/presentation/host_app_shell.dart",
+      "line": 47
     },
     {
       "source": "consumer:lib/core/widgets/catch_mutation_error_listener.dart#CatchMutationErrorListener.build",

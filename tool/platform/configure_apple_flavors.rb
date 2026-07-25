@@ -8,28 +8,37 @@ require 'xcodeproj'
 REPO_ROOT = File.expand_path('../..', __dir__)
 APP_TARGETS_PATH = File.join(REPO_ROOT, 'tool', 'app_targets.json')
 APP_TARGETS = JSON.parse(File.read(APP_TARGETS_PATH)).freeze
-FLAVORS = APP_TARGETS.fetch('targets').to_h do |target|
-  role = target.fetch('role')
-  environment = target.fetch('environment')
-  ios = target.fetch('ios')
-  role_config = APP_TARGETS.fetch('roles').fetch(role)
-  [
-    ios.fetch('scheme'),
-    {
-      target_id: target.fetch('id'),
-      flutter_target: target.fetch('entrypoint'),
-      bundle_id: ios.fetch('bundleId'),
-      app_name: target.fetch('displayName'),
-      firebase_env: environment,
-      firebase_role: role,
-      firebase_role_path: role == 'host' ? 'host/' : '',
-      app_icon: ios.fetch('iconSet'),
-      ios_url_scheme: ios.fetch('urlScheme'),
-      entitlements: role_config.fetch('iosEntitlements').sub(%r{\Aios/}, ''),
-      maps_key_suffix: environment.upcase
-    }.freeze
-  ]
-end.freeze
+
+def flavors_for(role: nil, package_entrypoints: false)
+  APP_TARGETS.fetch('targets')
+    .select { |target| role.nil? || target.fetch('role') == role }
+    .to_h do |target|
+      target_role = target.fetch('role')
+      environment = target.fetch('environment')
+      ios = target.fetch('ios')
+      role_config = APP_TARGETS.fetch('roles').fetch(target_role)
+      [
+        ios.fetch('scheme'),
+        {
+          target_id: target.fetch('id'),
+          flutter_target: target.fetch(
+            package_entrypoints ? 'packageEntrypoint' : 'entrypoint'
+          ),
+          bundle_id: ios.fetch('bundleId'),
+          app_name: target.fetch('displayName'),
+          firebase_env: environment,
+          firebase_role: target_role,
+          firebase_role_path: target_role == 'host' ? 'host/' : '',
+          app_icon: ios.fetch('iconSet'),
+          ios_url_scheme: ios.fetch('urlScheme'),
+          entitlements: role_config.fetch('iosEntitlements').sub(%r{\Aios/}, ''),
+          maps_key_suffix: environment.upcase
+        }.freeze
+      ]
+    end
+end
+
+FLAVORS = flavors_for.freeze
 
 BUILD_MODES = {
   'Debug' => :debug,
@@ -136,19 +145,19 @@ def remove_static_firebase_resource(target)
   end
 end
 
-def configure_ios
-  project_path = File.join(REPO_ROOT, 'ios', 'Runner.xcodeproj')
+def configure_ios(project_root:, flavors:)
+  project_path = File.join(project_root, 'ios', 'Runner.xcodeproj')
   project = Xcodeproj::Project.open(project_path)
   runner = project.targets.find { |target| target.name == 'Runner' }
   tests = project.targets.find { |target| target.name == 'RunnerTests' }
 
-  FLAVORS.each do |flavor, settings|
+  flavors.each do |flavor, settings|
     BUILD_MODES.each do |mode, type|
       config_name = "#{mode}-#{flavor}"
       xcconfig = "Flutter/#{config_name}.xcconfig"
       pod_config = mode == 'Debug' ? 'debug' : 'release'
       File.write(
-        File.join(REPO_ROOT, 'ios', xcconfig),
+        File.join(project_root, 'ios', xcconfig),
         <<~CONFIG
           #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.#{config_name.downcase}.xcconfig"
           #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.#{pod_config}.xcconfig"
@@ -203,10 +212,16 @@ def configure_ios
   ensure_firebase_copy_phase(runner, 'ios')
   project.save
 
-  scheme_dir = File.join(REPO_ROOT, 'ios', 'Runner.xcodeproj', 'xcshareddata', 'xcschemes')
+  scheme_dir = File.join(
+    project_root,
+    'ios',
+    'Runner.xcodeproj',
+    'xcshareddata',
+    'xcschemes'
+  )
   FileUtils.mkdir_p(scheme_dir)
   source_scheme = File.join(scheme_dir, 'Runner.xcscheme')
-  FLAVORS.each do |flavor, settings|
+  flavors.each do |flavor, settings|
     write_scheme(source_scheme, File.join(scheme_dir, "#{flavor}.xcscheme"), flavor, settings)
   end
 end
@@ -282,5 +297,12 @@ def configure_macos
   end
 end
 
-configure_ios
+configure_ios(project_root: REPO_ROOT, flavors: FLAVORS)
+APP_TARGETS.fetch('roles').each do |role, role_config|
+  project_root = File.join(REPO_ROOT, role_config.fetch('projectRoot'))
+  configure_ios(
+    project_root: project_root,
+    flavors: flavors_for(role: role, package_entrypoints: true)
+  )
+end
 configure_macos

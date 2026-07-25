@@ -1,7 +1,7 @@
 {
   "$schema": "./widget_classification.schema.json",
   "version": 2,
-  "updated": "2026-07-23",
+  "updated": "2026-07-25",
   "sourceOfTruth": {
     "scope": "Generated inventory for production Flutter widget and widget-state classes under lib/**. Widgetbook/test scaffolds are intentionally out of scope.",
     "canonicalContracts": "design/components/catch.components.json owns canonical global component contracts and governance metadata.",
@@ -10,22 +10,22 @@
     "generator": "tool/design/generate_widget_classification.mjs"
   },
   "summary": {
-    "total": 1100,
-    "widgetClasses": 967,
+    "total": 1102,
+    "widgetClasses": 969,
     "stateClasses": 133,
-    "publicClasses": 962,
+    "publicClasses": 964,
     "privateClasses": 138,
     "byRole": {
       "atom": 57,
       "composition": 353,
       "feature-adapter": 285,
       "pattern": 17,
-      "screen": 255,
+      "screen": 257,
       "widget-state": 133
     },
     "byDecision": {
       "keep-canonical-contract": 195,
-      "keep-public-cataloged": 702,
+      "keep-public-cataloged": 704,
       "keep-widget-state": 133,
       "review-catalog-coverage": 44,
       "review-promote-or-consolidate": 21,
@@ -35,19 +35,19 @@
       "cataloged": 665,
       "contracted": 195,
       "not-applicable": 133,
-      "route-covered": 54,
+      "route-covered": 56,
       "uncataloged": 53
     },
     "conceptCount": 62,
     "memberClassCount": 116,
     "compositionClassCount": 517,
-    "screenClassCount": 267,
+    "screenClassCount": 269,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 517,
       "concept": 62,
       "member": 116,
-      "screen": 267
+      "screen": 269
     },
     "collisionGroupCount": 32,
     "collisions": [
@@ -2702,6 +2702,35 @@
       "asyncOwnership": "display-state-only",
       "layoutOwnership": "feature-section-layout",
       "actionOwnership": "feature-callbacks",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "ConsumerApp",
+      "file": "lib/consumer_app.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.consumer_app",
+      "publicApi": true,
+      "catalogStatus": "route-covered",
+      "contractId": null,
+      "conceptRole": "screen",
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": "consumer_app",
+      "decisionRef": "generated-rule:screen-boundary",
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
       "decision": "keep-public-cataloged",
       "remediationOptions": [
         "keepPublicCataloged",
@@ -21907,6 +21936,35 @@
       "parentConceptId": null,
       "qualifier": null,
       "collisionKey": "update_required_screen",
+      "decisionRef": "generated-rule:screen-boundary",
+      "allowedDependencyLevel": "route-boundary",
+      "stateOwnership": "screen-owned",
+      "asyncOwnership": "screen-owned",
+      "layoutOwnership": "page-safe-area-sliver",
+      "actionOwnership": "navigation-and-controller-calls",
+      "decision": "keep-public-cataloged",
+      "remediationOptions": [
+        "keepPublicCataloged",
+        "mergeIntoCanonical"
+      ],
+      "flags": []
+    },
+    {
+      "name": "HostApp",
+      "file": "lib/host_app.dart",
+      "classKind": "widget",
+      "baseClass": "StatelessWidget",
+      "visibility": "public",
+      "role": "screen",
+      "canonicalFamily": "screen.host_app",
+      "publicApi": true,
+      "catalogStatus": "route-covered",
+      "contractId": null,
+      "conceptRole": "screen",
+      "conceptId": null,
+      "parentConceptId": null,
+      "qualifier": null,
+      "collisionKey": "host_app",
       "decisionRef": "generated-rule:screen-boundary",
       "allowedDependencyLevel": "route-boundary",
       "stateOwnership": "screen-owned",
