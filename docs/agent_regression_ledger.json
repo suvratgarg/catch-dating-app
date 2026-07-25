@@ -1,5 +1,5 @@
 {
-  "version": 113,
+  "version": 114,
   "updated": "2026-07-25",
   "owner": "agent_operating_model",
   "entries": [
@@ -3301,6 +3301,28 @@
         "docs/release_operations.md"
       ],
       "notes": "Similar TestFlight display sizes are expected when both apps share Flutter, Firebase, assets, and most domain code. Package boundaries are proven by native plugin contents and compiled binary hashes, not size alone."
+    },
+    {
+      "id": "REG-MOBILE-PACKAGE-SIZE-METRIC-001",
+      "title": "Signed mobile artifacts are rejected against a mismatched size metric",
+      "status": "active",
+      "applies_to": [
+        ".github/workflows/mobile-internal-release.yml",
+        "tool/platform/check_mobile_package.mjs",
+        "tool/platform/check_mobile_package.test.mjs",
+        "tool/platform/mobile_package_policy.json"
+      ],
+      "symptom": "A valid signed IPA or AAB fails because an expanded-payload total is compared with a compressed archive or store-display baseline, or an oversized budget is introduced without a measured signed artifact.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/platform/check_mobile_package.test.mjs && node tool/run.mjs check platform:mobile-package-policy",
+        "guardEvidence": "receipts define compressed archive, expanded payload, and processed store display sizes separately; role/platform baselines come from signed integration artifacts; and policy validation rejects budgets outside 20 percent headroom"
+      },
+      "owner_docs": [
+        "docs/release_operations.md",
+        "tool/README.md"
+      ],
+      "notes": "The first impact-routed integration run produced valid Consumer and Host IPAs but revealed that the prior iOS expanded-payload ceilings were copied from a different build-size measurement."
     },
     {
       "id": "REG-CI-REUSABLE-CONCURRENCY-001",

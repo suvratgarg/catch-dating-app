@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 1.12.0
+version: 1.12.1
 updated: 2026-07-25
 owner: recursive_audit_loop
 status: active
@@ -419,6 +419,16 @@ package-policy receipts. A push never uploads to TestFlight or Play. Store
 mutation requires a manual dispatch, `upload_to_internal=true`, and a recorded
 release reason; Play additionally requires `GOOGLE_PLAY_UPLOAD_ENABLED=true`
 and remains restricted to the `qa` internal track.
+
+The mobile package receipt intentionally reports two repository-controlled
+measurements: compressed bytes in the signed IPA/AAB and the sum of raw archive
+member lengths. `tool/platform/mobile_package_policy.json` records the signed
+integration baseline for each role/platform and permits at most 20% budget
+headroom. App Store Connect and Play report processed download/install
+estimates; those values are not compared to either archive metric. Similar
+store-displayed sizes do not imply identical applications: the release gate
+also requires different compiled binaries and entry sets, and rejects Health
+or Razorpay native payloads in Host.
 
 Marketing and admin Hosting deploys require explicit Vite Firebase/App Check
 environment variables. Firebase Hosting predeploy runs
