@@ -1,4 +1,6 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'razorpay_checkout.g.dart';
 
 typedef RazorpaySuccessHandler =
     Future<void> Function(RazorpaySuccessResponse response);
@@ -42,6 +44,6 @@ abstract interface class RazorpayCheckout {
 }
 
 /// Host and non-native shells intentionally have no Razorpay implementation.
-final razorpayCheckoutFactoryProvider = Provider<RazorpayCheckoutFactory?>(
-  (ref) => null,
-);
+// keepalive: the native checkout factory is fixed by the installable app root.
+@Riverpod(keepAlive: true)
+RazorpayCheckoutFactory? razorpayCheckoutFactory(Ref ref) => null;

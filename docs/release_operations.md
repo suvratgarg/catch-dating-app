@@ -120,6 +120,12 @@ path, and invokes reusable validation workflows only for affected targets.
 Changes to the CI control plane intentionally run the full matrix. A weekly
 scheduled full run catches drift hidden by ordinary impact routing.
 
+The orchestrator also owns cancellation. Reusable fanout workflows must not
+derive a concurrency group from `github.workflow`: inside a called workflow
+that value is the caller name, so sibling lanes would share one key and cancel
+one another. Standalone/manual workflow dispatches may add a distinct
+workflow-specific key, but normal CI fanout inherits the orchestrator boundary.
+
 The current workflows are:
 
 | Workflow | Purpose |

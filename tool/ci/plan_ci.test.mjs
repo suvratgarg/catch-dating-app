@@ -126,3 +126,20 @@ test("unknown paths fail closed", () => {
   });
   assert.deepEqual(plan.unmatchedPaths, ["unowned/example.txt"]);
 });
+
+test("reusable fanout workflows do not cancel sibling lanes", () => {
+  for (const workflow of [
+    ".github/workflows/app-build-matrix.yml",
+    ".github/workflows/flutter-ci.yml",
+    ".github/workflows/operations-ci.yml",
+    ".github/workflows/tools-ci.yml",
+    ".github/workflows/visual-integration-ci.yml",
+  ]) {
+    const source = fs.readFileSync(workflow, "utf8");
+    assert.doesNotMatch(
+      source,
+      /^concurrency:\s*\n\s+group:.*github\.workflow/m,
+      `${workflow} must inherit concurrency from the CI orchestrator; in a called workflow github.workflow is the caller name, so sibling lanes otherwise cancel one another`,
+    );
+  }
+});

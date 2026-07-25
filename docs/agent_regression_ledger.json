@@ -1,5 +1,5 @@
 {
-  "version": 105,
+  "version": 106,
   "updated": "2026-07-25",
   "owner": "agent_operating_model",
   "entries": [
@@ -3301,6 +3301,31 @@
         "docs/release_operations.md"
       ],
       "notes": "Similar TestFlight display sizes are expected when both apps share Flutter, Firebase, assets, and most domain code. Package boundaries are proven by native plugin contents and compiled binary hashes, not size alone."
+    },
+    {
+      "id": "REG-CI-REUSABLE-CONCURRENCY-001",
+      "title": "Reusable workflow lanes cancel their CI siblings",
+      "status": "active",
+      "applies_to": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/app-build-matrix.yml",
+        ".github/workflows/flutter-ci.yml",
+        ".github/workflows/operations-ci.yml",
+        ".github/workflows/tools-ci.yml",
+        ".github/workflows/visual-integration-ci.yml",
+        "tool/ci/plan_ci.test.mjs"
+      ],
+      "symptom": "Several reusable validation lanes start from the same orchestrated run and immediately cancel one another because each called workflow derives the same concurrency group from the caller-level github.workflow value.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/ci/plan_ci.test.mjs",
+        "guardEvidence": "the CI orchestrator owns cancellation and the planner regression suite rejects caller-name concurrency in reusable fanout workflows"
+      },
+      "owner_docs": [
+        "docs/release_operations.md",
+        "docs/agent_operating_model.md"
+      ],
+      "notes": "Called workflows observe the caller name through github.workflow. One top-level run-scoped concurrency boundary safely cancels stale runs without making affected sibling lanes compete for the same key."
     }
   ]
 }

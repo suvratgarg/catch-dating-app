@@ -215,12 +215,14 @@ String initialAppLocation(Ref ref) => _initialLocationFromPlatform();
 @Riverpod(keepAlive: true)
 GoRouter consumerGoRouter(Ref ref) => _buildGoRouter(ref, isHostApp: false);
 
+// keepalive: Host navigation is the app-wide route graph for the Host root.
 @Riverpod(keepAlive: true)
 GoRouter hostGoRouter(Ref ref) => _buildGoRouter(ref, isHostApp: true);
 
 /// Compatibility provider for test harnesses that intentionally exercise both
 /// role graphs in one Dart process. Installable app roots use one of the two
 /// compile-time role providers above.
+// keepalive: compatibility tests need one stable role-selected router graph.
 @Riverpod(keepAlive: true)
 GoRouter goRouter(Ref ref) {
   return _buildGoRouter(ref, isHostApp: AppConfig.appRole.isHost);

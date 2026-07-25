@@ -55,7 +55,7 @@ final class HealthActivityRepositoryProvider
 }
 
 String _$healthActivityRepositoryHash() =>
-    r'6cd2567e5be103c8311de684aaea0e42e7d7eaaf';
+    r'3ec65634923853e87d4bbf5b44ea13db380bbb53';
 
 @ProviderFor(weeklyActivity)
 @Deprecated(

@@ -138,6 +138,7 @@ String _$hostGoRouterHash() => r'9517323b42f7512d85c4f551be0c9b61860923c4';
 /// Compatibility provider for test harnesses that intentionally exercise both
 /// role graphs in one Dart process. Installable app roots use one of the two
 /// compile-time role providers above.
+// keepalive: compatibility tests need one stable role-selected router graph.
 
 @ProviderFor(goRouter)
 final goRouterProvider = GoRouterProvider._();
@@ -145,6 +146,7 @@ final goRouterProvider = GoRouterProvider._();
 /// Compatibility provider for test harnesses that intentionally exercise both
 /// role graphs in one Dart process. Installable app roots use one of the two
 /// compile-time role providers above.
+// keepalive: compatibility tests need one stable role-selected router graph.
 
 final class GoRouterProvider
     extends $FunctionalProvider<GoRouter, GoRouter, GoRouter>
@@ -152,6 +154,7 @@ final class GoRouterProvider
   /// Compatibility provider for test harnesses that intentionally exercise both
   /// role graphs in one Dart process. Installable app roots use one of the two
   /// compile-time role providers above.
+  // keepalive: compatibility tests need one stable role-selected router graph.
   GoRouterProvider._()
     : super(
         from: null,
