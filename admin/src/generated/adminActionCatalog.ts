@@ -285,7 +285,7 @@ export const adminActionCatalog = {
         "adminOwner",
         "support"
       ],
-      "summary": "Record the manual publication decision for one private organizer candidate.",
+      "summary": "Approve or hold one organizer record while setting public-page publication, search indexing, and app discovery independently.",
       "controlPlane": false
     },
     {
