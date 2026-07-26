@@ -476,6 +476,13 @@ canonical draft. Its deterministic curation receipt is the durable join back
 to the Intake Ready stage; publication, indexing, crawling, app visibility,
 and ownership remain separate governed operations.
 
+Organizer review approval and exposure are also distinct. The review decision
+records public-page publication, search indexing, and app discovery as three
+explicit controls with conditional evidence gates. Suppression turns every
+control off; a claimed organizer cannot be downgraded by intake. External-event
+authority must call the shared visibility policy so an event cannot exceed its
+organizer on the web, in search, or in the app.
+
 Eligibility is evaluated only from the source-publication policy frozen into
 the run plan. The promotion receipt includes that complete policy snapshot and
 its `promotionPolicyHash`, so later edits to a live source profile cannot change

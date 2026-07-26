@@ -1826,6 +1826,8 @@ const model = {
       "required": [
         "entityId",
         "decision",
+        "publishStatus",
+        "indexStatus",
         "appVisibility",
         "checklist",
         "note"
@@ -1841,6 +1843,23 @@ const model = {
             "hold",
             "suppress"
           ]
+        },
+        "publishStatus": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "published",
+            "suppressed"
+          ],
+          "description": "Explicit public-web publication switch. Approval does not imply publication."
+        },
+        "indexStatus": {
+          "type": "string",
+          "enum": [
+            "noindex",
+            "indexed"
+          ],
+          "description": "Explicit search-indexing switch. Indexed requires a published web page."
         },
         "appVisibility": {
           "type": "string",
@@ -1882,6 +1901,24 @@ const model = {
             "manualReportsReviewed": {
               "type": "boolean",
               "description": "True when the reviewer explicitly inspected manual reports that have no local raw artifact. Raw evidence remains outside Firestore; replay validation decides when this acknowledgement is required."
+            },
+            "claimTargetReviewed": {
+              "type": "boolean"
+            },
+            "takedownPathReviewed": {
+              "type": "boolean"
+            },
+            "impersonationReviewed": {
+              "type": "boolean"
+            },
+            "operatingStatusReviewed": {
+              "type": "boolean"
+            },
+            "eventAccuracyReviewed": {
+              "type": "boolean"
+            },
+            "unclaimedAffordancesReviewed": {
+              "type": "boolean"
             }
           }
         },
@@ -5462,6 +5499,7 @@ const model = {
                   "required": [
                     "canonicalPath",
                     "claimTargetPath",
+                    "publishStatus",
                     "indexStatus",
                     "appVisibility",
                     "projectionStatus"
@@ -5486,6 +5524,9 @@ const model = {
                           "type": "null"
                         }
                       ]
+                    },
+                    "publishStatus": {
+                      "$ref": "#/definitions/boundedString"
                     },
                     "indexStatus": {
                       "$ref": "#/definitions/boundedString"
@@ -5523,11 +5564,19 @@ const model = {
                           "additionalProperties": false,
                           "required": [
                             "decision",
+                            "publishStatus",
+                            "indexStatus",
                             "decidedAt",
                             "appVisibility"
                           ],
                           "properties": {
                             "decision": {
+                              "$ref": "#/definitions/boundedString"
+                            },
+                            "publishStatus": {
+                              "$ref": "#/definitions/boundedString"
+                            },
+                            "indexStatus": {
                               "$ref": "#/definitions/boundedString"
                             },
                             "decidedAt": {

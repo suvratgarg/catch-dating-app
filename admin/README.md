@@ -276,6 +276,11 @@ rows and bounded organizer publication-review packets are persisted
 market, blockers, checklist, aggregate evidence counts, public-state summary,
 decision state, and next actions needed by the workbench; evidence records,
 public copy, local commands, and raw provider payloads do not enter Firestore.
+The workbench treats record approval, public-page publication, search indexing,
+and app discovery as separate choices. Web and app exposure show their own
+evidence checks; indexing requires a published page, suppression clears every
+surface, and the backend repeats the same checks before accepting a decision.
+The browser never infers a hidden-app default for an approval.
 Until a run contains that packet projection, live Verify, Resolve, and Ready
 show an explicit unavailable state rather than reporting zero work. Sample and
 Storybook views continue to use typed synthetic operation records. The checked

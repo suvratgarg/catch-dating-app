@@ -337,8 +337,34 @@ function validatePublicationPayload({decision, errors, item, payload, prefix}) {
   if (payload.decision !== decision) {
     errors.push(`${prefix}.${decision}.decision must be ${decision}.`);
   }
-  if (payload.appVisibility !== "hidden") {
-    errors.push(`${prefix}.${decision}.appVisibility must be hidden.`);
+  if (!["draft", "published", "suppressed"].includes(payload.publishStatus)) {
+    errors.push(`${prefix}.${decision}.publishStatus is invalid.`);
+  }
+  if (!["noindex", "indexed"].includes(payload.indexStatus)) {
+    errors.push(`${prefix}.${decision}.indexStatus is invalid.`);
+  }
+  if (!["hidden", "discoverable"].includes(payload.appVisibility)) {
+    errors.push(`${prefix}.${decision}.appVisibility is invalid.`);
+  }
+  if (payload.indexStatus === "indexed" &&
+    payload.publishStatus !== "published") {
+    errors.push(
+      `${prefix}.${decision}.indexStatus requires published web visibility.`
+    );
+  }
+  if (decision === "hold" && (
+    payload.publishStatus !== "draft" ||
+    payload.indexStatus !== "noindex" ||
+    payload.appVisibility !== "hidden"
+  )) {
+    errors.push(`${prefix}.hold must keep every surface off.`);
+  }
+  if (decision === "suppress" && (
+    payload.publishStatus !== "suppressed" ||
+    payload.indexStatus !== "noindex" ||
+    payload.appVisibility !== "hidden"
+  )) {
+    errors.push(`${prefix}.suppress must clear every surface.`);
   }
   validateRequiredNote({decision, errors, payload, prefix});
   const checklist = payload.checklist;

@@ -225,7 +225,7 @@ function publicationCallableSubmission({
       {
         entityId,
         decision,
-        appVisibility: "hidden",
+        ...publicationSurfaceControls(packet, decision),
         checklist: publicationChecklistForDecision({
           decision,
           manualReportsRequired,
@@ -246,6 +246,33 @@ function publicationCallableSubmission({
       payloadsByDecision.hold ??
       Object.values(payloadsByDecision)[0] ??
       null,
+  };
+}
+
+function publicationSurfaceControls(packet, decision) {
+  if (decision === "suppress") {
+    return {
+      publishStatus: "suppressed",
+      indexStatus: "noindex",
+      appVisibility: "hidden",
+    };
+  }
+  if (decision === "hold") {
+    return {
+      publishStatus: "draft",
+      indexStatus: "noindex",
+      appVisibility: "hidden",
+    };
+  }
+  const presence = packet.publicPresence ?? {};
+  return {
+    publishStatus: presence.publishStatus === "published" ?
+      "published" :
+      "draft",
+    indexStatus: presence.indexStatus === "indexed" ? "indexed" : "noindex",
+    appVisibility: presence.appVisibility === "discoverable" ?
+      "discoverable" :
+      "hidden",
   };
 }
 

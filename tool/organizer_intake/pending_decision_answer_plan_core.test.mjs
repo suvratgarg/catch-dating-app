@@ -19,6 +19,9 @@ test("answer plan builds dry-run and write commands for completed answers", () =
   payload.answerTemplate.answers[0] = {
     answerId: "admin-publication:afterfly",
     decision: "approve_public",
+    publishStatus: "published",
+    indexStatus: "indexed",
+    appVisibility: "hidden",
     note: "Manual QA approved Afterfly.",
     acknowledgements: {
       crawlDisabledReviewed: true,
@@ -55,6 +58,10 @@ test("answer plan builds dry-run and write commands for completed answers", () =
   );
   assert.match(
     plan.plannedActions[0].dryRunCommand,
+    /--publish-status published --index-status indexed --app-visibility hidden/
+  );
+  assert.match(
+    plan.plannedActions[0].dryRunCommand,
     /--confirm-manual-reports-reviewed --dry-run/
   );
   assert.match(
@@ -70,6 +77,9 @@ test("answer plan rejects incomplete approval acknowledgements", () => {
   payload.answerTemplate.reviewer = "admin";
   payload.answerTemplate.decidedAt = "2026-06-18";
   payload.answerTemplate.answers[0].decision = "approve_public";
+  payload.answerTemplate.answers[0].publishStatus = "published";
+  payload.answerTemplate.answers[0].indexStatus = "indexed";
+  payload.answerTemplate.answers[0].appVisibility = "hidden";
   payload.answerTemplate.answers[0].note = "Approved.";
   payload.answerTemplate.answers[0].acknowledgements.identityReviewed = true;
 
@@ -129,6 +139,8 @@ function packet() {
         ],
         requiredInputs: [],
         safeDefaultPayload: {
+          publishStatus: "draft",
+          indexStatus: "noindex",
           appVisibility: "hidden",
         },
       },

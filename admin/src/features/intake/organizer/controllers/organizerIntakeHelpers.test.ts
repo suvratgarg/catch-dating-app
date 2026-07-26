@@ -8,6 +8,8 @@ import {
   organizerIntakeDecisionFromString,
   organizerOperationStage,
   organizerPolicyGapDecisionFromString,
+  organizerSurfaceChecklistReady,
+  organizerVisibilityForDecision,
   publicationPacketReady,
 } from "./organizerIntakeHelpers";
 
@@ -104,6 +106,43 @@ describe("organizer intake helpers", () => {
         ...readyPacket.approvalChecklist,
         mediaRightsReviewed: false,
       },
+    })).toBe(false);
+  });
+
+  it("keeps visibility switches independent and applies suppress guardrails",
+    () => {
+      const form: Intake.OrganizerVisibilityFormState = {
+        publishStatus: "published",
+        indexStatus: "noindex",
+        appVisibility: "hidden",
+      };
+      expect(organizerSurfaceChecklistReady(form, {
+        claimTargetReviewed: true,
+        takedownPathReviewed: true,
+        impersonationReviewed: true,
+        operatingStatusReviewed: false,
+        eventAccuracyReviewed: false,
+        unclaimedAffordancesReviewed: false,
+      })).toBe(true);
+      expect(organizerVisibilityForDecision("suppress", form)).toEqual({
+        publishStatus: "suppressed",
+        indexStatus: "noindex",
+        appVisibility: "hidden",
+      });
+    });
+
+  it("requires the extra app checklist only for app discovery", () => {
+    expect(organizerSurfaceChecklistReady({
+      publishStatus: "draft",
+      indexStatus: "noindex",
+      appVisibility: "discoverable",
+    }, {
+      claimTargetReviewed: true,
+      takedownPathReviewed: true,
+      impersonationReviewed: true,
+      operatingStatusReviewed: false,
+      eventAccuracyReviewed: true,
+      unclaimedAffordancesReviewed: true,
     })).toBe(false);
   });
 

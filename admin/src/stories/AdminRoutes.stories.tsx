@@ -476,6 +476,8 @@ const organizerIntakeController: OrganizerIntakeController = {
       packet,
     ])
   ),
+  surfaceChecklists: {},
+  visibilityForms: {},
   setCurationForms: (_value) => {
     noop();
   },
@@ -495,6 +497,12 @@ const organizerIntakeController: OrganizerIntakeController = {
     noop();
   },
   setPolicyDecisionNotes: (_value) => {
+    noop();
+  },
+  setSurfaceChecklists: (_value) => {
+    noop();
+  },
+  setVisibilityForms: (_value) => {
     noop();
   },
 };

@@ -10,6 +10,8 @@ final class AdminDecideOrganizerIntakeCallableRequest {
   const AdminDecideOrganizerIntakeCallableRequest({
     required this.entityId,
     required this.decision,
+    required this.publishStatus,
+    required this.indexStatus,
     required this.appVisibility,
     required this.checklist,
     required this.note,
@@ -17,6 +19,8 @@ final class AdminDecideOrganizerIntakeCallableRequest {
 
   final String entityId;
   final String decision;
+  final String publishStatus;
+  final String indexStatus;
   final String appVisibility;
   final Map<String, Object?> checklist;
   final String note;
@@ -24,6 +28,8 @@ final class AdminDecideOrganizerIntakeCallableRequest {
   Map<String, Object?> toJson() => {
     'entityId': entityId,
     'decision': decision,
+    'publishStatus': publishStatus,
+    'indexStatus': indexStatus,
     'appVisibility': appVisibility,
     'checklist': checklist,
     'note': note,

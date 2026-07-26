@@ -19,12 +19,12 @@
     "nonLiteralDynamicImports": "report"
   },
   "summary": {
-    "scannedSourceModules": 344,
+    "scannedSourceModules": 345,
     "dependencyLeafNodes": 18,
-    "moduleNodes": 362,
-    "moduleEdges": 1249,
-    "runtimeModuleEdges": 986,
-    "typeOnlyModuleEdges": 263,
+    "moduleNodes": 363,
+    "moduleEdges": 1252,
+    "runtimeModuleEdges": 988,
+    "typeOnlyModuleEdges": 264,
     "dynamicImportEdges": 29,
     "reExportEdges": 64,
     "featureGroups": 33,
@@ -217,7 +217,7 @@
       "surface": "admin",
       "scope": "feature",
       "feature": "intake",
-      "modules": 31,
+      "modules": 32,
       "tests": 10,
       "stories": 0
     },
@@ -962,8 +962,8 @@
       "targetSurface": "admin",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 60,
-      "runtimeEdges": 40,
+      "edges": 61,
+      "runtimeEdges": 41,
       "typeOnlyEdges": 20,
       "dynamicImports": 0,
       "reExports": 3,
@@ -992,6 +992,7 @@
         "admin/src/features/intake/organizer/ui/organizerIntakeEventPanels.tsx",
         "admin/src/features/intake/organizer/ui/organizerIntakeEvidencePanels.tsx",
         "admin/src/features/intake/organizer/ui/organizerIntakeReadinessPanels.tsx",
+        "admin/src/features/intake/organizer/ui/organizerIntakeVisibilityControls.tsx",
         "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx",
         "admin/src/features/intake/ui/IntakeWorkspaceScreen.tsx",
         "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx"
@@ -3220,8 +3221,8 @@
       "sourceLayer": "feature",
       "targetSurface": "admin",
       "targetLayer": "shared",
-      "edges": 209,
-      "runtimeEdges": 141,
+      "edges": 210,
+      "runtimeEdges": 142,
       "typeOnlyEdges": 68,
       "dynamicImports": 0,
       "reExports": 4,
@@ -3280,6 +3281,7 @@
         "admin/src/features/intake/organizer/ui/organizerIntakeEventPanels.tsx",
         "admin/src/features/intake/organizer/ui/organizerIntakeEvidencePanels.tsx",
         "admin/src/features/intake/organizer/ui/organizerIntakeReadinessPanels.tsx",
+        "admin/src/features/intake/organizer/ui/organizerIntakeVisibilityControls.tsx",
         "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx",
         "admin/src/features/intake/ui/IntakeWorkspaceScreen.tsx",
         "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
@@ -4423,9 +4425,9 @@
     },
     {
       "package": "react",
-      "edges": 127,
+      "edges": 128,
       "runtimeEdges": 65,
-      "typeOnlyEdges": 62,
+      "typeOnlyEdges": 63,
       "dynamicImports": 0,
       "surfaces": [
         "admin",
@@ -4455,6 +4457,7 @@
         "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.tsx",
         "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
         "admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx",
+        "admin/src/features/intake/organizer/ui/organizerIntakeVisibilityControls.tsx",
         "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx",
         "admin/src/features/intake/ui/IntakeWorkspaceScreen.tsx",
         "admin/src/features/marketing/controllers/useMarketingOpsController.ts",
@@ -5379,6 +5382,18 @@
     },
     {
       "id": "admin/src/features/intake/organizer/ui/organizerIntakeReadinessPanels.tsx",
+      "surface": "admin",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "intake",
+      "group": "admin:feature:intake",
+      "extension": ".tsx",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/features/intake/organizer/ui/organizerIntakeVisibilityControls.tsx",
       "surface": "admin",
       "layer": "feature",
       "scope": "feature",
@@ -10749,7 +10764,7 @@
       "specifier": "./loadOrganizerIntakeBridge",
       "kind": "import",
       "typeOnly": false,
-      "line": 36,
+      "line": 40,
       "column": 1
     },
     {
@@ -10758,7 +10773,7 @@
       "specifier": "../../../../shared/types/adminTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 37,
+      "line": 41,
       "column": 1
     },
     {
@@ -10767,7 +10782,7 @@
       "specifier": "../types/organizerIntakeTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 54,
+      "line": 58,
       "column": 1
     },
     {
@@ -10776,7 +10791,7 @@
       "specifier": "../../../../shared/query/queryKeys",
       "kind": "import",
       "typeOnly": false,
-      "line": 55,
+      "line": 59,
       "column": 1
     },
     {
@@ -10785,7 +10800,7 @@
       "specifier": "../../../../shared/query/usePendingMutationRecord",
       "kind": "import",
       "typeOnly": false,
-      "line": 56,
+      "line": 60,
       "column": 1
     },
     {
@@ -10794,7 +10809,7 @@
       "specifier": "../../../../shared/pendingOperation",
       "kind": "import",
       "typeOnly": false,
-      "line": 57,
+      "line": 61,
       "column": 1
     },
     {
@@ -10812,7 +10827,7 @@
       "specifier": "../../../../shared/operations/operationsTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 17,
+      "line": 19,
       "column": 1
     },
     {
@@ -11257,6 +11272,24 @@
       "column": 1
     },
     {
+      "source": "admin/src/features/intake/organizer/ui/organizerIntakeVisibilityControls.tsx",
+      "target": "admin/src/shared/ui/AdminPrimitives/index.ts",
+      "specifier": "../../../../shared/ui/AdminPrimitives",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/ui/organizerIntakeVisibilityControls.tsx",
+      "target": "admin/src/features/intake/organizer/types/organizerIntakeTypes.ts",
+      "specifier": "../types/organizerIntakeTypes",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 8,
+      "column": 1
+    },
+    {
       "source": "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.test.ts",
       "target": "admin/src/features/intake/organizer/types/organizerIntakeTypes.ts",
       "specifier": "../types/organizerIntakeTypes",
@@ -11307,7 +11340,7 @@
       "specifier": "../controllers/useOrganizerIntakeController",
       "kind": "import",
       "typeOnly": true,
-      "line": 27,
+      "line": 30,
       "column": 1
     },
     {
@@ -11316,7 +11349,16 @@
       "specifier": "../types/organizerIntakeTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 29,
+      "line": 32,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx",
+      "target": "admin/src/features/intake/organizer/ui/organizerIntakeVisibilityControls.tsx",
+      "specifier": "./organizerIntakeVisibilityControls",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 33,
       "column": 1
     },
     {
@@ -13071,7 +13113,7 @@
       "specifier": "../../generated/contracts/adminGetOverviewCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1764,
+      "line": 1779,
       "column": 1
     },
     {
@@ -13080,7 +13122,7 @@
       "specifier": "../../generated/contracts/adminDecideAccessApplicationCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1766,
+      "line": 1781,
       "column": 1
     },
     {
@@ -13089,7 +13131,7 @@
       "specifier": "../../generated/contracts/adminDecideAccessApplicationCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1768,
+      "line": 1783,
       "column": 1
     },
     {
@@ -13098,7 +13140,7 @@
       "specifier": "../../generated/contracts/adminSetAdminUserRolesCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1770,
+      "line": 1785,
       "column": 1
     },
     {
@@ -13107,7 +13149,7 @@
       "specifier": "../../generated/contracts/adminSetAdminUserRolesCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1772,
+      "line": 1787,
       "column": 1
     },
     {
@@ -13116,7 +13158,7 @@
       "specifier": "../../generated/contracts/adminDecideSafetyTriageItemCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1774,
+      "line": 1789,
       "column": 1
     },
     {
@@ -13125,7 +13167,7 @@
       "specifier": "../../generated/contracts/adminDecideSafetyTriageItemCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1776,
+      "line": 1791,
       "column": 1
     },
     {
@@ -13134,7 +13176,7 @@
       "specifier": "../../generated/contracts/adminAssignSafetyTriageItemCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1778,
+      "line": 1793,
       "column": 1
     },
     {
@@ -13143,7 +13185,7 @@
       "specifier": "../../generated/contracts/adminAssignSafetyTriageItemCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1780,
+      "line": 1795,
       "column": 1
     },
     {
@@ -13152,7 +13194,7 @@
       "specifier": "../../generated/contracts/adminCreateMarketingContentDraftCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1782,
+      "line": 1797,
       "column": 1
     },
     {
@@ -13161,7 +13203,7 @@
       "specifier": "../../generated/contracts/adminCreateOrganizerDraftFromCandidateCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1784,
+      "line": 1799,
       "column": 1
     },
     {
@@ -13170,7 +13212,7 @@
       "specifier": "../../generated/contracts/adminCreateOrganizerDraftFromCandidateCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1786,
+      "line": 1801,
       "column": 1
     },
     {
@@ -13179,7 +13221,7 @@
       "specifier": "../../generated/contracts/adminRecordMarketingReviewDecisionCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1788,
+      "line": 1803,
       "column": 1
     },
     {
@@ -13188,7 +13230,7 @@
       "specifier": "../../generated/contracts/adminRecordMarketingReviewDecisionCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1790,
+      "line": 1805,
       "column": 1
     },
     {
@@ -21011,6 +21053,15 @@
       "specifier": "lucide-react",
       "kind": "import",
       "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/ui/organizerIntakeVisibilityControls.tsx",
+      "package": "react",
+      "specifier": "react",
+      "kind": "import",
+      "typeOnly": true,
       "line": 1,
       "column": 1
     },

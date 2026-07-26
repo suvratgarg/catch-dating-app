@@ -1168,6 +1168,10 @@ function organizerPacketProjection(packet) {
         packet.publicPresence?.claimTargetPath,
         "publicPresence.claimTargetPath"
       ),
+      publishStatus: boundedPacketString(
+        packet.publicPresence?.publishStatus,
+        "publicPresence.publishStatus"
+      ),
       indexStatus: boundedPacketString(
         packet.publicPresence?.indexStatus,
         "publicPresence.indexStatus"
@@ -1195,6 +1199,14 @@ function organizerPacketProjection(packet) {
         decision: boundedPacketString(
           currentDecision.decision,
           "adminDecision.currentDecision.decision"
+        ),
+        publishStatus: boundedPacketString(
+          currentDecision.publishStatus,
+          "adminDecision.currentDecision.publishStatus"
+        ),
+        indexStatus: boundedPacketString(
+          currentDecision.indexStatus,
+          "adminDecision.currentDecision.indexStatus"
         ),
         decidedAt: boundedPacketString(
           currentDecision.decidedAt,

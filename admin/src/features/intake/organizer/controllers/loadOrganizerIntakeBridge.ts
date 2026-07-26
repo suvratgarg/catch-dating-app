@@ -412,11 +412,13 @@ function isOrganizerPacketProjection(
   if (!presence || !hasOnlyKeys(presence, [
     "canonicalPath",
     "claimTargetPath",
+    "publishStatus",
     "indexStatus",
     "appVisibility",
     "projectionStatus",
   ]) || !nullableString(presence.canonicalPath) ||
     !nullableString(presence.claimTargetPath) ||
+    !nonEmptyString(presence.publishStatus) ||
     !nonEmptyString(presence.indexStatus) ||
     !nonEmptyString(presence.appVisibility) ||
     !nonEmptyString(presence.projectionStatus)) return false;
@@ -432,10 +434,14 @@ function isOrganizerPacketProjection(
     const current = recordValue(decision.currentDecision);
     if (!current || !hasOnlyKeys(current, [
       "decision",
+      "publishStatus",
+      "indexStatus",
       "decidedAt",
       "appVisibility",
     ]) || ![
       "decision",
+      "publishStatus",
+      "indexStatus",
       "decidedAt",
       "appVisibility",
     ].every((field) => nonEmptyString(current[field]))) return false;
@@ -487,7 +493,7 @@ function workbenchPacketFromProjection(
     publicPresence: {
       ...packet.publicPresence,
       legacyPaths: [],
-      publishStatus: packet.status === "published" ? "published" : "draft",
+      publishStatus: packet.publicPresence.publishStatus,
     },
     publicDraft: {
       headline: null,
@@ -600,7 +606,7 @@ function workbenchItemFromPacket(
       sourceFile: "",
     } : null,
     projectionStatus: packet.publicPresence.projectionStatus,
-    publishStatus: packet.status === "published" ? "published" : "draft",
+    publishStatus: packet.publicPresence.publishStatus,
     indexStatus: packet.publicPresence.indexStatus,
     appVisibility: packet.publicPresence.appVisibility,
     claimTargetPath: packet.publicPresence.claimTargetPath,

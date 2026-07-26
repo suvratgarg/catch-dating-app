@@ -152,8 +152,27 @@ function publicationAction({answer, decidedAt, reviewer, slot}) {
     slot.subjectId,
     "--decision",
     answer.decision,
+    "--publish-status",
+    requiredSurfaceValue(
+      answer.publishStatus,
+      slot.safeDefaultPayload?.publishStatus,
+      "publishStatus",
+      slot
+    ),
+    "--index-status",
+    requiredSurfaceValue(
+      answer.indexStatus,
+      slot.safeDefaultPayload?.indexStatus,
+      "indexStatus",
+      slot
+    ),
     "--app-visibility",
-    answer.appVisibility ?? slot.safeDefaultPayload?.appVisibility ?? "hidden",
+    requiredSurfaceValue(
+      answer.appVisibility,
+      slot.safeDefaultPayload?.appVisibility,
+      "appVisibility",
+      slot
+    ),
     "--reviewer",
     reviewer,
     "--date",
@@ -179,6 +198,16 @@ function publicationAction({answer, decidedAt, reviewer, slot}) {
     writeCommandParts: parts,
     writeCommand: renderCommand(parts),
   };
+}
+
+function requiredSurfaceValue(answerValue, safeValue, field, slot) {
+  const value = answerValue ?? safeValue;
+  if (typeof value !== "string" || value.length === 0) {
+    throw new Error(
+      `${slot.answerId}: ${field} must be explicit in the answer or safe payload.`
+    );
+  }
+  return value;
 }
 
 function policyAction({answer, decidedAt, reviewer, slot}) {

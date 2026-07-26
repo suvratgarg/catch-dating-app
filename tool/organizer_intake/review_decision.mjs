@@ -59,7 +59,9 @@ function draftDecision(rawArgs) {
   const reviewer = requiredFlag(flags, "reviewer");
   const date = requiredFlag(flags, "date");
   const note = requiredFlag(flags, "note");
-  const appVisibility = flags["app-visibility"] ?? "hidden";
+  const publishStatus = requiredFlag(flags, "publish-status");
+  const indexStatus = requiredFlag(flags, "index-status");
+  const appVisibility = requiredFlag(flags, "app-visibility");
   const queuePath = flags.queue ?
     path.resolve(repoRoot, flags.queue) :
     generatedQueuePath;
@@ -85,6 +87,29 @@ function draftDecision(rawArgs) {
   }
   if (!["hidden", "discoverable"].includes(appVisibility)) {
     failFlag("app-visibility", "must be hidden or discoverable");
+  }
+  if (!["draft", "published", "suppressed"].includes(publishStatus)) {
+    failFlag("publish-status", "must be draft, published, or suppressed");
+  }
+  if (!["noindex", "indexed"].includes(indexStatus)) {
+    failFlag("index-status", "must be noindex or indexed");
+  }
+  if (indexStatus === "indexed" && publishStatus !== "published") {
+    failFlag("index-status", "indexed requires publish-status published");
+  }
+  if (decision === "hold" && (
+    publishStatus !== "draft" ||
+    indexStatus !== "noindex" ||
+    appVisibility !== "hidden"
+  )) {
+    failFlag("decision", "hold must keep every surface off");
+  }
+  if (decision === "suppress" && (
+    publishStatus !== "suppressed" ||
+    indexStatus !== "noindex" ||
+    appVisibility !== "hidden"
+  )) {
+    failFlag("decision", "suppress must clear every surface");
   }
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     failFlag("date", "must be YYYY-MM-DD");
@@ -124,7 +149,14 @@ function draftDecision(rawArgs) {
   const decisionBatchId = `${date}-${entityId}-${decision.replaceAll("_", "-")}`;
   const outputPath = path.join(outputRoot, `${decisionBatchId}.json`);
   const checklist = confirmPublicChecklist ?
-    completeChecklist({manualReportsReviewed: confirmManualReportsReviewed}) :
+    completeChecklist({
+      appVisible: appVisibility === "discoverable",
+      manualReportsReviewed: confirmManualReportsReviewed,
+      webVisible:
+        publishStatus === "published" ||
+        indexStatus === "indexed" ||
+        appVisibility === "discoverable",
+    }) :
     emptyChecklist();
   const payload = {
     schemaVersion: 1,
@@ -135,6 +167,8 @@ function draftDecision(rawArgs) {
       {
         entityId,
         decision,
+        publishStatus,
+        indexStatus,
         appVisibility,
         checklist,
         note,
@@ -281,13 +315,27 @@ function findPublicationPacket(entityId, publicationPacketsPath) {
   return (packets.packets ?? []).find((packet) => packet.entityId === entityId) ?? null;
 }
 
-function completeChecklist({manualReportsReviewed = false} = {}) {
+function completeChecklist({
+  appVisible = false,
+  manualReportsReviewed = false,
+  webVisible = false,
+} = {}) {
   return {
     crawlDisabledReviewed: true,
     identityReviewed: true,
     marketScopeReviewed: true,
     ...(manualReportsReviewed ? {manualReportsReviewed: true} : {}),
     mediaRightsReviewed: true,
+    ...(webVisible ? {
+      claimTargetReviewed: true,
+      takedownPathReviewed: true,
+      impersonationReviewed: true,
+    } : {}),
+    ...(appVisible ? {
+      operatingStatusReviewed: true,
+      eventAccuracyReviewed: true,
+      unclaimedAffordancesReviewed: true,
+    } : {}),
     ownerSafeCopyReviewed: true,
     surfaceInventoryReviewed: true,
   };

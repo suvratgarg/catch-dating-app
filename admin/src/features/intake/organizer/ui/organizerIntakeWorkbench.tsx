@@ -22,11 +22,16 @@ import {
   decisionLabel,
   organizerDraftFormFromCandidate,
   organizerOperationStage,
+  emptyOrganizerSurfaceChecklist,
+  organizerSurfaceChecklistReady,
+  organizerVisibilityFormForItem,
   publicationPacketReady,
 } from "../controllers/organizerIntakeHelpers";
 import type {OrganizerIntakeController} from
   "../controllers/useOrganizerIntakeController";
 import type * as Intake from "../types/organizerIntakeTypes";
+import {organizerIntakeVisibilityControls} from
+  "./organizerIntakeVisibilityControls";
 
 type OrganizerWorkbenchStage = "incoming" | "verify" | "resolve" | "ready";
 type OrganizerQueueFilter = "all" | "attention" | "ready";
@@ -80,6 +85,10 @@ function OrganizerTaskWorkbench({
     setDecisionNotes,
     setManualReportAcknowledgements,
     setOrganizerDraftForms,
+    setSurfaceChecklists,
+    setVisibilityForms,
+    surfaceChecklists,
+    visibilityForms,
   } = controller;
   const [activeStage, setActiveStageState] = useState<OrganizerWorkbenchStage>(
     readOrganizerWorkbenchStage
@@ -204,10 +213,18 @@ function OrganizerTaskWorkbench({
     manualReportAcknowledgements[item.entityId] === true : false;
   const inFlight = item ? decisionInFlight[item.entityId] : undefined;
   const decision = item ? localDecisions[item.entityId] : undefined;
+  const visibilityForm = item ?
+    visibilityForms[item.entityId] ?? organizerVisibilityFormForItem(item) :
+    null;
+  const surfaceChecklist = item ?
+    surfaceChecklists[item.entityId] ?? emptyOrganizerSurfaceChecklist() :
+    null;
   const checklistEntries = Object.entries(packet?.approvalChecklist ?? {});
   const checklistComplete = checklistEntries.filter(([, passed]) => passed).length;
   const canApprove = Boolean(
     item && publicationPacketReady(packet) &&
+    visibilityForm && surfaceChecklist &&
+    organizerSurfaceChecklistReady(visibilityForm, surfaceChecklist) &&
     (manualReports === 0 || reportsAcknowledged)
   );
   const candidateChecklist = candidate ?
@@ -354,11 +371,20 @@ function OrganizerTaskWorkbench({
           footerHint: organizerDecisionHint(
             decision, packet, manualReports, reportsAcknowledged
           ),
-          impactRows: organizerImpactRows(item, packet),
+          impactRows: organizerImpactRows(item, packet, visibilityForm),
           impactTitle: "Handoff impact",
           initials: initialsForLabel(item.displayName),
           note: (
             <AdminIntakeSection>
+              {visibilityForm && surfaceChecklist ? (
+                <organizerIntakeVisibilityControls.OrganizerVisibilityControls
+                  checklist={surfaceChecklist}
+                  entityId={item.entityId}
+                  form={visibilityForm}
+                  setChecklists={setSurfaceChecklists}
+                  setForms={setVisibilityForms}
+                />
+              ) : null}
               <TextareaField
                 label="Decision note"
                 placeholder="Add evidence or explain why this organizer should advance..."
@@ -751,16 +777,30 @@ function organizerChecklistRows(
 
 function organizerImpactRows(
   item: Intake.OrganizerIntakeItem,
-  packet?: Intake.OrganizerPublicationReviewPacket
+  packet: Intake.OrganizerPublicationReviewPacket | undefined,
+  visibility: Intake.OrganizerVisibilityFormState | null
 ) {
   return [
     {
       id: "website",
       label: "Website listing",
-      tone: item.publishStatus === "published" ? "success" as const : "neutral" as const,
-      value: item.publishStatus === "published" ? "Published" : "Ready after review",
+      tone: visibility?.publishStatus === "published" ?
+        "success" as const :
+        "neutral" as const,
+      value: visibility?.publishStatus === "published" ?
+        "Publish" :
+        "Keep draft",
     },
-    {id: "app", label: "App visibility", value: item.appVisibility.replaceAll("_", " ")},
+    {
+      id: "index",
+      label: "Search indexing",
+      value: visibility?.indexStatus ?? "noindex",
+    },
+    {
+      id: "app",
+      label: "App visibility",
+      value: visibility?.appVisibility ?? item.appVisibility.replaceAll("_", " "),
+    },
     {id: "claim", label: "Claim handoff", value: packet?.publicPresence.claimTargetPath ? "Target prepared" : "No target"},
     {id: "crawl", label: "Recurring crawl", value: item.surfaces.some((surface) => surface.crawl.policy !== "blocked") ? "Manual only" : "Blocked"},
     {id: "canonical", label: "Canonical organizer", value: "Separate workspace"},
@@ -782,7 +822,7 @@ function organizerDecisionHint(
     return "Approval is disabled until manual reports are acknowledged.";
   }
   return publicationPacketReady(packet) ?
-    "Approval records a website handoff and keeps app visibility hidden." :
+    "Approval records the reviewed entity and applies only the three selected surface controls." :
     "Approval is disabled until packet blockers and checklist gates are resolved.";
 }
 

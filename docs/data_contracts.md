@@ -456,6 +456,21 @@ candidate rather than creating a second organizer schema. Deterministic
 auto-attribution records the reused source-mention scorecard rationale and is
 the only path that clears the orphan blocker.
 
+Organizer review decisions store approval and surface exposure independently.
+`organizerIntakeReviewDecisions/{entityId}` requires `publishStatus`,
+`indexStatus`, and `appVisibility`; `approve_public` may keep all surfaces off
+or enable a reviewed subset. `indexed` requires `published`, `hold` is
+`draft` + `noindex` + `hidden`, and `suppress` is `suppressed` + `noindex` +
+`hidden`. Web exposure additionally requires claim-target, takedown, and
+impersonation review; app discovery also requires operating-status,
+event-accuracy, and unclaimed-affordance review. The shared Functions policy
+derives effective event visibility as the minimum of the event request and
+organizer ceiling on every surface and refuses a request above that ceiling.
+Before this contract shipped, the guarded visibility-decision backfill repaired
+the two production legacy approvals (`afterfly` and `bhag`) to their exact prior
+`published` + `indexed` semantics; the post-apply dry run reported two current
+documents and zero remaining repairs.
+
 Supply Intake `0.1.1` records exact field provenance for the candidate title,
 canonical URL, snippet, market, reviewed formats, review note, and review
 timestamp. Each entry binds the projected field to an evidence artifact,

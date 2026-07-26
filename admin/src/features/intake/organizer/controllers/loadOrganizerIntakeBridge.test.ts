@@ -355,6 +355,7 @@ function organizerPacketWorkItem(entityId: string, market: string) {
           publicPresence: {
             canonicalPath: "/organizers/afterfly/",
             claimTargetPath: "clubs/afterfly",
+            publishStatus: "published",
             indexStatus: "indexed",
             appVisibility: "hidden",
             projectionStatus: "ready",
@@ -364,6 +365,8 @@ function organizerPacketWorkItem(entityId: string, market: string) {
             defaultAppVisibility: "hidden",
             currentDecision: {
               decision: "approve_public",
+              publishStatus: "published",
+              indexStatus: "indexed",
               decidedAt: "2026-06-18",
               appVisibility: "hidden",
             },

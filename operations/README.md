@@ -211,6 +211,14 @@ objects, generated public copy, curation details, local CLI commands, or raw
 provider payloads. Changing this projection changes immutable export content,
 so verification must create and import a new run id.
 
+Publication packets carry three explicit surface controls:
+`publishStatus`, `indexStatus`, and `appVisibility`. A reviewed approval does
+not imply any one of them. Web and app evidence gates are evaluated separately,
+suppression clears every surface, and event publication code must apply the
+organizer's per-surface visibility as a hard ceiling. Compatibility projections
+and CLI actions preserve the selected values rather than recreating the former
+published, indexed, app-hidden approval default.
+
 Orphan-event work items persist a bounded Event Intake candidate under
 `normalizedPayload.intake` with `recordType=orphan_event_candidate`.
 The operations contract requires the event entity kind, the

@@ -216,8 +216,8 @@
       "confirmation": "action-and-target",
       "targetField": "entityId",
       "requestSchema": "contracts/callables/admin_decide_organizer_intake_payload.schema.json",
-      "summary": "Record the manual publication decision for one private organizer candidate.",
-      "example": {"entityId": "example-organizer", "decision": "hold", "appVisibility": "hidden", "checklist": {"identityReviewed": true, "surfaceInventoryReviewed": true, "ownerSafeCopyReviewed": true, "marketScopeReviewed": true, "mediaRightsReviewed": true, "crawlDisabledReviewed": true}, "note": "Fixture publication hold."}
+      "summary": "Approve or hold one organizer record while setting public-page publication, search indexing, and app discovery independently.",
+      "example": {"entityId": "example-organizer", "decision": "hold", "publishStatus": "draft", "indexStatus": "noindex", "appVisibility": "hidden", "checklist": {"identityReviewed": true, "surfaceInventoryReviewed": true, "ownerSafeCopyReviewed": true, "marketScopeReviewed": true, "mediaRightsReviewed": true, "crawlDisabledReviewed": true}, "note": "Fixture publication hold."}
     },
     {
       "actionId": "organizer-intake.decide-event-candidate",

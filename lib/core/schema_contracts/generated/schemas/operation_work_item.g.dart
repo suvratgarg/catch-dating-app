@@ -385,6 +385,7 @@ const schemaOperationWorkItemSchema = <String, Object?>{
                         'required': <Object?>[
                           'canonicalPath',
                           'claimTargetPath',
+                          'publishStatus',
                           'indexStatus',
                           'appVisibility',
                           'projectionStatus',
@@ -413,6 +414,11 @@ const schemaOperationWorkItemSchema = <String, Object?>{
                                 'type': 'null',
                               },
                             ],
+                          },
+                          'publishStatus': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 500,
                           },
                           'indexStatus': <String, Object?>{
                             'type': 'string',
@@ -464,11 +470,23 @@ const schemaOperationWorkItemSchema = <String, Object?>{
                                 'additionalProperties': false,
                                 'required': <Object?>[
                                   'decision',
+                                  'publishStatus',
+                                  'indexStatus',
                                   'decidedAt',
                                   'appVisibility',
                                 ],
                                 'properties': <String, Object?>{
                                   'decision': <String, Object?>{
+                                    'type': 'string',
+                                    'minLength': 1,
+                                    'maxLength': 500,
+                                  },
+                                  'publishStatus': <String, Object?>{
+                                    'type': 'string',
+                                    'minLength': 1,
+                                    'maxLength': 500,
+                                  },
+                                  'indexStatus': <String, Object?>{
                                     'type': 'string',
                                     'minLength': 1,
                                     'maxLength': 500,
@@ -1395,6 +1413,7 @@ const schemaOperationWorkItemSchema = <String, Object?>{
               'required': <Object?>[
                 'canonicalPath',
                 'claimTargetPath',
+                'publishStatus',
                 'indexStatus',
                 'appVisibility',
                 'projectionStatus',
@@ -1423,6 +1442,11 @@ const schemaOperationWorkItemSchema = <String, Object?>{
                       'type': 'null',
                     },
                   ],
+                },
+                'publishStatus': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 500,
                 },
                 'indexStatus': <String, Object?>{
                   'type': 'string',
@@ -1474,11 +1498,23 @@ const schemaOperationWorkItemSchema = <String, Object?>{
                       'additionalProperties': false,
                       'required': <Object?>[
                         'decision',
+                        'publishStatus',
+                        'indexStatus',
                         'decidedAt',
                         'appVisibility',
                       ],
                       'properties': <String, Object?>{
                         'decision': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 500,
+                        },
+                        'publishStatus': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 500,
+                        },
+                        'indexStatus': <String, Object?>{
                           'type': 'string',
                           'minLength': 1,
                           'maxLength': 500,
