@@ -52,6 +52,27 @@ describe("loadOrganizerIntakeBridge", () => {
 
     expect(result.source).toBe("firestore");
     expect(result.diagnosticsBridge).toBeNull();
+    expect(result.availability).toEqual({
+      searchCandidates: true,
+      publicationPackets: false,
+      canonicalItems: false,
+      diagnostics: false,
+      discoveryCandidateCount: 50,
+      runIds: ["mumbai-run", "indore-run"],
+    });
+    expect(result.workbench.summary).toMatchObject({
+      reviewItems: null,
+      evidenceReview: null,
+      promotionReview: null,
+      blocked: null,
+      approvedPublic: null,
+      appDiscoverable: null,
+    });
+    expect(result.workbench.publicationReviewPackets.summary).toMatchObject({
+      packets: null,
+      readyForManualPublicationReview: null,
+      blockedByData: null,
+    });
     expect(result.workbench.searchCandidates.summary.candidates).toBe(50);
     expect(new Set(
       result.workbench.searchCandidates.candidates.map((candidate) =>

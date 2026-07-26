@@ -59,6 +59,7 @@ function OrganizerTaskWorkbench({
   onShowDiagnostics: () => void;
 }) {
   const {
+    availability,
     bridge,
     diagnosticsBridge,
     decisionInFlight,
@@ -87,6 +88,8 @@ function OrganizerTaskWorkbench({
   const [city, setCity] = useState("all");
   const [priority, setPriority] = useState("all");
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
+  const livePublicationUnavailable =
+    controller.source === "firestore" && !availability.canonicalItems;
   const duplicateCandidateIds = useMemo(() => new Set(
     bridge.searchCandidates.duplicateKeys.flatMap((entry) => entry.candidateIds)
   ), [bridge.searchCandidates.duplicateKeys]);
@@ -122,6 +125,7 @@ function OrganizerTaskWorkbench({
     )).sort().map((label) => ({value: label, label})),
   ], [bridge.items, bridge.searchCandidates.candidates]);
   const stagedEntries = useMemo<OrganizerWorkbenchEntry[]>(() => {
+    if (activeStage !== "incoming" && livePublicationUnavailable) return [];
     const entityEntries = stageItems(
       bridge.items,
       publicationPacketByEntity,
@@ -149,6 +153,7 @@ function OrganizerTaskWorkbench({
     activeStage,
     bridge.items,
     bridge.searchCandidates.candidates,
+    livePublicationUnavailable,
     localOrganizerDrafts,
     publicationPacketByEntity,
   ]);
@@ -265,15 +270,44 @@ function OrganizerTaskWorkbench({
               Discovery plan
             </AdminButton>
           </>
+        ) : controller.source === "firestore" ? (
+          <AdminWorkbenchNote>
+            Full pipeline diagnostics are available only in sample and
+            Storybook coverage.
+          </AdminWorkbenchNote>
         ) : null}
       </AdminIntakeTaskToolbar>
       <AdminIntakeStageRail<OrganizerWorkbenchStage>
         ariaLabel="Organizer intake stages"
         options={[
           {id: "incoming", label: "Incoming", meta: `${stageCounts.incoming} new leads`},
-          {id: "verify", label: "Verify", meta: `${stageCounts.verify} need review`},
-          {id: "resolve", label: "Resolve", meta: `${stageCounts.resolve} need attention`},
-          {id: "ready", label: "Ready", meta: `${stageCounts.ready} handoffs`},
+          {
+            id: "verify",
+            label: "Verify",
+            meta: stageMeta(
+              stageCounts.verify,
+              "need review",
+              livePublicationUnavailable
+            ),
+          },
+          {
+            id: "resolve",
+            label: "Resolve",
+            meta: stageMeta(
+              stageCounts.resolve,
+              "need attention",
+              livePublicationUnavailable
+            ),
+          },
+          {
+            id: "ready",
+            label: "Ready",
+            meta: stageMeta(
+              stageCounts.ready,
+              "handoffs",
+              livePublicationUnavailable
+            ),
+          },
         ]}
         value={activeStage}
         onChange={setStage}
@@ -517,10 +551,24 @@ function OrganizerTaskWorkbench({
             `Search candidate · ${candidateMarketLabel(candidate)} · observed ${candidate.observedAt}`,
           title: candidate.title,
         } : null}
-        emptyDetail="Select an organizer lead to review evidence and handoff impact."
-        emptyQueue="No organizer leads match this stage and filter set."
+        emptyDetail={
+          activeStage !== "incoming" && livePublicationUnavailable ?
+            publicationUnavailableMessage(availability) :
+            "Select an organizer lead to review evidence and handoff impact."
+        }
+        emptyQueue={
+          activeStage !== "incoming" && livePublicationUnavailable ?
+            publicationUnavailableMessage(availability) :
+            "No organizer leads match this stage and filter set."
+        }
         filters={[
-          {id: "all", label: `All ${filteredEntries.length}`, selected: queueFilter === "all"},
+          {
+            id: "all",
+            label: activeStage !== "incoming" && livePublicationUnavailable ?
+              "All —" :
+              `All ${filteredEntries.length}`,
+            selected: queueFilter === "all",
+          },
           {id: "attention", label: "Needs attention", selected: queueFilter === "attention"},
           {id: "ready", label: "Ready", selected: queueFilter === "ready"},
         ]}
@@ -538,7 +586,11 @@ function OrganizerTaskWorkbench({
                 localOrganizerDrafts[entry.candidate.candidateId]
               )
             ))}
-        queueMeta={`${filteredEntries.length} item${filteredEntries.length === 1 ? "" : "s"}`}
+        queueMeta={
+          activeStage !== "incoming" && livePublicationUnavailable ?
+            "Publication review unavailable" :
+            `${filteredEntries.length} item${filteredEntries.length === 1 ? "" : "s"}`
+        }
         queueTitle={stageTitle(activeStage)}
         selectedId={selectedEntryId}
         onFilterChange={(filterId) => setQueueFilter(filterId as OrganizerQueueFilter)}
@@ -546,6 +598,27 @@ function OrganizerTaskWorkbench({
       />
     </>
   );
+}
+
+function stageMeta(
+  count: number,
+  label: string,
+  unavailable: boolean
+) {
+  return unavailable ? "— unavailable" : `${count} ${label}`;
+}
+
+function publicationUnavailableMessage(
+  availability: OrganizerIntakeController["availability"]
+) {
+  const runLabel = availability.runIds.length === 1 ?
+    `run ${availability.runIds[0]}` :
+    availability.runIds.length > 1 ?
+      `runs ${availability.runIds.join(", ")}` :
+      "the current live run";
+  return "Organizer publication review is not available from the live " +
+    `projection yet — ${availability.discoveryCandidateCount} discovery ` +
+    `candidates loaded from ${runLabel}.`;
 }
 
 function stageItems(

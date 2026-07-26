@@ -19,6 +19,18 @@ function OrganizerHarness() {
   return <OrganizerIntakeWorkspace controller={controller} />;
 }
 
+function LiveOrganizerHarness() {
+  const controller = useOrganizerIntakeController({
+    onError: vi.fn(),
+    onNotice: vi.fn(),
+  });
+  return (
+    <OrganizerIntakeWorkspace
+      controller={{...controller, source: "firestore"}}
+    />
+  );
+}
+
 function EventHarness() {
   const controller = useEventIntakeController({
     onError: vi.fn(),
@@ -95,6 +107,27 @@ describe("Intake task-first defaults", () => {
     expect(screen.getByRole("button", {
       name: "Attach to existing organizer",
     }).hasAttribute("disabled")).toBe(false);
+  });
+
+  it("marks unavailable live publication stages instead of reporting zero", async () => {
+    const {wrapper} = createQueryHarness();
+    render(<LiveOrganizerHarness />, {wrapper});
+
+    const stages = await screen.findByRole("navigation", {
+      name: "Organizer intake stages",
+    });
+    expect(stages.textContent).toContain("Verify— unavailable");
+    expect(stages.textContent).toContain("Resolve— unavailable");
+    expect(stages.textContent).toContain("Ready— unavailable");
+
+    fireEvent.click(screen.getByRole("button", {name: /Verify/u}));
+    expect(screen.getAllByText(
+      /Organizer publication review is not available from the live projection yet/u
+    )).toHaveLength(2);
+    expect(screen.getAllByText(/2 discovery candidates loaded from runs/u))
+      .toHaveLength(2);
+    expect(screen.getByText("Publication review unavailable")).toBeTruthy();
+    expect(screen.getByRole("button", {name: "All —"})).toBeTruthy();
   });
 
   it("keeps event diagnostics behind the candidate review queue", async () => {

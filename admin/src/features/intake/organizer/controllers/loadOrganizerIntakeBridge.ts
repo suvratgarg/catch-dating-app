@@ -10,19 +10,68 @@ import type {
 } from "../../../../shared/operations/operationsTypes";
 import type * as Intake from "../types/organizerIntakeTypes";
 
-export type OrganizerIntakeWorkbenchBridge = Pick<
-  Intake.OrganizerIntakeBridge,
-  "schemaVersion" |
-  "summary" |
-  "publicationReviewPackets" |
-  "searchCandidates" |
-  "items"
->;
+type NullableLiveSummaryFields =
+  | "reviewItems"
+  | "evidenceReview"
+  | "promotionReview"
+  | "blocked"
+  | "approvedPublic"
+  | "appDiscoverable";
+
+export type OrganizerIntakeWorkbenchBridge = Omit<
+  Pick<
+    Intake.OrganizerIntakeBridge,
+    | "schemaVersion"
+    | "summary"
+    | "publicationReviewPackets"
+    | "searchCandidates"
+    | "items"
+  >,
+  "summary" | "publicationReviewPackets"
+> & {
+  summary: Omit<
+    Intake.OrganizerIntakeSummary,
+    NullableLiveSummaryFields
+  > & Record<NullableLiveSummaryFields, number | null>;
+  publicationReviewPackets: OrganizerWorkbenchPublicationReviewPackets;
+};
+
+type NullablePublicationPacketSummaryFields =
+  | "packets"
+  | "readyForManualPublicationReview"
+  | "blockedByData"
+  | "published"
+  | "suppressed"
+  | "held"
+  | "evidenceRecords"
+  | "manualReportsWithoutArtifacts"
+  | "unresolvedEvidenceRefs"
+  | "missingSurfaceEvidence";
+
+type OrganizerWorkbenchPublicationReviewPackets = Omit<
+  Intake.OrganizerPublicationReviewPackets,
+  "summary"
+> & {
+  summary: Omit<
+    Intake.OrganizerPublicationReviewPackets["summary"],
+    NullablePublicationPacketSummaryFields
+  > & Record<NullablePublicationPacketSummaryFields, number | null>;
+};
+
+export interface OrganizerIntakeAvailability {
+  searchCandidates: boolean;
+  publicationPackets: boolean;
+  canonicalItems: boolean;
+  diagnostics: boolean;
+  discoveryCandidateCount: number;
+  runIds: string[];
+}
 
 export interface OrganizerIntakeLoadResult {
   source: "firestore" | "sample";
   workbench: OrganizerIntakeWorkbenchBridge;
   diagnosticsBridge: Intake.OrganizerIntakeBridge | null;
+  availability: OrganizerIntakeAvailability;
 }
 
 export async function loadOrganizerIntakeBridge():
@@ -43,9 +92,15 @@ Promise<OrganizerIntakeLoadResult> {
     workItems,
     draftLinks
   );
+  const diagnosticsBridge = null;
   return {
     source: inventory.source === "firestore" ? "firestore" : "sample",
-    diagnosticsBridge: null,
+    diagnosticsBridge,
+    availability: organizerAvailabilityFromOperations(
+      runs,
+      workItems,
+      diagnosticsBridge
+    ),
     workbench,
   };
 }
@@ -65,13 +120,12 @@ export function organizerWorkbenchFromOperations(
   return {
     schemaVersion: 1,
     summary: {
-      reviewItems: 0,
-      evidenceReview: 0,
-      promotionReview: 0,
-      blocked: workItems.filter((item) =>
-        item.blockerCodes.length > 0).length,
-      approvedPublic: 0,
-      appDiscoverable: 0,
+      reviewItems: null,
+      evidenceReview: null,
+      promotionReview: null,
+      blocked: null,
+      approvedPublic: null,
+      appDiscoverable: null,
       searchResultCandidates: candidates.length,
       duplicateSearchResultKeys: duplicateKeys.length,
       matchedSearchResultCandidates: candidates.filter((candidate) =>
@@ -106,6 +160,32 @@ export function organizerWorkbenchFromOperations(
       },
     },
     items: [],
+  };
+}
+
+function organizerAvailabilityFromOperations(
+  runs: OperationRun[],
+  workItems: OperationWorkItem[],
+  diagnosticsBridge: Intake.OrganizerIntakeBridge | null
+): OrganizerIntakeAvailability {
+  const recordTypes = new Set(workItems.flatMap((item) => {
+    const intake = recordValue(item.normalizedPayload.intake);
+    return typeof intake?.recordType === "string" ? [intake.recordType] : [];
+  }));
+  const discoveryCandidateCount = workItems.filter((item) => {
+    const intake = recordValue(item.normalizedPayload.intake);
+    return intake?.recordType === "organizer_search_candidate";
+  }).length;
+  const hasPublicationPackets =
+    recordTypes.has("organizer_publication_packet");
+  return {
+    searchCandidates:
+      recordTypes.has("organizer_search_candidate"),
+    publicationPackets: hasPublicationPackets,
+    canonicalItems: hasPublicationPackets,
+    diagnostics: diagnosticsBridge !== null,
+    discoveryCandidateCount,
+    runIds: runs.map((run) => run.runId),
   };
 }
 
@@ -243,20 +323,20 @@ function duplicateCandidateKeys(
 }
 
 function emptyPublicationPackets():
-Intake.OrganizerPublicationReviewPackets {
+OrganizerWorkbenchPublicationReviewPackets {
   return {
     schemaVersion: 1,
     summary: {
-      packets: 0,
-      readyForManualPublicationReview: 0,
-      blockedByData: 0,
-      published: 0,
-      suppressed: 0,
-      held: 0,
-      evidenceRecords: 0,
-      manualReportsWithoutArtifacts: 0,
-      unresolvedEvidenceRefs: 0,
-      missingSurfaceEvidence: 0,
+      packets: null,
+      readyForManualPublicationReview: null,
+      blockedByData: null,
+      published: null,
+      suppressed: null,
+      held: null,
+      evidenceRecords: null,
+      manualReportsWithoutArtifacts: null,
+      unresolvedEvidenceRefs: null,
+      missingSurfaceEvidence: null,
       packetsByStatus: {},
       packetsByTaskType: {},
     },

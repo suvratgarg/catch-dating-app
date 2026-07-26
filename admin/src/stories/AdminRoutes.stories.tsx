@@ -387,6 +387,14 @@ const organizerIntakeBridge = organizerWorkbenchFromOperations(
   organizerPreviewWorkItems
 );
 const organizerIntakeController: OrganizerIntakeController = {
+  availability: {
+    searchCandidates: true,
+    publicationPackets: false,
+    canonicalItems: false,
+    diagnostics: false,
+    discoveryCandidateCount: organizerPreviewWorkItems.length,
+    runIds: organizerSampleOperations.runs.map((run) => run.runId),
+  },
   bridge: organizerIntakeBridge,
   diagnosticsBridge: null,
   source: "sample",
@@ -447,7 +455,7 @@ const organizerIntakeController: OrganizerIntakeController = {
     },
     {
       label: "Review items",
-      value: organizerIntakeBridge.summary.reviewItems,
+      value: organizerIntakeBridge.summary.reviewItems ?? "—",
     },
     {
       label: "Policy gaps",
