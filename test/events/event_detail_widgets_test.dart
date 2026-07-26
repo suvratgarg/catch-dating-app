@@ -1497,6 +1497,9 @@ void main() {
         signedInUid: null,
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          fetchClubProvider(event.clubId).overrideWith(
+            (ref) async => buildClub(id: event.clubId),
+          ),
           eventDetailViewModelProvider(event.id).overrideWith(
             (ref) => AsyncData(
               EventDetailViewModel(
@@ -1563,6 +1566,9 @@ void main() {
             overrides: [
               uidProvider.overrideWith((ref) => Stream.value('runner-1')),
               clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+              fetchClubProvider(event.clubId).overrideWith(
+                (ref) async => buildClub(id: event.clubId),
+              ),
               eventDetailViewModelProvider(event.id).overrideWith(
                 (ref) => AsyncData(
                   EventDetailViewModel(
@@ -1638,6 +1644,9 @@ void main() {
         ),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          fetchClubProvider('club-1').overrideWith(
+            (ref) async => buildClub(),
+          ),
           eventDetailViewModelProvider('event-1').overrideWith(
             (ref) => AsyncData(
               EventDetailViewModel(
@@ -1677,6 +1686,9 @@ void main() {
         ),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          fetchClubProvider('club-1').overrideWith(
+            (ref) async => buildClub(),
+          ),
           eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
           eventDetailViewModelProvider('event-1').overrideWith(
             (ref) => AsyncData(
