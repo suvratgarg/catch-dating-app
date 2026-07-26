@@ -555,8 +555,689 @@ export const operationWorkItemSchema: Record<string, unknown> = {
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object",
+            "required": [
+              "intake"
+            ],
+            "properties": {
+              "intake": {
+                "type": "object",
+                "required": [
+                  "recordType"
+                ],
+                "properties": {
+                  "recordType": {
+                    "const": "organizer_publication_packet"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "normalizedPayload": {
+            "properties": {
+              "intake": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "recordType",
+                  "packet"
+                ],
+                "properties": {
+                  "recordType": {
+                    "const": "organizer_publication_packet"
+                  },
+                  "packet": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "packetId",
+                      "entityId",
+                      "canonicalHostId",
+                      "displayName",
+                      "status",
+                      "priority",
+                      "markets",
+                      "blockers",
+                      "dataBlockers",
+                      "evidenceBlockers",
+                      "approvalChecklist",
+                      "evidenceSummary",
+                      "publicPresence",
+                      "adminDecision",
+                      "nextActions"
+                    ],
+                    "properties": {
+                      "packetId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "entityId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "canonicalHostId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "displayName": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "status": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "priority": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "markets": {
+                        "type": "array",
+                        "maxItems": 8,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "slug",
+                            "displayName"
+                          ],
+                          "properties": {
+                            "slug": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 500
+                            },
+                            "displayName": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 500
+                            }
+                          }
+                        }
+                      },
+                      "blockers": {
+                        "type": "array",
+                        "maxItems": 40,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 500
+                        }
+                      },
+                      "dataBlockers": {
+                        "type": "array",
+                        "maxItems": 40,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 500
+                        }
+                      },
+                      "evidenceBlockers": {
+                        "type": "array",
+                        "maxItems": 40,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 500
+                        }
+                      },
+                      "approvalChecklist": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "crawlDisabledReviewed",
+                          "identityReviewed",
+                          "marketScopeReviewed",
+                          "mediaRightsReviewed",
+                          "ownerSafeCopyReviewed",
+                          "surfaceInventoryReviewed"
+                        ],
+                        "properties": {
+                          "crawlDisabledReviewed": {
+                            "type": "boolean"
+                          },
+                          "identityReviewed": {
+                            "type": "boolean"
+                          },
+                          "marketScopeReviewed": {
+                            "type": "boolean"
+                          },
+                          "mediaRightsReviewed": {
+                            "type": "boolean"
+                          },
+                          "ownerSafeCopyReviewed": {
+                            "type": "boolean"
+                          },
+                          "surfaceInventoryReviewed": {
+                            "type": "boolean"
+                          }
+                        }
+                      },
+                      "evidenceSummary": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "records",
+                          "manualReportsWithoutArtifacts",
+                          "unresolvedLocalRefs",
+                          "missingSurfaceEvidence",
+                          "rawProviderArtifactRefs",
+                          "firestoreForbiddenArtifactRefs",
+                          "riskFlags"
+                        ],
+                        "properties": {
+                          "records": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "manualReportsWithoutArtifacts": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "unresolvedLocalRefs": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "missingSurfaceEvidence": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "rawProviderArtifactRefs": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "firestoreForbiddenArtifactRefs": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "riskFlags": {
+                            "type": "array",
+                            "maxItems": 12,
+                            "items": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 500
+                            }
+                          }
+                        }
+                      },
+                      "publicPresence": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "canonicalPath",
+                          "claimTargetPath",
+                          "indexStatus",
+                          "appVisibility",
+                          "projectionStatus"
+                        ],
+                        "properties": {
+                          "canonicalPath": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 500
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "claimTargetPath": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 500
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "indexStatus": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                          },
+                          "appVisibility": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                          },
+                          "projectionStatus": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                          }
+                        }
+                      },
+                      "adminDecision": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "allowedDecisions",
+                          "defaultAppVisibility",
+                          "currentDecision"
+                        ],
+                        "properties": {
+                          "allowedDecisions": {
+                            "type": "array",
+                            "maxItems": 40,
+                            "items": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 500
+                            }
+                          },
+                          "defaultAppVisibility": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                          },
+                          "currentDecision": {
+                            "anyOf": [
+                              {
+                                "type": "null"
+                              },
+                              {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "required": [
+                                  "decision",
+                                  "decidedAt",
+                                  "appVisibility"
+                                ],
+                                "properties": {
+                                  "decision": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 500
+                                  },
+                                  "decidedAt": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 500
+                                  },
+                                  "appVisibility": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 500
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "nextActions": {
+                        "type": "array",
+                        "maxItems": 12,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 500
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   ],
+  "definitions": {
+    "boundedString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "boundedStringArray": {
+      "type": "array",
+      "maxItems": 40,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500
+      }
+    },
+    "organizerPublicationPacketIntake": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recordType",
+        "packet"
+      ],
+      "properties": {
+        "recordType": {
+          "const": "organizer_publication_packet"
+        },
+        "packet": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "packetId",
+            "entityId",
+            "canonicalHostId",
+            "displayName",
+            "status",
+            "priority",
+            "markets",
+            "blockers",
+            "dataBlockers",
+            "evidenceBlockers",
+            "approvalChecklist",
+            "evidenceSummary",
+            "publicPresence",
+            "adminDecision",
+            "nextActions"
+          ],
+          "properties": {
+            "packetId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "entityId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "canonicalHostId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "displayName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "status": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "priority": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "markets": {
+              "type": "array",
+              "maxItems": 8,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "slug",
+                  "displayName"
+                ],
+                "properties": {
+                  "slug": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "displayName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  }
+                }
+              }
+            },
+            "blockers": {
+              "type": "array",
+              "maxItems": 40,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              }
+            },
+            "dataBlockers": {
+              "type": "array",
+              "maxItems": 40,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              }
+            },
+            "evidenceBlockers": {
+              "type": "array",
+              "maxItems": 40,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              }
+            },
+            "approvalChecklist": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "crawlDisabledReviewed",
+                "identityReviewed",
+                "marketScopeReviewed",
+                "mediaRightsReviewed",
+                "ownerSafeCopyReviewed",
+                "surfaceInventoryReviewed"
+              ],
+              "properties": {
+                "crawlDisabledReviewed": {
+                  "type": "boolean"
+                },
+                "identityReviewed": {
+                  "type": "boolean"
+                },
+                "marketScopeReviewed": {
+                  "type": "boolean"
+                },
+                "mediaRightsReviewed": {
+                  "type": "boolean"
+                },
+                "ownerSafeCopyReviewed": {
+                  "type": "boolean"
+                },
+                "surfaceInventoryReviewed": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "evidenceSummary": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "records",
+                "manualReportsWithoutArtifacts",
+                "unresolvedLocalRefs",
+                "missingSurfaceEvidence",
+                "rawProviderArtifactRefs",
+                "firestoreForbiddenArtifactRefs",
+                "riskFlags"
+              ],
+              "properties": {
+                "records": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "manualReportsWithoutArtifacts": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "unresolvedLocalRefs": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "missingSurfaceEvidence": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "rawProviderArtifactRefs": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "firestoreForbiddenArtifactRefs": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "riskFlags": {
+                  "type": "array",
+                  "maxItems": 12,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  }
+                }
+              }
+            },
+            "publicPresence": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "canonicalPath",
+                "claimTargetPath",
+                "indexStatus",
+                "appVisibility",
+                "projectionStatus"
+              ],
+              "properties": {
+                "canonicalPath": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 500
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "claimTargetPath": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 500
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "indexStatus": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "appVisibility": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "projectionStatus": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                }
+              }
+            },
+            "adminDecision": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "allowedDecisions",
+                "defaultAppVisibility",
+                "currentDecision"
+              ],
+              "properties": {
+                "allowedDecisions": {
+                  "type": "array",
+                  "maxItems": 40,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  }
+                },
+                "defaultAppVisibility": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "currentDecision": {
+                  "anyOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "decision",
+                        "decidedAt",
+                        "appVisibility"
+                      ],
+                      "properties": {
+                        "decision": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 500
+                        },
+                        "decidedAt": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 500
+                        },
+                        "appVisibility": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 500
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "nextActions": {
+              "type": "array",
+              "maxItems": 12,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   "required": [
     "schemaVersion",
     "workItemId",

@@ -158,7 +158,688 @@ const schemaOperationWorkItemSchema = <String, Object?>{
         },
       },
     },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'normalizedPayload': <String, Object?>{
+            'type': 'object',
+            'required': <Object?>[
+              'intake',
+            ],
+            'properties': <String, Object?>{
+              'intake': <String, Object?>{
+                'type': 'object',
+                'required': <Object?>[
+                  'recordType',
+                ],
+                'properties': <String, Object?>{
+                  'recordType': <String, Object?>{
+                    'const': 'organizer_publication_packet',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'properties': <String, Object?>{
+          'normalizedPayload': <String, Object?>{
+            'properties': <String, Object?>{
+              'intake': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'recordType',
+                  'packet',
+                ],
+                'properties': <String, Object?>{
+                  'recordType': <String, Object?>{
+                    'const': 'organizer_publication_packet',
+                  },
+                  'packet': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'packetId',
+                      'entityId',
+                      'canonicalHostId',
+                      'displayName',
+                      'status',
+                      'priority',
+                      'markets',
+                      'blockers',
+                      'dataBlockers',
+                      'evidenceBlockers',
+                      'approvalChecklist',
+                      'evidenceSummary',
+                      'publicPresence',
+                      'adminDecision',
+                      'nextActions',
+                    ],
+                    'properties': <String, Object?>{
+                      'packetId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'entityId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'canonicalHostId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'displayName': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'status': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'priority': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'markets': <String, Object?>{
+                        'type': 'array',
+                        'maxItems': 8,
+                        'items': <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'slug',
+                            'displayName',
+                          ],
+                          'properties': <String, Object?>{
+                            'slug': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 500,
+                            },
+                            'displayName': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 500,
+                            },
+                          },
+                        },
+                      },
+                      'blockers': <String, Object?>{
+                        'type': 'array',
+                        'maxItems': 40,
+                        'items': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 500,
+                        },
+                      },
+                      'dataBlockers': <String, Object?>{
+                        'type': 'array',
+                        'maxItems': 40,
+                        'items': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 500,
+                        },
+                      },
+                      'evidenceBlockers': <String, Object?>{
+                        'type': 'array',
+                        'maxItems': 40,
+                        'items': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 500,
+                        },
+                      },
+                      'approvalChecklist': <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'crawlDisabledReviewed',
+                          'identityReviewed',
+                          'marketScopeReviewed',
+                          'mediaRightsReviewed',
+                          'ownerSafeCopyReviewed',
+                          'surfaceInventoryReviewed',
+                        ],
+                        'properties': <String, Object?>{
+                          'crawlDisabledReviewed': <String, Object?>{
+                            'type': 'boolean',
+                          },
+                          'identityReviewed': <String, Object?>{
+                            'type': 'boolean',
+                          },
+                          'marketScopeReviewed': <String, Object?>{
+                            'type': 'boolean',
+                          },
+                          'mediaRightsReviewed': <String, Object?>{
+                            'type': 'boolean',
+                          },
+                          'ownerSafeCopyReviewed': <String, Object?>{
+                            'type': 'boolean',
+                          },
+                          'surfaceInventoryReviewed': <String, Object?>{
+                            'type': 'boolean',
+                          },
+                        },
+                      },
+                      'evidenceSummary': <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'records',
+                          'manualReportsWithoutArtifacts',
+                          'unresolvedLocalRefs',
+                          'missingSurfaceEvidence',
+                          'rawProviderArtifactRefs',
+                          'firestoreForbiddenArtifactRefs',
+                          'riskFlags',
+                        ],
+                        'properties': <String, Object?>{
+                          'records': <String, Object?>{
+                            'type': 'integer',
+                            'minimum': 0,
+                          },
+                          'manualReportsWithoutArtifacts': <String, Object?>{
+                            'type': 'integer',
+                            'minimum': 0,
+                          },
+                          'unresolvedLocalRefs': <String, Object?>{
+                            'type': 'integer',
+                            'minimum': 0,
+                          },
+                          'missingSurfaceEvidence': <String, Object?>{
+                            'type': 'integer',
+                            'minimum': 0,
+                          },
+                          'rawProviderArtifactRefs': <String, Object?>{
+                            'type': 'integer',
+                            'minimum': 0,
+                          },
+                          'firestoreForbiddenArtifactRefs': <String, Object?>{
+                            'type': 'integer',
+                            'minimum': 0,
+                          },
+                          'riskFlags': <String, Object?>{
+                            'type': 'array',
+                            'maxItems': 12,
+                            'items': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 500,
+                            },
+                          },
+                        },
+                      },
+                      'publicPresence': <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'canonicalPath',
+                          'claimTargetPath',
+                          'indexStatus',
+                          'appVisibility',
+                          'projectionStatus',
+                        ],
+                        'properties': <String, Object?>{
+                          'canonicalPath': <String, Object?>{
+                            'anyOf': <Object?>[
+                              <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 500,
+                              },
+                              <String, Object?>{
+                                'type': 'null',
+                              },
+                            ],
+                          },
+                          'claimTargetPath': <String, Object?>{
+                            'anyOf': <Object?>[
+                              <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 500,
+                              },
+                              <String, Object?>{
+                                'type': 'null',
+                              },
+                            ],
+                          },
+                          'indexStatus': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 500,
+                          },
+                          'appVisibility': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 500,
+                          },
+                          'projectionStatus': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 500,
+                          },
+                        },
+                      },
+                      'adminDecision': <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'allowedDecisions',
+                          'defaultAppVisibility',
+                          'currentDecision',
+                        ],
+                        'properties': <String, Object?>{
+                          'allowedDecisions': <String, Object?>{
+                            'type': 'array',
+                            'maxItems': 40,
+                            'items': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 500,
+                            },
+                          },
+                          'defaultAppVisibility': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 500,
+                          },
+                          'currentDecision': <String, Object?>{
+                            'anyOf': <Object?>[
+                              <String, Object?>{
+                                'type': 'null',
+                              },
+                              <String, Object?>{
+                                'type': 'object',
+                                'additionalProperties': false,
+                                'required': <Object?>[
+                                  'decision',
+                                  'decidedAt',
+                                  'appVisibility',
+                                ],
+                                'properties': <String, Object?>{
+                                  'decision': <String, Object?>{
+                                    'type': 'string',
+                                    'minLength': 1,
+                                    'maxLength': 500,
+                                  },
+                                  'decidedAt': <String, Object?>{
+                                    'type': 'string',
+                                    'minLength': 1,
+                                    'maxLength': 500,
+                                  },
+                                  'appVisibility': <String, Object?>{
+                                    'type': 'string',
+                                    'minLength': 1,
+                                    'maxLength': 500,
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                      },
+                      'nextActions': <String, Object?>{
+                        'type': 'array',
+                        'maxItems': 12,
+                        'items': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 500,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   ],
+  'definitions': <String, Object?>{
+    'boundedString': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 500,
+    },
+    'boundedStringArray': <String, Object?>{
+      'type': 'array',
+      'maxItems': 40,
+      'items': <String, Object?>{
+        'type': 'string',
+        'minLength': 1,
+        'maxLength': 500,
+      },
+    },
+    'organizerPublicationPacketIntake': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'recordType',
+        'packet',
+      ],
+      'properties': <String, Object?>{
+        'recordType': <String, Object?>{
+          'const': 'organizer_publication_packet',
+        },
+        'packet': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'packetId',
+            'entityId',
+            'canonicalHostId',
+            'displayName',
+            'status',
+            'priority',
+            'markets',
+            'blockers',
+            'dataBlockers',
+            'evidenceBlockers',
+            'approvalChecklist',
+            'evidenceSummary',
+            'publicPresence',
+            'adminDecision',
+            'nextActions',
+          ],
+          'properties': <String, Object?>{
+            'packetId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'entityId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'canonicalHostId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'displayName': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'status': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'priority': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'markets': <String, Object?>{
+              'type': 'array',
+              'maxItems': 8,
+              'items': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'slug',
+                  'displayName',
+                ],
+                'properties': <String, Object?>{
+                  'slug': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 500,
+                  },
+                  'displayName': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 500,
+                  },
+                },
+              },
+            },
+            'blockers': <String, Object?>{
+              'type': 'array',
+              'maxItems': 40,
+              'items': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 500,
+              },
+            },
+            'dataBlockers': <String, Object?>{
+              'type': 'array',
+              'maxItems': 40,
+              'items': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 500,
+              },
+            },
+            'evidenceBlockers': <String, Object?>{
+              'type': 'array',
+              'maxItems': 40,
+              'items': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 500,
+              },
+            },
+            'approvalChecklist': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'crawlDisabledReviewed',
+                'identityReviewed',
+                'marketScopeReviewed',
+                'mediaRightsReviewed',
+                'ownerSafeCopyReviewed',
+                'surfaceInventoryReviewed',
+              ],
+              'properties': <String, Object?>{
+                'crawlDisabledReviewed': <String, Object?>{
+                  'type': 'boolean',
+                },
+                'identityReviewed': <String, Object?>{
+                  'type': 'boolean',
+                },
+                'marketScopeReviewed': <String, Object?>{
+                  'type': 'boolean',
+                },
+                'mediaRightsReviewed': <String, Object?>{
+                  'type': 'boolean',
+                },
+                'ownerSafeCopyReviewed': <String, Object?>{
+                  'type': 'boolean',
+                },
+                'surfaceInventoryReviewed': <String, Object?>{
+                  'type': 'boolean',
+                },
+              },
+            },
+            'evidenceSummary': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'records',
+                'manualReportsWithoutArtifacts',
+                'unresolvedLocalRefs',
+                'missingSurfaceEvidence',
+                'rawProviderArtifactRefs',
+                'firestoreForbiddenArtifactRefs',
+                'riskFlags',
+              ],
+              'properties': <String, Object?>{
+                'records': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                },
+                'manualReportsWithoutArtifacts': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                },
+                'unresolvedLocalRefs': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                },
+                'missingSurfaceEvidence': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                },
+                'rawProviderArtifactRefs': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                },
+                'firestoreForbiddenArtifactRefs': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                },
+                'riskFlags': <String, Object?>{
+                  'type': 'array',
+                  'maxItems': 12,
+                  'items': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 500,
+                  },
+                },
+              },
+            },
+            'publicPresence': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'canonicalPath',
+                'claimTargetPath',
+                'indexStatus',
+                'appVisibility',
+                'projectionStatus',
+              ],
+              'properties': <String, Object?>{
+                'canonicalPath': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 500,
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+                'claimTargetPath': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 500,
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+                'indexStatus': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 500,
+                },
+                'appVisibility': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 500,
+                },
+                'projectionStatus': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 500,
+                },
+              },
+            },
+            'adminDecision': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'allowedDecisions',
+                'defaultAppVisibility',
+                'currentDecision',
+              ],
+              'properties': <String, Object?>{
+                'allowedDecisions': <String, Object?>{
+                  'type': 'array',
+                  'maxItems': 40,
+                  'items': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 500,
+                  },
+                },
+                'defaultAppVisibility': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 500,
+                },
+                'currentDecision': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                    <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'decision',
+                        'decidedAt',
+                        'appVisibility',
+                      ],
+                      'properties': <String, Object?>{
+                        'decision': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 500,
+                        },
+                        'decidedAt': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 500,
+                        },
+                        'appVisibility': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 500,
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+            'nextActions': <String, Object?>{
+              'type': 'array',
+              'maxItems': 12,
+              'items': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 500,
+              },
+            },
+          },
+        },
+      },
+    },
+  },
   'required': <Object?>[
     'schemaVersion',
     'workItemId',

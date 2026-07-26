@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.3.1
-updated: 2026-07-24
+version: 1.4.0
+updated: 2026-07-26
 owner: operations_platform
 status: active
 ---
@@ -222,9 +222,16 @@ Organizer discovery can run with `--intake-scope organizer`. This scope does
 not require or project an Event Intake bridge, so each launch market can
 produce an immutable organizer queue independently. Normalized organizer
 candidate fields are carried in the work item's bounded Admin projection.
-Supply Intake `0.1.1` also emits content-hash-bound field provenance for each
+Supply Intake `0.1.2` also emits content-hash-bound field provenance for each
 candidate value that can participate in the organizer-draft handoff; private
-raw-provider payloads remain excluded. The live Organizer Intake tab
+raw-provider payloads remain excluded. Organizer publication-packet work items
+also carry a schema-validated Admin projection with only the identity, markets,
+blockers, six-check approval checklist, aggregate evidence counts, public-state
+summary, bounded decision state, and next actions needed by the workbench.
+Markets are capped at eight, risk flags and next actions at twelve, and every
+string is truncated. Evidence-record objects, public copy, curation details,
+local CLI commands, and raw provider payloads remain outside the canonical
+Firestore work item. The live Organizer Intake tab
 selects the newest completed organizer run per launch market and ignores
 historical runs rather than merging duplicate snapshots.
 

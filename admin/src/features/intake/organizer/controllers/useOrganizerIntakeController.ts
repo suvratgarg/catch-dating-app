@@ -193,18 +193,18 @@ export function useOrganizerIntakeController({
     ), [bridge.publicationReviewPackets.packets]);
 
   const metrics = useMemo(() => [
-    {label: "Host entities", value: bridge.summary.canonicalHostEntities ?? 0},
-    {label: "Evidence refs", value: bridge.summary.canonicalEvidenceRecords ?? 0},
-    {label: "Review packets", value: bridge.summary.publicationReviewPackets ?? 0},
-    {label: "Would publish", value: bridge.summary.publicationImpactWouldPublish ?? 0},
-    {label: "Would index", value: bridge.summary.publicationImpactWouldIndex ?? 0},
-    {label: "Review items", value: bridge.summary.reviewItems},
-    {label: "Promotion", value: bridge.summary.promotionReview},
-    {label: "Evidence", value: bridge.summary.evidenceReview},
-    {label: "Blocked", value: bridge.summary.blocked},
-    {label: "Public", value: bridge.summary.approvedPublic},
-    {label: "App visible", value: bridge.summary.appDiscoverable},
-    {label: "Claim writes", value: bridge.summary.claimTargetSyncPreviewWrites ?? 0},
+    {label: "Host entities", value: metricValue(bridge.summary.canonicalHostEntities)},
+    {label: "Evidence refs", value: metricValue(bridge.summary.canonicalEvidenceRecords)},
+    {label: "Review packets", value: metricValue(bridge.summary.publicationReviewPackets)},
+    {label: "Would publish", value: metricValue(bridge.summary.publicationImpactWouldPublish)},
+    {label: "Would index", value: metricValue(bridge.summary.publicationImpactWouldIndex)},
+    {label: "Review items", value: metricValue(bridge.summary.reviewItems)},
+    {label: "Promotion", value: metricValue(bridge.summary.promotionReview)},
+    {label: "Evidence", value: metricValue(bridge.summary.evidenceReview)},
+    {label: "Blocked", value: metricValue(bridge.summary.blocked)},
+    {label: "Public", value: metricValue(bridge.summary.approvedPublic)},
+    {label: "App visible", value: metricValue(bridge.summary.appDiscoverable)},
+    {label: "Claim writes", value: metricValue(bridge.summary.claimTargetSyncPreviewWrites)},
     {label: "Search surfaces", value: bridge.summary.searchResultCandidates ?? 0},
     {label: "Event candidates", value: bridge.summary.externalEventCandidates ?? 0},
     {label: "Location tasks", value: bridge.summary.externalEventLocationTasks ?? 0},
@@ -711,6 +711,7 @@ export function useOrganizerIntakeController({
   ]);
 
   return {
+    availability: intake.availability,
     bridge,
     diagnosticsBridge,
     source: intake.source,
@@ -752,6 +753,10 @@ export function useOrganizerIntakeController({
     setOrganizerDraftForms,
     setPolicyDecisionNotes,
   };
+}
+
+function metricValue(value: number | null | undefined): number | string {
+  return value ?? "—";
 }
 
 function curationKeyForPayload(payload: AdminRecordOrganizerCurationPayload) {

@@ -23,7 +23,11 @@ import {
   MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN,
   SupplyIntakeWorkflow,
 } from "../src/workflows/supply-intake/workflow.mjs";
-import {createFixtureRepository, temporaryDirectory} from "./helpers.mjs";
+import {
+  createFixtureRepository,
+  publicationPacketFixture,
+  temporaryDirectory,
+} from "./helpers.mjs";
 
 const NOW = "2026-07-14T12:00:00.000Z";
 const REPO_ROOT = fileURLToPath(new URL("../../", import.meta.url));
@@ -135,28 +139,24 @@ test("Mumbai plans admit only organizer packets with Mumbai market evidence", as
     repoRoot,
     "tool/organizer_intake/generated/publication_review_packets.json"
   );
-  const packetFor = (entityId, market) => ({
-    entityId,
-    canonicalHostId: entityId,
-    displayName: `${market} Organizer`,
-    blockers: [],
-    dataBlockers: [],
-    evidenceBlockers: [],
-    evidenceReview: {manualReportsWithoutArtifacts: 0, records: []},
-    identity: {
-      geography: {
-        primaryMarketSlug: market,
-        markets: [{marketSlug: market, eventFilter: {citySlug: market}}],
-      },
-    },
-    adminDecision: {currentDecision: {decision: "approve_public"}},
-  });
   await fs.writeFile(publicationPacketsPath, `${JSON.stringify({
     schemaVersion: 1,
     packets: [
-      packetFor("organizer-mumbai", "mumbai"),
-      packetFor("organizer-indore", "indore"),
-      packetFor("organizer-delhi", "delhi-ncr"),
+      publicationPacketFixture({
+        entityId: "organizer-mumbai",
+        market: "mumbai",
+        status: "published",
+      }),
+      publicationPacketFixture({
+        entityId: "organizer-indore",
+        market: "indore",
+        status: "published",
+      }),
+      publicationPacketFixture({
+        entityId: "organizer-delhi",
+        market: "delhi-ncr",
+        status: "published",
+      }),
     ],
   }, null, 2)}\n`);
 
@@ -176,6 +176,50 @@ test("Mumbai plans admit only organizer packets with Mumbai market evidence", as
       .map((item) => item.sourceEntity.id),
     ["organizer-mumbai"]
   );
+  const organizerProjection = items.find((item) =>
+    item.sourceEntity.id === "organizer-mumbai").adminProjection;
+  assert.equal(
+    organizerProjection.recordType,
+    "organizer_publication_packet"
+  );
+  assert.deepEqual(
+    Object.keys(organizerProjection.packet).sort(),
+    [
+      "packetId",
+      "entityId",
+      "canonicalHostId",
+      "displayName",
+      "status",
+      "priority",
+      "markets",
+      "blockers",
+      "dataBlockers",
+      "evidenceBlockers",
+      "approvalChecklist",
+      "evidenceSummary",
+      "publicPresence",
+      "adminDecision",
+      "nextActions",
+    ].sort()
+  );
+  assert.deepEqual(organizerProjection.packet.markets, [{
+    slug: "mumbai",
+    displayName: "mumbai",
+  }]);
+  assert.equal(
+    Object.hasOwn(organizerProjection.packet.adminDecision, "command"),
+    false
+  );
+  assert.equal(
+    Object.hasOwn(organizerProjection.packet, "evidenceReview"),
+    false
+  );
+  assert.equal(
+    JSON.stringify(organizerProjection).includes(
+      "must-not-reach-admin-projection"
+    ),
+    false
+  );
   assert.deepEqual(plan.capabilities, {
     network: false,
     modelCalls: false,
@@ -183,6 +227,70 @@ test("Mumbai plans admit only organizer packets with Mumbai market evidence", as
     ruleDeployment: false,
   });
 });
+
+test("organizer packet projections stay bounded and exclude raw provider payloads",
+  async () => {
+    const repoRoot = await createFixtureRepository(
+      await temporaryDirectory("catch-ops-packet-projection-")
+    );
+    const publicationPacketsPath = path.join(
+      repoRoot,
+      "tool/organizer_intake/generated/publication_review_packets.json"
+    );
+    const packet = publicationPacketFixture({
+      entityId: "organizer-bounded",
+      market: "mumbai",
+    });
+    packet.displayName = "x".repeat(900);
+    packet.identity.geography.markets = Array.from(
+      {length: 12},
+      (_, index) => ({
+        marketSlug: `market-${index}`,
+        displayName: `Market ${index}`,
+      })
+    );
+    packet.evidenceSummary.riskFlags = Array.from(
+      {length: 20},
+      (_, index) => `risk-${index}`
+    );
+    packet.nextActions = Array.from(
+      {length: 20},
+      (_, index) => `action-${index}`
+    );
+    packet.evidenceReview.records = [{
+      providerPayload: "raw-provider-secret",
+    }];
+    await fs.writeFile(publicationPacketsPath, `${JSON.stringify({
+      schemaVersion: 1,
+      packets: [packet],
+    }, null, 2)}\n`);
+
+    const workflow = new SupplyIntakeWorkflow({repoRoot});
+    const plan = await workflow.createPlan({
+      market: "mumbai",
+      through: "2026-07-28",
+      now: NOW,
+    });
+    const items = await workflow.project(plan, {
+      runId: "run-bounded-packet-projection",
+      now: NOW,
+    });
+    const projected = items.find((item) =>
+      item.sourceEntity.id === "organizer-bounded").adminProjection.packet;
+
+    assert.equal(projected.displayName.length, 500);
+    assert.equal(projected.markets.length, 8);
+    assert.equal(projected.evidenceSummary.riskFlags.length, 12);
+    assert.equal(projected.nextActions.length, 12);
+    assert.equal(
+      JSON.stringify(projected).includes("raw-provider-secret"),
+      false
+    );
+    assert.equal(
+      Object.hasOwn(projected.adminDecision, "command"),
+      false
+    );
+  });
 
 test("organizer search candidates become database-ready organizer work items", async () => {
   const repoRoot = await createFixtureRepository(
@@ -292,7 +400,7 @@ test("organizer search candidates become database-ready organizer work items", a
     schemaVersion: 1,
     runId: "run-organizer-candidates",
     workflowId: "supply-intake",
-    workflowVersion: "0.1.1",
+    workflowVersion: "0.1.2",
     revision: 0,
     mode: "shadow",
     status: "completed",

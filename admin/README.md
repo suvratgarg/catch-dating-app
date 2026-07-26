@@ -269,8 +269,14 @@ handoff still pass through promotion tooling and the Organizers workspace.
 
 In live mode Organizer Intake loads the newest completed organizer-only Supply
 Intake run for Indore and Mumbai through `adminListIntakeOperations`. Candidate
-rows are persisted `operationWorkItems`; sample and Storybook views use typed
-synthetic operation records. The checked
+rows and bounded organizer publication-review packets are persisted
+`operationWorkItems`. The packet projection contains only the identity,
+market, blockers, checklist, aggregate evidence counts, public-state summary,
+decision state, and next actions needed by the workbench; evidence records,
+public copy, local commands, and raw provider payloads do not enter Firestore.
+Until a run contains that packet projection, live Verify, Resolve, and Ready
+show an explicit unavailable state rather than reporting zero work. Sample and
+Storybook views continue to use typed synthetic operation records. The checked
 `contracts/admin/admin_live_data_sources.json` inventory covers every Admin
 route and fails if production feature code imports generated operational JSON.
 Live builds also fail if any generated Event Intake, Organizer Intake,

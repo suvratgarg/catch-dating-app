@@ -1,6 +1,6 @@
 {
-  "version": 114,
-  "updated": "2026-07-25",
+  "version": 115,
+  "updated": "2026-07-26",
   "owner": "agent_operating_model",
   "entries": [
     {
@@ -3505,6 +3505,32 @@
         "docs/app_architecture.md"
       ],
       "notes": "Removing a dependency is an architecture change too. Regenerate all provider-graph projections and retire review decisions whose relationship no longer exists."
+    },
+    {
+      "id": "REG-ADMIN-ORGANIZER-LIVE-PACKET-PROJECTION-001",
+      "title": "Organizer Intake live mode reports unavailable workflow stages as zero",
+      "status": "active",
+      "applies_to": [
+        "contracts/operations/work_item.schema.json",
+        "operations/src/workflows/supply-intake/workflow.mjs",
+        "operations/src/platform/read-models.mjs",
+        "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.ts",
+        "admin/src/features/intake/organizer/types/organizerIntakeTypes.ts",
+        "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx"
+      ],
+      "symptom": "The live Organizer Intake queue loads candidate inventory but shows Verify, Resolve, and Ready as zero because immutable operation items contain no bounded publication-packet projection, or the Admin loader silently accepts a malformed projection.",
+      "guard": {
+        "type": "command",
+        "command": "node --test operations/test/workflow.test.mjs && npm --workspace catch-admin test -- --run src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.test.ts src/features/intake/organizer/controllers/organizerIntakeHelpers.test.ts && node tool/contracts/generate_schema_contracts.mjs --check",
+        "guardEvidence": "the supply-intake workflow emits an exact, bounded, market-filtered organizer_publication_packet projection; the schema rejects extra or malformed fields; and the Admin loader distinguishes unavailable stages from real zero counts before mapping valid packets into the review workbench"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "docs/web_surface_architecture.md",
+        "admin/README.md",
+        "operations/README.md"
+      ],
+      "notes": "Operation runs are immutable. Deploying this projection does not repair historical runs; a new organizer-scoped run and reviewed Admin projection import are required before the live queue can claim packet availability."
     }
   ]
 }

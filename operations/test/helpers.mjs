@@ -67,22 +67,11 @@ export async function createFixtureRepository(root) {
   });
   await writeJson(root, "tool/organizer_intake/generated/publication_review_packets.json", {
     schemaVersion: 1,
-    packets: [{
+    packets: [publicationPacketFixture({
       entityId: "organizer-ready",
-      canonicalHostId: "organizer-ready",
-      displayName: "Ready Organizer",
-      identity: {
-        geography: {
-          primaryMarketSlug: "mumbai",
-          markets: [{marketSlug: "mumbai", eventFilter: {citySlug: "mumbai"}}],
-        },
-      },
-      blockers: [],
-      dataBlockers: [],
-      evidenceBlockers: [],
-      evidenceReview: {manualReportsWithoutArtifacts: 0, records: []},
-      adminDecision: {currentDecision: {decision: "approve_public"}},
-    }],
+      market: "mumbai",
+      status: "published",
+    })],
   });
   await writeJson(root, "tool/organizer_intake/generated/search_result_candidate_queue.json", {
     schemaVersion: 1,
@@ -94,6 +83,70 @@ export async function createFixtureRepository(root) {
   await writeJson(root, "tool/organizer_intake/generated/source_mention_llm_prompt_queue.json", {schemaVersion: 1, requests: []});
   await writeJson(root, "tool/organizer_intake/generated/event_crawl_run_plan.json", {schemaVersion: 1, runIntents: []});
   return root;
+}
+
+export function publicationPacketFixture({
+  entityId,
+  market,
+  status = "ready_for_manual_publication_review",
+}) {
+  return {
+    packetId: `packet-${entityId}`,
+    entityId,
+    canonicalHostId: entityId,
+    displayName: `${market} Organizer`,
+    status,
+    priority: "p1",
+    blockers: [],
+    dataBlockers: [],
+    evidenceBlockers: [],
+    approvalChecklist: {
+      crawlDisabledReviewed: true,
+      identityReviewed: true,
+      marketScopeReviewed: true,
+      mediaRightsReviewed: true,
+      ownerSafeCopyReviewed: true,
+      surfaceInventoryReviewed: true,
+    },
+    evidenceSummary: {
+      records: 2,
+      manualReportsWithoutArtifacts: 0,
+      unresolvedLocalRefs: 0,
+      missingSurfaceEvidence: 0,
+      rawProviderArtifactRefs: 0,
+      firestoreForbiddenArtifactRefs: 0,
+      riskFlags: [],
+    },
+    evidenceReview: {manualReportsWithoutArtifacts: 0, records: []},
+    identity: {
+      geography: {
+        primaryMarketSlug: market,
+        markets: [{
+          marketSlug: market,
+          displayName: market,
+          eventFilter: {citySlug: market},
+        }],
+      },
+    },
+    publicPresence: {
+      canonicalPath: `/organizers/${entityId}/`,
+      claimTargetPath: `clubs/${entityId}`,
+      indexStatus: status === "published" ? "indexed" : "noindex",
+      appVisibility: "hidden",
+      projectionStatus: "ready",
+    },
+    adminDecision: {
+      allowedDecisions: ["approve_public", "hold", "suppress"],
+      defaultAppVisibility: "hidden",
+      currentDecision: status === "published" ? {
+        decision: "approve_public",
+        decidedAt: "2026-07-14",
+        appVisibility: "hidden",
+      } : null,
+      command: "must-not-reach-admin-projection",
+    },
+    nextActions: ["review_publication_packet"],
+  };
 }
 
 async function writeJson(root, relative, value) {
