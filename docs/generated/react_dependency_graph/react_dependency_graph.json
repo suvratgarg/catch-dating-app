@@ -19,12 +19,12 @@
     "nonLiteralDynamicImports": "report"
   },
   "summary": {
-    "scannedSourceModules": 342,
+    "scannedSourceModules": 343,
     "dependencyLeafNodes": 18,
-    "moduleNodes": 360,
-    "moduleEdges": 1243,
-    "runtimeModuleEdges": 983,
-    "typeOnlyModuleEdges": 260,
+    "moduleNodes": 361,
+    "moduleEdges": 1245,
+    "runtimeModuleEdges": 984,
+    "typeOnlyModuleEdges": 261,
     "dynamicImportEdges": 29,
     "reExportEdges": 65,
     "featureGroups": 33,
@@ -217,8 +217,8 @@
       "surface": "admin",
       "scope": "feature",
       "feature": "intake",
-      "modules": 29,
-      "tests": 8,
+      "modules": 30,
+      "tests": 9,
       "stories": 0
     },
     {
@@ -4593,8 +4593,8 @@
     },
     {
       "package": "vitest",
-      "edges": 60,
-      "runtimeEdges": 60,
+      "edges": 61,
+      "runtimeEdges": 61,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "surfaces": [
@@ -4617,6 +4617,7 @@
         "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.test.ts",
         "admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.test.ts",
         "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.test.tsx",
+        "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.test.ts",
         "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
         "admin/src/features/marketing/controllers/useMarketingOpsController.test.tsx",
         "admin/src/features/operations/controllers/useAdminActionExecutionsController.test.ts",
@@ -5373,6 +5374,18 @@
       "extension": ".tsx",
       "scanned": true,
       "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.test.ts",
+      "surface": "admin",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "intake",
+      "group": "admin:feature:intake",
+      "extension": ".ts",
+      "scanned": true,
+      "test": true,
       "story": false
     },
     {
@@ -11192,6 +11205,24 @@
       "kind": "import",
       "typeOnly": false,
       "line": 102,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.test.ts",
+      "target": "admin/src/features/intake/organizer/types/organizerIntakeTypes.ts",
+      "specifier": "../types/organizerIntakeTypes",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.test.ts",
+      "target": "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx",
+      "specifier": "./organizerIntakeWorkbench",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 4,
       "column": 1
     },
     {
@@ -20920,6 +20951,15 @@
       "source": "admin/src/features/intake/organizer/ui/organizerIntakeReadinessPanels.tsx",
       "package": "lucide-react",
       "specifier": "lucide-react",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.test.ts",
+      "package": "vitest",
+      "specifier": "vitest",
       "kind": "import",
       "typeOnly": false,
       "line": 1,
