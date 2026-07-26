@@ -106,7 +106,15 @@ Object? readOrganizerSupplyCapabilities(
   final claim = json['claim'];
   final ownershipState = ownership is Map ? ownership['state'] : null;
   final claimState = claim is Map ? claim['state'] : null;
+  final hasLegacyOwner =
+      json['ownerUserId'] != null ||
+      json['hostUserId'] != null ||
+      (json['hostUserIds'] is List &&
+          (json['hostUserIds'] as List).isNotEmpty) ||
+      (json['hostProfiles'] is List &&
+          (json['hostProfiles'] as List).isNotEmpty);
   final managed =
+      hasLegacyOwner ||
       const {
         'userCreated',
         'claimed',

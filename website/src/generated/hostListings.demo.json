@@ -1,19 +1,21 @@
 [
   {
-    "id": "afterfly-run-club-indore",
+    "id": "afterfly",
     "listingVariant": "unclaimedScraped",
-    "dataOrigin": "scrapedSeed",
+    "dataOrigin": "organizerIntake",
     "name": "AFTER FLY",
-    "slug": "afterfly-run-club",
+    "slug": "afterfly",
     "city": "Indore",
     "citySlug": "indore",
     "region": "Madhya Pradesh",
     "country": "India",
-    "path": "/organizers/indore/afterfly-run-club/",
-    "legacyPaths": [],
+    "path": "/organizers/afterfly/",
+    "legacyPaths": [
+      "/organizers/indore/afterfly-run-club/"
+    ],
     "category": "Progressive techno run club",
     "status": "unclaimed",
-    "indexing": "noindex, follow",
+    "indexing": "index, follow",
     "sourceConfidence": "high",
     "headline": "AFTER FLY run club in Indore",
     "description": "AFTER FLY is an Indore run-and-rave organizer discovered through a public Luma event page. This unclaimed profile summarizes verified public facts for owner review and stays out of search until cadence, contact, and claim details are confirmed.",
@@ -65,10 +67,7 @@
     ],
     "eventEvidence": [
       {
-        "title": "AFTERFLY TAKEOFF RUN & RAVE",
         "date": "16 Mar 2025, 7:00 AM-11:00 AM IST",
-        "location": "Indore, Madhya Pradesh",
-        "summary": "The public Luma page lists a Sunday social run from Traffic Park near Daly College followed by a post-run techno social at Tropico Cafe.",
         "facts": [
           "Hosted by AFTER FLY",
           "Listed under Fitness and Wellness",
@@ -76,8 +75,11 @@
           "Page copy states INR 499 per person with payment link sent by Instagram DM after registering",
           "Luma registration is closed on the public page"
         ],
+        "location": "Indore, Madhya Pradesh",
+        "sourceHref": "https://luma.com/pxgmph3b",
         "sourceLabel": "Luma event page",
-        "sourceHref": "https://luma.com/pxgmph3b"
+        "summary": "The public Luma page lists a Sunday social run from Traffic Park near Daly College followed by a post-run techno social at Tropico Cafe.",
+        "title": "AFTERFLY TAKEOFF RUN & RAVE"
       }
     ],
     "reviews": [],
@@ -117,34 +119,34 @@
       }
     ],
     "claim": {
-      "href": "/organizers/indore/afterfly-run-club/#claim",
+      "href": "/organizers/afterfly/#claim",
       "label": "Claim this listing"
     },
     "publicApi": {
       "state": "disabled",
-      "reason": "Legacy scraped seed listings are static until their Firestore claim target sync is verified.",
-      "claimTargetSyncStatus": "static_fixture"
+      "reason": "Claiming is not available until target readiness is verified against Firestore.",
+      "claimTargetSyncStatus": "unknown"
     },
     "authority": {
       "ownershipState": "programmatic",
       "claimState": "unclaimed",
-      "provenanceOrigin": "scraper",
+      "provenanceOrigin": "import",
       "sourceConfidence": "high",
       "verificationStatus": "sourceBacked",
       "appVisibility": "hidden",
-      "publishStatus": "qa",
-      "indexStatus": "noindex"
+      "publishStatus": "published",
+      "indexStatus": "indexed"
     },
     "capabilities": {
       "claimRequest": {
         "state": "disabled",
-        "reason": "Legacy scraped seed listings are static until their Firestore claim target sync is verified."
+        "reason": "Claiming is not available until target readiness is verified against Firestore."
       },
       "publicReviews": {
         "targetState": "disabled",
         "readState": "disabled",
         "writeState": "disabled",
-        "reason": "Public reviews require a published, index-ready organizer page."
+        "reason": "Public reviews are unavailable until canonical target readiness is verified."
       },
       "supply": {
         "mode": "unclaimed_read_only",
@@ -157,20 +159,22 @@
       }
     },
     "lastVerifiedAt": "2026-06-10",
-    "searchText": "after fly indore indore progressive techno run club afterfly.in social runs run-and-rave fitness/wellness techno afters social runs run-and-rave fitness/wellness community techno afters"
+    "searchText": "after fly indore indore club progressive techno run club progressive techno run club afterfly.in social runs run-and-rave fitness/wellness techno afters social runs run-and-rave fitness/wellness community techno afters"
   },
   {
-    "id": "bhag-run-club-delhi",
+    "id": "bhag",
     "listingVariant": "unclaimedScraped",
-    "dataOrigin": "scrapedSeed",
+    "dataOrigin": "organizerIntake",
     "name": "Bhag Club",
-    "slug": "bhag-run-club",
-    "city": "Delhi",
+    "slug": "bhag",
+    "city": "New Delhi",
     "citySlug": "delhi",
     "region": "Delhi",
     "country": "India",
-    "path": "/organizers/delhi/bhag-run-club/",
-    "legacyPaths": [],
+    "path": "/organizers/bhag/",
+    "legacyPaths": [
+      "/organizers/delhi/bhag-run-club/"
+    ],
     "category": "Running community and activewear brand",
     "status": "unclaimed",
     "indexing": "noindex, follow",
@@ -225,10 +229,7 @@
     ],
     "eventEvidence": [
       {
-        "title": "Bhag GGN",
         "date": "8 Nov 2025, 7:00 AM-9:00 AM IST",
-        "location": "Espressos AnyDay, Gurugram, Haryana",
-        "summary": "The public Luma page lists a Bhag Club-hosted Gurgaon run from Espressos AnyDay with a 3KM distance and free general admission.",
         "facts": [
           "Hosted by Bhag Club under the BHAG RUNS calendar",
           "Listed under Fitness",
@@ -236,8 +237,11 @@
           "Registration questions include Instagram, age, gender, emergency contact, attendance intent, and consent",
           "Embedded host data lists website thebhag.in and social handle bhagclub"
         ],
+        "location": "Espressos AnyDay, Gurugram, Haryana",
+        "sourceHref": "https://luma.com/ixj7uqiu",
         "sourceLabel": "Luma event page",
-        "sourceHref": "https://luma.com/ixj7uqiu"
+        "summary": "The public Luma page lists a Bhag Club-hosted Gurgaon run from Espressos AnyDay with a 3KM distance and free general admission.",
+        "title": "Bhag GGN"
       }
     ],
     "reviews": [],
@@ -284,18 +288,18 @@
       }
     ],
     "claim": {
-      "href": "/organizers/delhi/bhag-run-club/#claim",
+      "href": "/organizers/bhag/#claim",
       "label": "Claim this listing"
     },
     "publicApi": {
       "state": "disabled",
-      "reason": "Legacy scraped seed listings are static until their Firestore claim target sync is verified.",
-      "claimTargetSyncStatus": "static_fixture"
+      "reason": "Claiming is not available until target readiness is verified against Firestore.",
+      "claimTargetSyncStatus": "unknown"
     },
     "authority": {
       "ownershipState": "programmatic",
       "claimState": "unclaimed",
-      "provenanceOrigin": "scraper",
+      "provenanceOrigin": "import",
       "sourceConfidence": "medium",
       "verificationStatus": "sourceBacked",
       "appVisibility": "hidden",
@@ -305,7 +309,7 @@
     "capabilities": {
       "claimRequest": {
         "state": "disabled",
-        "reason": "Legacy scraped seed listings are static until their Firestore claim target sync is verified."
+        "reason": "Claiming is not available until target readiness is verified against Firestore."
       },
       "publicReviews": {
         "targetState": "disabled",
@@ -324,7 +328,7 @@
       }
     },
     "lastVerifiedAt": "2026-06-10",
-    "searchText": "bhag club delhi delhi running community and activewear brand bhagclub running community training programs activewear fitness events community runs training programs fitness events activewear"
+    "searchText": "bhag club new delhi delhi brand running community and activewear brand running community and activewear brand bhagclub running community training programs activewear fitness events community runs training programs fitness events activewear"
   },
   {
     "id": "club-sales-sunday-table",

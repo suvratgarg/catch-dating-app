@@ -81,6 +81,11 @@ describe("public surface behavior contract", () => {
 
 function listingFor(values: Record<string, string>): HostListing {
   const base = hostListings[0];
+  const managed = ["userCreated", "claimed", "transferred"].includes(
+    values["organizer.ownershipState"] ?? "programmatic"
+  ) || ["claimed", "verified"].includes(
+    values["organizer.claimState"] ?? "unclaimed"
+  );
   return {
     ...base,
     authority: {
@@ -101,6 +106,23 @@ function listingFor(values: Record<string, string>): HostListing {
         readState: values["website.publicReviewReadCapability"] ?? "disabled",
         writeState: values["website.publicReviewWriteCapability"] ?? "disabled",
         reason: "Matrix review capability is unavailable.",
+      },
+      supply: managed ? {
+        mode: "claimed_managed",
+        bookable: true,
+        paymentsEnabled: true,
+        waitlistEnabled: true,
+        hostContactEnabled: true,
+        claimable: false,
+        reviewPolicy: "attended_event_only",
+      } : {
+        mode: "unclaimed_read_only",
+        bookable: false,
+        paymentsEnabled: false,
+        waitlistEnabled: false,
+        hostContactEnabled: false,
+        claimable: true,
+        reviewPolicy: "after_event_end",
       },
     },
   } as HostListing;

@@ -23,8 +23,8 @@
     "nonMessageL10nReferences": 1,
     "missingCatalogKeys": 0,
     "missingCatalogReferences": 0,
-    "scannedDartFiles": 785,
-    "excludedGeneratedDartFiles": 496
+    "scannedDartFiles": 786,
+    "excludedGeneratedDartFiles": 501
   },
   "orphanedKeys": [],
   "nonMessageL10nReferences": [
@@ -22685,7 +22685,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/widgets/event_detail_cta.dart",
-          "line": 313,
+          "line": 318,
           "column": 29
         }
       ],
@@ -22693,7 +22693,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/widgets/event_detail_cta.dart",
-          "line": 313,
+          "line": 318,
           "column": 29
         }
       ]
@@ -22705,7 +22705,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/widgets/event_detail_cta.dart",
-          "line": 459,
+          "line": 464,
           "column": 30
         }
       ],
@@ -22713,7 +22713,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/widgets/event_detail_cta.dart",
-          "line": 459,
+          "line": 464,
           "column": 30
         }
       ]
@@ -22725,7 +22725,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/widgets/event_detail_cta.dart",
-          "line": 458,
+          "line": 463,
           "column": 30
         }
       ],
@@ -22733,7 +22733,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/widgets/event_detail_cta.dart",
-          "line": 458,
+          "line": 463,
           "column": 30
         }
       ]
@@ -22745,7 +22745,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/widgets/event_detail_cta.dart",
-          "line": 302,
+          "line": 307,
           "column": 29
         }
       ],
@@ -22753,7 +22753,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/widgets/event_detail_cta.dart",
-          "line": 302,
+          "line": 307,
           "column": 29
         }
       ]
@@ -22765,7 +22765,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/widgets/event_detail_cta.dart",
-          "line": 418,
+          "line": 423,
           "column": 38
         }
       ],
@@ -22773,7 +22773,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/widgets/event_detail_cta.dart",
-          "line": 418,
+          "line": 423,
           "column": 38
         }
       ]
@@ -22785,7 +22785,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/widgets/event_detail_cta.dart",
-          "line": 442,
+          "line": 447,
           "column": 24
         }
       ],
@@ -22793,7 +22793,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/widgets/event_detail_cta.dart",
-          "line": 442,
+          "line": 447,
           "column": 24
         }
       ]
@@ -22805,7 +22805,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/widgets/event_detail_cta.dart",
-          "line": 443,
+          "line": 448,
           "column": 24
         }
       ],
@@ -22813,7 +22813,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/widgets/event_detail_cta.dart",
-          "line": 443,
+          "line": 448,
           "column": 24
         }
       ]
@@ -23330,7 +23330,7 @@
         },
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 341,
+          "line": 347,
           "column": 22
         }
       ],
@@ -23343,7 +23343,7 @@
         },
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 341,
+          "line": 347,
           "column": 22
         }
       ]
@@ -24635,17 +24635,17 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 261,
+          "line": 264,
           "column": 30
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 271,
+          "line": 274,
           "column": 30
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 393,
+          "line": 401,
           "column": 28
         }
       ],
@@ -24653,17 +24653,17 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 261,
+          "line": 264,
           "column": 30
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 271,
+          "line": 274,
           "column": 30
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 393,
+          "line": 401,
           "column": 28
         }
       ]
@@ -24675,17 +24675,17 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 255,
+          "line": 258,
           "column": 30
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 262,
+          "line": 265,
           "column": 30
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 384,
+          "line": 392,
           "column": 28
         }
       ],
@@ -24693,17 +24693,17 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 255,
+          "line": 258,
           "column": 30
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 262,
+          "line": 265,
           "column": 30
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 384,
+          "line": 392,
           "column": 28
         }
       ]
@@ -24715,12 +24715,12 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 306,
+          "line": 314,
           "column": 30
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 424,
+          "line": 433,
           "column": 28
         }
       ],
@@ -24728,12 +24728,12 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 306,
+          "line": 314,
           "column": 30
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 424,
+          "line": 433,
           "column": 28
         }
       ]
@@ -24745,12 +24745,12 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 125,
+          "line": 126,
           "column": 33
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 455,
+          "line": 464,
           "column": 29
         }
       ],
@@ -24758,12 +24758,12 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 125,
+          "line": 126,
           "column": 33
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 455,
+          "line": 464,
           "column": 29
         }
       ]
@@ -24775,7 +24775,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 239,
+          "line": 245,
           "column": 18
         }
       ],
@@ -24783,7 +24783,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 239,
+          "line": 245,
           "column": 18
         }
       ]
@@ -24795,7 +24795,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 240,
+          "line": 246,
           "column": 18
         }
       ],
@@ -24803,7 +24803,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 240,
+          "line": 246,
           "column": 18
         }
       ]
@@ -24815,7 +24815,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 378,
+          "line": 384,
           "column": 16
         },
         {
@@ -24828,7 +24828,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 378,
+          "line": 384,
           "column": 16
         },
         {
@@ -24845,7 +24845,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 424,
+          "line": 430,
           "column": 17
         }
       ],
@@ -24853,7 +24853,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 424,
+          "line": 430,
           "column": 17
         }
       ]
@@ -24865,7 +24865,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 373,
+          "line": 379,
           "column": 22
         }
       ],
@@ -24873,7 +24873,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 373,
+          "line": 379,
           "column": 22
         }
       ]
@@ -24885,7 +24885,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 171,
+          "line": 177,
           "column": 19
         }
       ],
@@ -24893,7 +24893,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 171,
+          "line": 177,
           "column": 19
         }
       ]
@@ -24905,7 +24905,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 303,
+          "line": 309,
           "column": 27
         }
       ],
@@ -24913,7 +24913,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 303,
+          "line": 309,
           "column": 27
         }
       ]
@@ -24925,7 +24925,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 193,
+          "line": 199,
           "column": 19
         }
       ],
@@ -24933,7 +24933,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 193,
+          "line": 199,
           "column": 19
         }
       ]
@@ -24945,7 +24945,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 333,
+          "line": 339,
           "column": 16
         }
       ],
@@ -24953,7 +24953,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 333,
+          "line": 339,
           "column": 16
         }
       ]
@@ -24965,7 +24965,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 372,
+          "line": 378,
           "column": 22
         }
       ],
@@ -24973,7 +24973,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 372,
+          "line": 378,
           "column": 22
         }
       ]
@@ -24985,7 +24985,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 375,
+          "line": 381,
           "column": 16
         }
       ],
@@ -24993,7 +24993,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 375,
+          "line": 381,
           "column": 16
         }
       ]
@@ -25005,7 +25005,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 294,
+          "line": 300,
           "column": 26
         }
       ],
@@ -25013,7 +25013,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 294,
+          "line": 300,
           "column": 26
         }
       ]
@@ -25025,7 +25025,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 310,
+          "line": 316,
           "column": 18
         }
       ],
@@ -25033,7 +25033,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 310,
+          "line": 316,
           "column": 18
         }
       ]
@@ -25045,7 +25045,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 331,
+          "line": 337,
           "column": 16
         }
       ],
@@ -25053,7 +25053,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 331,
+          "line": 337,
           "column": 16
         }
       ]
@@ -25065,7 +25065,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 329,
+          "line": 335,
           "column": 16
         }
       ],
@@ -25073,7 +25073,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 329,
+          "line": 335,
           "column": 16
         }
       ]
@@ -25085,7 +25085,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 342,
+          "line": 348,
           "column": 22
         }
       ],
@@ -25093,7 +25093,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 342,
+          "line": 348,
           "column": 22
         }
       ]
@@ -25105,12 +25105,12 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 237,
+          "line": 243,
           "column": 18
         },
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 367,
+          "line": 373,
           "column": 16
         }
       ],
@@ -25118,12 +25118,12 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 237,
+          "line": 243,
           "column": 18
         },
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 367,
+          "line": 373,
           "column": 16
         }
       ]
@@ -25135,7 +25135,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 336,
+          "line": 342,
           "column": 22
         }
       ],
@@ -25143,7 +25143,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 336,
+          "line": 342,
           "column": 22
         }
       ]
@@ -25155,12 +25155,12 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 258,
+          "line": 264,
           "column": 18
         },
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 293,
+          "line": 299,
           "column": 26
         }
       ],
@@ -25168,12 +25168,12 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 258,
+          "line": 264,
           "column": 18
         },
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 293,
+          "line": 299,
           "column": 26
         }
       ]
@@ -25185,17 +25185,17 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 257,
+          "line": 263,
           "column": 18
         },
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 291,
+          "line": 297,
           "column": 26
         },
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 369,
+          "line": 375,
           "column": 16
         }
       ],
@@ -25203,17 +25203,17 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 257,
+          "line": 263,
           "column": 18
         },
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 291,
+          "line": 297,
           "column": 26
         },
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 369,
+          "line": 375,
           "column": 16
         }
       ]
@@ -25225,7 +25225,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 337,
+          "line": 343,
           "column": 22
         }
       ],
@@ -25233,7 +25233,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 337,
+          "line": 343,
           "column": 22
         }
       ]
@@ -25245,12 +25245,12 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 186,
+          "line": 192,
           "column": 19
         },
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 322,
+          "line": 328,
           "column": 19
         }
       ],
@@ -25258,12 +25258,12 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 186,
+          "line": 192,
           "column": 19
         },
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 322,
+          "line": 328,
           "column": 19
         }
       ]
@@ -25275,7 +25275,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 309,
+          "line": 315,
           "column": 18
         }
       ],
@@ -25283,7 +25283,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 309,
+          "line": 315,
           "column": 18
         }
       ]
@@ -25295,12 +25295,12 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 179,
+          "line": 185,
           "column": 21
         },
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 316,
+          "line": 322,
           "column": 19
         }
       ],
@@ -25308,12 +25308,12 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 179,
+          "line": 185,
           "column": 21
         },
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 316,
+          "line": 322,
           "column": 19
         }
       ]
@@ -25325,7 +25325,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 541,
+          "line": 547,
           "column": 12
         }
       ],
@@ -25333,7 +25333,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 541,
+          "line": 547,
           "column": 12
         }
       ]
@@ -25345,7 +25345,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 403,
+          "line": 409,
           "column": 14
         }
       ],
@@ -25353,7 +25353,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 403,
+          "line": 409,
           "column": 14
         }
       ]
@@ -25365,7 +25365,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 395,
+          "line": 401,
           "column": 16
         }
       ],
@@ -25373,7 +25373,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen_state.dart",
-          "line": 395,
+          "line": 401,
           "column": 16
         }
       ]
@@ -25385,12 +25385,12 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 124,
+          "line": 125,
           "column": 31
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 454,
+          "line": 463,
           "column": 27
         }
       ],
@@ -25398,12 +25398,12 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 124,
+          "line": 125,
           "column": 31
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 454,
+          "line": 463,
           "column": 27
         }
       ]
@@ -25415,7 +25415,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 690,
+          "line": 699,
           "column": 28
         }
       ],
@@ -25423,7 +25423,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 690,
+          "line": 699,
           "column": 28
         }
       ]
@@ -25435,7 +25435,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 196,
+          "line": 199,
           "column": 28
         }
       ],
@@ -25443,7 +25443,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 196,
+          "line": 199,
           "column": 28
         }
       ]
@@ -25455,7 +25455,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 188,
+          "line": 191,
           "column": 28
         }
       ],
@@ -25463,7 +25463,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 188,
+          "line": 191,
           "column": 28
         }
       ]
@@ -25475,7 +25475,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 691,
+          "line": 700,
           "column": 34
         }
       ],
@@ -25483,7 +25483,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 691,
+          "line": 700,
           "column": 34
         }
       ]
@@ -25495,12 +25495,12 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 674,
+          "line": 683,
           "column": 20
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 701,
+          "line": 710,
           "column": 22
         }
       ],
@@ -25508,12 +25508,12 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 674,
+          "line": 683,
           "column": 20
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 701,
+          "line": 710,
           "column": 22
         }
       ]
@@ -25525,7 +25525,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 500,
+          "line": 512,
           "column": 34
         }
       ],
@@ -25533,7 +25533,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 500,
+          "line": 512,
           "column": 34
         }
       ]
@@ -25545,7 +25545,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 499,
+          "line": 511,
           "column": 34
         }
       ],
@@ -25553,7 +25553,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 499,
+          "line": 511,
           "column": 34
         }
       ]
@@ -25565,16 +25565,16 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 512,
-          "column": 24
+          "line": 495,
+          "column": 10
         }
       ],
       "l10nReferenceCount": 1,
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 512,
-          "column": 24
+          "line": 495,
+          "column": 10
         }
       ]
     },
@@ -25585,12 +25585,12 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 91,
+          "line": 92,
           "column": 22
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 98,
+          "line": 99,
           "column": 10
         }
       ],
@@ -25598,12 +25598,12 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 91,
+          "line": 92,
           "column": 22
         },
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 98,
+          "line": 99,
           "column": 10
         }
       ]
@@ -25615,7 +25615,7 @@
       "usages": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 678,
+          "line": 687,
           "column": 20
         }
       ],
@@ -25623,7 +25623,7 @@
       "l10nReferences": [
         {
           "path": "lib/events/presentation/event_detail_screen.dart",
-          "line": 678,
+          "line": 687,
           "column": 20
         }
       ]

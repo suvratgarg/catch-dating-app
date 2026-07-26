@@ -24,6 +24,9 @@ test("production deploy materializes organizer projections from Firestore before
     packageJson.scripts["materialize:organizer-listings:deploy"],
     "node scripts/generateOrganizerListings.mjs " +
       "--firestore-project catch-dating-app-64e51 --no-seeds && " +
+      "node scripts/generateOrganizerListings.mjs " +
+      "--firestore-project catch-dating-app-64e51 --no-seeds --include-demo " +
+      "--output src/generated/hostListings.demo.json && " +
       "npm run check:organizer-listings"
   );
 

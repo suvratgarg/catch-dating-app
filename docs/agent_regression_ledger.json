@@ -3712,13 +3712,16 @@
         "admin/src/features/intake/organizer",
         "tool/organizer_intake",
         "lib/events",
-        "website/src/features/organizers"
+        "website/src/features/organizers",
+        "website/package.json",
+        "website/src/generated/hostListings.json",
+        "website/src/generated/hostListings.demo.json"
       ],
       "symptom": "Unclaimed supply exposes booking, payment, waitlist, host contact, or early review; an external event publishes without exact market and organizer ceilings; a blocker clears without an explicit resolution or accepted exact waiver; retry duplicates a write; or takedown deletes provenance.",
       "guard": {
         "type": "command",
         "command": "npm --prefix functions run build && node --test functions/lib/admin/externalEventPublishing.test.js functions/lib/admin/externalEventTakedown.test.js functions/lib/admin/organizerEventIntake.test.js functions/lib/shared/organizerSupplyCapabilities.test.js && node --test tool/organizer_intake/event_import_plan_core.test.mjs tool/organizer_intake/event_import_execution_core.test.mjs tool/data/backfill_organizer_supply_capabilities.test.mjs && flutter test test/events/event_detail_screen_state_test.dart test/events/external_event_repository_test.dart",
-        "guardEvidence": "the shared capability contract removes privileged unclaimed actions and gates review by end time; Functions revalidates market, visibility, capability, candidate, and policy-gap evidence; dry-run/apply/takedown use immutable idempotency receipts; and every governed blocker is explicitly resolved or waived"
+        "guardEvidence": "the shared capability contract removes privileged unclaimed actions and gates review by end time while preserving legacy owner-backed app organizers as managed; Functions revalidates market, visibility, capability, candidate, and policy-gap evidence; dry-run/apply/takedown use immutable idempotency receipts; every governed blocker is explicitly resolved or waived; and both production and demo website projections materialize from Firestore before deploy"
       },
       "owner_docs": [
         "docs/data_contracts.md",
@@ -3729,7 +3732,7 @@
         "admin/README.md",
         "operations/README.md"
       ],
-      "notes": "The app-side review submission flow for passed external events on unclaimed organizers remains a named app-team dependency. This phase exposes eligibility but deliberately does not stub a generic review route."
+      "notes": "The app-side review submission flow for passed external events on unclaimed organizers remains a named app-team dependency. This phase exposes eligibility but deliberately does not stub a generic review route. Missing capability fields retain managed behavior only when legacy owner evidence exists; ownerless legacy records fail closed."
     }
   ]
 }

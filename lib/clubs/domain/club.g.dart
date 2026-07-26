@@ -78,7 +78,7 @@ _Club _$ClubFromJson(Map<String, dynamic> json) => _Club(
         ),
   supplyCapabilities:
       readOrganizerSupplyCapabilities(json, 'supplyCapabilities') == null
-      ? const OrganizerSupplyCapabilities.unclaimedReadOnly()
+      ? const OrganizerSupplyCapabilities.claimedManaged()
       : OrganizerSupplyCapabilities.fromJson(
           readOrganizerSupplyCapabilities(json, 'supplyCapabilities')
               as Map<String, dynamic>,

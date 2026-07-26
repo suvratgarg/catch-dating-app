@@ -83,7 +83,7 @@ abstract class Club with _$Club {
     OrganizerPublicPage? publicPage,
     OrganizerProvenance? provenance,
     @JsonKey(readValue: readOrganizerSupplyCapabilities)
-    @Default(OrganizerSupplyCapabilities.unclaimedReadOnly())
+    @Default(OrganizerSupplyCapabilities.claimedManaged())
     OrganizerSupplyCapabilities supplyCapabilities,
     @JsonKey(readValue: _readOrganizerType)
     @Default(OrganizerType.club)
