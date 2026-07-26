@@ -3686,7 +3686,7 @@
       "symptom": "Approving a real organizer silently publishes or indexes it, the Admin payload pins app discovery to a hidden default, an event exceeds its organizer on any surface, suppression leaves a surface enabled, or intake downgrades claimed supply.",
       "guard": {
         "type": "command",
-        "command": "node --test functions/lib/admin/organizerIntake.test.js functions/lib/admin/supplyVisibilityPolicy.test.js && npm --workspace catch-admin test -- --run src/features/intake/organizer && npm --prefix operations test",
+        "command": "npm --prefix functions run build && node --test functions/lib/admin/organizerIntake.test.js functions/lib/admin/supplyVisibilityPolicy.test.js && npm --workspace catch-admin test -- --run src/features/intake/organizer && npm --prefix operations test",
         "guardEvidence": "contracts and every control path carry publishStatus, indexStatus, and appVisibility explicitly; web and app evidence gates are conditional; hold and suppress fail closed; claimed visibility cannot be reduced; and event controls are rejected above the organizer ceiling"
       },
       "owner_docs": [
