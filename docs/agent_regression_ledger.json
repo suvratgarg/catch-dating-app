@@ -1,5 +1,5 @@
 {
-  "version": 117,
+  "version": 118,
   "updated": "2026-07-26",
   "owner": "agent_operating_model",
   "entries": [
@@ -3573,6 +3573,26 @@
         "docs/operations_platform.md"
       ],
       "notes": "Immutable run and work-item IDs identify observations, not organizer identity. Draft continuity binds to the deterministic normalized candidate identity and verifies the stable candidate ID before returning the current run's work-item link."
+    },
+    {
+      "id": "REG-ADMIN-ORGANIZER-ENTITY-QUEUE-SELECTION-001",
+      "title": "Organizer publication packet rows cannot become the selected detail",
+      "status": "active",
+      "applies_to": [
+        "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx",
+        "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.test.ts"
+      ],
+      "symptom": "Clicking a canonical organizer or publication-packet row moves browser focus but leaves the first queue item's detail selected because the row emits the raw entity ID while the staged entry uses an entity-prefixed ID.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin test -- --run src/features/intake/organizer/ui/organizerIntakeWorkbench.test.ts src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
+        "guardEvidence": "staged canonical entities and their clickable queue rows derive the same namespaced selection ID, while candidate-row selection remains covered by the intake workbench interaction suite"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "admin/README.md"
+      ],
+      "notes": "Queue identity is UI state, not the Firestore entity ID. Every queue variant must emit the exact staged-entry ID so operators can open any packet rather than only the first item."
     }
   ]
 }

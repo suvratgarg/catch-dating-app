@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 588,
+  "total": 589,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -555,7 +555,7 @@
       ]
     },
     "web": {
-      "count": 68,
+      "count": 69,
       "files": [
         "admin/src/app/App.test.tsx",
         "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
@@ -571,6 +571,7 @@
         "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.test.ts",
         "admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.test.ts",
         "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.test.tsx",
+        "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.test.ts",
         "admin/src/features/intake/ui/intakeWorkbenchDefaults.test.tsx",
         "admin/src/features/marketing/controllers/useMarketingOpsController.test.tsx",
         "admin/src/features/operations/controllers/useAdminActionExecutionsController.test.ts",
