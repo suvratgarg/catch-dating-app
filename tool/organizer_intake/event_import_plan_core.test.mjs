@@ -269,6 +269,47 @@ test("buildExternalEventImportPlan keeps duplicate sources as non-event actions"
   );
 });
 
+test("buildExternalEventImportPlan never proposes an orphan event", () => {
+  const queue = sampleQueue({
+    attribution: {
+      state: "orphan",
+      organizerEvidence: {
+        name: "Courtside",
+        url: "https://courtside.club/",
+      },
+      match: {
+        decision: "needs_review",
+        matchedEntityId: null,
+        score: 0.82,
+        threshold: 0.9,
+      },
+    },
+    entityId: null,
+    publicationEligibility: "blocked_orphan",
+    reviewStatus: "approved_for_import",
+    reviewDecision: approvedReviewDecision(),
+    importState: "blocked_by_policy",
+    blockers: [
+      "global_external_event_import_disabled",
+      "organizer_not_in_inventory",
+    ],
+  });
+
+  const plan = buildExternalEventImportPlan(queue, {
+    writeEnabled: true,
+    policy: {status: "enabled"},
+  });
+
+  assert.equal(plan.summary.proposedReadOnlyEvents, 0);
+  assert.equal(plan.actions[0].action, "skip");
+  assert.equal(plan.actions[0].status, "blocked");
+  assert.ok(plan.actions[0].blockers.includes(
+    "organizer_not_in_inventory"
+  ));
+  assert.equal(plan.actions[0].proposedReadOnlyEventDraft, null);
+  assert.equal(plan.actions[0].proposedExternalEventDocument, null);
+});
+
 function sampleQueue(overrides) {
   return {
     schemaVersion: 1,

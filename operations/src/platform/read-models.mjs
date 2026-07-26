@@ -204,6 +204,11 @@ export function toCanonicalWorkItemRecord(item, {
         artifactId,
         confidence
       ),
+      ...orphanEventFieldProvenance(
+        item,
+        artifactId,
+        confidence
+      ),
     ],
     normalizedPayload: {
       title: item.sourceEntity.title,
@@ -390,6 +395,39 @@ function organizerCandidateFieldProvenance(item, artifactId, confidence) {
       "intake.candidate.reviewContext.verifiedAt",
       candidate.reviewContext?.verifiedAt,
     ],
+  ].filter(([, value]) =>
+    value !== null &&
+    value !== undefined &&
+    (!Array.isArray(value) || value.length > 0));
+  return fields.map(([field]) => fieldProvenance(
+    field,
+    item,
+    artifactId,
+    confidence,
+    `${base}#normalizedPayload.${field}`
+  ));
+}
+
+function orphanEventFieldProvenance(item, artifactId, confidence) {
+  const intake = item.adminProjection;
+  const candidate = intake?.recordType === "orphan_event_candidate" ?
+    intake.candidate :
+    null;
+  if (!candidate) return [];
+  const base = item.evidence.artifactRef ?? "supply-intake-artifact";
+  const fields = [
+    ["intake.candidate.attribution.organizerEvidence.name",
+      candidate.attribution?.organizerEvidence?.name],
+    ["intake.candidate.attribution.organizerEvidence.url",
+      candidate.attribution?.organizerEvidence?.url],
+    ["intake.candidate.attribution.match.rationale",
+      candidate.attribution?.match?.rationale],
+    ["intake.candidate.attribution.match.matchingSignals",
+      candidate.attribution?.match?.matchingSignals],
+    ["intake.candidate.attribution.match.blockingKeys",
+      candidate.attribution?.match?.blockingKeys],
+    ["intake.candidate.publicationEligibility",
+      candidate.publicationEligibility],
   ].filter(([, value]) =>
     value !== null &&
     value !== undefined &&

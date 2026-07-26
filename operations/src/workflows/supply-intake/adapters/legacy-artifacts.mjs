@@ -12,6 +12,8 @@ export const LEGACY_ARTIFACTS = Object.freeze({
   llmPromptQueue: "tool/organizer_intake/generated/source_mention_llm_prompt_queue.json",
   eventCrawlPlan: "tool/organizer_intake/generated/event_crawl_plan.json",
   crawlRunPlan: "tool/organizer_intake/generated/event_crawl_run_plan.json",
+  externalEventCandidateQueue:
+    "tool/organizer_intake/generated/external_event_candidate_queue.json",
 });
 
 export const LEGACY_ARTIFACT_PATTERNS = Object.freeze([
@@ -184,6 +186,19 @@ function artifactCounts(id, data, {market} = {}) {
   if (id === "llmPromptQueue") return {requests: data.requests?.length ?? 0};
   if (id === "eventCrawlPlan") return {entries: data.entries?.length ?? 0};
   if (id === "crawlRunPlan") return {runIntents: data.runIntents?.length ?? 0};
+  if (id === "externalEventCandidateQueue") {
+    const events = market ?
+      (data.candidates ?? []).filter((candidate) =>
+        candidate?.location?.citySlug === market &&
+        candidate?.attribution?.state === "orphan").length :
+      (data.candidates ?? []).filter((candidate) =>
+        candidate?.attribution?.state === "orphan").length;
+    const organizerLeads = market ?
+      (data.organizerLeads ?? []).filter((lead) =>
+        lead?.marketSlug === market).length :
+      data.organizerLeads?.length ?? 0;
+    return {events, organizerLeads};
+  }
   return data.summary ?? {};
 }
 

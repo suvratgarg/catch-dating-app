@@ -4974,6 +4974,55 @@ const model = {
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": [
+                  "intake"
+                ],
+                "properties": {
+                  "intake": {
+                    "type": "object",
+                    "required": [
+                      "recordType"
+                    ],
+                    "properties": {
+                      "recordType": {
+                        "const": "orphan_event_candidate"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "entityKind": {
+                "const": "event"
+              },
+              "lifecycleStatus": {
+                "not": {
+                  "const": "published"
+                }
+              },
+              "blockerCodes": {
+                "contains": {
+                  "const": "organizer_not_in_inventory"
+                }
+              },
+              "normalizedPayload": {
+                "properties": {
+                  "intake": {
+                    "$ref": "#/definitions/orphanEventCandidateIntake"
+                  }
+                }
+              }
+            }
+          }
         }
       ],
       "definitions": {
@@ -4987,6 +5036,139 @@ const model = {
           "maxItems": 40,
           "items": {
             "$ref": "#/definitions/boundedString"
+          }
+        },
+        "orphanEventCandidateIntake": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "recordType",
+            "candidate"
+          ],
+          "properties": {
+            "recordType": {
+              "const": "orphan_event_candidate"
+            },
+            "candidate": {
+              "type": "object",
+              "additionalProperties": true,
+              "required": [
+                "id",
+                "candidateId",
+                "publicationEligibility",
+                "blockerCodes",
+                "attribution"
+              ],
+              "properties": {
+                "id": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "candidateId": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "publicationEligibility": {
+                  "const": "blocked_orphan"
+                },
+                "blockerCodes": {
+                  "type": "array",
+                  "maxItems": 40,
+                  "contains": {
+                    "const": "organizer_not_in_inventory"
+                  },
+                  "items": {
+                    "$ref": "#/definitions/boundedString"
+                  }
+                },
+                "attribution": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "state",
+                    "organizerEvidence",
+                    "match"
+                  ],
+                  "properties": {
+                    "state": {
+                      "const": "orphan"
+                    },
+                    "organizerEvidence": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "name",
+                        "url"
+                      ],
+                      "properties": {
+                        "name": {
+                          "anyOf": [
+                            {
+                              "$ref": "#/definitions/boundedString"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "url": {
+                          "anyOf": [
+                            {
+                              "$ref": "#/definitions/boundedString"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "match": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "decision",
+                        "policyId",
+                        "threshold",
+                        "rationale",
+                        "matchedEntityId",
+                        "score",
+                        "matchingSignals",
+                        "blockingKeys"
+                      ],
+                      "properties": {
+                        "decision": {
+                          "$ref": "#/definitions/boundedString"
+                        },
+                        "policyId": {
+                          "$ref": "#/definitions/boundedString"
+                        },
+                        "threshold": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "rationale": {
+                          "$ref": "#/definitions/boundedString"
+                        },
+                        "matchedEntityId": {
+                          "type": "null"
+                        },
+                        "score": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "matchingSignals": {
+                          "$ref": "#/definitions/boundedStringArray"
+                        },
+                        "blockingKeys": {
+                          "$ref": "#/definitions/boundedStringArray"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "supplyFreshnessCoverageIntake": {

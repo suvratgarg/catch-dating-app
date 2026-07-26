@@ -113,6 +113,16 @@ export async function createFixtureRepository(root) {
     entries: [],
   });
   await writeJson(root, "tool/organizer_intake/generated/event_crawl_run_plan.json", {schemaVersion: 1, runIntents: []});
+  await writeJson(
+    root,
+    "tool/organizer_intake/generated/external_event_candidate_queue.json",
+    {
+      schemaVersion: 1,
+      candidates: [],
+      organizerLeads: [],
+      summary: {candidates: 0, organizerLeads: 0, orphanEvents: 0},
+    }
+  );
   return root;
 }
 

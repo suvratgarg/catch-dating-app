@@ -1072,6 +1072,213 @@ export const operationWorkItemSchema = {
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object",
+            "required": [
+              "intake"
+            ],
+            "properties": {
+              "intake": {
+                "type": "object",
+                "required": [
+                  "recordType"
+                ],
+                "properties": {
+                  "recordType": {
+                    "const": "orphan_event_candidate"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "entityKind": {
+            "const": "event"
+          },
+          "lifecycleStatus": {
+            "not": {
+              "const": "published"
+            }
+          },
+          "blockerCodes": {
+            "contains": {
+              "const": "organizer_not_in_inventory"
+            }
+          },
+          "normalizedPayload": {
+            "properties": {
+              "intake": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "recordType",
+                  "candidate"
+                ],
+                "properties": {
+                  "recordType": {
+                    "const": "orphan_event_candidate"
+                  },
+                  "candidate": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "required": [
+                      "id",
+                      "candidateId",
+                      "publicationEligibility",
+                      "blockerCodes",
+                      "attribution"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "candidateId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "publicationEligibility": {
+                        "const": "blocked_orphan"
+                      },
+                      "blockerCodes": {
+                        "type": "array",
+                        "maxItems": 40,
+                        "contains": {
+                          "const": "organizer_not_in_inventory"
+                        },
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 500
+                        }
+                      },
+                      "attribution": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "state",
+                          "organizerEvidence",
+                          "match"
+                        ],
+                        "properties": {
+                          "state": {
+                            "const": "orphan"
+                          },
+                          "organizerEvidence": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "name",
+                              "url"
+                            ],
+                            "properties": {
+                              "name": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 500
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "url": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 500
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          "match": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "decision",
+                              "policyId",
+                              "threshold",
+                              "rationale",
+                              "matchedEntityId",
+                              "score",
+                              "matchingSignals",
+                              "blockingKeys"
+                            ],
+                            "properties": {
+                              "decision": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 500
+                              },
+                              "policyId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 500
+                              },
+                              "threshold": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1
+                              },
+                              "rationale": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 500
+                              },
+                              "matchedEntityId": {
+                                "type": "null"
+                              },
+                              "score": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1
+                              },
+                              "matchingSignals": {
+                                "type": "array",
+                                "maxItems": 40,
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 500
+                                }
+                              },
+                              "blockingKeys": {
+                                "type": "array",
+                                "maxItems": 40,
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 500
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   ],
   "definitions": {
@@ -1087,6 +1294,167 @@ export const operationWorkItemSchema = {
         "type": "string",
         "minLength": 1,
         "maxLength": 500
+      }
+    },
+    "orphanEventCandidateIntake": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recordType",
+        "candidate"
+      ],
+      "properties": {
+        "recordType": {
+          "const": "orphan_event_candidate"
+        },
+        "candidate": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": [
+            "id",
+            "candidateId",
+            "publicationEligibility",
+            "blockerCodes",
+            "attribution"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "candidateId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "publicationEligibility": {
+              "const": "blocked_orphan"
+            },
+            "blockerCodes": {
+              "type": "array",
+              "maxItems": 40,
+              "contains": {
+                "const": "organizer_not_in_inventory"
+              },
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              }
+            },
+            "attribution": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "state",
+                "organizerEvidence",
+                "match"
+              ],
+              "properties": {
+                "state": {
+                  "const": "orphan"
+                },
+                "organizerEvidence": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "name",
+                    "url"
+                  ],
+                  "properties": {
+                    "name": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 500
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 500
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "match": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "decision",
+                    "policyId",
+                    "threshold",
+                    "rationale",
+                    "matchedEntityId",
+                    "score",
+                    "matchingSignals",
+                    "blockingKeys"
+                  ],
+                  "properties": {
+                    "decision": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 500
+                    },
+                    "policyId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 500
+                    },
+                    "threshold": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "rationale": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 500
+                    },
+                    "matchedEntityId": {
+                      "type": "null"
+                    },
+                    "score": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "matchingSignals": {
+                      "type": "array",
+                      "maxItems": 40,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      }
+                    },
+                    "blockingKeys": {
+                      "type": "array",
+                      "maxItems": 40,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "supplyFreshnessCoverageIntake": {

@@ -99,6 +99,78 @@ test("buildExternalEventCandidateQueue rejects incomplete import approvals", () 
   );
 });
 
+test("orphan events stay blocked and seed an organizer lead", () => {
+  const batch = sampleBatch();
+  batch.attributionState = "orphan";
+  batch.entityId = null;
+  batch.organizerEvidence = {
+    name: "Courtside",
+    url: "https://courtside.club/",
+  };
+
+  const queue = buildExternalEventCandidateQueue([batch]);
+  const candidate = queue.candidates[0];
+
+  assert.equal(queue.summary.orphanEvents, 1);
+  assert.equal(queue.summary.organizerLeads, 1);
+  assert.equal(candidate.entityId, null);
+  assert.equal(candidate.attribution.state, "orphan");
+  assert.equal(candidate.publicationEligibility, "blocked_orphan");
+  assert.ok(candidate.blockers.includes("organizer_not_in_inventory"));
+  assert.deepEqual(queue.organizerLeads[0], {
+    leadId: "event-organizer-lead:courtside:indore:https://courtside.club/",
+    recordType: "organizer_event_lead",
+    organizerName: "Courtside",
+    organizerUrl: "https://courtside.club/",
+    marketSlug: "indore",
+    sourcePlatform: "luma",
+    eventCandidateIds: [
+      "2026-06-17-afterfly-luma-events:pxgmph3b",
+    ],
+    eventUrls: ["https://luma.com/pxgmph3b"],
+    observedAt: "2025-03-15T18:00:00+05:30",
+    reviewAction: "create_or_match_organizer_before_event_publication",
+    blocker: "organizer_not_in_inventory",
+  });
+});
+
+test("orphan events auto-attribute with a reviewable scorecard", () => {
+  const batch = sampleBatch();
+  batch.attributionState = "orphan";
+  batch.entityId = null;
+  batch.organizerEvidence = {
+    name: "Courtside",
+    url: "https://courtside.club/",
+  };
+
+  const queue = buildExternalEventCandidateQueue([batch], {
+    organizerInventory: [{
+      entityId: "courtside",
+      displayName: "Courtside",
+      citySlug: "indore",
+      surfaces: [{url: "https://courtside.club/"}],
+    }],
+  });
+  const candidate = queue.candidates[0];
+
+  assert.equal(queue.summary.autoAttributedEvents, 1);
+  assert.equal(queue.summary.orphanEvents, 0);
+  assert.equal(queue.summary.organizerLeads, 0);
+  assert.equal(candidate.entityId, "courtside");
+  assert.equal(candidate.attribution.state, "attributed");
+  assert.equal(candidate.attribution.match.decision, "auto_attach");
+  assert.equal(candidate.attribution.match.matchedEntityId, "courtside");
+  assert.ok(candidate.attribution.match.score >=
+    candidate.attribution.match.threshold);
+  assert.ok(candidate.attribution.match.matchingSignals.includes(
+    "same_canonical_url"
+  ));
+  assert.equal(
+    candidate.blockers.includes("organizer_not_in_inventory"),
+    false
+  );
+});
+
 function sampleBatch() {
   return {
     schemaVersion: 1,

@@ -19,14 +19,14 @@
     "nonLiteralDynamicImports": "report"
   },
   "summary": {
-    "scannedSourceModules": 343,
+    "scannedSourceModules": 344,
     "dependencyLeafNodes": 18,
-    "moduleNodes": 361,
-    "moduleEdges": 1245,
-    "runtimeModuleEdges": 984,
-    "typeOnlyModuleEdges": 261,
+    "moduleNodes": 362,
+    "moduleEdges": 1249,
+    "runtimeModuleEdges": 986,
+    "typeOnlyModuleEdges": 263,
     "dynamicImportEdges": 29,
-    "reExportEdges": 65,
+    "reExportEdges": 64,
     "featureGroups": 33,
     "featureDependencies": 100,
     "crossSurfaceDependencies": 5,
@@ -217,8 +217,8 @@
       "surface": "admin",
       "scope": "feature",
       "feature": "intake",
-      "modules": 30,
-      "tests": 9,
+      "modules": 31,
+      "tests": 10,
       "stories": 0
     },
     {
@@ -962,11 +962,11 @@
       "targetSurface": "admin",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 57,
-      "runtimeEdges": 39,
-      "typeOnlyEdges": 18,
+      "edges": 60,
+      "runtimeEdges": 40,
+      "typeOnlyEdges": 20,
       "dynamicImports": 0,
-      "reExports": 4,
+      "reExports": 3,
       "sourceModules": [
         "admin/src/features/intake/events/api/eventIntakeRepository.ts",
         "admin/src/features/intake/events/controllers/eventIntakeReviewDecisionHelpers.test.ts",
@@ -3220,11 +3220,11 @@
       "sourceLayer": "feature",
       "targetSurface": "admin",
       "targetLayer": "shared",
-      "edges": 206,
-      "runtimeEdges": 140,
-      "typeOnlyEdges": 66,
+      "edges": 209,
+      "runtimeEdges": 141,
+      "typeOnlyEdges": 68,
       "dynamicImports": 0,
-      "reExports": 5,
+      "reExports": 4,
       "sourceModules": [
         "admin/src/features/access/api/accessReviewRepository.ts",
         "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
@@ -4593,8 +4593,8 @@
     },
     {
       "package": "vitest",
-      "edges": 61,
-      "runtimeEdges": 61,
+      "edges": 62,
+      "runtimeEdges": 62,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "surfaces": [
@@ -4610,6 +4610,7 @@
         "admin/src/features/events/controllers/useEventPublishingController.test.tsx",
         "admin/src/features/finance/controllers/useFinanceOpsController.test.tsx",
         "admin/src/features/growth/controllers/useGrowthKpiController.test.tsx",
+        "admin/src/features/intake/events/api/eventIntakeRepository.test.ts",
         "admin/src/features/intake/events/controllers/eventIntakeReviewDecisionHelpers.test.ts",
         "admin/src/features/intake/events/controllers/useEventIntakeController.test.tsx",
         "admin/src/features/intake/operations/controllers/useIntakeOperationsController.test.tsx",
@@ -5062,6 +5063,18 @@
       "extension": ".tsx",
       "scanned": true,
       "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/features/intake/events/api/eventIntakeRepository.test.ts",
+      "surface": "admin",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "intake",
+      "group": "admin:feature:intake",
+      "extension": ".ts",
+      "scanned": true,
+      "test": true,
       "story": false
     },
     {
@@ -10227,12 +10240,48 @@
       "column": 1
     },
     {
+      "source": "admin/src/features/intake/events/api/eventIntakeRepository.test.ts",
+      "target": "admin/src/features/intake/events/api/eventIntakeRepository.ts",
+      "specifier": "./eventIntakeRepository",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 14,
+      "column": 1
+    },
+    {
       "source": "admin/src/features/intake/events/api/eventIntakeRepository.ts",
       "target": "admin/src/shared/api/adminApi.ts",
       "specifier": "../../../../shared/api/adminApi",
-      "kind": "export",
+      "kind": "import",
       "typeOnly": false,
       "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/events/api/eventIntakeRepository.ts",
+      "target": "admin/src/shared/config/launchMarkets.ts",
+      "specifier": "../../../../shared/config/launchMarkets",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 5,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/events/api/eventIntakeRepository.ts",
+      "target": "admin/src/shared/types/adminTypes.ts",
+      "specifier": "../../../../shared/types/adminTypes",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 7,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/events/api/eventIntakeRepository.ts",
+      "target": "admin/src/shared/operations/operationsTypes.ts",
+      "specifier": "../../../../shared/operations/operationsTypes",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 12,
       "column": 1
     },
     {
@@ -10241,7 +10290,7 @@
       "specifier": "../../../../shared/api/adminApi",
       "kind": "export",
       "typeOnly": false,
-      "line": 5,
+      "line": 40,
       "column": 1
     },
     {
@@ -13022,7 +13071,7 @@
       "specifier": "../../generated/contracts/adminGetOverviewCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1743,
+      "line": 1764,
       "column": 1
     },
     {
@@ -13031,7 +13080,7 @@
       "specifier": "../../generated/contracts/adminDecideAccessApplicationCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1745,
+      "line": 1766,
       "column": 1
     },
     {
@@ -13040,7 +13089,7 @@
       "specifier": "../../generated/contracts/adminDecideAccessApplicationCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1747,
+      "line": 1768,
       "column": 1
     },
     {
@@ -13049,7 +13098,7 @@
       "specifier": "../../generated/contracts/adminSetAdminUserRolesCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1749,
+      "line": 1770,
       "column": 1
     },
     {
@@ -13058,7 +13107,7 @@
       "specifier": "../../generated/contracts/adminSetAdminUserRolesCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1751,
+      "line": 1772,
       "column": 1
     },
     {
@@ -13067,7 +13116,7 @@
       "specifier": "../../generated/contracts/adminDecideSafetyTriageItemCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1753,
+      "line": 1774,
       "column": 1
     },
     {
@@ -13076,7 +13125,7 @@
       "specifier": "../../generated/contracts/adminDecideSafetyTriageItemCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1755,
+      "line": 1776,
       "column": 1
     },
     {
@@ -13085,7 +13134,7 @@
       "specifier": "../../generated/contracts/adminAssignSafetyTriageItemCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1757,
+      "line": 1778,
       "column": 1
     },
     {
@@ -13094,7 +13143,7 @@
       "specifier": "../../generated/contracts/adminAssignSafetyTriageItemCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1759,
+      "line": 1780,
       "column": 1
     },
     {
@@ -13103,7 +13152,7 @@
       "specifier": "../../generated/contracts/adminCreateMarketingContentDraftCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1761,
+      "line": 1782,
       "column": 1
     },
     {
@@ -13112,7 +13161,7 @@
       "specifier": "../../generated/contracts/adminCreateOrganizerDraftFromCandidateCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1763,
+      "line": 1784,
       "column": 1
     },
     {
@@ -13121,7 +13170,7 @@
       "specifier": "../../generated/contracts/adminCreateOrganizerDraftFromCandidateCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1765,
+      "line": 1786,
       "column": 1
     },
     {
@@ -13130,7 +13179,7 @@
       "specifier": "../../generated/contracts/adminRecordMarketingReviewDecisionCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1767,
+      "line": 1788,
       "column": 1
     },
     {
@@ -13139,7 +13188,7 @@
       "specifier": "../../generated/contracts/adminRecordMarketingReviewDecisionCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1769,
+      "line": 1790,
       "column": 1
     },
     {
@@ -20681,6 +20730,15 @@
       "source": "admin/src/features/growth/ui/GrowthKpiScreen.tsx",
       "package": "lucide-react",
       "specifier": "lucide-react",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/events/api/eventIntakeRepository.test.ts",
+      "package": "vitest",
+      "specifier": "vitest",
       "kind": "import",
       "typeOnly": false,
       "line": 1,

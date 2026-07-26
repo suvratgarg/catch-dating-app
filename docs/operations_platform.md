@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.6.0
-updated: 2026-07-26
+version: 1.7.0
+updated: 2026-07-27
 owner: operations_platform
 status: active
 ---
@@ -293,6 +293,18 @@ The Event and Organizer Intake tabs remain the human-review surfaces. The
 operations projection adds run health and exception inventory without replacing
 their source evidence or backed decision callables.
 
+Supply Intake `0.4.0` makes missing organizer attribution representable without
+weakening publication. A source-backed event capture must explicitly choose
+`attributed` or `orphan`; accidental omission still fails. An orphan projects
+to Event Intake as human-owned Resolve work with
+`organizer_not_in_inventory`, `event_crawl_todo`, and
+`publicationEligibility=blocked_orphan`. The same evidence creates a normal
+organizer discovery candidate, so the existing reviewed organizer-draft
+handoff can resolve the missing inventory. On a later ingest, a unique
+organizer-inventory match above the source-mention resolution threshold clears
+the blocker and records the policy id, score, matching signals, blocking keys,
+and rationale. The React admin does not run this matcher.
+
 Organizer discovery can run with `--intake-scope organizer`. This scope does
 not require or project an Event Intake bridge, so each launch market can
 produce an immutable organizer queue independently. Normalized organizer
@@ -309,6 +321,12 @@ local CLI commands, and raw provider payloads remain outside the canonical
 Firestore work item. The live Organizer Intake tab
 selects the newest completed organizer run per launch market and ignores
 historical runs rather than merging duplicate snapshots.
+
+The live Event Intake read joins its event-owned dashboard with orphan-event
+work items from the newest completed non-organizer Supply Intake run per launch
+market. Invalid orphan projections fail the read instead of rendering partial
+evidence. Intake approval remains only a review decision; the contract and
+promotion eligibility both independently forbid publishing an orphan.
 
 ### Admin projection bridge
 

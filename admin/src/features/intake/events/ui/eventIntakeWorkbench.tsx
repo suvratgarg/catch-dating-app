@@ -270,6 +270,13 @@ function detailForRecord({
         "Approval is disabled until source, date, venue, copy, and rights checks pass.",
     impactRows: candidate ? [
       {id: "intake", label: "Intake state", value: candidate.reviewState.replaceAll("_", " ")},
+      {
+        id: "organizer",
+        label: "Organizer attribution",
+        value: candidate.attribution?.state === "orphan" ?
+          "Required before publication" :
+          candidate.attribution?.match.matchedEntityId ?? "Attributed",
+      },
       {id: "marketing", label: "Marketing eligibility", value: candidate.sourceUrl ? "Reviewable" : "Blocked"},
       {id: "external", label: "External supply", value: "Separate import plan"},
       {id: "canonical", label: "Canonical event", value: "Not created here"},
@@ -294,7 +301,9 @@ function detailForRecord({
       </AdminIntakeSection>
     ),
     noteTitle: "Decision note",
-    primaryRows: candidate ? candidate.sourceResultIds.map((sourceId) => {
+    primaryRows: candidate ? (
+      candidate.sourceResultIds.length > 0 ?
+        candidate.sourceResultIds.map((sourceId) => {
       const result = sourceResultById.get(sourceId);
       return {
         href: result?.url,
@@ -304,7 +313,22 @@ function detailForRecord({
         statusTone: result ? "warning" as const : "danger" as const,
         title: result?.title ?? sourceId,
       };
-    }) : [{
+        }) :
+        candidate.sourceUrl ? [{
+          href: candidate.sourceUrl,
+          id: `direct-source:${candidate.id}`,
+          meta:
+            `${candidate.sourceLabel} · direct event evidence`,
+          status: candidate.attribution?.state === "orphan" ?
+            "organizer attribution required" :
+            "source backed",
+          statusTone: candidate.attribution?.state === "orphan" ?
+            "warning" as const :
+            "success" as const,
+          title: candidate.attribution?.organizerEvidence.name ??
+            candidate.title,
+        }] : []
+    ) : [{
       href: source!.url,
       id: source!.id,
       meta: `${source!.sourceLabel} · observed ${formatTimestamp(source!.observedAt)}`,
@@ -330,6 +354,12 @@ function detailForRecord({
 
 function candidateChecks(candidate: EventIntakeCandidate) {
   return [
+    {
+      id: "organizer",
+      label: "Canonical organizer attributed",
+      meta: "required before publication",
+      passed: candidate.attribution?.state !== "orphan",
+    },
     {id: "source", label: "Official source URL attached", meta: "required", passed: Boolean(candidate.sourceUrl)},
     {id: "date", label: "Date and time recorded", meta: "required", passed: Boolean(candidate.startDate && candidate.time)},
     {id: "venue", label: "Venue or meeting point recorded", meta: "required", passed: Boolean(candidate.venue && candidate.neighborhood)},
@@ -373,6 +403,9 @@ function recordStatus(record: EventWorkbenchRecord): {
     return {label: record.value.status.replaceAll("_", " "), tone: "warning"};
   }
   if (record.value.reviewState === "approved") return {label: "approved", tone: "success"};
+  if (record.value.attribution?.state === "orphan") {
+    return {label: "organizer required", tone: "danger"};
+  }
   if (!record.value.sourceUrl) return {label: "needs source", tone: "danger"};
   if (record.value.sourceStatus === "manual_reference_needs_official_verification") {
     return {label: "verify source", tone: "warning"};
@@ -381,7 +414,8 @@ function recordStatus(record: EventWorkbenchRecord): {
 }
 
 function candidateNeedsAttention(candidate: EventIntakeCandidate) {
-  return !candidate.sourceUrl ||
+  return candidate.attribution?.state === "orphan" ||
+    !candidate.sourceUrl ||
     candidate.sourceStatus === "manual_reference_needs_official_verification" ||
     candidate.warnings.length > 0;
 }

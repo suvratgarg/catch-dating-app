@@ -39,4 +39,36 @@ test("buildLumaEventSourceBatch extracts Event JSON-LD", () => {
   assert.equal(batch.events[0].sourceEventId, "pxgmph3b");
   assert.equal(batch.events[0].priceText, "0 INR");
   assert.equal(batch.events[0].citySlug, "indore");
+  assert.equal(batch.attributionState, "attributed");
+});
+
+test("buildLumaEventSourceBatch preserves organizer evidence for orphans", () => {
+  const batch = buildLumaEventSourceBatch({
+    "@type": "Event",
+    name: "Courtside Friday Social",
+    startDate: "2026-08-01T18:00:00+05:30",
+    url: "https://lu.ma/courtside-friday",
+    organizer: {
+      "@type": "Organization",
+      name: "Courtside",
+      url: "https://courtside.club/",
+    },
+  }, {
+    attributionState: "orphan",
+    batchId: "2026-07-27-courtside-orphan-events",
+    citySlug: "mumbai",
+    countryCode: "IN",
+    createdAt: "2026-07-27",
+    entityId: null,
+    surfaceId: "luma-courtside-friday",
+    timezone: "Asia/Kolkata",
+  });
+
+  assert.equal(batch.attributionState, "orphan");
+  assert.equal(batch.entityId, null);
+  assert.deepEqual(batch.organizerEvidence, {
+    name: "Courtside",
+    url: "https://courtside.club/",
+  });
+  assert.equal(batch.events[0].organizerName, "Courtside");
 });

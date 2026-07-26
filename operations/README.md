@@ -22,6 +22,13 @@ runtime is **shadow-only and provider-disabled by default**:
   provider payloads are excluded from that Firestore projection;
 - Event Intake bridges fail planning when missing, market-mismatched,
   future-dated, older than 168 hours, or past their reviewed week end;
+- explicitly orphaned external-event candidates are admitted only with
+  organizer evidence. They project as human-owned `resolve` work with the
+  `organizer_not_in_inventory` blocker and `event_crawl_todo` flag, and seed a
+  normal organizer discovery candidate from the event's organizer evidence;
+- rerunning deterministic event ingestion with current organizer inventory can
+  auto-attribute a unique scorecard match. The event retains the score,
+  signals, keys, rationale, and policy id that cleared the threshold;
 - promotion produces a review receipt, never an app, website, or Firestore
   mutation; and
 - CN Traveller is discovery-only and requires an official source before any
@@ -203,6 +210,15 @@ the contract maximum. The Admin projection never includes evidence-record
 objects, generated public copy, curation details, local CLI commands, or raw
 provider payloads. Changing this projection changes immutable export content,
 so verification must create and import a new run id.
+
+Orphan-event work items persist a bounded Event Intake candidate under
+`normalizedPayload.intake` with `recordType=orphan_event_candidate`.
+The operations contract requires the event entity kind, the
+`organizer_not_in_inventory` blocker, an orphan attribution record whose
+matched entity is null, and `publicationEligibility=blocked_orphan`. Such a
+record can never carry the canonical `published` lifecycle. The paired
+organizer lead uses the ordinary organizer-search-candidate contract so the
+existing candidate-to-draft handoff remains the only scaffolder.
 
 The export can then be validated without credentials and, after review,
 imported into the server-owned admin projection:

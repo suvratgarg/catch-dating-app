@@ -526,6 +526,188 @@ test("organizer search candidates become database-ready organizer work items", a
   });
 });
 
+test("orphan events project to event work and organizer leads", async () => {
+  const repoRoot = await createFixtureRepository(
+    await temporaryDirectory("catch-ops-orphan-events-")
+  );
+  const queuePath = path.join(
+    repoRoot,
+    "tool/organizer_intake/generated/external_event_candidate_queue.json"
+  );
+  const candidateId = "courtside-orphan-events:courtside-friday";
+  const leadId = "event-organizer-lead:courtside:mumbai:courtside.club";
+  await fs.writeFile(queuePath, `${JSON.stringify({
+    schemaVersion: 1,
+    summary: {candidates: 1, organizerLeads: 1, orphanEvents: 1},
+    candidates: [{
+      candidateId,
+      batchId: "courtside-orphan-events",
+      entityId: null,
+      surfaceId: "courtside-luma",
+      platform: "luma",
+      sourceUrl: "https://lu.ma/courtside-friday",
+      sourceEventId: "courtside-friday",
+      sourceEventKey: "luma:event:courtside-friday",
+      normalizedEventKey:
+        "orphan-courtside:2026-07-20T18:00:00+05:30:courtside-friday",
+      title: "Courtside Friday",
+      description: "Source-backed padel social.",
+      startAt: "2026-07-20T18:00:00+05:30",
+      endAt: "2026-07-20T20:00:00+05:30",
+      timezone: "Asia/Kolkata",
+      location: {
+        name: "Courtside",
+        address: "Mumbai",
+        citySlug: "mumbai",
+        countryCode: "IN",
+      },
+      locationResolution: null,
+      eventUrl: "https://lu.ma/courtside-friday",
+      imageUrl: null,
+      priceText: "Free",
+      sourceStatus: "scheduled",
+      attribution: {
+        state: "orphan",
+        organizerEvidence: {
+          name: "Courtside",
+          url: "https://courtside.club/",
+        },
+        match: {
+          decision: "needs_review",
+          policyId: "source-mention-resolution-v1",
+          threshold: 0.9,
+          rationale: "No organizer inventory match cleared the threshold.",
+          matchedEntityId: null,
+          score: 0.82,
+          matchingSignals: ["exact_organizer_name"],
+          blockingKeys: ["organizer-name:courtside"],
+        },
+      },
+      publicationEligibility: "blocked_orphan",
+      reviewStatus: "needs_admin_review",
+      reviewDecision: null,
+      importReadiness: "blocked",
+      importState: "not_reviewed",
+      blockers: [
+        "global_external_event_import_disabled",
+        "organizer_not_in_inventory",
+        "requires_admin_review",
+      ],
+      reviewAction: "review_external_event_candidate",
+      diagnostics: [],
+    }],
+    organizerLeads: [{
+      leadId,
+      recordType: "organizer_event_lead",
+      organizerName: "Courtside",
+      organizerUrl: "https://courtside.club/",
+      marketSlug: "mumbai",
+      sourcePlatform: "luma",
+      eventCandidateIds: [candidateId],
+      eventUrls: ["https://lu.ma/courtside-friday"],
+      observedAt: "2026-07-20T18:00:00+05:30",
+      reviewAction: "create_or_match_organizer_before_event_publication",
+      blocker: "organizer_not_in_inventory",
+    }],
+  }, null, 2)}\n`);
+
+  const workflow = new SupplyIntakeWorkflow({repoRoot});
+  const plan = await workflow.createPlan({
+    market: "mumbai",
+    through: "2026-07-28",
+    now: NOW,
+  });
+  assert.deepEqual(
+    plan.artifactSnapshot.artifacts.externalEventCandidateQueue.counts,
+    {events: 1, organizerLeads: 1}
+  );
+  const projected = await workflow.project(plan, {
+    runId: "run-orphan-events",
+    now: NOW,
+  });
+  const event = projected.find((item) =>
+    item.sourceEntity.id === candidateId);
+  const lead = projected.find((item) => item.sourceEntity.id === leadId);
+  assert.ok(event);
+  assert.ok(lead);
+
+  const reviewedEvent = {...event, ...workflow.review(event, {now: NOW})};
+  const reviewedLead = {...lead, ...workflow.review(lead, {now: NOW})};
+  assert.equal(reviewedEvent.primaryStage, "resolve");
+  assert.equal(reviewedEvent.owner, "human");
+  assert.ok(reviewedEvent.blockers.includes("organizer_not_in_inventory"));
+  assert.ok(reviewedEvent.taskFlags.includes("event_crawl_todo"));
+  assert.equal(
+    reviewedEvent.adminProjection.recordType,
+    "orphan_event_candidate"
+  );
+  assert.equal(reviewedEvent.adminProjection.candidate.attribution.state,
+    "orphan");
+  assert.equal(reviewedLead.entityKind, "organizer");
+  assert.equal(
+    reviewedLead.adminProjection.recordType,
+    "organizer_search_candidate"
+  );
+  assert.equal(
+    reviewedLead.adminProjection.candidate.queryIntent.marketSlug,
+    "mumbai"
+  );
+
+  const promotion = await workflow.promotionEligibility(reviewedEvent);
+  assert.equal(promotion.eligible, false);
+  assert.ok(promotion.blockers.includes("organizer_not_in_inventory"));
+
+  const projection = buildAdminProjection({
+    schemaVersion: 1,
+    runId: "run-orphan-events",
+    workflowId: "supply-intake",
+    workflowVersion: workflow.version,
+    revision: 0,
+    mode: "shadow",
+    status: "completed",
+    planId: plan.planId,
+    plan,
+    planHash: hashValue(plan),
+    capabilities: plan.capabilities,
+    budget: {limits: plan.budgets, consumed: {}},
+    counters: {actions: 0},
+    createdAt: NOW,
+    updatedAt: NOW,
+    startedAt: NOW,
+    completedAt: NOW,
+    failure: null,
+  }, [reviewedEvent, reviewedLead]);
+  assert.equal(
+    projection.items.find((item) => item.entityKind === "event")
+      .normalizedPayload.intake.candidate.publicationEligibility,
+    "blocked_orphan"
+  );
+  const eventProjection = projection.items.find((item) =>
+    item.entityKind === "event");
+  assert.deepEqual(
+    eventProjection.fieldProvenance.map((entry) => entry.field),
+    [
+      "sourceEntity.title",
+      "source.url",
+      "intake.candidate.attribution.organizerEvidence.name",
+      "intake.candidate.attribution.organizerEvidence.url",
+      "intake.candidate.attribution.match.rationale",
+      "intake.candidate.attribution.match.matchingSignals",
+      "intake.candidate.attribution.match.blockingKeys",
+      "intake.candidate.publicationEligibility",
+    ]
+  );
+  assert.ok(eventProjection.fieldProvenance.slice(2).every((entry) =>
+    entry.extractedBy === "deterministic" &&
+    entry.locator?.includes("#normalizedPayload.intake.candidate")
+  ));
+  await validateCanonicalProjection({
+    repoRoot: REPO_ROOT,
+    projection,
+    requireContracts: true,
+  });
+});
+
 test("organizer-only plans do not require an Event Intake bridge", async () => {
   const repoRoot = await createFixtureRepository(
     await temporaryDirectory("catch-ops-organizer-only-")
@@ -788,6 +970,52 @@ test("canonical export validation enforces conditional work-item contracts",
             outcome: "published",
           }],
         },
+        requireContracts: true,
+      }),
+      {code: "CANONICAL_PROJECTION_INVALID"}
+    );
+    const publishedOrphan = {
+      ...workItem,
+      entityKind: "event",
+      lifecycleStatus: "published",
+      outcome: "published",
+      taskFlags: [],
+      blockerCodes: ["organizer_not_in_inventory"],
+      normalizedPayload: {
+        ...workItem.normalizedPayload,
+        owner: "system",
+        intake: {
+          recordType: "orphan_event_candidate",
+          candidate: {
+            id: "orphan-event",
+            candidateId: "orphan-event",
+            publicationEligibility: "blocked_orphan",
+            blockerCodes: ["organizer_not_in_inventory"],
+            attribution: {
+              state: "orphan",
+              organizerEvidence: {
+                name: "Missing organizer",
+                url: null,
+              },
+              match: {
+                decision: "needs_review",
+                policyId: "source-mention-resolution-v1",
+                threshold: 0.9,
+                rationale: "No organizer matched.",
+                matchedEntityId: null,
+                score: 0,
+                matchingSignals: [],
+                blockingKeys: [],
+              },
+            },
+          },
+        },
+      },
+    };
+    await assert.rejects(
+      validateCanonicalProjection({
+        repoRoot: REPO_ROOT,
+        projection: {run, items: [publishedOrphan]},
         requireContracts: true,
       }),
       {code: "CANONICAL_PROJECTION_INVALID"}

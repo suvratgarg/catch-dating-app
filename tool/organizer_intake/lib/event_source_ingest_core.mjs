@@ -1,7 +1,11 @@
+import {buildOrganizerAttributionScorecard} from
+  "./source_mention_resolution_core.mjs";
+
 export function buildExternalEventCandidateQueue(batches, options = {}) {
   const errors = [];
   const warnings = [];
   const candidates = [];
+  const organizerInventory = options.organizerInventory ?? [];
   const reviewDecisionState = buildReviewDecisionState(
     options.reviewDecisionBatches ?? [],
     errors
@@ -20,13 +24,15 @@ export function buildExternalEventCandidateQueue(batches, options = {}) {
         event,
         warnings,
         reviewDecisionState.byCandidateId,
-        locationResolutionState.byCandidateId
+        locationResolutionState.byCandidateId,
+        organizerInventory
       );
       if (candidate) candidates.push(candidate);
     }
   }
 
   const duplicateEventKeys = duplicateKeys(candidates, "normalizedEventKey");
+  const organizerLeads = organizerLeadsFor(candidates);
   validateReviewDecisionReferences(
     reviewDecisionState.byCandidateId,
     candidates,
@@ -68,15 +74,23 @@ export function buildExternalEventCandidateQueue(batches, options = {}) {
         candidate.reviewStatus === "rejected").length,
       locationResolved: candidates.filter((candidate) =>
         candidate.locationResolution).length,
+      orphanEvents: candidates.filter((candidate) =>
+        candidate.attribution.state === "orphan").length,
+      autoAttributedEvents: candidates.filter((candidate) =>
+        candidate.attribution.state === "attributed" &&
+        candidate.attribution.match?.decision === "auto_attach").length,
+      organizerLeads: organizerLeads.length,
     },
     candidates,
+    organizerLeads,
     duplicateEventKeys,
     warnings: warnings.sort(),
     errors: errors.sort(),
     commands: {
       captureLuma:
         "node tool/organizer_intake/capture_luma_events.mjs " +
-        "--entity ENTITY --surface SURFACE --raw-results LUMA_JSON --date YYYY-MM-DD",
+        "--entity ENTITY --surface SURFACE --raw-results LUMA_JSON --date YYYY-MM-DD " +
+        "or --orphan --organizer-name NAME --surface SURFACE",
       ingest:
         "node tool/organizer_intake/ingest_event_sources.mjs",
       review:
@@ -96,7 +110,8 @@ function candidateForEvent(
   event,
   warnings,
   reviewDecisions,
-  locationResolutions
+  locationResolutions,
+  organizerInventory
 ) {
   const label = `${batch.batchId}/${event.sourceEventId ?? "<unknown>"}`;
   if (!isIsoDateTime(event.startAt)) {
@@ -106,13 +121,32 @@ function candidateForEvent(
   const sourceEventId = event.sourceEventId;
   const candidateId = `${batch.batchId}:${sourceEventId}`;
   const eventUrl = event.eventUrl ?? batch.sourceUrl ?? null;
+  const organizerEvidence = {
+    name: event.organizerName ?? batch.organizerEvidence?.name ?? null,
+    url: event.organizerUrl ?? batch.organizerEvidence?.url ?? null,
+  };
+  const requestedState = batch.attributionState ??
+    (batch.entityId ? "attributed" : "orphan");
+  const scorecard = requestedState === "orphan" ?
+    buildOrganizerAttributionScorecard({
+      organizerEvidence,
+      organizerInventory,
+      citySlug: event.citySlug ?? batch.citySlug ?? null,
+    }) :
+    null;
+  const entityId = requestedState === "attributed" ?
+    batch.entityId :
+    scorecard?.match?.entityId ?? null;
+  const attributionState = entityId ? "attributed" : "orphan";
   const normalizedEventKey = [
-    batch.entityId,
+    entityId ?? `orphan-${slugify(organizerEvidence.name ?? batch.batchId)}`,
     event.startAt,
     slugify(event.title),
   ].join(":");
   const reviewDecision = reviewDecisions.get(candidateId) ?? null;
-  const reviewState = eventReviewState(reviewDecision);
+  const reviewState = eventReviewState(reviewDecision, {
+    orphan: attributionState === "orphan",
+  });
   const locationResolution = locationResolutions.get(candidateId) ?? null;
   const sourceLocation = {
     name: event.locationName ?? null,
@@ -130,7 +164,7 @@ function candidateForEvent(
   return {
     candidateId,
     batchId: batch.batchId,
-    entityId: batch.entityId,
+    entityId,
     surfaceId: batch.surfaceId,
     platform: batch.platform,
     sourceUrl: batch.sourceUrl ?? null,
@@ -148,6 +182,38 @@ function candidateForEvent(
     imageUrl: event.imageUrl ?? null,
     priceText: event.priceText ?? null,
     sourceStatus: event.status ?? "scheduled",
+    attribution: {
+      state: attributionState,
+      organizerEvidence,
+      match: scorecard ? {
+        decision: scorecard.decision,
+        policyId: scorecard.policyId,
+        threshold: scorecard.threshold,
+        rationale: scorecard.match?.rationale ??
+          "No unique organizer inventory match cleared the auto-attach threshold.",
+        matchedEntityId: scorecard.match?.entityId ?? null,
+        score: scorecard.match?.score ??
+          scorecard.candidates[0]?.score ??
+          0,
+        matchingSignals: scorecard.match?.matchingSignals ??
+          scorecard.candidates[0]?.matchingSignals ??
+          [],
+        blockingKeys: scorecard.match?.blockingKeys ??
+          scorecard.candidates[0]?.blockingKeys ??
+          [],
+      } : {
+        decision: "pre_attributed",
+        policyId: "explicit-entity-attribution-v1",
+        threshold: 1,
+        rationale: "Capture supplied an existing organizer entity id.",
+        matchedEntityId: entityId,
+        score: 1,
+        matchingSignals: ["explicit_entity_id"],
+        blockingKeys: [`entity_id:${entityId}`],
+      },
+    },
+    publicationEligibility:
+      attributionState === "orphan" ? "blocked_orphan" : "review_gated",
     reviewStatus: reviewState.reviewStatus,
     reviewDecision: reviewState.reviewDecision,
     importReadiness: reviewState.importReadiness,
@@ -402,7 +468,10 @@ function locationResolutionSummary(locationResolution) {
   };
 }
 
-function eventReviewState(reviewDecision) {
+function eventReviewState(reviewDecision, {orphan = false} = {}) {
+  const attributionBlockers = orphan ?
+    ["organizer_not_in_inventory"] :
+    [];
   if (!reviewDecision) {
     return {
       reviewStatus: "needs_admin_review",
@@ -411,6 +480,7 @@ function eventReviewState(reviewDecision) {
       importState: "not_reviewed",
       blockers: [
         "global_external_event_import_disabled",
+        ...attributionBlockers,
         "requires_admin_review",
         "requires_event_dedupe_review",
       ],
@@ -430,7 +500,10 @@ function eventReviewState(reviewDecision) {
       reviewDecision: reviewSummary,
       importReadiness: "blocked",
       importState: "blocked_by_policy",
-      blockers: ["global_external_event_import_disabled"],
+      blockers: [
+        "global_external_event_import_disabled",
+        ...attributionBlockers,
+      ],
     };
   }
   if (reviewDecision.decision === "hold") {
@@ -441,6 +514,7 @@ function eventReviewState(reviewDecision) {
       importState: "not_importable",
       blockers: [
         "global_external_event_import_disabled",
+        ...attributionBlockers,
         "admin_hold",
       ],
     };
@@ -472,7 +546,24 @@ function validateBatch(batch, errors) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(batch.createdAt ?? "")) {
     errors.push(`${label}: createdAt must be YYYY-MM-DD.`);
   }
-  if (!batch.entityId) errors.push(`${label}: entityId is required.`);
+  const attributionState = batch.attributionState ??
+    (batch.entityId ? "attributed" : null);
+  if (!["attributed", "orphan"].includes(attributionState)) {
+    errors.push(
+      `${label}: attributionState must be attributed or orphan.`
+    );
+  }
+  if (attributionState === "attributed" && !batch.entityId) {
+    errors.push(`${label}: attributed batches require entityId.`);
+  }
+  if (attributionState === "orphan" && batch.entityId) {
+    errors.push(`${label}: orphan batches must not include entityId.`);
+  }
+  if (attributionState === "orphan" &&
+    (!batch.organizerEvidence?.name ||
+      typeof batch.organizerEvidence.name !== "string")) {
+    errors.push(`${label}: orphan batches require organizerEvidence.name.`);
+  }
   if (!batch.surfaceId) errors.push(`${label}: surfaceId is required.`);
   if (!["bookMyShow", "district", "luma", "partiful", "sortMyScene"].includes(batch.platform)) {
     errors.push(`${label}: unsupported event platform ${batch.platform}.`);
@@ -490,6 +581,43 @@ function validateBatch(batch, errors) {
       errors.push(`${label}/${event.sourceEventId}: title is required.`);
     }
   }
+}
+
+function organizerLeadsFor(candidates) {
+  const byKey = new Map();
+  for (const candidate of candidates) {
+    if (candidate.attribution?.state !== "orphan") continue;
+    const evidence = candidate.attribution.organizerEvidence;
+    const key = [
+      slugify(evidence?.name),
+      candidate.location?.citySlug ?? "unknown",
+      evidence?.url ?? "",
+    ].join(":");
+    const current = byKey.get(key);
+    if (current) {
+      current.eventCandidateIds.push(candidate.candidateId);
+      current.eventUrls.push(candidate.eventUrl);
+      continue;
+    }
+    byKey.set(key, {
+      leadId: `event-organizer-lead:${key}`,
+      recordType: "organizer_event_lead",
+      organizerName: evidence?.name ?? "Unknown organizer",
+      organizerUrl: evidence?.url ?? null,
+      marketSlug: candidate.location?.citySlug ?? null,
+      sourcePlatform: candidate.platform,
+      eventCandidateIds: [candidate.candidateId],
+      eventUrls: [candidate.eventUrl],
+      observedAt: candidate.startAt,
+      reviewAction: "create_or_match_organizer_before_event_publication",
+      blocker: "organizer_not_in_inventory",
+    });
+  }
+  return [...byKey.values()].map((lead) => ({
+    ...lead,
+    eventCandidateIds: [...new Set(lead.eventCandidateIds)].sort(),
+    eventUrls: [...new Set(lead.eventUrls.filter(Boolean))].sort(),
+  })).sort((left, right) => left.leadId.localeCompare(right.leadId));
 }
 
 function compareEvents(left, right) {
