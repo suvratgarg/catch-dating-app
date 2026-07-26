@@ -14,7 +14,6 @@ const matrixPath = path.join(discoveryRoot, "search_matrix.json");
 const categoriesPath = path.join(discoveryRoot, "target_categories.json");
 const templatesPath = path.join(discoveryRoot, "query_templates.json");
 const batchRoot = path.join(discoveryRoot, "candidate_batches");
-const runsRoot = path.join(discoveryRoot, "runs");
 const outputPath = path.join(discoveryRoot, "generated", "search_plan.json");
 
 const matrix = readJson(matrixPath);
@@ -24,7 +23,6 @@ const batches = loadBatches();
 const candidates = batches.flatMap((batch) => batch.candidates);
 const cities = new Map((categoriesConfig.cities ?? []).map((city) => [city.slug, city]));
 const templatesById = new Map(templates.map((template) => [template.id, template]));
-const existingRuns = loadExistingRuns();
 
 const errors = [];
 const planned = [];
@@ -110,10 +108,10 @@ const output = {
     targetCategories: relative(categoriesPath),
     queryTemplates: relative(templatesPath),
     batches: batches.map((batch) => batch.file).sort(),
-    runs: existingRuns.map((run) => run.file).sort(),
   },
   asOf,
-  freshForDays: matrix.freshForDays,
+  freshnessAuthority:
+    "immutable completed supply-intake operation runs",
   plannedCount: planned.length,
   skippedFreshCount: skipped.length,
   planned,
@@ -123,13 +121,6 @@ const output = {
     categoriesConfig,
     templates,
     candidates,
-    existingRuns: existingRuns.map((run) => ({
-      runId: run.runId,
-      searchedAt: run.searchedAt,
-      category: run.category,
-      candidateId: run.candidateId,
-      queries: run.queries,
-    })),
   }),
 };
 
@@ -169,12 +160,6 @@ console.log(
 
 function addPlan(plan) {
   const key = planKey(plan);
-  const freshCandidateRun =
-    plan.planKind === "candidate_verification" && plan.candidateId
-      ? existingRuns.find((run) => run.candidateId === plan.candidateId && isFresh(run.searchedAt))
-      : null;
-  const freshRun =
-    freshCandidateRun ?? existingRuns.find((run) => run.keys.has(key) && isFresh(run.searchedAt));
   const entry = {
     ...plan,
     runKey: key,
@@ -187,16 +172,7 @@ function addPlan(plan) {
       source: plan.source,
     }).slice(0, 16),
   };
-  if (freshRun) {
-    skipped.push({
-      ...entry,
-      existingRunId: freshRun.runId,
-      existingRunFile: freshRun.file,
-      searchedAt: freshRun.searchedAt,
-    });
-  } else {
-    planned.push(entry);
-  }
+  planned.push(entry);
 }
 
 function loadBatches() {
@@ -207,35 +183,6 @@ function loadBatches() {
     .map((file) => {
       const batchPath = path.join(batchRoot, file);
       return {...readJson(batchPath), file: relative(batchPath)};
-    });
-}
-
-function loadExistingRuns() {
-  if (!fs.existsSync(runsRoot)) return [];
-  return fs
-    .readdirSync(runsRoot)
-    .filter((file) => file.endsWith(".json"))
-    .sort()
-    .map((file) => {
-      const runPath = path.join(runsRoot, file);
-      const run = readJson(runPath);
-      const keys = new Set();
-      for (const query of run.queries ?? []) {
-        keys.add(
-          planKey({
-            source: query.source,
-            renderedQuery: query.renderedQuery,
-            citySlug: slugify(run.seed?.city ?? ""),
-            categoryId: run.category,
-            candidateId: run.candidateId ?? null,
-          })
-        );
-      }
-      return {
-        ...run,
-        file: relative(runPath),
-        keys,
-      };
     });
 }
 
@@ -259,15 +206,6 @@ function renderQuery(template, values) {
 
 function normalizeQuery(value) {
   return String(value).toLowerCase().replace(/\s+/g, " ").trim();
-}
-
-function isFresh(searchedAt) {
-  if (!searchedAt) return false;
-  const searched = Date.parse(`${searchedAt}T00:00:00Z`);
-  const current = Date.parse(`${asOf}T00:00:00Z`);
-  if (Number.isNaN(searched) || Number.isNaN(current)) return false;
-  const ageDays = Math.floor((current - searched) / 86_400_000);
-  return ageDays >= 0 && ageDays <= matrix.freshForDays;
 }
 
 function operationallyEquivalent(current, next) {
@@ -330,14 +268,6 @@ function sortValue(value) {
 
 function hashObject(value) {
   return crypto.createHash("sha256").update(stableStringify(value)).digest("hex");
-}
-
-function slugify(value) {
-  return String(value)
-    .normalize("NFKD")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
 }
 
 function relative(file) {

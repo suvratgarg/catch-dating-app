@@ -307,7 +307,7 @@
       ]
     },
     "docs/operations_platform.md": {
-      "purpose": "Canonical architecture and safety boundary for durable, resumable business workflows; Supply Intake is the reference workflow, tool remains repository automation rather than workflow runtime, and the admin projection crosses into Firestore only through the trusted dry-run-first importer.",
+      "purpose": "Canonical architecture and safety boundary for durable, resumable business workflows; Supply Intake is the reference workflow and acquisition-freshness authority, tool remains repository automation rather than workflow runtime, and the admin projection crosses into Firestore only through the trusted dry-run-first importer.",
       "read_when": [
         "Adding or changing a durable admin or agent-operated workflow",
         "Changing operation runs, work items, leases, budgets, decisions, receipts, learning rules, or publication plans",
@@ -418,7 +418,7 @@
       ]
     },
     "docs/plans/host_listing_discovery_architecture.md": {
-      "purpose": "Organizer and event discovery architecture for source mentions, deterministic dedupe, bounded LLM extraction/adjudication, admin review, claimable listings, organizer claim workflow, and Firestore projection planning.",
+      "purpose": "Organizer and event discovery architecture for immutable query and source freshness, source mentions, deterministic dedupe, bounded LLM extraction/adjudication, admin review, claimable listings, organizer claim workflow, and Firestore projection planning.",
       "read_when": [
         "Changing organizer or event intake workflows",
         "Adding crawler, search, editorial, or platform-source ingestion",

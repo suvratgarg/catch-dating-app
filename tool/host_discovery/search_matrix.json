@@ -1,7 +1,6 @@
 {
   "version": 1,
   "updatedAt": "2026-06-10",
-  "freshForDays": 90,
   "genericSearches": [
     {
       "queryTemplateId": "run_club_city_v1",

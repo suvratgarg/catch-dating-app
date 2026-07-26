@@ -66,9 +66,12 @@ mistaken for success. This graph is the canonical cross-root integration map.
 - `design/`: visual review and design-preview entrypoints.
 - `env/`: checked-in Dart define files for app environments.
 - `firebase/`: Firebase project/config helper scripts.
-- `host_discovery/`: organizer acquisition backlog, deterministic search plans,
-  seed listing fixtures, and dedupe indexes consumed through the legacy Supply
-  Intake adapter. New workflow orchestration belongs in `operations/`.
+- `host_discovery/`: organizer acquisition backlog, deterministic query-intent
+  plans, historical source-evidence fixtures, seed listing fixtures, and dedupe
+  indexes consumed through the legacy Supply Intake adapter. Its planner does
+  not decide freshness: per-kind query and source cadence is derived from
+  immutable completed runs in `operations/`. New workflow orchestration belongs
+  there too.
 - `lib/`: shared Node helper modules for repo paths, CLI parsing, and Firebase project selection.
 - Completed one-time migration tools are retired after prod verification; historical
   evidence lives in the audit registry and migration contract metadata.

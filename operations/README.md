@@ -27,6 +27,18 @@ runtime is **shadow-only**:
 - CN Traveller is discovery-only and requires an official source before any
   candidate can become publication-ready.
 
+Supply Intake is also the freshness authority for future acquisition. The host
+discovery planner now emits deterministic query intents without reading
+committed run logs. During planning, Supply Intake joins those intents and the
+event crawl's known source surfaces against immutable
+`supply_freshness_coverage` records from completed Operations runs. The frozen,
+schema-validated policy currently distinguishes city discovery, candidate
+verification, known-organizer event refresh, and event detail
+prepublication. Each scheduled or skipped source surface carries
+`lastFetchedAt` and `nextEligibleAt`; a fresh skip cites the completed run that
+covered it. This is scheduling only: shadow mode still performs no fetch and
+therefore creates no new coverage record.
+
 ## Architecture
 
 ```text
@@ -154,6 +166,12 @@ Useful common flags:
 `run` accepts `--plan PATH` to execute a previously captured plan. Without one,
 it creates the same plan as `plan`. Repeating `run` for an identical plan returns
 the original run rather than duplicating work.
+
+`plan` and a planless `run` read the configured Operations store before creating
+the frozen plan. That read is what makes freshness survive a CLI or worker
+restart. A trusted acquisition runtime can later append coverage as ordinary
+immutable run-scoped work items; it must not introduce a mutable global
+last-fetched table.
 
 `export-admin` validates every exported run and work-item record with full
 draft-07/Ajv semantics against

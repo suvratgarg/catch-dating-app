@@ -507,6 +507,175 @@ const schemaOperationWorkItemSchema = <String, Object?>{
         },
       },
     },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'normalizedPayload': <String, Object?>{
+            'type': 'object',
+            'required': <Object?>[
+              'intake',
+            ],
+            'properties': <String, Object?>{
+              'intake': <String, Object?>{
+                'type': 'object',
+                'required': <Object?>[
+                  'recordType',
+                ],
+                'properties': <String, Object?>{
+                  'recordType': <String, Object?>{
+                    'const': 'supply_freshness_coverage',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'properties': <String, Object?>{
+          'normalizedPayload': <String, Object?>{
+            'properties': <String, Object?>{
+              'intake': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'recordType',
+                  'coverage',
+                ],
+                'properties': <String, Object?>{
+                  'recordType': <String, Object?>{
+                    'const': 'supply_freshness_coverage',
+                  },
+                  'coverage': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'schemaVersion',
+                      'recordType',
+                      'coverageId',
+                      'runId',
+                      'kind',
+                      'scopeKey',
+                      'runKey',
+                      'market',
+                      'sourceProfileId',
+                      'entityId',
+                      'surfaceId',
+                      'schedulerStatus',
+                      'surfacePolicy',
+                      'fetchEnabled',
+                      'completedAt',
+                      'policyVersion',
+                      'requestHash',
+                    ],
+                    'properties': <String, Object?>{
+                      'schemaVersion': <String, Object?>{
+                        'type': 'integer',
+                        'const': 1,
+                      },
+                      'recordType': <String, Object?>{
+                        'const': 'supply_freshness_coverage',
+                      },
+                      'coverageId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 180,
+                        'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                      },
+                      'runId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 180,
+                        'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                      },
+                      'kind': <String, Object?>{
+                        'type': 'string',
+                        'enum': <Object?>[
+                          'city_discovery_sweep',
+                          'candidate_verification',
+                          'known_organizer_event_refresh',
+                          'event_detail_prepublication',
+                        ],
+                      },
+                      'scopeKey': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'runKey': <String, Object?>{
+                        'type': <Object?>[
+                          'string',
+                          'null',
+                        ],
+                        'maxLength': 500,
+                      },
+                      'market': <String, Object?>{
+                        'type': <Object?>[
+                          'string',
+                          'null',
+                        ],
+                        'maxLength': 80,
+                      },
+                      'sourceProfileId': <String, Object?>{
+                        'type': <Object?>[
+                          'string',
+                          'null',
+                        ],
+                        'maxLength': 160,
+                      },
+                      'entityId': <String, Object?>{
+                        'type': <Object?>[
+                          'string',
+                          'null',
+                        ],
+                        'maxLength': 200,
+                      },
+                      'surfaceId': <String, Object?>{
+                        'type': <Object?>[
+                          'string',
+                          'null',
+                        ],
+                        'maxLength': 200,
+                      },
+                      'schedulerStatus': <String, Object?>{
+                        'type': <Object?>[
+                          'string',
+                          'null',
+                        ],
+                        'maxLength': 40,
+                      },
+                      'surfacePolicy': <String, Object?>{
+                        'type': <Object?>[
+                          'string',
+                          'null',
+                        ],
+                        'maxLength': 80,
+                      },
+                      'fetchEnabled': <String, Object?>{
+                        'type': 'boolean',
+                      },
+                      'completedAt': <String, Object?>{
+                        'type': 'string',
+                        'format': 'date-time',
+                      },
+                      'policyVersion': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 120,
+                      },
+                      'requestHash': <String, Object?>{
+                        'type': 'string',
+                        'pattern': '^[a-f0-9]{64}\$',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   ],
   'definitions': <String, Object?>{
     'boundedString': <String, Object?>{
@@ -521,6 +690,142 @@ const schemaOperationWorkItemSchema = <String, Object?>{
         'type': 'string',
         'minLength': 1,
         'maxLength': 500,
+      },
+    },
+    'supplyFreshnessCoverageIntake': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'recordType',
+        'coverage',
+      ],
+      'properties': <String, Object?>{
+        'recordType': <String, Object?>{
+          'const': 'supply_freshness_coverage',
+        },
+        'coverage': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'schemaVersion',
+            'recordType',
+            'coverageId',
+            'runId',
+            'kind',
+            'scopeKey',
+            'runKey',
+            'market',
+            'sourceProfileId',
+            'entityId',
+            'surfaceId',
+            'schedulerStatus',
+            'surfacePolicy',
+            'fetchEnabled',
+            'completedAt',
+            'policyVersion',
+            'requestHash',
+          ],
+          'properties': <String, Object?>{
+            'schemaVersion': <String, Object?>{
+              'type': 'integer',
+              'const': 1,
+            },
+            'recordType': <String, Object?>{
+              'const': 'supply_freshness_coverage',
+            },
+            'coverageId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+            'runId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+            'kind': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'city_discovery_sweep',
+                'candidate_verification',
+                'known_organizer_event_refresh',
+                'event_detail_prepublication',
+              ],
+            },
+            'scopeKey': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'runKey': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'maxLength': 500,
+            },
+            'market': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'maxLength': 80,
+            },
+            'sourceProfileId': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'maxLength': 160,
+            },
+            'entityId': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'maxLength': 200,
+            },
+            'surfaceId': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'maxLength': 200,
+            },
+            'schedulerStatus': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'maxLength': 40,
+            },
+            'surfacePolicy': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'maxLength': 80,
+            },
+            'fetchEnabled': <String, Object?>{
+              'type': 'boolean',
+            },
+            'completedAt': <String, Object?>{
+              'type': 'string',
+              'format': 'date-time',
+            },
+            'policyVersion': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 120,
+            },
+            'requestHash': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
+            },
+          },
+        },
       },
     },
     'organizerPublicationPacketIntake': <String, Object?>{

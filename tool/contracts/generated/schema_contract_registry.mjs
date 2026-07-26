@@ -903,6 +903,175 @@ export const operationWorkItemSchema = {
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object",
+            "required": [
+              "intake"
+            ],
+            "properties": {
+              "intake": {
+                "type": "object",
+                "required": [
+                  "recordType"
+                ],
+                "properties": {
+                  "recordType": {
+                    "const": "supply_freshness_coverage"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "normalizedPayload": {
+            "properties": {
+              "intake": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "recordType",
+                  "coverage"
+                ],
+                "properties": {
+                  "recordType": {
+                    "const": "supply_freshness_coverage"
+                  },
+                  "coverage": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "schemaVersion",
+                      "recordType",
+                      "coverageId",
+                      "runId",
+                      "kind",
+                      "scopeKey",
+                      "runKey",
+                      "market",
+                      "sourceProfileId",
+                      "entityId",
+                      "surfaceId",
+                      "schedulerStatus",
+                      "surfacePolicy",
+                      "fetchEnabled",
+                      "completedAt",
+                      "policyVersion",
+                      "requestHash"
+                    ],
+                    "properties": {
+                      "schemaVersion": {
+                        "type": "integer",
+                        "const": 1
+                      },
+                      "recordType": {
+                        "const": "supply_freshness_coverage"
+                      },
+                      "coverageId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      },
+                      "runId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      },
+                      "kind": {
+                        "type": "string",
+                        "enum": [
+                          "city_discovery_sweep",
+                          "candidate_verification",
+                          "known_organizer_event_refresh",
+                          "event_detail_prepublication"
+                        ]
+                      },
+                      "scopeKey": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "runKey": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 500
+                      },
+                      "market": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 80
+                      },
+                      "sourceProfileId": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 160
+                      },
+                      "entityId": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 200
+                      },
+                      "surfaceId": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 200
+                      },
+                      "schedulerStatus": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 40
+                      },
+                      "surfacePolicy": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 80
+                      },
+                      "fetchEnabled": {
+                        "type": "boolean"
+                      },
+                      "completedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "policyVersion": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "requestHash": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   ],
   "definitions": {
@@ -918,6 +1087,142 @@ export const operationWorkItemSchema = {
         "type": "string",
         "minLength": 1,
         "maxLength": 500
+      }
+    },
+    "supplyFreshnessCoverageIntake": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recordType",
+        "coverage"
+      ],
+      "properties": {
+        "recordType": {
+          "const": "supply_freshness_coverage"
+        },
+        "coverage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schemaVersion",
+            "recordType",
+            "coverageId",
+            "runId",
+            "kind",
+            "scopeKey",
+            "runKey",
+            "market",
+            "sourceProfileId",
+            "entityId",
+            "surfaceId",
+            "schedulerStatus",
+            "surfacePolicy",
+            "fetchEnabled",
+            "completedAt",
+            "policyVersion",
+            "requestHash"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "type": "integer",
+              "const": 1
+            },
+            "recordType": {
+              "const": "supply_freshness_coverage"
+            },
+            "coverageId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "runId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "city_discovery_sweep",
+                "candidate_verification",
+                "known_organizer_event_refresh",
+                "event_detail_prepublication"
+              ]
+            },
+            "scopeKey": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "runKey": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            },
+            "market": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "sourceProfileId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 160
+            },
+            "entityId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 200
+            },
+            "surfaceId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 200
+            },
+            "schedulerStatus": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 40
+            },
+            "surfacePolicy": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "fetchEnabled": {
+              "type": "boolean"
+            },
+            "completedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "policyVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "requestHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        }
       }
     },
     "organizerPublicationPacketIntake": {

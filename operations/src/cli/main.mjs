@@ -40,6 +40,8 @@ export async function main(argv, dependencies = {}) {
   const now = clock().toISOString();
   const repoRoot = path.resolve(parsed.flags.repoRoot ?? defaultRepoRoot);
   const stateDir = path.resolve(parsed.flags.stateDir ?? path.join(operationsRoot, ".state"));
+  const store = dependencies.store ??
+    await new FileOperationsStore(stateDir).initialize();
   const registry = dependencies.workflowRegistry ?? WORKFLOW_REGISTRY;
   const workflowFor = (workflowId) => resolveWorkflow({
     workflowId,
@@ -57,12 +59,18 @@ export async function main(argv, dependencies = {}) {
         program: "catch-operations",
         command: "plan",
         ok: true,
-        data: {plan: await createPlan(workflow, parsed.flags, now)},
+        data: {
+          plan: await createPlan(
+            workflow,
+            parsed.flags,
+            now,
+            store
+          ),
+        },
         warnings: [],
       },
     };
   }
-  const store = dependencies.store ?? await new FileOperationsStore(stateDir).initialize();
   const engineFor = (workflow) => dependencies.engine ??
     new OperationsEngine({
       store,
@@ -90,7 +98,8 @@ export async function main(argv, dependencies = {}) {
     const plan = planFromFile ?? await createPlan(
       workflow,
       parsed.flags,
-      now
+      now,
+      store
     );
     const engine = engineFor(workflow);
     const result = await engine.start(plan, {requestedRunId: parsed.flags.run});
@@ -251,12 +260,17 @@ export function createCliClock(nowOverride, systemClock = () => new Date()) {
   };
 }
 
-async function createPlan(workflow, flags, now) {
+async function createPlan(workflow, flags, now, store) {
+  const planningContext =
+    typeof workflow.planningContext === "function" ?
+      await workflow.planningContext({store}) :
+      {};
   return workflow.createPlan({
     market: flags.market ?? "mumbai",
     intakeScope: flags.intakeScope ?? "all",
     through: flags.through ?? defaultThrough(now),
     now,
+    ...planningContext,
   });
 }
 

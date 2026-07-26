@@ -24,6 +24,10 @@ import {
   SupplyIntakeWorkflow,
 } from "../src/workflows/supply-intake/workflow.mjs";
 import {
+  createFreshnessCoverage,
+  SUPPLY_FRESHNESS_RECORD_TYPE,
+} from "../src/workflows/supply-intake/freshness.mjs";
+import {
   createFixtureRepository,
   publicationPacketFixture,
   temporaryDirectory,
@@ -227,6 +231,62 @@ test("Mumbai plans admit only organizer packets with Mumbai market evidence", as
     ruleDeployment: false,
   });
 });
+
+test("workflow freshness planning cites immutable completed run coverage",
+  async () => {
+    const repoRoot = await createFixtureRepository(
+      await temporaryDirectory("catch-ops-freshness-plan-")
+    );
+    const workflow = new SupplyIntakeWorkflow({repoRoot});
+    const policy = await workflow.freshnessPolicyLoader();
+    const request = {
+      kind: "city_discovery_sweep",
+      scopeKey:
+        "web_search|run club mumbai|mumbai|" +
+        "social_run_club|generic",
+      runKey:
+        "web_search|run club mumbai|mumbai|" +
+        "social_run_club|generic",
+      market: "mumbai",
+      sourceProfileId: "web_search",
+      entityId: null,
+      surfaceId: null,
+      url: null,
+    };
+    const coverage = createFreshnessCoverage({
+      request,
+      runId: "run-covered-query",
+      completedAt: "2026-07-10T12:00:00.000Z",
+      policyVersion: policy.policyVersion,
+    });
+    const plan = await workflow.createPlan({
+      market: "mumbai",
+      through: "2026-07-28",
+      now: NOW,
+      freshnessHistory: {
+        runs: [{
+          runId: coverage.runId,
+          status: "completed",
+        }],
+        workItems: [{
+          workItemId: `wi-${coverage.coverageId}`,
+          runId: coverage.runId,
+          adminProjection: {
+            recordType: SUPPLY_FRESHNESS_RECORD_TYPE,
+            coverage,
+          },
+        }],
+      },
+    });
+
+    assert.equal(plan.freshness.summary.requested, 1);
+    assert.equal(plan.freshness.summary.scheduled, 0);
+    assert.equal(plan.freshness.summary.skippedFresh, 1);
+    assert.equal(
+      plan.freshness.skippedFresh[0].coveredByRunId,
+      "run-covered-query"
+    );
+  });
 
 test("organizer packet projections stay bounded and exclude raw provider payloads",
   async () => {
@@ -1568,7 +1628,11 @@ test("promotion uses the run-frozen source policy and exposes hash-bound evidenc
   const receipt = await engine.promotionReceipt(run.runId);
   assert.equal(
     receipt.policyEvidence.promotionPolicyHash,
-    hashValue({workflowPolicy: plan.policy, sourceProfiles: plan.sourceProfiles})
+    hashValue({
+      workflowPolicy: plan.policy,
+      freshnessPolicy: plan.freshnessPolicy,
+      sourceProfiles: plan.sourceProfiles,
+    })
   );
   assert.deepEqual(receipt.policyEvidence.sourceProfiles, plan.sourceProfiles);
   const readyEvent = (await store.listWorkItems({runId: run.runId}))

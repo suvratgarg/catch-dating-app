@@ -1,7 +1,7 @@
 ---
 doc_id: host_listing_discovery_architecture
-version: 0.3.1
-updated: 2026-07-14
+version: 0.4.0
+updated: 2026-07-26
 owner: marketing_website
 status: draft
 ---
@@ -55,6 +55,16 @@ Every search run should create an immutable run record:
 
 The search scheduler should only run query templates that do not already have a
 fresh run for the same city, category, source, and template version.
+
+The active implementation now stores that scheduling evidence as run-scoped
+`supply_freshness_coverage` records owned by the Operations platform. It does
+not use committed `tool/host_discovery/runs/*.json` files as its freshness
+ledger. The host-discovery planner continues to own stable `runKey` composition
+and plan-bound capture, while Supply Intake applies the schema-validated
+per-kind windows and cites the exact completed run that covers a skipped query.
+Known organizer source surfaces use a second cadence key made from organizer
+entity plus surface, preventing an early refetch independently of the query
+ledger.
 
 ## Candidate Identity And Deduplication
 
@@ -486,20 +496,22 @@ truth:
 - `website/scripts/generateOrganizerListings.mjs`
 - `website/src/generated/hostListings.json`
 
-For scraper operations, use a separate ledger and private source-evidence store
-until this graduates to Firestore or BigQuery:
+For legacy scraper fixtures, keep private source evidence separate from
+canonical organizer documents:
 
 - `tool/host_discovery/query_templates.json`
 - `tool/host_discovery/target_categories.json`
 - `tool/host_discovery/search_matrix.json`
 - `tool/host_discovery/candidate_batches/*.json`
-- `tool/host_discovery/runs/*.json`
+- `tool/host_discovery/runs/*.json` (historical compatibility evidence only;
+  not an active scheduler ledger)
 - `tool/host_discovery/generated/candidate_dedupe_index.json`
 - `tool/host_discovery/generated/search_plan.json`
 - `tool/host_discovery/generated/source_evidence.json`
 - `tool/host_discovery/generated/index_readiness_report.json`
 - `tool/host_discovery/generated/firestore_seed_import_plan.json`
-- future `clubDiscoveryRuns/{runId}`
+- `operationRuns/{runId}` plus immutable
+  `operationWorkItems/{workItemId}` freshness coverage
 - future `clubs/{clubId}/sourceEvidence/{sourceId}` or
   `clubSourceEvidence/{sourceId}`
 
@@ -578,16 +590,18 @@ node tool/host_discovery/validate_discovery_data.mjs --check
 ```
 
 The search planner expands category/city queries and candidate-specific
-verification queries while skipping candidates with fresh run logs:
+verification queries. It deliberately emits intents without reading committed
+run logs; Supply Intake applies the durable freshness policy when it freezes an
+Operations plan:
 
 ```sh
 node tool/host_discovery/plan_search_runs.mjs
 node tool/host_discovery/plan_search_runs.mjs --check
 ```
 
-As of 2026-06-10, the generated plan has 225 planned searches and skips 10
-candidate verification searches because Afterfly and Bhag already have fresh run
-logs.
+As of 2026-07-26, the compatibility artifact contains 243 query intents. A
+Supply Intake plan may schedule fewer when immutable completed Operations runs
+contain fresh coverage for the same query keys.
 
 ## Source Evidence And Import Plan
 
