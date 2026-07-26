@@ -11,6 +11,9 @@ import {
   profilePhotoSchema,
   uploadedPhotoSchema,
   activityPreferencesSchema,
+  organizerSupplyCapabilitiesSchema,
+  externalEventBlockerResolutionSchema,
+  externalEventPublicationReceiptDocumentSchema,
   configCitiesDocumentSchema,
   onboardingDraftDocumentSchema,
   accessApplicationDocumentSchema,
@@ -126,6 +129,7 @@ import {
   adminListExternalEventDetailsCallablePayloadSchema,
   adminUpdateEventDetailsCallablePayloadSchema,
   adminPublishExternalEventCallablePayloadSchema,
+  adminTakedownExternalEventCallablePayloadSchema,
   startClubHostConversationCallablePayloadSchema,
   startOrganizerConversationCallablePayloadSchema,
   archiveClubCallablePayloadSchema,
@@ -242,6 +246,9 @@ export const validatePhotoPromptAnswer = ajv.compile(photoPromptAnswerSchema);
 export const validateProfilePhoto = ajv.compile(profilePhotoSchema);
 export const validateUploadedPhoto = ajv.compile(uploadedPhotoSchema);
 export const validateActivityPreferences = ajv.compile(activityPreferencesSchema);
+export const validateOrganizerSupplyCapabilities = ajv.compile(organizerSupplyCapabilitiesSchema);
+export const validateExternalEventBlockerResolution = ajv.compile(externalEventBlockerResolutionSchema);
+export const validateExternalEventPublicationReceiptDocument = ajv.compile(externalEventPublicationReceiptDocumentSchema);
 export const validateConfigCitiesDocument = ajv.compile(configCitiesDocumentSchema);
 export const validateOnboardingDraftDocument = ajv.compile(onboardingDraftDocumentSchema);
 export const validateAccessApplicationDocument = ajv.compile(accessApplicationDocumentSchema);
@@ -357,6 +364,7 @@ export const validateAdminListEventDetailsCallablePayload = ajv.compile(adminLis
 export const validateAdminListExternalEventDetailsCallablePayload = ajv.compile(adminListExternalEventDetailsCallablePayloadSchema);
 export const validateAdminUpdateEventDetailsCallablePayload = ajv.compile(adminUpdateEventDetailsCallablePayloadSchema);
 export const validateAdminPublishExternalEventCallablePayload = ajv.compile(adminPublishExternalEventCallablePayloadSchema);
+export const validateAdminTakedownExternalEventCallablePayload = ajv.compile(adminTakedownExternalEventCallablePayloadSchema);
 export const validateStartClubHostConversationCallablePayload = ajv.compile(startClubHostConversationCallablePayloadSchema);
 export const validateStartOrganizerConversationCallablePayload = ajv.compile(startOrganizerConversationCallablePayloadSchema);
 export const validateArchiveClubCallablePayload = ajv.compile(archiveClubCallablePayloadSchema);

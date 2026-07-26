@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.6.0
+version: 1.7.0
 updated: 2026-07-27
 owner: recursive_audit_loop
 status: active
@@ -116,6 +116,28 @@ segment, `publicPage.canonicalPath` owns the website URL, and
 `publicRouteReservations` transactionally enforces route uniqueness. Renaming
 or rerouting an organizer therefore does not require changing its document id
 or relationship references.
+
+### Organizer Supply Capabilities
+
+Every canonical organizer, compatibility club projection, and published
+external-event organizer snapshot carries the shared
+`organizerSupplyCapabilities` contract. It is an explicit product-policy
+projection, not a UI inference:
+
+- unclaimed/programmatic supply is not bookable, payable, waitlistable, or
+  host-contactable; it is claimable and becomes reviewable only after the
+  event's end time;
+- claimed/owner-managed supply may enable the supported capabilities, subject
+  to the normal event, payment, and availability checks;
+- missing or invalid capabilities fail closed.
+
+Create, claim, draft-scaffolding, and claim-decision callables write the
+projection. Existing canonical and compatibility documents were repaired with
+`tool/data/backfill_organizer_supply_capabilities.mjs`: the production apply on
+2026-07-27 repaired 44 organizers and 42 clubs, found no external events, and a
+post-apply dry run reported 86 current documents with zero repairs or invalid
+records. The migration contract is
+`contracts/migrations/organizer_supply_capabilities.json`.
 
 ### Required Event Meeting Location
 
@@ -587,12 +609,34 @@ work queues such as Indore + Mumbai. Existing event docs can be repaired with
 `node tool/data/backfill_event_admin_search.mjs`; the repair is dry-run by
 default and requires `--allow-prod` when applying against prod.
 
-Read-only external event supply uses `externalEvents/{eventId}`. These records
-are sourced from reviewed organizer intake candidates, preserve source/dedupe
-attribution, and must keep Catch booking, payments, reservations, and waitlists
-disabled. `adminListExternalEventDetails` lists that collection for admin event
-supply review with the same bounded launch-city and time-window filters, but it
-does not import candidates or mutate Firestore.
+External event supply uses `externalEvents/{eventId}`. These records are
+sourced from reviewed organizer-intake candidates, preserve source/dedupe
+attribution, carry a fail-closed organizer capability snapshot, and keep Catch
+booking, payments, reservations, waitlists, and host contact disabled.
+`adminListExternalEventDetails` lists that collection for admin event-supply
+review with the same bounded launch-city and time-window filters.
+
+`adminPublishExternalEvent` is the only publication writer. It requires a
+dry-run or apply execution mode, an idempotency key, exact launch-market
+identity, the organizer visibility ceiling, accepted per-blocker decisions,
+and the reviewed candidate snapshot. Dry-run and apply append immutable
+`externalEventPublicationReceipts/{receiptId}` records; a replay with the same
+key returns the same result and changed input is rejected. The callable writes
+one outbound-only `externalEvents/{id}` record and never creates a canonical
+Catch-hosted `events/{id}` record.
+
+The governed blockers are `missing_exact_coordinates`, `missing_end_time`,
+`missing_location_detail`, `requires_event_defaults_policy`,
+`requires_owner_safe_copy_review`, and `duplicate_normalized_event_key`.
+Every blocker must be explicitly resolved or waived. A waiver is accepted only
+when it cites an accepted `organizerPolicyGapReviewDecisions/{decisionId}` with
+the exact expected policy id; code defaults and generic acknowledgements do not
+clear blockers.
+
+`adminTakedownExternalEvent` is the only takedown writer. Its dry-run/apply
+contract is also idempotent and receipt-backed. Apply preserves the source and
+audit record, changes publication state to taken down, and records takedown
+metadata rather than deleting the document.
 
 Read-only dry-runs on 2026-05-26 found:
 

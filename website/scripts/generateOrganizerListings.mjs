@@ -569,6 +569,35 @@ function listingCapabilities(
         !publicReviewTargetEnabled ? publicReviewTarget.reason :
         "Public reviews are available for this published organizer page.",
     },
+    supply: supplyCapabilitiesForAuthority(authority),
+  };
+}
+
+function supplyCapabilitiesForAuthority(authority) {
+  const managed =
+    ["userCreated", "claimed", "transferred"].includes(
+      authority.ownershipState
+    ) ||
+    ["claimed", "verified"].includes(authority.claimState);
+  if (managed) {
+    return {
+      mode: "claimed_managed",
+      bookable: true,
+      paymentsEnabled: true,
+      waitlistEnabled: true,
+      hostContactEnabled: true,
+      claimable: false,
+      reviewPolicy: "attended_event_only",
+    };
+  }
+  return {
+    mode: "unclaimed_read_only",
+    bookable: false,
+    paymentsEnabled: false,
+    waitlistEnabled: false,
+    hostContactEnabled: false,
+    claimable: authority.claimState === "unclaimed",
+    reviewPolicy: "after_event_end",
   };
 }
 

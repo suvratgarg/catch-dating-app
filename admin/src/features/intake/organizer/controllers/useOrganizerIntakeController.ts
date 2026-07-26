@@ -52,6 +52,7 @@ import type {
   AdminResolveOrganizerEventLocationPayload,
   AdminResolveOrganizerEventLocationResponse,
   OrganizerEventCandidateDecision,
+  OrganizerEventBlockerResolution,
   OrganizerIntakeDecision,
   OrganizerPolicyGapDecision,
 } from "../../../../shared/types/adminTypes";
@@ -478,7 +479,8 @@ export function useOrganizerIntakeController({
 
   const handleEventDecision = useCallback(async (
     candidate: Intake.OrganizerExternalEventCandidate,
-    decision: OrganizerEventCandidateDecision
+    decision: OrganizerEventCandidateDecision,
+    blockerResolutions: OrganizerEventBlockerResolution[]
   ) => {
     const checklist = eventCandidateChecklistForDecision(candidate, decision);
     if (decision === "approve_for_import" &&
@@ -492,6 +494,9 @@ export function useOrganizerIntakeController({
       candidateId: candidate.candidateId,
       decision,
       checklist,
+      blockerResolutions: decision === "approve_for_import" ?
+        blockerResolutions :
+        [],
       note,
     };
     const operation = beginOperation();

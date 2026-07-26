@@ -27,6 +27,8 @@ import {
   defaultOrganizerPublicSlug,
   requireFirestoreAutoId,
 } from "../organizers/organizerIdentity";
+import {organizerSupplyCapabilitiesFor} from
+  "../shared/organizerSupplyCapabilities";
 
 interface CreateClubDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -189,6 +191,10 @@ export async function createClubHandler(
       countryCode: market.countryIsoCode,
       countryName: market.countryName,
       appVisibility: "discoverable",
+      supplyCapabilities: organizerSupplyCapabilitiesFor({
+        ownershipState: "userCreated",
+        claimState: "claimed",
+      }),
       ownership: {
         state: "userCreated",
         ownerUserId: hostUserId,

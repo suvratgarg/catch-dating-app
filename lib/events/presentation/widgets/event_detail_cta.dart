@@ -17,6 +17,7 @@ import 'package:catch_dating_app/events/presentation/event_booking_controller.da
 import 'package:catch_dating_app/events/presentation/event_detail_screen_state.dart';
 import 'package:catch_dating_app/events/shared/event_joined_celebration_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/organizers/domain/organizer_supply_capabilities.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -87,6 +88,8 @@ class EventDetailCta extends ConsumerWidget {
     required this.userProfile,
     required this.clubId,
     required this.participation,
+    this.organizerCapabilities =
+        const OrganizerSupplyCapabilities.claimedManaged(),
     this.isSaved = false,
     this.isHosted = false,
     this.isClubMember = false,
@@ -100,6 +103,7 @@ class EventDetailCta extends ConsumerWidget {
   final UserProfile userProfile;
   final String clubId;
   final EventParticipation? participation;
+  final OrganizerSupplyCapabilities organizerCapabilities;
   final bool isSaved;
   final bool isHosted;
   final bool isClubMember;
@@ -162,6 +166,7 @@ class EventDetailCta extends ConsumerWidget {
       now: referenceNow,
       hasInviteCode: inviteCode?.trim().isNotEmpty ?? false,
       supportsPaidBookings: supportsPaid,
+      organizerCapabilities: organizerCapabilities,
       mutationState: EventDetailBookingDockMutationState(
         bookPending: bookMutation.isPending,
         cancelPending: cancelMutation.isPending,

@@ -133,6 +133,7 @@ export function buildEventReviewDecisionBatchFromFirestoreDocs(
     return {
       candidateId: data.candidateId,
       checklist: data.checklist,
+      blockerResolutions: data.blockerResolutions ?? [],
       decision: data.decision,
       note: data.note,
     };

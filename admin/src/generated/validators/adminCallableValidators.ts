@@ -39,6 +39,7 @@ const model = {
     "adminResolveOrganizerEventLocation",
     "adminSetAdminUserRoles",
     "adminSetClubIndexStatus",
+    "adminTakedownExternalEvent",
     "adminUpdateEventDetails",
     "adminUpdateOrganizerDetails"
   ],
@@ -1757,6 +1758,7 @@ const model = {
         "candidateId",
         "decision",
         "checklist",
+        "blockerResolutions",
         "note"
       ],
       "properties": {
@@ -1809,12 +1811,100 @@ const model = {
             }
           }
         },
+        "blockerResolutions": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "$ref": "../embedded/external_event_blocker_resolution.schema.json"
+          }
+        },
         "note": {
           "type": "string",
           "minLength": 1,
           "maxLength": 1000
         }
       }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/embedded/external_event_blocker_resolution.schema.json",
+      "title": "ExternalEventBlockerResolution",
+      "description": "One explicit, event-scoped resolution or policy-backed waiver for a governed external-event import blocker.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blockerCode",
+        "outcome",
+        "policyGapDecisionId",
+        "note"
+      ],
+      "properties": {
+        "blockerCode": {
+          "type": "string",
+          "enum": [
+            "missing_exact_coordinates",
+            "missing_end_time",
+            "missing_location_detail",
+            "requires_event_defaults_policy",
+            "requires_owner_safe_copy_review",
+            "duplicate_normalized_event_key"
+          ]
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "resolved",
+            "waived"
+          ]
+        },
+        "policyGapDecisionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "waived"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "policyGapDecisionId": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "resolved"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "policyGapDecisionId": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -2634,6 +2724,8 @@ const model = {
       "required": [
         "sourceActionId",
         "targetPath",
+        "executionMode",
+        "idempotencyKey",
         "reviewNote",
         "checklist"
       ],
@@ -2646,6 +2738,19 @@ const model = {
         "targetPath": {
           "type": "string",
           "pattern": "^externalEvents/[A-Za-z0-9_-]{1,180}$"
+        },
+        "executionMode": {
+          "type": "string",
+          "enum": [
+            "dry_run",
+            "apply"
+          ]
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9:_-]+$"
         },
         "reviewNote": {
           "type": "string",
@@ -3319,6 +3424,67 @@ const model = {
             "null"
           ],
           "maxLength": 1000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_takedown_external_event_payload.schema.json",
+      "title": "AdminTakedownExternalEventCallablePayload",
+      "description": "Callable payload accepted by adminTakedownExternalEvent. Dry-run validates and receipts a reviewed takedown; apply removes the external event from discovery without deleting audit history.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "executionMode",
+        "idempotencyKey",
+        "reviewNote",
+        "checklist"
+      ],
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "executionMode": {
+          "type": "string",
+          "enum": [
+            "dry_run",
+            "apply"
+          ]
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9:_-]+$"
+        },
+        "reviewNote": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "checklist": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sourceStatusReviewed",
+            "takedownAuthorityReviewed",
+            "downstreamVisibilityReviewed"
+          ],
+          "properties": {
+            "sourceStatusReviewed": {
+              "type": "boolean"
+            },
+            "takedownAuthorityReviewed": {
+              "type": "boolean"
+            },
+            "downstreamVisibilityReviewed": {
+              "type": "boolean"
+            }
+          }
         }
       }
     },
@@ -6900,6 +7066,11 @@ const model = {
       "additionalProperties": true
     },
     {
+      "$id": "https://catch.app/contracts/admin_runtime/adminTakedownExternalEvent_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
       "$id": "https://catch.app/contracts/admin_runtime/adminUpdateEventDetails_response.schema.json",
       "type": "object",
       "additionalProperties": true
@@ -6946,6 +7117,7 @@ const model = {
     "adminResolveOrganizerEventLocation": "https://catch.app/contracts/callables/admin_resolve_organizer_event_location_payload.schema.json",
     "adminSetAdminUserRoles": "https://catch.app/contracts/callables/admin_set_admin_user_roles_payload.schema.json",
     "adminSetClubIndexStatus": "https://catch.app/contracts/callables/admin_set_club_index_status_payload.schema.json",
+    "adminTakedownExternalEvent": "https://catch.app/contracts/callables/admin_takedown_external_event_payload.schema.json",
     "adminUpdateEventDetails": "https://catch.app/contracts/callables/admin_update_event_details_payload.schema.json",
     "adminUpdateOrganizerDetails": "https://catch.app/contracts/callables/admin_update_organizer_details_payload.schema.json"
   },
@@ -6985,6 +7157,7 @@ const model = {
     "adminResolveOrganizerEventLocation": "https://catch.app/contracts/admin_runtime/adminResolveOrganizerEventLocation_response.schema.json",
     "adminSetAdminUserRoles": "https://catch.app/contracts/callable_responses/admin_set_admin_user_roles_response.schema.json",
     "adminSetClubIndexStatus": "https://catch.app/contracts/admin_runtime/adminSetClubIndexStatus_response.schema.json",
+    "adminTakedownExternalEvent": "https://catch.app/contracts/admin_runtime/adminTakedownExternalEvent_response.schema.json",
     "adminUpdateEventDetails": "https://catch.app/contracts/admin_runtime/adminUpdateEventDetails_response.schema.json",
     "adminUpdateOrganizerDetails": "https://catch.app/contracts/admin_runtime/adminUpdateOrganizerDetails_response.schema.json"
   },
@@ -7024,6 +7197,7 @@ const model = {
     "adminResolveOrganizerEventLocation",
     "adminSetAdminUserRoles",
     "adminSetClubIndexStatus",
+    "adminTakedownExternalEvent",
     "adminUpdateEventDetails",
     "adminUpdateOrganizerDetails"
   ],

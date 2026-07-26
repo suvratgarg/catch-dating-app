@@ -31,6 +31,8 @@ import {
 } from "./organizerIdentity";
 import {reserveOrganizerCanonicalRoute} from
   "../admin/organizerPublishingGuards";
+import {organizerSupplyCapabilitiesFor} from
+  "../shared/organizerSupplyCapabilities";
 
 interface CreateOrganizerDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -176,6 +178,10 @@ export async function createOrganizerHandler(
       countryCode: market.countryIsoCode,
       countryName: market.countryName,
       appVisibility: "discoverable",
+      supplyCapabilities: organizerSupplyCapabilitiesFor({
+        ownershipState: "userCreated",
+        claimState: "claimed",
+      }),
       ownership: {
         state: "userCreated",
         ownerUserId: ownerUid,

@@ -282,6 +282,12 @@ function ExternalEventInventoryView({
               <eventPublishingSupplyPanels.ExternalEventImportReviewPanel
                 review={controller.selectedExternalImportReview}
               />
+              <eventPublishingSupplyPanels.ExternalEventTakedownPanel
+                key={controller.selectedExternalEvent?.eventId}
+                event={controller.selectedExternalEvent}
+                isSubmitting={controller.isTakingDownExternalEvent}
+                onTakedown={controller.takedownExternalEvent}
+              />
             </AdminEventSupplyReviewGrid>
           </Panel>
         )}

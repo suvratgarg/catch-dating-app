@@ -8,6 +8,7 @@ import type {
   OrganizerCurationSurface,
   OrganizerEntityKind,
   OrganizerEventCandidateDecision,
+  OrganizerEventBlockerResolution,
   OrganizerIntakeDecision,
   OrganizerIntakeIndexStatus,
   OrganizerIntakePublishStatus,
@@ -1875,6 +1876,7 @@ export interface OrganizerExternalEventReviewDecision {
     ownerSafeCopyReviewed: boolean;
     importPolicyAcknowledged: boolean;
   };
+  blockerResolutions: OrganizerEventBlockerResolution[];
   decidedAt: string;
   decision: OrganizerEventCandidateDecision;
   eventReviewBatchId: string;

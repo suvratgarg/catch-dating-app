@@ -95,6 +95,89 @@ const schemaOrganizerEventCandidateReviewDecisionDocumentSchema = <String, Objec
         },
       },
     },
+    'blockerResolutions': <String, Object?>{
+      'type': 'array',
+      'maxItems': 6,
+      'items': <String, Object?>{
+        'title': 'ExternalEventBlockerResolution',
+        'description': 'One explicit, event-scoped resolution or policy-backed waiver for a governed external-event import blocker.',
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'blockerCode',
+          'outcome',
+          'policyGapDecisionId',
+          'note',
+        ],
+        'properties': <String, Object?>{
+          'blockerCode': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'missing_exact_coordinates',
+              'missing_end_time',
+              'missing_location_detail',
+              'requires_event_defaults_policy',
+              'requires_owner_safe_copy_review',
+              'duplicate_normalized_event_key',
+            ],
+          },
+          'outcome': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'resolved',
+              'waived',
+            ],
+          },
+          'policyGapDecisionId': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'note': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 1000,
+          },
+        },
+        'allOf': <Object?>[
+          <String, Object?>{
+            'if': <String, Object?>{
+              'properties': <String, Object?>{
+                'outcome': <String, Object?>{
+                  'const': 'waived',
+                },
+              },
+            },
+            'then': <String, Object?>{
+              'properties': <String, Object?>{
+                'policyGapDecisionId': <String, Object?>{
+                  'type': 'string',
+                },
+              },
+            },
+          },
+          <String, Object?>{
+            'if': <String, Object?>{
+              'properties': <String, Object?>{
+                'outcome': <String, Object?>{
+                  'const': 'resolved',
+                },
+              },
+            },
+            'then': <String, Object?>{
+              'properties': <String, Object?>{
+                'policyGapDecisionId': <String, Object?>{
+                  'type': 'null',
+                },
+              },
+            },
+          },
+        ],
+      },
+    },
     'note': <String, Object?>{
       'type': 'string',
       'minLength': 1,

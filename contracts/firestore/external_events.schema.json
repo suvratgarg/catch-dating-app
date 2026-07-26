@@ -27,6 +27,7 @@
     "price",
     "status",
     "publicationStatus",
+    "organizerCapabilities",
     "booking",
     "discovery",
     "dedupe",
@@ -94,6 +95,10 @@
     "publicationStatus": {
       "type": "string",
       "enum": ["draft", "public", "archived", "removed"]
+    },
+    "organizerCapabilities": {
+      "$ref": "../embedded/organizer_supply_capabilities.schema.json",
+      "description": "Audited snapshot of the attributed organizer's member-affordance ceiling at publication time."
     },
     "booking": {
       "type": "object",
@@ -220,7 +225,8 @@
         "decidedAt",
         "note",
         "importPolicyAcknowledged",
-        "ownerSafeCopyReviewed"
+        "ownerSafeCopyReviewed",
+        "blockerResolutions"
       ],
       "properties": {
         "eventReviewBatchId": {"type": ["string", "null"], "maxLength": 180},
@@ -229,6 +235,25 @@
         "note": {"type": ["string", "null"], "maxLength": 1000},
         "importPolicyAcknowledged": {"type": "boolean"},
         "ownerSafeCopyReviewed": {"type": "boolean"}
+        ,
+        "blockerResolutions": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "$ref": "../embedded/external_event_blocker_resolution.schema.json"
+          }
+        }
+      }
+    },
+    "takedown": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["removedAt", "removedByUid", "reason", "receiptId"],
+      "properties": {
+        "removedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+        "removedByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "reason": {"type": "string", "minLength": 1, "maxLength": 1000},
+        "receiptId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
       }
     },
     "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},

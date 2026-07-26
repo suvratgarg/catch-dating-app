@@ -3,6 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 import {UploadedPhoto} from "./uploadedPhoto";
+import {OrganizerSupplyCapabilities} from "./organizerSupplyCapabilities";
 
 /**
  * Legacy storage contract for an organizer document stored at clubs/{clubId} during the clubs-to-organizers migration. The organizer id is the document id and is not stored in document data.
@@ -298,6 +299,7 @@ export interface ClubDocument {
    * Whether the native app should show this organizer in browse surfaces. Scraped unclaimed profiles start hidden.
    */
   appVisibility?: "discoverable" | "hidden";
+  supplyCapabilities?: OrganizerSupplyCapabilities;
   /**
    * Claim-aware organizer ownership state. This is the forward-looking owner model; legacy host fields are maintained for app compatibility.
    */

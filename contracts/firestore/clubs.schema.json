@@ -325,6 +325,11 @@
       "description": "Whether the native app should show this organizer in browse surfaces. Scraped unclaimed profiles start hidden.",
       "x-catch-ownership": "callable-owned"
     },
+    "supplyCapabilities": {
+      "$ref": "../embedded/organizer_supply_capabilities.schema.json",
+      "description": "Compatibility shadow of the canonical organizer member-affordance ceiling.",
+      "x-catch-ownership": "callable-owned"
+    },
     "ownership": {
       "type": "object",
       "additionalProperties": false,

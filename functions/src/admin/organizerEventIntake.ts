@@ -13,6 +13,9 @@ import {validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAdminRole} from "./adminAuth";
 import {setAdminAuditLogInTransaction} from "./adminAudit";
+import {
+  policyDecisionIdByExternalEventBlocker,
+} from "./externalEventBlockerAuthority";
 
 const organizerIntakeRoles = ["admin", "adminOwner", "support"] as const;
 const decisionCollection = "organizerEventCandidateReviewDecisions";
@@ -37,6 +40,10 @@ type OrganizerEventCandidateDecision =
   AdminDecideOrganizerEventCandidateCallablePayload["decision"];
 type OrganizerEventCandidateChecklist =
   AdminDecideOrganizerEventCandidateCallablePayload["checklist"];
+type OrganizerEventBlockerResolution =
+  AdminDecideOrganizerEventCandidateCallablePayload[
+    "blockerResolutions"
+  ][number];
 
 export interface AdminDecideOrganizerEventCandidateResponse {
   candidateId: string;
@@ -87,6 +94,7 @@ export async function adminDecideOrganizerEventCandidateHandler(
     decision: data.decision,
     decisionStatus,
     checklist: data.checklist,
+    blockerResolutions: data.blockerResolutions,
     note: data.note,
     reviewedByUid: adminContext.uid,
     reviewedAt: timestamp as unknown as
@@ -110,6 +118,10 @@ export async function adminDecideOrganizerEventCandidateHandler(
         decision: data.decision,
         decisionStatus,
         importState,
+        blockerResolutionCount: data.blockerResolutions.length,
+        waivedBlockerCount: data.blockerResolutions.filter(
+          (resolution) => resolution.outcome === "waived"
+        ).length,
       },
       note: data.note,
       serverTimestamp: deps.serverTimestamp,
@@ -140,6 +152,9 @@ function normalizeAdminDecideOrganizerEventCandidatePayload(
     ...data,
     candidateId: normalizeString(data.candidateId),
     decision: normalizeString(data.decision),
+    blockerResolutions: Array.isArray(data.blockerResolutions) ?
+      data.blockerResolutions.map(normalizeBlockerResolution) :
+      data.blockerResolutions,
     note: normalizeString(data.note),
   };
 }
@@ -151,6 +166,7 @@ function normalizeAdminDecideOrganizerEventCandidatePayload(
 function assertDecisionAllowed(
   data: AdminDecideOrganizerEventCandidateCallablePayload
 ) {
+  assertBlockerResolutionsAllowed(data);
   if (data.decision === "approve_for_import" &&
     !reviewChecklistComplete(data.checklist)) {
     throw new HttpsError(
@@ -158,6 +174,46 @@ function assertDecisionAllowed(
       "Identity, source event, time, location, dedupe, owner-safe copy, " +
         "and import-policy checks must be complete before import approval."
     );
+  }
+}
+
+/**
+ * Keeps blocker decisions event-scoped and binds every waiver to the reviewed
+ * policy gap which can authorize it. The publisher separately verifies that
+ * the referenced policy decision is accepted at write time.
+ * @param {AdminDecideOrganizerEventCandidateCallablePayload} data Payload.
+ */
+function assertBlockerResolutionsAllowed(
+  data: AdminDecideOrganizerEventCandidateCallablePayload
+) {
+  if (data.decision !== "approve_for_import" &&
+    data.blockerResolutions.length > 0) {
+    throw new HttpsError(
+      "invalid-argument",
+      "Blocker resolutions are only valid for import approvals."
+    );
+  }
+  const seen = new Set<string>();
+  for (const resolution of data.blockerResolutions) {
+    if (seen.has(resolution.blockerCode)) {
+      throw new HttpsError(
+        "invalid-argument",
+        `Duplicate blocker resolution: ${resolution.blockerCode}.`
+      );
+    }
+    seen.add(resolution.blockerCode);
+    const expectedPolicyDecisionId =
+      policyDecisionIdByExternalEventBlocker[resolution.blockerCode];
+    if (
+      resolution.outcome === "waived" &&
+      resolution.policyGapDecisionId !== expectedPolicyDecisionId
+    ) {
+      throw new HttpsError(
+        "failed-precondition",
+        `${resolution.blockerCode} can only be waived by ` +
+          `${expectedPolicyDecisionId}.`
+      );
+    }
   }
 }
 
@@ -234,6 +290,22 @@ export function decisionIdForCandidate(candidateId: string): string {
  */
 function normalizeString(value: unknown): unknown {
   return typeof value === "string" ? value.trim() : value;
+}
+
+function normalizeBlockerResolution(
+  value: unknown
+): unknown {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return value;
+  const resolution = value as Record<string, unknown>;
+  return {
+    ...resolution,
+    blockerCode: normalizeString(resolution.blockerCode),
+    outcome: normalizeString(resolution.outcome),
+    policyGapDecisionId: resolution.policyGapDecisionId === null ?
+      null :
+      normalizeString(resolution.policyGapDecisionId),
+    note: normalizeString(resolution.note),
+  } satisfies Record<keyof OrganizerEventBlockerResolution, unknown>;
 }
 
 export const adminDecideOrganizerEventCandidate = onCall(

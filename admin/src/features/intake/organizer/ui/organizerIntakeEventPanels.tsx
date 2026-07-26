@@ -1,3 +1,4 @@
+import {useState} from "react";
 import {
   Activity,
   CheckCircle2,
@@ -91,6 +92,8 @@ import type {
   AdminResolveOrganizerEventLocationResponse,
   OrganizerCurationOperation,
   OrganizerEventCandidateDecision,
+  OrganizerEventBlockerResolution,
+  OrganizerEventImportBlockerCode,
   OrganizerIntakeDecision,
   OrganizerPolicyGapDecision,
   OrganizerSurfaceDecision,
@@ -100,6 +103,12 @@ import {useAdminFeedback} from "../../../../shared/feedback/AdminFeedbackContext
 import {organizerIntakeReadinessPanels} from "./organizerIntakeReadinessPanels";
 import {organizerIntakeEvidencePanels} from "./organizerIntakeEvidencePanels";
 import {organizerIntakeDiscoveryPanels} from "./organizerIntakeDiscoveryPanels";
+import {
+  blockerResolutionsFromChoices,
+  governedBlockersForCandidate,
+  renderOrganizerEventBlockerResolutionFields,
+  type BlockerResolutionChoices,
+} from "./organizerEventBlockerControls";
 
 const organizerCurationOperations: OrganizerCurationOperation[] = [
   "surface_decision",
@@ -129,7 +138,8 @@ function OrganizerExternalEventCandidateQueueView({
   notes: Record<string, string>;
   onDecision: (
     candidate: Intake.OrganizerExternalEventCandidate,
-    decision: OrganizerEventCandidateDecision
+    decision: OrganizerEventCandidateDecision,
+    blockerResolutions: OrganizerEventBlockerResolution[]
   ) => void;
   onNoteChange: (candidateId: string, note: string) => void;
   queue: Intake.OrganizerExternalEventCandidateQueue;
@@ -190,12 +200,14 @@ function OrganizerExternalEventCandidateQueueView({
         ) : (
           visibleCandidates.map((candidate) => (
             <OrganizerExternalEventCandidateCard
+              blockerCodes={governedBlockersForCandidate(candidate, queue)}
               candidate={candidate}
               inFlightDecision={decisionInFlight[candidate.candidateId]}
               key={candidate.candidateId}
               localDecision={localDecisions[candidate.candidateId]}
               note={notes[candidate.candidateId] ?? ""}
-              onDecision={(decision) => onDecision(candidate, decision)}
+              onDecision={(decision, blockerResolutions) =>
+                onDecision(candidate, decision, blockerResolutions)}
               onNoteChange={(note) => onNoteChange(candidate.candidateId, note)}
             />
           ))
@@ -620,6 +632,7 @@ function OrganizerExternalEventImportExecutionPlanView({
 }
 
 function OrganizerExternalEventCandidateCard({
+  blockerCodes,
   candidate,
   inFlightDecision,
   localDecision,
@@ -627,16 +640,30 @@ function OrganizerExternalEventCandidateCard({
   onDecision,
   onNoteChange,
 }: {
+  blockerCodes: OrganizerEventImportBlockerCode[];
   candidate: Intake.OrganizerExternalEventCandidate;
   inFlightDecision?: OrganizerEventCandidateDecision;
   localDecision?: AdminDecideOrganizerEventCandidateResponse;
   note: string;
-  onDecision: (decision: OrganizerEventCandidateDecision) => void;
+  onDecision: (
+    decision: OrganizerEventCandidateDecision,
+    blockerResolutions: OrganizerEventBlockerResolution[]
+  ) => void;
   onNoteChange: (note: string) => void;
 }) {
   const generatedDecision = candidate.reviewDecision?.decision ?? null;
   const submittedDecision = localDecision?.decision ?? generatedDecision;
   const isDeciding = Boolean(inFlightDecision);
+  const [resolutionChoices, setResolutionChoices] = useState<
+    BlockerResolutionChoices
+  >({});
+  const blockerResolutions = blockerResolutionsFromChoices(
+    blockerCodes,
+    resolutionChoices,
+    note
+  );
+  const approvalReady = note.trim().length > 0 &&
+    blockerResolutions.length === blockerCodes.length;
 
   return (
     <AdminSearchCandidateCard>
@@ -659,8 +686,8 @@ function OrganizerExternalEventCandidateCard({
         <StateRow label="Location" value={eventCandidateLocation(candidate)} />
         <StateRow label="Import" value={`${candidate.importReadiness} / ${candidate.importState}`} />
       </AdminIntakeStateGrid>
-      <AdminTagList>
-        {candidate.blockers.map((blocker) => (
+        <AdminTagList>
+        {[...new Set([...candidate.blockers, ...blockerCodes])].map((blocker) => (
           <AdminTag key={blocker} tone="muted">{blocker}</AdminTag>
         ))}
         {candidate.diagnostics.map((diagnostic) => (
@@ -687,10 +714,17 @@ function OrganizerExternalEventCandidateCard({
             rows={3}
             value={note}
           />
+          {renderOrganizerEventBlockerResolutionFields({
+            blockerCodes,
+            choices: resolutionChoices,
+            disabled: isDeciding,
+            onChange: setResolutionChoices,
+          })}
           <AdminIntakeDecisionActions>
             <AdminButton
-              disabled={isDeciding}
-              onClick={() => onDecision("approve_for_import")}
+              disabled={isDeciding || !approvalReady}
+              onClick={() =>
+                onDecision("approve_for_import", blockerResolutions)}
               variant="primary"
             >
               {inFlightDecision === "approve_for_import" ?
@@ -699,13 +733,13 @@ function OrganizerExternalEventCandidateCard({
             </AdminButton>
             <AdminButton
               disabled={isDeciding}
-              onClick={() => onDecision("hold")}
+              onClick={() => onDecision("hold", [])}
             >
               {inFlightDecision === "hold" ? "Holding" : "Hold"}
             </AdminButton>
             <AdminButton
               disabled={isDeciding}
-              onClick={() => onDecision("reject")}
+              onClick={() => onDecision("reject", [])}
             >
               {inFlightDecision === "reject" ? "Rejecting" : "Reject"}
             </AdminButton>

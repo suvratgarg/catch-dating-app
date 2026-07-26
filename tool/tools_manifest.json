@@ -1778,6 +1778,20 @@
       "role": "generator"
     },
     {
+      "id": "data:backfill-organizer-supply-capabilities",
+      "category": "data",
+      "path": "tool/data/backfill_organizer_supply_capabilities.mjs",
+      "command": "node tool/data/backfill_organizer_supply_capabilities.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Backfills organizer and club member-affordance ceilings while auditing existing external-event provenance.",
+      "checks": [
+        "node --check tool/data/backfill_organizer_supply_capabilities.mjs",
+        "node --test tool/data/backfill_organizer_supply_capabilities.test.mjs"
+      ],
+      "role": "generator"
+    },
+    {
       "id": "data:backfill-organizer-candidate-provenance",
       "category": "data",
       "path": "tool/data/backfill_organizer_candidate_provenance.mjs",

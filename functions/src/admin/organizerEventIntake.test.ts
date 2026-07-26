@@ -163,6 +163,7 @@ function approvalPayload(overrides: FakeData = {}) {
     candidateId: "2026-06-17-afterfly-luma-events:pxgmph3b",
     decision: "approve_for_import",
     checklist: completeChecklist(),
+    blockerResolutions: [],
     note: "Manual event QA complete.",
     ...overrides,
   };
@@ -204,6 +205,7 @@ test("adminDecideOrganizerEventCandidateHandler records an approval decision",
         decision: "approve_for_import",
         decisionStatus: "approved_for_import",
         checklist: completeChecklist(),
+        blockerResolutions: [],
         note: "Manual event QA complete.",
         reviewedByUid: "admin-1",
         reviewedAt: "SERVER_TIMESTAMP",
@@ -251,6 +253,88 @@ test("adminDecideOrganizerEventCandidateHandler keeps holds non-importable",
 
     assert.equal(result.decisionStatus, "held");
     assert.equal(result.importState, "not_importable");
+  });
+
+test("event candidate decisions record explicit blocker outcomes",
+  async () => {
+    const h = harness();
+
+    await adminDecideOrganizerEventCandidateHandler(
+      callableRequest("admin-1", approvalPayload({
+        blockerResolutions: [
+          {
+            blockerCode: "missing_end_time",
+            outcome: "waived",
+            policyGapDecisionId: "policy-external-event-defaults-policy",
+            note: "Official source defines a fixed two-hour format.",
+          },
+          {
+            blockerCode: "requires_owner_safe_copy_review",
+            outcome: "resolved",
+            policyGapDecisionId: null,
+            note: "Copy is descriptive and does not imply organizer ownership.",
+          },
+        ],
+      }), {support: true}),
+      h.deps
+    );
+
+    assert.deepEqual(
+      h.firestore.get(
+        "organizerEventCandidateReviewDecisions/" +
+          "event-2026-06-17-afterfly-luma-events-pxgmph3b"
+      )?.blockerResolutions,
+      [
+        {
+          blockerCode: "missing_end_time",
+          outcome: "waived",
+          policyGapDecisionId: "policy-external-event-defaults-policy",
+          note: "Official source defines a fixed two-hour format.",
+        },
+        {
+          blockerCode: "requires_owner_safe_copy_review",
+          outcome: "resolved",
+          policyGapDecisionId: null,
+          note: "Copy is descriptive and does not imply organizer ownership.",
+        },
+      ]
+    );
+  });
+
+test("event candidate decisions reject duplicate or wrong waivers",
+  async () => {
+    const h = harness();
+    const duplicated = {
+      blockerCode: "missing_end_time",
+      outcome: "resolved",
+      policyGapDecisionId: null,
+      note: "Reviewed.",
+    };
+
+    await assert.rejects(
+      () => adminDecideOrganizerEventCandidateHandler(
+        callableRequest("admin-1", approvalPayload({
+          blockerResolutions: [duplicated, duplicated],
+        }), {support: true}),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "invalid-argument")
+    );
+    await assert.rejects(
+      () => adminDecideOrganizerEventCandidateHandler(
+        callableRequest("admin-1", approvalPayload({
+          blockerResolutions: [{
+            blockerCode: "missing_end_time",
+            outcome: "waived",
+            policyGapDecisionId:
+              "policy-external-event-location-provider-policy",
+            note: "Wrong authority.",
+          }],
+        }), {support: true}),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
   });
 
 test("adminDecideOrganizerEventCandidateHandler blocks viewer-only admins",

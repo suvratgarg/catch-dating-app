@@ -9,7 +9,7 @@ import {sampleOverview} from "../../shared/api/sampleData";
 
 describe("generated admin callable validators", () => {
   it("covers every callable used by adminApi", () => {
-    expect(adminCallableValidationCoverage.callables).toHaveLength(37);
+    expect(adminCallableValidationCoverage.callables).toHaveLength(38);
     expect(adminCallableValidationCoverage.strictRequests).toContain(
       "adminGetHostAnalytics"
     );

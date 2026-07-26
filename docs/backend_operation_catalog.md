@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.4.2
-updated: 2026-07-24
+version: 1.5.0
+updated: 2026-07-27
 owner: recursive_audit_loop
 status: active
 ---
@@ -165,6 +165,9 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `requestOrganizerClaim` / `adminDecideOrganizerClaim` | Callable | Website claim flow / admin claim queue | `organizerClaimRequests`, canonical organizer ownership/claim fields, team membership, notifications, legacy shadows | Claim submission never grants access; role-gated admin decision owns transfer. |
 | `createPublicOrganizerReview` / `listPublicOrganizerReviews` | Callable | Public website listing | `reviews/{reviewId}` with `organizerId` and compatibility `clubId` | Public review scope is bound to a published canonical organizer route. |
 | `adminGetOrganizerDetails` / `adminListOrganizerDetails` / `adminUpdateOrganizerDetails` | Callable | React admin Organizers workspace | canonical organizer read/update projections plus audited legacy shadow | Organizer-named admin wire contract; internal `AdminClub*` adapters are transitional only. |
+| `adminDecideOrganizerEventCandidate` | Callable | React Organizer Intake review | `organizerEventCandidateReviewDecisions/{candidateId}` | Records approve/reject plus one explicit resolved/waived decision for every governed import blocker. A waiver must reference the accepted matching policy-gap decision. |
+| `adminPublishExternalEvent` | Callable | React Events external-supply workspace | `externalEvents/{eventId}`, `externalEventPublicationReceipts/{receiptId}` | Dry-run/apply authority for one reviewed outbound-only event. Enforces market identity, organizer capability/visibility ceiling, exact blocker decisions, immutable idempotency, and never writes canonical `events`. |
+| `adminTakedownExternalEvent` | Callable | React Events external-supply workspace | `externalEvents/{eventId}`, `externalEventPublicationReceipts/{receiptId}` | Dry-run/apply takedown; preserves the record and attribution, records takedown metadata, and is idempotent. |
 | `createClub`, `updateClub`, `archiveClub`, `deleteClub`, `joinClub`, `leaveClub`, `createClubPost`, `requestClubClaim`, `adminDecideClubClaim` | Callable compatibility wrappers | Released clients only | legacy club projection and/or canonical organizer adapter | No new client may adopt these names. Remove only after released-client and remote-parity evidence. |
 | `setReviewResponse` | Callable | Claimed organizer review UI | `reviews/{reviewId}.ownerResponse` | Server-owned owner response on public review documents. Only managers for the owning organizer can write responses; app and website render the canonical review snapshot. |
 | `startOrganizerConversation` | Callable | `ClubHostContactController.startConversation` compatibility controller from organizer or event detail | `matches/{opaqueScopedId}` | Validates `organizerId` and optional `eventId`, prefers canonical organizer-manager authority with a legacy-club fallback during backfill, and checks the block/deleted-user boundary. New documents carry both `organizerId` and the compatibility `clubId`; legacy pair-id `clubHostInquiry` threads remain reusable. `startClubHostConversation` is a released-client wrapper only. |

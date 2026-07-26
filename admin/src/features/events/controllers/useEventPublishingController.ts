@@ -7,6 +7,7 @@ import type {
   AdminListExternalEventDetailsPayload,
   AdminListEventDetailsPayload,
   AdminPublishExternalEventPayload,
+  AdminTakedownExternalEventPayload,
 } from "../../../shared/types/adminTypes";
 import {
   listExternalEventProfiles,
@@ -15,6 +16,7 @@ import {
   loadEventProfile,
   publishExternalEventProfile,
   saveEventProfile,
+  takedownExternalEventProfile,
 } from "../api/eventPublishingRepository";
 import {
   buildExternalEventImportReview,
@@ -63,6 +65,12 @@ export interface ExternalEventPublishRequest {
   targetPath: string;
   reviewNote: string;
   checklist: AdminPublishExternalEventPayload["checklist"];
+}
+
+export interface ExternalEventTakedownRequest {
+  eventId: string;
+  reviewNote: string;
+  checklist: AdminTakedownExternalEventPayload["checklist"];
 }
 
 export function useEventPublishingController({
@@ -190,6 +198,9 @@ export function useEventPublishingController({
   });
   const publishExternalMutation = useMutation({
     mutationFn: publishExternalEventProfile,
+  });
+  const takedownExternalMutation = useMutation({
+    mutationFn: takedownExternalEventProfile,
   });
   const rows = listQuery.data?.rows ?? [];
   const externalRows = externalListQuery.data?.rows ?? [];
@@ -436,9 +447,22 @@ export function useEventPublishingController({
     const operation = beginOperation();
     if (!operation) return false;
     try {
+      const operationKey = externalEventOperationKey(
+        publishRequest.sourceActionId
+      );
+      await publishExternalMutation.mutateAsync({
+        sourceActionId: publishRequest.sourceActionId,
+        targetPath: publishRequest.targetPath,
+        executionMode: "dry_run",
+        idempotencyKey: `${operationKey}:dry-run`,
+        reviewNote: publishRequest.reviewNote.trim(),
+        checklist: publishRequest.checklist,
+      });
       const result = await publishExternalMutation.mutateAsync({
         sourceActionId: publishRequest.sourceActionId,
         targetPath: publishRequest.targetPath,
+        executionMode: "apply",
+        idempotencyKey: `${operationKey}:apply`,
         reviewNote: publishRequest.reviewNote.trim(),
         checklist: publishRequest.checklist,
       });
@@ -468,6 +492,54 @@ export function useEventPublishingController({
     queryClient,
   ]);
 
+  const takedownExternalEvent = useCallback(async (
+    takedownRequest: ExternalEventTakedownRequest
+  ) => {
+    if (!takedownRequest.reviewNote.trim()) {
+      onError("Add a review note before removing external supply.");
+      return false;
+    }
+    const operation = beginOperation();
+    if (!operation) return false;
+    try {
+      const operationKey = externalEventOperationKey(
+        `${takedownRequest.eventId}:takedown`
+      );
+      await takedownExternalMutation.mutateAsync({
+        eventId: takedownRequest.eventId,
+        executionMode: "dry_run",
+        idempotencyKey: `${operationKey}:dry-run`,
+        reviewNote: takedownRequest.reviewNote.trim(),
+        checklist: takedownRequest.checklist,
+      });
+      const result = await takedownExternalMutation.mutateAsync({
+        eventId: takedownRequest.eventId,
+        executionMode: "apply",
+        idempotencyKey: `${operationKey}:apply`,
+        reviewNote: takedownRequest.reviewNote.trim(),
+        checklist: takedownRequest.checklist,
+      });
+      await queryClient.invalidateQueries({
+        queryKey: [...adminQueryKeys.all, "events"],
+      });
+      onError(null);
+      onNotice(`Removed ${result.targetPath} from external discovery.`);
+      return true;
+    } catch (error) {
+      onError(messageFromError(error, "Unable to remove external event."));
+      return false;
+    } finally {
+      endOperation(operation);
+    }
+  }, [
+    beginOperation,
+    endOperation,
+    onError,
+    onNotice,
+    queryClient,
+    takedownExternalMutation,
+  ]);
+
   return {
     backToList,
     diffRows,
@@ -490,6 +562,7 @@ export function useEventPublishingController({
     isListLoading: activeWorkspace === "directory" &&
       !selectedEventId && (listQuery.isPending || listQuery.isFetching),
     isSaving: saveMutation.isPending,
+    isTakingDownExternalEvent: takedownExternalMutation.isPending,
     isSupplyReadinessLoading: activeWorkspace === "readiness" &&
       (supplyReadinessQuery.isPending || supplyReadinessQuery.isFetching),
     listGeneratedAt,
@@ -521,6 +594,7 @@ export function useEventPublishingController({
     setFilter,
     setForm,
     setQuery,
+    takedownExternalEvent,
   };
 }
 
@@ -709,4 +783,13 @@ function messageFromError(error: unknown, fallback: string): string {
     if (typeof message === "string" && message.trim()) return message;
   }
   return fallback;
+}
+
+function externalEventOperationKey(prefix: string): string {
+  const entropy = globalThis.crypto?.randomUUID?.() ??
+    `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+  const boundedPrefix = prefix
+    .replace(/[^A-Za-z0-9:_-]/g, "-")
+    .slice(0, 80);
+  return `${boundedPrefix}:${entropy}`;
 }

@@ -23,6 +23,8 @@ import {setAdminAuditLogInTransaction} from "./adminAudit";
 import {buildOrganizerAdminSearchProjection} from "./organizerAdminSearch";
 import {reserveOrganizerCanonicalRoute} from "./organizerPublishingGuards";
 import {organizerDraftOperationId} from "./organizerDraftIdentity";
+import {organizerSupplyCapabilitiesFor} from
+  "../shared/organizerSupplyCapabilities";
 
 const organizerIntakeRoles = ["admin", "adminOwner", "support"] as const;
 const curationCollection = "organizerIntakeCurationDecisions";
@@ -345,6 +347,10 @@ function buildOrganizerDraft({
     countryCode: market.countryIsoCode,
     countryName: market.countryName,
     appVisibility: "hidden",
+    supplyCapabilities: organizerSupplyCapabilitiesFor({
+      ownershipState: "programmatic",
+      claimState: "unclaimed",
+    }),
     ownership: {
       state: "programmatic",
       ownerUserId: null,

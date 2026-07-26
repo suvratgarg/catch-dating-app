@@ -32,6 +32,8 @@ import {
   activityNotificationId,
   setActivityNotificationInTransaction,
 } from "../shared/notifications";
+import {organizerSupplyCapabilitiesFor} from
+  "../shared/organizerSupplyCapabilities";
 
 const claimReviewRoles = ["admin", "adminOwner", "support"] as const;
 
@@ -162,6 +164,10 @@ export async function requestClubClaimHandler(
         claimHref: club.claim?.claimHref ?? "/host/#founding-hosts",
         lastClaimRequestId: requestId,
       },
+      supplyCapabilities: organizerSupplyCapabilitiesFor({
+        ownershipState: club.ownership?.state,
+        claimState: "claimPending",
+      }),
     });
   });
 
@@ -232,6 +238,10 @@ export async function adminDecideClubClaimHandler(
             claimHref: club.claim?.claimHref ?? "/host/#founding-hosts",
             lastClaimRequestId: data.requestId,
           },
+          supplyCapabilities: organizerSupplyCapabilitiesFor({
+            ownershipState: club.ownership?.state,
+            claimState: "unclaimed",
+          }),
         });
       }
       setActivityNotificationInTransaction(tx, db, {
@@ -348,6 +358,10 @@ export async function adminDecideClubClaimHandler(
       hostUserIds: [claimRequest.requesterUid],
       hostProfiles: [ownerProfile],
       appVisibility: "discoverable",
+      supplyCapabilities: organizerSupplyCapabilitiesFor({
+        ownershipState: "claimed",
+        claimState: "claimed",
+      }),
       ownership: {
         state: "claimed",
         ownerUserId: claimRequest.requesterUid,

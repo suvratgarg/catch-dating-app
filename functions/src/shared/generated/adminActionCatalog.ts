@@ -332,6 +332,16 @@ export const ADMIN_ACTION_CATALOG = {
       "support"
     ]
   },
+  "external-events.takedown": {
+    "callable": "adminTakedownExternalEvent",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support"
+    ]
+  },
   "admin-roles.list": {
     "callable": "adminListAdminRoleAssignments",
     "controlPlane": false,

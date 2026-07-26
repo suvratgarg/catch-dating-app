@@ -42,6 +42,7 @@ export 'callables/admin_record_organizer_curation_callable_request.g.dart';
 export 'callables/admin_resolve_organizer_event_location_callable_request.g.dart';
 export 'callables/admin_set_admin_user_roles_callable_request.g.dart';
 export 'callables/admin_set_club_index_status_callable_request.g.dart';
+export 'callables/admin_takedown_external_event_callable_request.g.dart';
 export 'callables/archive_club_callable_request.g.dart';
 export 'callables/archive_organizer_callable_request.g.dart';
 export 'callables/block_user_callable_request.g.dart';

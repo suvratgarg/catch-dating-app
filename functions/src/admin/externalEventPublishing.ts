@@ -6,6 +6,8 @@ import {AdminPublishExternalEventCallablePayload} from
   "../shared/generated/adminPublishExternalEventCallablePayload";
 import {ExternalEventDocument} from
   "../shared/generated/externalEventDocument";
+import {ExternalEventPublicationReceiptDocument} from
+  "../shared/generated/externalEventPublicationReceiptDocument";
 import {
   validateAdminPublishExternalEventCallablePayload,
   validateExternalEventDocument,
@@ -14,6 +16,15 @@ import {validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAdminRole} from "./adminAuth";
 import {setAdminAuditLogInTransaction} from "./adminAudit";
+import {
+  assertExternalEventOrganizerAuthority,
+  assertMatchingPublicationReceipt,
+  publicationInputHash,
+  publicationReceiptId,
+} from "./externalEventPublicationPolicy";
+import {
+  assertAcceptedExternalEventWaivers,
+} from "./externalEventBlockerAuthority";
 
 const externalEventPublishRoles = ["admin", "adminOwner", "support"] as const;
 
@@ -41,6 +52,11 @@ export interface AdminPublishExternalEventResponse {
   sourceActionId: string;
   publicationStatus: "public";
   externalLinkCount: number;
+  executionMode: "dry_run" | "apply";
+  outcome: "would_publish" | "published";
+  receiptPath: string;
+  writeApplied: boolean;
+  idempotent: boolean;
   publishedAt: string;
 }
 
@@ -75,14 +91,35 @@ export async function adminPublishExternalEventHandler(
   const eventId = eventIdFromTargetPath(data.targetPath);
   const readinessRef = db.collection("eventSupplyReadiness").doc("current");
   const externalEventRef = db.collection("externalEvents").doc(eventId);
+  const inputHash = publicationInputHash(data);
+  const receiptId = publicationReceiptId(
+    adminContext.uid,
+    "publish",
+    data.idempotencyKey
+  );
+  const receiptRef = db.collection("externalEventPublicationReceipts")
+    .doc(receiptId);
   const publishedAt = (deps.now?.() ?? new Date()).toISOString();
   let externalLinkCount = 0;
+  let idempotent = false;
 
   await db.runTransaction(async (tx) => {
-    const [readinessSnap, beforeSnap] = await Promise.all([
+    const [readinessSnap, beforeSnap, receiptSnap] = await Promise.all([
       tx.get(readinessRef),
       tx.get(externalEventRef),
+      tx.get(receiptRef),
     ]);
+    if (receiptSnap.exists) {
+      assertMatchingPublicationReceipt(receiptSnap.data() ?? {}, {
+        action: "publish",
+        inputHash,
+        idempotencyKey: data.idempotencyKey,
+      });
+      const receipt = receiptSnap.data() ?? {};
+      externalLinkCount = numberValue(receipt.externalLinkCount);
+      idempotent = true;
+      return;
+    }
     if (!readinessSnap.exists) {
       throw new HttpsError(
         "failed-precondition",
@@ -108,11 +145,56 @@ export async function adminPublishExternalEventHandler(
       eventId,
       data.targetPath
     );
+    const blockerResolutions = await assertAcceptedExternalEventWaivers(
+      tx,
+      db,
+      action.blockerResolutions
+    );
+    assertMatchingBlockerResolutionSnapshot(
+      blockerResolutions,
+      externalEventDocument.review.blockerResolutions
+    );
+    const organizerRef = db.collection("organizers")
+      .doc(externalEventDocument.canonicalHostId);
+    const organizerSnap = await tx.get(organizerRef);
+    if (!organizerSnap.exists) {
+      throw new HttpsError(
+        "failed-precondition",
+        "The attributed canonical organizer does not exist."
+      );
+    }
+    assertExternalEventOrganizerAuthority(
+      eventId,
+      externalEventDocument,
+      organizerRef.id,
+      organizerSnap.data() ?? {}
+    );
     externalLinkCount = externalEventDocument.booking.externalLinks.length;
     const firestoreDocument =
       externalEventDocumentForFirestore(externalEventDocument);
-
-    tx.create(externalEventRef, firestoreDocument);
+    const outcome = data.executionMode === "apply" ?
+      "published" :
+      "would_publish";
+    if (data.executionMode === "apply") {
+      tx.create(externalEventRef, firestoreDocument);
+    }
+    const receipt: ExternalEventPublicationReceiptDocument = {
+      schemaVersion: 1,
+      receiptId,
+      idempotencyKey: data.idempotencyKey,
+      inputHash,
+      action: "publish",
+      executionMode: data.executionMode,
+      outcome,
+      eventId,
+      targetPath: data.targetPath,
+      sourceActionId: data.sourceActionId,
+      externalLinkCount,
+      reviewNote: data.reviewNote,
+      actorUid: adminContext.uid,
+      createdAt: deps.serverTimestamp() as never,
+    };
+    tx.create(receiptRef, receipt);
     setAdminAuditLogInTransaction(tx, db, adminContext, {
       action: "adminPublishExternalEvent",
       targetPath: externalEventRef.path,
@@ -123,7 +205,9 @@ export async function adminPublishExternalEventHandler(
         sourceActionId: data.sourceActionId,
         readinessGeneratedAt: nullableString(readiness.generatedAt),
         externalLinkCount,
-        effect: "publish_read_only_external_event",
+        executionMode: data.executionMode,
+        receiptId,
+        effect: outcome,
       },
       note: data.reviewNote,
       serverTimestamp: deps.serverTimestamp,
@@ -136,8 +220,30 @@ export async function adminPublishExternalEventHandler(
     sourceActionId: data.sourceActionId,
     publicationStatus: "public",
     externalLinkCount,
+    executionMode: data.executionMode,
+    outcome: data.executionMode === "apply" ?
+      "published" :
+      "would_publish",
+    receiptPath: receiptRef.path,
+    writeApplied: data.executionMode === "apply" && !idempotent,
+    idempotent,
     publishedAt,
   };
+}
+
+function assertMatchingBlockerResolutionSnapshot(
+  actionResolutions: unknown,
+  documentResolutions: unknown
+) {
+  const actionJson = JSON.stringify(actionResolutions);
+  const documentJson = JSON.stringify(documentResolutions);
+  if (actionJson === documentJson) {
+    return;
+  }
+  throw new HttpsError(
+    "failed-precondition",
+    "External-event blocker resolution provenance changed after preflight."
+  );
 }
 
 /**
@@ -152,6 +258,8 @@ function normalizeAdminPublishExternalEventPayload(value: unknown): unknown {
     ...data,
     sourceActionId: normalizeString(data.sourceActionId),
     targetPath: normalizeString(data.targetPath),
+    executionMode: normalizeString(data.executionMode),
+    idempotencyKey: normalizeString(data.idempotencyKey),
     reviewNote: normalizeString(data.reviewNote),
   };
 }
@@ -391,6 +499,10 @@ function normalizeString(value: unknown): unknown {
  */
 function nullableString(value: unknown): string | null {
   return typeof value === "string" && value.trim() ? value : null;
+}
+
+function numberValue(value: unknown): number {
+  return typeof value === "number" && Number.isFinite(value) ? value : 0;
 }
 
 export const adminPublishExternalEvent = onCall(

@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.4.180
-updated: 2026-07-24
+version: 0.4.181
+updated: 2026-07-27
 owner: marketing_website
 status: active
 ---
@@ -94,6 +94,13 @@ The website is already split out of the old monolithic shell:
   `publicPage.canonicalPath`; the Firestore `organizers/{organizerId}` auto-id
   is an internal identity and is not a URL convention. Route reservations make
   slugs unique independently of document creation.
+- Organizer listings consume the canonical `supplyCapabilities` projection.
+  Unclaimed supply never renders Catch booking, payment, waitlist, or direct
+  host-contact actions; it remains claimable, and review eligibility begins
+  only after an event ends. Missing or invalid capabilities fail closed. The
+  generated static projection derives legacy records conservatively while the
+  production backfill completes, but React does not re-infer policy from
+  provenance or claim copy.
 - `design/public_surface_behavior.json` is the cross-surface authority and
   action matrix described by
   `docs/web_surface_architecture.md#public-viewer-and-listing-authority-matrix`.

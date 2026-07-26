@@ -94,6 +94,7 @@ function executionActionForImportAction(action, policy) {
     targetPath: action.targetPath,
     sourceStatus: action.status,
     sourceReviewStatus: action.reviewStatus,
+    blockerResolutions: action.blockerResolutions ?? [],
     blockers,
     projectionValidation,
     payloadValidation: {valid: true, errors: []},

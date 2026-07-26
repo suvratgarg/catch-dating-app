@@ -183,6 +183,7 @@ class ClubDetailBodyState {
     final canMessageHosts =
         isAuthenticated &&
         userProfile?.hasSocialReadyProfileOn(now ?? DateTime.now()) == true &&
+        club.supplyCapabilities.hostContactEnabled &&
         !appRole.isHost &&
         !isHost;
     final messageableHostUids = {
@@ -205,7 +206,9 @@ class ClubDetailBodyState {
       canMessageHosts: canMessageHosts,
       isMessageHostPending: isMessageHostPending,
       nextEvent: _nextPublishedEvent(upcomingEvents),
-      contactActions: _clubContactActions(club),
+      contactActions: club.supplyCapabilities.hostContactEnabled
+          ? _clubContactActions(club)
+          : const [],
       showReviews: isAuthenticated,
       messageableHostUids: messageableHostUids,
       eventRouteTarget: appRole.isHost

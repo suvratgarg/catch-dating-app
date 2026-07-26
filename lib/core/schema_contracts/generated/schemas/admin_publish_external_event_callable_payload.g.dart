@@ -14,6 +14,8 @@ const schemaAdminPublishExternalEventCallablePayloadSchema = <String, Object?>{
   'required': <Object?>[
     'sourceActionId',
     'targetPath',
+    'executionMode',
+    'idempotencyKey',
     'reviewNote',
     'checklist',
   ],
@@ -26,6 +28,19 @@ const schemaAdminPublishExternalEventCallablePayloadSchema = <String, Object?>{
     'targetPath': <String, Object?>{
       'type': 'string',
       'pattern': '^externalEvents/[A-Za-z0-9_-]{1,180}\$',
+    },
+    'executionMode': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'dry_run',
+        'apply',
+      ],
+    },
+    'idempotencyKey': <String, Object?>{
+      'type': 'string',
+      'minLength': 8,
+      'maxLength': 180,
+      'pattern': '^[A-Za-z0-9:_-]+\$',
     },
     'reviewNote': <String, Object?>{
       'type': 'string',

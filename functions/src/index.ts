@@ -214,6 +214,9 @@ export {
   adminPublishExternalEvent,
 } from "./admin/externalEventPublishing";
 export {
+  adminTakedownExternalEvent,
+} from "./admin/externalEventTakedown";
+export {
   adminGetEventIntakeDashboard,
 } from "./admin/eventIntakeDashboard";
 export {

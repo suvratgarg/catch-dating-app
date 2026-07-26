@@ -2,6 +2,9 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import {OrganizerSupplyCapabilities} from "./organizerSupplyCapabilities";
+import {ExternalEventBlockerResolution} from "./externalEventBlockerResolution";
+
 /**
  * Read-only external event document stored at externalEvents/{eventId}. These records are sourced from reviewed organizer intake candidates and may link to external booking platforms, but they never enable Catch booking, payments, reservations, waitlists, attendance, or schedule locks.
  */
@@ -71,6 +74,7 @@ export interface ExternalEventDocument {
   };
   status: "active" | "cancelled";
   publicationStatus: "draft" | "public" | "archived" | "removed";
+  organizerCapabilities: OrganizerSupplyCapabilities;
   booking: {
     mode: "external_outbound_only";
     catchBookingEnabled: false;
@@ -120,7 +124,23 @@ export interface ExternalEventDocument {
     note: string | null;
     importPolicyAcknowledged: boolean;
     ownerSafeCopyReviewed: boolean;
+    /**
+     * @maxItems 6
+     */
+    blockerResolutions: ExternalEventBlockerResolution[];
   };
+  takedown?: {
+    /**
+     * Serialized Firestore Timestamp fixture shape.
+     */
+    removedAt: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
+    removedByUid: string;
+    reason: string;
+    receiptId: string;
+  } | null;
   /**
    * Serialized Firestore Timestamp fixture shape.
    */

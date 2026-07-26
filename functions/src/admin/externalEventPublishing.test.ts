@@ -10,6 +10,10 @@ type FakeData = Record<string, unknown>;
 class FakeDocRef {
   constructor(readonly firestore: FakeFirestore, readonly path: string) {}
 
+  get id(): string {
+    return this.path.split("/").at(-1) ?? "";
+  }
+
   async get() {
     return new FakeSnapshot(this.firestore.get(this.path));
   }
@@ -129,6 +133,8 @@ function publishPayload(overrides: FakeData = {}) {
   return {
     sourceActionId: "import-action-1",
     targetPath: "externalEvents/ext-afterfly-future-run",
+    executionMode: "apply",
+    idempotencyKey: "import-action-1:apply",
     reviewNote: "Reviewed external event publish.",
     checklist: {
       preflightActionReviewed: true,
@@ -176,6 +182,7 @@ function executionAction(overrides: FakeData = {}) {
     targetPath: "externalEvents/ext-afterfly-future-run",
     sourceStatus: "write_ready",
     sourceReviewStatus: "approved_for_import",
+    blockerResolutions: [],
     blockers: [],
     projectionValidation: {valid: true, errors: []},
     payloadValidation: {valid: true, errors: []},
@@ -220,6 +227,7 @@ function externalEventDocument(overrides: FakeData = {}) {
     },
     status: "active",
     publicationStatus: "public",
+    organizerCapabilities: unclaimedCapabilities(),
     booking: {
       mode: "external_outbound_only",
       catchBookingEnabled: false,
@@ -262,9 +270,33 @@ function externalEventDocument(overrides: FakeData = {}) {
       note: "Reviewed.",
       importPolicyAcknowledged: true,
       ownerSafeCopyReviewed: true,
+      blockerResolutions: [],
     },
     createdAt: timestamp("2026-06-25T00:00:00.000Z"),
     updatedAt: timestamp("2026-06-25T00:00:00.000Z"),
+    ...overrides,
+  };
+}
+
+function unclaimedCapabilities() {
+  return {
+    mode: "unclaimed_read_only",
+    bookable: false,
+    paymentsEnabled: false,
+    waitlistEnabled: false,
+    hostContactEnabled: false,
+    claimable: true,
+    reviewPolicy: "after_event_end",
+  };
+}
+
+function canonicalOrganizer(overrides: FakeData = {}) {
+  return {
+    locationMarketId: "in-mp-indore",
+    appVisibility: "discoverable",
+    ownership: {state: "programmatic"},
+    claim: {state: "unclaimed"},
+    supplyCapabilities: unclaimedCapabilities(),
     ...overrides,
   };
 }
@@ -286,6 +318,7 @@ test("adminPublishExternalEventHandler publishes one gated external event",
   async () => {
     const h = harness({
       "eventSupplyReadiness/current": readinessDoc(),
+      "organizers/afterfly": canonicalOrganizer(),
     });
 
     const result = await adminPublishExternalEventHandler(
@@ -296,6 +329,10 @@ test("adminPublishExternalEventHandler publishes one gated external event",
     assert.equal(result.eventId, "ext-afterfly-future-run");
     assert.equal(result.publicationStatus, "public");
     assert.equal(result.externalLinkCount, 1);
+    assert.equal(result.executionMode, "apply");
+    assert.equal(result.outcome, "published");
+    assert.equal(result.writeApplied, true);
+    assert.equal(result.idempotent, false);
     assert.deepEqual(h.rateLimitCalls, [
       "admin-1:adminPublishExternalEvent",
     ]);
@@ -308,6 +345,51 @@ test("adminPublishExternalEventHandler publishes one gated external event",
       "external_outbound_only"
     );
     assert.ok(h.firestore.get("adminAuditLogs/audit-1"));
+    assert.ok(h.firestore.get(result.receiptPath));
+  });
+
+test("adminPublishExternalEventHandler dry-runs without event write",
+  async () => {
+    const h = harness({
+      "eventSupplyReadiness/current": readinessDoc(),
+      "organizers/afterfly": canonicalOrganizer(),
+    });
+
+    const result = await adminPublishExternalEventHandler(
+      callableRequest("admin-1", publishPayload({
+        executionMode: "dry_run",
+        idempotencyKey: "import-action-1:dry-run",
+      }), {support: true}),
+      h.deps
+    );
+
+    assert.equal(result.outcome, "would_publish");
+    assert.equal(result.writeApplied, false);
+    assert.equal(
+      h.firestore.get("externalEvents/ext-afterfly-future-run"),
+      undefined
+    );
+    assert.ok(h.firestore.get(result.receiptPath));
+  });
+
+test("adminPublishExternalEventHandler replays the same receipt idempotently",
+  async () => {
+    const h = harness({
+      "eventSupplyReadiness/current": readinessDoc(),
+      "organizers/afterfly": canonicalOrganizer(),
+    });
+    const request = callableRequest(
+      "admin-1",
+      publishPayload(),
+      {support: true}
+    );
+
+    const first = await adminPublishExternalEventHandler(request, h.deps);
+    const second = await adminPublishExternalEventHandler(request, h.deps);
+
+    assert.equal(first.receiptPath, second.receiptPath);
+    assert.equal(second.idempotent, true);
+    assert.equal(second.externalLinkCount, 1);
   });
 
 test("adminPublishExternalEventHandler rejects disabled import policy",
@@ -324,6 +406,7 @@ test("adminPublishExternalEventHandler rejects disabled import policy",
           actions: [executionAction()],
         },
       }),
+      "organizers/afterfly": canonicalOrganizer(),
     });
 
     await assert.rejects(
@@ -354,12 +437,107 @@ test("adminPublishExternalEventHandler rejects blocked preflight action",
           })],
         },
       }),
+      "organizers/afterfly": canonicalOrganizer(),
     });
 
     await assert.rejects(
       () => adminPublishExternalEventHandler(
         callableRequest("admin-1", publishPayload(), {support: true}),
         h.deps
+      ),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
+  });
+
+test("adminPublishExternalEventHandler rejects organizer market drift",
+  async () => {
+    const h = harness({
+      "eventSupplyReadiness/current": readinessDoc(),
+      "organizers/afterfly": canonicalOrganizer({
+        locationMarketId: "in-mh-mumbai",
+      }),
+    });
+
+    await assert.rejects(
+      () => adminPublishExternalEventHandler(
+        callableRequest("admin-1", publishPayload(), {support: true}),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
+  });
+
+test("adminPublishExternalEventHandler requires accepted policy for waivers",
+  async () => {
+    const waiver = {
+      blockerCode: "missing_end_time",
+      outcome: "waived",
+      policyGapDecisionId: "policy-external-event-defaults-policy",
+      note: "Reviewed against the accepted defaults policy.",
+    };
+    const action = executionAction({
+      blockerResolutions: [waiver],
+      externalEventDocument: externalEventDocument({
+        review: {
+          eventReviewBatchId: "batch-1",
+          reviewer: "ops",
+          decidedAt: "2026-06-25",
+          note: "Reviewed.",
+          importPolicyAcknowledged: true,
+          ownerSafeCopyReviewed: true,
+          blockerResolutions: [waiver],
+        },
+      }),
+    });
+    const h = harness({
+      "eventSupplyReadiness/current": readinessDoc({
+        executionPlan: {
+          policy: {
+            writeEnabled: true,
+            status: "enabled",
+            authorityModel: "admin_import_service",
+            reason: "Admin import service enabled.",
+          },
+          actions: [action],
+        },
+      }),
+      "organizers/afterfly": canonicalOrganizer(),
+      ["organizerPolicyGapReviewDecisions/" +
+        "policy-external-event-defaults-policy"]: {
+        decisionId: "policy-external-event-defaults-policy",
+        decisionStatus: "accepted",
+      },
+    });
+
+    const result = await adminPublishExternalEventHandler(
+      callableRequest("admin-1", publishPayload(), {support: true}),
+      h.deps
+    );
+    assert.equal(result.writeApplied, true);
+
+    const rejected = harness({
+      "eventSupplyReadiness/current": readinessDoc({
+        executionPlan: {
+          policy: {
+            writeEnabled: true,
+            status: "enabled",
+            authorityModel: "admin_import_service",
+            reason: "Admin import service enabled.",
+          },
+          actions: [action],
+        },
+      }),
+      "organizers/afterfly": canonicalOrganizer(),
+      ["organizerPolicyGapReviewDecisions/" +
+        "policy-external-event-defaults-policy"]: {
+        decisionId: "policy-external-event-defaults-policy",
+        decisionStatus: "held",
+      },
+    });
+    await assert.rejects(
+      () => adminPublishExternalEventHandler(
+        callableRequest("admin-1", publishPayload(), {support: true}),
+        rejected.deps
       ),
       (error) => assertHttpsCode(error, "failed-precondition")
     );

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 590,
+  "total": 596,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -308,7 +308,7 @@
       ]
     },
     "functions_source": {
-      "count": 93,
+      "count": 97,
       "files": [
         "functions/src/admin/accessApplications.test.ts",
         "functions/src/admin/adminActionExecutions.test.ts",
@@ -322,7 +322,9 @@
         "functions/src/admin/eventIntakeReview.test.ts",
         "functions/src/admin/eventSupplyReadiness.test.ts",
         "functions/src/admin/externalEventDetails.test.ts",
+        "functions/src/admin/externalEventPublicationPolicy.test.ts",
         "functions/src/admin/externalEventPublishing.test.ts",
+        "functions/src/admin/externalEventTakedown.test.ts",
         "functions/src/admin/intakeOperations.test.ts",
         "functions/src/admin/marketingOps.test.ts",
         "functions/src/admin/organizerCuration.test.ts",
@@ -333,6 +335,7 @@
         "functions/src/admin/organizerPolicyGap.test.ts",
         "functions/src/admin/overview.test.ts",
         "functions/src/admin/safetyTriage.test.ts",
+        "functions/src/admin/supplyVisibilityPolicy.test.ts",
         "functions/src/analytics/hostAnalytics.test.ts",
         "functions/src/analytics/organizerAnalyticsEvents.test.ts",
         "functions/src/analytics/userAnalytics.test.ts",
@@ -399,6 +402,7 @@
         "functions/src/search/algoliaExploreIndex.test.ts",
         "functions/src/search/exploreSearch.test.ts",
         "functions/src/shared/notificationCopy.test.ts",
+        "functions/src/shared/organizerSupplyCapabilities.test.ts",
         "functions/src/shared/profileProjection.test.ts",
         "functions/src/shared/schemaContracts.test.ts",
         "functions/src/shared/validation.test.ts",
@@ -406,7 +410,7 @@
       ]
     },
     "tooling": {
-      "count": 144,
+      "count": 146,
       "files": [
         "tool/admin/generate_admin_action_catalog.test.mjs",
         "tool/agent/check_agent_readiness.test.mjs",
@@ -434,6 +438,8 @@
         "tool/data/backfill_location_market_fields.test.mjs",
         "tool/data/backfill_organizer_admin_search.test.mjs",
         "tool/data/backfill_organizer_candidate_provenance.test.mjs",
+        "tool/data/backfill_organizer_intake_visibility_decisions.test.mjs",
+        "tool/data/backfill_organizer_supply_capabilities.test.mjs",
         "tool/data/backfill_profile_photos.test.mjs",
         "tool/data/migrate_clubs_to_organizers.test.mjs",
         "tool/data/profile_projection_parity.test.mjs",

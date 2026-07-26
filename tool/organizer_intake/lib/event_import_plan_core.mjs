@@ -127,6 +127,8 @@ function actionForCandidate(candidate, {candidateById, duplicateKeys, policy}) {
     reviewStatus: candidate.reviewStatus,
     importState: candidate.importState,
     blockers,
+    blockerResolutions:
+      candidate.reviewDecision?.blockerResolutions ?? [],
     duplicateRole,
     canonicalCandidateId,
     duplicateCandidateIds,
@@ -211,8 +213,28 @@ function blockersForCandidate(candidate, {
   if (duplicateRole === "merged_source") {
     blockers.delete("requires_owner_safe_copy_review");
   }
+  if (duplicateRole !== "merged_source") {
+    for (const resolution of
+      candidate.reviewDecision?.blockerResolutions ?? []) {
+      if (
+        governedEventBlockers.has(resolution.blockerCode) &&
+        ["resolved", "waived"].includes(resolution.outcome)
+      ) {
+        blockers.delete(resolution.blockerCode);
+      }
+    }
+  }
   return [...blockers].sort();
 }
+
+const governedEventBlockers = new Set([
+  "missing_exact_coordinates",
+  "missing_end_time",
+  "missing_location_detail",
+  "requires_event_defaults_policy",
+  "requires_owner_safe_copy_review",
+  "duplicate_normalized_event_key",
+]);
 
 function statusForCandidate(candidate, action, blockers) {
   if (candidate.reviewStatus === "rejected") return "rejected";
@@ -337,6 +359,10 @@ function proposedExternalEventDocument(candidate, eventId, {
     status: draft.status,
     publicationStatus:
       candidate.reviewStatus === "approved_for_import" ? "public" : "draft",
+    organizerCapabilities:
+      candidate.organizerCapabilities ?? unclaimedSupplyCapabilities(
+        candidate.reviewDecision?.organizerClaimable !== false
+      ),
     booking: draft.booking,
     discovery: draft.discovery,
     dedupe: draft.dedupe,
@@ -351,9 +377,23 @@ function proposedExternalEventDocument(candidate, eventId, {
         candidate.reviewDecision?.checklist?.importPolicyAcknowledged === true,
       ownerSafeCopyReviewed:
         candidate.reviewDecision?.checklist?.ownerSafeCopyReviewed === true,
+      blockerResolutions:
+        candidate.reviewDecision?.blockerResolutions ?? [],
     },
     createdAt: reviewedAt,
     updatedAt: reviewedAt,
+  };
+}
+
+function unclaimedSupplyCapabilities(claimable = true) {
+  return {
+    mode: "unclaimed_read_only",
+    bookable: false,
+    paymentsEnabled: false,
+    waitlistEnabled: false,
+    hostContactEnabled: false,
+    claimable,
+    reviewPolicy: "after_event_end",
   };
 }
 

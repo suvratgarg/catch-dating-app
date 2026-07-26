@@ -72,6 +72,8 @@ import {
   AdminRecordEventIntakeReviewDecisionResponse,
   AdminPublishExternalEventPayload,
   AdminPublishExternalEventResponse,
+  AdminTakedownExternalEventPayload,
+  AdminTakedownExternalEventResponse,
   AdminRecordMarketingReviewDecisionPayload,
   AdminRecordMarketingReviewDecisionResponse,
   AdminGetEventIntakeDashboardResponse,
@@ -1723,6 +1725,13 @@ export async function publishExternalEvent(
       sourceActionId: payload.sourceActionId,
       publicationStatus: "public",
       externalLinkCount: 1,
+      executionMode: payload.executionMode,
+      outcome: payload.executionMode === "apply" ?
+        "published" :
+        "would_publish",
+      receiptPath: `externalEventPublicationReceipts/sample-${eventId}`,
+      writeApplied: payload.executionMode === "apply",
+      idempotent: false,
       publishedAt: sampleGeneratedAt,
     };
   }
@@ -1731,6 +1740,37 @@ export async function publishExternalEvent(
     AdminPublishExternalEventPayload,
     AdminPublishExternalEventResponse
   >(functions, "adminPublishExternalEvent");
+  const result = await callable(payload);
+  return result.data;
+}
+
+export async function takedownExternalEvent(
+  payload: AdminTakedownExternalEventPayload
+): Promise<AdminTakedownExternalEventResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 220));
+    if (!payload.reviewNote.trim()) {
+      throw new Error("A review note is required to remove external supply.");
+    }
+    return {
+      eventId: payload.eventId,
+      targetPath: `externalEvents/${payload.eventId}`,
+      executionMode: payload.executionMode,
+      outcome: payload.executionMode === "apply" ?
+        "removed" :
+        "would_remove",
+      receiptPath:
+        `externalEventPublicationReceipts/sample-takedown-${payload.eventId}`,
+      writeApplied: payload.executionMode === "apply",
+      idempotent: false,
+      completedAt: sampleGeneratedAt,
+    };
+  }
+
+  const callable = httpsCallable<
+    AdminTakedownExternalEventPayload,
+    AdminTakedownExternalEventResponse
+  >(functions, "adminTakedownExternalEvent");
   const result = await callable(payload);
   return result.data;
 }

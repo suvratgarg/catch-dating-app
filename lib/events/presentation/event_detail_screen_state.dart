@@ -10,6 +10,7 @@ import 'package:catch_dating_app/events/domain/event_service.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/organizers/domain/organizer_supply_capabilities.dart';
 import 'package:catch_dating_app/organizers/organizers.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -160,12 +161,17 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
   required DateTime now,
   required bool hasInviteCode,
   required bool supportsPaidBookings,
+  OrganizerSupplyCapabilities organizerCapabilities =
+      const OrganizerSupplyCapabilities.claimedManaged(),
   bool isSaved = false,
   bool isHosted = false,
   bool isClubMember = false,
   EventDetailBookingDockMutationState mutationState =
       const EventDetailBookingDockMutationState(),
 }) {
+  if (!organizerCapabilities.bookable) {
+    return const EventDetailBookingDockState.hidden();
+  }
   if (event.isCancelled) {
     return EventDetailBookingDockState(
       label: l10n.eventsEventDetailScreenStateLabelEventCancelled,
