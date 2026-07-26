@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-07-25",
+  "updated": "2026-07-26",
   "sourceOfTruth": {
     "generator": "tool/design/build_widget_similarity.mjs",
     "fingerprints": "artifacts/widget_dedupe/fingerprints.json",
@@ -98,37 +98,37 @@
     },
     {
       "hammingBucket": "55-59",
-      "pairs": 2895,
+      "pairs": 2899,
       "jaccardMin": 0,
       "jaccardMean": 0.0531,
       "jaccardMax": 0.2813
     },
     {
       "hammingBucket": "60-64",
-      "pairs": 3170,
+      "pairs": 3167,
       "jaccardMin": 0,
       "jaccardMean": 0.0327,
       "jaccardMax": 0.2381
     },
     {
       "hammingBucket": "65-69",
-      "pairs": 1962,
+      "pairs": 1965,
       "jaccardMin": 0,
       "jaccardMean": 0.0216,
       "jaccardMax": 0.2
     },
     {
       "hammingBucket": "70-74",
-      "pairs": 660,
+      "pairs": 654,
       "jaccardMin": 0,
       "jaccardMean": 0.0132,
       "jaccardMax": 0.1124
     },
     {
       "hammingBucket": "75-79",
-      "pairs": 104,
+      "pairs": 106,
       "jaccardMin": 0,
-      "jaccardMean": 0.0081,
+      "jaccardMean": 0.0082,
       "jaccardMax": 0.0816
     },
     {
@@ -6070,11 +6070,11 @@
       "name": "EventDetailScreen",
       "file": "lib/events/presentation/event_detail_screen.dart",
       "role": "screen",
-      "shapeHash": "f2b3f6595ccdc30c5c596e06d4d91312d6a281bab0cbe96453a6aabdb6c521fe",
-      "coarseShapeHash": "05407e162104b4099dc2380bae891e0ca8b2499330fd329b2fb0aa2a00919932",
-      "simhash128": "c491707fa7e4a01a35ada2148328b95f",
-      "tokenStreamLength": 121,
-      "coarseTokenStreamLength": 121,
+      "shapeHash": "2803f8d05e25ee5b801446cdf01ad1addb6c00022241dd3443fe1c303eb494bc",
+      "coarseShapeHash": "887674575e32423d62e2346a5ac31f46321330487c0fb98602ab3ffac44aae9b",
+      "simhash128": "c493727fa7e6b8ba3dbda21c8329b95f",
+      "tokenStreamLength": 125,
+      "coarseTokenStreamLength": 125,
       "usageCountRaw": 17,
       "usageCountNote": "raw word-boundary count across lib/ and widgetbook/lib/ excluding generated files and defining file; may include name collisions",
       "hasWidgetHelpers": false
@@ -18397,11 +18397,11 @@
       "rank": 163,
       "a": "ClubDetailScreen",
       "b": "EventDetailScreen",
-      "jaccard": 0.0808,
+      "jaccard": 0.0784,
       "containment": 0.2,
       "score": 0.2,
       "smallWidgetMultisetJaccard": 0,
-      "hamming": 52,
+      "hamming": 53,
       "flags": [],
       "detectors": [
         "name"

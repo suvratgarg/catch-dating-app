@@ -450,22 +450,25 @@ export function useEventPublishingController({
       const operationKey = externalEventOperationKey(
         publishRequest.sourceActionId
       );
-      await publishExternalMutation.mutateAsync({
-        sourceActionId: publishRequest.sourceActionId,
-        targetPath: publishRequest.targetPath,
-        executionMode: "dry_run",
-        idempotencyKey: `${operationKey}:dry-run`,
-        reviewNote: publishRequest.reviewNote.trim(),
-        checklist: publishRequest.checklist,
-      });
-      const result = await publishExternalMutation.mutateAsync({
-        sourceActionId: publishRequest.sourceActionId,
-        targetPath: publishRequest.targetPath,
-        executionMode: "apply",
-        idempotencyKey: `${operationKey}:apply`,
-        reviewNote: publishRequest.reviewNote.trim(),
-        checklist: publishRequest.checklist,
-      });
+      const result = await dispatchDryRunAndApply(
+        (payload) => publishExternalMutation.mutateAsync(payload),
+        {
+          sourceActionId: publishRequest.sourceActionId,
+          targetPath: publishRequest.targetPath,
+          executionMode: "dry_run",
+          idempotencyKey: `${operationKey}:dry-run`,
+          reviewNote: publishRequest.reviewNote.trim(),
+          checklist: publishRequest.checklist,
+        } satisfies AdminPublishExternalEventPayload,
+        {
+          sourceActionId: publishRequest.sourceActionId,
+          targetPath: publishRequest.targetPath,
+          executionMode: "apply",
+          idempotencyKey: `${operationKey}:apply`,
+          reviewNote: publishRequest.reviewNote.trim(),
+          checklist: publishRequest.checklist,
+        } satisfies AdminPublishExternalEventPayload
+      );
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: [...adminQueryKeys.all, "events", "external-list"],
@@ -505,20 +508,23 @@ export function useEventPublishingController({
       const operationKey = externalEventOperationKey(
         `${takedownRequest.eventId}:takedown`
       );
-      await takedownExternalMutation.mutateAsync({
-        eventId: takedownRequest.eventId,
-        executionMode: "dry_run",
-        idempotencyKey: `${operationKey}:dry-run`,
-        reviewNote: takedownRequest.reviewNote.trim(),
-        checklist: takedownRequest.checklist,
-      });
-      const result = await takedownExternalMutation.mutateAsync({
-        eventId: takedownRequest.eventId,
-        executionMode: "apply",
-        idempotencyKey: `${operationKey}:apply`,
-        reviewNote: takedownRequest.reviewNote.trim(),
-        checklist: takedownRequest.checklist,
-      });
+      const result = await dispatchDryRunAndApply(
+        (payload) => takedownExternalMutation.mutateAsync(payload),
+        {
+          eventId: takedownRequest.eventId,
+          executionMode: "dry_run",
+          idempotencyKey: `${operationKey}:dry-run`,
+          reviewNote: takedownRequest.reviewNote.trim(),
+          checklist: takedownRequest.checklist,
+        } satisfies AdminTakedownExternalEventPayload,
+        {
+          eventId: takedownRequest.eventId,
+          executionMode: "apply",
+          idempotencyKey: `${operationKey}:apply`,
+          reviewNote: takedownRequest.reviewNote.trim(),
+          checklist: takedownRequest.checklist,
+        } satisfies AdminTakedownExternalEventPayload
+      );
       await queryClient.invalidateQueries({
         queryKey: [...adminQueryKeys.all, "events"],
       });
@@ -600,6 +606,15 @@ export function useEventPublishingController({
 
 export type EventPublishingController =
   ReturnType<typeof useEventPublishingController>;
+
+async function dispatchDryRunAndApply<TPayload, TResult>(
+  dispatch: (payload: TPayload) => Promise<TResult>,
+  dryRunPayload: TPayload,
+  applyPayload: TPayload
+): Promise<TResult> {
+  await dispatch(dryRunPayload);
+  return dispatch(applyPayload);
+}
 
 function useDebouncedValue(value: string, delayMs: number) {
   const [debouncedValue, setDebouncedValue] = useState(value);
