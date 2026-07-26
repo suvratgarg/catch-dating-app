@@ -30,3 +30,9 @@ wrapper is test metadata and is not itself an operations document.
 Operational code must not treat model confidence as authority, silently mutate
 an applied publication plan, or let the same actor both propose and independently
 approve a learned rule.
+
+Workflow-manifest capabilities are the maximum supported by the registered
+runtime, not an automatic grant to every run. Each immutable plan freezes its
+actual capability set and matching budget. Supply Intake supports a guarded
+network acquisition seam, while the checked default policy grants zero network
+requests and keeps the provider disabled.

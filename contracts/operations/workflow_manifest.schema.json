@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/operations/workflow_manifest.schema.json",
   "title": "OperationWorkflowManifest",
-  "description": "Enforced inventory for a durable operations workflow, its CLI surface, queue model, source profiles, capacity, and disabled capabilities.",
+  "description": "Enforced inventory for a durable operations workflow, its CLI surface, queue model, source profiles, capacity, and platform-bounded capabilities.",
   "type": "object",
   "additionalProperties": false,
   "required": [

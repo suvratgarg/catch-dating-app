@@ -1,6 +1,6 @@
 ---
 doc_id: host_listing_discovery_architecture
-version: 0.4.0
+version: 0.5.0
 updated: 2026-07-26
 owner: marketing_website
 status: draft
@@ -65,6 +65,15 @@ per-kind windows and cites the exact completed run that covers a skipped query.
 Known organizer source surfaces use a second cadence key made from organizer
 entity plus surface, preventing an early refetch independently of the query
 ledger.
+
+The Operations-owned acquisition port consumes those planned keys without
+letting the workflow or React admin construct a fetcher. Manual reviewed JSON
+capture remains the default and produces the same normalized batches as the
+compatibility CLI. A provider client may be injected only after checked config
+cites an accepted recurring-crawl policy decision and supplies positive
+per-run and monthly request ceilings. Both ceilings are reserved before a
+provider call. The checked default is disabled, and raw responses remain
+external-artifact data rather than Firestore or Admin projection content.
 
 ## Candidate Identity And Deduplication
 

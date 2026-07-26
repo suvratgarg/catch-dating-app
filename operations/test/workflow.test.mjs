@@ -1631,6 +1631,7 @@ test("promotion uses the run-frozen source policy and exposes hash-bound evidenc
     hashValue({
       workflowPolicy: plan.policy,
       freshnessPolicy: plan.freshnessPolicy,
+      acquisitionPolicy: plan.acquisitionPolicy,
       sourceProfiles: plan.sourceProfiles,
     })
   );

@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.5.0
+version: 1.6.0
 updated: 2026-07-26
 owner: operations_platform
 status: active
@@ -88,6 +88,42 @@ cadence:
 compatibility list of query intents. Its historical `runs/*.json` files may
 still support legacy source-evidence projections, but they are not consulted
 for scheduling and must not regain freshness authority.
+
+### Supply acquisition port
+
+Supply Intake owns one acquisition method shape: a trusted runtime supplies a
+freshness-scheduled `runKey` to an injected acquisition port and receives a raw
+JSON payload plus bounded provenance. The workflow never constructs a network
+client, and the React admin has no acquisition or model client.
+
+Two adapters implement that port:
+
+- `manual_file` reads the same reviewed JSON payloads used by the existing
+  compatibility capture commands. It consumes no network allowance and
+  preserves the existing normalization output.
+- the provider adapter accepts an injected provider client only when
+  `acquisition_policy.json` enables it, names an adapter, freezes positive
+  per-run and monthly request caps, and cites an accepted
+  `recurring_event_crawl_policy` decision from
+  `organizerPolicyGapReviewDecisions/{decisionId}`. A policy decision records
+  review state but does not enable acquisition by itself; the checked config is
+  the separate implementation gate.
+
+Provider calls reserve one request against both ledgers before invoking the
+adapter. Missing config, a missing or non-accepted policy decision, a missing
+provider injection, an unplanned/fresh `runKey`, or either exhausted ceiling
+fails closed before the provider runs. The monthly ledger is a trusted-runtime
+port and must be initialized from durable usage for its calendar-month window;
+it is never inferred from browser state.
+
+Raw payloads remain in the acquisition result long enough for deterministic
+normalization or approved external-artifact storage. They are never part of an
+Operations run, work item, action receipt, admin projection, or Firestore
+document. `acquisitionReceipt()` strips the payload and retains only its hash,
+byte count, source/request identifiers, adapter/policy decision, capture time,
+and budget evidence. The checked policy fixes
+`firestorePersistenceAllowed=false` and
+`persistence=external_artifact_store_only`.
 
 ## Reference Layout
 

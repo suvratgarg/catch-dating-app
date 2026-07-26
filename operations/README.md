@@ -9,9 +9,9 @@ The first reference workflow is `supply-intake`. It can project the existing
 Event Intake and Organizer Intake artifacts into one exclusive work-item queue,
 run deterministic review steps, create hash-bound promotion receipts, reconcile
 expired events, and propose source-specific extraction rules. The shipped
-runtime is **shadow-only**:
+runtime is **shadow-only and provider-disabled by default**:
 
-- network access is disabled;
+- default plans grant no network requests;
 - model calls are disabled;
 - public writes are disabled;
 - run projection reads reviewed local compatibility artifacts; the source
@@ -38,6 +38,15 @@ prepublication. Each scheduled or skipped source surface carries
 `lastFetchedAt` and `nextEligibleAt`; a fresh skip cites the completed run that
 covered it. This is scheduling only: shadow mode still performs no fetch and
 therefore creates no new coverage record.
+
+Phase B adds a guarded acquisition port without enabling a provider. A trusted
+runtime may inject either the existing manual-file adapter or a configured
+provider adapter. Provider acquisition requires a freshness-scheduled key, an
+accepted live policy-gap review decision, positive per-run and monthly caps,
+and budget ledgers that match those caps. The port reserves both request
+allowances before the provider runs and emits payload-free provenance for
+durable evidence. Raw responses remain outside Firestore and outside every
+Operations/admin projection.
 
 ## Architecture
 
@@ -112,7 +121,9 @@ Its schema-backed check discovers workflow directories and compares the
 manifest with the executable registry, supported command subset, ordered stages
 and lifecycles, explicit active/published/expired lifecycle semantics, complete
 stage-closed transition graph, optional source-profile loader, executable
-factory methods, disabled capabilities, workflow identity, and platform cap.
+factory methods, maximum supported capabilities, workflow identity, and
+platform cap. A plan freezes the smaller capability actually granted by its
+checked policy; provider-disabled plans keep `network=false`.
 The boundary gate separately scans every `tool/` code subtree for operations
 runtime imports and split durable-workflow signals so future admin flows do not
 recreate orchestration under a new tooling folder.
