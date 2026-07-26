@@ -9,7 +9,7 @@
 .claim-flow {
   display: grid;
   gap: 28px;
-  width: min(calc(100vw - (var(--gutter) * 2)), var(--content));
+  width: min(calc(100vw - (var(--website-gutter) * 2)), var(--website-content));
   margin: 0 auto;
   padding: 118px 0 72px;
 }
@@ -356,9 +356,9 @@
 }
 
 .not-found-page main {
-  width: min(calc(100% - (var(--gutter) * 2)), var(--content));
+  width: min(calc(100% - (var(--website-gutter) * 2)), var(--website-content));
   margin: 0 auto;
-  padding: calc(var(--header-height) + 32px) 0 64px;
+  padding: calc(var(--website-header-height) + 32px) 0 64px;
 }
 
 .process-status-panel__card {
@@ -575,7 +575,7 @@
   }
 
   .home-discovery {
-    width: min(calc(100vw - 64px), var(--content));
+    width: min(calc(100vw - 64px), var(--website-content));
     padding: 56px 0 64px;
   }
 
@@ -651,4 +651,10 @@
   .flow-actions .see-all-button {
     width: 100%;
   }
+}
+
+/* Folded from the removed organizer-public.css migration layer. */
+.waitlist-form input,
+.waitlist-form select {
+  border-radius: var(--catch-radius-pill);
 }

@@ -1,5 +1,5 @@
 import {eventDetailCopy} from "../../content/events";
-import {siteFooterLegalLinks} from "../../content/site";
+import {siteFooterLegalLinks, siteMenuCopy} from "../../content/site";
 import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
 import {useAppDownloadCtas} from "../marketing/useAppDownloadCtas";
 import type {EventDetailRecord} from "./eventDetailModel";
@@ -22,6 +22,7 @@ export function EventDetailPage({event}: {event: EventDetailRecord}) {
           label: eventDetailCopy.nav.organizerAction,
         }]}
         brandHref="/"
+        menuCopy={siteMenuCopy}
         nav={[
           {href: "/organizers/", label: eventDetailCopy.nav.organizers},
           {href: "/host/", label: eventDetailCopy.nav.host},

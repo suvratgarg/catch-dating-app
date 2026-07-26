@@ -16,15 +16,15 @@
 
 .consent-banner {
   position: fixed;
-  right: var(--gutter);
-  bottom: calc(var(--gutter) + env(safe-area-inset-bottom, 0px));
+  right: var(--website-gutter);
+  bottom: calc(var(--website-gutter) + env(safe-area-inset-bottom, 0px));
   z-index: 80;
   display: grid;
-  width: min(420px, calc(100vw - (var(--gutter) * 2)));
+  width: min(420px, calc(100vw - (var(--website-gutter) * 2)));
   gap: 14px;
   padding: 16px;
   border: 1px solid var(--website-line);
-  border-radius: var(--radius);
+  border-radius: var(--catch-radius-sm);
   background: var(--website-surface);
   box-shadow: var(--website-shadow-soft);
 }

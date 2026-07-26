@@ -1,5 +1,5 @@
 import {websiteCopy} from "@content/generated";
-import {siteFooterLegalLinks} from "@content/site";
+import {siteFooterLegalLinks, siteMenuCopy} from "@content/site";
 import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
 import {
   DirectoryClaimPressureStrip,
@@ -31,6 +31,7 @@ export function OrganizerSearchPage({listings}: OrganizerSearchPageProps = {}) {
     <>
       <SiteHeader
         brandHref="/"
+        menuCopy={siteMenuCopy}
         nav={[
           {href: "/host/", label: websiteCopy["organizersearchpage_0349"]},
           {href: "/", label: websiteCopy["organizersearchpage_0350"]},

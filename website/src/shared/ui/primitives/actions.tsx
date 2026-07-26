@@ -200,19 +200,18 @@ export function EventActionCard({
   );
 }
 
-export function PlainButton({
-  children,
-  className,
-  ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & {
-  children: ReactNode;
-}) {
+export const PlainButton = forwardRef<
+  HTMLButtonElement,
+  ButtonHTMLAttributes<HTMLButtonElement> & {
+    children: ReactNode;
+  }
+>(function PlainButton({children, className, ...props}, ref) {
   return (
-    <button className={className} {...props}>
+    <button className={className} ref={ref} {...props}>
       {children}
     </button>
   );
-}
+});
 
 export function PlainLink({
   children,

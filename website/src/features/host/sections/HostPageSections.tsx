@@ -1,14 +1,11 @@
+import type {CSSProperties} from "react";
 import {websiteCopy} from "@content/generated";
 import {SectionHeader} from "../../../shared/site";
-import {activeMarket} from "@content/markets";
 import {
   ActionGroup,
   ButtonLink,
   CaptureGrid,
-  EvidenceStrip,
-  HostConsoleGrid,
-  HostConsoleHeader,
-  HostConsoleTimeline,
+  HomeHeroStage,
   HostHeroCopy,
   HostHeroInner,
   HostHeroShell,
@@ -19,36 +16,35 @@ import {
   MarketingSectionCopy,
   ModuleStack,
   ProductModuleGrid,
-  ProductShell,
   ProofLedgerRows,
+  UiLabel,
   WaitlistSection,
 } from "../../../shared/ui/primitives";
 import {
-  hostEvidenceMetrics,
   hostFillRoomModules,
   hostLoop,
   hostModules,
   hostProofRows,
   hostSurfaceCards,
 } from "@content/marketing";
+import {hostHeroCopy} from "@content/host";
 import {trackCtaClick} from "../../marketing/tracking";
 import {HostApplicationFlow} from "../application/HostApplicationFlow";
-import {CaptureCard, type HostCaptureMap} from "./CaptureFrames";
+import {CaptureCard, PhoneCaptureFrame, type HostCaptureMap} from "./CaptureFrames";
 
-const hostConsoleSummaryItems = [
-  {key: "admission", label: websiteCopy["hostpagesections_0293"], value: "Requests + invite links"},
-  {key: "live", label: websiteCopy["hostpagesections_0310"], value: "Balanced rotations"},
-  {key: "after", label: websiteCopy["hostpagesections_0294"], value: "18 mutual matches"},
-];
-
-export function HostHeroSection() {
+export function HostHeroSection({captures}: {captures: HostCaptureMap}) {
   return (
     <HostHeroShell>
       <HostHeroInner>
         <HostHeroCopy>
-          <h1 data-reveal>{websiteCopy["hostpagesections_0314"]}</h1>
-          <p data-reveal>{websiteCopy["hostpagesections_0300"]}</p>
-          <ActionGroup variant="hero" reveal>
+          <UiLabel>{hostHeroCopy.kicker}</UiLabel>
+          <h1 data-reveal style={{"--reveal-delay": "70ms"} as CSSProperties}>{websiteCopy["hostpagesections_0314"]}</h1>
+          <p data-reveal style={{"--reveal-delay": "150ms"} as CSSProperties}>{websiteCopy["hostpagesections_0300"]}</p>
+          <ActionGroup
+            reveal
+            style={{"--reveal-delay": "230ms"} as CSSProperties}
+            variant="hero"
+          >
             <ButtonLink
               href="#founding-hosts"
               onClick={() => trackCtaClick("host_hero_apply", "#founding-hosts")}
@@ -61,27 +57,15 @@ export function HostHeroSection() {
           </ActionGroup>
         </HostHeroCopy>
 
-        <ProductShell variant="host-console" aria-label={websiteCopy["hostpagesections_0306"]} reveal>
-          <HostConsoleHeader label={websiteCopy["hostpagesections_0306"]} title={activeMarket.exampleEvent.name} />
-          <HostConsoleGrid items={hostConsoleSummaryItems} />
-          <HostConsoleTimeline items={hostEvidenceMetrics} />
-        </ProductShell>
+        <HomeHeroStage data-reveal="scale" style={{"--reveal-delay": "300ms"} as CSSProperties}>
+          <PhoneCaptureFrame
+            id="host-live-console"
+            fallbackStep={hostHeroCopy.stageCaption}
+            captures={captures}
+          />
+        </HomeHeroStage>
       </HostHeroInner>
     </HostHeroShell>
-  );
-}
-
-export function HostEvidenceSection() {
-  return (
-    <HostPageSection variant="evidence" aria-labelledby="host-evidence-title">
-      <SectionHeader
-        eyebrow={websiteCopy["hostpagesections_0323"]}
-        id="host-evidence-title"
-        title={websiteCopy["hostpagesections_0301"]}
-        body={<>{websiteCopy["hostpagesections_0298"]}</>}
-      />
-      <EvidenceStrip items={hostEvidenceMetrics} reveal />
-    </HostPageSection>
   );
 }
 

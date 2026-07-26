@@ -1,5 +1,5 @@
 import {websiteCopy} from "@content/generated";
-import {siteFooterLegalLinks} from "@content/site";
+import {siteFooterLegalLinks, siteMenuCopy} from "@content/site";
 import {SiteFooter, SiteHeader, WebsitePageMain} from "../../shared/site";
 import type {HostListing} from "./types";
 import {useListingClaimController} from "../claims/useListingClaimController";
@@ -14,6 +14,7 @@ export function HostListingPage({listing}: {listing: HostListing}) {
     <>
       <SiteHeader
         brandHref="/"
+        menuCopy={siteMenuCopy}
         nav={controller.nav}
         ctaHref={controller.claimHref}
         ctaLabel={controller.headerCtaLabel}

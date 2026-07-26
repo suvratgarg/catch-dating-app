@@ -6,7 +6,6 @@ import {HostComparisonSection as HostComparisonSectionComponent} from "../featur
 import {
   HostApplySection as HostApplySectionComponent,
   HostCapturesSection as HostCapturesSectionComponent,
-  HostEvidenceSection as HostEvidenceSectionComponent,
   HostFillRoomSection as HostFillRoomSectionComponent,
   HostHeroSection as HostHeroSectionComponent,
   HostLiveModulesSection as HostLiveModulesSectionComponent,
@@ -92,22 +91,10 @@ export const HostHeroSectionStory: Story = {
     catchComponent: {
       id: "host_hero_section",
       routeIds: ["host"],
-      states: ["default", "host-console"],
+      states: ["default", "capture-stage"],
     },
   },
-  render: () => <HostHeroSectionComponent />,
-};
-
-export const HostEvidenceSectionStory: Story = {
-  name: "Host evidence",
-  parameters: {
-    catchComponent: {
-      id: "host_evidence_section",
-      routeIds: ["host"],
-      states: ["default", "evidence-strip"],
-    },
-  },
-  render: () => <HostEvidenceSectionComponent />,
+  render: () => <HostHeroSectionComponent captures={captures} />,
 };
 
 export const HostWorkflowSectionStory: Story = {

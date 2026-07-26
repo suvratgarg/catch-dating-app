@@ -1,5 +1,5 @@
 import {websiteCopy} from "@content/generated";
-import {siteFooterLegalLinks} from "@content/site";
+import {siteFooterLegalLinks, siteMenuCopy} from "@content/site";
 import {
   HomeCapturesSection,
   HomeDiscoverySection,
@@ -24,6 +24,8 @@ export function HomePage({captures}: {captures: Record<string, CaptureRecord>}) 
     <>
       <SiteHeader
         brandHref="#top"
+        menuCopy={siteMenuCopy}
+        tone="dark"
         nav={[
           {href: "#events", label: websiteCopy["homepage_0110"]},
           {href: "#formats", label: websiteCopy["homepage_0112"]},
@@ -37,12 +39,12 @@ export function HomePage({captures}: {captures: Record<string, CaptureRecord>}) 
         ctaLabel={websiteCopy["homepage_0114"]}
       />
       <WebsitePageMain id="top">
-        <HomeHeroSection />
+        <HomeHeroSection captures={captures} />
         <HomeDiscoverySection />
         <HomeFormatsSection />
         <HomeFeaturedOrganizersSection />
         <HomeMemberLoopSection />
-        <HomeHostProofSection />
+        <HomeHostProofSection captures={captures} />
         <HomeCapturesSection captures={captures} />
         <HomeDownloadSection />
         <HomeTrustSection />

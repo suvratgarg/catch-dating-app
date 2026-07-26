@@ -10,6 +10,15 @@ export const siteFooterLegalLinks = [
   {href: "/help/", label: "Help"},
 ] as const;
 
+export const siteMenuCopy = {
+  dialogLabel: "Site menu",
+  openLabel: "Menu",
+  closeLabel: "Close",
+  kicker: "Catch · Menu",
+  hint: "The event before the match",
+  navLabel: "Mobile",
+} as const;
+
 export const storeCtaCopy = [
   {
     platform: "ios",

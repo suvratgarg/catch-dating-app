@@ -18,7 +18,7 @@ export {ContentGrid, ControlRow, PanelShell, ProductBoardCard, ProductModuleGrid
 export type {ModuleStackItem, ProductModuleCardItem, PublicEventCardModel, PublicEventCardProps} from "./layout";
 export {CardGrid, ChipRail, ChoiceCard, ChoiceChip, ChoiceChipGrid, FilterRail, MetricCard, ModuleStack, NumberedRail, PublicSearchResultsPanel} from "./layout2";
 export type {ChipRailItem} from "./layout2";
-export {EvidenceStrip, HomeHeroBody, HomeHeroCopy, HomeHeroInner, HomeHeroShell, ProofLedgerRows} from "./marketing";
+export {EvidenceStrip, HeroAccent, HomeHeroBody, HomeHeroCopy, HomeHeroInner, HomeHeroShell, HomeHeroStage, ProofLedgerRows} from "./marketing";
 export type {AppDownloadStorePlatform, ProofLedgerItem} from "./marketing";
 export {ActivityMark, CaptureCard, CaptureGrid, HomeHeroMedia, HostCreateFlowCapture, HostPreviewHeroMedia, MarketingInfoCardGrid, MarketingLoopList, MarketingSection, MarketingSectionCopy, PhoneCaptureShell} from "./media";
 export type {ActivityMarkSize, CaptureRecord, MarketingInfoCardItem, MarketingLoopListItem, MarketingLoopListProps} from "./media";

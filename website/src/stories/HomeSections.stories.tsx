@@ -16,7 +16,7 @@ import {captures, placeholderCaptures} from "./fixtures/marketingCaptures";
 
 const eligibleEventFixture: PublicEventCardModel = {
   activityLabel: "Dinner",
-  activityToken: "var(--activity-dinner)",
+  activityToken: "var(--catch-activity-dinner-accent)",
   bookedCount: 18,
   capacityLimit: 24,
   city: "Mumbai",
@@ -56,7 +56,7 @@ export const HomeHeroSectionStory: Story = {
       states: ["default", "app-download-ctas"],
     },
   },
-  render: () => <HomeHeroSectionComponent />,
+  render: () => <HomeHeroSectionComponent captures={captures} />,
 };
 
 export const HomeDiscoverySectionStory: Story = {
@@ -125,10 +125,10 @@ export const HomeHostProofSectionStory: Story = {
     catchComponent: {
       id: "home_host_proof_section",
       routeIds: ["home"],
-      states: ["host-cta", "product-board"],
+      states: ["host-cta", "capture-grid"],
     },
   },
-  render: () => <HomeHostProofSectionComponent />,
+  render: () => <HomeHostProofSectionComponent captures={captures} />,
 };
 
 export const HomeCapturesSectionStory: Story = {
