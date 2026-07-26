@@ -172,6 +172,7 @@ export function publicationPacketFixture({
     publicPresence: {
       canonicalPath: `/organizers/${entityId}/`,
       claimTargetPath: `clubs/${entityId}`,
+      publishStatus: status === "published" ? "published" : "draft",
       indexStatus: status === "published" ? "indexed" : "noindex",
       appVisibility: "hidden",
       projectionStatus: "ready",
@@ -181,6 +182,8 @@ export function publicationPacketFixture({
       defaultAppVisibility: "hidden",
       currentDecision: status === "published" ? {
         decision: "approve_public",
+        publishStatus: "published",
+        indexStatus: "indexed",
         decidedAt: "2026-07-14",
         appVisibility: "hidden",
       } : null,

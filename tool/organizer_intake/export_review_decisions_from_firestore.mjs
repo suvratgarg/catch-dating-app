@@ -133,7 +133,9 @@ export function buildReviewDecisionBatchFromFirestoreDocs(
       checklist: data.checklist,
       decision: data.decision,
       entityId: data.entityId,
+      indexStatus: data.indexStatus,
       note: data.note,
+      publishStatus: data.publishStatus,
     };
   }).sort((a, b) => a.entityId.localeCompare(b.entityId));
 
@@ -208,8 +210,22 @@ function assertDecisionStatusMatches(data, label) {
         `${data.decision}.`
     );
   }
-  if (data.decision !== "approve_public" && data.appVisibility !== "hidden") {
-    throw new Error(`${label}: non-public decisions must remain app-hidden.`);
+  if (data.indexStatus === "indexed" && data.publishStatus !== "published") {
+    throw new Error(`${label}: indexed visibility requires publication.`);
+  }
+  if (data.decision === "hold" && (
+    data.publishStatus !== "draft" ||
+    data.indexStatus !== "noindex" ||
+    data.appVisibility !== "hidden"
+  )) {
+    throw new Error(`${label}: hold must keep every surface off.`);
+  }
+  if (data.decision === "suppress" && (
+    data.publishStatus !== "suppressed" ||
+    data.indexStatus !== "noindex" ||
+    data.appVisibility !== "hidden"
+  )) {
+    throw new Error(`${label}: suppress must clear every surface.`);
   }
   if (data.decision === "approve_public" && !checklistComplete(data.checklist)) {
     throw new Error(`${label}: approve_public decision has an incomplete checklist.`);

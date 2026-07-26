@@ -44,6 +44,8 @@ test("pending input request combines publication and policy decisions", () => {
     {
       entityId: "afterfly",
       decision: "approve_public",
+      publishStatus: "draft",
+      indexStatus: "noindex",
       appVisibility: "hidden",
       checklist: {
         identityReviewed: true,

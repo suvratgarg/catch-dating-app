@@ -2720,6 +2720,8 @@ export interface OrganizerIntakeReviewDecisionDocument {
   entityId: string;
   decision: "approve_public" | "hold" | "suppress";
   decisionStatus: "approved_public" | "held" | "suppressed";
+  publishStatus: "draft" | "published" | "suppressed";
+  indexStatus: "noindex" | "indexed";
   appVisibility: "hidden" | "discoverable";
   checklist: {
     identityReviewed: boolean;
@@ -2732,6 +2734,12 @@ export interface OrganizerIntakeReviewDecisionDocument {
      * True when the reviewer explicitly inspected manual reports that have no stored source artifact. Projection replay decides when this acknowledgement is required.
      */
     manualReportsReviewed?: boolean;
+    claimTargetReviewed?: boolean;
+    takedownPathReviewed?: boolean;
+    impersonationReviewed?: boolean;
+    operatingStatusReviewed?: boolean;
+    eventAccuracyReviewed?: boolean;
+    unclaimedAffordancesReviewed?: boolean;
   };
   note: string;
   reviewedByUid: string;

@@ -1764,6 +1764,20 @@
       "role": "generator"
     },
     {
+      "id": "data:backfill-organizer-intake-visibility-decisions",
+      "category": "data",
+      "path": "tool/data/backfill_organizer_intake_visibility_decisions.mjs",
+      "command": "node tool/data/backfill_organizer_intake_visibility_decisions.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Backfills explicit publication and indexing controls on legacy organizer-intake review decisions.",
+      "checks": [
+        "node --check tool/data/backfill_organizer_intake_visibility_decisions.mjs",
+        "node --test tool/data/backfill_organizer_intake_visibility_decisions.test.mjs"
+      ],
+      "role": "generator"
+    },
+    {
       "id": "data:backfill-organizer-candidate-provenance",
       "category": "data",
       "path": "tool/data/backfill_organizer_candidate_provenance.mjs",

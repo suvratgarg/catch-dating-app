@@ -289,6 +289,81 @@ export function intakeChecklistForDecision(
   };
 }
 
+export function organizerVisibilityFormForItem(
+  item: Intake.OrganizerIntakeItem
+): Intake.OrganizerVisibilityFormState {
+  return {
+    publishStatus: item.publishStatus === "published" ?
+      "published" :
+      item.publishStatus === "suppressed" ? "suppressed" : "draft",
+    indexStatus: item.indexStatus === "indexed" ? "indexed" : "noindex",
+    appVisibility: item.appVisibility === "discoverable" ?
+      "discoverable" :
+      "hidden",
+  };
+}
+
+export function emptyOrganizerSurfaceChecklist():
+Intake.OrganizerSurfaceChecklistState {
+  return {
+    claimTargetReviewed: false,
+    takedownPathReviewed: false,
+    impersonationReviewed: false,
+    operatingStatusReviewed: false,
+    eventAccuracyReviewed: false,
+    unclaimedAffordancesReviewed: false,
+  };
+}
+
+export function organizerVisibilityForDecision(
+  decision: OrganizerIntakeDecision,
+  form: Intake.OrganizerVisibilityFormState
+): Intake.OrganizerVisibilityFormState {
+  if (decision === "suppress") {
+    return {
+      publishStatus: "suppressed",
+      indexStatus: "noindex",
+      appVisibility: "hidden",
+    };
+  }
+  if (decision === "hold") {
+    return {
+      publishStatus: "draft",
+      indexStatus: "noindex",
+      appVisibility: "hidden",
+    };
+  }
+  return form;
+}
+
+export function organizerSurfaceChecklistReady(
+  form: Intake.OrganizerVisibilityFormState,
+  checklist: Intake.OrganizerSurfaceChecklistState
+): boolean {
+  const anyVisible =
+    form.publishStatus === "published" ||
+    form.indexStatus === "indexed" ||
+    form.appVisibility === "discoverable";
+  if (form.indexStatus === "indexed" && form.publishStatus !== "published") {
+    return false;
+  }
+  if (anyVisible && (
+    !checklist.claimTargetReviewed ||
+    !checklist.takedownPathReviewed ||
+    !checklist.impersonationReviewed
+  )) {
+    return false;
+  }
+  if (form.appVisibility === "discoverable" && (
+    !checklist.operatingStatusReviewed ||
+    !checklist.eventAccuracyReviewed ||
+    !checklist.unclaimedAffordancesReviewed
+  )) {
+    return false;
+  }
+  return true;
+}
+
 export function publicationPacketReady(
   packet?: Intake.OrganizerPublicationReviewPacket
 ) {
@@ -304,7 +379,7 @@ export function defaultIntakeDecisionNote(
   decision: OrganizerIntakeDecision
 ) {
   if (decision === "approve_public") {
-    return `Manual QA approved ${item.displayName} for public website projection.`;
+    return `Manual QA approved ${item.displayName} as a reviewed organizer record.`;
   }
   if (decision === "hold") {
     return `Manual QA held ${item.displayName} for additional evidence.`;

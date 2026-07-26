@@ -8,6 +8,14 @@
 export interface AdminDecideOrganizerIntakeCallablePayload {
   entityId: string;
   decision: "approve_public" | "hold" | "suppress";
+  /**
+   * Explicit public-web publication switch. Approval does not imply publication.
+   */
+  publishStatus: "draft" | "published" | "suppressed";
+  /**
+   * Explicit search-indexing switch. Indexed requires a published web page.
+   */
+  indexStatus: "noindex" | "indexed";
   appVisibility: "hidden" | "discoverable";
   checklist: {
     identityReviewed: boolean;
@@ -20,6 +28,12 @@ export interface AdminDecideOrganizerIntakeCallablePayload {
      * True when the reviewer explicitly inspected manual reports that have no local raw artifact. Raw evidence remains outside Firestore; replay validation decides when this acknowledgement is required.
      */
     manualReportsReviewed?: boolean;
+    claimTargetReviewed?: boolean;
+    takedownPathReviewed?: boolean;
+    impersonationReviewed?: boolean;
+    operatingStatusReviewed?: boolean;
+    eventAccuracyReviewed?: boolean;
+    unclaimedAffordancesReviewed?: boolean;
   };
   note: string;
 }

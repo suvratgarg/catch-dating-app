@@ -24,10 +24,14 @@ import {
   intakeChecklistForDecision,
   locationResolutionFormFromTask,
   nullableInput,
+  emptyOrganizerSurfaceChecklist,
   organizerDraftFormFromCandidate,
   organizerDraftPayloadForCandidate,
   organizerIntakeDecisionFromString,
   organizerPolicyGapDecisionFromString,
+  organizerSurfaceChecklistReady,
+  organizerVisibilityForDecision,
+  organizerVisibilityFormForItem,
   policyGapChecklistForDecision,
   policyGapDecisionLabel,
   publicationPacketReady,
@@ -106,6 +110,10 @@ export function useOrganizerIntakeController({
     useState<Record<string, AdminDecideOrganizerPolicyGapResponse>>({});
   const [manualReportAcknowledgements, setManualReportAcknowledgements] =
     useState<Record<string, boolean>>({});
+  const [visibilityForms, setVisibilityForms] =
+    useState<Record<string, Intake.OrganizerVisibilityFormState>>({});
+  const [surfaceChecklists, setSurfaceChecklists] =
+    useState<Record<string, Intake.OrganizerSurfaceChecklistState>>({});
   const decisionMutationKey = adminQueryKeys.organizerIntake.decision();
   const curationMutationKey = adminQueryKeys.organizerIntake.curation();
   const organizerDraftMutationKey =
@@ -263,6 +271,17 @@ export function useOrganizerIntakeController({
         {manualReportsReviewed: true} :
         {}),
     };
+    const visibilityForm = visibilityForms[item.entityId] ??
+      organizerVisibilityFormForItem(item);
+    const surfaceChecklist = surfaceChecklists[item.entityId] ??
+      emptyOrganizerSurfaceChecklist();
+    if (decision === "approve_public" &&
+      !organizerSurfaceChecklistReady(visibilityForm, surfaceChecklist)) {
+      onError(
+        "Confirm the visibility-specific checks before exposing this organizer."
+      );
+      return;
+    }
     if (decision === "approve_public" &&
       !Object.values(checklist).every(Boolean)) {
       onError("Resolve review gates before approving this organizer.");
@@ -273,8 +292,11 @@ export function useOrganizerIntakeController({
     const payload: AdminDecideOrganizerIntakePayload = {
       entityId: item.entityId,
       decision,
-      appVisibility: "hidden",
-      checklist,
+      ...organizerVisibilityForDecision(decision, visibilityForm),
+      checklist: {
+        ...checklist,
+        ...(decision === "approve_public" ? surfaceChecklist : {}),
+      },
       note,
     };
     const operation = beginOperation();
@@ -308,6 +330,8 @@ export function useOrganizerIntakeController({
     onError,
     onNotice,
     publicationPacketByEntity,
+    surfaceChecklists,
+    visibilityForms,
   ]);
 
   const handleAttachCandidate = useCallback(async (
@@ -752,6 +776,10 @@ export function useOrganizerIntakeController({
     setManualReportAcknowledgements,
     setOrganizerDraftForms,
     setPolicyDecisionNotes,
+    setSurfaceChecklists,
+    setVisibilityForms,
+    surfaceChecklists,
+    visibilityForms,
   };
 }
 

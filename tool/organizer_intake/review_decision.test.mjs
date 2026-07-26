@@ -26,6 +26,8 @@ test("review decision draft requires and consumes ready publication packet", asy
 
   assert.match(result.stdout, /Would write/);
   assert.match(result.stdout, /"decision": "approve_public"/);
+  assert.match(result.stdout, /"publishStatus": "published"/);
+  assert.match(result.stdout, /"indexStatus": "indexed"/);
   assert.match(result.stdout, /"crawlDisabledReviewed": true/);
   assert.match(result.stdout, /"manualReportsReviewed": true/);
   assert.match(result.stdout, /"appVisibility": "hidden"/);
@@ -106,6 +108,12 @@ async function runDraft(fixture, extraArgs = []) {
     "afterfly",
     "--decision",
     "approve_public",
+    "--publish-status",
+    "published",
+    "--index-status",
+    "indexed",
+    "--app-visibility",
+    "hidden",
     "--reviewer",
     "codex-dry-run",
     "--date",
@@ -154,7 +162,11 @@ function writeFixture({
         evidenceBlockers: [],
         approvalChecklist: completeChecklist(),
         evidenceSummary: {manualReportsWithoutArtifacts: 0},
-        publicPresence: {appVisibility: "hidden"},
+        publicPresence: {
+          publishStatus: "draft",
+          indexStatus: "noindex",
+          appVisibility: "hidden",
+        },
         adminDecision: {
           allowedDecisions: ["approve_public", "hold", "suppress"],
           currentDecision: null,
