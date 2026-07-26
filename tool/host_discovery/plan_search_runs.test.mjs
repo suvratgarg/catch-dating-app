@@ -30,7 +30,7 @@ test("search planner rejects malformed operational dates", () => {
 test("search intent generation delegates freshness to Operations runs", () => {
   const result = spawnSync(
     process.execPath,
-    [script, "--as-of", "2026-07-26"],
+    [script, "--check-current", "--as-of", "2026-07-26"],
     {encoding: "utf8"}
   );
 
