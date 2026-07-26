@@ -132,7 +132,7 @@ function OrganizerTaskWorkbench({
       publicationPacketByEntity,
       activeStage
     ).map((item) => ({
-      id: `entity:${item.entityId}`,
+      id: organizerEntityEntryId(item.entityId),
       kind: "entity" as const,
       item,
     }));
@@ -575,7 +575,7 @@ function OrganizerTaskWorkbench({
         ]}
         items={filteredEntries.map((entry) =>
           entry.kind === "entity" ?
-            queueItem(
+            organizerEntityQueueItem(
               entry.item,
               publicationPacketByEntity.get(entry.item.entityId)
             ) :
@@ -797,14 +797,18 @@ function decisionBlockerCount(
     (packet.evidenceSummary.manualReportsWithoutArtifacts > 0 && !reportsAcknowledged ? 1 : 0);
 }
 
-function queueItem(
+export function organizerEntityEntryId(entityId: string) {
+  return `entity:${entityId}`;
+}
+
+export function organizerEntityQueueItem(
   item: Intake.OrganizerIntakeItem,
   packet?: Intake.OrganizerPublicationReviewPacket
 ) {
   const status = organizerItemStatus(item, packet);
   return {
     description: `${activityLabel(packet)} · ${marketLabel(item)}`,
-    id: item.entityId,
+    id: organizerEntityEntryId(item.entityId),
     initials: initialsForLabel(item.displayName),
     meta: `${item.surfaceSummary.total} surfaces · ${packet?.evidenceSummary.manualReportsWithoutArtifacts ?? 0} reports`,
     status: status.label,
