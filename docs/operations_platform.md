@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.4.0
+version: 1.5.0
 updated: 2026-07-26
 owner: operations_platform
 status: active
@@ -49,6 +49,45 @@ market, cannot be future-dated or older than the frozen `staleAfterHours`
 policy, and must retain a review window through the plan date. Missing, stale,
 expired, or mismatched bridges fail planning before work-item counts or run
 state are created.
+
+### Supply freshness authority
+
+Supply Intake owns one schema-validated freshness policy for acquisition work.
+It classifies work by purpose rather than applying one global TTL:
+
+| Work kind | Default window | Ledger scope |
+|---|---:|---|
+| City discovery sweep | 720 hours | Stable query `runKey` |
+| Candidate verification | 2,160 hours | Stable candidate-verification `runKey` |
+| Known-organizer event refresh | 24 hours | Organizer entity plus source surface |
+| Event detail prepublication | 6 hours | Event entity plus source surface |
+
+The policy lives in
+`operations/src/workflows/supply-intake/config/freshness_policy.json` and is
+validated before a plan is created. Freshness evidence is an immutable
+`supply_freshness_coverage` work-item projection belonging to a completed
+Operations run. Planning reads only coverage whose parent run completed, uses
+the newest coverage for the same kind and scope, and records both
+`lastFetchedAt` and `nextEligibleAt`. A skipped request cites the exact completed
+run and coverage record that satisfied it. Restarting a worker does not reset
+this decision because it is derived from the persisted run and work-item
+ledger, not process memory or committed search-run JSON.
+
+The other time bounds answer different questions and do not override fetch
+cadence:
+
+- `<city>/<week>/` event-guide folders define the publication week represented
+  by a compatibility artifact. They are coverage partitions, not a fetch TTL.
+- Supply Intake's 168-hour Event Intake bridge bound decides whether reviewed
+  evidence is recent enough to project into a new run. It is an admission rule,
+  not permission to refetch a provider.
+- Per-kind freshness decides whether a planned query or source surface is
+  eligible to be fetched. It is the only acquisition-cadence authority.
+
+`tool/host_discovery/generated/search_plan.json` remains a deterministic
+compatibility list of query intents. Its historical `runs/*.json` files may
+still support legacy source-evidence projections, but they are not consulted
+for scheduling and must not regain freshness authority.
 
 ## Reference Layout
 
@@ -222,7 +261,7 @@ Organizer discovery can run with `--intake-scope organizer`. This scope does
 not require or project an Event Intake bridge, so each launch market can
 produce an immutable organizer queue independently. Normalized organizer
 candidate fields are carried in the work item's bounded Admin projection.
-Supply Intake `0.1.2` also emits content-hash-bound field provenance for each
+Supply Intake `0.2.0` also emits content-hash-bound field provenance for each
 candidate value that can participate in the organizer-draft handoff; private
 raw-provider payloads remain excluded. Organizer publication-packet work items
 also carry a schema-validated Admin projection with only the identity, markets,

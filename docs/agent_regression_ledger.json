@@ -505,6 +505,7 @@
       "status": "active",
       "applies_to": [
         "contracts/operations/work_item.schema.json",
+        "contracts/operations/fixtures/valid/workflow_manifest.json",
         "operations/src/platform/read-models.mjs",
         "functions/src/operations/validation.ts",
         "tool/contracts/generate_schema_contracts.mjs"
@@ -512,8 +513,8 @@
       "symptom": "A lightweight or hand-written validator ignores draft-07 conditionals, hardcodes Supply Intake vocabulary into the generic base contract, or allows incompatible terminal outcomes or unqueryable human-review signals into export, import, or Firestore.",
       "guard": {
         "type": "command",
-        "command": "npm --prefix operations test && npm --prefix functions run build && node --test functions/lib/operations/validation.test.js",
-        "guardEvidence": "generic validators accept valid future workflow tokens while Supply Intake response validators reject foreign stages; Ajv also rejects missing human flags, incompatible terminal outcomes, and terminal human-review ownership"
+        "command": "npm --prefix operations test && npm --prefix functions run build && node --test functions/lib/operations/contractSchemas.test.js functions/lib/operations/validation.test.js",
+        "guardEvidence": "generic validators and their complete canonical fixtures stay synchronized while Supply Intake response validators reject foreign stages; Ajv also rejects missing human flags, incompatible terminal outcomes, and terminal human-review ownership"
       },
       "owner_docs": [
         "docs/operations_platform.md",
@@ -3593,6 +3594,31 @@
         "admin/README.md"
       ],
       "notes": "Queue identity is UI state, not the Firestore entity ID. Every queue variant must emit the exact staged-entry ID so operators can open any packet rather than only the first item."
+    },
+    {
+      "id": "REG-SUPPLY-FRESHNESS-LEDGER-001",
+      "title": "Supply acquisition freshness falls back to committed run JSON or one global TTL",
+      "status": "active",
+      "applies_to": [
+        "operations/src/workflows/supply-intake/freshness.mjs",
+        "operations/src/workflows/supply-intake/config/freshness_policy.json",
+        "operations/src/workflows/supply-intake/config/freshness_policy.schema.json",
+        "operations/src/workflows/supply-intake/workflow.mjs",
+        "contracts/operations/work_item.schema.json",
+        "tool/host_discovery/plan_search_runs.mjs"
+      ],
+      "symptom": "A restarted worker repeats fresh queries or source fetches, one 90-day constant governs unrelated work, or the scheduler treats committed tool/host_discovery/runs JSON as live operational state.",
+      "guard": {
+        "type": "command",
+        "command": "node --test operations/test/freshness.test.mjs operations/test/workflow.test.mjs tool/host_discovery/plan_search_runs.test.mjs && npm --prefix operations run check",
+        "guardEvidence": "planning derives per-query and per-source cadence from immutable coverage records whose parent Operations runs completed, fresh skips cite the covering run, the file-store ledger survives restart, and the compatibility planner emits intents without reading committed run logs"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "operations/README.md",
+        "docs/plans/host_listing_discovery_architecture.md"
+      ],
+      "notes": "Weekly event-guide paths partition publication coverage and the 168-hour bridge bound admits reviewed evidence; neither value is an acquisition fetch cadence. Historical host-discovery run JSON remains compatibility evidence only until downstream source-evidence projections are converged."
     }
   ]
 }

@@ -226,7 +226,7 @@
   },
   "operations_platform": {
     "path": "docs/operations_platform.md",
-    "version": "1.4.0",
+    "version": "1.5.0",
     "updated": "2026-07-26",
     "status": "active",
     "read_policy": "Read before adding or changing durable business workflow runs, work items, leases, budgets, decisions, receipts, source learning, publication plans, or the boundary between operations and repository tooling."
@@ -331,8 +331,8 @@
   },
   "host_listing_discovery_architecture": {
     "path": "docs/plans/host_listing_discovery_architecture.md",
-    "version": "0.3.1",
-    "updated": "2026-07-14",
+    "version": "0.4.0",
+    "updated": "2026-07-26",
     "status": "draft",
     "read_policy": "Read before changing organizer/event discovery, source-mention extraction, deterministic dedupe, LLM adjudication, admin review packets, claimable listings, organizer claim workflow, or Firestore projection planning."
   },

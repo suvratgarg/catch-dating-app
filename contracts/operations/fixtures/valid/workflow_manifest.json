@@ -42,5 +42,6 @@
     "expiredStatuses": ["expired"]
   },
   "maxWorkItemsPerRun": 10000,
-  "sourceProfiles": ["cntraveller", "luma"]
+  "sourceProfiles": ["cntraveller", "luma"],
+  "compatibilityInputs": []
 }

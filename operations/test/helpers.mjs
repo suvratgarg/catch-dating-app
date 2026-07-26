@@ -7,6 +7,28 @@ export async function temporaryDirectory(prefix = "catch-operations-") {
 }
 
 export async function createFixtureRepository(root) {
+  await writeJson(
+    root,
+    "tool/host_discovery/generated/search_plan.json",
+    {
+      schemaVersion: 1,
+      freshnessAuthority:
+        "immutable completed supply-intake operation runs",
+      planned: [
+        {
+          planKind: "generic_city_category",
+          source: "web_search",
+          citySlug: "mumbai",
+          categoryId: "social_run_club",
+          candidateId: null,
+          runKey:
+            "web_search|run club mumbai|mumbai|" +
+            "social_run_club|generic",
+        },
+      ],
+      skippedFresh: [],
+    }
+  );
   await writeJson(root, "tool/marketing/event_guide/generated/mumbai/2026-07-14/event_intake_bridge.json", {
     schemaVersion: 1,
     generatedAt: "2026-07-14T10:00:00.000Z",
@@ -81,6 +103,15 @@ export async function createFixtureRepository(root) {
   await writeJson(root, "tool/organizer_intake/generated/organizer_operator_action_queue.json", {schemaVersion: 1, actions: []});
   await writeJson(root, "tool/organizer_intake/generated/organizer_operational_health.json", {schemaVersion: 1, summary: {workstreams: 0}});
   await writeJson(root, "tool/organizer_intake/generated/source_mention_llm_prompt_queue.json", {schemaVersion: 1, requests: []});
+  await writeJson(root, "tool/organizer_intake/generated/event_crawl_plan.json", {
+    schemaVersion: 1,
+    policy: {
+      status: "disabled",
+      schedulerEnabled: false,
+      defaultSurfacePolicy: "manualOnly",
+    },
+    entries: [],
+  });
   await writeJson(root, "tool/organizer_intake/generated/event_crawl_run_plan.json", {schemaVersion: 1, runIntents: []});
   return root;
 }

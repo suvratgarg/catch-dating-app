@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "policyVersion": "supply-freshness-2026-07-26",
+  "clockSkewToleranceMinutes": 5,
+  "kinds": {
+    "city_discovery_sweep": {
+      "freshForHours": 720,
+      "description": "Generic launch-market and category discovery query."
+    },
+    "candidate_verification": {
+      "freshForHours": 2160,
+      "description": "Known organizer candidate identity and operating-status verification."
+    },
+    "known_organizer_event_refresh": {
+      "freshForHours": 24,
+      "description": "Known organizer source surface refresh for current events."
+    },
+    "event_detail_prepublication": {
+      "freshForHours": 6,
+      "description": "Final event detail refresh before a publication decision."
+    }
+  }
+}

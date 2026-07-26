@@ -19,10 +19,15 @@ import {
   SUPPLY_INTAKE_PRIMARY_STAGES,
   SUPPLY_INTAKE_TRANSITIONS,
 } from "./definition.mjs";
+import {
+  freshnessRequestsFromArtifacts,
+  loadSupplyFreshnessPolicy,
+  planFreshnessRequests,
+} from "./freshness.mjs";
 
 export const MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN = MAX_WORK_ITEMS_PER_RUN;
 export const SUPPLY_INTAKE_WORKFLOW_ID = "supply-intake";
-export const SUPPLY_INTAKE_WORKFLOW_VERSION = "0.1.2";
+export const SUPPLY_INTAKE_WORKFLOW_VERSION = "0.2.0";
 const SUPPLY_INTAKE_STALE_AFTER_HOURS = 168;
 const SUPPLY_INTAKE_SCOPES = Object.freeze(["all", "organizer"]);
 const ORGANIZER_PACKET_STRING_LIMIT = 500;
@@ -43,6 +48,7 @@ export class SupplyIntakeWorkflow {
     repoRoot,
     adapter = new LegacyIntakeArtifactAdapter({repoRoot}),
     sourceProfilesLoader = loadSourceProfiles,
+    freshnessPolicyLoader = loadSupplyFreshnessPolicy,
   } = {}) {
     this.workflowId = SUPPLY_INTAKE_WORKFLOW_ID;
     this.version = SUPPLY_INTAKE_WORKFLOW_VERSION;
@@ -53,6 +59,24 @@ export class SupplyIntakeWorkflow {
     this.allowedTransitions = SUPPLY_INTAKE_TRANSITIONS;
     this.adapter = adapter;
     this.sourceProfilesLoader = sourceProfilesLoader;
+    this.freshnessPolicyLoader = freshnessPolicyLoader;
+  }
+
+  async planningContext({store}) {
+    invariant(
+      store &&
+        typeof store.listRuns === "function" &&
+        typeof store.listWorkItems === "function",
+      "INVALID_FRESHNESS_STORE",
+      "Supply Intake planning requires an Operations store."
+    );
+    const [runs, workItems] = await Promise.all([
+      store.listRuns(),
+      store.listWorkItems(),
+    ]);
+    return {
+      freshnessHistory: {runs, workItems},
+    };
   }
 
   async createPlan({
@@ -60,6 +84,7 @@ export class SupplyIntakeWorkflow {
     through,
     now,
     intakeScope = "all",
+    freshnessHistory = {runs: [], workItems: []},
   }) {
     invariant(/^[a-z][a-z0-9-]{1,49}$/.test(market), "INVALID_MARKET", "Market must be a lowercase slug.", {market});
     invariant(/^\d{4}-\d{2}-\d{2}$/.test(through ?? ""), "INVALID_THROUGH", "--through YYYY-MM-DD is required.", {through});
@@ -70,7 +95,10 @@ export class SupplyIntakeWorkflow {
       {intakeScope}
     );
     const generatedAt = new Date(now).toISOString();
-    const profiles = await this.sourceProfilesLoader();
+    const [profiles, freshnessPolicy] = await Promise.all([
+      this.sourceProfilesLoader(),
+      this.freshnessPolicyLoader(),
+    ]);
     const artifactSnapshotWithData = await this.adapter.snapshot({
       market,
       intakeScope,
@@ -87,6 +115,20 @@ export class SupplyIntakeWorkflow {
       artifactSnapshotWithData.artifacts.organizerSearchCandidates?.data
         ?.reviewPolicy
     );
+    const freshness = planFreshnessRequests({
+      requests: freshnessRequestsFromArtifacts({
+        searchPlan:
+          artifactSnapshotWithData.artifacts
+            .hostDiscoverySearchPlan?.data,
+        eventCrawlPlan:
+          artifactSnapshotWithData.artifacts.eventCrawlPlan?.data,
+        market,
+      }),
+      policy: freshnessPolicy,
+      runs: freshnessHistory.runs,
+      workItems: freshnessHistory.workItems,
+      now: generatedAt,
+    });
     const plannedItems = plannedWorkItemCount(
       artifactSnapshot,
       profiles.length,
@@ -104,8 +146,13 @@ export class SupplyIntakeWorkflow {
       randomAuditBasisPoints: 10_000,
       autoPublicationEnabled: false,
       editorialSourcesDiscoveryOnly: true,
+      freshnessPolicyVersion: freshnessPolicy.policyVersion,
     };
-    const promotionPolicyHash = hashValue({workflowPolicy: policy, sourceProfiles});
+    const promotionPolicyHash = hashValue({
+      workflowPolicy: policy,
+      freshnessPolicy,
+      sourceProfiles,
+    });
     const basis = {
       schemaVersion: 1,
       workflowId: this.workflowId,
@@ -127,6 +174,8 @@ export class SupplyIntakeWorkflow {
       organizerReviewPolicy,
       sourceProfiles,
       policy,
+      freshnessPolicy,
+      freshness,
       promotionPolicyHash,
       capabilities: {network: false, modelCalls: false, publicWrites: false, ruleDeployment: false},
     };
@@ -148,6 +197,7 @@ export class SupplyIntakeWorkflow {
       guardrails: [
         "The plan reads reviewed local artifacts only.",
         "No network, model, public write, scheduler, or rule deployment capability is granted.",
+        "Freshness eligibility is derived from immutable completed Operations runs; eligible requests remain unfetched in shadow mode.",
         "Editorial sources are discovery-only until an official source is resolved.",
       ],
     };
@@ -222,9 +272,25 @@ export class SupplyIntakeWorkflow {
       "Shadow plan grants an unsafe capability."
     );
     invariant(
-      plan.promotionPolicyHash === hashValue({workflowPolicy: plan.policy, sourceProfiles: plan.sourceProfiles}),
+      plan.promotionPolicyHash === hashValue({
+        workflowPolicy: plan.policy,
+        freshnessPolicy: plan.freshnessPolicy,
+        sourceProfiles: plan.sourceProfiles,
+      }),
       "INVALID_PLAN",
       "Plan promotion policy snapshot is stale or invalid."
+    );
+    invariant(
+      plan.freshness?.schemaVersion === 1 &&
+        plan.freshness.policyVersion ===
+          plan.freshnessPolicy?.policyVersion &&
+        plan.policy?.freshnessPolicyVersion ===
+          plan.freshnessPolicy?.policyVersion &&
+        plan.freshness.summary?.requested ===
+          (plan.freshness.scheduled?.length ?? 0) +
+          (plan.freshness.skippedFresh?.length ?? 0),
+      "INVALID_FRESHNESS_PLAN",
+      "Supply Intake freshness plan is missing or stale."
     );
     if (plan.reconciliation !== undefined) {
       invariant(
@@ -545,7 +611,7 @@ function baseWorkItem({
     adminProjection,
     decisionProvenance: {
       actorKind: "legacy_projection",
-      actorId: "supply-intake-v0.1.2",
+      actorId: `supply-intake-v${SUPPLY_INTAKE_WORKFLOW_VERSION}`,
       decision: "pending_deterministic_review",
       decidedAt: now,
       inputHash: hashValue(raw),
@@ -1115,7 +1181,7 @@ function outcome(item, {primaryStage, lifecycleStatus = "active", blockers, task
     },
     decisionProvenance: {
       actorKind: "deterministic_rule_engine",
-      actorId: "supply-intake-v0.1.2",
+      actorId: `supply-intake-v${SUPPLY_INTAKE_WORKFLOW_VERSION}`,
       decision: `${primaryStage}:${lifecycleStatus}`,
       decidedAt: now,
       inputHash: hashValue(item.raw),
