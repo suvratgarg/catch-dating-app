@@ -17,7 +17,10 @@ runtime is **shadow-only**:
 - run projection reads reviewed local compatibility artifacts; the source
   extractors are not yet connected to an acquisition worker;
 - organizer compatibility packets are filtered by their declared market, and
-  Event Intake bridges fail planning when missing, market-mismatched,
+  their work items carry a schema-validated, bounded Admin packet projection;
+  evidence records, public copy, curation detail, local commands, and raw
+  provider payloads are excluded from that Firestore projection;
+- Event Intake bridges fail planning when missing, market-mismatched,
   future-dated, older than 168 hours, or past their reviewed week end;
 - promotion produces a review receipt, never an app, website, or Firestore
   mutation; and
@@ -162,6 +165,15 @@ the `human_review_required` task flag. Published and terminal records cannot
 retain that flag, its blocker, or a human owner. Only completed runs can export;
 the path is immutable, and later promotion receipts do not change the frozen
 projection.
+
+Organizer publication-packet work items persist the exact bounded fields needed
+by the live Organizer Intake workbench under
+`normalizedPayload.intake.packet`. Market objects are capped at eight;
+risk flags and next actions are capped at twelve; all strings are truncated to
+the contract maximum. The Admin projection never includes evidence-record
+objects, generated public copy, curation details, local CLI commands, or raw
+provider payloads. Changing this projection changes immutable export content,
+so verification must create and import a new run id.
 
 The export can then be validated without credentials and, after review,
 imported into the server-owned admin projection:

@@ -356,7 +356,7 @@ function fieldProvenance(
     contentHash: item.evidence.artifactHash,
     locator,
     extractedBy: item.decisionProvenance.actorKind === "human" ? "human" : "deterministic",
-    extractorVersion: `${item.workflowId}-v0.1.1`,
+    extractorVersion: `${item.workflowId}-v0.1.2`,
     confidence,
   };
 }

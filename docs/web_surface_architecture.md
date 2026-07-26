@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.9.3
-updated: 2026-07-24
+version: 0.10.0
+updated: 2026-07-26
 owner: web_platform
 status: active
 ---
@@ -445,10 +445,14 @@ those artifacts cannot ship as dormant production assets.
 
 Organizer Intake live mode reads the latest completed organizer-only Supply
 Intake run for each launch market through `adminListIntakeOperations`. Its
-search candidates therefore come from `operationRuns` and
-`operationWorkItems`. Sample and Storybook views use typed synthetic operation
-records; no operational JSON snapshot is retained or packaged. The browser
-does not upload a generated file or reconstruct a queue from repository state.
+search candidates and bounded publication-review packets therefore come from
+`operationRuns` and `operationWorkItems`. The packet shape is validated at the
+workflow, operations-schema, and Admin loader boundaries. Live counters are
+derived only when packet records exist; otherwise Verify, Resolve, and Ready
+show the run-bound unavailable state rather than a fabricated zero. Sample and
+Storybook views use typed synthetic operation records; no operational JSON
+snapshot is retained or packaged. The browser does not upload a generated file
+or reconstruct a queue from repository state.
 
 For a reviewed candidate with no existing-entity match, the detail pane exposes
 a bounded organizer name, independent public slug, type, and review-note form.

@@ -893,6 +893,56 @@ export interface OrganizerPublicationReviewPacket {
   nextActions: string[];
 }
 
+export interface OrganizerPublicationPacketProjection {
+  packetId: string;
+  entityId: string;
+  canonicalHostId: string;
+  displayName: string;
+  status: string;
+  priority: string;
+  markets: Array<{
+    slug: string;
+    displayName: string;
+  }>;
+  blockers: string[];
+  dataBlockers: string[];
+  evidenceBlockers: string[];
+  approvalChecklist: {
+    crawlDisabledReviewed: boolean;
+    identityReviewed: boolean;
+    marketScopeReviewed: boolean;
+    mediaRightsReviewed: boolean;
+    ownerSafeCopyReviewed: boolean;
+    surfaceInventoryReviewed: boolean;
+  };
+  evidenceSummary: {
+    records: number;
+    manualReportsWithoutArtifacts: number;
+    unresolvedLocalRefs: number;
+    missingSurfaceEvidence: number;
+    rawProviderArtifactRefs: number;
+    firestoreForbiddenArtifactRefs: number;
+    riskFlags: string[];
+  };
+  publicPresence: {
+    canonicalPath: string | null;
+    claimTargetPath: string | null;
+    indexStatus: string;
+    appVisibility: string;
+    projectionStatus: string;
+  };
+  adminDecision: {
+    allowedDecisions: OrganizerIntakeDecision[];
+    defaultAppVisibility: string;
+    currentDecision: {
+      decision: string;
+      decidedAt: string;
+      appVisibility: string;
+    } | null;
+  };
+  nextActions: string[];
+}
+
 export interface OrganizerPublicationEvidenceReviewRecord {
   evidenceId: string;
   surface: {

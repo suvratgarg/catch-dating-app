@@ -689,7 +689,7 @@ function organizerEvidenceRows(
       record.evidence.status === "resolved_artifact" ? "success" as const : "neutral" as const,
     title: `${record.surface.platform} · ${record.surface.surfaceKind.replaceAll("_", " ")}`,
   })) ?? [];
-  return rows.length > 0 ? rows : item.surfaces.slice(0, 4).map((surface) => ({
+  const surfaceRows = item.surfaces.slice(0, 4).map((surface) => ({
     href: surface.url,
     id: surface.surfaceId,
     meta: surface.notes,
@@ -697,6 +697,18 @@ function organizerEvidenceRows(
     statusTone: surface.status === "active" ? "success" as const : "warning" as const,
     title: `${surface.platform} · ${surface.surfaceKind.replaceAll("_", " ")}`,
   }));
+  if (rows.length > 0) return rows;
+  if (surfaceRows.length > 0) return surfaceRows;
+  if (packet && packet.evidenceSummary.records > 0) return [{
+    id: "evidence-summary",
+    meta: `${packet.evidenceSummary.records} records · ${packet.evidenceSummary.manualReportsWithoutArtifacts} manual reports`,
+    status: packet.evidenceSummary.unresolvedLocalRefs > 0 ?
+      "needs resolution" : "summary loaded",
+    statusTone: packet.evidenceSummary.unresolvedLocalRefs > 0 ?
+      "warning" as const : "neutral" as const,
+    title: "Bounded evidence summary",
+  }];
+  return [];
 }
 
 function organizerChecklistRows(

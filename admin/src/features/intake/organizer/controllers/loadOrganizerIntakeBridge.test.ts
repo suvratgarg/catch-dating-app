@@ -121,6 +121,97 @@ describe("loadOrganizerIntakeBridge", () => {
     expect(result.workbench.searchCandidates.candidates[0]?.draftLink)
       .toBeUndefined();
   });
+
+  it("hydrates bounded publication packets into the live workbench", async () => {
+    const run = operationRun(
+      "indore-run",
+      "indore",
+      "2026-07-24T12:01:00.000Z"
+    );
+    mocks.listIntakeOperations.mockImplementation(async (
+      payload: {runId?: string}
+    ) => operationResponse({
+      runs: [run],
+      workItems: payload.runId ? [
+        organizerWorkItem("indore", 1),
+        organizerPacketWorkItem("afterfly", "indore"),
+      ] : [],
+    }));
+
+    const result = await loadOrganizerIntakeBridge();
+
+    expect(result.availability).toMatchObject({
+      searchCandidates: true,
+      publicationPackets: true,
+      canonicalItems: true,
+      discoveryCandidateCount: 1,
+      runIds: ["indore-run"],
+    });
+    expect(result.workbench.items).toHaveLength(1);
+    expect(result.workbench.items[0]).toMatchObject({
+      entityId: "afterfly",
+      displayName: "AFTER FLY",
+      priority: "p1",
+      reviewStatus: "ready",
+      publishStatus: "published",
+      appVisibility: "hidden",
+      markets: [{marketSlug: "indore", displayName: "Indore"}],
+    });
+    expect(result.workbench.publicationReviewPackets.packets).toHaveLength(1);
+    expect(result.workbench.publicationReviewPackets.packets[0]).toMatchObject({
+      packetId: "packet-afterfly",
+      entityId: "afterfly",
+      status: "published",
+      evidenceSummary: {
+        records: 6,
+        manualReportsWithoutArtifacts: 2,
+      },
+      adminDecision: {
+        currentDecision: {
+          decision: "approve_public",
+          appVisibility: "hidden",
+        },
+      },
+    });
+    expect(result.workbench.summary).toMatchObject({
+      reviewItems: 1,
+      evidenceReview: 6,
+      promotionReview: 0,
+      blocked: 0,
+      approvedPublic: 1,
+      appDiscoverable: 0,
+      publicationReviewPackets: 1,
+    });
+    expect(result.workbench.publicationReviewPackets.summary).toMatchObject({
+      packets: 1,
+      published: 1,
+      evidenceRecords: 6,
+      manualReportsWithoutArtifacts: 2,
+    });
+  });
+
+  it("rejects malformed publication packet projections", async () => {
+    const run = operationRun(
+      "indore-run",
+      "indore",
+      "2026-07-24T12:01:00.000Z"
+    );
+    const packet = organizerPacketWorkItem("afterfly", "indore");
+    const intake = packet.normalizedPayload.intake as {
+      packet: Record<string, unknown>;
+    };
+    delete intake.packet.approvalChecklist;
+    mocks.listIntakeOperations.mockImplementation(async (
+      payload: {runId?: string}
+    ) => operationResponse({
+      runs: [run],
+      workItems: payload.runId ? [packet] : [],
+    }));
+
+    await expect(loadOrganizerIntakeBridge()).rejects.toThrow(
+      "invalid publication packet projection"
+    );
+  });
 });
 
 function operationRun(runId: string, market: string, updatedAt: string) {
@@ -220,6 +311,67 @@ function organizerWorkItem(market: string, rank: number) {
     updatedAt: "2026-07-24T12:00:00.000Z",
     staleAt: null,
     expiresAt: null,
+  };
+}
+
+function organizerPacketWorkItem(entityId: string, market: string) {
+  return {
+    ...organizerWorkItem(market, 99),
+    workItemId: `wi-packet-${entityId}`,
+    externalKey: entityId,
+    primaryStage: "ready",
+    lifecycleStatus: "ready",
+    normalizedPayload: {
+      intake: {
+        recordType: "organizer_publication_packet",
+        packet: {
+          packetId: `packet-${entityId}`,
+          entityId,
+          canonicalHostId: entityId,
+          displayName: "AFTER FLY",
+          status: "published",
+          priority: "p1",
+          markets: [{slug: market, displayName: "Indore"}],
+          blockers: [],
+          dataBlockers: [],
+          evidenceBlockers: [],
+          approvalChecklist: {
+            crawlDisabledReviewed: true,
+            identityReviewed: true,
+            marketScopeReviewed: true,
+            mediaRightsReviewed: true,
+            ownerSafeCopyReviewed: true,
+            surfaceInventoryReviewed: true,
+          },
+          evidenceSummary: {
+            records: 6,
+            manualReportsWithoutArtifacts: 2,
+            unresolvedLocalRefs: 0,
+            missingSurfaceEvidence: 0,
+            rawProviderArtifactRefs: 0,
+            firestoreForbiddenArtifactRefs: 0,
+            riskFlags: ["manual_report_without_artifact"],
+          },
+          publicPresence: {
+            canonicalPath: "/organizers/afterfly/",
+            claimTargetPath: "clubs/afterfly",
+            indexStatus: "indexed",
+            appVisibility: "hidden",
+            projectionStatus: "ready",
+          },
+          adminDecision: {
+            allowedDecisions: ["approve_public", "hold", "suppress"],
+            defaultAppVisibility: "hidden",
+            currentDecision: {
+              decision: "approve_public",
+              decidedAt: "2026-06-18",
+              appVisibility: "hidden",
+            },
+          },
+          nextActions: ["review_publication_packet"],
+        },
+      },
+    },
   };
 }
 

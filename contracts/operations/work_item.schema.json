@@ -93,8 +93,248 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object",
+            "required": ["intake"],
+            "properties": {
+              "intake": {
+                "type": "object",
+                "required": ["recordType"],
+                "properties": {
+                  "recordType": {
+                    "const": "organizer_publication_packet"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "normalizedPayload": {
+            "properties": {
+              "intake": {
+                "$ref": "#/definitions/organizerPublicationPacketIntake"
+              }
+            }
+          }
+        }
+      }
     }
   ],
+  "definitions": {
+    "boundedString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "boundedStringArray": {
+      "type": "array",
+      "maxItems": 40,
+      "items": {"$ref": "#/definitions/boundedString"}
+    },
+    "organizerPublicationPacketIntake": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recordType", "packet"],
+      "properties": {
+        "recordType": {"const": "organizer_publication_packet"},
+        "packet": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "packetId",
+            "entityId",
+            "canonicalHostId",
+            "displayName",
+            "status",
+            "priority",
+            "markets",
+            "blockers",
+            "dataBlockers",
+            "evidenceBlockers",
+            "approvalChecklist",
+            "evidenceSummary",
+            "publicPresence",
+            "adminDecision",
+            "nextActions"
+          ],
+          "properties": {
+            "packetId": {"$ref": "#/definitions/boundedString"},
+            "entityId": {"$ref": "#/definitions/boundedString"},
+            "canonicalHostId": {"$ref": "#/definitions/boundedString"},
+            "displayName": {"$ref": "#/definitions/boundedString"},
+            "status": {"$ref": "#/definitions/boundedString"},
+            "priority": {"$ref": "#/definitions/boundedString"},
+            "markets": {
+              "type": "array",
+              "maxItems": 8,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["slug", "displayName"],
+                "properties": {
+                  "slug": {"$ref": "#/definitions/boundedString"},
+                  "displayName": {"$ref": "#/definitions/boundedString"}
+                }
+              }
+            },
+            "blockers": {"$ref": "#/definitions/boundedStringArray"},
+            "dataBlockers": {"$ref": "#/definitions/boundedStringArray"},
+            "evidenceBlockers": {
+              "$ref": "#/definitions/boundedStringArray"
+            },
+            "approvalChecklist": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "crawlDisabledReviewed",
+                "identityReviewed",
+                "marketScopeReviewed",
+                "mediaRightsReviewed",
+                "ownerSafeCopyReviewed",
+                "surfaceInventoryReviewed"
+              ],
+              "properties": {
+                "crawlDisabledReviewed": {"type": "boolean"},
+                "identityReviewed": {"type": "boolean"},
+                "marketScopeReviewed": {"type": "boolean"},
+                "mediaRightsReviewed": {"type": "boolean"},
+                "ownerSafeCopyReviewed": {"type": "boolean"},
+                "surfaceInventoryReviewed": {"type": "boolean"}
+              }
+            },
+            "evidenceSummary": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "records",
+                "manualReportsWithoutArtifacts",
+                "unresolvedLocalRefs",
+                "missingSurfaceEvidence",
+                "rawProviderArtifactRefs",
+                "firestoreForbiddenArtifactRefs",
+                "riskFlags"
+              ],
+              "properties": {
+                "records": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "manualReportsWithoutArtifacts": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "unresolvedLocalRefs": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "missingSurfaceEvidence": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "rawProviderArtifactRefs": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "firestoreForbiddenArtifactRefs": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "riskFlags": {
+                  "type": "array",
+                  "maxItems": 12,
+                  "items": {"$ref": "#/definitions/boundedString"}
+                }
+              }
+            },
+            "publicPresence": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "canonicalPath",
+                "claimTargetPath",
+                "indexStatus",
+                "appVisibility",
+                "projectionStatus"
+              ],
+              "properties": {
+                "canonicalPath": {
+                  "anyOf": [
+                    {"$ref": "#/definitions/boundedString"},
+                    {"type": "null"}
+                  ]
+                },
+                "claimTargetPath": {
+                  "anyOf": [
+                    {"$ref": "#/definitions/boundedString"},
+                    {"type": "null"}
+                  ]
+                },
+                "indexStatus": {"$ref": "#/definitions/boundedString"},
+                "appVisibility": {"$ref": "#/definitions/boundedString"},
+                "projectionStatus": {
+                  "$ref": "#/definitions/boundedString"
+                }
+              }
+            },
+            "adminDecision": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "allowedDecisions",
+                "defaultAppVisibility",
+                "currentDecision"
+              ],
+              "properties": {
+                "allowedDecisions": {
+                  "$ref": "#/definitions/boundedStringArray"
+                },
+                "defaultAppVisibility": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "currentDecision": {
+                  "anyOf": [
+                    {"type": "null"},
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "decision",
+                        "decidedAt",
+                        "appVisibility"
+                      ],
+                      "properties": {
+                        "decision": {
+                          "$ref": "#/definitions/boundedString"
+                        },
+                        "decidedAt": {
+                          "$ref": "#/definitions/boundedString"
+                        },
+                        "appVisibility": {
+                          "$ref": "#/definitions/boundedString"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "nextActions": {
+              "type": "array",
+              "maxItems": 12,
+              "items": {"$ref": "#/definitions/boundedString"}
+            }
+          }
+        }
+      }
+    }
+  },
   "required": [
     "schemaVersion",
     "workItemId",

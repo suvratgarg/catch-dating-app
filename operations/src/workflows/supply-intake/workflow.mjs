@@ -22,9 +22,21 @@ import {
 
 export const MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN = MAX_WORK_ITEMS_PER_RUN;
 export const SUPPLY_INTAKE_WORKFLOW_ID = "supply-intake";
-export const SUPPLY_INTAKE_WORKFLOW_VERSION = "0.1.1";
+export const SUPPLY_INTAKE_WORKFLOW_VERSION = "0.1.2";
 const SUPPLY_INTAKE_STALE_AFTER_HOURS = 168;
 const SUPPLY_INTAKE_SCOPES = Object.freeze(["all", "organizer"]);
+const ORGANIZER_PACKET_STRING_LIMIT = 500;
+const ORGANIZER_PACKET_LIST_LIMIT = 40;
+const ORGANIZER_PACKET_MARKET_LIMIT = 8;
+const ORGANIZER_PACKET_SHORT_LIST_LIMIT = 12;
+const ORGANIZER_PACKET_APPROVAL_CHECKS = Object.freeze([
+  "crawlDisabledReviewed",
+  "identityReviewed",
+  "marketScopeReviewed",
+  "mediaRightsReviewed",
+  "ownerSafeCopyReviewed",
+  "surfaceInventoryReviewed",
+]);
 
 export class SupplyIntakeWorkflow {
   constructor({
@@ -533,7 +545,7 @@ function baseWorkItem({
     adminProjection,
     decisionProvenance: {
       actorKind: "legacy_projection",
-      actorId: "supply-intake-v0.1.1",
+      actorId: "supply-intake-v0.1.2",
       decision: "pending_deterministic_review",
       decidedAt: now,
       inputHash: hashValue(raw),
@@ -657,7 +669,7 @@ function workItemForOrganizer(packet, context) {
     raw: packet,
     adminProjection: {
       recordType: "organizer_publication_packet",
-      entityId: packet.entityId ?? packet.canonicalHostId,
+      packet: organizerPacketProjection(packet),
     },
   });
 }
@@ -719,6 +731,218 @@ function organizerCandidateProjection(candidate, reviewContext = null) {
     diagnostics: candidate.diagnostics ?? [],
     ...(reviewContext ? {reviewContext} : {}),
   };
+}
+
+function organizerPacketProjection(packet) {
+  const entityId = boundedPacketString(
+    packet.entityId ?? packet.canonicalHostId,
+    "entityId"
+  );
+  const currentDecision = packet.adminDecision?.currentDecision;
+  const projection = {
+    packetId: boundedPacketString(packet.packetId, "packetId"),
+    entityId,
+    canonicalHostId: boundedPacketString(
+      packet.canonicalHostId ?? entityId,
+      "canonicalHostId"
+    ),
+    displayName: boundedPacketString(packet.displayName, "displayName"),
+    status: boundedPacketString(packet.status, "status"),
+    priority: boundedPacketString(packet.priority, "priority"),
+    markets: boundedPacketMarkets(packet.identity?.geography?.markets),
+    blockers: boundedPacketStringList(
+      packet.blockers,
+      "blockers",
+      ORGANIZER_PACKET_LIST_LIMIT
+    ),
+    dataBlockers: boundedPacketStringList(
+      packet.dataBlockers,
+      "dataBlockers",
+      ORGANIZER_PACKET_LIST_LIMIT
+    ),
+    evidenceBlockers: boundedPacketStringList(
+      packet.evidenceBlockers,
+      "evidenceBlockers",
+      ORGANIZER_PACKET_LIST_LIMIT
+    ),
+    approvalChecklist: Object.fromEntries(
+      ORGANIZER_PACKET_APPROVAL_CHECKS.map((key) => {
+        invariant(
+          typeof packet.approvalChecklist?.[key] === "boolean",
+          "INVALID_ORGANIZER_PACKET_PROJECTION",
+          `Organizer packet approvalChecklist.${key} must be boolean.`,
+          {entityId, key}
+        );
+        return [key, packet.approvalChecklist[key]];
+      })
+    ),
+    evidenceSummary: {
+      records: boundedPacketCount(
+        packet.evidenceSummary?.records,
+        "evidenceSummary.records"
+      ),
+      manualReportsWithoutArtifacts: boundedPacketCount(
+        packet.evidenceSummary?.manualReportsWithoutArtifacts,
+        "evidenceSummary.manualReportsWithoutArtifacts"
+      ),
+      unresolvedLocalRefs: boundedPacketCount(
+        packet.evidenceSummary?.unresolvedLocalRefs,
+        "evidenceSummary.unresolvedLocalRefs"
+      ),
+      missingSurfaceEvidence: boundedPacketCount(
+        packet.evidenceSummary?.missingSurfaceEvidence,
+        "evidenceSummary.missingSurfaceEvidence"
+      ),
+      rawProviderArtifactRefs: boundedPacketCount(
+        packet.evidenceSummary?.rawProviderArtifactRefs,
+        "evidenceSummary.rawProviderArtifactRefs"
+      ),
+      firestoreForbiddenArtifactRefs: boundedPacketCount(
+        packet.evidenceSummary?.firestoreForbiddenArtifactRefs,
+        "evidenceSummary.firestoreForbiddenArtifactRefs"
+      ),
+      riskFlags: boundedPacketStringList(
+        packet.evidenceSummary?.riskFlags,
+        "evidenceSummary.riskFlags",
+        ORGANIZER_PACKET_SHORT_LIST_LIMIT
+      ),
+    },
+    publicPresence: {
+      canonicalPath: boundedNullablePacketString(
+        packet.publicPresence?.canonicalPath,
+        "publicPresence.canonicalPath"
+      ),
+      claimTargetPath: boundedNullablePacketString(
+        packet.publicPresence?.claimTargetPath,
+        "publicPresence.claimTargetPath"
+      ),
+      indexStatus: boundedPacketString(
+        packet.publicPresence?.indexStatus,
+        "publicPresence.indexStatus"
+      ),
+      appVisibility: boundedPacketString(
+        packet.publicPresence?.appVisibility,
+        "publicPresence.appVisibility"
+      ),
+      projectionStatus: boundedPacketString(
+        packet.publicPresence?.projectionStatus,
+        "publicPresence.projectionStatus"
+      ),
+    },
+    adminDecision: {
+      allowedDecisions: boundedPacketStringList(
+        packet.adminDecision?.allowedDecisions,
+        "adminDecision.allowedDecisions",
+        ORGANIZER_PACKET_LIST_LIMIT
+      ),
+      defaultAppVisibility: boundedPacketString(
+        packet.adminDecision?.defaultAppVisibility,
+        "adminDecision.defaultAppVisibility"
+      ),
+      currentDecision: currentDecision ? {
+        decision: boundedPacketString(
+          currentDecision.decision,
+          "adminDecision.currentDecision.decision"
+        ),
+        decidedAt: boundedPacketString(
+          currentDecision.decidedAt,
+          "adminDecision.currentDecision.decidedAt"
+        ),
+        appVisibility: boundedPacketString(
+          currentDecision.appVisibility,
+          "adminDecision.currentDecision.appVisibility"
+        ),
+      } : null,
+    },
+    nextActions: boundedPacketStringList(
+      packet.nextActions,
+      "nextActions",
+      ORGANIZER_PACKET_SHORT_LIST_LIMIT
+    ),
+  };
+  assertBoundedPacketProjection(projection);
+  return projection;
+}
+
+function boundedPacketString(value, field) {
+  invariant(
+    typeof value === "string" && value.length > 0,
+    "INVALID_ORGANIZER_PACKET_PROJECTION",
+    `Organizer packet ${field} must be a non-empty string.`,
+    {field}
+  );
+  return value.slice(0, ORGANIZER_PACKET_STRING_LIMIT);
+}
+
+function boundedNullablePacketString(value, field) {
+  if (value === null) return null;
+  return boundedPacketString(value, field);
+}
+
+function boundedPacketStringList(value, field, maxItems) {
+  invariant(
+    Array.isArray(value),
+    "INVALID_ORGANIZER_PACKET_PROJECTION",
+    `Organizer packet ${field} must be an array.`,
+    {field}
+  );
+  return value.slice(0, maxItems).map((entry, index) =>
+    boundedPacketString(entry, `${field}[${index}]`));
+}
+
+function boundedPacketCount(value, field) {
+  invariant(
+    Number.isSafeInteger(value) && value >= 0,
+    "INVALID_ORGANIZER_PACKET_PROJECTION",
+    `Organizer packet ${field} must be a non-negative safe integer.`,
+    {field}
+  );
+  return value;
+}
+
+function boundedPacketMarkets(value) {
+  invariant(
+    Array.isArray(value),
+    "INVALID_ORGANIZER_PACKET_PROJECTION",
+    "Organizer packet identity.geography.markets must be an array."
+  );
+  return value.slice(0, ORGANIZER_PACKET_MARKET_LIMIT).map((market, index) => {
+    invariant(
+      market && typeof market === "object" && !Array.isArray(market),
+      "INVALID_ORGANIZER_PACKET_PROJECTION",
+      `Organizer packet market ${index} must be an object.`
+    );
+    return {
+      slug: boundedPacketString(
+        market.marketSlug,
+        `markets[${index}].slug`
+      ),
+      displayName: boundedPacketString(
+        market.displayName,
+        `markets[${index}].displayName`
+      ),
+    };
+  });
+}
+
+function assertBoundedPacketProjection(value, path = "") {
+  if (Array.isArray(value)) {
+    const containsObjects = value.some((entry) =>
+      entry && typeof entry === "object");
+    invariant(
+      !containsObjects || path === "markets",
+      "INVALID_ORGANIZER_PACKET_PROJECTION",
+      `Organizer packet projection has a nested object array at ${path}.`,
+      {path}
+    );
+    value.forEach((entry, index) =>
+      assertBoundedPacketProjection(entry, `${path}[${index}]`));
+    return;
+  }
+  if (!value || typeof value !== "object") return;
+  for (const [key, entry] of Object.entries(value)) {
+    assertBoundedPacketProjection(entry, path ? `${path}.${key}` : key);
+  }
 }
 
 function organizerReviewPolicySnapshot(reviewPolicy) {
@@ -891,7 +1115,7 @@ function outcome(item, {primaryStage, lifecycleStatus = "active", blockers, task
     },
     decisionProvenance: {
       actorKind: "deterministic_rule_engine",
-      actorId: "supply-intake-v0.1.1",
+      actorId: "supply-intake-v0.1.2",
       decision: `${primaryStage}:${lifecycleStatus}`,
       decidedAt: now,
       inputHash: hashValue(item.raw),

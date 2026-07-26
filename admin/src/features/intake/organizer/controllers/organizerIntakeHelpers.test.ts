@@ -74,7 +74,7 @@ describe("organizer intake helpers", () => {
   });
 
   it("requires every publication blocker and checklist item to clear", () => {
-    expect(publicationPacketReady({
+    const readyPacket = {
       status: "ready_for_manual_publication_review",
       dataBlockers: [],
       evidenceBlockers: [],
@@ -86,7 +86,15 @@ describe("organizer intake helpers", () => {
         mediaRightsReviewed: true,
         crawlDisabledReviewed: true,
       },
-    } as unknown as Intake.OrganizerPublicationReviewPacket)).toBe(true);
+    } as unknown as Intake.OrganizerPublicationReviewPacket;
+    expect(publicationPacketReady(readyPacket)).toBe(true);
+    expect(publicationPacketReady({
+      ...readyPacket,
+      approvalChecklist: {
+        ...readyPacket.approvalChecklist,
+        mediaRightsReviewed: false,
+      },
+    })).toBe(false);
   });
 
   it("builds a strict organizer draft request from a reviewed candidate", () => {
