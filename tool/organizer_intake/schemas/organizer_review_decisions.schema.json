@@ -23,6 +23,8 @@
       "required": [
         "entityId",
         "decision",
+        "publishStatus",
+        "indexStatus",
         "appVisibility",
         "checklist",
         "note"
@@ -35,6 +37,14 @@
         "decision": {
           "type": "string",
           "enum": ["approve_public", "hold", "suppress"]
+        },
+        "publishStatus": {
+          "type": "string",
+          "enum": ["draft", "published", "suppressed"]
+        },
+        "indexStatus": {
+          "type": "string",
+          "enum": ["noindex", "indexed"]
         },
         "appVisibility": {
           "type": "string",
@@ -61,7 +71,13 @@
             "manualReportsReviewed": {
               "type": "boolean",
               "description": "True when the reviewer explicitly inspected manual reports that have no local raw artifact. Required by replay validation only when the publication packet contains those reports."
-            }
+            },
+            "claimTargetReviewed": {"type": "boolean"},
+            "takedownPathReviewed": {"type": "boolean"},
+            "impersonationReviewed": {"type": "boolean"},
+            "operatingStatusReviewed": {"type": "boolean"},
+            "eventAccuracyReviewed": {"type": "boolean"},
+            "unclaimedAffordancesReviewed": {"type": "boolean"}
           }
         },
         "note": {"type": "string", "minLength": 1, "maxLength": 1000}

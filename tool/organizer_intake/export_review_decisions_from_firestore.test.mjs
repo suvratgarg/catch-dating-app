@@ -73,6 +73,8 @@ function approvalDoc(entityId) {
     entityId,
     decision: "approve_public",
     decisionStatus: "approved_public",
+    publishStatus: "published",
+    indexStatus: "indexed",
     appVisibility: "hidden",
     checklist: {
       crawlDisabledReviewed: true,
@@ -96,6 +98,8 @@ function holdDoc(entityId) {
     ...approvalDoc(entityId),
     decision: "hold",
     decisionStatus: "held",
+    publishStatus: "draft",
+    indexStatus: "noindex",
     checklist: {
       crawlDisabledReviewed: false,
       identityReviewed: true,

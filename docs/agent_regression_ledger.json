@@ -3669,6 +3669,33 @@
         "operations/README.md"
       ],
       "notes": "Missing attribution is a representable review state, never an implicit null. Only a unique scorecard match at or above the reviewed threshold clears organizer_not_in_inventory; the React admin neither fetches sources nor runs identity matching."
+    },
+    {
+      "id": "REG-SUPPLY-VISIBILITY-CEILING-001",
+      "title": "Organizer approval implicitly widens web, search, app, or event visibility",
+      "status": "active",
+      "applies_to": [
+        "contracts/callables/admin_decide_organizer_intake_payload.schema.json",
+        "contracts/firestore/organizer_intake_review_decisions.schema.json",
+        "functions/src/admin/supplyVisibilityPolicy.ts",
+        "functions/src/admin/organizerIntake.ts",
+        "admin/src/features/intake/organizer",
+        "operations/src/workflows/supply-intake/workflow.mjs",
+        "tool/organizer_intake"
+      ],
+      "symptom": "Approving a real organizer silently publishes or indexes it, the Admin payload pins app discovery to a hidden default, an event exceeds its organizer on any surface, suppression leaves a surface enabled, or intake downgrades claimed supply.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions run build && node --test functions/lib/admin/organizerIntake.test.js functions/lib/admin/supplyVisibilityPolicy.test.js && npm --workspace catch-admin test -- --run src/features/intake/organizer && npm --prefix operations test",
+        "guardEvidence": "contracts and every control path carry publishStatus, indexStatus, and appVisibility explicitly; web and app evidence gates are conditional; hold and suppress fail closed; claimed visibility cannot be reduced; and event controls are rejected above the organizer ceiling"
+      },
+      "owner_docs": [
+        "docs/data_contracts.md",
+        "docs/operations_platform.md",
+        "admin/README.md",
+        "operations/README.md"
+      ],
+      "notes": "Approval establishes a reviewed record, not exposure. Search indexing depends on a published page, while public-page and app visibility remain independent. The event publication writer introduced later must call the shared ceiling policy rather than duplicating it."
     }
   ]
 }

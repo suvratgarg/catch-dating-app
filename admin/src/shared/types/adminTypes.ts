@@ -414,6 +414,11 @@ export type OrganizerType =
   | "venue"
   | "brand";
 export type OrganizerAppVisibility = "discoverable" | "hidden";
+export type OrganizerIntakePublishStatus =
+  | "draft"
+  | "published"
+  | "suppressed";
+export type OrganizerIntakeIndexStatus = "noindex" | "indexed";
 export type OrganizerPublishStatus =
   | "draft"
   | "qa"
@@ -616,6 +621,8 @@ export interface AdminSetClubIndexStatusResponse {
 export interface AdminDecideOrganizerIntakePayload {
   entityId: string;
   decision: OrganizerIntakeDecision;
+  publishStatus: OrganizerIntakePublishStatus;
+  indexStatus: OrganizerIntakeIndexStatus;
   appVisibility: OrganizerAppVisibility;
   checklist: {
     identityReviewed: boolean;
@@ -625,6 +632,12 @@ export interface AdminDecideOrganizerIntakePayload {
     mediaRightsReviewed: boolean;
     crawlDisabledReviewed: boolean;
     manualReportsReviewed?: boolean;
+    claimTargetReviewed?: boolean;
+    takedownPathReviewed?: boolean;
+    impersonationReviewed?: boolean;
+    operatingStatusReviewed?: boolean;
+    eventAccuracyReviewed?: boolean;
+    unclaimedAffordancesReviewed?: boolean;
   };
   note: string;
 }
@@ -633,6 +646,8 @@ export interface AdminDecideOrganizerIntakeResponse {
   entityId: string;
   decision: OrganizerIntakeDecision;
   decisionStatus: "approved_public" | "held" | "suppressed";
+  publishStatus: OrganizerIntakePublishStatus;
+  indexStatus: OrganizerIntakeIndexStatus;
   appVisibility: OrganizerAppVisibility;
   decisionPath: string;
   projectionState: "pending_static_generation" | "not_projectable";

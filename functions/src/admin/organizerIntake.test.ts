@@ -158,6 +158,8 @@ function approvalPayload(overrides: FakeData = {}) {
   return {
     entityId: "afterfly",
     decision: "approve_public",
+    publishStatus: "draft",
+    indexStatus: "noindex",
     appVisibility: "hidden",
     checklist: completeChecklist(),
     note: "Manual QA complete.",
@@ -183,6 +185,8 @@ test("adminDecideOrganizerIntakeHandler records an approval decision",
       entityId: "afterfly",
       decision: "approve_public",
       decisionStatus: "approved_public",
+      publishStatus: "draft",
+      indexStatus: "noindex",
       appVisibility: "hidden",
       decisionPath: "organizerIntakeReviewDecisions/afterfly",
       projectionState: "pending_static_generation",
@@ -194,6 +198,8 @@ test("adminDecideOrganizerIntakeHandler records an approval decision",
         entityId: "afterfly",
         decision: "approve_public",
         decisionStatus: "approved_public",
+        publishStatus: "draft",
+        indexStatus: "noindex",
         appVisibility: "hidden",
         checklist: completeChecklist(),
         note: "Manual QA complete.",
@@ -253,6 +259,8 @@ test("adminDecideOrganizerIntakeHandler keeps holds app-hidden", async () => {
     () => adminDecideOrganizerIntakeHandler(
       callableRequest("admin-1", approvalPayload({
         decision: "hold",
+        publishStatus: "draft",
+        indexStatus: "noindex",
         appVisibility: "discoverable",
         checklist: incompleteChecklist(),
       }), {support: true}),
@@ -261,6 +269,94 @@ test("adminDecideOrganizerIntakeHandler keeps holds app-hidden", async () => {
     (error) => assertHttpsCode(error, "failed-precondition")
   );
 });
+
+test("adminDecideOrganizerIntakeHandler stores independent surface switches",
+  async () => {
+    const h = harness();
+    const checklist = {
+      ...completeChecklist(),
+      claimTargetReviewed: true,
+      takedownPathReviewed: true,
+      impersonationReviewed: true,
+    };
+
+    const result = await adminDecideOrganizerIntakeHandler(
+      callableRequest("admin-1", approvalPayload({
+        publishStatus: "published",
+        indexStatus: "noindex",
+        appVisibility: "hidden",
+        checklist,
+      }), {support: true}),
+      h.deps
+    );
+
+    assert.equal(result.publishStatus, "published");
+    assert.equal(result.indexStatus, "noindex");
+    assert.equal(result.appVisibility, "hidden");
+  });
+
+test("adminDecideOrganizerIntakeHandler requires app-specific gates",
+  async () => {
+    const h = harness();
+
+    await assert.rejects(
+      () => adminDecideOrganizerIntakeHandler(
+        callableRequest("admin-1", approvalPayload({
+          appVisibility: "discoverable",
+          checklist: {
+            ...completeChecklist(),
+            claimTargetReviewed: true,
+            takedownPathReviewed: true,
+            impersonationReviewed: true,
+          },
+        }), {support: true}),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
+  });
+
+test("adminDecideOrganizerIntakeHandler suppresses every surface", async () => {
+  const h = harness();
+
+  const result = await adminDecideOrganizerIntakeHandler(
+    callableRequest("admin-1", approvalPayload({
+      decision: "suppress",
+      publishStatus: "suppressed",
+      indexStatus: "noindex",
+      appVisibility: "hidden",
+      checklist: incompleteChecklist(),
+    }), {support: true}),
+    h.deps
+  );
+
+  assert.equal(result.publishStatus, "suppressed");
+  assert.equal(result.indexStatus, "noindex");
+  assert.equal(result.appVisibility, "hidden");
+});
+
+test("adminDecideOrganizerIntakeHandler cannot downgrade a claimed organizer",
+  async () => {
+    const h = harness({
+      "organizers/afterfly": {
+        ownership: {state: "claimed"},
+        claim: {state: "claimed"},
+        appVisibility: "discoverable",
+        publicPage: {
+          publishStatus: "published",
+          indexStatus: "indexed",
+        },
+      },
+    });
+
+    await assert.rejects(
+      () => adminDecideOrganizerIntakeHandler(
+        callableRequest("admin-1", approvalPayload(), {support: true}),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
+  });
 
 test("adminDecideOrganizerIntakeHandler blocks viewer-only admins",
   async () => {

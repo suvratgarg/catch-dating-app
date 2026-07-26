@@ -187,6 +187,8 @@ function packet() {
         requiredAcknowledgements: [],
         requiredInputs: [],
         safeDefaultPayload: {
+          publishStatus: "draft",
+          indexStatus: "noindex",
           appVisibility: "hidden",
         },
       },

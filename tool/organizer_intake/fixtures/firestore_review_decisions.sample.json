@@ -5,6 +5,8 @@
       "path": "organizerIntakeReviewDecisions/afterfly",
       "data": {
         "appVisibility": "hidden",
+        "publishStatus": "published",
+        "indexStatus": "indexed",
         "checklist": {
           "crawlDisabledReviewed": true,
           "identityReviewed": true,
@@ -36,6 +38,8 @@
       "path": "organizerIntakeReviewDecisions/bhag",
       "data": {
         "appVisibility": "hidden",
+        "publishStatus": "draft",
+        "indexStatus": "noindex",
         "checklist": {
           "crawlDisabledReviewed": false,
           "identityReviewed": true,

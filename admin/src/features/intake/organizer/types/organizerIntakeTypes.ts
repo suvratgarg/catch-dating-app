@@ -9,6 +9,8 @@ import type {
   OrganizerEntityKind,
   OrganizerEventCandidateDecision,
   OrganizerIntakeDecision,
+  OrganizerIntakeIndexStatus,
+  OrganizerIntakePublishStatus,
   OrganizerPublishStatus,
   OrganizerSourceConfidence,
   OrganizerSurfaceDecision,
@@ -927,17 +929,20 @@ export interface OrganizerPublicationPacketProjection {
   publicPresence: {
     canonicalPath: string | null;
     claimTargetPath: string | null;
-    indexStatus: string;
-    appVisibility: string;
+    publishStatus: OrganizerIntakePublishStatus;
+    indexStatus: OrganizerIntakeIndexStatus;
+    appVisibility: OrganizerAppVisibility;
     projectionStatus: string;
   };
   adminDecision: {
     allowedDecisions: OrganizerIntakeDecision[];
-    defaultAppVisibility: string;
+    defaultAppVisibility: OrganizerAppVisibility;
     currentDecision: {
-      decision: string;
+      decision: OrganizerIntakeDecision;
+      publishStatus: OrganizerIntakePublishStatus;
+      indexStatus: OrganizerIntakeIndexStatus;
       decidedAt: string;
-      appVisibility: string;
+      appVisibility: OrganizerAppVisibility;
     } | null;
   };
   nextActions: string[];
@@ -1764,6 +1769,21 @@ export interface OrganizerDraftFormState {
   reviewNote: string;
 }
 
+export interface OrganizerVisibilityFormState {
+  publishStatus: OrganizerIntakePublishStatus;
+  indexStatus: OrganizerIntakeIndexStatus;
+  appVisibility: OrganizerAppVisibility;
+}
+
+export interface OrganizerSurfaceChecklistState {
+  claimTargetReviewed: boolean;
+  takedownPathReviewed: boolean;
+  impersonationReviewed: boolean;
+  operatingStatusReviewed: boolean;
+  eventAccuracyReviewed: boolean;
+  unclaimedAffordancesReviewed: boolean;
+}
+
 export interface OrganizerSearchCandidateReviewContext {
   recordStatus: string;
   existingInventory: boolean;
@@ -2003,6 +2023,8 @@ export interface OrganizerPromotionPolicy {
 
 export interface OrganizerReviewDecision {
   decision: string;
+  publishStatus?: OrganizerIntakePublishStatus;
+  indexStatus?: OrganizerIntakeIndexStatus;
   appVisibility: string;
   decidedAt: string;
   reviewer: string;

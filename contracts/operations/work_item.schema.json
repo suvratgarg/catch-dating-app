@@ -525,6 +525,7 @@
               "required": [
                 "canonicalPath",
                 "claimTargetPath",
+                "publishStatus",
                 "indexStatus",
                 "appVisibility",
                 "projectionStatus"
@@ -542,6 +543,7 @@
                     {"type": "null"}
                   ]
                 },
+                "publishStatus": {"$ref": "#/definitions/boundedString"},
                 "indexStatus": {"$ref": "#/definitions/boundedString"},
                 "appVisibility": {"$ref": "#/definitions/boundedString"},
                 "projectionStatus": {
@@ -572,11 +574,19 @@
                       "additionalProperties": false,
                       "required": [
                         "decision",
+                        "publishStatus",
+                        "indexStatus",
                         "decidedAt",
                         "appVisibility"
                       ],
                       "properties": {
                         "decision": {
+                          "$ref": "#/definitions/boundedString"
+                        },
+                        "publishStatus": {
+                          "$ref": "#/definitions/boundedString"
+                        },
+                        "indexStatus": {
                           "$ref": "#/definitions/boundedString"
                         },
                         "decidedAt": {

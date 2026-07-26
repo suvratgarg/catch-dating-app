@@ -524,6 +524,8 @@ function approvedAfterflyDecision() {
     decisions: [
       {
         appVisibility: "hidden",
+        publishStatus: "published",
+        indexStatus: "indexed",
         checklist: {
           crawlDisabledReviewed: true,
           identityReviewed: true,

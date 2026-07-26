@@ -138,6 +138,8 @@ function pendingInputRequest() {
             approve_public: {
               entityId: "afterfly",
               decision: "approve_public",
+              publishStatus: "published",
+              indexStatus: "indexed",
               appVisibility: "hidden",
               checklist: {
                 identityReviewed: true,
@@ -153,6 +155,8 @@ function pendingInputRequest() {
             hold: {
               entityId: "afterfly",
               decision: "hold",
+              publishStatus: "draft",
+              indexStatus: "noindex",
               appVisibility: "hidden",
               checklist: {
                 identityReviewed: true,
@@ -167,6 +171,8 @@ function pendingInputRequest() {
             suppress: {
               entityId: "afterfly",
               decision: "suppress",
+              publishStatus: "suppressed",
+              indexStatus: "noindex",
               appVisibility: "hidden",
               checklist: {
                 identityReviewed: true,
@@ -182,6 +188,8 @@ function pendingInputRequest() {
           safeDefaultPayload: {
             entityId: "afterfly",
             decision: "hold",
+            publishStatus: "draft",
+            indexStatus: "noindex",
             appVisibility: "hidden",
             checklist: {
               identityReviewed: true,

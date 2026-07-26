@@ -20,6 +20,8 @@ const schemaOrganizerIntakeReviewDecisionDocumentSchema = <String, Object?>{
     'entityId',
     'decision',
     'decisionStatus',
+    'publishStatus',
+    'indexStatus',
     'appVisibility',
     'checklist',
     'note',
@@ -52,6 +54,21 @@ const schemaOrganizerIntakeReviewDecisionDocumentSchema = <String, Object?>{
         'approved_public',
         'held',
         'suppressed',
+      ],
+    },
+    'publishStatus': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'draft',
+        'published',
+        'suppressed',
+      ],
+    },
+    'indexStatus': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'noindex',
+        'indexed',
       ],
     },
     'appVisibility': <String, Object?>{
@@ -94,6 +111,24 @@ const schemaOrganizerIntakeReviewDecisionDocumentSchema = <String, Object?>{
         'manualReportsReviewed': <String, Object?>{
           'type': 'boolean',
           'description': 'True when the reviewer explicitly inspected manual reports that have no stored source artifact. Projection replay decides when this acknowledgement is required.',
+        },
+        'claimTargetReviewed': <String, Object?>{
+          'type': 'boolean',
+        },
+        'takedownPathReviewed': <String, Object?>{
+          'type': 'boolean',
+        },
+        'impersonationReviewed': <String, Object?>{
+          'type': 'boolean',
+        },
+        'operatingStatusReviewed': <String, Object?>{
+          'type': 'boolean',
+        },
+        'eventAccuracyReviewed': <String, Object?>{
+          'type': 'boolean',
+        },
+        'unclaimedAffordancesReviewed': <String, Object?>{
+          'type': 'boolean',
         },
       },
     },

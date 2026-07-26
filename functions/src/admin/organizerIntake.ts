@@ -1,4 +1,4 @@
-import {onCall, CallableRequest, HttpsError} from
+import {onCall, CallableRequest} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
@@ -12,6 +12,13 @@ import {validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAdminRole} from "./adminAuth";
 import {setAdminAuditLogInTransaction} from "./adminAudit";
+import {
+  assertOrganizerVisibilityDecisionAllowed,
+  SupplyAppVisibility,
+  SupplyIndexStatus,
+  SupplyPublishStatus,
+  SupplyVisibilityControls,
+} from "./supplyVisibilityPolicy";
 
 const organizerIntakeRoles = ["admin", "adminOwner", "support"] as const;
 const decisionCollection = "organizerIntakeReviewDecisions";
@@ -34,13 +41,12 @@ const defaultDeps: OrganizerIntakeDeps = {
 
 type OrganizerIntakeDecision =
   AdminDecideOrganizerIntakeCallablePayload["decision"];
-type OrganizerIntakeChecklist =
-  AdminDecideOrganizerIntakeCallablePayload["checklist"];
-
 export interface AdminDecideOrganizerIntakeResponse {
   entityId: string;
   decision: OrganizerIntakeDecision;
   decisionStatus: OrganizerIntakeReviewDecisionDocument["decisionStatus"];
+  publishStatus: OrganizerIntakeReviewDecisionDocument["publishStatus"];
+  indexStatus: OrganizerIntakeReviewDecisionDocument["indexStatus"];
   appVisibility: OrganizerIntakeReviewDecisionDocument["appVisibility"];
   decisionPath: string;
   projectionState: OrganizerIntakeReviewDecisionDocument["projectionState"];
@@ -74,6 +80,7 @@ export async function adminDecideOrganizerIntakeHandler(
     "adminDecideOrganizerIntake"
   );
   const decisionRef = db.collection(decisionCollection).doc(data.entityId);
+  const organizerRef = db.collection("organizers").doc(data.entityId);
   const timestamp = deps.serverTimestamp();
   const decisionStatus = decisionStatusFor(data.decision);
   const projectionState = data.decision === "approve_public" ?
@@ -84,6 +91,8 @@ export async function adminDecideOrganizerIntakeHandler(
     entityId: data.entityId,
     decision: data.decision,
     decisionStatus,
+    publishStatus: data.publishStatus,
+    indexStatus: data.indexStatus,
     appVisibility: data.appVisibility,
     checklist: data.checklist,
     note: data.note,
@@ -96,7 +105,11 @@ export async function adminDecideOrganizerIntakeHandler(
   };
 
   await db.runTransaction(async (tx) => {
-    const beforeSnap = await tx.get(decisionRef);
+    const [beforeSnap, organizerSnap] = await Promise.all([
+      tx.get(decisionRef),
+      tx.get(organizerRef),
+    ]);
+    assertDecisionAllowed(data, currentOrganizerVisibility(organizerSnap));
     tx.set(decisionRef, decisionDoc, {merge: true});
     setAdminAuditLogInTransaction(tx, db, adminContext, {
       action: "adminDecideOrganizerIntake",
@@ -107,6 +120,8 @@ export async function adminDecideOrganizerIntakeHandler(
         entityId: data.entityId,
         decision: data.decision,
         decisionStatus,
+        publishStatus: data.publishStatus,
+        indexStatus: data.indexStatus,
         appVisibility: data.appVisibility,
         projectionState,
       },
@@ -119,6 +134,8 @@ export async function adminDecideOrganizerIntakeHandler(
     entityId: data.entityId,
     decision: data.decision,
     decisionStatus,
+    publishStatus: data.publishStatus,
+    indexStatus: data.indexStatus,
     appVisibility: data.appVisibility,
     decisionPath: decisionRef.path,
     projectionState,
@@ -137,6 +154,8 @@ function normalizeAdminDecideOrganizerIntakePayload(value: unknown): unknown {
     ...data,
     entityId: normalizeString(data.entityId),
     decision: normalizeString(data.decision),
+    publishStatus: normalizeString(data.publishStatus),
+    indexStatus: normalizeString(data.indexStatus),
     appVisibility: normalizeString(data.appVisibility),
     note: normalizeString(data.note),
   };
@@ -147,23 +166,19 @@ function normalizeAdminDecideOrganizerIntakePayload(value: unknown): unknown {
  * @param {AdminDecideOrganizerIntakeCallablePayload} data Validated payload.
  */
 function assertDecisionAllowed(
-  data: AdminDecideOrganizerIntakeCallablePayload
+  data: AdminDecideOrganizerIntakeCallablePayload,
+  current: {
+    claimed: boolean;
+    controls: SupplyVisibilityControls;
+  } | null = null
 ) {
-  if (data.decision !== "approve_public" &&
-    data.appVisibility !== "hidden") {
-    throw new HttpsError(
-      "failed-precondition",
-      "Held or suppressed organizer intake decisions must remain app-hidden."
-    );
-  }
-  if (data.decision === "approve_public" &&
-    !reviewChecklistComplete(data.checklist)) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Identity, surface inventory, owner-safe copy, market scope, media " +
-        "rights, and crawl-disabled checks must be complete before approval."
-    );
-  }
+  assertOrganizerVisibilityDecisionAllowed({
+    decision: data.decision,
+    publishStatus: data.publishStatus,
+    indexStatus: data.indexStatus,
+    appVisibility: data.appVisibility,
+    checklist: data.checklist,
+  }, current);
 }
 
 /**
@@ -180,17 +195,47 @@ function decisionStatusFor(
 }
 
 /**
- * Returns whether every manual-publication checklist field was reviewed.
- * @param {OrganizerIntakeChecklist} checklist Admin checklist.
- * @return {boolean} True when complete.
+ * Reads the current canonical surface ceiling for claimed-organizer guards.
+ * Missing organizers are allowed because intake decisions can precede the
+ * canonical draft handoff.
+ * @param {FirebaseFirestore.DocumentSnapshot} snapshot Organizer snapshot.
+ * @return {{claimed: boolean, controls: SupplyVisibilityControls} | null}
+ * Current visibility, or null when no organizer exists yet.
  */
-function reviewChecklistComplete(checklist: OrganizerIntakeChecklist): boolean {
-  return checklist.identityReviewed &&
-    checklist.surfaceInventoryReviewed &&
-    checklist.ownerSafeCopyReviewed &&
-    checklist.marketScopeReviewed &&
-    checklist.mediaRightsReviewed &&
-    checklist.crawlDisabledReviewed;
+function currentOrganizerVisibility(
+  snapshot: FirebaseFirestore.DocumentSnapshot
+): {claimed: boolean; controls: SupplyVisibilityControls} | null {
+  if (!snapshot.exists) return null;
+  const data = snapshot.data() ?? {};
+  const ownership = data.ownership as Record<string, unknown> | undefined;
+  const claim = data.claim as Record<string, unknown> | undefined;
+  const publicPage = data.publicPage as Record<string, unknown> | undefined;
+  return {
+    claimed:
+      ownership?.state === "claimed" ||
+      ownership?.state === "transferred" ||
+      claim?.state === "claimed" ||
+      claim?.state === "verified",
+    controls: {
+      publishStatus: normalizePublishStatus(publicPage?.publishStatus),
+      indexStatus: normalizeIndexStatus(publicPage?.indexStatus),
+      appVisibility: normalizeAppVisibility(data.appVisibility),
+    },
+  };
+}
+
+function normalizePublishStatus(value: unknown): SupplyPublishStatus {
+  if (value === "published") return "published";
+  if (value === "suppressed" || value === "removed") return "suppressed";
+  return "draft";
+}
+
+function normalizeIndexStatus(value: unknown): SupplyIndexStatus {
+  return value === "indexed" ? "indexed" : "noindex";
+}
+
+function normalizeAppVisibility(value: unknown): SupplyAppVisibility {
+  return value === "discoverable" ? "discoverable" : "hidden";
 }
 
 /**

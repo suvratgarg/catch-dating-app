@@ -782,6 +782,7 @@ export const operationWorkItemSchema = {
                         "required": [
                           "canonicalPath",
                           "claimTargetPath",
+                          "publishStatus",
                           "indexStatus",
                           "appVisibility",
                           "projectionStatus"
@@ -810,6 +811,11 @@ export const operationWorkItemSchema = {
                                 "type": "null"
                               }
                             ]
+                          },
+                          "publishStatus": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
                           },
                           "indexStatus": {
                             "type": "string",
@@ -861,11 +867,23 @@ export const operationWorkItemSchema = {
                                 "additionalProperties": false,
                                 "required": [
                                   "decision",
+                                  "publishStatus",
+                                  "indexStatus",
                                   "decidedAt",
                                   "appVisibility"
                                 ],
                                 "properties": {
                                   "decision": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 500
+                                  },
+                                  "publishStatus": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 500
+                                  },
+                                  "indexStatus": {
                                     "type": "string",
                                     "minLength": 1,
                                     "maxLength": 500
@@ -1792,6 +1810,7 @@ export const operationWorkItemSchema = {
               "required": [
                 "canonicalPath",
                 "claimTargetPath",
+                "publishStatus",
                 "indexStatus",
                 "appVisibility",
                 "projectionStatus"
@@ -1820,6 +1839,11 @@ export const operationWorkItemSchema = {
                       "type": "null"
                     }
                   ]
+                },
+                "publishStatus": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
                 },
                 "indexStatus": {
                   "type": "string",
@@ -1871,11 +1895,23 @@ export const operationWorkItemSchema = {
                       "additionalProperties": false,
                       "required": [
                         "decision",
+                        "publishStatus",
+                        "indexStatus",
                         "decidedAt",
                         "appVisibility"
                       ],
                       "properties": {
                         "decision": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 500
+                        },
+                        "publishStatus": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 500
+                        },
+                        "indexStatus": {
                           "type": "string",
                           "minLength": 1,
                           "maxLength": 500
@@ -19835,6 +19871,8 @@ export const organizerIntakeReviewDecisionDocumentSchema = {
     "entityId",
     "decision",
     "decisionStatus",
+    "publishStatus",
+    "indexStatus",
     "appVisibility",
     "checklist",
     "note",
@@ -19867,6 +19905,21 @@ export const organizerIntakeReviewDecisionDocumentSchema = {
         "approved_public",
         "held",
         "suppressed"
+      ]
+    },
+    "publishStatus": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "suppressed"
+      ]
+    },
+    "indexStatus": {
+      "type": "string",
+      "enum": [
+        "noindex",
+        "indexed"
       ]
     },
     "appVisibility": {
@@ -19909,6 +19962,24 @@ export const organizerIntakeReviewDecisionDocumentSchema = {
         "manualReportsReviewed": {
           "type": "boolean",
           "description": "True when the reviewer explicitly inspected manual reports that have no stored source artifact. Projection replay decides when this acknowledgement is required."
+        },
+        "claimTargetReviewed": {
+          "type": "boolean"
+        },
+        "takedownPathReviewed": {
+          "type": "boolean"
+        },
+        "impersonationReviewed": {
+          "type": "boolean"
+        },
+        "operatingStatusReviewed": {
+          "type": "boolean"
+        },
+        "eventAccuracyReviewed": {
+          "type": "boolean"
+        },
+        "unclaimedAffordancesReviewed": {
+          "type": "boolean"
         }
       }
     },
@@ -27643,6 +27714,8 @@ export const adminDecideOrganizerIntakeCallablePayloadSchema = {
   "required": [
     "entityId",
     "decision",
+    "publishStatus",
+    "indexStatus",
     "appVisibility",
     "checklist",
     "note"
@@ -27660,6 +27733,23 @@ export const adminDecideOrganizerIntakeCallablePayloadSchema = {
         "hold",
         "suppress"
       ]
+    },
+    "publishStatus": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "suppressed"
+      ],
+      "description": "Explicit public-web publication switch. Approval does not imply publication."
+    },
+    "indexStatus": {
+      "type": "string",
+      "enum": [
+        "noindex",
+        "indexed"
+      ],
+      "description": "Explicit search-indexing switch. Indexed requires a published web page."
     },
     "appVisibility": {
       "type": "string",
@@ -27701,6 +27791,24 @@ export const adminDecideOrganizerIntakeCallablePayloadSchema = {
         "manualReportsReviewed": {
           "type": "boolean",
           "description": "True when the reviewer explicitly inspected manual reports that have no local raw artifact. Raw evidence remains outside Firestore; replay validation decides when this acknowledgement is required."
+        },
+        "claimTargetReviewed": {
+          "type": "boolean"
+        },
+        "takedownPathReviewed": {
+          "type": "boolean"
+        },
+        "impersonationReviewed": {
+          "type": "boolean"
+        },
+        "operatingStatusReviewed": {
+          "type": "boolean"
+        },
+        "eventAccuracyReviewed": {
+          "type": "boolean"
+        },
+        "unclaimedAffordancesReviewed": {
+          "type": "boolean"
         }
       }
     },

@@ -882,15 +882,30 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['hidden', 'discoverable'],
   );
 
+  static const adminDecideOrganizerIntakeCallablePayloadChecklistClaimTargetReviewed = CatchContractFieldConstraints(
+    path: 'adminDecideOrganizerIntakeCallablePayload.checklist.claimTargetReviewed',
+    valueTypes: <String>['boolean'],
+  );
+
   static const adminDecideOrganizerIntakeCallablePayloadChecklistCrawlDisabledReviewed = CatchContractFieldConstraints(
     path: 'adminDecideOrganizerIntakeCallablePayload.checklist.crawlDisabledReviewed',
     required: true,
     valueTypes: <String>['boolean'],
   );
 
+  static const adminDecideOrganizerIntakeCallablePayloadChecklistEventAccuracyReviewed = CatchContractFieldConstraints(
+    path: 'adminDecideOrganizerIntakeCallablePayload.checklist.eventAccuracyReviewed',
+    valueTypes: <String>['boolean'],
+  );
+
   static const adminDecideOrganizerIntakeCallablePayloadChecklistIdentityReviewed = CatchContractFieldConstraints(
     path: 'adminDecideOrganizerIntakeCallablePayload.checklist.identityReviewed',
     required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminDecideOrganizerIntakeCallablePayloadChecklistImpersonationReviewed = CatchContractFieldConstraints(
+    path: 'adminDecideOrganizerIntakeCallablePayload.checklist.impersonationReviewed',
     valueTypes: <String>['boolean'],
   );
 
@@ -911,6 +926,11 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const adminDecideOrganizerIntakeCallablePayloadChecklistOperatingStatusReviewed = CatchContractFieldConstraints(
+    path: 'adminDecideOrganizerIntakeCallablePayload.checklist.operatingStatusReviewed',
+    valueTypes: <String>['boolean'],
+  );
+
   static const adminDecideOrganizerIntakeCallablePayloadChecklistOwnerSafeCopyReviewed = CatchContractFieldConstraints(
     path: 'adminDecideOrganizerIntakeCallablePayload.checklist.ownerSafeCopyReviewed',
     required: true,
@@ -920,6 +940,16 @@ abstract final class CatchContractConstraints {
   static const adminDecideOrganizerIntakeCallablePayloadChecklistSurfaceInventoryReviewed = CatchContractFieldConstraints(
     path: 'adminDecideOrganizerIntakeCallablePayload.checklist.surfaceInventoryReviewed',
     required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminDecideOrganizerIntakeCallablePayloadChecklistTakedownPathReviewed = CatchContractFieldConstraints(
+    path: 'adminDecideOrganizerIntakeCallablePayload.checklist.takedownPathReviewed',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminDecideOrganizerIntakeCallablePayloadChecklistUnclaimedAffordancesReviewed = CatchContractFieldConstraints(
+    path: 'adminDecideOrganizerIntakeCallablePayload.checklist.unclaimedAffordancesReviewed',
     valueTypes: <String>['boolean'],
   );
 
@@ -938,12 +968,26 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const adminDecideOrganizerIntakeCallablePayloadIndexStatus = CatchContractFieldConstraints(
+    path: 'adminDecideOrganizerIntakeCallablePayload.indexStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['noindex', 'indexed'],
+  );
+
   static const adminDecideOrganizerIntakeCallablePayloadNote = CatchContractFieldConstraints(
     path: 'adminDecideOrganizerIntakeCallablePayload.note',
     maxLength: 1000,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const adminDecideOrganizerIntakeCallablePayloadPublishStatus = CatchContractFieldConstraints(
+    path: 'adminDecideOrganizerIntakeCallablePayload.publishStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['draft', 'published', 'suppressed'],
   );
 
   static const adminDecideOrganizerPolicyGapCallablePayloadChecklistBehaviorStillDisabledAcknowledged = CatchContractFieldConstraints(
@@ -18861,15 +18905,30 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['hidden', 'discoverable'],
   );
 
+  static const organizerIntakeReviewDecisionDocumentChecklistClaimTargetReviewed = CatchContractFieldConstraints(
+    path: 'organizerIntakeReviewDecisionDocument.checklist.claimTargetReviewed',
+    valueTypes: <String>['boolean'],
+  );
+
   static const organizerIntakeReviewDecisionDocumentChecklistCrawlDisabledReviewed = CatchContractFieldConstraints(
     path: 'organizerIntakeReviewDecisionDocument.checklist.crawlDisabledReviewed',
     required: true,
     valueTypes: <String>['boolean'],
   );
 
+  static const organizerIntakeReviewDecisionDocumentChecklistEventAccuracyReviewed = CatchContractFieldConstraints(
+    path: 'organizerIntakeReviewDecisionDocument.checklist.eventAccuracyReviewed',
+    valueTypes: <String>['boolean'],
+  );
+
   static const organizerIntakeReviewDecisionDocumentChecklistIdentityReviewed = CatchContractFieldConstraints(
     path: 'organizerIntakeReviewDecisionDocument.checklist.identityReviewed',
     required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerIntakeReviewDecisionDocumentChecklistImpersonationReviewed = CatchContractFieldConstraints(
+    path: 'organizerIntakeReviewDecisionDocument.checklist.impersonationReviewed',
     valueTypes: <String>['boolean'],
   );
 
@@ -18890,6 +18949,11 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const organizerIntakeReviewDecisionDocumentChecklistOperatingStatusReviewed = CatchContractFieldConstraints(
+    path: 'organizerIntakeReviewDecisionDocument.checklist.operatingStatusReviewed',
+    valueTypes: <String>['boolean'],
+  );
+
   static const organizerIntakeReviewDecisionDocumentChecklistOwnerSafeCopyReviewed = CatchContractFieldConstraints(
     path: 'organizerIntakeReviewDecisionDocument.checklist.ownerSafeCopyReviewed',
     required: true,
@@ -18899,6 +18963,16 @@ abstract final class CatchContractConstraints {
   static const organizerIntakeReviewDecisionDocumentChecklistSurfaceInventoryReviewed = CatchContractFieldConstraints(
     path: 'organizerIntakeReviewDecisionDocument.checklist.surfaceInventoryReviewed',
     required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerIntakeReviewDecisionDocumentChecklistTakedownPathReviewed = CatchContractFieldConstraints(
+    path: 'organizerIntakeReviewDecisionDocument.checklist.takedownPathReviewed',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerIntakeReviewDecisionDocumentChecklistUnclaimedAffordancesReviewed = CatchContractFieldConstraints(
+    path: 'organizerIntakeReviewDecisionDocument.checklist.unclaimedAffordancesReviewed',
     valueTypes: <String>['boolean'],
   );
 
@@ -18924,6 +18998,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerIntakeReviewDecisionDocumentIndexStatus = CatchContractFieldConstraints(
+    path: 'organizerIntakeReviewDecisionDocument.indexStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['noindex', 'indexed'],
+  );
+
   static const organizerIntakeReviewDecisionDocumentNote = CatchContractFieldConstraints(
     path: 'organizerIntakeReviewDecisionDocument.note',
     maxLength: 1000,
@@ -18937,6 +19018,13 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['pending_static_generation', 'not_projectable'],
+  );
+
+  static const organizerIntakeReviewDecisionDocumentPublishStatus = CatchContractFieldConstraints(
+    path: 'organizerIntakeReviewDecisionDocument.publishStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['draft', 'published', 'suppressed'],
   );
 
   static const organizerIntakeReviewDecisionDocumentReviewedAtNanoseconds = CatchContractFieldConstraints(
@@ -26331,16 +26419,24 @@ abstract final class CatchContractConstraints {
     'adminDecideOrganizerEventCandidateCallablePayload.decision': adminDecideOrganizerEventCandidateCallablePayloadDecision,
     'adminDecideOrganizerEventCandidateCallablePayload.note': adminDecideOrganizerEventCandidateCallablePayloadNote,
     'adminDecideOrganizerIntakeCallablePayload.appVisibility': adminDecideOrganizerIntakeCallablePayloadAppVisibility,
+    'adminDecideOrganizerIntakeCallablePayload.checklist.claimTargetReviewed': adminDecideOrganizerIntakeCallablePayloadChecklistClaimTargetReviewed,
     'adminDecideOrganizerIntakeCallablePayload.checklist.crawlDisabledReviewed': adminDecideOrganizerIntakeCallablePayloadChecklistCrawlDisabledReviewed,
+    'adminDecideOrganizerIntakeCallablePayload.checklist.eventAccuracyReviewed': adminDecideOrganizerIntakeCallablePayloadChecklistEventAccuracyReviewed,
     'adminDecideOrganizerIntakeCallablePayload.checklist.identityReviewed': adminDecideOrganizerIntakeCallablePayloadChecklistIdentityReviewed,
+    'adminDecideOrganizerIntakeCallablePayload.checklist.impersonationReviewed': adminDecideOrganizerIntakeCallablePayloadChecklistImpersonationReviewed,
     'adminDecideOrganizerIntakeCallablePayload.checklist.manualReportsReviewed': adminDecideOrganizerIntakeCallablePayloadChecklistManualReportsReviewed,
     'adminDecideOrganizerIntakeCallablePayload.checklist.marketScopeReviewed': adminDecideOrganizerIntakeCallablePayloadChecklistMarketScopeReviewed,
     'adminDecideOrganizerIntakeCallablePayload.checklist.mediaRightsReviewed': adminDecideOrganizerIntakeCallablePayloadChecklistMediaRightsReviewed,
+    'adminDecideOrganizerIntakeCallablePayload.checklist.operatingStatusReviewed': adminDecideOrganizerIntakeCallablePayloadChecklistOperatingStatusReviewed,
     'adminDecideOrganizerIntakeCallablePayload.checklist.ownerSafeCopyReviewed': adminDecideOrganizerIntakeCallablePayloadChecklistOwnerSafeCopyReviewed,
     'adminDecideOrganizerIntakeCallablePayload.checklist.surfaceInventoryReviewed': adminDecideOrganizerIntakeCallablePayloadChecklistSurfaceInventoryReviewed,
+    'adminDecideOrganizerIntakeCallablePayload.checklist.takedownPathReviewed': adminDecideOrganizerIntakeCallablePayloadChecklistTakedownPathReviewed,
+    'adminDecideOrganizerIntakeCallablePayload.checklist.unclaimedAffordancesReviewed': adminDecideOrganizerIntakeCallablePayloadChecklistUnclaimedAffordancesReviewed,
     'adminDecideOrganizerIntakeCallablePayload.decision': adminDecideOrganizerIntakeCallablePayloadDecision,
     'adminDecideOrganizerIntakeCallablePayload.entityId': adminDecideOrganizerIntakeCallablePayloadEntityId,
+    'adminDecideOrganizerIntakeCallablePayload.indexStatus': adminDecideOrganizerIntakeCallablePayloadIndexStatus,
     'adminDecideOrganizerIntakeCallablePayload.note': adminDecideOrganizerIntakeCallablePayloadNote,
+    'adminDecideOrganizerIntakeCallablePayload.publishStatus': adminDecideOrganizerIntakeCallablePayloadPublishStatus,
     'adminDecideOrganizerPolicyGapCallablePayload.checklist.behaviorStillDisabledAcknowledged': adminDecideOrganizerPolicyGapCallablePayloadChecklistBehaviorStillDisabledAcknowledged,
     'adminDecideOrganizerPolicyGapCallablePayload.checklist.costAndSafetyReviewed': adminDecideOrganizerPolicyGapCallablePayloadChecklistCostAndSafetyReviewed,
     'adminDecideOrganizerPolicyGapCallablePayload.checklist.implementationOwnerReviewed': adminDecideOrganizerPolicyGapCallablePayloadChecklistImplementationOwnerReviewed,
@@ -28850,18 +28946,26 @@ abstract final class CatchContractConstraints {
     'organizerIntakeCurationDecisionDocument.updatedAt._nanoseconds': organizerIntakeCurationDecisionDocumentUpdatedAtNanoseconds,
     'organizerIntakeCurationDecisionDocument.updatedAt._seconds': organizerIntakeCurationDecisionDocumentUpdatedAtSeconds,
     'organizerIntakeReviewDecisionDocument.appVisibility': organizerIntakeReviewDecisionDocumentAppVisibility,
+    'organizerIntakeReviewDecisionDocument.checklist.claimTargetReviewed': organizerIntakeReviewDecisionDocumentChecklistClaimTargetReviewed,
     'organizerIntakeReviewDecisionDocument.checklist.crawlDisabledReviewed': organizerIntakeReviewDecisionDocumentChecklistCrawlDisabledReviewed,
+    'organizerIntakeReviewDecisionDocument.checklist.eventAccuracyReviewed': organizerIntakeReviewDecisionDocumentChecklistEventAccuracyReviewed,
     'organizerIntakeReviewDecisionDocument.checklist.identityReviewed': organizerIntakeReviewDecisionDocumentChecklistIdentityReviewed,
+    'organizerIntakeReviewDecisionDocument.checklist.impersonationReviewed': organizerIntakeReviewDecisionDocumentChecklistImpersonationReviewed,
     'organizerIntakeReviewDecisionDocument.checklist.manualReportsReviewed': organizerIntakeReviewDecisionDocumentChecklistManualReportsReviewed,
     'organizerIntakeReviewDecisionDocument.checklist.marketScopeReviewed': organizerIntakeReviewDecisionDocumentChecklistMarketScopeReviewed,
     'organizerIntakeReviewDecisionDocument.checklist.mediaRightsReviewed': organizerIntakeReviewDecisionDocumentChecklistMediaRightsReviewed,
+    'organizerIntakeReviewDecisionDocument.checklist.operatingStatusReviewed': organizerIntakeReviewDecisionDocumentChecklistOperatingStatusReviewed,
     'organizerIntakeReviewDecisionDocument.checklist.ownerSafeCopyReviewed': organizerIntakeReviewDecisionDocumentChecklistOwnerSafeCopyReviewed,
     'organizerIntakeReviewDecisionDocument.checklist.surfaceInventoryReviewed': organizerIntakeReviewDecisionDocumentChecklistSurfaceInventoryReviewed,
+    'organizerIntakeReviewDecisionDocument.checklist.takedownPathReviewed': organizerIntakeReviewDecisionDocumentChecklistTakedownPathReviewed,
+    'organizerIntakeReviewDecisionDocument.checklist.unclaimedAffordancesReviewed': organizerIntakeReviewDecisionDocumentChecklistUnclaimedAffordancesReviewed,
     'organizerIntakeReviewDecisionDocument.decision': organizerIntakeReviewDecisionDocumentDecision,
     'organizerIntakeReviewDecisionDocument.decisionStatus': organizerIntakeReviewDecisionDocumentDecisionStatus,
     'organizerIntakeReviewDecisionDocument.entityId': organizerIntakeReviewDecisionDocumentEntityId,
+    'organizerIntakeReviewDecisionDocument.indexStatus': organizerIntakeReviewDecisionDocumentIndexStatus,
     'organizerIntakeReviewDecisionDocument.note': organizerIntakeReviewDecisionDocumentNote,
     'organizerIntakeReviewDecisionDocument.projectionState': organizerIntakeReviewDecisionDocumentProjectionState,
+    'organizerIntakeReviewDecisionDocument.publishStatus': organizerIntakeReviewDecisionDocumentPublishStatus,
     'organizerIntakeReviewDecisionDocument.reviewedAt._nanoseconds': organizerIntakeReviewDecisionDocumentReviewedAtNanoseconds,
     'organizerIntakeReviewDecisionDocument.reviewedAt._seconds': organizerIntakeReviewDecisionDocumentReviewedAtSeconds,
     'organizerIntakeReviewDecisionDocument.reviewedByUid': organizerIntakeReviewDecisionDocumentReviewedByUid,

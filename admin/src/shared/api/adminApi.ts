@@ -1304,6 +1304,8 @@ export async function decideOrganizerIntake(
       decisionStatus: payload.decision === "approve_public" ?
         "approved_public" :
         payload.decision === "hold" ? "held" : "suppressed",
+      publishStatus: payload.publishStatus,
+      indexStatus: payload.indexStatus,
       appVisibility: payload.appVisibility,
       decisionPath: `organizerIntakeReviewDecisions/${payload.entityId}`,
       projectionState: payload.decision === "approve_public" ?

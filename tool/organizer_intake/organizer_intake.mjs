@@ -1009,7 +1009,37 @@ function validateReviewDecisions(decisionBatches, entityList) {
         new Set(["approve_public", "hold", "suppress"]),
         decisionPrefix
       );
+      requiredEnum(
+        decision,
+        "publishStatus",
+        new Set(["draft", "published", "suppressed"]),
+        decisionPrefix
+      );
+      requiredEnum(
+        decision,
+        "indexStatus",
+        new Set(["noindex", "indexed"]),
+        decisionPrefix
+      );
       requiredEnum(decision, "appVisibility", new Set(["hidden", "discoverable"]), decisionPrefix);
+      if (decision.indexStatus === "indexed" &&
+        decision.publishStatus !== "published") {
+        errors.push(`${decisionPrefix}: indexed visibility requires publication`);
+      }
+      if (decision.decision === "hold" && (
+        decision.publishStatus !== "draft" ||
+        decision.indexStatus !== "noindex" ||
+        decision.appVisibility !== "hidden"
+      )) {
+        errors.push(`${decisionPrefix}: hold must keep every surface off`);
+      }
+      if (decision.decision === "suppress" && (
+        decision.publishStatus !== "suppressed" ||
+        decision.indexStatus !== "noindex" ||
+        decision.appVisibility !== "hidden"
+      )) {
+        errors.push(`${decisionPrefix}: suppress must clear every surface`);
+      }
       validateReviewChecklist(decision.checklist, decisionPrefix);
       requiredString(decision, "note", decisionPrefix);
       if (decision.decision === "approve_public" && decision.appVisibility === "discoverable") {
@@ -1984,8 +2014,9 @@ function buildReviewQueue(entityList, index, decisions, curationState) {
         "Admin can review final copy and approve public indexed website listing." :
         "Resolve blockers before public promotion.",
       promotionPolicy: {
-        adminApprovalPublishesWebsite: true,
-        adminApprovalIndexesWebsite: entity.publicListingIntent?.indexOnAdminApproval === true,
+        adminApprovalPublishesWebsite:
+          decision?.publishStatus === "published",
+        adminApprovalIndexesWebsite: decision?.indexStatus === "indexed",
         appVisibilityAfterPublicApproval: decision?.appVisibility ??
           entity.publicListingIntent?.appVisibilityOnAdminApproval ??
           "hidden",
@@ -2028,30 +2059,41 @@ function buildProjectionPlan(entityList, reviewQueue, decisions) {
   const entries = [...entityList].sort((a, b) => a.entityId.localeCompare(b.entityId)).map((entity) => {
     const queueItem = reviewByEntity.get(entity.entityId) ?? null;
     const decision = decisions.get(entity.entityId) ?? null;
-    const approvedPublic =
+    const approvedRecord =
       decision?.decision === "approve_public" ||
       entity.reviewStatus === "approved_public" ||
       entity.reviewStatus === "published";
     const suppressed = decision?.decision === "suppress" || entity.reviewStatus === "suppressed";
-    const indexStatus = approvedPublic && entity.publicListingIntent?.indexOnAdminApproval === true ?
-      "indexed" :
+    const publishStatus = suppressed ?
+      "suppressed" :
+      decision?.decision === "approve_public" ?
+        decision.publishStatus :
+        entity.reviewStatus === "published" ? "published" : "blocked";
+    const indexStatus = publishStatus === "published" ?
+      decision?.indexStatus ??
+        (entity.publicListingIntent?.indexOnAdminApproval === true ?
+          "indexed" :
+          "noindex") :
       "noindex";
-    const publishStatus = suppressed ? "suppressed" : approvedPublic ? "published" : "blocked";
     return {
       entityId: entity.entityId,
       displayName: entity.displayName,
-      projectionStatus: suppressed ? "suppressed" : approvedPublic ? "ready" : "blocked",
+      projectionStatus: suppressed ? "suppressed" : approvedRecord ? "ready" : "blocked",
       publishStatus,
       indexStatus,
-      appVisibility: approvedPublic ?
+      appVisibility: approvedRecord ?
         decision?.appVisibility ?? entity.publicListingIntent?.appVisibilityOnAdminApproval ?? "hidden" :
         "hidden",
       canonicalPath: entity.publicListingIntent?.canonicalPath ?? null,
       legacyPaths: entity.publicListingIntent?.legacyPaths ?? [],
       pageMode: entity.publicListingIntent?.pageMode ?? null,
       reviewDecision: decision ? reviewDecisionSummary(decision) : null,
-      publicListing: approvedPublic ? publicListingProjection(entity) : null,
-      blockedBy: approvedPublic ? [] : queueItem?.blockers ?? ["manual_admin_review_required"],
+      publicListing: publishStatus === "published" ?
+        publicListingProjection(entity) :
+        null,
+      blockedBy: approvedRecord ?
+        [] :
+        queueItem?.blockers ?? ["manual_admin_review_required"],
     };
   });
   return {
@@ -2063,14 +2105,15 @@ function buildProjectionPlan(entityList, reviewQueue, decisions) {
     },
     summary: {
       entities: entries.length,
-      approvedPublic: entries.filter((entry) => entry.projectionStatus === "ready").length,
+      approvedPublic:
+        entries.filter((entry) => entry.publishStatus === "published").length,
       blocked: entries.filter((entry) => entry.projectionStatus !== "ready").length,
       appDiscoverable: entries.filter((entry) => entry.appVisibility === "discoverable").length,
     },
     guardrails: [
       "Do not import blocked projections into Firestore clubs.",
       "Public website approval and app discoverability are separate gates.",
-      "Admin approval publishes and indexes website pages by default under organizer-intake-v1.",
+      "Record approval does not imply publication, indexing, or app discovery.",
       "Recurring event crawling remains disabled until a separate crawl policy review.",
     ],
     entries,
@@ -3945,6 +3988,8 @@ function reviewChecklistComplete(checklist) {
 function reviewDecisionSummary(decision) {
   return {
     decision: decision.decision,
+    publishStatus: decision.publishStatus,
+    indexStatus: decision.indexStatus,
     appVisibility: decision.appVisibility,
     decidedAt: decision.decidedAt,
     reviewer: decision.reviewer,

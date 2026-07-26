@@ -14,6 +14,8 @@ const schemaAdminDecideOrganizerIntakeCallablePayloadSchema = <String, Object?>{
   'required': <Object?>[
     'entityId',
     'decision',
+    'publishStatus',
+    'indexStatus',
     'appVisibility',
     'checklist',
     'note',
@@ -31,6 +33,23 @@ const schemaAdminDecideOrganizerIntakeCallablePayloadSchema = <String, Object?>{
         'hold',
         'suppress',
       ],
+    },
+    'publishStatus': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'draft',
+        'published',
+        'suppressed',
+      ],
+      'description': 'Explicit public-web publication switch. Approval does not imply publication.',
+    },
+    'indexStatus': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'noindex',
+        'indexed',
+      ],
+      'description': 'Explicit search-indexing switch. Indexed requires a published web page.',
     },
     'appVisibility': <String, Object?>{
       'type': 'string',
@@ -72,6 +91,24 @@ const schemaAdminDecideOrganizerIntakeCallablePayloadSchema = <String, Object?>{
         'manualReportsReviewed': <String, Object?>{
           'type': 'boolean',
           'description': 'True when the reviewer explicitly inspected manual reports that have no local raw artifact. Raw evidence remains outside Firestore; replay validation decides when this acknowledgement is required.',
+        },
+        'claimTargetReviewed': <String, Object?>{
+          'type': 'boolean',
+        },
+        'takedownPathReviewed': <String, Object?>{
+          'type': 'boolean',
+        },
+        'impersonationReviewed': <String, Object?>{
+          'type': 'boolean',
+        },
+        'operatingStatusReviewed': <String, Object?>{
+          'type': 'boolean',
+        },
+        'eventAccuracyReviewed': <String, Object?>{
+          'type': 'boolean',
+        },
+        'unclaimedAffordancesReviewed': <String, Object?>{
+          'type': 'boolean',
         },
       },
     },
