@@ -254,9 +254,11 @@ read/write.
 ## Marketing Ops
 
 The Marketing tab is the human review console for the weekly event-guide loop.
-Live Marketing and Event Intake state is read from
-`marketingOpsDashboards/current` and `eventIntakeDashboards/current` through
-authenticated callables. Sample mode uses small typed synthetic objects in
+Live Marketing state is read from `marketingOpsDashboards/current`. Event
+Intake joins `eventIntakeDashboards/current` with bounded orphan-event work
+items from the newest completed non-organizer Supply Intake run in each launch
+market, using authenticated callables for both sources. Sample mode uses small
+typed synthetic objects in
 `admin/src/shared/api/sampleOperationalData.ts`; it never retains a copy of
 production operations data.
 
@@ -302,7 +304,12 @@ is republished. `--apply` also enforces live-data readiness: stale week bounds,
 placeholder domains/results, and sample candidate labels fail before Firestore
 initialization. Use `--check-live --as-of YYYY-MM-DD` to run that guard without
 writing. Event Intake remains a review surface; the separate external-event
-pipeline still owns identity, location, dedupe, and import-policy gates.
+pipeline still owns identity, location, dedupe, and import-policy gates. An
+orphan row is labeled `organizer required`, links its direct event evidence,
+shows the organizer evidence captured from the source, and cannot pass the
+Intake approval checklist until a canonical organizer is attributed. Its
+paired organizer lead appears in Organizer Intake through the existing
+candidate-to-draft flow.
 
 Live mode calls `adminGetMarketingOpsDashboard`,
 `adminRecordMarketingReviewDecision`, and `adminCreateMarketingContentDraft`.

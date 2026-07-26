@@ -150,6 +150,11 @@ function actionForCandidate(candidate, {candidateById, duplicateKeys, policy}) {
 }
 
 function actionNameForCandidate(candidate, duplicateRole) {
+  if (!candidate.entityId ||
+    candidate.attribution?.state === "orphan" ||
+    candidate.publicationEligibility === "blocked_orphan") {
+    return "skip";
+  }
   if (candidate.reviewStatus !== "approved_for_import") return "skip";
   if (duplicateRole === "merged_source") return "merge_duplicate_source_link";
   return "publish_read_only_external_event";
@@ -161,6 +166,11 @@ function blockersForCandidate(candidate, {
   policy,
 }) {
   const blockers = new Set(candidate.blockers ?? []);
+  if (!candidate.entityId ||
+    candidate.attribution?.state === "orphan" ||
+    candidate.publicationEligibility === "blocked_orphan") {
+    blockers.add("organizer_not_in_inventory");
+  }
   if (policy.writeEnabled !== true) {
     blockers.add("global_external_event_import_disabled");
   }
@@ -216,6 +226,7 @@ function proposedReadOnlyEventDraft(candidate, eventId, {
   duplicateCandidateIds = [],
   duplicateCandidates = [],
 } = {}) {
+  if (!candidate.entityId) return null;
   const priceInPaise = priceInPaiseFromText(candidate.priceText);
   const locationName = candidate.location?.name ??
     candidate.location?.address ??
@@ -303,6 +314,7 @@ function proposedExternalEventDocument(candidate, eventId, {
     duplicateCandidateIds,
     duplicateCandidates,
   });
+  if (!draft) return null;
   const reviewedAt = timestampFromDateOrIso(
     candidate.reviewDecision?.decidedAt ?? candidate.startAt
   );

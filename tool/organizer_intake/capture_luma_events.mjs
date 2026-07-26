@@ -24,7 +24,15 @@ export function main(argv = process.argv.slice(2)) {
     return;
   }
 
-  if (!flags.entity) throw new Error("--entity is required.");
+  if (!flags.entity && !flags.orphan) {
+    throw new Error("--entity is required unless --orphan is set.");
+  }
+  if (flags.entity && flags.orphan) {
+    throw new Error("--entity and --orphan are mutually exclusive.");
+  }
+  if (flags.orphan && !flags.organizerName) {
+    throw new Error("--organizer-name is required with --orphan.");
+  }
   if (!flags.surface) throw new Error("--surface is required.");
   if (!flags.rawResults) throw new Error("--raw-results is required.");
   if (!flags.date || !/^\d{4}-\d{2}-\d{2}$/.test(flags.date)) {
@@ -40,6 +48,9 @@ export function main(argv = process.argv.slice(2)) {
     countryCode: flags.countryCode,
     createdAt: flags.date,
     entityId: flags.entity,
+    attributionState: flags.orphan ? "orphan" : "attributed",
+    organizerName: flags.organizerName,
+    organizerUrl: flags.organizerUrl,
     sourceUrl: flags.sourceUrl,
     surfaceId: flags.surface,
     timezone: flags.timezone,
@@ -85,7 +96,13 @@ export function buildLumaEventSourceBatch(raw, options) {
     batchId: options.batchId,
     createdAt: options.createdAt,
     source: "reviewed_luma_payload",
-    entityId: options.entityId,
+    attributionState: options.attributionState ??
+      (options.entityId ? "attributed" : "orphan"),
+    entityId: options.entityId ?? null,
+    organizerEvidence: {
+      name: options.organizerName ?? firstOrganizerName(events),
+      url: options.organizerUrl ?? firstOrganizerUrl(events),
+    },
     surfaceId: options.surfaceId,
     platform: "luma",
     sourceUrl: options.sourceUrl ?? firstEventUrl(events),
@@ -137,6 +154,9 @@ function normalizeLumaEvent(event, options) {
   const address = location.address && typeof location.address === "object" ?
     location.address :
     {};
+  const organizer = Array.isArray(event.organizer) ?
+    event.organizer[0] :
+    event.organizer;
   return {
     sourceEventId,
     title: stringOrNull(event.name) ?? "Untitled Luma event",
@@ -151,6 +171,8 @@ function normalizeLumaEvent(event, options) {
     eventUrl: url,
     imageUrl: imageUrl(event.image),
     priceText: priceText(event.offers),
+    organizerName: stringOrNull(organizer?.name),
+    organizerUrl: stringOrNull(organizer?.url),
     status: statusFor(event.eventStatus),
   };
 }
@@ -166,6 +188,14 @@ function lumaIdFromUrl(value) {
 
 function firstEventUrl(events) {
   return events.find((event) => event.eventUrl)?.eventUrl ?? null;
+}
+
+function firstOrganizerName(events) {
+  return events.find((event) => event.organizerName)?.organizerName ?? null;
+}
+
+function firstOrganizerUrl(events) {
+  return events.find((event) => event.organizerUrl)?.organizerUrl ?? null;
 }
 
 function addressText(address) {
@@ -214,6 +244,9 @@ function parseFlags(argv) {
     dryRun: false,
     entity: null,
     help: false,
+    orphan: false,
+    organizerName: null,
+    organizerUrl: null,
     output: null,
     rawResults: null,
     sourceUrl: null,
@@ -224,6 +257,7 @@ function parseFlags(argv) {
     const arg = argv[index];
     if (arg === "--check") flags.check = true;
     else if (arg === "--dry-run") flags.dryRun = true;
+    else if (arg === "--orphan") flags.orphan = true;
     else if (arg === "--help" || arg === "-h") flags.help = true;
     else if ([
       "--batch-id",
@@ -231,6 +265,8 @@ function parseFlags(argv) {
       "--country-code",
       "--date",
       "--entity",
+      "--organizer-name",
+      "--organizer-url",
       "--output",
       "--raw-results",
       "--source-url",
@@ -291,8 +327,15 @@ function printHelp() {
   node tool/organizer_intake/capture_luma_events.mjs \\
     --entity ENTITY --surface SURFACE --raw-results LUMA_JSON --date YYYY-MM-DD
 
+  node tool/organizer_intake/capture_luma_events.mjs \\
+    --orphan --organizer-name NAME --surface SURFACE \\
+    --raw-results LUMA_JSON --date YYYY-MM-DD
+
 Flags:
   --entity <id>          Organizer entity id.
+  --orphan               Capture an explicitly unattributed event candidate.
+  --organizer-name <n>   Evidence-backed organizer name. Required for orphans.
+  --organizer-url <url>  Optional official organizer URL from the evidence.
   --surface <id>         Organizer surface id.
   --raw-results <file>   Reviewed Luma JSON or JSON-LD payload.
   --date YYYY-MM-DD      Deterministic capture date.

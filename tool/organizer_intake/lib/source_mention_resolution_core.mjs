@@ -122,6 +122,105 @@ export function buildSourceMentionResolution({
   };
 }
 
+export function buildOrganizerAttributionScorecard({
+  organizerEvidence,
+  organizerInventory = [],
+  citySlug = null,
+  policy = defaultSourceMentionResolutionPolicy,
+} = {}) {
+  const leadName = normalizeText(organizerEvidence?.name);
+  const leadUrl = canonicalUrlKey(organizerEvidence?.url);
+  const leadDomain = domainKey(organizerEvidence?.url);
+  const leadCity = slugOrNull(citySlug);
+  const candidates = organizerInventory.map((organizer) => {
+    const organizerName = normalizeText(
+      organizer.displayName ?? organizer.name ?? organizer.entityId
+    );
+    const organizerUrls = [
+      organizer.canonicalUrl,
+      organizer.officialUrl,
+      ...(organizer.sourceUrls ?? []),
+      ...(organizer.surfaces ?? []).map((surface) => surface.url),
+    ].filter(Boolean);
+    const organizerDomains = organizerUrls.map(domainKey).filter(Boolean);
+    const organizerCanonicalUrls =
+      organizerUrls.map(canonicalUrlKey).filter(Boolean);
+    const organizerCities = [
+      organizer.citySlug,
+      organizer.marketSlug,
+      organizer.identity?.geography?.primaryMarketSlug,
+      ...(organizer.identity?.geography?.markets ?? []).map((market) =>
+        market.marketSlug ?? market.eventFilter?.citySlug),
+    ].map(slugOrNull).filter(Boolean);
+    const matchingSignals = [];
+    const blockingKeys = [];
+    let score = 0;
+    if (leadUrl && organizerCanonicalUrls.includes(leadUrl)) {
+      score += policy.signalWeights.sameCanonicalUrl;
+      matchingSignals.push("same_canonical_url");
+      blockingKeys.push(`hard:surface:${leadUrl}`);
+    } else if (leadDomain && organizerDomains.includes(leadDomain)) {
+      score += policy.signalWeights.sameCanonicalUrl;
+      matchingSignals.push("same_domain");
+      blockingKeys.push(`organizer-domain:${leadDomain}`);
+    }
+    if (leadName && organizerName && leadName === organizerName) {
+      score += 0.82;
+      matchingSignals.push("exact_organizer_name");
+      blockingKeys.push(`organizer-name:${leadName}`);
+    } else {
+      const similarity = tokenSimilarity(leadName, organizerName);
+      if (similarity > 0) {
+        score += policy.signalWeights.titleSimilarity * similarity;
+        if (similarity >= 0.66) matchingSignals.push("similar_organizer_name");
+      }
+    }
+    if (leadCity && organizerCities.includes(leadCity)) {
+      score += policy.signalWeights.sameCity;
+      matchingSignals.push("same_city");
+      blockingKeys.push(`organizer-city:${leadCity}`);
+    }
+    return {
+      entityId: organizer.entityId,
+      displayName: organizer.displayName ?? organizer.name ?? organizer.entityId,
+      score: round(Math.min(1, score)),
+      threshold: policy.thresholds.autoAttach,
+      matchingSignals: [...new Set(matchingSignals)].sort(),
+      blockingKeys: [...new Set(blockingKeys)].sort(),
+      rationale: reasonForScore(
+        Math.min(1, score),
+        matchingSignals,
+        [],
+        blockingKeys.filter((key) => key.startsWith("hard:"))
+      ),
+      policyId: policy.policyId,
+    };
+  }).filter((candidate) =>
+    typeof candidate.entityId === "string" && candidate.entityId.length > 0
+  ).sort((left, right) =>
+    right.score - left.score || left.entityId.localeCompare(right.entityId)
+  );
+  const best = candidates[0] ?? null;
+  const runnerUp = candidates[1] ?? null;
+  const autoAttach = Boolean(
+    best &&
+    best.score >= policy.thresholds.autoAttach &&
+    (!runnerUp || best.score > runnerUp.score)
+  );
+  return {
+    policyId: policy.policyId,
+    threshold: policy.thresholds.autoAttach,
+    lead: {
+      name: organizerEvidence?.name ?? null,
+      url: organizerEvidence?.url ?? null,
+      citySlug: leadCity,
+    },
+    candidates: candidates.slice(0, 12),
+    decision: autoAttach ? "auto_attach" : "needs_review",
+    match: autoAttach ? best : null,
+  };
+}
+
 function buildSourceArtifacts({
   externalEventCandidateQueue,
   searchResultCandidateQueue,
@@ -598,7 +697,9 @@ function eventMentionForEventCandidate(candidate) {
     },
     fields: {
       title: candidate.title,
-      organizerName: candidate.entityId,
+      organizerName:
+        candidate.attribution?.organizerEvidence?.name ??
+        candidate.entityId,
       citySlug: candidate.location?.citySlug ?? null,
       categoryId: activityKindForEventCandidate(candidate),
       officialUrl: candidate.eventUrl,

@@ -1,4 +1,5 @@
 {
+  "attributionState": "attributed",
   "batchId": "2026-06-17-afterfly-luma-events",
   "citySlug": "indore",
   "countryCode": "IN",
@@ -14,6 +15,8 @@
       "eventUrl": "https://luma.com/pxgmph3b",
       "imageUrl": "https://images.lumacdn.com/event-afterfly.jpg",
       "locationName": "Indore",
+      "organizerName": null,
+      "organizerUrl": null,
       "priceText": "0 INR",
       "sourceEventId": "pxgmph3b",
       "startAt": "2025-03-15T18:00:00+05:30",
@@ -22,6 +25,10 @@
       "title": "Takeoff: Run + Rave"
     }
   ],
+  "organizerEvidence": {
+    "name": null,
+    "url": null
+  },
   "platform": "luma",
   "schemaVersion": 1,
   "source": "reviewed_luma_payload",

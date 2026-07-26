@@ -3643,6 +3643,32 @@
         "docs/plans/host_listing_discovery_architecture.md"
       ],
       "notes": "The workflow manifest advertises the platform ceiling, not a live grant. Provider activation remains fail-closed until the acquisition policy names the reviewed adapter and decision, and the trusted runtime initializes durable request usage."
+    },
+    {
+      "id": "REG-SUPPLY-ORPHAN-EVENT-ATTRIBUTION-001",
+      "title": "An event without organizer inventory is discarded or becomes publishable",
+      "status": "active",
+      "applies_to": [
+        "tool/organizer_intake/capture_luma_events.mjs",
+        "tool/organizer_intake/lib/event_source_ingest_core.mjs",
+        "tool/organizer_intake/lib/event_import_plan_core.mjs",
+        "operations/src/workflows/supply-intake/workflow.mjs",
+        "contracts/operations/work_item.schema.json",
+        "admin/src/features/intake/events/api/eventIntakeRepository.ts"
+      ],
+      "symptom": "A source-backed event is lost when its organizer is absent, appears without human work, fails to seed the organizer loop, auto-attaches without rationale, or reaches a publication path while still orphaned.",
+      "guard": {
+        "type": "command",
+        "command": "node --test tool/organizer_intake/capture_luma_events.test.mjs tool/organizer_intake/event_source_ingest_core.test.mjs tool/organizer_intake/event_import_plan_core.test.mjs operations/test/workflow.test.mjs && npm --workspace catch-admin test -- --run src/features/intake/events",
+        "guardEvidence": "explicit orphan capture preserves organizer evidence; queue generation emits a blocked event and organizer lead; unique deterministic inventory matches retain the source-mention scorecard; import planning and the operations contract reject orphan publication; and Event Intake fails closed while rendering the human task"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "docs/data_contracts.md",
+        "admin/README.md",
+        "operations/README.md"
+      ],
+      "notes": "Missing attribution is a representable review state, never an implicit null. Only a unique scorecard match at or above the reviewed threshold clears organizer_not_in_inventory; the React admin neither fetches sources nor runs identity matching."
     }
   ]
 }

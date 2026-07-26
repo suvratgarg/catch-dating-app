@@ -31,7 +31,7 @@ import {
 
 export const MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN = MAX_WORK_ITEMS_PER_RUN;
 export const SUPPLY_INTAKE_WORKFLOW_ID = "supply-intake";
-export const SUPPLY_INTAKE_WORKFLOW_VERSION = "0.3.0";
+export const SUPPLY_INTAKE_WORKFLOW_VERSION = "0.4.0";
 const SUPPLY_INTAKE_STALE_AFTER_HOURS = 168;
 const SUPPLY_INTAKE_SCOPES = Object.freeze(["all", "organizer"]);
 const ORGANIZER_PACKET_STRING_LIMIT = 500;
@@ -472,6 +472,28 @@ export class SupplyIntakeWorkflow {
         reviewContext,
       }));
     }
+    const externalEventArtifact = artifacts.externalEventCandidateQueue;
+    if (plan.intakeScope !== "organizer") {
+      for (const event of externalEventArtifact?.data?.candidates ?? []) {
+        if (event?.attribution?.state !== "orphan" ||
+          event?.location?.citySlug !== plan.market) continue;
+        items.push(workItemForOrphanEvent(event, {
+          runId,
+          now,
+          market: plan.market,
+          artifact: externalEventArtifact,
+        }));
+      }
+    }
+    for (const lead of externalEventArtifact?.data?.organizerLeads ?? []) {
+      if (lead?.marketSlug !== plan.market) continue;
+      items.push(workItemForOrganizerEventLead(lead, {
+        runId,
+        now,
+        market: plan.market,
+        artifact: externalEventArtifact,
+      }));
+    }
     return dedupeItems(items).sort((left, right) => left.workItemId.localeCompare(right.workItemId));
   }
 
@@ -512,9 +534,16 @@ export class SupplyIntakeWorkflow {
   }
 
   review(item, {now}) {
-    if (item.entityKind === "event") return reviewEvent(item, now);
+    if (item.entityKind === "event") {
+      return item.adminProjection?.recordType === "orphan_event_candidate" ?
+        reviewOrphanEvent(item, now) :
+        reviewEvent(item, now);
+    }
     if (item.entityKind === "organizer") {
-      return item.adminProjection?.recordType === "organizer_search_candidate" ?
+      return [
+        "organizer_search_candidate",
+        "organizer_event_lead",
+      ].includes(item.adminProjection?.recordType) ?
         reviewOrganizerCandidate(item, now) :
         reviewOrganizer(item, now);
     }
@@ -534,6 +563,9 @@ export class SupplyIntakeWorkflow {
     const profile = run?.plan?.sourceProfiles?.find((candidate) =>
       candidate.sourceProfileId === item.source?.sourceProfileId);
     if (item.entityKind === "event") {
+      if (item.adminProjection?.recordType === "orphan_event_candidate") {
+        blockers.push("organizer_not_in_inventory");
+      }
       if (!profile) blockers.push("source_policy_snapshot_missing");
       if (profile?.publication?.autoEligible !== true) {
         blockers.push("source_not_auto_eligible");
@@ -650,6 +682,10 @@ function plannedWorkItemCount(
     intakeScope === "organizer" ? 0 : eventCounts.eventCandidates,
     organizerCounts.organizers,
     organizerCandidateCounts.organizers,
+    intakeScope === "organizer" ? 0 :
+      artifactSnapshot?.artifacts?.externalEventCandidateQueue?.counts?.events,
+    artifactSnapshot?.artifacts?.externalEventCandidateQueue?.counts
+      ?.organizerLeads,
     intakeScope === "organizer" ? 0 : sourceProfileCount,
   ].map((count) => count ?? 0);
   invariant(
@@ -751,6 +787,161 @@ function workItemForEvent(event, context) {
     observedAt: null,
     expiresAt: endOfDate(event.endDate ?? event.startDate),
   });
+}
+
+function workItemForOrphanEvent(event, context) {
+  return baseWorkItem({
+    ...context,
+    entityKind: "event",
+    id: event.candidateId,
+    title: event.title,
+    source: {
+      sourceProfileId: `external_event:${event.platform}`,
+      label: event.platform,
+      url: event.eventUrl ?? event.sourceUrl ?? null,
+      artifactRef: context.artifact.relativePath,
+    },
+    evidence: evidenceFor(
+      context.artifact,
+      event,
+      [event.eventUrl, event.sourceUrl].filter(Boolean)
+    ),
+    raw: event,
+    adminProjection: {
+      recordType: "orphan_event_candidate",
+      candidate: orphanEventProjection(event),
+    },
+    observedAt: event.startAt,
+    expiresAt: event.endAt ?? event.startAt,
+  });
+}
+
+function workItemForOrganizerEventLead(lead, context) {
+  const canonicalUrl = lead.organizerUrl ?? lead.eventUrls?.[0] ?? null;
+  const candidate = {
+    candidateId: lead.leadId,
+    batchId: "event-organizer-leads",
+    resultId: lead.leadId,
+    rank: 1,
+    query: `${lead.organizerName} organizer from event evidence`,
+    queryIntent: {
+      activityKind: "event_organizer_attribution",
+      entityHint: lead.organizerName,
+      marketSlug: lead.marketSlug,
+    },
+    observedAt: dateOnly(lead.observedAt),
+    title: lead.organizerName,
+    snippet:
+      `Organizer named by ${lead.eventCandidateIds.length} source-backed event candidate(s).`,
+    url: canonicalUrl,
+    canonicalUrl,
+    platform: lead.sourcePlatform,
+    surfaceKind: lead.organizerUrl ? "organizerProfile" : "eventListing",
+    normalizedKey: lead.organizerUrl ?
+      `url:${lead.organizerUrl.toLowerCase()}` :
+      `event-organizer:${safeId(lead.organizerName)}:${lead.marketSlug}`,
+    suggestedSurface: {
+      confidence: {city: "high", entityMatch: "low", ownership: "low"},
+      crawl: {
+        eventDiscoveryStatus: "disabled",
+        policy: "manualOnly",
+        supportsEventExtraction: true,
+      },
+      evidenceRefs: lead.eventUrls,
+      normalizedKey: lead.organizerUrl ?
+        `url:${lead.organizerUrl.toLowerCase()}` :
+        `event-organizer:${safeId(lead.organizerName)}:${lead.marketSlug}`,
+      notes: "Match or create the organizer before attributing the event.",
+      platform: lead.sourcePlatform,
+      role: "secondary",
+      status: "candidate",
+      surfaceId: safeId(`event-lead-${lead.leadId}`),
+      surfaceKind: lead.organizerUrl ? "organizerProfile" : "eventListing",
+      url: canonicalUrl,
+    },
+    existingEntityMatches: [],
+    reviewAction: lead.reviewAction,
+    diagnostics: [lead.blocker],
+    reviewContext: {
+      recordStatus: "review_now",
+      existingInventory: false,
+      formats: [],
+      sources: lead.eventUrls,
+      eventSignal:
+        `${lead.eventCandidateIds.length} event candidate(s) name this organizer.`,
+      reviewNotes:
+        "Resolve organizer identity; attribution stays blocked until a canonical match exists.",
+      verifiedAt: dateOnly(lead.observedAt),
+    },
+  };
+  return baseWorkItem({
+    ...context,
+    entityKind: "organizer",
+    id: lead.leadId,
+    title: lead.organizerName,
+    source: {
+      sourceProfileId: `event_organizer_lead:${lead.sourcePlatform}`,
+      label: "Event organizer evidence",
+      url: canonicalUrl,
+      artifactRef: context.artifact.relativePath,
+    },
+    evidence: evidenceFor(
+      context.artifact,
+      lead,
+      lead.eventUrls ?? []
+    ),
+    raw: lead,
+    adminProjection: {
+      recordType: "organizer_search_candidate",
+      candidate,
+    },
+    observedAt: lead.observedAt,
+  });
+}
+
+function orphanEventProjection(event) {
+  return {
+    id: event.candidateId,
+    candidateId: event.candidateId,
+    title: event.title,
+    category: "external_event",
+    neighborhood: event.location?.address ?? "",
+    venue: event.location?.name ?? event.location?.address ?? "",
+    startDate: dateOnly(event.startAt),
+    endDate: event.endAt ? dateOnly(event.endAt) : null,
+    time: timeOnly(event.startAt),
+    price: event.priceText ?? "",
+    sourceResultIds: [],
+    sourceUrl: event.eventUrl ?? event.sourceUrl ?? null,
+    sourceLabel: event.platform,
+    reviewState: "needs_changes",
+    requiresVerification: true,
+    explicitSinglesEvent: false,
+    whySinglesFriendly: "",
+    publicDescription: event.description ?? "",
+    scores: {},
+    sourceCoverage: {
+      sourceResultIds: [],
+      matchedSourceResults: 0,
+      hasSourceUrl: Boolean(event.eventUrl ?? event.sourceUrl),
+      hasManualInstagramReference: false,
+    },
+    sourceStatus: event.eventUrl || event.sourceUrl ?
+      "source_backed" :
+      "missing_source_url",
+    publishability: "lead_needs_source",
+    score: 0,
+    warnings: uniqueSorted([
+      ...(event.diagnostics ?? []),
+      "organizer_not_in_inventory",
+    ]),
+    attribution: event.attribution,
+    blockerCodes: uniqueSorted([
+      ...(event.blockers ?? []),
+      "organizer_not_in_inventory",
+    ]),
+    publicationEligibility: "blocked_orphan",
+  };
 }
 
 function workItemForSourceResult(result, context) {
@@ -1164,6 +1355,30 @@ function reviewEvent(item, now) {
   });
 }
 
+function reviewOrphanEvent(item, now) {
+  return outcome(item, {
+    primaryStage: "resolve",
+    lifecycleStatus: item.lifecycleStatus,
+    blockers: uniqueSorted([
+      ...(item.raw.blockers ?? []),
+      "organizer_not_in_inventory",
+    ]),
+    taskFlags: [
+      "organizer_attribution",
+      "event_crawl_todo",
+    ],
+    owner: "human",
+    overall: item.source.url ? 0.62 : 0.25,
+    basis: "source_backed_orphan_event",
+    ruleIds: [
+      "orphan-event-attribution-required-v1",
+      "orphan-event-publication-block-v1",
+    ],
+    reason: "organizer_attribution_required",
+    now,
+  });
+}
+
 function reviewOrganizer(item, now) {
   const packet = item.raw;
   const blockers = uniqueSorted([...(packet.blockers ?? []), ...(packet.dataBlockers ?? []), ...(packet.evidenceBlockers ?? [])]);
@@ -1186,7 +1401,7 @@ function reviewOrganizer(item, now) {
 }
 
 function reviewOrganizerCandidate(item, now) {
-  const candidate = item.raw;
+  const candidate = item.adminProjection?.candidate ?? item.raw;
   const blockers = [];
   const taskFlags = ["organizer_candidate_review"];
   if (!candidate.canonicalUrl) blockers.push("source_url_missing");
@@ -1348,6 +1563,17 @@ function endOfDate(value) {
 function dateAtUtc(value) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value ?? "")) return value ?? null;
   return `${value}T00:00:00.000Z`;
+}
+
+function dateOnly(value) {
+  const parsed = String(value ?? "");
+  return /^\d{4}-\d{2}-\d{2}/.test(parsed) ? parsed.slice(0, 10) : "";
+}
+
+function timeOnly(value) {
+  const parsed = Date.parse(value);
+  if (Number.isNaN(parsed)) return "";
+  return new Date(parsed).toISOString().slice(11, 16);
 }
 
 function addHours(value, hours) {

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 589,
+  "total": 590,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -555,7 +555,7 @@
       ]
     },
     "web": {
-      "count": 69,
+      "count": 70,
       "files": [
         "admin/src/app/App.test.tsx",
         "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
@@ -564,6 +564,7 @@
         "admin/src/features/events/controllers/useEventPublishingController.test.tsx",
         "admin/src/features/finance/controllers/useFinanceOpsController.test.tsx",
         "admin/src/features/growth/controllers/useGrowthKpiController.test.tsx",
+        "admin/src/features/intake/events/api/eventIntakeRepository.test.ts",
         "admin/src/features/intake/events/controllers/eventIntakeReviewDecisionHelpers.test.ts",
         "admin/src/features/intake/events/controllers/useEventIntakeController.test.tsx",
         "admin/src/features/intake/operations/controllers/useIntakeOperationsController.test.tsx",

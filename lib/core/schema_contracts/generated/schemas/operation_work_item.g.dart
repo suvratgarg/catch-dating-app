@@ -676,6 +676,213 @@ const schemaOperationWorkItemSchema = <String, Object?>{
         },
       },
     },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'normalizedPayload': <String, Object?>{
+            'type': 'object',
+            'required': <Object?>[
+              'intake',
+            ],
+            'properties': <String, Object?>{
+              'intake': <String, Object?>{
+                'type': 'object',
+                'required': <Object?>[
+                  'recordType',
+                ],
+                'properties': <String, Object?>{
+                  'recordType': <String, Object?>{
+                    'const': 'orphan_event_candidate',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'properties': <String, Object?>{
+          'entityKind': <String, Object?>{
+            'const': 'event',
+          },
+          'lifecycleStatus': <String, Object?>{
+            'not': <String, Object?>{
+              'const': 'published',
+            },
+          },
+          'blockerCodes': <String, Object?>{
+            'contains': <String, Object?>{
+              'const': 'organizer_not_in_inventory',
+            },
+          },
+          'normalizedPayload': <String, Object?>{
+            'properties': <String, Object?>{
+              'intake': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'recordType',
+                  'candidate',
+                ],
+                'properties': <String, Object?>{
+                  'recordType': <String, Object?>{
+                    'const': 'orphan_event_candidate',
+                  },
+                  'candidate': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': true,
+                    'required': <Object?>[
+                      'id',
+                      'candidateId',
+                      'publicationEligibility',
+                      'blockerCodes',
+                      'attribution',
+                    ],
+                    'properties': <String, Object?>{
+                      'id': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'candidateId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'publicationEligibility': <String, Object?>{
+                        'const': 'blocked_orphan',
+                      },
+                      'blockerCodes': <String, Object?>{
+                        'type': 'array',
+                        'maxItems': 40,
+                        'contains': <String, Object?>{
+                          'const': 'organizer_not_in_inventory',
+                        },
+                        'items': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 500,
+                        },
+                      },
+                      'attribution': <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'state',
+                          'organizerEvidence',
+                          'match',
+                        ],
+                        'properties': <String, Object?>{
+                          'state': <String, Object?>{
+                            'const': 'orphan',
+                          },
+                          'organizerEvidence': <String, Object?>{
+                            'type': 'object',
+                            'additionalProperties': false,
+                            'required': <Object?>[
+                              'name',
+                              'url',
+                            ],
+                            'properties': <String, Object?>{
+                              'name': <String, Object?>{
+                                'anyOf': <Object?>[
+                                  <String, Object?>{
+                                    'type': 'string',
+                                    'minLength': 1,
+                                    'maxLength': 500,
+                                  },
+                                  <String, Object?>{
+                                    'type': 'null',
+                                  },
+                                ],
+                              },
+                              'url': <String, Object?>{
+                                'anyOf': <Object?>[
+                                  <String, Object?>{
+                                    'type': 'string',
+                                    'minLength': 1,
+                                    'maxLength': 500,
+                                  },
+                                  <String, Object?>{
+                                    'type': 'null',
+                                  },
+                                ],
+                              },
+                            },
+                          },
+                          'match': <String, Object?>{
+                            'type': 'object',
+                            'additionalProperties': false,
+                            'required': <Object?>[
+                              'decision',
+                              'policyId',
+                              'threshold',
+                              'rationale',
+                              'matchedEntityId',
+                              'score',
+                              'matchingSignals',
+                              'blockingKeys',
+                            ],
+                            'properties': <String, Object?>{
+                              'decision': <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 500,
+                              },
+                              'policyId': <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 500,
+                              },
+                              'threshold': <String, Object?>{
+                                'type': 'number',
+                                'minimum': 0,
+                                'maximum': 1,
+                              },
+                              'rationale': <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 500,
+                              },
+                              'matchedEntityId': <String, Object?>{
+                                'type': 'null',
+                              },
+                              'score': <String, Object?>{
+                                'type': 'number',
+                                'minimum': 0,
+                                'maximum': 1,
+                              },
+                              'matchingSignals': <String, Object?>{
+                                'type': 'array',
+                                'maxItems': 40,
+                                'items': <String, Object?>{
+                                  'type': 'string',
+                                  'minLength': 1,
+                                  'maxLength': 500,
+                                },
+                              },
+                              'blockingKeys': <String, Object?>{
+                                'type': 'array',
+                                'maxItems': 40,
+                                'items': <String, Object?>{
+                                  'type': 'string',
+                                  'minLength': 1,
+                                  'maxLength': 500,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   ],
   'definitions': <String, Object?>{
     'boundedString': <String, Object?>{
@@ -690,6 +897,167 @@ const schemaOperationWorkItemSchema = <String, Object?>{
         'type': 'string',
         'minLength': 1,
         'maxLength': 500,
+      },
+    },
+    'orphanEventCandidateIntake': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'recordType',
+        'candidate',
+      ],
+      'properties': <String, Object?>{
+        'recordType': <String, Object?>{
+          'const': 'orphan_event_candidate',
+        },
+        'candidate': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': true,
+          'required': <Object?>[
+            'id',
+            'candidateId',
+            'publicationEligibility',
+            'blockerCodes',
+            'attribution',
+          ],
+          'properties': <String, Object?>{
+            'id': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'candidateId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'publicationEligibility': <String, Object?>{
+              'const': 'blocked_orphan',
+            },
+            'blockerCodes': <String, Object?>{
+              'type': 'array',
+              'maxItems': 40,
+              'contains': <String, Object?>{
+                'const': 'organizer_not_in_inventory',
+              },
+              'items': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 500,
+              },
+            },
+            'attribution': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'state',
+                'organizerEvidence',
+                'match',
+              ],
+              'properties': <String, Object?>{
+                'state': <String, Object?>{
+                  'const': 'orphan',
+                },
+                'organizerEvidence': <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'name',
+                    'url',
+                  ],
+                  'properties': <String, Object?>{
+                    'name': <String, Object?>{
+                      'anyOf': <Object?>[
+                        <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 500,
+                        },
+                        <String, Object?>{
+                          'type': 'null',
+                        },
+                      ],
+                    },
+                    'url': <String, Object?>{
+                      'anyOf': <Object?>[
+                        <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 500,
+                        },
+                        <String, Object?>{
+                          'type': 'null',
+                        },
+                      ],
+                    },
+                  },
+                },
+                'match': <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'decision',
+                    'policyId',
+                    'threshold',
+                    'rationale',
+                    'matchedEntityId',
+                    'score',
+                    'matchingSignals',
+                    'blockingKeys',
+                  ],
+                  'properties': <String, Object?>{
+                    'decision': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 500,
+                    },
+                    'policyId': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 500,
+                    },
+                    'threshold': <String, Object?>{
+                      'type': 'number',
+                      'minimum': 0,
+                      'maximum': 1,
+                    },
+                    'rationale': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 500,
+                    },
+                    'matchedEntityId': <String, Object?>{
+                      'type': 'null',
+                    },
+                    'score': <String, Object?>{
+                      'type': 'number',
+                      'minimum': 0,
+                      'maximum': 1,
+                    },
+                    'matchingSignals': <String, Object?>{
+                      'type': 'array',
+                      'maxItems': 40,
+                      'items': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                    },
+                    'blockingKeys': <String, Object?>{
+                      'type': 'array',
+                      'maxItems': 40,
+                      'items': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     },
     'supplyFreshnessCoverageIntake': <String, Object?>{

@@ -1,6 +1,27 @@
 {
   "candidates": [
     {
+      "attribution": {
+        "match": {
+          "blockingKeys": [
+            "entity_id:afterfly"
+          ],
+          "decision": "pre_attributed",
+          "matchedEntityId": "afterfly",
+          "matchingSignals": [
+            "explicit_entity_id"
+          ],
+          "policyId": "explicit-entity-attribution-v1",
+          "rationale": "Capture supplied an existing organizer entity id.",
+          "score": 1,
+          "threshold": 1
+        },
+        "organizerEvidence": {
+          "name": null,
+          "url": null
+        },
+        "state": "attributed"
+      },
       "batchId": "2026-06-17-afterfly-luma-events",
       "blockers": [
         "global_external_event_import_disabled",
@@ -30,6 +51,7 @@
       "normalizedEventKey": "afterfly:2025-03-15T18:00:00+05:30:takeoff-run-rave",
       "platform": "luma",
       "priceText": "0 INR",
+      "publicationEligibility": "review_gated",
       "reviewAction": "review_external_event_candidate",
       "reviewDecision": null,
       "reviewStatus": "needs_admin_review",
@@ -44,7 +66,7 @@
     }
   ],
   "commands": {
-    "captureLuma": "node tool/organizer_intake/capture_luma_events.mjs --entity ENTITY --surface SURFACE --raw-results LUMA_JSON --date YYYY-MM-DD",
+    "captureLuma": "node tool/organizer_intake/capture_luma_events.mjs --entity ENTITY --surface SURFACE --raw-results LUMA_JSON --date YYYY-MM-DD or --orphan --organizer-name NAME --surface SURFACE",
     "exportLocationResolutions": "node tool/organizer_intake/export_event_location_resolutions_from_firestore.mjs --env dev --date YYYY-MM-DD",
     "exportReviewDecisions": "node tool/organizer_intake/export_event_review_decisions_from_firestore.mjs --env dev --date YYYY-MM-DD",
     "ingest": "node tool/organizer_intake/ingest_event_sources.mjs",
@@ -59,6 +81,7 @@
     "locationResolutionBatches": [],
     "reviewDecisionBatches": []
   },
+  "organizerLeads": [],
   "policy": {
     "importWritesEnabled": false,
     "reason": "External event import is modeled for review only. No recurring crawl, Firestore event write, or host notification is enabled by this artifact.",
@@ -67,6 +90,7 @@
   "schemaVersion": 1,
   "summary": {
     "approvedForImport": 0,
+    "autoAttributedEvents": 0,
     "batches": 1,
     "blocked": 1,
     "candidates": 1,
@@ -74,6 +98,8 @@
     "events": 1,
     "held": 0,
     "locationResolved": 0,
+    "organizerLeads": 0,
+    "orphanEvents": 0,
     "platforms": {
       "luma": 1
     },

@@ -212,8 +212,8 @@
   },
   "data_contracts": {
     "path": "docs/data_contracts.md",
-    "version": "1.5.3",
-    "updated": "2026-07-24",
+    "version": "1.6.0",
+    "updated": "2026-07-27",
     "status": "active",
     "read_policy": "Read before Firestore rules or query/index changes, Functions mutation boundaries, schema-source tooling, Dart/TypeScript model generation, callable validation schemas, seed validation, relationship documents, data migrations, or rules test execution."
   },
@@ -226,8 +226,8 @@
   },
   "operations_platform": {
     "path": "docs/operations_platform.md",
-    "version": "1.6.0",
-    "updated": "2026-07-26",
+    "version": "1.7.0",
+    "updated": "2026-07-27",
     "status": "active",
     "read_policy": "Read before adding or changing durable business workflow runs, work items, leases, budgets, decisions, receipts, source learning, publication plans, the guarded acquisition port and provider-activation policy, or the boundary between operations and repository tooling."
   },

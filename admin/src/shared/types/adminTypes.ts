@@ -1359,6 +1359,7 @@ export interface MarketingOpsBridge {
     sourceMissingCandidates?: number;
     approvedCandidates: number;
     candidatesNeedingReview: number;
+    orphanCandidates?: number;
     duplicateGroups?: number;
     recommendationSets: number;
     contentDrafts: number;
@@ -1535,6 +1536,25 @@ export interface MarketingEventCandidate {
   };
   score: number;
   warnings: string[];
+  blockerCodes?: string[];
+  publicationEligibility?: "blocked_orphan" | "review_gated";
+  attribution?: {
+    state: "orphan" | "attributed";
+    organizerEvidence: {
+      name: string | null;
+      url: string | null;
+    };
+    match: {
+      decision: string;
+      policyId: string;
+      threshold: number;
+      rationale: string;
+      matchedEntityId: string | null;
+      score: number;
+      matchingSignals: string[];
+      blockingKeys: string[];
+    };
+  };
   latestDecision?: MarketingLatestDecision | null;
 }
 
@@ -1679,6 +1699,7 @@ export type EventIntakeBridge = Pick<
   bridgeSource?:
     | "event_intake"
     | "native_generated"
+    | "operations"
     | "sample"
     | "empty";
 };

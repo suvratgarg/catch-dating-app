@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "workflowId": "supply-intake",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "executionModes": ["shadow"],
   "capabilities": {
     "network": true,
@@ -83,7 +83,8 @@
         "tool/organizer_intake/generated/organizer_operational_health.json",
         "tool/organizer_intake/generated/source_mention_llm_prompt_queue.json",
         "tool/organizer_intake/generated/event_crawl_plan.json",
-        "tool/organizer_intake/generated/event_crawl_run_plan.json"
+        "tool/organizer_intake/generated/event_crawl_run_plan.json",
+        "tool/organizer_intake/generated/external_event_candidate_queue.json"
       ],
       "adapter": "legacy-intake-artifacts-v1",
       "status": "compatibility-only",

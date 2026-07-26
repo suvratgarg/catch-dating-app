@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.5.3
-updated: 2026-07-24
+version: 1.6.0
+updated: 2026-07-27
 owner: recursive_audit_loop
 status: active
 ---
@@ -445,6 +445,16 @@ not a canonical `organizers/{id}` document and grants no publication,
 ownership, crawl, or app-visibility authority. Organizer-only shadow runs may
 omit an Event Intake bridge, but remain subject to the same immutable export,
 contract validation, and trusted importer.
+
+An explicitly unattributed external event is represented only as
+`normalizedPayload.intake.recordType=orphan_event_candidate`. The work-item
+contract requires `entityKind=event`, the
+`organizer_not_in_inventory` blocker, a null matched organizer, and
+`publicationEligibility=blocked_orphan`; it rejects a published lifecycle for
+that record. The event's evidence also projects a regular organizer discovery
+candidate rather than creating a second organizer schema. Deterministic
+auto-attribution records the reused source-mention scorecard rationale and is
+the only path that clears the orphan blocker.
 
 Supply Intake `0.1.1` records exact field provenance for the candidate title,
 canonical URL, snippet, market, reviewed formats, review note, and review

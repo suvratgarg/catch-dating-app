@@ -17,6 +17,11 @@ const generatedOutputPath = path.join(
   "generated",
   "external_event_candidate_queue.json"
 );
+const defaultOrganizerInventoryPath = path.join(
+  scriptDir,
+  "generated",
+  "canonical_host_entity_registry.json"
+);
 
 const flags = parseFlags(process.argv.slice(2));
 
@@ -33,9 +38,11 @@ try {
   const locationResolutionBatches = loadLocationResolutionBatches(
     flags.locationResolutionsRoot
   );
+  const organizerInventory = loadOrganizerInventory(flags.organizerInventory);
   const queue = buildExternalEventCandidateQueue(batches, {
     reviewDecisionBatches,
     locationResolutionBatches,
+    organizerInventory,
   });
   if (queue.errors.length > 0) {
     console.error("External event source ingestion validation failed:");
@@ -107,6 +114,7 @@ function parseFlags(argv) {
     output: null,
     reviewDecisionsRoot: null,
     locationResolutionsRoot: null,
+    organizerInventory: null,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -119,6 +127,7 @@ function parseFlags(argv) {
       "--output",
       "--review-decisions-root",
       "--location-resolutions-root",
+      "--organizer-inventory",
     ].includes(arg)) {
       const value = argv[index + 1];
       if (!value || value.startsWith("--")) {
@@ -131,6 +140,26 @@ function parseFlags(argv) {
     }
   }
   return flags;
+}
+
+function loadOrganizerInventory(inputPath) {
+  const target = inputPath ?
+    path.resolve(repoRoot, inputPath) :
+    defaultOrganizerInventoryPath;
+  if (!fs.existsSync(target)) return [];
+  const registry = readJson(target);
+  if (!Array.isArray(registry.entries)) {
+    throw new Error(
+      `Organizer inventory must contain an entries array: ${relative(target)}`
+    );
+  }
+  return registry.entries.map((entry) => ({
+    entityId: entry.entityId ?? entry.canonicalHostId,
+    displayName: entry.displayName,
+    citySlug: entry.geography?.primaryMarketSlug ?? null,
+    identity: {geography: entry.geography ?? null},
+    surfaces: entry.surfaces ?? [],
+  }));
 }
 
 function loadReviewDecisionBatches(inputPath) {
@@ -215,6 +244,9 @@ Flags:
                         Read local event review decision batches.
   --location-resolutions-root <file-or-dir>
                         Read local event location resolution batches.
+  --organizer-inventory <file>
+                        Canonical organizer registry used for deterministic
+                        orphan attribution. Defaults to the generated registry.
   --check                Compare output with the generated candidate queue.
   --dry-run              Print candidate queue without writing.
 `);
