@@ -14,6 +14,19 @@ export type OrganizerPendingInputSubmittedDecision =
   | AdminDecideOrganizerIntakeResponse
   | AdminDecideOrganizerPolicyGapResponse;
 
+export type OrganizerOperationStage =
+  "incoming" | "verify" | "resolve" | "ready";
+
+export function organizerOperationStage(
+  reviewStatus: string
+): OrganizerOperationStage | null {
+  if (reviewStatus === "incoming" || reviewStatus === "new") return "incoming";
+  if (reviewStatus === "needs_review") return "verify";
+  if (reviewStatus === "needs_attention") return "resolve";
+  if (reviewStatus === "ready") return "ready";
+  return null;
+}
+
 export function pendingInputSubmittedDecision({
   input,
   policyDecisions,

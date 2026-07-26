@@ -5,7 +5,10 @@ import {InMemoryOperationsRepository} from
   "../operations/inMemoryRepository";
 import {operationRun, operationWorkItem} from
   "../operations/testFixtures";
-import {adminListIntakeOperationsHandler} from "./intakeOperations";
+import {
+  adminListIntakeOperationsHandler,
+  loadOrganizerDraftLinks,
+} from "./intakeOperations";
 
 const now = "2026-07-14T09:00:00.000Z";
 
@@ -324,6 +327,65 @@ test("rejects unindexed human-review filter combinations", async () => {
     }
   );
 });
+
+test("keeps organizer draft links across immutable operation runs",
+  async () => {
+    const candidateId = "candidate-courtside";
+    const normalizedKey = "domain:courtside.example";
+    const currentWorkItemId = "work:courtside:2026-07-26";
+    const item = operationWorkItem({
+      workItemId: currentWorkItemId,
+      entityKind: "organizer",
+      externalKey: candidateId,
+      normalizedPayload: {
+        intake: {
+          recordType: "organizer_search_candidate",
+          candidate: {
+            candidateId,
+            canonicalUrl: "https://courtside.example/",
+            normalizedKey,
+          },
+        },
+      },
+    });
+    const db = {
+      collection: (collectionId: string) => ({
+        doc: (documentId: string) => ({
+          id: documentId,
+          path: `${collectionId}/${documentId}`,
+        }),
+      }),
+      getAll: async (...refs: Array<{id: string; path: string}>) =>
+        refs.map((ref) => ({
+          id: ref.id,
+          exists: true,
+          data: () => ({
+            operationType: "create_entity_draft",
+            sourceWorkItemId: "work:courtside:prior-run",
+            sourceCandidateId: candidateId,
+            sourceNormalizedKey: normalizedKey,
+            entityId: "courtside",
+          }),
+          ref: {path: ref.path},
+        })),
+    } as unknown as FirebaseFirestore.Firestore;
+
+    const links = await loadOrganizerDraftLinks(db, [item]);
+    assert.equal(links.length, 1);
+    assert.deepEqual({
+      ...links[0],
+      curationPath: undefined,
+    }, {
+      workItemId: currentWorkItemId,
+      candidateId,
+      organizerId: "courtside",
+      curationPath: undefined,
+    });
+    assert.match(
+      links[0].curationPath,
+      /^organizerIntakeCurationDecisions\/create-draft-[a-f0-9]{64}$/
+    );
+  });
 
 function callableRequest(
   uid: string | null,

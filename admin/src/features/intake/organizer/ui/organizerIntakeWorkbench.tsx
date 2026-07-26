@@ -21,6 +21,7 @@ import type {AdminDecideOrganizerIntakeResponse} from
 import {
   decisionLabel,
   organizerDraftFormFromCandidate,
+  organizerOperationStage,
   publicationPacketReady,
 } from "../controllers/organizerIntakeHelpers";
 import type {OrganizerIntakeController} from
@@ -628,6 +629,8 @@ function stageItems(
 ) {
   return items.filter((item) => {
     const packet = packets.get(item.entityId);
+    const operationStage = organizerOperationStage(item.reviewStatus);
+    if (operationStage) return operationStage === stage;
     if (stage === "incoming") {
       return item.reviewStatus === "new" || item.taskType.includes("discovery");
     }
