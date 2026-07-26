@@ -11227,7 +11227,7 @@
       "specifier": "../controllers/useOrganizerIntakeController",
       "kind": "import",
       "typeOnly": true,
-      "line": 26,
+      "line": 27,
       "column": 1
     },
     {
@@ -11236,7 +11236,7 @@
       "specifier": "../types/organizerIntakeTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 28,
+      "line": 29,
       "column": 1
     },
     {

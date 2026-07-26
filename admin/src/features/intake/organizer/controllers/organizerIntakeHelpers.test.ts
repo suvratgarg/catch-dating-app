@@ -6,6 +6,7 @@ import {
   organizerDraftFormFromCandidate,
   organizerDraftPayloadForCandidate,
   organizerIntakeDecisionFromString,
+  organizerOperationStage,
   organizerPolicyGapDecisionFromString,
   publicationPacketReady,
 } from "./organizerIntakeHelpers";
@@ -31,6 +32,15 @@ describe("organizer intake helpers", () => {
     expect(organizerIntakeDecisionFromString("reject")).toBeNull();
     expect(organizerPolicyGapDecisionFromString("reject")).toBe("reject");
     expect(organizerPolicyGapDecisionFromString("suppress")).toBeNull();
+  });
+
+  it("maps explicit operation stages without overlapping heuristics", () => {
+    expect(organizerOperationStage("incoming")).toBe("incoming");
+    expect(organizerOperationStage("new")).toBe("incoming");
+    expect(organizerOperationStage("needs_review")).toBe("verify");
+    expect(organizerOperationStage("needs_attention")).toBe("resolve");
+    expect(organizerOperationStage("ready")).toBe("ready");
+    expect(organizerOperationStage("waiting_review")).toBeNull();
   });
 
   it("maps evidence gates into the durable approval checklist", () => {

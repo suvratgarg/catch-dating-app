@@ -1,5 +1,5 @@
 {
-  "version": 115,
+  "version": 117,
   "updated": "2026-07-26",
   "owner": "agent_operating_model",
   "entries": [
@@ -3531,6 +3531,48 @@
         "operations/README.md"
       ],
       "notes": "Operation runs are immutable. Deploying this projection does not repair historical runs; a new organizer-scoped run and reviewed Admin projection import are required before the live queue can claim packet availability."
+    },
+    {
+      "id": "REG-ADMIN-ORGANIZER-STAGE-EXCLUSIVITY-001",
+      "title": "Live organizer records appear in multiple intake stages",
+      "status": "active",
+      "applies_to": [
+        "admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.ts",
+        "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.ts",
+        "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx"
+      ],
+      "symptom": "A publication packet with a persisted Ready primary stage also appears in Resolve because evidence-warning heuristics overlap the authoritative operation stage.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin test -- --run src/features/intake/organizer/controllers/organizerIntakeHelpers.test.ts src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.test.ts",
+        "guardEvidence": "explicit live operation statuses map to exactly one organizer workbench stage while unrecognized legacy and sample statuses continue through the existing fallback heuristics"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "docs/web_surface_architecture.md"
+      ],
+      "notes": "The operation read model owns queue stage. Blockers and evidence warnings explain readiness inside that stage; they must not create a second queue membership."
+    },
+    {
+      "id": "REG-ADMIN-ORGANIZER-RUN-DRAFT-CONTINUITY-001",
+      "title": "A new immutable intake run hides an existing organizer draft",
+      "status": "active",
+      "applies_to": [
+        "functions/src/admin/intakeOperations.ts",
+        "functions/src/admin/organizerDraftFromCandidate.ts",
+        "functions/src/admin/organizerDraftIdentity.ts"
+      ],
+      "symptom": "A candidate returns to Incoming after a new immutable operation run because draft-link lookup requires the current work-item ID to equal the historical curation receipt's source work-item ID.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions run build && node --test functions/lib/admin/intakeOperations.test.js",
+        "guardEvidence": "a current candidate work item resolves the prior draft receipt through the stable normalized identity and candidate ID while the historical source work-item ID remains audit provenance"
+      },
+      "owner_docs": [
+        "docs/data_contracts.md",
+        "docs/operations_platform.md"
+      ],
+      "notes": "Immutable run and work-item IDs identify observations, not organizer identity. Draft continuity binds to the deterministic normalized candidate identity and verifies the stable candidate ID before returning the current run's work-item link."
     }
   ]
 }

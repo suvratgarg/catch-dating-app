@@ -196,7 +196,7 @@ export async function adminListIntakeOperationsHandler(
   };
 }
 
-async function loadOrganizerDraftLinks(
+export async function loadOrganizerDraftLinks(
   db: FirebaseFirestore.Firestore,
   workItems: OperationWorkItem[]
 ): Promise<OrganizerDraftLink[]> {
@@ -238,7 +238,6 @@ async function loadOrganizerDraftLinks(
     if (
       !source ||
       value?.operationType !== "create_entity_draft" ||
-      value.sourceWorkItemId !== source.workItemId ||
       value.sourceCandidateId !== source.candidateId ||
       value.sourceNormalizedKey !== source.normalizedKey ||
       typeof value.entityId !== "string"
