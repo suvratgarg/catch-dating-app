@@ -11,6 +11,10 @@ import {
   organizerPacketSupportsMarket,
   stripArtifactData,
 } from "./adapters/legacy-artifacts.mjs";
+import {
+  acquisitionRunKey,
+  loadSupplyAcquisitionPolicy,
+} from "./acquisition.mjs";
 import {loadSourceProfiles} from "./sources/index.mjs";
 import {
   SUPPLY_INTAKE_ENTITY_KINDS,
@@ -27,7 +31,7 @@ import {
 
 export const MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN = MAX_WORK_ITEMS_PER_RUN;
 export const SUPPLY_INTAKE_WORKFLOW_ID = "supply-intake";
-export const SUPPLY_INTAKE_WORKFLOW_VERSION = "0.2.0";
+export const SUPPLY_INTAKE_WORKFLOW_VERSION = "0.3.0";
 const SUPPLY_INTAKE_STALE_AFTER_HOURS = 168;
 const SUPPLY_INTAKE_SCOPES = Object.freeze(["all", "organizer"]);
 const ORGANIZER_PACKET_STRING_LIMIT = 500;
@@ -47,6 +51,8 @@ export class SupplyIntakeWorkflow {
   constructor({
     repoRoot,
     adapter = new LegacyIntakeArtifactAdapter({repoRoot}),
+    acquisitionPolicyLoader = loadSupplyAcquisitionPolicy,
+    acquisitionPort = null,
     sourceProfilesLoader = loadSourceProfiles,
     freshnessPolicyLoader = loadSupplyFreshnessPolicy,
   } = {}) {
@@ -58,6 +64,8 @@ export class SupplyIntakeWorkflow {
     this.entityKinds = SUPPLY_INTAKE_ENTITY_KINDS;
     this.allowedTransitions = SUPPLY_INTAKE_TRANSITIONS;
     this.adapter = adapter;
+    this.acquisitionPolicyLoader = acquisitionPolicyLoader;
+    this.acquisitionPort = acquisitionPort;
     this.sourceProfilesLoader = sourceProfilesLoader;
     this.freshnessPolicyLoader = freshnessPolicyLoader;
   }
@@ -95,9 +103,14 @@ export class SupplyIntakeWorkflow {
       {intakeScope}
     );
     const generatedAt = new Date(now).toISOString();
-    const [profiles, freshnessPolicy] = await Promise.all([
+    const [
+      profiles,
+      freshnessPolicy,
+      acquisitionPolicy,
+    ] = await Promise.all([
       this.sourceProfilesLoader(),
       this.freshnessPolicyLoader(),
+      this.acquisitionPolicyLoader(),
     ]);
     const artifactSnapshotWithData = await this.adapter.snapshot({
       market,
@@ -147,10 +160,12 @@ export class SupplyIntakeWorkflow {
       autoPublicationEnabled: false,
       editorialSourcesDiscoveryOnly: true,
       freshnessPolicyVersion: freshnessPolicy.policyVersion,
+      acquisitionPolicyVersion: acquisitionPolicy.policyVersion,
     };
     const promotionPolicyHash = hashValue({
       workflowPolicy: policy,
       freshnessPolicy,
+      acquisitionPolicy,
       sourceProfiles,
     });
     const basis = {
@@ -175,9 +190,15 @@ export class SupplyIntakeWorkflow {
       sourceProfiles,
       policy,
       freshnessPolicy,
+      acquisitionPolicy,
       freshness,
       promotionPolicyHash,
-      capabilities: {network: false, modelCalls: false, publicWrites: false, ruleDeployment: false},
+      capabilities: {
+        network: acquisitionPolicy.provider.enabled,
+        modelCalls: false,
+        publicWrites: false,
+        ruleDeployment: false,
+      },
     };
     const basisHash = hashValue(basis);
     const plan = {
@@ -187,7 +208,8 @@ export class SupplyIntakeWorkflow {
       generatedAt,
       budgets: {
         workItems: Math.max(1_000, plannedItems),
-        networkRequests: 0,
+        networkRequests:
+          acquisitionPolicy.budgets.maxNetworkRequestsPerRun,
         modelCalls: 0,
         modelInputTokens: 0,
         modelOutputTokens: 0,
@@ -196,8 +218,12 @@ export class SupplyIntakeWorkflow {
       },
       guardrails: [
         "The plan reads reviewed local artifacts only.",
-        "No network, model, public write, scheduler, or rule deployment capability is granted.",
-        "Freshness eligibility is derived from immutable completed Operations runs; eligible requests remain unfetched in shadow mode.",
+        acquisitionPolicy.provider.enabled ?
+          "Provider acquisition requires the frozen policy-gap decision, injected adapter, and both request ceilings." :
+          "Provider acquisition is disabled; manual file capture remains available through the injected acquisition port.",
+        "No model, public write, scheduler, or rule deployment capability is granted.",
+        "Freshness eligibility is derived from immutable completed Operations runs; only scheduled requests may cross the acquisition port.",
+        "Raw provider payloads remain outside Firestore; only bounded provenance may enter durable records.",
         "Editorial sources are discovery-only until an official source is resolved.",
       ],
     };
@@ -264,7 +290,8 @@ export class SupplyIntakeWorkflow {
       "Supply Intake workflow contract is missing or stale."
     );
     invariant(
-      !plan.capabilities.network &&
+      plan.capabilities.network ===
+          plan.acquisitionPolicy?.provider?.enabled &&
         !plan.capabilities.modelCalls &&
         !plan.capabilities.publicWrites &&
         !plan.capabilities.ruleDeployment,
@@ -275,10 +302,42 @@ export class SupplyIntakeWorkflow {
       plan.promotionPolicyHash === hashValue({
         workflowPolicy: plan.policy,
         freshnessPolicy: plan.freshnessPolicy,
+        acquisitionPolicy: plan.acquisitionPolicy,
         sourceProfiles: plan.sourceProfiles,
       }),
       "INVALID_PLAN",
       "Plan promotion policy snapshot is stale or invalid."
+    );
+    invariant(
+      plan.policy?.acquisitionPolicyVersion ===
+          plan.acquisitionPolicy?.policyVersion &&
+        plan.acquisitionPolicy?.rawPayload
+          ?.firestorePersistenceAllowed === false &&
+        plan.acquisitionPolicy?.rawPayload?.persistence ===
+          "external_artifact_store_only" &&
+        plan.budgets?.networkRequests ===
+          plan.acquisitionPolicy?.budgets
+            ?.maxNetworkRequestsPerRun &&
+        (plan.acquisitionPolicy?.provider?.enabled ?
+          (
+            typeof plan.acquisitionPolicy.provider.adapterId ===
+              "string" &&
+            typeof plan.acquisitionPolicy.provider.decisionId ===
+              "string" &&
+            plan.acquisitionPolicy.budgets
+              .maxNetworkRequestsPerRun > 0 &&
+            plan.acquisitionPolicy.budgets
+              .maxNetworkRequestsPerMonth > 0
+          ) :
+          (
+            plan.acquisitionPolicy?.provider?.adapterId === null &&
+            plan.acquisitionPolicy?.provider?.decisionId === null &&
+            plan.budgets.networkRequests === 0 &&
+            plan.acquisitionPolicy?.budgets
+              ?.maxNetworkRequestsPerMonth === 0
+          )),
+      "INVALID_ACQUISITION_PLAN",
+      "Supply Intake acquisition policy or budget is missing, stale, or unsafe."
     );
     invariant(
       plan.freshness?.schemaVersion === 1 &&
@@ -414,6 +473,42 @@ export class SupplyIntakeWorkflow {
       }));
     }
     return dedupeItems(items).sort((left, right) => left.workItemId.localeCompare(right.workItemId));
+  }
+
+  async acquire(plan, {runKey, input = {}} = {}) {
+    this.assertPlan(plan);
+    invariant(
+      this.acquisitionPort &&
+        typeof this.acquisitionPort.acquire === "function",
+      "ACQUISITION_PORT_MISSING",
+      "Acquisition requires a port injected by the trusted runtime."
+    );
+    invariant(
+      this.acquisitionPort.policyVersion ===
+        plan.acquisitionPolicy.policyVersion,
+      "ACQUISITION_POLICY_MISMATCH",
+      "The injected acquisition port does not match the frozen plan policy."
+    );
+    if (this.acquisitionPort.networkRequestCost > 0) {
+      invariant(
+        plan.capabilities.network === true,
+        "UNSAFE_CAPABILITY",
+        "The frozen plan does not grant provider network acquisition."
+      );
+    }
+    const request = plan.freshness.scheduled.find((entry) =>
+      acquisitionRunKey(entry) === runKey);
+    invariant(
+      request,
+      "ACQUISITION_NOT_PLANNED",
+      "Acquisition is allowed only for a scheduled freshness request.",
+      {runKey: runKey ?? null}
+    );
+    return this.acquisitionPort.acquire({
+      runKey,
+      input,
+      plannedRequest: request,
+    });
   }
 
   review(item, {now}) {

@@ -13,7 +13,7 @@ export const MIN_WORK_ITEMS_PER_RUN = 1;
 export const MAX_WORK_ITEMS_PER_RUN = 10_000;
 export const SUPPORTED_EXECUTION_MODES = Object.freeze(["shadow"]);
 export const PLATFORM_CAPABILITY_CEILING = Object.freeze({
-  network: false,
+  network: true,
   modelCalls: false,
   publicWrites: false,
   ruleDeployment: false,

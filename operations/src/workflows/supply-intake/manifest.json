@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "workflowId": "supply-intake",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "executionModes": ["shadow"],
   "capabilities": {
-    "network": false,
+    "network": true,
     "modelCalls": false,
     "publicWrites": false,
     "ruleDeployment": false

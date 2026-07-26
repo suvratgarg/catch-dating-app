@@ -1,0 +1,157 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/operations/supply-intake/acquisition-policy.schema.json",
+  "title": "SupplyIntakeAcquisitionPolicy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "policyVersion",
+    "manualFileCaptureEnabled",
+    "provider",
+    "budgets",
+    "rawPayload"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "policyVersion": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,119}$"
+    },
+    "manualFileCaptureEnabled": {
+      "const": true
+    },
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "adapterId",
+        "policyGapId",
+        "decisionId"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "adapterId": {
+          "type": ["string", "null"],
+          "pattern": "^[a-z0-9][a-z0-9._-]{0,119}$"
+        },
+        "policyGapId": {
+          "const": "recurring_event_crawl_policy"
+        },
+        "decisionId": {
+          "type": ["string", "null"],
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,199}$"
+        }
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxNetworkRequestsPerRun",
+        "maxNetworkRequestsPerMonth"
+      ],
+      "properties": {
+        "maxNetworkRequestsPerRun": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "maxNetworkRequestsPerMonth": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        }
+      }
+    },
+    "rawPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "firestorePersistenceAllowed",
+        "persistence"
+      ],
+      "properties": {
+        "firestorePersistenceAllowed": {
+          "const": false
+        },
+        "persistence": {
+          "const": "external_artifact_store_only"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "provider": {
+            "properties": {
+              "enabled": {
+                "const": true
+              }
+            },
+            "required": ["enabled"]
+          }
+        },
+        "required": ["provider"]
+      },
+      "then": {
+        "properties": {
+          "provider": {
+            "properties": {
+              "adapterId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "decisionId": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "budgets": {
+            "properties": {
+              "maxNetworkRequestsPerRun": {
+                "minimum": 1
+              },
+              "maxNetworkRequestsPerMonth": {
+                "minimum": 1
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "provider": {
+            "properties": {
+              "adapterId": {
+                "type": "null"
+              },
+              "decisionId": {
+                "type": "null"
+              }
+            }
+          },
+          "budgets": {
+            "properties": {
+              "maxNetworkRequestsPerRun": {
+                "const": 0
+              },
+              "maxNetworkRequestsPerMonth": {
+                "const": 0
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

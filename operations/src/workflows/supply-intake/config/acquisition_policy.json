@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "policyVersion": "supply-acquisition-v1",
+  "manualFileCaptureEnabled": true,
+  "provider": {
+    "enabled": false,
+    "adapterId": null,
+    "policyGapId": "recurring_event_crawl_policy",
+    "decisionId": null
+  },
+  "budgets": {
+    "maxNetworkRequestsPerRun": 0,
+    "maxNetworkRequestsPerMonth": 0
+  },
+  "rawPayload": {
+    "firestorePersistenceAllowed": false,
+    "persistence": "external_artifact_store_only"
+  }
+}

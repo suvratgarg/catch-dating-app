@@ -1,5 +1,5 @@
 {
-  "version": 118,
+  "version": 119,
   "updated": "2026-07-26",
   "owner": "agent_operating_model",
   "entries": [
@@ -3619,6 +3619,30 @@
         "docs/plans/host_listing_discovery_architecture.md"
       ],
       "notes": "Weekly event-guide paths partition publication coverage and the 168-hour bridge bound admits reviewed evidence; neither value is an acquisition fetch cadence. Historical host-discovery run JSON remains compatibility evidence only until downstream source-evidence projections are converged."
+    },
+    {
+      "id": "REG-SUPPLY-ACQUISITION-GUARD-001",
+      "title": "A supply provider can bypass policy, plan, budget, or raw-payload boundaries",
+      "status": "active",
+      "applies_to": [
+        "operations/src/workflows/supply-intake/acquisition.mjs",
+        "operations/src/workflows/supply-intake/config/acquisition_policy.json",
+        "operations/src/workflows/supply-intake/config/acquisition_policy.schema.json",
+        "operations/src/workflows/supply-intake/workflow.mjs",
+        "operations/src/platform/contracts.mjs"
+      ],
+      "symptom": "A provider request runs for an unplanned or fresh work item, without an accepted policy-gap decision, after a run or monthly cap is exhausted, or exposes a raw response to Firestore-backed workflow state.",
+      "guard": {
+        "type": "command",
+        "command": "node --test operations/test/acquisition.test.mjs operations/test/workflow.test.mjs && npm --prefix operations run check",
+        "guardEvidence": "the default policy permits deterministic manual-file capture only; provider acquisition requires the scheduled run key, an accepted live policy decision, an injected provider client, and successful run and month budget reservations, while receipts exclude raw payloads and Firestore persistence remains forbidden"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "operations/README.md",
+        "docs/plans/host_listing_discovery_architecture.md"
+      ],
+      "notes": "The workflow manifest advertises the platform ceiling, not a live grant. Provider activation remains fail-closed until the acquisition policy names the reviewed adapter and decision, and the trusted runtime initializes durable request usage."
     }
   ]
 }
