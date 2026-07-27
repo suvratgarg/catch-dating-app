@@ -261,6 +261,11 @@ function buildReviewDecisionState(decisionBatches, errors) {
         errors.push(`${decisionPrefix}: invalid decision ${decision.decision}.`);
       }
       validateReviewChecklist(decision.checklist, decisionPrefix, errors);
+      validateBlockerResolutions(
+        decision.blockerResolutions,
+        decisionPrefix,
+        errors
+      );
       if (!decision.note || typeof decision.note !== "string") {
         errors.push(`${decisionPrefix}: note is required.`);
       }
@@ -271,6 +276,7 @@ function buildReviewDecisionState(decisionBatches, errors) {
       if (decision.candidateId) {
         byCandidateId.set(decision.candidateId, {
           checklist: decision.checklist,
+          blockerResolutions: decision.blockerResolutions,
           decidedAt: batch.decidedAt,
           decision: decision.decision,
           eventReviewBatchId: batch.eventReviewBatchId,
@@ -488,6 +494,7 @@ function eventReviewState(reviewDecision, {orphan = false} = {}) {
   }
   const reviewSummary = {
     checklist: reviewDecision.checklist,
+    blockerResolutions: reviewDecision.blockerResolutions ?? [],
     decidedAt: reviewDecision.decidedAt,
     decision: reviewDecision.decision,
     eventReviewBatchId: reviewDecision.eventReviewBatchId,
@@ -526,6 +533,52 @@ function eventReviewState(reviewDecision, {orphan = false} = {}) {
     importState: "not_importable",
     blockers: ["admin_rejected"],
   };
+}
+
+const governedEventBlockers = new Set([
+  "missing_exact_coordinates",
+  "missing_end_time",
+  "missing_location_detail",
+  "requires_event_defaults_policy",
+  "requires_owner_safe_copy_review",
+  "duplicate_normalized_event_key",
+]);
+
+function validateBlockerResolutions(resolutions, prefix, errors) {
+  if (resolutions === undefined) return;
+  if (!Array.isArray(resolutions)) {
+    errors.push(`${prefix}: blockerResolutions must be an array.`);
+    return;
+  }
+  const seen = new Set();
+  for (const [index, resolution] of resolutions.entries()) {
+    const label = `${prefix}/blockerResolutions[${index}]`;
+    if (!resolution || typeof resolution !== "object") {
+      errors.push(`${label}: resolution must be an object.`);
+      continue;
+    }
+    if (!governedEventBlockers.has(resolution.blockerCode)) {
+      errors.push(`${label}: invalid blockerCode ${resolution.blockerCode}.`);
+    } else if (seen.has(resolution.blockerCode)) {
+      errors.push(`${label}: duplicate blockerCode ${resolution.blockerCode}.`);
+    } else {
+      seen.add(resolution.blockerCode);
+    }
+    if (!["resolved", "waived"].includes(resolution.outcome)) {
+      errors.push(`${label}: invalid outcome ${resolution.outcome}.`);
+    }
+    if (resolution.outcome === "resolved" &&
+      resolution.policyGapDecisionId !== null) {
+      errors.push(`${label}: resolved blockers cannot reference policy.`);
+    }
+    if (resolution.outcome === "waived" &&
+      !resolution.policyGapDecisionId) {
+      errors.push(`${label}: waived blockers require policy authority.`);
+    }
+    if (!resolution.note || typeof resolution.note !== "string") {
+      errors.push(`${label}: note is required.`);
+    }
+  }
 }
 
 function diagnosticsFor(event, eventUrl, location) {

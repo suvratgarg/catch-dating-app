@@ -56,6 +56,25 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/activityPreferences.ts",
   },
   {
+    name: "OrganizerSupplyCapabilities",
+    source: "embedded/organizer_supply_capabilities.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerSupplyCapabilities.ts",
+  },
+  {
+    name: "ExternalEventBlockerResolution",
+    source: "embedded/external_event_blocker_resolution.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/externalEventBlockerResolution.ts",
+  },
+  {
+    name: "ExternalEventPublicationReceiptDocument",
+    source:
+      "firestore/external_event_publication_receipts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/externalEventPublicationReceiptDocument.ts",
+  },
+  {
     name: "ConfigCitiesDocument",
     source: "firestore/config_cities.schema.json",
     typeOutput: "functions/src/shared/generated/configCitiesDocument.ts",
@@ -724,6 +743,12 @@ const schemaSpecs = [
       "functions/src/shared/generated/adminPublishExternalEventCallablePayload.ts",
   },
   {
+    name: "AdminTakedownExternalEventCallablePayload",
+    source: "callables/admin_takedown_external_event_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminTakedownExternalEventCallablePayload.ts",
+  },
+  {
     name: "StartClubHostConversationCallablePayload",
     source: "callables/start_club_host_conversation_payload.schema.json",
     typeOutput:
@@ -1378,6 +1403,10 @@ const FIRESTORE_ADMIN_EMBEDDED_SPECS = [
   {
     name: "ActivityPreferences",
     source: "embedded/activity_preferences.schema.json",
+  },
+  {
+    name: "OrganizerSupplyCapabilities",
+    source: "embedded/organizer_supply_capabilities.schema.json",
   },
   {
     name: "EventMeetingLocation",

@@ -1,5 +1,5 @@
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {renderHook, waitFor} from "@testing-library/react";
+import {act, renderHook, waitFor} from "@testing-library/react";
 import type {PropsWithChildren} from "react";
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {
@@ -22,6 +22,7 @@ const repository = vi.hoisted(() => ({
   loadEventSupplyReadiness: vi.fn(),
   publishExternalEventProfile: vi.fn(),
   saveEventProfile: vi.fn(),
+  takedownExternalEventProfile: vi.fn(),
 }));
 
 vi.mock("../api/eventPublishingRepository", () => repository);
@@ -109,6 +110,84 @@ describe("useEventPublishingController", () => {
     expect(repository.listEventProfiles).not.toHaveBeenCalled();
     expect(repository.loadEventProfile).toHaveBeenCalledWith({eventId: event.eventId});
     expect(result.current.view).toBe("detail");
+  });
+
+  it("dry-runs before applying external publication", async () => {
+    repository.publishExternalEventProfile
+      .mockResolvedValueOnce({outcome: "would_publish", writeApplied: false})
+      .mockResolvedValueOnce({
+        outcome: "published",
+        targetPath: "externalEvents/event-1",
+        writeApplied: true,
+      });
+    const onNotice = vi.fn();
+    const {result} = renderHook(
+      () => useEventPublishingController({
+        activeWorkspace: "readiness",
+        onError: vi.fn(),
+        onNotice,
+      }),
+      {wrapper: createWrapper()}
+    );
+
+    await act(async () => {
+      expect(await result.current.publishExternalEvent({
+        sourceActionId: "source-action-1",
+        targetPath: "externalEvents/event-1",
+        reviewNote: "Reviewed source and owner-safe copy.",
+        checklist: {
+          preflightActionReviewed: true,
+          outboundLinksReviewed: true,
+          noCatchBookingPaymentsWaitlist: true,
+          ownerSafeCopyReviewed: true,
+        },
+      })).toBe(true);
+    });
+
+    expect(repository.publishExternalEventProfile).toHaveBeenCalledTimes(2);
+    expect(repository.publishExternalEventProfile.mock.calls[0]?.[0])
+      .toMatchObject({executionMode: "dry_run"});
+    expect(repository.publishExternalEventProfile.mock.calls[1]?.[0])
+      .toMatchObject({executionMode: "apply"});
+    expect(onNotice).toHaveBeenCalledWith(
+      "Published externalEvents/event-1 as read-only external supply."
+    );
+  });
+
+  it("dry-runs before applying an external-event takedown", async () => {
+    repository.takedownExternalEventProfile
+      .mockResolvedValueOnce({outcome: "would_remove", writeApplied: false})
+      .mockResolvedValueOnce({
+        outcome: "removed",
+        targetPath: "externalEvents/event-1",
+        writeApplied: true,
+      });
+    const {result} = renderHook(
+      () => useEventPublishingController({
+        activeWorkspace: "external",
+        onError: vi.fn(),
+        onNotice: vi.fn(),
+      }),
+      {wrapper: createWrapper()}
+    );
+
+    await act(async () => {
+      expect(await result.current.takedownExternalEvent({
+        eventId: "event-1",
+        reviewNote: "Official source marks the event cancelled.",
+        checklist: {
+          sourceStatusReviewed: true,
+          takedownAuthorityReviewed: true,
+          downstreamVisibilityReviewed: true,
+        },
+      })).toBe(true);
+    });
+
+    expect(repository.takedownExternalEventProfile).toHaveBeenCalledTimes(2);
+    expect(repository.takedownExternalEventProfile.mock.calls[0]?.[0])
+      .toMatchObject({executionMode: "dry_run"});
+    expect(repository.takedownExternalEventProfile.mock.calls[1]?.[0])
+      .toMatchObject({executionMode: "apply"});
   });
 
   it("normalizes query and filter payloads", () => {

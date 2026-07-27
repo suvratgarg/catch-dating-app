@@ -5,6 +5,7 @@ import {
   loadEventDetails,
   publishExternalEvent,
   saveEventDetails,
+  takedownExternalEvent,
 } from "../../../shared/api/adminApi";
 import type {
   AdminGetEventSupplyReadinessResponse,
@@ -16,6 +17,8 @@ import type {
   AdminListEventDetailsResponse,
   AdminPublishExternalEventPayload,
   AdminPublishExternalEventResponse,
+  AdminTakedownExternalEventPayload,
+  AdminTakedownExternalEventResponse,
   AdminUpdateEventDetailsPayload,
   AdminUpdateEventDetailsResponse,
 } from "../../../shared/types/adminTypes";
@@ -55,4 +58,10 @@ export function publishExternalEventProfile(
   payload: AdminPublishExternalEventPayload
 ): Promise<AdminPublishExternalEventResponse> {
   return publishExternalEvent(payload);
+}
+
+export function takedownExternalEventProfile(
+  payload: AdminTakedownExternalEventPayload
+): Promise<AdminTakedownExternalEventResponse> {
+  return takedownExternalEvent(payload);
 }

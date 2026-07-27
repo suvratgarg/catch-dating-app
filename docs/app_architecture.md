@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.6.0
-updated: 2026-07-25
+version: 1.7.0
+updated: 2026-07-27
 owner: recursive_audit_loop
 status: active
 ---
@@ -60,6 +60,15 @@ taxonomy `club`, `community`, `individual`, `eventProducer`, `venue`, and
 `brand`. Managers do not own this classification change. Generic visible copy
 must say organizer/follow rather than club/join; “Club” remains valid only as
 the label for the `club` subtype or as specific real-world content.
+
+Organizer and external-event action rendering consumes
+`OrganizerSupplyCapabilities`; claim state or provenance alone never enables
+an action. Unclaimed supply removes booking, payment, waitlist, and host-contact
+widgets from composition rather than merely disabling them. Its review
+eligibility is `after_event_end`, but the actual review submission affordance
+and authority for passed external events is a named app-team dependency. Until
+that dedicated flow exists, the app may expose eligibility in domain state but
+must not route the user into a generic or fabricated review workflow.
 
 `lib/organizers/` is the canonical import surface. Existing `Club` Dart model,
 repository, provider, and `lib/clubs/` filenames are transitional aliases for

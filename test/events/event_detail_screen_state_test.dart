@@ -7,6 +7,7 @@ import 'package:catch_dating_app/events/presentation/event_detail_display_state.
 import 'package:catch_dating_app/events/presentation/event_detail_screen_state.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/organizers/domain/organizer_authority.dart';
+import 'package:catch_dating_app/organizers/domain/organizer_supply_capabilities.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -33,6 +34,25 @@ void main() {
   });
 
   group('EventDetail booking dock state', () {
+    test('hides Catch booking for an unclaimed organizer', () {
+      final event = events.buildEvent();
+
+      final state = eventDetailBookingDockStateFrom(
+        l10n: _l10n,
+        event: event,
+        userProfile: events.buildUser(),
+        participation: null,
+        now: event.startTime.subtract(const Duration(hours: 1)),
+        hasInviteCode: false,
+        supportsPaidBookings: true,
+        organizerCapabilities:
+            const OrganizerSupplyCapabilities.unclaimedReadOnly(),
+      );
+
+      expect(state.visible, isFalse);
+      expect(state.primaryAction, EventDetailBookingDockAction.none);
+    });
+
     test('derives eligible paid and paid-unsupported booking states', () {
       final event = events.buildEvent(bookedCount: 17, priceInPaise: 15000);
       final user = events.buildUser();

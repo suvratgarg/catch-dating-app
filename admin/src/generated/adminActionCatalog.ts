@@ -575,7 +575,24 @@ export const adminActionCatalog = {
         "adminOwner",
         "support"
       ],
-      "summary": "Publish one preflight-approved read-only external event.",
+      "summary": "Dry-run or publish one preflight-approved read-only external event with an idempotency receipt.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "external-events.takedown",
+      "callable": "adminTakedownExternalEvent",
+      "workflowIds": [
+        "external-events"
+      ],
+      "guiPath": "/events/external",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "summary": "Dry-run or remove one published external event without deleting its audit history.",
       "controlPlane": false
     },
     {
@@ -778,7 +795,8 @@ export const adminActionCatalog = {
       "actions": [
         "external-events.list",
         "external-events.readiness",
-        "external-events.publish"
+        "external-events.publish",
+        "external-events.takedown"
       ]
     },
     {

@@ -118,6 +118,7 @@ function draftDecision(rawArgs) {
         candidateId,
         decision,
         checklist,
+        blockerResolutions: [],
         note,
       },
     ],

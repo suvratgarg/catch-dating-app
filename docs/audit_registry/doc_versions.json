@@ -120,8 +120,8 @@
   },
   "app_architecture": {
     "path": "docs/app_architecture.md",
-    "version": "1.6.0",
-    "updated": "2026-07-25",
+    "version": "1.7.0",
+    "updated": "2026-07-27",
     "status": "active",
     "read_policy": "Read first for Flutter app code organization, dependency-direction seams including annotated feature-root barrel exports, provider-free *_state.dart naming, Firebase/domain boundaries, mutation-cardinality grain, pending request snapshot integrity, app-role boundaries, feature/layer/screen/controller/repository/widget ownership, async state boundaries, error-surface taxonomy, UI layout/scroll/sizing, realtime stream lifecycle keepAlive markers, routing/navigation constants, reference implementation exhibits, exhibit-freshness markers, and architecture enforcement policy.",
     "read_when": "Changing code organization under lib/; Starting or continuing an architecture migration rollout; Updating reference implementation exhibits; Classifying pattern adopters, variants, or exceptions; Defining or reviewing feature folder structure; Changing dependency-direction scanner policy or cross-feature controller seams; Changing domain/data Firebase boundaries; Changing host/consumer app-role boundaries or role-specific routing; Moving behavior between widgets, controllers, repositories, services, or domain classes; Deciding screen vs body/widget ownership; Changing async loading/error/mutation state boundaries; Choosing frozen, versioned, or independently keyed behavior for pending operations; Changing mutation pending/error grain or action-cardinality behavior; Changing shared screen padding, tab body insets, sliver body gaps, scroll ownership, or sizing constraints; Changing exceptions, error mappers, operation context, logging, analytics, or user-facing error rendering; Changing keepAlive, autoDispose, or retained-tab stream ownership; Adding architecture lints, scanners, or overrides"
@@ -212,21 +212,21 @@
   },
   "data_contracts": {
     "path": "docs/data_contracts.md",
-    "version": "1.6.0",
+    "version": "1.7.0",
     "updated": "2026-07-27",
     "status": "active",
     "read_policy": "Read before Firestore rules or query/index changes, Functions mutation boundaries, schema-source tooling, Dart/TypeScript model generation, callable validation schemas, seed validation, relationship documents, data migrations, or rules test execution."
   },
   "backend_operation_catalog": {
     "path": "docs/backend_operation_catalog.md",
-    "version": "1.4.1",
-    "updated": "2026-07-24",
+    "version": "1.5.0",
+    "updated": "2026-07-27",
     "status": "active",
     "read_policy": "Read before changing repository writes, callable interfaces, trigger-owned projections, server-only collections, Firestore rules for write paths, or notification fan-out."
   },
   "operations_platform": {
     "path": "docs/operations_platform.md",
-    "version": "1.7.0",
+    "version": "1.8.0",
     "updated": "2026-07-27",
     "status": "active",
     "read_policy": "Read before adding or changing durable business workflow runs, work items, leases, budgets, decisions, receipts, source learning, publication plans, the guarded acquisition port and provider-activation policy, or the boundary between operations and repository tooling."
@@ -282,8 +282,8 @@
   },
   "release_operations": {
     "path": "docs/release_operations.md",
-    "version": "1.12.1",
-    "updated": "2026-07-25",
+    "version": "1.13.0",
+    "updated": "2026-07-27",
     "status": "active",
     "read_policy": "Read before changing CI workflows, Firebase deploy ordering, release gates, environment setup, store readiness, app-shell integration coverage, host TestFlight setup, or release evidence."
   },
@@ -296,8 +296,8 @@
   },
   "marketing_website_architecture": {
     "path": "docs/marketing_website_architecture.md",
-    "version": "0.4.180",
-    "updated": "2026-07-24",
+    "version": "0.4.181",
+    "updated": "2026-07-27",
     "status": "active",
     "read_policy": "Read before changing marketing website source layout, React dependency choices, route shell ownership, route Storybook evidence, Home, Host, Host Preview, claim, or organizer listing section decomposition, feature/page/controller/component boundaries, CSS ownership, server-state conventions, shared primitive, class-name boundary, and governed component-family governance including the retired website legacy site barrel/import boundary, website page shells, admin editor section/form shells, admin directory/detail screen shells, admin marketing field shells, admin marketing carousel preview shells, admin intake/status chips, admin quality rows, admin quality lists, admin roadmap lists, website capture-card shells, website empty-state variants, website badge/status rows, website identity display shells, website process status panels, UI label spans, section headings, action groups, control rows, waitlist/application sections, waitlist form shells, configured success grids, claim shells, claim-flow route/root/auth-row shells, content grids, panel shells, product shells including product-module grids, row/list shells, Host Preview route shells including main/hero/hero-store/offer/section/apply/format-rail/chip-row wrappers, Host Page route shells, Host Application flow shells, Host feature section shells, marketing section shells, marketing info-card shells, marketing loop-list shells, marketing consent banner shells, featured organizer card shells, app-download CTA group/shells, organizer listing shells, organizer listing intro shells, organizer listing hero shells, organizer listing review shells including review-signal and owner-response shells, organizer listing claim shells, organizer listing card-grid shells, organizer listing event section shells including event-action cards, organizer listing source ledger shells, organizer search section shells, organizer search result shells, and search-form shells including PublicSearchBar ownership, direct public-search slot composition, and public event-card shells, exported website feature component registry coverage, component ownership registry, or component-first workbench strategy."
   },

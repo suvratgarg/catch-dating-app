@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/organizers/domain/organizer_supply_capabilities.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'external_event.freezed.dart';
@@ -31,6 +32,8 @@ abstract class ExternalEvent with _$ExternalEvent {
     @Default(defaultCurrencyCode) String currency,
     required String status,
     required String publicationStatus,
+    @Default(OrganizerSupplyCapabilities.unclaimedReadOnly())
+    OrganizerSupplyCapabilities organizerCapabilities,
     String? citySlug,
     required List<ExternalEventLink> externalLinks,
     String? sourcePlatform,
@@ -77,6 +80,9 @@ abstract class ExternalEvent with _$ExternalEvent {
       currency: _string(price['currency']) ?? defaultCurrencyCode,
       status: _string(json['status']) ?? '',
       publicationStatus: _string(json['publicationStatus']) ?? '',
+      organizerCapabilities: OrganizerSupplyCapabilities.fromJson(
+        _map(json['organizerCapabilities']),
+      ),
       citySlug: _string(discovery['citySlug']),
       externalLinks: (_list(booking['externalLinks']))
           .map(ExternalEventLink.fromJson)
@@ -90,6 +96,15 @@ abstract class ExternalEvent with _$ExternalEvent {
   bool get isActive => status == 'active';
   bool isUpcomingAt(DateTime now) => isActive && startTime.isAfter(now);
   bool isDiscoverableAt(DateTime now) => isPublic && isUpcomingAt(now);
+  bool get isBookableOnCatch => organizerCapabilities.bookable;
+  bool get canJoinCatchWaitlist => organizerCapabilities.waitlistEnabled;
+  bool get canContactHostOnCatch => organizerCapabilities.hostContactEnabled;
+  bool get canRequestOrganizerClaim => organizerCapabilities.claimable;
+  bool isReviewableAt(DateTime now) {
+    final eventEnd = endTime;
+    return eventEnd != null &&
+        organizerCapabilities.reviewableAt(eventEnd: eventEnd, now: now);
+  }
 
   ExternalEventLink? get primaryExternalLink {
     for (final link in externalLinks) {

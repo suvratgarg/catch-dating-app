@@ -499,10 +499,13 @@
     "capabilities": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["claimRequest", "publicReviews"],
+      "required": ["claimRequest", "publicReviews", "supply"],
       "properties": {
         "claimRequest": {"$ref": "#/definitions/capability"},
-        "publicReviews": {"$ref": "#/definitions/publicReviewCapability"}
+        "publicReviews": {"$ref": "#/definitions/publicReviewCapability"},
+        "supply": {
+          "$ref": "../embedded/organizer_supply_capabilities.schema.json"
+        }
       }
     },
     "source": {

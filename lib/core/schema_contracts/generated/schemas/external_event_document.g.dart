@@ -33,6 +33,7 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
     'price',
     'status',
     'publicationStatus',
+    'organizerCapabilities',
     'booking',
     'discovery',
     'dedupe',
@@ -309,6 +310,118 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
         'removed',
       ],
     },
+    'organizerCapabilities': <String, Object?>{
+      'title': 'OrganizerSupplyCapabilities',
+      'description': 'Audited snapshot of the attributed organizer\'s member-affordance ceiling at publication time.',
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'mode',
+        'bookable',
+        'paymentsEnabled',
+        'waitlistEnabled',
+        'hostContactEnabled',
+        'claimable',
+        'reviewPolicy',
+      ],
+      'properties': <String, Object?>{
+        'mode': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'unclaimed_read_only',
+            'claimed_managed',
+          ],
+        },
+        'bookable': <String, Object?>{
+          'type': 'boolean',
+        },
+        'paymentsEnabled': <String, Object?>{
+          'type': 'boolean',
+        },
+        'waitlistEnabled': <String, Object?>{
+          'type': 'boolean',
+        },
+        'hostContactEnabled': <String, Object?>{
+          'type': 'boolean',
+        },
+        'claimable': <String, Object?>{
+          'type': 'boolean',
+        },
+        'reviewPolicy': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'after_event_end',
+            'attended_event_only',
+          ],
+        },
+      },
+      'oneOf': <Object?>[
+        <String, Object?>{
+          'properties': <String, Object?>{
+            'mode': <String, Object?>{
+              'const': 'unclaimed_read_only',
+            },
+            'bookable': <String, Object?>{
+              'const': false,
+            },
+            'paymentsEnabled': <String, Object?>{
+              'const': false,
+            },
+            'waitlistEnabled': <String, Object?>{
+              'const': false,
+            },
+            'hostContactEnabled': <String, Object?>{
+              'const': false,
+            },
+            'reviewPolicy': <String, Object?>{
+              'const': 'after_event_end',
+            },
+          },
+          'required': <Object?>[
+            'mode',
+            'bookable',
+            'paymentsEnabled',
+            'waitlistEnabled',
+            'hostContactEnabled',
+            'reviewPolicy',
+          ],
+        },
+        <String, Object?>{
+          'properties': <String, Object?>{
+            'mode': <String, Object?>{
+              'const': 'claimed_managed',
+            },
+            'bookable': <String, Object?>{
+              'const': true,
+            },
+            'paymentsEnabled': <String, Object?>{
+              'const': true,
+            },
+            'waitlistEnabled': <String, Object?>{
+              'const': true,
+            },
+            'hostContactEnabled': <String, Object?>{
+              'const': true,
+            },
+            'claimable': <String, Object?>{
+              'const': false,
+            },
+            'reviewPolicy': <String, Object?>{
+              'const': 'attended_event_only',
+            },
+          },
+          'required': <Object?>[
+            'mode',
+            'bookable',
+            'paymentsEnabled',
+            'waitlistEnabled',
+            'hostContactEnabled',
+            'claimable',
+            'reviewPolicy',
+          ],
+        },
+      ],
+    },
     'booking': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
@@ -550,6 +663,7 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
         'note',
         'importPolicyAcknowledged',
         'ownerSafeCopyReviewed',
+        'blockerResolutions',
       ],
       'properties': <String, Object?>{
         'eventReviewBatchId': <String, Object?>{
@@ -585,6 +699,139 @@ const schemaExternalEventDocumentSchema = <String, Object?>{
         },
         'ownerSafeCopyReviewed': <String, Object?>{
           'type': 'boolean',
+        },
+        'blockerResolutions': <String, Object?>{
+          'type': 'array',
+          'maxItems': 6,
+          'items': <String, Object?>{
+            'title': 'ExternalEventBlockerResolution',
+            'description': 'One explicit, event-scoped resolution or policy-backed waiver for a governed external-event import blocker.',
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'blockerCode',
+              'outcome',
+              'policyGapDecisionId',
+              'note',
+            ],
+            'properties': <String, Object?>{
+              'blockerCode': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'missing_exact_coordinates',
+                  'missing_end_time',
+                  'missing_location_detail',
+                  'requires_event_defaults_policy',
+                  'requires_owner_safe_copy_review',
+                  'duplicate_normalized_event_key',
+                ],
+              },
+              'outcome': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'resolved',
+                  'waived',
+                ],
+              },
+              'policyGapDecisionId': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'note': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 1000,
+              },
+            },
+            'allOf': <Object?>[
+              <String, Object?>{
+                'if': <String, Object?>{
+                  'properties': <String, Object?>{
+                    'outcome': <String, Object?>{
+                      'const': 'waived',
+                    },
+                  },
+                },
+                'then': <String, Object?>{
+                  'properties': <String, Object?>{
+                    'policyGapDecisionId': <String, Object?>{
+                      'type': 'string',
+                    },
+                  },
+                },
+              },
+              <String, Object?>{
+                'if': <String, Object?>{
+                  'properties': <String, Object?>{
+                    'outcome': <String, Object?>{
+                      'const': 'resolved',
+                    },
+                  },
+                },
+                'then': <String, Object?>{
+                  'properties': <String, Object?>{
+                    'policyGapDecisionId': <String, Object?>{
+                      'type': 'null',
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+    },
+    'takedown': <String, Object?>{
+      'type': <Object?>[
+        'object',
+        'null',
+      ],
+      'additionalProperties': false,
+      'required': <Object?>[
+        'removedAt',
+        'removedByUid',
+        'reason',
+        'receiptId',
+      ],
+      'properties': <String, Object?>{
+        'removedAt': <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        'removedByUid': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'reason': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 1000,
+        },
+        'receiptId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
         },
       },
     },

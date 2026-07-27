@@ -153,10 +153,17 @@ the Events tab into a bulk importer. When the readiness policy explicitly sets
 `writeEnabled: true` and `authorityModel: admin_import_service`, operators can
 publish one preflight-ready row at a time through `adminPublishExternalEvent`.
 The UI requires a review note plus preflight, outbound-link, no-Catch-booking,
-and owner-safe-copy checklist gates before the per-row Publish action enables.
-The callable creates only `externalEvents/{id}` read-only outbound supply and
-refuses canonical `events/{id}` writes, blocked actions, invalid projections, or
-existing target documents.
+and owner-safe-copy checklist gates before the per-row action enables. It
+performs and displays a server dry run before apply. The callable creates only
+`externalEvents/{id}` outbound supply, snapshots the organizer capability
+ceiling, and refuses canonical `events/{id}` writes.
+
+Organizer Intake requires an explicit Resolved or Waived choice for every
+governed event-import blocker. Waived choices must name the accepted matching
+policy-gap decision; selecting approval never silently clears a blocker. The
+Events workspace also exposes a separate dry-run-first takedown action. Takedown
+preserves the source record and attribution and appends an immutable receipt;
+it does not delete the external event.
 Sample mode uses explicit canonical Indore and Mumbai event records rather than
 host analytics rows, plus read-only external event rows, so the default Events
 tab exercises the same launch-city workflow as live mode.

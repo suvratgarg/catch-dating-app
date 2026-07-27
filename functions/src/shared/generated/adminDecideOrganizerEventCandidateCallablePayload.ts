@@ -2,6 +2,8 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import {ExternalEventBlockerResolution} from "./externalEventBlockerResolution";
+
 /**
  * Callable payload accepted by adminDecideOrganizerEventCandidate. This records a manual admin review decision for a private external event candidate without importing the event.
  */
@@ -17,5 +19,9 @@ export interface AdminDecideOrganizerEventCandidateCallablePayload {
     ownerSafeCopyReviewed: boolean;
     importPolicyAcknowledged: boolean;
   };
+  /**
+   * @maxItems 6
+   */
+  blockerResolutions: ExternalEventBlockerResolution[];
   note: string;
 }

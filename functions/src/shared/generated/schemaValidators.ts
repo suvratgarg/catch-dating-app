@@ -12,6 +12,9 @@ import {PhotoPromptAnswer} from "./photoPromptAnswer";
 import {ProfilePhoto} from "./profilePhoto";
 import {UploadedPhoto} from "./uploadedPhoto";
 import {ActivityPreferences} from "./activityPreferences";
+import {OrganizerSupplyCapabilities} from "./organizerSupplyCapabilities";
+import {ExternalEventBlockerResolution} from "./externalEventBlockerResolution";
+import {ExternalEventPublicationReceiptDocument} from "./externalEventPublicationReceiptDocument";
 import {ConfigCitiesDocument} from "./configCitiesDocument";
 import {OnboardingDraftDocument} from "./onboardingDraftDocument";
 import {AccessApplicationDocument} from "./accessApplicationDocument";
@@ -127,6 +130,7 @@ import {AdminListEventDetailsCallablePayload} from "./adminListEventDetailsCalla
 import {AdminListExternalEventDetailsCallablePayload} from "./adminListExternalEventDetailsCallablePayload";
 import {AdminUpdateEventDetailsCallablePayload} from "./adminUpdateEventDetailsCallablePayload";
 import {AdminPublishExternalEventCallablePayload} from "./adminPublishExternalEventCallablePayload";
+import {AdminTakedownExternalEventCallablePayload} from "./adminTakedownExternalEventCallablePayload";
 import {StartClubHostConversationCallablePayload} from "./startClubHostConversationCallablePayload";
 import {StartOrganizerConversationCallablePayload} from "./startOrganizerConversationCallablePayload";
 import {ArchiveClubCallablePayload} from "./archiveClubCallablePayload";
@@ -220,6 +224,9 @@ import {
   profilePhotoSchema,
   uploadedPhotoSchema,
   activityPreferencesSchema,
+  organizerSupplyCapabilitiesSchema,
+  externalEventBlockerResolutionSchema,
+  externalEventPublicationReceiptDocumentSchema,
   configCitiesDocumentSchema,
   onboardingDraftDocumentSchema,
   accessApplicationDocumentSchema,
@@ -335,6 +342,7 @@ import {
   adminListExternalEventDetailsCallablePayloadSchema,
   adminUpdateEventDetailsCallablePayloadSchema,
   adminPublishExternalEventCallablePayloadSchema,
+  adminTakedownExternalEventCallablePayloadSchema,
   startClubHostConversationCallablePayloadSchema,
   startOrganizerConversationCallablePayloadSchema,
   archiveClubCallablePayloadSchema,
@@ -456,6 +464,18 @@ export const validateActivityPreferences:
   ValidateFunction<ActivityPreferences> =
     ajv.compile(activityPreferencesSchema) as
       ValidateFunction<ActivityPreferences>;
+export const validateOrganizerSupplyCapabilities:
+  ValidateFunction<OrganizerSupplyCapabilities> =
+    ajv.compile(organizerSupplyCapabilitiesSchema) as
+      ValidateFunction<OrganizerSupplyCapabilities>;
+export const validateExternalEventBlockerResolution:
+  ValidateFunction<ExternalEventBlockerResolution> =
+    ajv.compile(externalEventBlockerResolutionSchema) as
+      ValidateFunction<ExternalEventBlockerResolution>;
+export const validateExternalEventPublicationReceiptDocument:
+  ValidateFunction<ExternalEventPublicationReceiptDocument> =
+    ajv.compile(externalEventPublicationReceiptDocumentSchema) as
+      ValidateFunction<ExternalEventPublicationReceiptDocument>;
 export const validateConfigCitiesDocument:
   ValidateFunction<ConfigCitiesDocument> =
     ajv.compile(configCitiesDocumentSchema) as
@@ -916,6 +936,10 @@ export const validateAdminPublishExternalEventCallablePayload:
   ValidateFunction<AdminPublishExternalEventCallablePayload> =
     ajv.compile(adminPublishExternalEventCallablePayloadSchema) as
       ValidateFunction<AdminPublishExternalEventCallablePayload>;
+export const validateAdminTakedownExternalEventCallablePayload:
+  ValidateFunction<AdminTakedownExternalEventCallablePayload> =
+    ajv.compile(adminTakedownExternalEventCallablePayloadSchema) as
+      ValidateFunction<AdminTakedownExternalEventCallablePayload>;
 export const validateStartClubHostConversationCallablePayload:
   ValidateFunction<StartClubHostConversationCallablePayload> =
     ajv.compile(startClubHostConversationCallablePayloadSchema) as

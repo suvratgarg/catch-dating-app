@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/organizers/domain/organizer_authority.dart';
+import 'package:catch_dating_app/organizers/domain/organizer_supply_capabilities.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -114,6 +115,33 @@ void main() {
       expect(owned.trustState, OrganizerTrustState.claimedUnverified);
       expect(owned.isOwnerVerified, isFalse);
       expect(unowned.trustState, OrganizerTrustState.crawledUnclaimed);
+    });
+  });
+
+  group('OrganizerSupplyCapabilities', () {
+    test('keeps legacy owned organizer documents managed', () {
+      final capabilities = OrganizerSupplyCapabilities.fromJson(
+        readOrganizerSupplyCapabilities({
+              'hostUserId': 'host-1',
+            }, 'supplyCapabilities')
+            as Map<String, dynamic>,
+      );
+
+      expect(capabilities, const OrganizerSupplyCapabilities.claimedManaged());
+    });
+
+    test('keeps ownerless legacy organizer documents fail closed', () {
+      final capabilities = OrganizerSupplyCapabilities.fromJson(
+        readOrganizerSupplyCapabilities({
+              'claim': {'state': 'unclaimed'},
+            }, 'supplyCapabilities')
+            as Map<String, dynamic>,
+      );
+
+      expect(
+        capabilities,
+        const OrganizerSupplyCapabilities.unclaimedReadOnly(),
+      );
     });
   });
 }

@@ -71,6 +71,7 @@ options when specific functions need higher or lower limits.
 | `adminCreateOrganizerDraftFromCandidate` | `src/admin/organizerDraftFromCandidate.ts` | Admin audited, retry-safe creation of a fail-closed organizer draft from reviewed Supply Intake evidence |
 | `adminGetEventSupplyReadiness` | `src/admin/eventSupplyReadiness.ts` | Admin read-only external event import plan and preflight snapshot |
 | `adminPublishExternalEvent` | `src/admin/externalEventPublishing.ts` | Admin audited publish of one preflight-approved read-only `externalEvents/{id}` document |
+| `adminTakedownExternalEvent` | `src/admin/externalEventTakedown.ts` | Admin audited dry-run/apply takedown of one published external event without deleting its source or publication receipts |
 | `adminGetMarketingOpsDashboard` | `src/admin/marketingOps.ts` | Admin read-only marketing ops dashboard bridge |
 | `adminRecordMarketingReviewDecision` | `src/admin/marketingOps.ts` | Admin audited marketing review decision, no publish |
 | `adminCreateMarketingContentDraft` | `src/admin/marketingOps.ts` | Admin editable marketing draft creation, no post publish |

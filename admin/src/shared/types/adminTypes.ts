@@ -399,6 +399,19 @@ export type OrganizerEventCandidateDecision =
   | "approve_for_import"
   | "hold"
   | "reject";
+export type OrganizerEventImportBlockerCode =
+  | "missing_exact_coordinates"
+  | "missing_end_time"
+  | "missing_location_detail"
+  | "requires_event_defaults_policy"
+  | "requires_owner_safe_copy_review"
+  | "duplicate_normalized_event_key";
+export interface OrganizerEventBlockerResolution {
+  blockerCode: OrganizerEventImportBlockerCode;
+  outcome: "resolved" | "waived";
+  policyGapDecisionId: string | null;
+  note: string;
+}
 export type OrganizerPolicyGapDecision = "accept" | "hold" | "reject";
 export type OrganizerEntityKind =
   | "club"
@@ -665,6 +678,7 @@ export interface AdminDecideOrganizerEventCandidatePayload {
     ownerSafeCopyReviewed: boolean;
     importPolicyAcknowledged: boolean;
   };
+  blockerResolutions: OrganizerEventBlockerResolution[];
   note: string;
 }
 
@@ -1250,6 +1264,8 @@ export interface AdminGetEventSupplyReadinessResponse {
 export interface AdminPublishExternalEventPayload {
   sourceActionId: string;
   targetPath: string;
+  executionMode: "dry_run" | "apply";
+  idempotencyKey: string;
   reviewNote: string;
   checklist: {
     preflightActionReviewed: boolean;
@@ -1265,7 +1281,35 @@ export interface AdminPublishExternalEventResponse {
   sourceActionId: string;
   publicationStatus: "public";
   externalLinkCount: number;
+  executionMode: "dry_run" | "apply";
+  outcome: "would_publish" | "published";
+  receiptPath: string;
+  writeApplied: boolean;
+  idempotent: boolean;
   publishedAt: string;
+}
+
+export interface AdminTakedownExternalEventPayload {
+  eventId: string;
+  executionMode: "dry_run" | "apply";
+  idempotencyKey: string;
+  reviewNote: string;
+  checklist: {
+    sourceStatusReviewed: boolean;
+    takedownAuthorityReviewed: boolean;
+    downstreamVisibilityReviewed: boolean;
+  };
+}
+
+export interface AdminTakedownExternalEventResponse {
+  eventId: string;
+  targetPath: string;
+  executionMode: "dry_run" | "apply";
+  outcome: "would_remove" | "removed";
+  receiptPath: string;
+  writeApplied: boolean;
+  idempotent: boolean;
+  completedAt: string;
 }
 
 export interface AdminListEventDetailsPayload {

@@ -10,18 +10,24 @@ final class AdminPublishExternalEventCallableRequest {
   const AdminPublishExternalEventCallableRequest({
     required this.sourceActionId,
     required this.targetPath,
+    required this.executionMode,
+    required this.idempotencyKey,
     required this.reviewNote,
     required this.checklist,
   });
 
   final String sourceActionId;
   final String targetPath;
+  final String executionMode;
+  final String idempotencyKey;
   final String reviewNote;
   final Map<String, Object?> checklist;
 
   Map<String, Object?> toJson() => {
     'sourceActionId': sourceActionId,
     'targetPath': targetPath,
+    'executionMode': executionMode,
+    'idempotencyKey': idempotencyKey,
     'reviewNote': reviewNote,
     'checklist': checklist,
   };

@@ -1403,6 +1403,119 @@ const schemaClubDocumentSchema = <String, Object?>{
       'description': 'Whether the native app should show this organizer in browse surfaces. Scraped unclaimed profiles start hidden.',
       'x-catch-ownership': 'callable-owned',
     },
+    'supplyCapabilities': <String, Object?>{
+      'title': 'OrganizerSupplyCapabilities',
+      'description': 'Compatibility shadow of the canonical organizer member-affordance ceiling.',
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'mode',
+        'bookable',
+        'paymentsEnabled',
+        'waitlistEnabled',
+        'hostContactEnabled',
+        'claimable',
+        'reviewPolicy',
+      ],
+      'properties': <String, Object?>{
+        'mode': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'unclaimed_read_only',
+            'claimed_managed',
+          ],
+        },
+        'bookable': <String, Object?>{
+          'type': 'boolean',
+        },
+        'paymentsEnabled': <String, Object?>{
+          'type': 'boolean',
+        },
+        'waitlistEnabled': <String, Object?>{
+          'type': 'boolean',
+        },
+        'hostContactEnabled': <String, Object?>{
+          'type': 'boolean',
+        },
+        'claimable': <String, Object?>{
+          'type': 'boolean',
+        },
+        'reviewPolicy': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'after_event_end',
+            'attended_event_only',
+          ],
+        },
+      },
+      'oneOf': <Object?>[
+        <String, Object?>{
+          'properties': <String, Object?>{
+            'mode': <String, Object?>{
+              'const': 'unclaimed_read_only',
+            },
+            'bookable': <String, Object?>{
+              'const': false,
+            },
+            'paymentsEnabled': <String, Object?>{
+              'const': false,
+            },
+            'waitlistEnabled': <String, Object?>{
+              'const': false,
+            },
+            'hostContactEnabled': <String, Object?>{
+              'const': false,
+            },
+            'reviewPolicy': <String, Object?>{
+              'const': 'after_event_end',
+            },
+          },
+          'required': <Object?>[
+            'mode',
+            'bookable',
+            'paymentsEnabled',
+            'waitlistEnabled',
+            'hostContactEnabled',
+            'reviewPolicy',
+          ],
+        },
+        <String, Object?>{
+          'properties': <String, Object?>{
+            'mode': <String, Object?>{
+              'const': 'claimed_managed',
+            },
+            'bookable': <String, Object?>{
+              'const': true,
+            },
+            'paymentsEnabled': <String, Object?>{
+              'const': true,
+            },
+            'waitlistEnabled': <String, Object?>{
+              'const': true,
+            },
+            'hostContactEnabled': <String, Object?>{
+              'const': true,
+            },
+            'claimable': <String, Object?>{
+              'const': false,
+            },
+            'reviewPolicy': <String, Object?>{
+              'const': 'attended_event_only',
+            },
+          },
+          'required': <Object?>[
+            'mode',
+            'bookable',
+            'paymentsEnabled',
+            'waitlistEnabled',
+            'hostContactEnabled',
+            'claimable',
+            'reviewPolicy',
+          ],
+        },
+      ],
+      'x-catch-ownership': 'callable-owned',
+    },
     'ownership': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,

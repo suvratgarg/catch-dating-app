@@ -147,6 +147,15 @@
         "readState": "disabled",
         "writeState": "disabled",
         "reason": "Public reviews are unavailable until canonical target readiness is verified."
+      },
+      "supply": {
+        "mode": "unclaimed_read_only",
+        "bookable": false,
+        "paymentsEnabled": false,
+        "waitlistEnabled": false,
+        "hostContactEnabled": false,
+        "claimable": true,
+        "reviewPolicy": "after_event_end"
       }
     },
     "lastVerifiedAt": "2026-06-10",

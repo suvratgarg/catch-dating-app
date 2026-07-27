@@ -306,6 +306,14 @@ There is no automatic rule discovery, live traffic comparison, activation,
 deployment, source acquisition, or model provider in this package. Those are
 explicit future capabilities, not implied by the learning commands.
 
+External-event publication is also outside the Operations writer boundary.
+Supply Intake may carry explicit resolved/waived blocker evidence into its
+reviewed projection, but `adminPublishExternalEvent` and
+`adminTakedownExternalEvent` are the only mutation authorities. Both use
+dry-run/apply execution, immutable idempotency receipts, and a server-side
+recheck of market, organizer ceiling, candidate snapshot, and policy-gap
+waivers.
+
 Promotion eligibility reads only source-publication policy frozen into a
 completed run plan. Promotion revalidates the plan and inventory hash before
 deciding. Each

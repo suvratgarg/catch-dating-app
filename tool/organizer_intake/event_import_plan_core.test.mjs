@@ -160,6 +160,44 @@ test("buildExternalEventImportPlan carries resolved coordinates", () => {
   );
 });
 
+test("buildExternalEventImportPlan clears only explicitly resolved blockers",
+  () => {
+    const plan = buildExternalEventImportPlan(sampleQueue({
+      reviewStatus: "approved_for_import",
+      reviewDecision: {
+        ...approvedReviewDecision(),
+        blockerResolutions: [{
+          blockerCode: "missing_end_time",
+          outcome: "resolved",
+          policyGapDecisionId: null,
+          note: "End time confirmed in the reviewed source.",
+        }],
+      },
+      importState: "blocked_by_policy",
+      blockers: ["global_external_event_import_disabled"],
+      endAt: null,
+    }), {
+      writeEnabled: true,
+      policy: {status: "enabled"},
+    });
+
+    assert.equal(plan.actions[0].blockers.includes("missing_end_time"), false);
+    assert.equal(
+      plan.actions[0].blockers.includes("missing_exact_coordinates"),
+      true
+    );
+    assert.equal(
+      plan.actions[0].blockers.includes("requires_event_defaults_policy"),
+      true
+    );
+    assert.deepEqual(plan.actions[0].blockerResolutions, [{
+      blockerCode: "missing_end_time",
+      outcome: "resolved",
+      policyGapDecisionId: null,
+      note: "End time confirmed in the reviewed source.",
+    }]);
+  });
+
 test("buildExternalEventImportPlan merges duplicate platform links", () => {
   const queue = sampleQueue({
     reviewStatus: "approved_for_import",
@@ -381,6 +419,7 @@ function approvedReviewDecision() {
       sourceEventReviewed: true,
       timeReviewed: true,
     },
+    blockerResolutions: [],
     decidedAt: "2026-06-17",
     decision: "approve_for_import",
     eventReviewBatchId: "firestore-fixture-2026-06-17",

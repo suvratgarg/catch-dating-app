@@ -23,6 +23,15 @@ interface PolicyFixtureFields {
       writeState: string;
       reason: string;
     };
+    supply: {
+      mode: string;
+      bookable: boolean;
+      paymentsEnabled: boolean;
+      waitlistEnabled: boolean;
+      hostContactEnabled: boolean;
+      claimable: boolean;
+      reviewPolicy: string;
+    };
   };
 }
 
@@ -51,6 +60,15 @@ function listingWithPolicy(
         writeState: "enabled",
         reason: "",
       },
+      supply: {
+        mode: "unclaimed_read_only",
+        bookable: false,
+        paymentsEnabled: false,
+        waitlistEnabled: false,
+        hostContactEnabled: false,
+        claimable: true,
+        reviewPolicy: "after_event_end",
+      },
       ...capabilities,
     },
   } as HostListing;
@@ -67,7 +85,10 @@ describe("organizerPolicyForListing", () => {
       },
       canReadPublicReviews: true,
       canRequestClaim: true,
-      canWritePublicReview: true,
+      canWritePublicReview: false,
+      canBook: false,
+      canContactHost: false,
+      canJoinWaitlist: false,
       claimState: "unclaimed",
       ownershipState: "programmatic",
       verificationStatus: "sourceBacked",
@@ -80,7 +101,7 @@ describe("organizerPolicyForListing", () => {
     }));
 
     expect(policy.canRequestClaim).toBe(false);
-    expect(policy.canWritePublicReview).toBe(true);
+    expect(policy.canWritePublicReview).toBe(false);
     expect(policy.badge).toMatchObject({
       label: organizerListingCopy.badges.claimPending.label,
       tone: "claimed",
@@ -130,7 +151,7 @@ describe("organizerPolicyForListing", () => {
     expect(policy.canRequestClaim).toBe(false);
     expect(policy.claimRequestReason).toBe("Claim target is syncing.");
     expect(policy.canReadPublicReviews).toBe(true);
-    expect(policy.canWritePublicReview).toBe(true);
+    expect(policy.canWritePublicReview).toBe(false);
   });
 
   it("adapts old unclaimed projections through the legacy public API flag", () => {

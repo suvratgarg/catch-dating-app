@@ -34,6 +34,8 @@ import {
   activityNotificationId,
   setActivityNotificationInTransaction,
 } from "../shared/notifications";
+import {organizerSupplyCapabilitiesFor} from
+  "../shared/organizerSupplyCapabilities";
 
 const claimReviewRoles = ["admin", "adminOwner", "support"] as const;
 
@@ -149,8 +151,14 @@ export async function requestOrganizerClaimHandler(
       claimHref: organizer.claim?.claimHref ?? "/host/#founding-hosts",
       lastClaimRequestId: requestId,
     };
-    tx.update(organizerRef, {claim});
-    if (legacyClubSnap.exists) tx.update(legacyClubRef, {claim});
+    const supplyCapabilities = organizerSupplyCapabilitiesFor({
+      ownershipState: organizer.ownership?.state,
+      claimState: claim.state,
+    });
+    tx.update(organizerRef, {claim, supplyCapabilities});
+    if (legacyClubSnap.exists) {
+      tx.update(legacyClubRef, {claim, supplyCapabilities});
+    }
   });
   return {requestId, status: "pending"};
 }
@@ -221,8 +229,14 @@ export async function adminDecideOrganizerClaimHandler(
           claimHref: organizer.claim?.claimHref ?? "/host/#founding-hosts",
           lastClaimRequestId: data.requestId,
         };
-        tx.update(organizerRef, {claim});
-        if (legacyClubSnap.exists) tx.update(legacyClubRef, {claim});
+        const supplyCapabilities = organizerSupplyCapabilitiesFor({
+          ownershipState: organizer.ownership?.state,
+          claimState: claim.state,
+        });
+        tx.update(organizerRef, {claim, supplyCapabilities});
+        if (legacyClubSnap.exists) {
+          tx.update(legacyClubRef, {claim, supplyCapabilities});
+        }
       }
       setActivityNotificationInTransaction(tx, db, {
         id: activityNotificationId(
@@ -325,6 +339,10 @@ export async function adminDecideOrganizerClaimHandler(
       hostUserIds: [claimRequest.requesterUid],
       hostProfiles: [ownerProfile],
       appVisibility: "discoverable",
+      supplyCapabilities: organizerSupplyCapabilitiesFor({
+        ownershipState: "claimed",
+        claimState: "claimed",
+      }),
       ownership: {
         state: "claimed",
         ownerUserId: claimRequest.requesterUid,

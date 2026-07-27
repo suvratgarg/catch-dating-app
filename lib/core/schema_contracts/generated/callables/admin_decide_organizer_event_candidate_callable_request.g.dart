@@ -11,18 +11,21 @@ final class AdminDecideOrganizerEventCandidateCallableRequest {
     required this.candidateId,
     required this.decision,
     required this.checklist,
+    required this.blockerResolutions,
     required this.note,
   });
 
   final String candidateId;
   final String decision;
   final Map<String, Object?> checklist;
+  final List<Map<String, Object?>> blockerResolutions;
   final String note;
 
   Map<String, Object?> toJson() => {
     'candidateId': candidateId,
     'decision': decision,
     'checklist': checklist,
+    'blockerResolutions': blockerResolutions,
     'note': note,
   };
 }

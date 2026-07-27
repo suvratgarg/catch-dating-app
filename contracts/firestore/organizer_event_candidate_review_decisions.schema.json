@@ -50,6 +50,13 @@
         "importPolicyAcknowledged": {"type": "boolean"}
       }
     },
+    "blockerResolutions": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "$ref": "../embedded/external_event_blocker_resolution.schema.json"
+      }
+    },
     "note": {"type": "string", "minLength": 1, "maxLength": 1000},
     "reviewedByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "reviewedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},

@@ -20,6 +20,9 @@ Do not edit it by hand.
 | ProfilePhoto | `embedded/profile_photo.schema.json` | `functions/src/shared/generated/profilePhoto.ts` |
 | UploadedPhoto | `embedded/uploaded_photo.schema.json` | `functions/src/shared/generated/uploadedPhoto.ts` |
 | ActivityPreferences | `embedded/activity_preferences.schema.json` | `functions/src/shared/generated/activityPreferences.ts` |
+| OrganizerSupplyCapabilities | `embedded/organizer_supply_capabilities.schema.json` | `functions/src/shared/generated/organizerSupplyCapabilities.ts` |
+| ExternalEventBlockerResolution | `embedded/external_event_blocker_resolution.schema.json` | `functions/src/shared/generated/externalEventBlockerResolution.ts` |
+| ExternalEventPublicationReceiptDocument | `firestore/external_event_publication_receipts.schema.json` | `functions/src/shared/generated/externalEventPublicationReceiptDocument.ts` |
 | ConfigCitiesDocument | `firestore/config_cities.schema.json` | `functions/src/shared/generated/configCitiesDocument.ts` |
 | OnboardingDraftDocument | `firestore/onboarding_drafts.schema.json` | `functions/src/shared/generated/onboardingDraftDocument.ts` |
 | AccessApplicationDocument | `firestore/access_applications.schema.json` | `functions/src/shared/generated/accessApplicationDocument.ts` |
@@ -135,6 +138,7 @@ Do not edit it by hand.
 | AdminListExternalEventDetailsCallablePayload | `callables/admin_list_external_event_details_payload.schema.json` | `functions/src/shared/generated/adminListExternalEventDetailsCallablePayload.ts` |
 | AdminUpdateEventDetailsCallablePayload | `callables/admin_update_event_details_payload.schema.json` | `functions/src/shared/generated/adminUpdateEventDetailsCallablePayload.ts` |
 | AdminPublishExternalEventCallablePayload | `callables/admin_publish_external_event_payload.schema.json` | `functions/src/shared/generated/adminPublishExternalEventCallablePayload.ts` |
+| AdminTakedownExternalEventCallablePayload | `callables/admin_takedown_external_event_payload.schema.json` | `functions/src/shared/generated/adminTakedownExternalEventCallablePayload.ts` |
 | StartClubHostConversationCallablePayload | `callables/start_club_host_conversation_payload.schema.json` | `functions/src/shared/generated/startClubHostConversationCallablePayload.ts` |
 | StartOrganizerConversationCallablePayload | `callables/start_organizer_conversation_payload.schema.json` | `functions/src/shared/generated/startOrganizerConversationCallablePayload.ts` |
 | ArchiveClubCallablePayload | `callables/archive_club_payload.schema.json` | `functions/src/shared/generated/archiveClubCallablePayload.ts` |
@@ -232,6 +236,9 @@ Do not edit it by hand.
 | `schemaProfilePhotoSchema` | ProfilePhoto | `embedded/profile_photo.schema.json` | `lib/core/schema_contracts/generated/schemas/profile_photo.g.dart` |
 | `schemaUploadedPhotoSchema` | UploadedPhoto | `embedded/uploaded_photo.schema.json` | `lib/core/schema_contracts/generated/schemas/uploaded_photo.g.dart` |
 | `schemaActivityPreferencesSchema` | ActivityPreferences | `embedded/activity_preferences.schema.json` | `lib/core/schema_contracts/generated/schemas/activity_preferences.g.dart` |
+| `schemaOrganizerSupplyCapabilitiesSchema` | OrganizerSupplyCapabilities | `embedded/organizer_supply_capabilities.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_supply_capabilities.g.dart` |
+| `schemaExternalEventBlockerResolutionSchema` | ExternalEventBlockerResolution | `embedded/external_event_blocker_resolution.schema.json` | `lib/core/schema_contracts/generated/schemas/external_event_blocker_resolution.g.dart` |
+| `schemaExternalEventPublicationReceiptDocumentSchema` | ExternalEventPublicationReceiptDocument | `firestore/external_event_publication_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/external_event_publication_receipt_document.g.dart` |
 | `schemaConfigCitiesDocumentSchema` | ConfigCitiesDocument | `firestore/config_cities.schema.json` | `lib/core/schema_contracts/generated/schemas/config_cities_document.g.dart` |
 | `schemaOnboardingDraftDocumentSchema` | OnboardingDraftDocument | `firestore/onboarding_drafts.schema.json` | `lib/core/schema_contracts/generated/schemas/onboarding_draft_document.g.dart` |
 | `schemaAccessApplicationDocumentSchema` | AccessApplicationDocument | `firestore/access_applications.schema.json` | `lib/core/schema_contracts/generated/schemas/access_application_document.g.dart` |
@@ -347,6 +354,7 @@ Do not edit it by hand.
 | `schemaAdminListExternalEventDetailsCallablePayloadSchema` | AdminListExternalEventDetailsCallablePayload | `callables/admin_list_external_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_external_event_details_callable_payload.g.dart` |
 | `schemaAdminUpdateEventDetailsCallablePayloadSchema` | AdminUpdateEventDetailsCallablePayload | `callables/admin_update_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_update_event_details_callable_payload.g.dart` |
 | `schemaAdminPublishExternalEventCallablePayloadSchema` | AdminPublishExternalEventCallablePayload | `callables/admin_publish_external_event_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_publish_external_event_callable_payload.g.dart` |
+| `schemaAdminTakedownExternalEventCallablePayloadSchema` | AdminTakedownExternalEventCallablePayload | `callables/admin_takedown_external_event_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_takedown_external_event_callable_payload.g.dart` |
 | `schemaStartClubHostConversationCallablePayloadSchema` | StartClubHostConversationCallablePayload | `callables/start_club_host_conversation_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/start_club_host_conversation_callable_payload.g.dart` |
 | `schemaStartOrganizerConversationCallablePayloadSchema` | StartOrganizerConversationCallablePayload | `callables/start_organizer_conversation_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/start_organizer_conversation_callable_payload.g.dart` |
 | `schemaArchiveClubCallablePayloadSchema` | ArchiveClubCallablePayload | `callables/archive_club_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/archive_club_callable_payload.g.dart` |
@@ -476,6 +484,7 @@ Do not edit it by hand.
 | AdminListEventDetailsCallableRequest | AdminListEventDetailsCallablePayload | `callables/admin_list_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_list_event_details_callable_request.g.dart` |
 | AdminListExternalEventDetailsCallableRequest | AdminListExternalEventDetailsCallablePayload | `callables/admin_list_external_event_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_list_external_event_details_callable_request.g.dart` |
 | AdminPublishExternalEventCallableRequest | AdminPublishExternalEventCallablePayload | `callables/admin_publish_external_event_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_publish_external_event_callable_request.g.dart` |
+| AdminTakedownExternalEventCallableRequest | AdminTakedownExternalEventCallablePayload | `callables/admin_takedown_external_event_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_takedown_external_event_callable_request.g.dart` |
 | StartClubHostConversationCallableRequest | StartClubHostConversationCallablePayload | `callables/start_club_host_conversation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/start_club_host_conversation_callable_request.g.dart` |
 | StartOrganizerConversationCallableRequest | StartOrganizerConversationCallablePayload | `callables/start_organizer_conversation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/start_organizer_conversation_callable_request.g.dart` |
 | ArchiveClubCallableRequest | ArchiveClubCallablePayload | `callables/archive_club_payload.schema.json` | `lib/core/schema_contracts/generated/callables/archive_club_callable_request.g.dart` |

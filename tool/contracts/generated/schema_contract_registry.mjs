@@ -2764,6 +2764,326 @@ export const activityPreferencesSchema = {
   }
 };
 
+export const organizerSupplyCapabilitiesSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/embedded/organizer_supply_capabilities.schema.json",
+  "title": "OrganizerSupplyCapabilities",
+  "description": "Canonical organizer-level ceiling for member affordances. Event policy may narrow these capabilities but may never widen them.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "mode",
+    "bookable",
+    "paymentsEnabled",
+    "waitlistEnabled",
+    "hostContactEnabled",
+    "claimable",
+    "reviewPolicy"
+  ],
+  "properties": {
+    "mode": {
+      "type": "string",
+      "enum": [
+        "unclaimed_read_only",
+        "claimed_managed"
+      ]
+    },
+    "bookable": {
+      "type": "boolean"
+    },
+    "paymentsEnabled": {
+      "type": "boolean"
+    },
+    "waitlistEnabled": {
+      "type": "boolean"
+    },
+    "hostContactEnabled": {
+      "type": "boolean"
+    },
+    "claimable": {
+      "type": "boolean"
+    },
+    "reviewPolicy": {
+      "type": "string",
+      "enum": [
+        "after_event_end",
+        "attended_event_only"
+      ]
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "mode": {
+          "const": "unclaimed_read_only"
+        },
+        "bookable": {
+          "const": false
+        },
+        "paymentsEnabled": {
+          "const": false
+        },
+        "waitlistEnabled": {
+          "const": false
+        },
+        "hostContactEnabled": {
+          "const": false
+        },
+        "reviewPolicy": {
+          "const": "after_event_end"
+        }
+      },
+      "required": [
+        "mode",
+        "bookable",
+        "paymentsEnabled",
+        "waitlistEnabled",
+        "hostContactEnabled",
+        "reviewPolicy"
+      ]
+    },
+    {
+      "properties": {
+        "mode": {
+          "const": "claimed_managed"
+        },
+        "bookable": {
+          "const": true
+        },
+        "paymentsEnabled": {
+          "const": true
+        },
+        "waitlistEnabled": {
+          "const": true
+        },
+        "hostContactEnabled": {
+          "const": true
+        },
+        "claimable": {
+          "const": false
+        },
+        "reviewPolicy": {
+          "const": "attended_event_only"
+        }
+      },
+      "required": [
+        "mode",
+        "bookable",
+        "paymentsEnabled",
+        "waitlistEnabled",
+        "hostContactEnabled",
+        "claimable",
+        "reviewPolicy"
+      ]
+    }
+  ]
+};
+
+export const externalEventBlockerResolutionSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/embedded/external_event_blocker_resolution.schema.json",
+  "title": "ExternalEventBlockerResolution",
+  "description": "One explicit, event-scoped resolution or policy-backed waiver for a governed external-event import blocker.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "blockerCode",
+    "outcome",
+    "policyGapDecisionId",
+    "note"
+  ],
+  "properties": {
+    "blockerCode": {
+      "type": "string",
+      "enum": [
+        "missing_exact_coordinates",
+        "missing_end_time",
+        "missing_location_detail",
+        "requires_event_defaults_policy",
+        "requires_owner_safe_copy_review",
+        "duplicate_normalized_event_key"
+      ]
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "resolved",
+        "waived"
+      ]
+    },
+    "policyGapDecisionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "waived"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "policyGapDecisionId": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "resolved"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "policyGapDecisionId": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+};
+
+export const externalEventPublicationReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/external_event_publication_receipts.schema.json",
+  "title": "ExternalEventPublicationReceiptDocument",
+  "description": "Immutable idempotency and audit receipt for a dry-run or applied external-event publication/takedown action.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "externalEventPublicationReceipts",
+  "x-firestore-path": "externalEventPublicationReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "adminPublishExternalEvent and adminTakedownExternalEvent callables",
+  "required": [
+    "schemaVersion",
+    "receiptId",
+    "idempotencyKey",
+    "inputHash",
+    "action",
+    "executionMode",
+    "outcome",
+    "eventId",
+    "targetPath",
+    "sourceActionId",
+    "externalLinkCount",
+    "reviewNote",
+    "actorUid",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "receiptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 180
+    },
+    "inputHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "publish",
+        "takedown"
+      ]
+    },
+    "executionMode": {
+      "type": "string",
+      "enum": [
+        "dry_run",
+        "apply"
+      ]
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "would_publish",
+        "published",
+        "would_remove",
+        "removed"
+      ]
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "targetPath": {
+      "type": "string",
+      "pattern": "^externalEvents/[A-Za-z0-9_-]{1,180}$"
+    },
+    "sourceActionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240
+    },
+    "externalLinkCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 12
+    },
+    "reviewNote": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
 export const configCitiesDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/config_cities.schema.json",
@@ -6645,6 +6965,119 @@ export const clubDocumentSchema = {
       "description": "Whether the native app should show this organizer in browse surfaces. Scraped unclaimed profiles start hidden.",
       "x-catch-ownership": "callable-owned"
     },
+    "supplyCapabilities": {
+      "title": "OrganizerSupplyCapabilities",
+      "description": "Compatibility shadow of the canonical organizer member-affordance ceiling.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "bookable",
+        "paymentsEnabled",
+        "waitlistEnabled",
+        "hostContactEnabled",
+        "claimable",
+        "reviewPolicy"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "unclaimed_read_only",
+            "claimed_managed"
+          ]
+        },
+        "bookable": {
+          "type": "boolean"
+        },
+        "paymentsEnabled": {
+          "type": "boolean"
+        },
+        "waitlistEnabled": {
+          "type": "boolean"
+        },
+        "hostContactEnabled": {
+          "type": "boolean"
+        },
+        "claimable": {
+          "type": "boolean"
+        },
+        "reviewPolicy": {
+          "type": "string",
+          "enum": [
+            "after_event_end",
+            "attended_event_only"
+          ]
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "mode": {
+              "const": "unclaimed_read_only"
+            },
+            "bookable": {
+              "const": false
+            },
+            "paymentsEnabled": {
+              "const": false
+            },
+            "waitlistEnabled": {
+              "const": false
+            },
+            "hostContactEnabled": {
+              "const": false
+            },
+            "reviewPolicy": {
+              "const": "after_event_end"
+            }
+          },
+          "required": [
+            "mode",
+            "bookable",
+            "paymentsEnabled",
+            "waitlistEnabled",
+            "hostContactEnabled",
+            "reviewPolicy"
+          ]
+        },
+        {
+          "properties": {
+            "mode": {
+              "const": "claimed_managed"
+            },
+            "bookable": {
+              "const": true
+            },
+            "paymentsEnabled": {
+              "const": true
+            },
+            "waitlistEnabled": {
+              "const": true
+            },
+            "hostContactEnabled": {
+              "const": true
+            },
+            "claimable": {
+              "const": false
+            },
+            "reviewPolicy": {
+              "const": "attended_event_only"
+            }
+          },
+          "required": [
+            "mode",
+            "bookable",
+            "paymentsEnabled",
+            "waitlistEnabled",
+            "hostContactEnabled",
+            "claimable",
+            "reviewPolicy"
+          ]
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
     "ownership": {
       "type": "object",
       "additionalProperties": false,
@@ -8929,6 +9362,119 @@ export const organizerDocumentSchema = {
         "hidden"
       ],
       "description": "Whether the native app should show this organizer in browse surfaces. Scraped unclaimed profiles start hidden.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "supplyCapabilities": {
+      "title": "OrganizerSupplyCapabilities",
+      "description": "Organizer-level member-affordance ceiling. New writes must persist it; legacy readers derive the same fail-closed policy until backfill completes.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "bookable",
+        "paymentsEnabled",
+        "waitlistEnabled",
+        "hostContactEnabled",
+        "claimable",
+        "reviewPolicy"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "unclaimed_read_only",
+            "claimed_managed"
+          ]
+        },
+        "bookable": {
+          "type": "boolean"
+        },
+        "paymentsEnabled": {
+          "type": "boolean"
+        },
+        "waitlistEnabled": {
+          "type": "boolean"
+        },
+        "hostContactEnabled": {
+          "type": "boolean"
+        },
+        "claimable": {
+          "type": "boolean"
+        },
+        "reviewPolicy": {
+          "type": "string",
+          "enum": [
+            "after_event_end",
+            "attended_event_only"
+          ]
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "mode": {
+              "const": "unclaimed_read_only"
+            },
+            "bookable": {
+              "const": false
+            },
+            "paymentsEnabled": {
+              "const": false
+            },
+            "waitlistEnabled": {
+              "const": false
+            },
+            "hostContactEnabled": {
+              "const": false
+            },
+            "reviewPolicy": {
+              "const": "after_event_end"
+            }
+          },
+          "required": [
+            "mode",
+            "bookable",
+            "paymentsEnabled",
+            "waitlistEnabled",
+            "hostContactEnabled",
+            "reviewPolicy"
+          ]
+        },
+        {
+          "properties": {
+            "mode": {
+              "const": "claimed_managed"
+            },
+            "bookable": {
+              "const": true
+            },
+            "paymentsEnabled": {
+              "const": true
+            },
+            "waitlistEnabled": {
+              "const": true
+            },
+            "hostContactEnabled": {
+              "const": true
+            },
+            "claimable": {
+              "const": false
+            },
+            "reviewPolicy": {
+              "const": "attended_event_only"
+            }
+          },
+          "required": [
+            "mode",
+            "bookable",
+            "paymentsEnabled",
+            "waitlistEnabled",
+            "hostContactEnabled",
+            "claimable",
+            "reviewPolicy"
+          ]
+        }
+      ],
       "x-catch-ownership": "callable-owned"
     },
     "ownership": {
@@ -11900,6 +12446,7 @@ export const externalEventDocumentSchema = {
     "price",
     "status",
     "publicationStatus",
+    "organizerCapabilities",
     "booking",
     "discovery",
     "dedupe",
@@ -12176,6 +12723,118 @@ export const externalEventDocumentSchema = {
         "removed"
       ]
     },
+    "organizerCapabilities": {
+      "title": "OrganizerSupplyCapabilities",
+      "description": "Audited snapshot of the attributed organizer's member-affordance ceiling at publication time.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "bookable",
+        "paymentsEnabled",
+        "waitlistEnabled",
+        "hostContactEnabled",
+        "claimable",
+        "reviewPolicy"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "unclaimed_read_only",
+            "claimed_managed"
+          ]
+        },
+        "bookable": {
+          "type": "boolean"
+        },
+        "paymentsEnabled": {
+          "type": "boolean"
+        },
+        "waitlistEnabled": {
+          "type": "boolean"
+        },
+        "hostContactEnabled": {
+          "type": "boolean"
+        },
+        "claimable": {
+          "type": "boolean"
+        },
+        "reviewPolicy": {
+          "type": "string",
+          "enum": [
+            "after_event_end",
+            "attended_event_only"
+          ]
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "mode": {
+              "const": "unclaimed_read_only"
+            },
+            "bookable": {
+              "const": false
+            },
+            "paymentsEnabled": {
+              "const": false
+            },
+            "waitlistEnabled": {
+              "const": false
+            },
+            "hostContactEnabled": {
+              "const": false
+            },
+            "reviewPolicy": {
+              "const": "after_event_end"
+            }
+          },
+          "required": [
+            "mode",
+            "bookable",
+            "paymentsEnabled",
+            "waitlistEnabled",
+            "hostContactEnabled",
+            "reviewPolicy"
+          ]
+        },
+        {
+          "properties": {
+            "mode": {
+              "const": "claimed_managed"
+            },
+            "bookable": {
+              "const": true
+            },
+            "paymentsEnabled": {
+              "const": true
+            },
+            "waitlistEnabled": {
+              "const": true
+            },
+            "hostContactEnabled": {
+              "const": true
+            },
+            "claimable": {
+              "const": false
+            },
+            "reviewPolicy": {
+              "const": "attended_event_only"
+            }
+          },
+          "required": [
+            "mode",
+            "bookable",
+            "paymentsEnabled",
+            "waitlistEnabled",
+            "hostContactEnabled",
+            "claimable",
+            "reviewPolicy"
+          ]
+        }
+      ]
+    },
     "booking": {
       "type": "object",
       "additionalProperties": false,
@@ -12416,7 +13075,8 @@ export const externalEventDocumentSchema = {
         "decidedAt",
         "note",
         "importPolicyAcknowledged",
-        "ownerSafeCopyReviewed"
+        "ownerSafeCopyReviewed",
+        "blockerResolutions"
       ],
       "properties": {
         "eventReviewBatchId": {
@@ -12452,6 +13112,139 @@ export const externalEventDocumentSchema = {
         },
         "ownerSafeCopyReviewed": {
           "type": "boolean"
+        },
+        "blockerResolutions": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "title": "ExternalEventBlockerResolution",
+            "description": "One explicit, event-scoped resolution or policy-backed waiver for a governed external-event import blocker.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "blockerCode",
+              "outcome",
+              "policyGapDecisionId",
+              "note"
+            ],
+            "properties": {
+              "blockerCode": {
+                "type": "string",
+                "enum": [
+                  "missing_exact_coordinates",
+                  "missing_end_time",
+                  "missing_location_detail",
+                  "requires_event_defaults_policy",
+                  "requires_owner_safe_copy_review",
+                  "duplicate_normalized_event_key"
+                ]
+              },
+              "outcome": {
+                "type": "string",
+                "enum": [
+                  "resolved",
+                  "waived"
+                ]
+              },
+              "policyGapDecisionId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "note": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "outcome": {
+                      "const": "waived"
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "policyGapDecisionId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "outcome": {
+                      "const": "resolved"
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "policyGapDecisionId": {
+                      "type": "null"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "takedown": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "removedAt",
+        "removedByUid",
+        "reason",
+        "receiptId"
+      ],
+      "properties": {
+        "removedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        "removedByUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "receiptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
         }
       }
     },
@@ -20966,6 +21759,89 @@ export const organizerEventCandidateReviewDecisionDocumentSchema = {
         }
       }
     },
+    "blockerResolutions": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "title": "ExternalEventBlockerResolution",
+        "description": "One explicit, event-scoped resolution or policy-backed waiver for a governed external-event import blocker.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "blockerCode",
+          "outcome",
+          "policyGapDecisionId",
+          "note"
+        ],
+        "properties": {
+          "blockerCode": {
+            "type": "string",
+            "enum": [
+              "missing_exact_coordinates",
+              "missing_end_time",
+              "missing_location_detail",
+              "requires_event_defaults_policy",
+              "requires_owner_safe_copy_review",
+              "duplicate_normalized_event_key"
+            ]
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "resolved",
+              "waived"
+            ]
+          },
+          "policyGapDecisionId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "outcome": {
+                  "const": "waived"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "policyGapDecisionId": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "outcome": {
+                  "const": "resolved"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "policyGapDecisionId": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
     "note": {
       "type": "string",
       "minLength": 1,
@@ -28708,6 +29584,7 @@ export const adminDecideOrganizerEventCandidateCallablePayloadSchema = {
     "candidateId",
     "decision",
     "checklist",
+    "blockerResolutions",
     "note"
   ],
   "properties": {
@@ -28758,6 +29635,89 @@ export const adminDecideOrganizerEventCandidateCallablePayloadSchema = {
         "importPolicyAcknowledged": {
           "type": "boolean"
         }
+      }
+    },
+    "blockerResolutions": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "title": "ExternalEventBlockerResolution",
+        "description": "One explicit, event-scoped resolution or policy-backed waiver for a governed external-event import blocker.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "blockerCode",
+          "outcome",
+          "policyGapDecisionId",
+          "note"
+        ],
+        "properties": {
+          "blockerCode": {
+            "type": "string",
+            "enum": [
+              "missing_exact_coordinates",
+              "missing_end_time",
+              "missing_location_detail",
+              "requires_event_defaults_policy",
+              "requires_owner_safe_copy_review",
+              "duplicate_normalized_event_key"
+            ]
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "resolved",
+              "waived"
+            ]
+          },
+          "policyGapDecisionId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "outcome": {
+                  "const": "waived"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "policyGapDecisionId": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "outcome": {
+                  "const": "resolved"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "policyGapDecisionId": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        ]
       }
     },
     "note": {
@@ -30284,6 +31244,8 @@ export const adminPublishExternalEventCallablePayloadSchema = {
   "required": [
     "sourceActionId",
     "targetPath",
+    "executionMode",
+    "idempotencyKey",
     "reviewNote",
     "checklist"
   ],
@@ -30296,6 +31258,19 @@ export const adminPublishExternalEventCallablePayloadSchema = {
     "targetPath": {
       "type": "string",
       "pattern": "^externalEvents/[A-Za-z0-9_-]{1,180}$"
+    },
+    "executionMode": {
+      "type": "string",
+      "enum": [
+        "dry_run",
+        "apply"
+      ]
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9:_-]+$"
     },
     "reviewNote": {
       "type": "string",
@@ -30322,6 +31297,68 @@ export const adminPublishExternalEventCallablePayloadSchema = {
           "type": "boolean"
         },
         "ownerSafeCopyReviewed": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+};
+
+export const adminTakedownExternalEventCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_takedown_external_event_payload.schema.json",
+  "title": "AdminTakedownExternalEventCallablePayload",
+  "description": "Callable payload accepted by adminTakedownExternalEvent. Dry-run validates and receipts a reviewed takedown; apply removes the external event from discovery without deleting audit history.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "executionMode",
+    "idempotencyKey",
+    "reviewNote",
+    "checklist"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "executionMode": {
+      "type": "string",
+      "enum": [
+        "dry_run",
+        "apply"
+      ]
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9:_-]+$"
+    },
+    "reviewNote": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceStatusReviewed",
+        "takedownAuthorityReviewed",
+        "downstreamVisibilityReviewed"
+      ],
+      "properties": {
+        "sourceStatusReviewed": {
+          "type": "boolean"
+        },
+        "takedownAuthorityReviewed": {
+          "type": "boolean"
+        },
+        "downstreamVisibilityReviewed": {
           "type": "boolean"
         }
       }
@@ -35465,7 +36502,8 @@ export const websiteHostListingProjectionSchema = {
       "additionalProperties": false,
       "required": [
         "claimRequest",
-        "publicReviews"
+        "publicReviews",
+        "supply"
       ],
       "properties": {
         "claimRequest": {
@@ -35571,6 +36609,118 @@ export const websiteHostListingProjectionSchema = {
               }
             ]
           }
+        },
+        "supply": {
+          "title": "OrganizerSupplyCapabilities",
+          "description": "Canonical organizer-level ceiling for member affordances. Event policy may narrow these capabilities but may never widen them.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "bookable",
+            "paymentsEnabled",
+            "waitlistEnabled",
+            "hostContactEnabled",
+            "claimable",
+            "reviewPolicy"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "unclaimed_read_only",
+                "claimed_managed"
+              ]
+            },
+            "bookable": {
+              "type": "boolean"
+            },
+            "paymentsEnabled": {
+              "type": "boolean"
+            },
+            "waitlistEnabled": {
+              "type": "boolean"
+            },
+            "hostContactEnabled": {
+              "type": "boolean"
+            },
+            "claimable": {
+              "type": "boolean"
+            },
+            "reviewPolicy": {
+              "type": "string",
+              "enum": [
+                "after_event_end",
+                "attended_event_only"
+              ]
+            }
+          },
+          "oneOf": [
+            {
+              "properties": {
+                "mode": {
+                  "const": "unclaimed_read_only"
+                },
+                "bookable": {
+                  "const": false
+                },
+                "paymentsEnabled": {
+                  "const": false
+                },
+                "waitlistEnabled": {
+                  "const": false
+                },
+                "hostContactEnabled": {
+                  "const": false
+                },
+                "reviewPolicy": {
+                  "const": "after_event_end"
+                }
+              },
+              "required": [
+                "mode",
+                "bookable",
+                "paymentsEnabled",
+                "waitlistEnabled",
+                "hostContactEnabled",
+                "reviewPolicy"
+              ]
+            },
+            {
+              "properties": {
+                "mode": {
+                  "const": "claimed_managed"
+                },
+                "bookable": {
+                  "const": true
+                },
+                "paymentsEnabled": {
+                  "const": true
+                },
+                "waitlistEnabled": {
+                  "const": true
+                },
+                "hostContactEnabled": {
+                  "const": true
+                },
+                "claimable": {
+                  "const": false
+                },
+                "reviewPolicy": {
+                  "const": "attended_event_only"
+                }
+              },
+              "required": [
+                "mode",
+                "bookable",
+                "paymentsEnabled",
+                "waitlistEnabled",
+                "hostContactEnabled",
+                "claimable",
+                "reviewPolicy"
+              ]
+            }
+          ]
         }
       }
     },
@@ -36363,7 +37513,8 @@ export const websiteHostListingProjectionSchema = {
       "additionalProperties": false,
       "required": [
         "claimRequest",
-        "publicReviews"
+        "publicReviews",
+        "supply"
       ],
       "properties": {
         "claimRequest": {
@@ -36469,6 +37620,118 @@ export const websiteHostListingProjectionSchema = {
               }
             ]
           }
+        },
+        "supply": {
+          "title": "OrganizerSupplyCapabilities",
+          "description": "Canonical organizer-level ceiling for member affordances. Event policy may narrow these capabilities but may never widen them.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "bookable",
+            "paymentsEnabled",
+            "waitlistEnabled",
+            "hostContactEnabled",
+            "claimable",
+            "reviewPolicy"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "unclaimed_read_only",
+                "claimed_managed"
+              ]
+            },
+            "bookable": {
+              "type": "boolean"
+            },
+            "paymentsEnabled": {
+              "type": "boolean"
+            },
+            "waitlistEnabled": {
+              "type": "boolean"
+            },
+            "hostContactEnabled": {
+              "type": "boolean"
+            },
+            "claimable": {
+              "type": "boolean"
+            },
+            "reviewPolicy": {
+              "type": "string",
+              "enum": [
+                "after_event_end",
+                "attended_event_only"
+              ]
+            }
+          },
+          "oneOf": [
+            {
+              "properties": {
+                "mode": {
+                  "const": "unclaimed_read_only"
+                },
+                "bookable": {
+                  "const": false
+                },
+                "paymentsEnabled": {
+                  "const": false
+                },
+                "waitlistEnabled": {
+                  "const": false
+                },
+                "hostContactEnabled": {
+                  "const": false
+                },
+                "reviewPolicy": {
+                  "const": "after_event_end"
+                }
+              },
+              "required": [
+                "mode",
+                "bookable",
+                "paymentsEnabled",
+                "waitlistEnabled",
+                "hostContactEnabled",
+                "reviewPolicy"
+              ]
+            },
+            {
+              "properties": {
+                "mode": {
+                  "const": "claimed_managed"
+                },
+                "bookable": {
+                  "const": true
+                },
+                "paymentsEnabled": {
+                  "const": true
+                },
+                "waitlistEnabled": {
+                  "const": true
+                },
+                "hostContactEnabled": {
+                  "const": true
+                },
+                "claimable": {
+                  "const": false
+                },
+                "reviewPolicy": {
+                  "const": "attended_event_only"
+                }
+              },
+              "required": [
+                "mode",
+                "bookable",
+                "paymentsEnabled",
+                "waitlistEnabled",
+                "hostContactEnabled",
+                "claimable",
+                "reviewPolicy"
+              ]
+            }
+          ]
         }
       }
     },

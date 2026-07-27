@@ -5,7 +5,7 @@
   "description": "Callable payload accepted by adminDecideOrganizerEventCandidate. This records a manual admin review decision for a private external event candidate without importing the event.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["candidateId", "decision", "checklist", "note"],
+  "required": ["candidateId", "decision", "checklist", "blockerResolutions", "note"],
   "properties": {
     "candidateId": {"type": "string", "minLength": 1, "maxLength": 240},
     "decision": {"type": "string", "enum": ["approve_for_import", "hold", "reject"]},
@@ -29,6 +29,13 @@
         "dedupeReviewed": {"type": "boolean"},
         "ownerSafeCopyReviewed": {"type": "boolean"},
         "importPolicyAcknowledged": {"type": "boolean"}
+      }
+    },
+    "blockerResolutions": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "$ref": "../embedded/external_event_blocker_resolution.schema.json"
       }
     },
     "note": {"type": "string", "minLength": 1, "maxLength": 1000}

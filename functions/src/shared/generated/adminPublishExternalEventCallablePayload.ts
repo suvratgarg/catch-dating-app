@@ -8,6 +8,8 @@
 export interface AdminPublishExternalEventCallablePayload {
   sourceActionId: string;
   targetPath: string;
+  executionMode: "dry_run" | "apply";
+  idempotencyKey: string;
   reviewNote: string;
   checklist: {
     preflightActionReviewed: boolean;

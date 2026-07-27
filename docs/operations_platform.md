@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.7.0
+version: 1.8.0
 updated: 2026-07-27
 owner: operations_platform
 status: active
@@ -482,6 +482,16 @@ explicit controls with conditional evidence gates. Suppression turns every
 control off; a claimed organizer cannot be downgraded by intake. External-event
 authority must call the shared visibility policy so an event cannot exceed its
 organizer on the web, in search, or in the app.
+
+External-event publication is now a separate Functions-owned authority.
+Operations and compatibility tools may normalize candidates, project readiness,
+and carry reviewed blocker resolutions, but they do not write
+`externalEvents`. The admin invokes a receipt-backed dry run before apply.
+Functions revalidates launch-market identity, the organizer capability and
+visibility ceilings, the reviewed candidate snapshot, and each governed
+blocker. A waiver succeeds only through the accepted exact policy-gap decision.
+Publication and takedown each emit immutable idempotency receipts; takedown
+preserves provenance rather than deleting the external-event record.
 
 Eligibility is evaluated only from the source-publication policy frozen into
 the run plan. The promotion receipt includes that complete policy snapshot and

@@ -2,6 +2,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import {ExternalEventBlockerResolution} from "./externalEventBlockerResolution";
 import {HostAnalyticsCallableResponse} from "./hostAnalyticsCallableResponse";
 
 /**
@@ -127,6 +128,39 @@ export interface ActivityPreferences {
     version: number;
   };
 }
+
+/**
+ * Canonical organizer-level ceiling for member affordances. Event policy may narrow these capabilities but may never widen them.
+ */
+export type OrganizerSupplyCapabilities = {
+  mode: "unclaimed_read_only" | "claimed_managed";
+  bookable: boolean;
+  paymentsEnabled: boolean;
+  waitlistEnabled: boolean;
+  hostContactEnabled: boolean;
+  claimable: boolean;
+  reviewPolicy: "after_event_end" | "attended_event_only";
+} & (
+  | {
+      mode: "unclaimed_read_only";
+      bookable: false;
+      paymentsEnabled: false;
+      waitlistEnabled: false;
+      hostContactEnabled: false;
+      reviewPolicy: "after_event_end";
+      [k: string]: unknown;
+    }
+  | {
+      mode: "claimed_managed";
+      bookable: true;
+      paymentsEnabled: true;
+      waitlistEnabled: true;
+      hostContactEnabled: true;
+      claimable: false;
+      reviewPolicy: "attended_event_only";
+      [k: string]: unknown;
+    }
+);
 
 /**
  * Canonical meeting location selected from Google Places or a manually pinned map coordinate.
@@ -417,6 +451,26 @@ export interface EventPolicyDemandPricingRuleDocument {
   maxAdjustmentInPaise: number;
   freeSkew: number;
   demandStep: number;
+}
+
+/**
+ * Immutable idempotency and audit receipt for a dry-run or applied external-event publication/takedown action.
+ */
+export interface ExternalEventPublicationReceiptDocument {
+  schemaVersion: 1;
+  receiptId: string;
+  idempotencyKey: string;
+  inputHash: string;
+  action: "publish" | "takedown";
+  executionMode: "dry_run" | "apply";
+  outcome: "would_publish" | "published" | "would_remove" | "removed";
+  eventId: string;
+  targetPath: string;
+  sourceActionId: string | null;
+  externalLinkCount: number;
+  reviewNote: string;
+  actorUid: string;
+  createdAt: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -890,6 +944,7 @@ export interface ClubDocument {
    * Whether the native app should show this organizer in browse surfaces. Scraped unclaimed profiles start hidden.
    */
   appVisibility?: "discoverable" | "hidden";
+  supplyCapabilities?: OrganizerSupplyCapabilities;
   /**
    * Claim-aware organizer ownership state. This is the forward-looking owner model; legacy host fields are maintained for app compatibility.
    */
@@ -1298,6 +1353,7 @@ export interface OrganizerDocument {
    * Whether the native app should show this organizer in browse surfaces. Scraped unclaimed profiles start hidden.
    */
   appVisibility?: "discoverable" | "hidden";
+  supplyCapabilities?: OrganizerSupplyCapabilities;
   /**
    * Claim-aware organizer ownership state. This is the forward-looking owner model; legacy host fields are maintained for app compatibility.
    */
@@ -1730,6 +1786,7 @@ export interface ExternalEventDocument {
   };
   status: "active" | "cancelled";
   publicationStatus: "draft" | "public" | "archived" | "removed";
+  organizerCapabilities: OrganizerSupplyCapabilities;
   booking: {
     mode: "external_outbound_only";
     catchBookingEnabled: false;
@@ -1779,7 +1836,17 @@ export interface ExternalEventDocument {
     note: string | null;
     importPolicyAcknowledged: boolean;
     ownerSafeCopyReviewed: boolean;
+    /**
+     * @maxItems 6
+     */
+    blockerResolutions: ExternalEventBlockerResolution[];
   };
+  takedown?: {
+    removedAt: FirebaseFirestore.Timestamp;
+    removedByUid: string;
+    reason: string;
+    receiptId: string;
+  } | null;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
 }
@@ -2906,6 +2973,10 @@ export interface OrganizerEventCandidateReviewDecisionDocument {
     ownerSafeCopyReviewed: boolean;
     importPolicyAcknowledged: boolean;
   };
+  /**
+   * @maxItems 6
+   */
+  blockerResolutions?: ExternalEventBlockerResolution[];
   note: string;
   reviewedByUid: string;
   reviewedAt: FirebaseFirestore.Timestamp;

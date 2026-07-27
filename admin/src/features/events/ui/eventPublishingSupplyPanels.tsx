@@ -87,6 +87,7 @@ import {
 } from "../../../shared/ui/AdminPrimitives";
 import {
   type ExternalEventPublishRequest,
+  type ExternalEventTakedownRequest,
   type ExternalEventSupplyFilter,
   type EventPublishingController,
   type EventPublishingFilter,
@@ -476,9 +477,93 @@ function ExternalEventImportReviewPanel({
   );
 }
 
+function ExternalEventTakedownPanel({
+  event,
+  isSubmitting,
+  onTakedown,
+}: {
+  event: AdminExternalEventListRow | null;
+  isSubmitting: boolean;
+  onTakedown: (request: ExternalEventTakedownRequest) => Promise<boolean>;
+}) {
+  const [reviewNote, setReviewNote] = useState("");
+  const [checklist, setChecklist] = useState({
+    sourceStatusReviewed: false,
+    takedownAuthorityReviewed: false,
+    downstreamVisibilityReviewed: false,
+  });
+  if (!event || event.publicationStatus !== "public") return null;
+  const checklistComplete = Object.values(checklist).every(Boolean);
+  const disabled = isSubmitting ||
+    !reviewNote.trim() ||
+    !checklistComplete;
+
+  return (
+    <AdminEventSupplyDetail aria-label="External event takedown">
+      <QualityRow
+        icon={<FileWarning size={16} strokeWidth={1.9} />}
+        tone="warning"
+      >
+        <strong>Remove from external discovery</strong>
+        <span>
+          This keeps the event and immutable receipts for audit, but marks the
+          public projection removed and cancelled.
+        </span>
+      </QualityRow>
+      <TextareaField
+        label="Takedown review note"
+        onChange={setReviewNote}
+        placeholder="State what changed at the official source and why removal is authorized."
+        rows={4}
+        value={reviewNote}
+      />
+      <QualityList>
+        <CheckboxField
+          checked={checklist.sourceStatusReviewed}
+          label="Official source status reviewed"
+          onChange={(checked) => setChecklist((current) => ({
+            ...current,
+            sourceStatusReviewed: checked,
+          }))}
+        />
+        <CheckboxField
+          checked={checklist.takedownAuthorityReviewed}
+          label="Takedown authority reviewed"
+          onChange={(checked) => setChecklist((current) => ({
+            ...current,
+            takedownAuthorityReviewed: checked,
+          }))}
+        />
+        <CheckboxField
+          checked={checklist.downstreamVisibilityReviewed}
+          label="Downstream app and web visibility reviewed"
+          onChange={(checked) => setChecklist((current) => ({
+            ...current,
+            downstreamVisibilityReviewed: checked,
+          }))}
+        />
+      </QualityList>
+      <AdminButton
+        disabled={disabled}
+        icon={<FileWarning size={15} strokeWidth={1.9} />}
+        loading={isSubmitting}
+        loadingLabel="Removing external event"
+        onClick={() => onTakedown({
+          eventId: event.eventId,
+          reviewNote,
+          checklist,
+        })}
+      >
+        Remove external event
+      </AdminButton>
+    </AdminEventSupplyDetail>
+  );
+}
+
 export const eventPublishingSupplyPanels = {
   EventDirectoryTable,
   ExternalEventSupplyTable,
   ExternalEventSupplyDetail,
   ExternalEventImportReviewPanel,
+  ExternalEventTakedownPanel,
 };

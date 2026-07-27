@@ -2,6 +2,8 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import {OrganizerSupplyCapabilities} from "./organizerSupplyCapabilities";
+
 /**
  * Public organizer listing projection consumed by the marketing website and future shared web/app listing surfaces. It is generated from approved organizer, seed, or demo data and is not the canonical organizer document.
  */
@@ -178,6 +180,7 @@ export interface WebsiteHostListingProjection {
       writeState: "enabled" | "disabled";
       reason: string;
     };
+    supply: OrganizerSupplyCapabilities;
   };
   lastVerifiedAt: string;
   searchText: string;

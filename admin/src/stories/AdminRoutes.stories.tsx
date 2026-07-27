@@ -228,6 +228,7 @@ const eventController: EventPublishingController = {
   isListLoading: false,
   isSaving: false,
   isSupplyReadinessLoading: false,
+  isTakingDownExternalEvent: false,
   listGeneratedAt: "2026-07-03T09:55:00.000Z",
   openExternalSupply: () => {
     noop();
@@ -294,6 +295,10 @@ const eventController: EventPublishingController = {
     noop();
   },
   supplyReadiness: eventSupplyReadiness,
+  takedownExternalEvent: async (_request) => {
+    noop();
+    return false;
+  },
   validationIssues: [],
   view: "list",
 };

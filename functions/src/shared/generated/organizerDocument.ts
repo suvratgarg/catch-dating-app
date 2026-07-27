@@ -3,6 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 import {UploadedPhoto} from "./uploadedPhoto";
+import {OrganizerSupplyCapabilities} from "./organizerSupplyCapabilities";
 
 /**
  * Canonical organizer document stored at organizers/{organizerId}. Club is one organizerType, not the parent entity name.
@@ -308,6 +309,7 @@ export interface OrganizerDocument {
    * Whether the native app should show this organizer in browse surfaces. Scraped unclaimed profiles start hidden.
    */
   appVisibility?: "discoverable" | "hidden";
+  supplyCapabilities?: OrganizerSupplyCapabilities;
   /**
    * Claim-aware organizer ownership state. This is the forward-looking owner model; legacy host fields are maintained for app compatibility.
    */

@@ -17,6 +17,8 @@ void main() {
     expect(event.meetingPoint, 'Legacy venue');
     expect(event.latitude, isNull);
     expect(event.longitude, isNull);
+    expect(event.isBookableOnCatch, isFalse);
+    expect(event.canRequestOrganizerClaim, isFalse);
   });
 
   group('ExternalEventDiscoveryQuery', () {
@@ -200,6 +202,15 @@ Future<void> _seedExternalEvent(
     'price': {'displayText': null, 'parsedPriceInPaise': 0, 'currency': 'INR'},
     'status': status,
     'publicationStatus': publicationStatus,
+    'organizerCapabilities': {
+      'mode': 'unclaimed_read_only',
+      'bookable': false,
+      'paymentsEnabled': false,
+      'waitlistEnabled': false,
+      'hostContactEnabled': false,
+      'claimable': true,
+      'reviewPolicy': 'after_event_end',
+    },
     'booking': {
       'mode': 'external_outbound_only',
       'catchBookingEnabled': false,
@@ -244,6 +255,7 @@ Future<void> _seedExternalEvent(
       'note': null,
       'importPolicyAcknowledged': true,
       'ownerSafeCopyReviewed': true,
+      'blockerResolutions': const [],
     },
     'createdAt': Timestamp.fromDate(DateTime(2026, 6, 25)),
     'updatedAt': Timestamp.fromDate(DateTime(2026, 6, 25)),

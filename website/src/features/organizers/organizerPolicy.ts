@@ -39,6 +39,9 @@ export interface OrganizerListingPolicy {
     tone: "claimed" | "unclaimed" | "verified";
   };
   canReadPublicReviews: boolean;
+  canBook: boolean;
+  canContactHost: boolean;
+  canJoinWaitlist: boolean;
   isPubliclyReadable: boolean;
   canRequestClaim: boolean;
   canWritePublicReview: boolean;
@@ -47,6 +50,7 @@ export interface OrganizerListingPolicy {
   isCatchCreated: boolean;
   ownershipState: OrganizerOwnershipState;
   publicReviewReason: string;
+  reviewPolicy: "after_event_end" | "attended_event_only" | "unavailable";
   trustState: OrganizerTrustState;
   verificationStatus: OrganizerVerificationStatus;
 }
@@ -72,6 +76,15 @@ interface PolicyAwareListing {
       reason?: string;
       targetState?: string;
       writeState?: string;
+    };
+    supply?: {
+      mode?: string;
+      bookable?: boolean;
+      paymentsEnabled?: boolean;
+      waitlistEnabled?: boolean;
+      hostContactEnabled?: boolean;
+      claimable?: boolean;
+      reviewPolicy?: string;
     };
   };
 }
@@ -135,6 +148,7 @@ export function organizerPolicyForListing(listing: HostListing): OrganizerListin
   const ownershipCanBeClaimed = ownershipState === "programmatic";
   const claimStateCanBeClaimed = claimState === "unclaimed";
   const claimCapability = projected.capabilities?.claimRequest;
+  const supply = projected.capabilities?.supply;
   const legacyPublicApiEnabled = listing.publicApi.state === "enabled";
   const claimCapabilityEnabled = claimCapability ?
     capabilityEnabled(claimCapability.state) :
@@ -142,7 +156,8 @@ export function organizerPolicyForListing(listing: HostListing): OrganizerListin
   const canRequestClaim = isPubliclyReadable &&
     ownershipCanBeClaimed &&
     claimStateCanBeClaimed &&
-    claimCapabilityEnabled;
+    claimCapabilityEnabled &&
+    (supply ? supply.claimable === true : !hasCapabilityProjection);
   const claimRequestReason = canRequestClaim ? "" : firstReason([
     !isPubliclyReadable ? "This organizer listing is not publicly available." : "",
     claimStateReason(claimState),
@@ -159,7 +174,9 @@ export function organizerPolicyForListing(listing: HostListing): OrganizerListin
   const canReadPublicReviews = isPubliclyReadable && publicReviewTargetEnabled && (publicReviews ?
     capabilityEnabled(publicReviews.readState) :
     !hasCapabilityProjection && legacyPublicApiEnabled);
-  const canWritePublicReview = canReadPublicReviews && (publicReviews ?
+  const reviewPolicy = normalizedReviewPolicy(supply?.reviewPolicy);
+  const canWritePublicReview = canReadPublicReviews &&
+    reviewPolicy !== "after_event_end" && (publicReviews ?
     capabilityEnabled(publicReviews.writeState) :
     !hasCapabilityProjection && legacyPublicApiEnabled);
   const publicReviewReason = canWritePublicReview ? "" : firstReason([
@@ -174,6 +191,9 @@ export function organizerPolicyForListing(listing: HostListing): OrganizerListin
   return {
     badge: badgeFor(trustState),
     canReadPublicReviews,
+    canBook: supply?.bookable === true,
+    canContactHost: supply?.hostContactEnabled === true,
+    canJoinWaitlist: supply?.waitlistEnabled === true,
     canRequestClaim,
     canWritePublicReview,
     claimRequestReason,
@@ -182,9 +202,19 @@ export function organizerPolicyForListing(listing: HostListing): OrganizerListin
     isPubliclyReadable,
     ownershipState,
     publicReviewReason,
+    reviewPolicy,
     trustState,
     verificationStatus,
   };
+}
+
+function normalizedReviewPolicy(
+  value: string | undefined
+): OrganizerListingPolicy["reviewPolicy"] {
+  if (value === "after_event_end" || value === "attended_event_only") {
+    return value;
+  }
+  return "unavailable";
 }
 
 function normalizedOwnershipState(

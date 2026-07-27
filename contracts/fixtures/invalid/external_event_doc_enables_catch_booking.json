@@ -38,6 +38,15 @@
   },
   "status": "active",
   "publicationStatus": "public",
+  "organizerCapabilities": {
+    "mode": "unclaimed_read_only",
+    "bookable": false,
+    "paymentsEnabled": false,
+    "waitlistEnabled": false,
+    "hostContactEnabled": false,
+    "claimable": true,
+    "reviewPolicy": "after_event_end"
+  },
   "booking": {
     "mode": "external_outbound_only",
     "catchBookingEnabled": true,

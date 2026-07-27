@@ -3696,6 +3696,43 @@
         "operations/README.md"
       ],
       "notes": "Approval establishes a reviewed record, not exposure. Search indexing depends on a published page, while public-page and app visibility remain independent. The event publication writer introduced later must call the shared ceiling policy rather than duplicating it."
+    },
+    {
+      "id": "REG-SUPPLY-EXTERNAL-EVENT-AUTHORITY-001",
+      "title": "Unclaimed supply exposes privileged actions or external events bypass publication authority",
+      "status": "active",
+      "applies_to": [
+        "contracts/embedded/organizer_supply_capabilities.schema.json",
+        "contracts/embedded/external_event_blocker_resolution.schema.json",
+        "functions/src/shared/organizerSupplyCapabilities.ts",
+        "functions/src/admin/externalEventPublishing.ts",
+        "functions/src/admin/externalEventTakedown.ts",
+        "functions/src/admin/organizerEventIntake.ts",
+        "admin/src/features/events",
+        "admin/src/features/intake/organizer",
+        "tool/organizer_intake",
+        "lib/events",
+        "website/src/features/organizers",
+        "website/package.json",
+        "website/src/generated/hostListings.json",
+        "website/src/generated/hostListings.demo.json"
+      ],
+      "symptom": "Unclaimed supply exposes booking, payment, waitlist, host contact, or early review; an external event publishes without exact market and organizer ceilings; a blocker clears without an explicit resolution or accepted exact waiver; retry duplicates a write; or takedown deletes provenance.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions run build && node --test functions/lib/admin/externalEventPublishing.test.js functions/lib/admin/externalEventTakedown.test.js functions/lib/admin/organizerEventIntake.test.js functions/lib/shared/organizerSupplyCapabilities.test.js && node --test tool/organizer_intake/event_import_plan_core.test.mjs tool/organizer_intake/event_import_execution_core.test.mjs tool/data/backfill_organizer_supply_capabilities.test.mjs && node tool/run.mjs check web:admin-pending-operations && flutter test test/events/event_detail_screen_state_test.dart test/events/external_event_repository_test.dart",
+        "guardEvidence": "the shared capability contract removes privileged unclaimed actions and gates review by end time while preserving legacy owner-backed app organizers as managed; Functions revalidates market, visibility, capability, candidate, and policy-gap evidence; each dry-run/apply pair remains inside one Admin operation lease and immutable idempotency receipts; every governed blocker is explicitly resolved or waived; and both production and demo website projections materialize from Firestore before deploy"
+      },
+      "owner_docs": [
+        "docs/data_contracts.md",
+        "docs/backend_operation_catalog.md",
+        "docs/operations_platform.md",
+        "docs/app_architecture.md",
+        "docs/marketing_website_architecture.md",
+        "admin/README.md",
+        "operations/README.md"
+      ],
+      "notes": "The app-side review submission flow for passed external events on unclaimed organizers remains a named app-team dependency. This phase exposes eligibility but deliberately does not stub a generic review route. Missing capability fields retain managed behavior only when legacy owner evidence exists; ownerless legacy records fail closed. The Admin dry-run/apply dispatch helper intentionally makes the two callable invocations one guarded operator action."
     }
   ]
 }

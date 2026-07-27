@@ -44,6 +44,8 @@ function enabledListing(): HostListing {
     ...hostListings[0],
     authority: {
       ...hostListings[0].authority,
+      claimState: "claimed",
+      ownershipState: "claimed",
       publishStatus: "published",
     },
     capabilities: {
@@ -53,6 +55,15 @@ function enabledListing(): HostListing {
         readState: "enabled",
         writeState: "enabled",
         reason: "",
+      },
+      supply: {
+        mode: "claimed_managed",
+        bookable: true,
+        paymentsEnabled: true,
+        waitlistEnabled: true,
+        hostContactEnabled: true,
+        claimable: false,
+        reviewPolicy: "attended_event_only",
       },
     },
   };
@@ -136,8 +147,8 @@ describe("useListingReviewsController", () => {
       ...hostListings[0],
       authority: {
         ...hostListings[0].authority,
-        claimState: "unclaimed",
-        ownershipState: "programmatic",
+        claimState: "claimed",
+        ownershipState: "claimed",
         publishStatus: "published",
         verificationStatus: "sourceBacked",
       },
@@ -148,6 +159,15 @@ describe("useListingReviewsController", () => {
           readState: "enabled",
           writeState: "enabled",
           reason: "",
+        },
+        supply: {
+          mode: "claimed_managed",
+          bookable: true,
+          paymentsEnabled: true,
+          waitlistEnabled: true,
+          hostContactEnabled: true,
+          claimable: false,
+          reviewPolicy: "attended_event_only",
         },
       },
     } as HostListing;

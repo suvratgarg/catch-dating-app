@@ -5,7 +5,14 @@
   "description": "Callable payload accepted by adminPublishExternalEvent. This publishes one preflight-approved read-only externalEvents/{eventId} document from eventSupplyReadiness/current.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["sourceActionId", "targetPath", "reviewNote", "checklist"],
+  "required": [
+    "sourceActionId",
+    "targetPath",
+    "executionMode",
+    "idempotencyKey",
+    "reviewNote",
+    "checklist"
+  ],
   "properties": {
     "sourceActionId": {
       "type": "string",
@@ -15,6 +22,16 @@
     "targetPath": {
       "type": "string",
       "pattern": "^externalEvents/[A-Za-z0-9_-]{1,180}$"
+    },
+    "executionMode": {
+      "type": "string",
+      "enum": ["dry_run", "apply"]
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9:_-]+$"
     },
     "reviewNote": {
       "type": "string",

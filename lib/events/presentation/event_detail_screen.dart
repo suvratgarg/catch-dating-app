@@ -32,10 +32,11 @@ import 'package:catch_dating_app/events/shared/event_share_card.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/organizers/domain/organizer_supply_capabilities.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -164,6 +165,8 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
         currentUid: vm.userProfile?.uid,
         canMessageHost:
             sectionVisibility.showConsumerActions &&
+            (clubAsync.asData?.value?.supplyCapabilities.hostContactEnabled ??
+                false) &&
             vm.userProfile?.hasSocialReadyProfileOn(now) == true,
       );
       final socialState = eventDetailSocialStateFrom(
@@ -297,6 +300,11 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
             isHosted: vm.isHost,
             isClubMember: vm.isClubMember,
             participation: vm.participation,
+            organizerCapabilities:
+                clubAsync.asData?.value?.supplyCapabilities ??
+                const OrganizerSupplyCapabilities.unclaimedReadOnly(
+                  claimable: false,
+                ),
             inviteCode: widget.inviteCode,
             inviteLinkId: widget.inviteLinkId,
             now: now,
@@ -415,6 +423,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
           clubId: widget.clubId,
           isAuthenticated: false,
           participation: null,
+          organizerCapabilities: clubAsync.asData!.value!.supplyCapabilities,
           inviteCode: widget.inviteCode,
           inviteLinkId: widget.inviteLinkId,
           now: now,
@@ -481,6 +490,9 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
       return;
     }
     final readyProfile = userProfile!;
+    final failureReason = context
+        .l10n
+        .eventsEventDetailScreenVisiblecopyEventdetailscreenTogglesavedeventFailed;
 
     unawaited(
       EventDetailController.toggleSavedEventMutation
@@ -504,13 +516,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
           .catchError((Object error, StackTrace stackTrace) {
             ref
                 .read(errorLoggerProvider)
-                .logError(
-                  error,
-                  stackTrace,
-                  reason: context
-                      .l10n
-                      .eventsEventDetailScreenVisiblecopyEventdetailscreenTogglesavedeventFailed,
-                );
+                .logError(error, stackTrace, reason: failureReason);
             return isSaved;
           }),
     );
@@ -566,6 +572,7 @@ Widget? _eventDetailBottomNavigationBar({
   bool isHosted = false,
   bool isClubMember = false,
   required EventParticipation? participation,
+  required OrganizerSupplyCapabilities organizerCapabilities,
   required String? inviteCode,
   required String? inviteLinkId,
   required DateTime now,
@@ -575,6 +582,7 @@ Widget? _eventDetailBottomNavigationBar({
   required VoidCallback onGuestBook,
   required VoidCallback onCompleteProfile,
 }) {
+  if (!organizerCapabilities.bookable) return null;
   if (!sectionVisibility.showBottomNavigation) return null;
 
   if (!isAuthenticated) {
@@ -599,6 +607,7 @@ Widget? _eventDetailBottomNavigationBar({
     userProfile: userProfile!,
     clubId: clubId,
     participation: participation,
+    organizerCapabilities: organizerCapabilities,
     isSaved: isSaved,
     isHosted: isHosted,
     isClubMember: isClubMember,

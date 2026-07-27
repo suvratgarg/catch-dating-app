@@ -182,7 +182,12 @@ function OrganizerIntakeDiagnostics({
             decisionInFlight={eventDecisionInFlight}
             localDecisions={localEventDecisions}
             notes={eventDecisionNotes}
-            onDecision={(candidate, decision) => void handleEventDecision(candidate, decision)}
+            onDecision={(candidate, decision, blockerResolutions) =>
+              void handleEventDecision(
+                candidate,
+                decision,
+                blockerResolutions
+              )}
             onNoteChange={(candidateId, note) => setEventDecisionNotes((current) => ({...current, [candidateId]: note}))}
             queue={bridge.externalEventCandidates}
           />

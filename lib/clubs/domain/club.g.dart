@@ -76,6 +76,13 @@ _Club _$ClubFromJson(Map<String, dynamic> json) => _Club(
       : OrganizerProvenance.fromJson(
           json['provenance'] as Map<String, dynamic>,
         ),
+  supplyCapabilities:
+      readOrganizerSupplyCapabilities(json, 'supplyCapabilities') == null
+      ? const OrganizerSupplyCapabilities.claimedManaged()
+      : OrganizerSupplyCapabilities.fromJson(
+          readOrganizerSupplyCapabilities(json, 'supplyCapabilities')
+              as Map<String, dynamic>,
+        ),
   organizerType:
       $enumDecodeNullable(
         _$OrganizerTypeEnumMap,
@@ -126,6 +133,7 @@ Map<String, dynamic> _$ClubToJson(_Club instance) => <String, dynamic>{
   'claim': instance.claim?.toJson(),
   'publicPage': instance.publicPage?.toJson(),
   'provenance': instance.provenance?.toJson(),
+  'supplyCapabilities': instance.supplyCapabilities.toJson(),
   'organizerType': _$OrganizerTypeEnumMap[instance.organizerType]!,
   'publicCategoryLabel': instance.publicCategoryLabel,
   'hostDefaults': instance.hostDefaults.toJson(),
