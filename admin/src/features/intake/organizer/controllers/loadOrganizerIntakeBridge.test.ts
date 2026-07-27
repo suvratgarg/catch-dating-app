@@ -269,6 +269,53 @@ describe("loadOrganizerIntakeBridge", () => {
       });
   });
 
+  it("normalizes an undecided legacy packet without creating a decision",
+    async () => {
+      const run = operationRun(
+        "indore-run",
+        "indore",
+        "2026-07-24T12:01:00.000Z"
+      );
+      const packet = organizerPacketWorkItem("afterfly", "indore");
+      const intake = packet.normalizedPayload.intake as {
+        packet: {
+          status: string;
+          publicPresence: Record<string, unknown>;
+          adminDecision: {
+            currentDecision: Record<string, unknown> | null;
+          };
+        };
+      };
+      intake.packet.status = "ready_for_manual_publication_review";
+      delete intake.packet.publicPresence.publishStatus;
+      intake.packet.publicPresence.indexStatus = "noindex";
+      intake.packet.adminDecision.currentDecision = null;
+      mocks.listIntakeOperations.mockImplementation(async (
+        payload: {runId?: string}
+      ) => operationResponse({
+        runs: [run],
+        workItems: payload.runId ? [packet] : [],
+      }));
+
+      const result = await loadOrganizerIntakeBridge();
+
+      expect(result.workbench.items[0]).toMatchObject({
+        publishStatus: "draft",
+        indexStatus: "noindex",
+        appVisibility: "hidden",
+        reviewDecision: null,
+      });
+      expect(result.workbench.publicationReviewPackets.packets[0])
+        .toMatchObject({
+          publicPresence: {
+            publishStatus: "draft",
+            indexStatus: "noindex",
+            appVisibility: "hidden",
+          },
+          adminDecision: {currentDecision: null},
+        });
+    });
+
   it("rejects contradictory legacy visibility instead of inventing state",
     async () => {
       const run = operationRun(
