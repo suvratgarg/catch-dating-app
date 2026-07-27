@@ -81,6 +81,9 @@ Club buildClub({
   );
 }
 
+FakeClubsRepository seededClubsRepository(Club club) =>
+    FakeClubsRepository()..clubsById[club.id] = club;
+
 String _cityIdForMarket(String marketId) => switch (marketId) {
   'in-dl-delhi-ncr' => 'in-dl-delhi',
   _ => marketId,

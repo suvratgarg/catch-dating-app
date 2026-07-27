@@ -45,7 +45,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../clubs/clubs_test_helpers.dart' show FakeClubsRepository;
+import '../clubs/clubs_test_helpers.dart'
+    show FakeClubsRepository, seededClubsRepository;
 import '../test_pump_helpers.dart';
 import 'events_test_helpers.dart';
 
@@ -228,10 +229,7 @@ void main() {
         tester,
         MediaQuery(
           data: media,
-          child: const EventDetailScreen(
-            clubId: 'club-1',
-            eventId: 'event-1',
-          ),
+          child: const EventDetailScreen(clubId: 'club-1', eventId: 'event-1'),
         ),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
@@ -1486,7 +1484,6 @@ void main() {
       tester,
     ) async {
       final event = buildEvent();
-
       await pumpEventsTestApp(
         tester,
         EventDetailScreen(
@@ -1496,9 +1493,8 @@ void main() {
         ),
         signedInUid: null,
         overrides: [
-          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
-          fetchClubProvider(event.clubId).overrideWith(
-            (ref) async => buildClub(id: event.clubId),
+          clubsRepositoryProvider.overrideWithValue(
+            seededClubsRepository(buildClub(id: event.clubId)),
           ),
           eventDetailViewModelProvider(event.id).overrideWith(
             (ref) => AsyncData(
@@ -1515,7 +1511,6 @@ void main() {
           ),
         ],
       );
-
       await _scrollEventDetailUntilVisible(
         tester,
         find.text('Sign in to see who has booked this event.'),
@@ -1560,14 +1555,12 @@ void main() {
             ),
           ],
         );
-
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
               uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-              clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
-              fetchClubProvider(event.clubId).overrideWith(
-                (ref) async => buildClub(id: event.clubId),
+              clubsRepositoryProvider.overrideWithValue(
+                seededClubsRepository(buildClub(id: event.clubId)),
               ),
               eventDetailViewModelProvider(event.id).overrideWith(
                 (ref) => AsyncData(
@@ -1593,20 +1586,17 @@ void main() {
           ),
         );
         await tester.pump();
-
         expect(find.text('Complete booking profile'), findsOneWidget);
         expect(find.byType(EventDetailCta), findsNothing);
 
         await tester.tap(find.byTooltip('Save event'));
         await pumpFeatureUi(tester);
-
         expect(find.text('Profile completion route'), findsOneWidget);
       },
     );
 
     testWidgets('does not render a host bottom action footer', (tester) async {
       final event = buildEvent();
-
       await pumpEventsTestApp(
         tester,
         _eventDetailBody(
@@ -1624,7 +1614,6 @@ void main() {
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );
-
       expect(find.text(event.title), findsWidgets);
       expect(find.text('HOST TOOLS'), findsNothing);
       expect(find.text('Manage event'), findsNothing);
@@ -1643,9 +1632,8 @@ void main() {
           eventId: 'event-1',
         ),
         overrides: [
-          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
-          fetchClubProvider('club-1').overrideWith(
-            (ref) async => buildClub(),
+          clubsRepositoryProvider.overrideWithValue(
+            seededClubsRepository(buildClub()),
           ),
           eventDetailViewModelProvider('event-1').overrideWith(
             (ref) => AsyncData(
@@ -1663,10 +1651,8 @@ void main() {
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );
-
       await tester.tap(find.text('Join event — 20 spots left'));
       await pumpFeatureUi(tester);
-
       expect(find.text('BOOKING CONFIRMED'), findsOneWidget);
       expect(find.text("You're in."), findsOneWidget);
       expect(find.text('View event'), findsOneWidget);
@@ -1676,7 +1662,6 @@ void main() {
       tester,
     ) async {
       final fakeEventRepository = FakeEventRepository();
-
       await pumpEventsTestApp(
         tester,
         const EventDetailScreen(
@@ -1685,9 +1670,8 @@ void main() {
           eventId: 'event-1',
         ),
         overrides: [
-          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
-          fetchClubProvider('club-1').overrideWith(
-            (ref) async => buildClub(),
+          clubsRepositoryProvider.overrideWithValue(
+            seededClubsRepository(buildClub()),
           ),
           eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
           eventDetailViewModelProvider('event-1').overrideWith(
@@ -1709,10 +1693,8 @@ void main() {
           ).overrideWith((ref) => Stream.value(null)),
         ],
       );
-
       await tester.tap(find.text('Cancel booking'));
       await tester.pump();
-
       expect(find.text('Booking cancelled.'), findsOneWidget);
     });
 
