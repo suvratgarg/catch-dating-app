@@ -58,10 +58,12 @@ import {
 export function AdminAppShell({
   children,
   className = "",
+  intakeMode = false,
   sidebarCollapsed = false,
   ...props
 }: HTMLAttributes<HTMLDivElement> & {
   children: ReactNode;
+  intakeMode?: boolean;
   sidebarCollapsed?: boolean;
 }) {
   return (
@@ -69,6 +71,7 @@ export function AdminAppShell({
       {...props}
       className={classNames(
         "app-shell",
+        intakeMode && "intake-route-shell",
         sidebarCollapsed && "sidebar-collapsed",
         className
       )}
@@ -219,16 +222,22 @@ export function AdminNavGroup({
 export function AdminWorkspace({
   children,
   className = "",
+  intakeMode = false,
   ...props
 }: HTMLAttributes<HTMLElement> & {
   children: ReactNode;
+  intakeMode?: boolean;
 }) {
   const operationPending = useAdminOperationPending();
   return (
     <main
       {...props}
       aria-busy={operationPending || undefined}
-      className={classNames("workspace", className)}
+      className={classNames(
+        "workspace",
+        intakeMode && "intake-route-workspace",
+        className
+      )}
       onClickCapture={(event) => {
         blockPendingAnchorClick(event, operationPending);
         props.onClickCapture?.(event);

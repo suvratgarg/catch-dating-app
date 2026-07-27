@@ -592,7 +592,10 @@ function AdminRouteApp() {
   }
 
   return (
-    <AdminAppShell sidebarCollapsed={isSidebarCollapsed}>
+    <AdminAppShell
+      intakeMode={currentNav === "organizer-intake"}
+      sidebarCollapsed={isSidebarCollapsed}
+    >
       <AdminSidebar aria-label="Admin sections" id="admin-sidebar">
         <AdminBrandBlock>
           <AdminBrandMark>C</AdminBrandMark>
@@ -635,7 +638,9 @@ function AdminRouteApp() {
         />
       </AdminSidebar>
 
-      <AdminWorkspace>
+      <AdminWorkspace
+        intakeMode={currentNav === "organizer-intake"}
+      >
         <AdminTopbar>
           <h1>{topbarTitle}</h1>
           <AdminTopbarActions>

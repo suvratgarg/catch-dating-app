@@ -16,7 +16,6 @@ import type {
 } from "../../../../shared/operations/operationsTypes";
 import {
   AdminButton,
-  AdminIntakeBoundaryNotice,
   AdminIntakeReviewWorkbench,
   AdminIntakeStageRail,
   AdminIntakeTaskToolbar,
@@ -45,7 +44,16 @@ export function IntakeOperationsPreviewWorkspace({
 }: {
   controller: IntakeOperationsController;
 }) {
-  const {data, isLoading, isLoadingMore, loadMore, refresh} = controller;
+  const {
+    data,
+    errorMessage,
+    isError,
+    isLoading,
+    isLoadingMore,
+    isRefreshing,
+    loadMore,
+    refresh,
+  } = controller;
   const [activeStage, setActiveStageState] =
     useState<SupplyIntakePrimaryStage>(readOperationsStage);
   const [queueFilter, setQueueFilter] =
@@ -88,7 +96,8 @@ export function IntakeOperationsPreviewWorkspace({
         queueTitle="Supply Intake operations"
         readOnly
         selectedId={null}
-        state={isLoading ? "loading" : "unavailable"}
+        state={isLoading ? "loading" : isError ? "error" : "unavailable"}
+        loadError={errorMessage}
         onRetry={() => void refresh()}
         onSelect={() => undefined}
       />
@@ -112,16 +121,8 @@ export function IntakeOperationsPreviewWorkspace({
     }
   };
 
-  return (
-    <>
-      <AdminIntakeBoundaryNotice
-        title={`${data.runs.length} shadow run${data.runs.length === 1 ? "" : "s"} loaded${data.nextRunCursor ? " · more runs available" : ""} · ${data.summary.humanReviewCount} human exception${data.summary.humanReviewCount === 1 ? "" : "s"} · ${data.workItems.length} of ${data.summary.workItemCount} items loaded`}
-      >
-        The browser is read-only. It cannot request runs, fetch sources, call a
-        model, deploy a rule, or publish a listing. Stage totals describe the
-        full persisted run even when this response is paginated.
-      </AdminIntakeBoundaryNotice>
-      <AdminIntakeTaskToolbar aria-label="Supply Intake operation filters">
+  const controls = (
+    <AdminIntakeTaskToolbar aria-label="Supply Intake operation filters">
         <SearchField
           ariaLabel="Search Supply Intake operations"
           icon={<Search size={15} strokeWidth={1.9} />}
@@ -149,7 +150,7 @@ export function IntakeOperationsPreviewWorkspace({
         />
         <AdminButton
           icon={<RefreshCw size={14} strokeWidth={1.9} />}
-          loading={isLoading}
+          loading={isLoading || isRefreshing}
           loadingLabel="Refreshing"
           variant="primary"
           onClick={() => void refresh()}
@@ -166,19 +167,25 @@ export function IntakeOperationsPreviewWorkspace({
             Load 200 more
           </AdminButton>
         ) : null}
-      </AdminIntakeTaskToolbar>
-      <AdminIntakeStageRail<SupplyIntakePrimaryStage>
-        ariaLabel="Supply Intake operation stages"
-        options={[
-          {id: "incoming", label: "Incoming", meta: `${data.summary.stages.incoming} items`},
-          {id: "verify", label: "Verify", meta: `${data.summary.stages.verify} items`},
-          {id: "resolve", label: "Resolve", meta: `${data.summary.stages.resolve} items`},
-          {id: "ready", label: "Ready", meta: `${data.summary.stages.ready} items`},
-        ]}
-        value={activeStage}
-        onChange={setStage}
-      />
+    </AdminIntakeTaskToolbar>
+  );
+  const stageControl = (
+    <AdminIntakeStageRail<SupplyIntakePrimaryStage>
+      ariaLabel="Supply Intake operation stages"
+      options={[
+        {id: "incoming", label: "Incoming"},
+        {id: "verify", label: "Verify"},
+        {id: "resolve", label: "Resolve"},
+        {id: "ready", label: "Ready"},
+      ]}
+      value={activeStage}
+      onChange={setStage}
+    />
+  );
+
+  return (
       <AdminIntakeReviewWorkbench
+        controls={controls}
         detail={selected ? operationDetail(selected, run?.status ?? "unknown") : null}
         emptyDetail="Select a persisted work item to inspect its evidence, blockers, and run receipt state."
         emptyQueue="No loaded work items match this stage and filter set. Load another page if ordinary inventory remains."
@@ -196,6 +203,15 @@ export function IntakeOperationsPreviewWorkspace({
           },
         ]}
         items={items.map(operationQueueItem)}
+        headerContext={
+          <span>
+            {data.runs.length} run{data.runs.length === 1 ? "" : "s"} ·{" "}
+            {data.summary.humanReviewCount} exception
+            {data.summary.humanReviewCount === 1 ? "" : "s"} ·{" "}
+            {data.workItems.length}/{data.summary.workItemCount}
+          </span>
+        }
+        loadError={errorMessage}
         queueMeta={`${items.length} item${items.length === 1 ? "" : "s"}`}
         queueTitle={`${stageLabel(activeStage)} inventory`}
         queueScopeKey={[
@@ -207,13 +223,13 @@ export function IntakeOperationsPreviewWorkspace({
         ].join(":")}
         readOnly
         selectedId={selectedId}
+        stageControl={stageControl}
         onFilterChange={(value) => {
           setQueueFilter(value as OperationQueueFilter);
           setSelectedId(null);
         }}
         onSelect={setSelectedId}
       />
-    </>
   );
 }
 
@@ -249,29 +265,16 @@ function operationDetail(item: OperationWorkItem, runStatus: string) {
     {id: "publication", label: "Publication plan", value: item.publicationPlanId ?? "Not created"},
   ];
   return {
-    checklistRows: checks,
-    checklistTitle: "Persisted tasks and blockers",
-    footerActions: null,
-    footerHint: operationNeedsHumanReview(item) ?
+    actionGate: operationNeedsHumanReview(item) ?
       "Resolve this exception in the matching Event or Organizer Intake queue; the next Supply Intake run will project that decision." :
       "This view is read-only. No operator action is required here.",
-    impactRows,
-    impactTitle: "Durable state",
+    blockers: openChecks.map((check) => ({
+      action: check.meta,
+      id: check.id,
+      label: check.label,
+      tone: "warning" as const,
+    })),
     initials: initialsForLabel(operationWorkItemTitle(item)),
-    note: (
-      <AdminWorkbenchNote>
-        Run {item.runId} · revision {item.revision} · updated {formatTimestamp(item.updatedAt)}
-      </AdminWorkbenchNote>
-    ),
-    noteTitle: "Run receipt",
-    primaryRows: evidenceRows.length > 0 ? evidenceRows : [{
-      id: "missing-evidence",
-      meta: "Attach source evidence before promotion planning.",
-      status: "missing",
-      statusTone: "danger" as const,
-      title: "No evidence references",
-    }],
-    primaryTitle: "Hash-bound evidence",
     readiness: {
       blockers: item.blockerCodes.length,
       complete: checks.filter((check) => check.passed).length,
@@ -279,12 +282,12 @@ function operationDetail(item: OperationWorkItem, runStatus: string) {
       total: Math.max(checks.length, 1),
     },
     sections: [
-      {
+      ...(evidenceRows.length > 0 ? [{
         id: "evidence",
         kind: "evidence" as const,
         rows: evidenceRows,
         title: "Hash-bound evidence",
-      },
+      }] : []),
       ...(checks.length > 0 ? [{
         id: "tasks",
         kind: "checklist" as const,

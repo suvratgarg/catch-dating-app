@@ -12,7 +12,6 @@ import type {
   AdminIntakeChecklistRow,
   AdminIntakeEvidenceRow,
   AdminIntakeImpactRow,
-  AdminIntakeInspectorBlocker,
   AdminIntakeInspectorSection,
   AdminIntakeQueueFilter,
   AdminIntakeQueueColumn,
@@ -119,49 +118,6 @@ function toneClass(tone: AdminIntakeWorkbenchTone = "neutral") {
   return `intake-batch-status ${tone}`;
 }
 
-function legacySections(detail: AdminIntakeWorkbenchDetail): AdminIntakeInspectorSection[] {
-  return [
-    {
-      id: "primary",
-      kind: "evidence",
-      rows: detail.primaryRows,
-      title: detail.primaryTitle,
-    },
-    {
-      id: "checklist",
-      kind: "checklist",
-      rows: detail.checklistRows,
-      title: detail.checklistTitle,
-    },
-    {
-      id: "impact",
-      kind: "impact",
-      rows: detail.impactRows,
-      title: detail.impactTitle,
-    },
-    {
-      content: detail.note,
-      id: "note",
-      kind: "content",
-      title: detail.noteTitle,
-    },
-  ];
-}
-
-function inferredBlockers(detail: AdminIntakeWorkbenchDetail): AdminIntakeInspectorBlocker[] {
-  if (detail.blockers) {
-    return detail.blockers;
-  }
-  return detail.checklistRows
-    .filter((row) => !row.passed)
-    .map((row) => ({
-      action: row.meta,
-      id: row.id,
-      label: row.label,
-      tone: "warning" as const,
-    }));
-}
-
 function EvidenceRows({rows}: {rows: AdminIntakeEvidenceRow[]}) {
   return (
     <div className="intake-inspector-list">
@@ -247,12 +203,15 @@ export function AdminIntakeReviewWorkbench({
   bulkActions = [],
   className = "",
   columns,
+  controls,
   detail,
   emptyDetail,
   emptyKind = "stage",
   emptyQueue,
   filters = [],
+  headerContext,
   items,
+  loadError,
   onFilterChange,
   onRetry,
   onSelect,
@@ -261,18 +220,22 @@ export function AdminIntakeReviewWorkbench({
   queueTitle,
   readOnly = false,
   selectedId,
+  stageControl,
   state = "ready",
   titleColumnLabel = "Name",
 }: {
   bulkActions?: AdminIntakeBulkAction[];
   className?: string;
   columns?: AdminIntakeQueueColumn[];
+  controls?: ReactNode;
   detail?: AdminIntakeWorkbenchDetail | null;
   emptyDetail?: ReactNode;
   emptyKind?: "filter" | "stage" | "unavailable";
   emptyQueue?: ReactNode;
   filters?: AdminIntakeQueueFilter[];
+  headerContext?: ReactNode;
   items: AdminIntakeQueueItem[];
+  loadError?: ReactNode;
   onFilterChange?: (filterId: string) => void;
   onRetry?: () => void;
   onSelect: (id: string) => void;
@@ -281,6 +244,7 @@ export function AdminIntakeReviewWorkbench({
   queueTitle: ReactNode;
   readOnly?: boolean;
   selectedId: string | null;
+  stageControl?: ReactNode;
   state?: AdminIntakeWorkbenchState;
   titleColumnLabel?: ReactNode;
 }) {
@@ -353,7 +317,14 @@ export function AdminIntakeReviewWorkbench({
     {id: "status", label: "Status"},
   ];
   const needsNow = orderedItems.filter((item) => (
-    item.statusTone === "danger" || item.blockerKey === "needs-you"
+    !resolved.has(item.id)
+    && (
+      item.statusTone === "danger"
+      || (
+        Boolean(item.blockerKey)
+        && item.statusTone !== "warning"
+      )
+    )
   )).length;
   const waiting = orderedItems.filter((item) => (
     item.statusTone === "warning" && !resolved.has(item.id)
@@ -507,90 +478,132 @@ export function AdminIntakeReviewWorkbench({
       onKeyDown={handleKeyboard}
     >
       <header className="intake-batch-command">
-        <div className="intake-batch-title">
-          <div>
+        <div className="intake-batch-command-row">
+          <div className="intake-batch-title">
             <h3>{queueTitle}</h3>
             <span>{queueMeta}</span>
           </div>
-          <button
-            aria-expanded={inspectorOpen}
-            className="intake-inspector-toggle"
-            disabled={!selectedId}
-            onClick={() => setInspectorOpen((current) => !current)}
-            type="button"
-          >
-            {inspectorOpen ? <PanelRightClose size={16} /> : <PanelRightOpen size={16} />}
-            {inspectorOpen ? "Close review" : "Review"}
-          </button>
-        </div>
-
-        <div aria-label="Intake queue metrics" className="intake-batch-metrics">
-          <span><strong>{needsNow}</strong> Needs you now</span>
-          <span><strong>{waiting}</strong> Waiting external</span>
-          <span><strong>{resolved.size}</strong> Cleared today</span>
-          <span><strong>{oldest ? `${oldest}d` : "—"}</strong> Oldest untouched</span>
-        </div>
-
-        <div className="intake-batch-toolbar">
-          <label>
-            <input
-              checked={allSelected}
-              onChange={() => setSelection(
-                allSelected ? new Set() : new Set(orderedItems.map((item) => item.id))
-              )}
-              type="checkbox"
-            />
-            Select all matching
-          </label>
-          <label>
-            Group
-            <select
-              aria-label="Group intake candidates"
-              onChange={(event) => setGroupByBlocker(event.target.value === "blocker")}
-              value={groupByBlocker ? "blocker" : "none"}
-            >
-              <option value="none">None</option>
-              <option value="blocker">Top blocker</option>
-            </select>
-          </label>
-          {filters.length > 0 ? (
-            <div aria-label="Queue filters" className="intake-batch-filters">
-              {filters.map((filter) => (
-                <button
-                  aria-pressed={filter.selected}
-                  key={filter.id}
-                  onClick={() => onFilterChange?.(filter.id)}
-                  type="button"
-                >
-                  {filter.label}
-                </button>
-              ))}
-            </div>
+          {stageControl ? (
+            <div className="intake-batch-stage-control">{stageControl}</div>
           ) : null}
-          {!readOnly ? bulkActions.map((action) => {
-            const {appliedIds, skippedIds} = eligibleBulkSelection(selectedForActions, action);
-            return (
+          {headerContext ? <div className="intake-batch-context">{headerContext}</div> : null}
+          <div aria-label="Intake queue metrics" className="intake-batch-metrics">
+            <span><strong>{needsNow}</strong> Need now</span>
+            <span><strong>{waiting}</strong> Waiting external</span>
+            <span><strong>{resolved.size}</strong> Cleared</span>
+            <span><strong>{oldest ? `${oldest}d` : "—"}</strong> Oldest</span>
+          </div>
+          <div className="intake-batch-review-control">
+            <button
+              aria-expanded={inspectorOpen}
+              aria-label={inspectorOpen ? "Close candidate review" : "Review selected candidate"}
+              className="intake-inspector-toggle"
+              disabled={!selectedId}
+              onClick={() => setInspectorOpen((current) => !current)}
+              type="button"
+            >
+              {inspectorOpen ? <PanelRightClose size={16} /> : <PanelRightOpen size={16} />}
+              {inspectorOpen ? "Close review" : "Review"}
+            </button>
+          </div>
+        </div>
+
+        <div
+          aria-label={selection.size > 0 ? "Selection actions" : "Intake controls"}
+          className={`intake-batch-toolbar ${selection.size > 0 ? "selection" : "filters"}`}
+        >
+          {selection.size > 0 && !readOnly ? (
+            <>
+              <label className="intake-select-all">
+                <input
+                  aria-label="Select all matching"
+                  checked={allSelected}
+                  onChange={() => setSelection(
+                    allSelected ? new Set() : new Set(orderedItems.map((item) => item.id))
+                  )}
+                  type="checkbox"
+                />
+                <strong>{selection.size} selected</strong>
+              </label>
+              {bulkActions.map((action) => {
+                const {appliedIds, skippedIds} = eligibleBulkSelection(selection, action);
+                const gateId = `bulk-${action.id}-gate`;
+                const gateText = appliedIds.length === 0
+                  ? action.disabledReason ??
+                    `${skippedIds.length} selected item(s) do not pass this action's gate.`
+                  : skippedIds.length > 0
+                    ? `${appliedIds.length} eligible; ${skippedIds.length} will be skipped.`
+                    : `All ${appliedIds.length} selected item(s) are eligible.`;
+                return (
+                  <span className="intake-bulk-action-group" key={action.id}>
+                    <button
+                      aria-describedby={gateId}
+                      className={`intake-bulk-action ${action.tone ?? "neutral"}`}
+                      disabled={appliedIds.length === 0 || workingIds.size > 0}
+                      onClick={() => void applyBulkAction(action)}
+                      type="button"
+                    >
+                      {workingIds.size > 0 ? <LoaderCircle className="spin" size={14} /> : null}
+                      {action.label}
+                      {skippedIds.length > 0 ? ` ${appliedIds.length}/${selection.size}` : ""}
+                    </button>
+                    <span className="intake-bulk-gate" id={gateId}>{gateText}</span>
+                  </span>
+                );
+              })}
               <button
-                aria-describedby={skippedIds.length ? `bulk-${action.id}-skip` : undefined}
-                className={`intake-bulk-action ${action.tone ?? "neutral"}`}
-                disabled={appliedIds.length === 0 || workingIds.size > 0}
-                key={action.id}
-                onClick={() => void applyBulkAction(action)}
-                title={skippedIds.length ? `${skippedIds.length} selected item(s) will be skipped` : undefined}
+                className="intake-clear-selection"
+                onClick={() => setSelection(new Set())}
                 type="button"
               >
-                {workingIds.size > 0 ? <LoaderCircle className="spin" size={14} /> : null}
-                {action.label}
-                {skippedIds.length ? (
-                  <span className="sr-only" id={`bulk-${action.id}-skip`}>
-                    {skippedIds.length} selected item(s) are not eligible and will be skipped.
-                  </span>
-                ) : null}
+                Clear
               </button>
-            );
-          }) : <span className="intake-read-only-label">Read-only projection</span>}
+            </>
+          ) : (
+            <>
+              {controls}
+              <label className="intake-select-all">
+                <input
+                  aria-label="Select all matching"
+                  checked={allSelected}
+                  onChange={() => setSelection(
+                    allSelected ? new Set() : new Set(orderedItems.map((item) => item.id))
+                  )}
+                  type="checkbox"
+                />
+                Select all matching
+              </label>
+              <label className="intake-group-control">
+                Group
+                <select
+                  aria-label="Group intake candidates"
+                  onChange={(event) => setGroupByBlocker(event.target.value === "blocker")}
+                  value={groupByBlocker ? "blocker" : "none"}
+                >
+                  <option value="none">None</option>
+                  <option value="blocker">Top blocker</option>
+                </select>
+              </label>
+              {filters.length > 0 ? (
+                <div aria-label="Queue filters" className="intake-batch-filters">
+                  {filters.map((filter) => (
+                    <button
+                      aria-pressed={filter.selected}
+                      key={filter.id}
+                      onClick={() => onFilterChange?.(filter.id)}
+                      type="button"
+                    >
+                      {filter.label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+              {readOnly ? <span className="intake-read-only-label">Read-only projection</span> : null}
+            </>
+          )}
           <button
             aria-expanded={helpOpen}
+            aria-label="Show intake keyboard shortcuts"
             className="intake-shortcuts-button"
             onClick={() => setHelpOpen((current) => !current)}
             type="button"
@@ -598,24 +611,6 @@ export function AdminIntakeReviewWorkbench({
             Shortcuts
           </button>
         </div>
-
-        {!readOnly && selection.size > 0 ? (
-          <div className="intake-action-gates" aria-live="polite">
-            {bulkActions.flatMap((action) => {
-              const {appliedIds, skippedIds} = eligibleBulkSelection(
-                selectedForActions,
-                action
-              );
-              if (appliedIds.length > 0 || skippedIds.length === 0) return [];
-              return [
-                <span key={action.id}>
-                  {action.label}: {action.disabledReason ??
-                    `${skippedIds.length} selected item(s) do not pass this action's gate.`}
-                </span>,
-              ];
-            })}
-          </div>
-        ) : null}
         {bulkMessage ? <div aria-live="polite" className="intake-bulk-message">{bulkMessage}</div> : null}
         {helpOpen ? (
           <div className="intake-shortcuts" role="dialog" aria-label="Intake keyboard shortcuts">
@@ -636,10 +631,16 @@ export function AdminIntakeReviewWorkbench({
       <div className="intake-batch-body">
         <div className="intake-batch-table-region">
           {state === "loading" ? <LoadingRows /> : null}
-          {state === "error" ? (
+          {(loadError || (state === "error" && orderedItems.length > 0)) ? (
+            <div className="intake-inline-error" role="alert">
+              <span>{loadError ?? "Candidate data could not be refreshed. The current table is preserved."}</span>
+              {onRetry ? <button onClick={onRetry} type="button">Try again</button> : null}
+            </div>
+          ) : null}
+          {state === "error" && orderedItems.length === 0 ? (
             <div className="intake-batch-state error" role="alert">
               <strong>Candidate data could not be loaded.</strong>
-              <span>Your current filters and decisions were preserved.</span>
+              <span>{loadError ?? "Your current filters and decisions were preserved."}</span>
               {onRetry ? <button onClick={onRetry} type="button">Try again</button> : null}
             </div>
           ) : null}
@@ -663,7 +664,7 @@ export function AdminIntakeReviewWorkbench({
               )}</span>
             </div>
           ) : null}
-          {state === "ready" && orderedItems.length > 0 ? (
+          {(state === "ready" || state === "error") && orderedItems.length > 0 ? (
             <table className="intake-batch-table">
               <thead>
                 <tr>
@@ -771,8 +772,8 @@ export function AdminIntakeReviewWorkbench({
                     {selectedDetail.readiness.complete} of {selectedDetail.readiness.total} checks complete
                   </span>
                 </div>
-                {inferredBlockers(selectedDetail).length ? (
-                  inferredBlockers(selectedDetail).map((blocker) => (
+                {selectedDetail.blockers?.length ? (
+                  selectedDetail.blockers.map((blocker) => (
                     <div className={blocker.tone ?? "warning"} key={blocker.id}>
                       <strong>{blocker.label}</strong>
                       <span>{blocker.action}</span>
@@ -787,15 +788,15 @@ export function AdminIntakeReviewWorkbench({
               </section>
 
               <div className="intake-inspector-scroll">
-                {(selectedDetail.sections ?? legacySections(selectedDetail)).map((section) => (
+                {selectedDetail.sections.map((section) => (
                   <InspectorSection key={section.id} section={section} />
                 ))}
                 {emptyDetail}
               </div>
 
               <footer className="intake-inspector-actions">
-                <p>{selectedDetail.actionGate ?? selectedDetail.footerHint}</p>
-                <div>{selectedDetail.actions ?? selectedDetail.footerActions}</div>
+                <p>{selectedDetail.actionGate}</p>
+                <div>{selectedDetail.actions}</div>
               </footer>
             </>
           ) : (

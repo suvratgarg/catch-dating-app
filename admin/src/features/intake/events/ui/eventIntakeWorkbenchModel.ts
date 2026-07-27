@@ -142,14 +142,14 @@ export function eventCandidateStage(
   now = new Date()
 ): EventCandidateStage {
   if (eventCandidateHasPassed(candidate, now)) return "passed";
-  if (candidateChecks(candidate, now).some((check) => !check.passed)) {
-    return "resolve";
-  }
   if (
     candidate.reviewState === "approved" ||
     candidate.reviewState === "rejected"
   ) {
     return "ready";
+  }
+  if (candidateChecks(candidate, now).some((check) => !check.passed)) {
+    return "resolve";
   }
   return "verify";
 }
@@ -198,10 +198,13 @@ export function eventWhenLabel(
     candidate.startDate,
     candidate.time,
   ].filter(Boolean).join(" · ");
-  if (!candidate.expiresAt) return absolute || "Expiry missing";
-  const expiry = Date.parse(candidate.expiresAt);
-  if (!Number.isFinite(expiry)) return `${absolute} · invalid expiry`;
-  const delta = expiry - now.getTime();
+  const start = timestampForEventStart(candidate);
+  const fallbackExpiry = candidate.expiresAt ? Date.parse(candidate.expiresAt) : NaN;
+  const eventTime = Number.isFinite(start) ? start : fallbackExpiry;
+  if (!Number.isFinite(eventTime)) {
+    return absolute ? `${absolute} · time invalid` : "Start time missing";
+  }
+  const delta = eventTime - now.getTime();
   const days = Math.max(0, Math.ceil(Math.abs(delta) / dayMs));
   const relative = delta < 0 ?
     `passed ${days === 0 ? "today" : `${days}d ago`}` :
@@ -243,8 +246,15 @@ export function formatTimestamp(value: string | null | undefined) {
 }
 
 function timestampForCandidate(candidate: EventIntakeCandidate): number {
-  const expiry = candidate.expiresAt ? Date.parse(candidate.expiresAt) : NaN;
-  if (Number.isFinite(expiry)) return expiry;
-  const start = Date.parse(candidate.startDate);
+  return timestampForEventStart(candidate);
+}
+
+export function timestampForEventStart(
+  candidate: Pick<EventIntakeCandidate, "startDate" | "time">
+): number {
+  const date = candidate.startDate.trim();
+  const time = candidate.time.trim();
+  const combined = date && time ? `${date}T${time}` : date;
+  const start = Date.parse(combined);
   return Number.isFinite(start) ? start : Number.POSITIVE_INFINITY;
 }

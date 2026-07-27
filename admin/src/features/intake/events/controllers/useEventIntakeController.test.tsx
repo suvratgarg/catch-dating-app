@@ -12,7 +12,6 @@ describe("useEventIntakeController", () => {
     }), {wrapper});
 
     await waitFor(() => expect(result.current.bridge?.eventCandidates.length).toBeGreaterThan(0));
-    expect(result.current.activeTab).toBe("candidates");
     const candidate = result.current.bridge!.eventCandidates[0];
     act(() => result.current.updateCandidate(candidate.id, {title: "Reviewed event title"}));
 

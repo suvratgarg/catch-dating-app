@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.10.0
-updated: 2026-07-26
+version: 0.10.1
+updated: 2026-07-27
 owner: web_platform
 status: active
 ---
@@ -398,7 +398,18 @@ multi-selection, partial-safe bulk actions, keyboard shortcuts, and
 resolution-first inspector are shared. The inspector is closed by default and
 uses consumer-supplied ordered sections, so a workflow does not render empty
 policy or diagnostics filler. Loading, retryable error, filter-empty,
-stage-empty, and unavailable projection states remain distinct.
+stage-empty, and unavailable projection states remain distinct. The route shell,
+workspace frame, and pending-operation fieldset form one `min-height: 0` flex
+chain, so the table consumes available viewport height without a component-owned
+height cap or viewport arithmetic.
+
+The first command row contains the workbench title, count-free segmented stage
+control, four operator metrics, and inspector toggle. The fixed-height second
+row swaps domain filters for explicit bulk actions when selection begins,
+keeping the table stationary. Every partially eligible action states the
+eligible fraction; every disabled action renders its gate as adjacent text.
+Keyboard and mouse controls are equivalent and named, while the ten-second undo
+receipt remains visible without changing table order.
 
 Organizer Intake uses the standard Name, kind, market, source, top-blocker,
 age, and status columns. Event Intake supplies stage-specific columns:
@@ -406,8 +417,9 @@ Incoming shows source provenance and risk, while candidate stages show the
 Operations expiry, attributed organizer, venue, source, top blocker, and
 status. Candidate stages are mutually exclusive. Passed events are retained in
 a separate filter, fail `event_has_not_passed`, and never compete with active
-upcoming review work. Upcoming candidates sort by the projected Operations
-expiry rather than by a client-invented TTL.
+upcoming review work. Upcoming candidates sort by their projected event start
+time; the distinct Operations-projected expiry remains visible provenance and
+is never replaced by a client-invented TTL.
 
 Event editing occurs inside the inspector. Review payloads contain changed
 fields only as `{before, after}` pairs; the server overlays only each `after`

@@ -1,5 +1,5 @@
 {
-  "version": 121,
+  "version": 122,
   "updated": "2026-07-27",
   "owner": "agent_operating_model",
   "entries": [
@@ -1387,6 +1387,30 @@
         "docs/audit_registry/admin_console_design_adoption.json"
       ],
       "notes": "New Intake stages must represent durable backend states. Discovery jobs and canonical promotion stay out of the primary stage rail until their state, authority, failure, retry, and receipt contracts exist."
+    },
+    {
+      "id": "REG-WEB-INTAKE-BATCH-WORKBENCH-001",
+      "title": "Intake batch review loses viewport height, selection position, or actionable gates",
+      "status": "active",
+      "applies_to": [
+        "admin/src/features/intake/**",
+        "admin/src/shared/ui/AdminPrimitives/intake.tsx",
+        "admin/src/shared/ui/AdminPrimitives/intakeWorkbench.tsx",
+        "admin/src/shared/ui/AdminPrimitives/intake.test.tsx",
+        "admin/src/styles.css",
+        "design/admin/components.json"
+      ],
+      "symptom": "An Intake route restores a capped queue or viewport calculation, stage count cards, sub-12px intake text, selection-driven layout shift, hidden bulk eligibility, non-actionable disabled controls, unstable post-disposition selection, or fixed inspector filler sections.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin test -- --run src/shared/ui/AdminPrimitives/intake.test.tsx src/features/intake/ui/intakeWorkbenchDefaults.test.tsx src/features/intake/events/ui/eventIntakeWorkbenchModel.test.ts",
+        "guardEvidence": "primitive and feature tests enforce shell-owned height, the 12px floor, stable queue order and next selection, keyboard and mouse parity, distinct projection states, partial bulk eligibility, visible gates, exclusive event stages, event-time ordering, and explicit consumer-owned inspector sections"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/plans/admin_intake_workbench_ui_spec.md"
+      ],
+      "notes": "The queue is the workspace. Header controls stay compact and fixed-height; the inspector exists for adjudication, not as a mandatory report pane."
     },
     {
       "id": "REG-WEB-ADMIN-CHROME-001",

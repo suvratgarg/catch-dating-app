@@ -87,11 +87,13 @@ describe("event intake workbench model", () => {
     ]);
     const active = (["verify", "resolve", "ready"] as const).flatMap((stage) =>
       recordsForStage([], values, stage, now));
+    expect(active).toHaveLength(3);
     expect(new Set(active.map((record) => record.value.id)).size).toBe(3);
   });
 
   it("blocks and labels passed events from Operations expiry", () => {
     const value = candidate("passed", {
+      startDate: "2026-07-26",
       expiresAt: "2026-07-26T18:00:00.000Z",
     });
     expect(candidateChecks(value, now)).toContainEqual(expect.objectContaining({
@@ -101,10 +103,16 @@ describe("event intake workbench model", () => {
     expect(eventWhenLabel(value, now)).toContain("passed");
   });
 
-  it("sorts upcoming candidates before later candidates", () => {
+  it("sorts upcoming candidates by their start time, not their expiry", () => {
     const records = recordsForStage([], [
-      candidate("later", {expiresAt: "2026-07-30T18:00:00.000Z"}),
-      candidate("sooner", {expiresAt: "2026-07-28T18:00:00.000Z"}),
+      candidate("later", {
+        startDate: "2026-07-30",
+        expiresAt: "2026-07-30T18:00:00.000Z",
+      }),
+      candidate("sooner", {
+        startDate: "2026-07-28",
+        expiresAt: "2026-08-02T18:00:00.000Z",
+      }),
     ], "verify", now);
     expect(records.map((record) => record.value.id)).toEqual([
       "sooner",

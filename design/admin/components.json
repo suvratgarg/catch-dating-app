@@ -1698,14 +1698,37 @@
           "batch-selection",
           "partial-eligibility",
           "inspector-open",
+          "keyboard-help",
           "loading",
+          "error",
           "unavailable",
-          "empty-queue",
+          "filter-empty",
+          "stage-empty",
           "blocked-decision",
           "mobile"
         ]
       },
-      "notes": "Shared full-height intake operations workbench with a compact table queue, stable multi-selection, partial-safe bulk actions, keyboard and mouse parity, explicit loading/empty/unavailable states, and a collapsible evidence inspector."
+      "notes": "Shared full-height intake operations workbench with an integrated segmented stage control and command row, a fixed-height selection action bar, a compact table queue, stable multi-selection, partial-safe bulk actions with visible gates and results, keyboard and mouse parity, retryable loading/error/empty/unavailable states, and a composable collapsible evidence inspector."
+    },
+    {
+      "id": "shared_admin_intake_workspace_frame",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
+      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
+      "exportName": "AdminIntakeWorkspaceFrame",
+      "css": [
+        "admin/src/styles.css"
+      ],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
+        "exportName": "AdminIntakeWorkspaceFrameStory",
+        "states": [
+          "compact-chrome",
+          "full-height-content"
+        ]
+      },
+      "notes": "Shared full-height route frame that owns the compact Intake workspace chrome and the min-height-zero content chain used by all three Intake workspaces."
     },
     {
       "id": "shared_admin_intake_section",

@@ -76,8 +76,11 @@ function EventTaskWorkbench({
 }) {
   const {
     bridge,
+    errorMessage,
     inFlight,
+    isError,
     isLoading,
+    isRefreshing,
     loadBridge,
     localDecisions,
     notes,
@@ -158,7 +161,8 @@ function EventTaskWorkbench({
         queueMeta={isLoading ? "Loading" : "Unavailable"}
         queueTitle="Event intake"
         selectedId={null}
-        state={isLoading ? "loading" : "unavailable"}
+        state={isLoading ? "loading" : isError ? "error" : "unavailable"}
+        loadError={errorMessage}
         onRetry={() => void loadBridge()}
         onSelect={() => undefined}
       />
@@ -174,15 +178,6 @@ function EventTaskWorkbench({
   const candidateById = new Map(
     bridge.eventCandidates.map((candidate) => [candidate.id, candidate])
   );
-  const stageCounts = {
-    incoming: bridge.sourceResults.length,
-    verify: bridge.eventCandidates.filter((candidate) =>
-      eventCandidateStage(candidate, now) === "verify").length,
-    resolve: bridge.eventCandidates.filter((candidate) =>
-      eventCandidateStage(candidate, now) === "resolve").length,
-    ready: bridge.eventCandidates.filter((candidate) =>
-      eventCandidateStage(candidate, now) === "ready").length,
-  };
   const lookaheadDays = bridge.runPlan.schedule.lookaheadDays || 7;
   const unavailable = bridge.bridgeSource === "empty";
   const stale = bridge.bridgeSource === "operations" &&
@@ -324,9 +319,8 @@ function EventTaskWorkbench({
     "Passed events" :
     eventStageTitle(activeStage);
 
-  return (
-    <>
-      <AdminIntakeTaskToolbar aria-label="Event intake filters">
+  const controls = (
+    <AdminIntakeTaskToolbar aria-label="Event intake filters">
         <SearchField
           ariaLabel="Search event intake"
           icon={<Search size={15} strokeWidth={1.9} />}
@@ -368,46 +362,36 @@ function EventTaskWorkbench({
         />
         <AdminButton
           icon={<RefreshCw size={14} strokeWidth={1.9} />}
-          loading={isLoading}
+          loading={isLoading || isRefreshing}
           loadingLabel="Refreshing"
           variant="primary"
           onClick={() => void loadBridge()}
         >
           Refresh
         </AdminButton>
-      </AdminIntakeTaskToolbar>
-      <AdminIntakeStageRail<EventWorkbenchStage>
-        ariaLabel="Event intake stages"
-        options={[
-          {
-            id: "incoming",
-            label: "Incoming",
-            meta: `${stageCounts.incoming} source leads`,
-          },
-          {
-            id: "verify",
-            label: "Verify",
-            meta: `${stageCounts.verify} candidates`,
-          },
-          {
-            id: "resolve",
-            label: "Resolve",
-            meta: `${stageCounts.resolve} blocked`,
-          },
-          {
-            id: "ready",
-            label: "Ready",
-            meta: `${stageCounts.ready} reviewed`,
-          },
-        ]}
-        value={activeStage}
-        onChange={setStage}
-      />
+    </AdminIntakeTaskToolbar>
+  );
+  const stageControl = (
+    <AdminIntakeStageRail<EventWorkbenchStage>
+      ariaLabel="Event intake stages"
+      options={[
+        {id: "incoming", label: "Incoming"},
+        {id: "verify", label: "Verify"},
+        {id: "resolve", label: "Resolve"},
+        {id: "ready", label: "Ready"},
+      ]}
+      value={activeStage}
+      onChange={setStage}
+    />
+  );
+
+  return (
       <AdminIntakeReviewWorkbench
         bulkActions={bulkActions}
         columns={activeStage === "incoming" && queueFilter !== "passed" ?
           incomingColumns :
           candidateColumns}
+        controls={controls}
         detail={selected && target ? detailForRecord({
           bridgeGeneratedAt: bridge.generatedAt,
           candidateById,
@@ -474,12 +458,17 @@ function EventTaskWorkbench({
             ]),
           };
         })}
-        queueMeta={[
-          bridge.city.label,
-          `run ${bridge.runPlan.id}`,
-          `generated ${formatTimestamp(bridge.generatedAt)}`,
-          `${records.length} item${records.length === 1 ? "" : "s"}`,
-        ].join(" · ")}
+        headerContext={
+          <span
+            aria-label={`${bridge.city.label}; reviewed run ${bridge.runPlan.id}; generated ${formatTimestamp(bridge.generatedAt)}`}
+            title={`${bridge.city.label} · reviewed run ${bridge.runPlan.id} · generated ${formatTimestamp(bridge.generatedAt)}`}
+          >
+            {bridge.city.label} · {compactIdentifier(bridge.runPlan.id)} ·{" "}
+            {compactDate(bridge.generatedAt)}
+          </span>
+        }
+        loadError={errorMessage}
+        queueMeta={`${records.length} item${records.length === 1 ? "" : "s"}`}
         queueTitle={queueTitle}
         queueScopeKey={[
           activeStage,
@@ -490,6 +479,7 @@ function EventTaskWorkbench({
           snapshotVersion,
         ].join(":")}
         selectedId={selectedId}
+        stageControl={stageControl}
         state={bridgeState}
         titleColumnLabel="Title"
         onFilterChange={(filterId) => {
@@ -499,7 +489,6 @@ function EventTaskWorkbench({
         onRetry={() => void loadBridge()}
         onSelect={setSelectedId}
       />
-    </>
   );
 }
 
@@ -830,62 +819,7 @@ function detailForRecord({
         "danger" as const :
         "warning" as const,
     })),
-    checklistRows: checks,
-    checklistTitle: "Review checklist",
-    footerActions: null,
-    footerHint: null,
-    impactRows: candidate ? [
-      {
-        id: "intake",
-        label: "Intake state",
-        value: candidate.reviewState.replaceAll("_", " "),
-      },
-      {
-        id: "organizer",
-        label: "Organizer attribution",
-        value: organizerName ?? "Unattributed",
-      },
-      {
-        id: "expiry",
-        label: "Operations expiry",
-        value: formatTimestamp(candidate.expiresAt),
-        tone: eventCandidateHasPassed(candidate, now) ?
-          "danger" as const :
-          "neutral" as const,
-      },
-      {
-        id: "visibility",
-        label: "App visibility ceiling",
-        value: candidate.organizerCeiling?.appVisibility ?? "unverified",
-      },
-      {
-        id: "publication",
-        label: "Publication",
-        value: "Separate governed action",
-      },
-    ] : [
-      {
-        id: "lead",
-        label: "Lead state",
-        value: source!.status.replaceAll("_", " "),
-      },
-      {
-        id: "candidate",
-        label: "Candidate creation",
-        value: "Separate dedupe step",
-      },
-      {
-        id: "snapshot",
-        label: "Bridge generated",
-        value: formatTimestamp(bridgeGeneratedAt),
-      },
-    ],
-    impactTitle: "Downstream impact",
     initials: initialsForLabel(record.value.title),
-    note: null,
-    noteTitle: "Decision note",
-    primaryRows: evidenceRows,
-    primaryTitle: "Source evidence",
     readiness: {
       blockers: checks.filter((check) => !check.passed).length,
       complete: checks.filter((check) => check.passed).length,
@@ -899,6 +833,12 @@ function detailForRecord({
         kind: "content" as const,
         title: "Reviewed fields",
       },
+      ...(checks.length > 0 ? [{
+        id: "checks",
+        kind: "checklist" as const,
+        rows: checks,
+        title: "Review checklist",
+      }] : []),
       ...(duplicateSection ? [{
         content: duplicateSection,
         id: "duplicates",
@@ -1080,6 +1020,20 @@ function recordStatus(
     label: record.value.reviewState.replaceAll("_", " "),
     tone: "neutral",
   };
+}
+
+function compactIdentifier(value: string) {
+  return value.length <= 8 ? value : `…${value.slice(-7)}`;
+}
+
+function compactDate(value: string | null | undefined) {
+  if (!value) return "No date";
+  const timestamp = Date.parse(value);
+  if (!Number.isFinite(timestamp)) return "Invalid date";
+  return new Intl.DateTimeFormat("en-IN", {
+    day: "numeric",
+    month: "short",
+  }).format(timestamp);
 }
 
 function recordNeedsAttention(record: EventWorkbenchRecord, now: Date) {

@@ -34,6 +34,37 @@ export function initialsForLabel(label: string) {
     .map((part) => part[0]?.toUpperCase()).join("") || "?";
 }
 
+export function candidateMarketLabel(
+  candidate: Intake.OrganizerSearchCandidate
+) {
+  return candidate.queryIntent.marketSlug ?
+    marketLabelForSlug(candidate.queryIntent.marketSlug) :
+    "Market unassigned";
+}
+
+export function marketLabelForSlug(slug: string) {
+  return slug.split("-")
+    .map((part) => part.length > 0 ?
+      `${part[0]?.toLocaleUpperCase()}${part.slice(1)}` : part)
+    .join(" ");
+}
+
+export function organizerIntakeAgeDays(
+  value: string | null | undefined
+) {
+  if (!value) return null;
+  const timestamp = Date.parse(value);
+  if (!Number.isFinite(timestamp)) return null;
+  return Math.max(0, Math.floor((Date.now() - timestamp) / 86_400_000));
+}
+
+export function organizerIntakeAgeLabel(
+  value: string | null | undefined
+) {
+  const days = organizerIntakeAgeDays(value);
+  return days === null ? "—" : days === 0 ? "Today" : `${days}d`;
+}
+
 export function organizerEntityQueueItem(
   item: Intake.OrganizerIntakeItem,
   packet?: Intake.OrganizerPublicationReviewPacket
