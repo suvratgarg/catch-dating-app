@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.10.1
+version: 0.10.2
 updated: 2026-07-27
 owner: web_platform
 status: active
@@ -493,6 +493,16 @@ show the run-bound unavailable state rather than a fabricated zero. Sample and
 Storybook views use typed synthetic operation records; no operational JSON
 snapshot is retained or packaged. The browser does not upload a generated file
 or reconstruct a queue from repository state.
+
+The Admin loader has one bounded rolling-data compatibility rule for immutable
+publication packets written before publish and index controls were separated.
+It accepts only the complete prior packet shape, derives publish and index from
+the prior reviewed decision mapping, preserves the packet's app visibility,
+and verifies that the derived controls agree with the persisted public-state
+summary. Partially upgraded, contradictory, or unknown shapes fail closed.
+This reader boundary does not relax the current operations schema or permit an
+old packet to be mutated in place; producers must create a new run for a
+changed projection.
 
 For a reviewed candidate with no existing-entity match, the detail pane exposes
 a bounded organizer name, independent public slug, type, and review-note form.

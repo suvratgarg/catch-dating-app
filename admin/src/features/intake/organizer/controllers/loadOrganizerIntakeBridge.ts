@@ -326,15 +326,107 @@ function organizerPacketFromWorkItem(
   const intake = recordValue(item.normalizedPayload.intake);
   if (intake?.recordType !== "organizer_publication_packet") return [];
   const packet = recordValue(intake.packet);
-  if (!packet || !isOrganizerPacketProjection(packet)) {
+  const normalizedPacket = packet ?
+    normalizeOrganizerPacketProjection(packet) :
+    null;
+  if (!normalizedPacket) {
     throw new Error(
       `Organizer work item ${item.workItemId} has an invalid publication packet projection.`
     );
   }
   return [{
     item,
-    packet: packet as unknown as Intake.OrganizerPublicationPacketProjection,
+    packet: normalizedPacket,
   }];
+}
+
+function normalizeOrganizerPacketProjection(
+  packet: Record<string, unknown>
+): Intake.OrganizerPublicationPacketProjection | null {
+  if (isOrganizerPacketProjection(packet)) {
+    return packet as unknown as Intake.OrganizerPublicationPacketProjection;
+  }
+
+  const presence = recordValue(packet.publicPresence);
+  const decision = recordValue(packet.adminDecision);
+  if (!presence || !decision || !hasOnlyKeys(presence, [
+    "canonicalPath",
+    "claimTargetPath",
+    "indexStatus",
+    "appVisibility",
+    "projectionStatus",
+  ]) || !hasOnlyKeys(decision, [
+    "allowedDecisions",
+    "defaultAppVisibility",
+    "currentDecision",
+  ])) return null;
+
+  const current = decision.currentDecision === null ?
+    null :
+    recordValue(decision.currentDecision);
+  if (current !== null && !hasOnlyKeys(current, [
+    "decision",
+    "decidedAt",
+    "appVisibility",
+  ])) return null;
+
+  const visibility = current ?
+    legacyVisibilityForDecision(current.decision) :
+    legacyVisibilityWithoutDecision(packet.status, presence.indexStatus);
+  if (!visibility ||
+    presence.indexStatus !== visibility.indexStatus ||
+    (current !== null &&
+      current.appVisibility !== presence.appVisibility)) return null;
+
+  const normalized = {
+    ...packet,
+    publicPresence: {
+      ...presence,
+      publishStatus: visibility.publishStatus,
+    },
+    adminDecision: {
+      ...decision,
+      currentDecision: current ? {
+        ...current,
+        publishStatus: visibility.publishStatus,
+        indexStatus: visibility.indexStatus,
+      } : null,
+    },
+  };
+  return isOrganizerPacketProjection(normalized) ?
+    normalized as unknown as Intake.OrganizerPublicationPacketProjection :
+    null;
+}
+
+function legacyVisibilityForDecision(
+  decision: unknown
+): {publishStatus: string; indexStatus: string} | null {
+  if (decision === "approve_public") {
+    return {publishStatus: "published", indexStatus: "indexed"};
+  }
+  if (decision === "hold") {
+    return {publishStatus: "draft", indexStatus: "noindex"};
+  }
+  if (decision === "suppress") {
+    return {publishStatus: "suppressed", indexStatus: "noindex"};
+  }
+  return null;
+}
+
+function legacyVisibilityWithoutDecision(
+  packetStatus: unknown,
+  indexStatus: unknown
+): {publishStatus: string; indexStatus: string} | null {
+  const publishStatus = packetStatus === "published" ?
+    "published" :
+    "draft";
+  if (publishStatus === "published" && indexStatus === "indexed") {
+    return {publishStatus, indexStatus};
+  }
+  if (publishStatus === "draft" && indexStatus === "noindex") {
+    return {publishStatus, indexStatus};
+  }
+  return null;
 }
 
 function isOrganizerPacketProjection(

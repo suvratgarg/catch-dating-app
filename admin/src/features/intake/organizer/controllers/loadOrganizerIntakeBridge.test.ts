@@ -190,6 +190,117 @@ describe("loadOrganizerIntakeBridge", () => {
     });
   });
 
+  it.each([
+    {
+      decision: "approve_public",
+      packetStatus: "published",
+      publishStatus: "published",
+      indexStatus: "indexed",
+    },
+    {
+      decision: "hold",
+      packetStatus: "ready_for_manual_publication_review",
+      publishStatus: "draft",
+      indexStatus: "noindex",
+    },
+    {
+      decision: "suppress",
+      packetStatus: "suppressed",
+      publishStatus: "suppressed",
+      indexStatus: "noindex",
+    },
+  ])("normalizes the exact legacy $decision packet shape", async ({
+    decision,
+    packetStatus,
+    publishStatus,
+    indexStatus,
+  }) => {
+    const run = operationRun(
+      "indore-run",
+      "indore",
+      "2026-07-24T12:01:00.000Z"
+    );
+    const packet = organizerPacketWorkItem("afterfly", "indore");
+    const intake = packet.normalizedPayload.intake as {
+      packet: {
+        status: string;
+        publicPresence: Record<string, unknown>;
+        adminDecision: {
+          currentDecision: Record<string, unknown>;
+        };
+      };
+    };
+    intake.packet.status = packetStatus;
+    delete intake.packet.publicPresence.publishStatus;
+    intake.packet.publicPresence.indexStatus = indexStatus;
+    intake.packet.adminDecision.currentDecision.decision = decision;
+    delete intake.packet.adminDecision.currentDecision.publishStatus;
+    delete intake.packet.adminDecision.currentDecision.indexStatus;
+    mocks.listIntakeOperations.mockImplementation(async (
+      payload: {runId?: string}
+    ) => operationResponse({
+      runs: [run],
+      workItems: payload.runId ? [packet] : [],
+    }));
+
+    const result = await loadOrganizerIntakeBridge();
+
+    expect(result.workbench.items[0]).toMatchObject({
+      entityId: "afterfly",
+      publishStatus,
+      indexStatus,
+      appVisibility: "hidden",
+    });
+    expect(result.workbench.publicationReviewPackets.packets[0])
+      .toMatchObject({
+        publicPresence: {
+          publishStatus,
+          indexStatus,
+          appVisibility: "hidden",
+        },
+        adminDecision: {
+          currentDecision: {
+            decision,
+            publishStatus,
+            indexStatus,
+            appVisibility: "hidden",
+          },
+        },
+      });
+  });
+
+  it("rejects contradictory legacy visibility instead of inventing state",
+    async () => {
+      const run = operationRun(
+        "indore-run",
+        "indore",
+        "2026-07-24T12:01:00.000Z"
+      );
+      const packet = organizerPacketWorkItem("afterfly", "indore");
+      const intake = packet.normalizedPayload.intake as {
+        packet: {
+          publicPresence: Record<string, unknown>;
+          adminDecision: {
+            currentDecision: Record<string, unknown>;
+          };
+        };
+      };
+      delete intake.packet.publicPresence.publishStatus;
+      intake.packet.publicPresence.indexStatus = "noindex";
+      delete intake.packet.adminDecision.currentDecision.publishStatus;
+      delete intake.packet.adminDecision.currentDecision.indexStatus;
+      mocks.listIntakeOperations.mockImplementation(async (
+        payload: {runId?: string}
+      ) => operationResponse({
+        runs: [run],
+        workItems: payload.runId ? [packet] : [],
+      }));
+
+      await expect(loadOrganizerIntakeBridge()).rejects.toThrow(
+        "invalid publication packet projection"
+      );
+    });
+
   it("rejects malformed publication packet projections", async () => {
     const run = operationRun(
       "indore-run",

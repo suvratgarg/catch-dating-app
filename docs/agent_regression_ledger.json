@@ -3148,6 +3148,28 @@
       "notes": "Deploy response-producing callables before dependent Admin bundles. Additive response fields still require a client-side compatibility default so a partial or rolled-back deploy cannot crash the route."
     },
     {
+      "id": "REG-ADMIN-ORGANIZER-IMMUTABLE-PACKET-COMPAT-001",
+      "title": "Legacy organizer packet blanks the live Intake workbench",
+      "status": "active",
+      "applies_to": [
+        "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.ts",
+        "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.test.ts",
+        "contracts/operations/work_item.schema.json"
+      ],
+      "symptom": "A newest completed organizer-only run predates explicit publish and index fields, so the current Admin loader rejects its otherwise valid immutable publication packet and blanks the route.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix admin test -- src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.test.ts",
+        "guardEvidence": "the loader accepts only the complete pre-split packet shape, restores the exact reviewed approve, hold, or suppress visibility semantics while preserving app visibility, and rejects contradictory or partially upgraded packets"
+      },
+      "owner_docs": [
+        "admin/README.md",
+        "docs/web_surface_architecture.md",
+        "operations/README.md"
+      ],
+      "notes": "Imported operation runs remain immutable and the current operations schema remains strict. Compatibility is bounded to the Admin read boundary; changed projections require a new run."
+    },
+    {
       "id": "REG-ADMIN-ORGANIZER-MARKET-PROJECTION-001",
       "title": "Organizer market projections can be edited into inconsistent combinations",
       "status": "active",
