@@ -18,9 +18,6 @@ if (args.help) {
   process.exit(0);
 }
 
-const seedRoot = path.resolve(
-  args.seedRoot ?? path.join(repoRoot, "tool", "host_discovery", "seed_clubs")
-);
 const intakeProjectionPath = path.resolve(args.projectionPlan ?? path.join(
   repoRoot,
   "tool",
@@ -110,19 +107,6 @@ const firestoreListings = firestoreOrganizerDocuments ?
   null;
 const publicExternalEventsByHostId =
   publicExternalEventsByCanonicalHostId(readJsonIfExists(externalEventReadinessPath));
-const suppressedLegacyPaths = new Set(
-  [
-    ...approvedIntakeProjections.flatMap((entry) => [
-      entry.publicListing?.path,
-      ...(entry.legacyPaths ?? []),
-    ]),
-    ...(firestoreOrganizerDocuments ?? []).flatMap(({data}) => [
-      data?.publicPage?.canonicalPath,
-      ...(data?.publicPage?.legacyPaths ?? []),
-    ]),
-  ].filter(Boolean)
-);
-
 const listings = [
   ...(firestoreListings ?? (
     (args.includeDemo ? approvedIntakeProjections : productionIntakeProjections)
@@ -130,8 +114,6 @@ const listings = [
         liveMarketsOnly: !args.includeDemo,
       }))
   )),
-  ...(args.noSeeds ? [] : scrapedSeedListings(suppressedLegacyPaths)
-    .filter((listing) => args.includeDemo || listingHasLiveMarket(listing))),
   ...(args.includeDemo ? appCreatedDemoListings() : []),
 ]
   .map(withPublicExternalEvents)
@@ -627,23 +609,6 @@ function validateListingProjections(listings) {
   ].join("\n"));
 }
 
-function scrapedSeedListings(suppressedPaths) {
-  return fs
-    .readdirSync(seedRoot)
-    .filter((file) => file.endsWith(".json"))
-    .sort()
-    .map((file) => {
-      const wrapper = JSON.parse(
-        fs.readFileSync(path.join(seedRoot, file), "utf8")
-      );
-      if (suppressedPaths.has(wrapper?.data?.publicPage?.canonicalPath)) {
-        return null;
-      }
-      return listingFromClubSeed(wrapper);
-    })
-    .filter(Boolean);
-}
-
 function appCreatedDemoListings() {
   return ["host-demo.json"]
     .map((file) => {
@@ -682,7 +647,7 @@ function organizerTypeLabel(type) {
   }
 }
 
-function listingFromClubSeed(wrapper) {
+function listingFromOrganizerDocument(wrapper) {
   if (!wrapper || typeof wrapper !== "object") return null;
   const {path: firestorePath, data: club} = wrapper;
   if (!club || typeof club !== "object") return null;
@@ -708,13 +673,13 @@ function listingFromClubSeed(wrapper) {
     indexStatus: club.publicPage.indexStatus,
   });
   const publicApi = staticPublicApi(
-    "Legacy scraped seed listings are static until their Firestore claim target sync is verified."
+    "This listing remains fail-closed until its Firestore claim target is verified."
   );
 
   return {
     id,
     listingVariant: "unclaimedScraped",
-    dataOrigin: "scrapedSeed",
+    dataOrigin: "organizerIntake",
     name: club.name,
     slug: club.publicPage.slug,
     city,
@@ -768,7 +733,7 @@ function listingFromClubSeed(wrapper) {
 
 function listingFromFirestoreOrganizer({id, data: club}) {
   const wrapper = {path: `organizers/${id}`, data: club};
-  const listing = listingFromClubSeed(wrapper);
+  const listing = listingFromOrganizerDocument(wrapper);
   if (!listing) return null;
   const publicApi = publicApiForOrganizerIntake(id);
   const publicReviewTarget = publicReviewTargetForOrganizerIntake(id);
@@ -1336,13 +1301,11 @@ function parseArgs(argv) {
     externalEventReadiness: null,
     help: false,
     includeDemo: false,
-    noSeeds: false,
     output: null,
     projectionPlan: null,
     claimTargetPlan: null,
     claimTargetReadinessReceipt: null,
     firestoreProject: null,
-    seedRoot: null,
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -1351,7 +1314,6 @@ function parseArgs(argv) {
     else if (arg === "--help" || arg === "-h") parsed.help = true;
     else if (arg === "--include-demo") parsed.includeDemo = true;
     else if (arg === "--no-demo") parsed.includeDemo = false;
-    else if (arg === "--no-seeds") parsed.noSeeds = true;
     else if (arg === "--demo-scenario-root") {
       parsed.demoScenarioRoot = requiredValue(argv, ++index, arg);
     } else if (arg === "--output") {
@@ -1368,8 +1330,6 @@ function parseArgs(argv) {
       parsed.claimTargetReadinessReceipt = requiredValue(argv, ++index, arg);
     } else if (arg === "--firestore-project") {
       parsed.firestoreProject = requiredValue(argv, ++index, arg);
-    } else if (arg === "--seed-root") {
-      parsed.seedRoot = requiredValue(argv, ++index, arg);
     } else {
       fail(`Unknown argument: ${arg}`);
     }
@@ -1398,10 +1358,8 @@ Options:
   --claim-target-readiness-receipt <path>
                                   Read a Firestore readiness receipt for public claim APIs.
   --firestore-project <project>    Read canonical organizer listing content from Firestore.
-  --seed-root <path>               Read legacy scraped seed listings from a specific folder.
   --demo-scenario-root <path>      Read demo scenario configs from a specific folder.
   --output <path>                  Write or check a specific output file.
-  --no-seeds                      Exclude legacy scraped seed listings.
   --include-demo                  Include app-created demo listings (Storybook/sales fixtures only).
   --no-demo                       Compatibility flag; production already excludes demos by default.
 `);

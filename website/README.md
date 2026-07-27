@@ -36,7 +36,8 @@ market cities; external events remain visible only on organizer listings.
 The production Hosting job regenerates `src/generated/hostListings.json` from
 canonical `organizers/{id}` documents in Firestore. The checked-in file is a
 build projection for deterministic pull-request validation, not an operational
-editing surface.
+editing surface. The generator has no legacy scraped-seed input; database
+materialization is the only production content path.
 
 Firebase Hosting deploys run
 `node tool/env/check_web_hosting_env.mjs marketing` before building. Production

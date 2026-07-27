@@ -63,14 +63,12 @@ test("production output excludes demo listings while explicit story output inclu
   assert.equal(storyListings.some((listing) => listing.dataOrigin === "catchDemo"), true);
 });
 
-test("approved organizer intake projections render canonical listings and suppress legacy seeds", () => {
+test("approved organizer intake projections render canonical listings", () => {
   const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-organizer-listings-"));
   const projectionPath = path.join(tmpRoot, "public_projection_plan.json");
   const claimTargetSyncPreviewPath = path.join(tmpRoot, "organizer_claim_target_sync_preview.json");
   const externalEventReadinessPath = path.join(tmpRoot, "external_event_readiness.json");
-  const seedRoot = path.join(tmpRoot, "seed_clubs");
   const outputPath = path.join(tmpRoot, "hostListings.json");
-  fs.mkdirSync(seedRoot, {recursive: true});
   fs.writeFileSync(projectionPath, `${JSON.stringify(approvedProjectionPlan(), null, 2)}\n`);
   fs.writeFileSync(
     claimTargetSyncPreviewPath,
@@ -80,11 +78,6 @@ test("approved organizer intake projections render canonical listings and suppre
     externalEventReadinessPath,
     `${JSON.stringify(externalEventReadiness(), null, 2)}\n`
   );
-  fs.writeFileSync(
-    path.join(seedRoot, "afterfly-run-club-indore.json"),
-    `${JSON.stringify(legacySeedListing(), null, 2)}\n`
-  );
-
   execFileSync(process.execPath, [
     scriptPath,
     "--projection-plan",
@@ -93,8 +86,6 @@ test("approved organizer intake projections render canonical listings and suppre
     claimTargetSyncPreviewPath,
     "--external-event-readiness",
     externalEventReadinessPath,
-    "--seed-root",
-    seedRoot,
     "--output",
     outputPath,
     "--no-demo",
@@ -142,8 +133,6 @@ test("approved organizer intake projections render canonical listings and suppre
     claimTargetSyncPreviewPath,
     "--external-event-readiness",
     externalEventReadinessPath,
-    "--seed-root",
-    seedRoot,
     "--output",
     outputPath,
     "--no-demo",
@@ -166,8 +155,6 @@ test("approved organizer intake projections render canonical listings and suppre
     claimTargetSyncPreviewPath,
     "--external-event-readiness",
     externalEventReadinessPath,
-    "--seed-root",
-    seedRoot,
     "--output",
     outputPath,
     "--no-demo",
@@ -205,8 +192,6 @@ test("approved organizer intake projections render canonical listings and suppre
     readinessReceiptPath,
     "--external-event-readiness",
     externalEventReadinessPath,
-    "--seed-root",
-    seedRoot,
     "--output",
     outputPath,
     "--no-demo",
@@ -254,8 +239,6 @@ test("approved organizer intake projections render canonical listings and suppre
     readinessReceiptPath,
     "--external-event-readiness",
     externalEventReadinessPath,
-    "--seed-root",
-    seedRoot,
     "--output",
     outputPath,
     "--no-demo",
@@ -464,28 +447,6 @@ function externalEventReadiness() {
         },
       },
     ],
-  };
-}
-
-function legacySeedListing() {
-  return {
-    path: "clubs/afterfly-run-club-indore",
-    data: {
-      cityName: "Indore",
-      description: "Legacy seed listing that should be suppressed.",
-      displayCategory: "Run club",
-      name: "AFTER FLY",
-      publicPage: {
-        canonicalPath: "/organizers/indore/afterfly-run-club/",
-        citySlug: "indore",
-        publishStatus: "published",
-        robots: "noindex, follow",
-        slug: "afterfly-run-club",
-      },
-      publicProfile: {
-        summary: "Legacy seed listing.",
-      },
-    },
   };
 }
 
