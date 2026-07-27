@@ -34,15 +34,24 @@ export class SupplyIntakeLearner {
   async propose(sourceProfileId) {
     const source = SUPPORTED_SOURCES[sourceProfileId];
     invariant(source, "SOURCE_NOT_SUPPORTED", `No rule-learning adapter exists for ${sourceProfileId}.`);
-    const items = (await this.store.listWorkItems({sourceProfileId}));
-    const observations = summarizeObservations(items);
+    const [items, corrections, fixtures] = await Promise.all([
+      this.store.listWorkItems({sourceProfileId}),
+      this.store.listFieldCorrections({sourceProfileId}),
+      this.store.listCorrectionFixtures({sourceProfileId}),
+    ]);
+    assertCorrectionFixtureCoverage(corrections, fixtures);
+    const observations = summarizeObservations(items, corrections);
     const basis = {
       schemaVersion: 1,
       sourceProfileId,
       extractorId: source.extractorId,
       fixtureSet: source.fixture,
+      correctionFixtureIds: fixtures.map((fixture) => fixture.fixtureId).sort(),
       observations,
-      candidateRule: this.candidateRuleFactory(sourceProfileId),
+      candidateRule: this.candidateRuleFactory(
+        sourceProfileId,
+        correctionRules(corrections)
+      ),
     };
     const proposalId = `rule-${sourceProfileId}-${shortHash(basis)}`;
     const existing = await this.store.getRuleProposal(proposalId);
@@ -90,8 +99,20 @@ export class SupplyIntakeLearner {
       "Rule fixture source does not match its frozen proposal."
     );
     const executeCandidate = compileCandidateRule(proposal.candidateRule);
-    const results = fixture.cases.map((testCase) =>
+    const sourceResults = fixture.cases.map((testCase) =>
       evaluateCase(executeCandidate, testCase));
+    const correctionFixtures = await Promise.all(
+      proposal.correctionFixtureIds.map((fixtureId) =>
+        this.store.getCorrectionFixture(fixtureId))
+    );
+    invariant(
+      correctionFixtures.every(Boolean),
+      "CORRUPT_RULE_FIXTURE",
+      "A correction fixture bound to the proposal is missing."
+    );
+    const correctionResults = correctionFixtures.map((correctionFixture) =>
+      evaluateCorrectionCase(proposal.candidateRule, correctionFixture));
+    const results = [...sourceResults, ...correctionResults];
     const totalExpected = results.reduce((sum, result) => sum + result.expected, 0);
     const exact = results.reduce((sum, result) => sum + result.exactMatches, 0);
     const falsePositive = results.reduce((sum, result) => sum + result.falsePositives, 0);
@@ -104,7 +125,10 @@ export class SupplyIntakeLearner {
       proposalId,
       proposalHash: proposal.proposalHash,
       fixtureSetId: fixture.fixtureSetId,
-      fixtureHash: hashValue(fixture),
+      fixtureHash: hashValue({
+        sourceFixture: fixture,
+        correctionFixtures,
+      }),
       evaluatedAt,
       results,
     };
@@ -202,11 +226,13 @@ export class SupplyIntakeLearner {
   }
 
   async status() {
-    const [proposals, evaluations, canaries, actions] = await Promise.all([
+    const [proposals, evaluations, canaries, actions, corrections, fixtures] = await Promise.all([
       this.store.listRuleProposals(),
       this.store.listRuleEvaluations(),
       this.store.listRuleCanaries(),
       this.store.listLearningActions(),
+      this.store.listFieldCorrections(),
+      this.store.listCorrectionFixtures(),
     ]);
     return {
       schemaVersion: 1,
@@ -217,12 +243,49 @@ export class SupplyIntakeLearner {
         shadowCanaries: canaries.filter((canary) => canary.status === "shadow_canary").length,
         activatedRules: 0,
         actions: actions.length,
+        corrections: corrections.length,
+        correctionFixtures: fixtures.length,
       },
       proposals,
       evaluations,
       canaries,
       actions,
+      corrections,
+      correctionFixtures: fixtures,
     };
+  }
+
+  async recordCorrection(input) {
+    const correction = normalizeCorrection(input, this.now());
+    invariant(
+      SUPPORTED_SOURCES[correction.sourceProfileId],
+      "SOURCE_NOT_SUPPORTED",
+      `No rule-learning adapter exists for ${correction.sourceProfileId}.`
+    );
+    const fixture = {
+      schemaVersion: 1,
+      fixtureId: correction.fixtureId,
+      sourceProfileId: correction.sourceProfileId,
+      correctionId: correction.correctionId,
+      field: correction.field,
+      extractedValue: correction.extractedValue,
+      correctedValue: correction.correctedValue,
+      provenance: correction.provenance,
+    };
+    await this.store.putFieldCorrection(correction);
+    await this.store.putCorrectionFixture(fixture);
+    await this.recordAction(
+      "field.correction_recorded",
+      correction.correctedAt,
+      null,
+      {
+        correctionId: correction.correctionId,
+        fixtureId: fixture.fixtureId,
+        sourceProfileId: correction.sourceProfileId,
+        field: correction.field,
+      }
+    );
+    return {correction, fixture};
   }
 
   async recordAction(type, at, proposalId, payload) {
@@ -266,7 +329,7 @@ function latestEvaluation(evaluations) {
   return ordered[0]?.evaluation ?? null;
 }
 
-function summarizeObservations(items) {
+function summarizeObservations(items, corrections = []) {
   const failureReasons = new Map();
   for (const item of items) {
     for (const blocker of item.blockers) failureReasons.set(blocker, (failureReasons.get(blocker) ?? 0) + 1);
@@ -276,10 +339,15 @@ function summarizeObservations(items) {
     supportCount: items.length,
     artifactCount: new Set(items.map((item) => item.evidence.artifactHash)).size,
     failureReasons: Object.fromEntries([...failureReasons.entries()].sort(([left], [right]) => left.localeCompare(right))),
+    correctionCount: corrections.length,
+    correctionsByField: Object.fromEntries(
+      [...frequencies(corrections.map((correction) => correction.field))]
+        .sort(([left], [right]) => left.localeCompare(right))
+    ),
   };
 }
 
-function candidateRule(sourceProfileId) {
+function candidateRule(sourceProfileId, fieldCorrections = []) {
   if (sourceProfileId === "cntraveller") return {
     kind: "declarative_extractor_config",
     templateFamily: "editorial_link_card",
@@ -288,6 +356,7 @@ function candidateRule(sourceProfileId) {
     mappings: {title: "card.heading", dateText: "card.dateText", venueText: "card.venueText", links: "card.links"},
     invariantOutputs: {discoveryOnly: true, requiresOfficialSource: true},
     onTemplateMismatch: "abstain",
+    fieldCorrections,
   };
   return {
     kind: "deterministic_extractor",
@@ -296,6 +365,7 @@ function candidateRule(sourceProfileId) {
     implementationId: "luma-json-ld-event-v1",
     requiredTypes: ["Event"],
     onTemplateMismatch: "abstain",
+    fieldCorrections,
   };
 }
 
@@ -331,7 +401,8 @@ function assertFrozenProposal(proposal) {
     proposal?.schemaVersion === 1 &&
       source &&
       proposal.extractorId === source.extractorId &&
-      proposal.fixtureSet === source.fixture,
+      proposal.fixtureSet === source.fixture &&
+      Array.isArray(proposal.correctionFixtureIds),
     "CORRUPT_RULE_PROPOSAL",
     "Rule proposal source, extractor, or fixture binding is invalid."
   );
@@ -351,12 +422,14 @@ function proposalBasis(proposal) {
     sourceProfileId: proposal.sourceProfileId,
     extractorId: proposal.extractorId,
     fixtureSet: proposal.fixtureSet,
+    correctionFixtureIds: proposal.correctionFixtureIds,
     observations: proposal.observations,
     candidateRule: proposal.candidateRule,
   };
 }
 
 function compileCandidateRule(rule) {
+  assertFieldCorrectionRules(rule?.fieldCorrections);
   if (rule?.kind === "declarative_extractor_config" &&
       rule.templateFamily === "editorial_link_card" &&
       rule.version === 1 &&
@@ -374,6 +447,133 @@ function compileCandidateRule(rule) {
   throw new OperationsError(
     "RULE_CANDIDATE_UNSUPPORTED",
     "Candidate rule has no allowlisted deterministic evaluator."
+  );
+}
+
+function evaluateCorrectionCase(rule, fixture) {
+  const actual = applyFieldCorrection(
+    rule.fieldCorrections ?? [],
+    fixture.field,
+    fixture.extractedValue
+  );
+  const passed = hashValue(actual) === hashValue(fixture.correctedValue);
+  return {
+    caseId: fixture.fixtureId,
+    expected: 1,
+    actual: 1,
+    exactMatches: passed ? 1 : 0,
+    falsePositives: passed ? 0 : 1,
+    falseNegatives: passed ? 0 : 1,
+    passed,
+  };
+}
+
+function applyFieldCorrection(rules, field, extractedValue) {
+  const match = rules.find((rule) =>
+    rule.field === field &&
+    hashValue(rule.extractedValue) === hashValue(extractedValue));
+  return match?.correctedValue ?? extractedValue;
+}
+
+function correctionRules(corrections) {
+  const groups = new Map();
+  for (const correction of corrections) {
+    const key = `${correction.field}:${hashValue(correction.extractedValue)}`;
+    const group = groups.get(key) ?? [];
+    group.push(correction);
+    groups.set(key, group);
+  }
+  return [...groups.values()].flatMap((group) => {
+    const outcomes = new Map();
+    for (const correction of group) {
+      const key = hashValue(correction.correctedValue);
+      outcomes.set(key, [...(outcomes.get(key) ?? []), correction]);
+    }
+    if (outcomes.size !== 1) return [];
+    const [consensus] = outcomes.values();
+    return [{
+      field: consensus[0].field,
+      extractedValue: consensus[0].extractedValue,
+      correctedValue: consensus[0].correctedValue,
+      supportCount: consensus.length,
+    }];
+  }).sort((left, right) =>
+    left.field.localeCompare(right.field) ||
+    hashValue(left.extractedValue).localeCompare(hashValue(right.extractedValue)));
+}
+
+function assertFieldCorrectionRules(rules) {
+  if (rules === undefined) return;
+  invariant(
+    Array.isArray(rules) && rules.length <= 200 &&
+      rules.every((rule) =>
+        typeof rule?.field === "string" &&
+        rule.field.length > 0 &&
+        rule.field.length <= 160 &&
+        isCorrectionValue(rule.extractedValue) &&
+        isCorrectionValue(rule.correctedValue) &&
+        Number.isSafeInteger(rule.supportCount) &&
+        rule.supportCount > 0),
+    "RULE_CANDIDATE_UNSUPPORTED",
+    "Candidate field-correction rules are not bounded or allowlisted."
+  );
+}
+
+function normalizeCorrection(input, correctedAt) {
+  invariant(input && typeof input === "object", "INVALID_FIELD_CORRECTION", "Correction input is required.");
+  invariant(typeof input.correctionId === "string" && input.correctionId.length > 0 && input.correctionId.length <= 200,
+    "INVALID_FIELD_CORRECTION", "Correction id is invalid.");
+  invariant(typeof input.fixtureId === "string" && input.fixtureId.length > 0 && input.fixtureId.length <= 200,
+    "INVALID_FIELD_CORRECTION", "Correction fixture id is invalid.");
+  invariant(typeof input.sourceProfileId === "string" && input.sourceProfileId.length > 0 && input.sourceProfileId.length <= 120,
+    "INVALID_FIELD_CORRECTION", "Correction source profile is invalid.");
+  invariant(typeof input.field === "string" && input.field.length > 0 && input.field.length <= 160,
+    "INVALID_FIELD_CORRECTION", "Correction field is invalid.");
+  invariant(isCorrectionValue(input.extractedValue) && isCorrectionValue(input.correctedValue),
+    "INVALID_FIELD_CORRECTION", "Correction values must be bounded strings, null, or string arrays.");
+  invariant(hashValue(input.extractedValue) !== hashValue(input.correctedValue),
+    "INVALID_FIELD_CORRECTION", "Extracted and corrected values must differ.");
+  invariant(input.provenance && typeof input.provenance === "object",
+    "INVALID_FIELD_CORRECTION", "Correction provenance is required.");
+  return {
+    schemaVersion: 1,
+    correctionId: input.correctionId,
+    fixtureId: input.fixtureId,
+    sourceProfileId: input.sourceProfileId,
+    sourceWorkItemId: input.sourceWorkItemId ?? null,
+    sourceCandidateId: input.sourceCandidateId ?? null,
+    field: input.field,
+    extractedValue: structuredClone(input.extractedValue),
+    correctedValue: structuredClone(input.correctedValue),
+    provenance: structuredClone(input.provenance),
+    correctedAt: input.correctedAt ?? correctedAt,
+  };
+}
+
+function isCorrectionValue(value) {
+  return value === null ||
+    (typeof value === "string" && value.length <= 2000) ||
+    (Array.isArray(value) && value.length <= 40 &&
+      value.every((item) => typeof item === "string" && item.length <= 500));
+}
+
+function assertCorrectionFixtureCoverage(corrections, fixtures) {
+  const fixturesByCorrection = new Map(fixtures.map((fixture) => [
+    fixture.correctionId,
+    fixture,
+  ]));
+  invariant(
+    corrections.every((correction) => {
+      const fixture = fixturesByCorrection.get(correction.correctionId);
+      return fixture &&
+        fixture.fixtureId === correction.fixtureId &&
+        fixture.sourceProfileId === correction.sourceProfileId &&
+        fixture.field === correction.field &&
+        hashValue(fixture.extractedValue) === hashValue(correction.extractedValue) &&
+        hashValue(fixture.correctedValue) === hashValue(correction.correctedValue);
+    }),
+    "CORRECTION_FIXTURE_MISSING",
+    "Every field correction must have an immutable matching replay fixture."
   );
 }
 

@@ -17775,6 +17775,112 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerDocumentIntakeLearningSourceCapturedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.intakeLearningSource.capturedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerDocumentIntakeLearningSourceCapturedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.intakeLearningSource.capturedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerDocumentIntakeLearningSourceSeededFields = CatchContractFieldConstraints(
+    path: 'organizerDocument.intakeLearningSource.seededFields',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 40,
+  );
+
+  static const organizerDocumentIntakeLearningSourceSeededFieldsItemsArtifactId = CatchContractFieldConstraints(
+    path: 'organizerDocument.intakeLearningSource.seededFields.items.artifactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const organizerDocumentIntakeLearningSourceSeededFieldsItemsConfidence = CatchContractFieldConstraints(
+    path: 'organizerDocument.intakeLearningSource.seededFields.items.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const organizerDocumentIntakeLearningSourceSeededFieldsItemsContentHash = CatchContractFieldConstraints(
+    path: 'organizerDocument.intakeLearningSource.seededFields.items.contentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerDocumentIntakeLearningSourceSeededFieldsItemsExtractedBy = CatchContractFieldConstraints(
+    path: 'organizerDocument.intakeLearningSource.seededFields.items.extractedBy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['deterministic', 'model', 'human'],
+  );
+
+  static const organizerDocumentIntakeLearningSourceSeededFieldsItemsExtractedValue = CatchContractFieldConstraints(
+    path: 'organizerDocument.intakeLearningSource.seededFields.items.extractedValue',
+    maxLength: 2000,
+    valueTypes: <String>['string', 'array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 40,
+  );
+
+  static const organizerDocumentIntakeLearningSourceSeededFieldsItemsExtractorVersion = CatchContractFieldConstraints(
+    path: 'organizerDocument.intakeLearningSource.seededFields.items.extractorVersion',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerDocumentIntakeLearningSourceSeededFieldsItemsField = CatchContractFieldConstraints(
+    path: 'organizerDocument.intakeLearningSource.seededFields.items.field',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['name', 'location', 'tags', 'publicProfile.sourceSummary', 'publicProfile.formats', 'publicSources[0].href'],
+  );
+
+  static const organizerDocumentIntakeLearningSourceSeededFieldsItemsLocator = CatchContractFieldConstraints(
+    path: 'organizerDocument.intakeLearningSource.seededFields.items.locator',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerDocumentIntakeLearningSourceSourceCandidateId = CatchContractFieldConstraints(
+    path: 'organizerDocument.intakeLearningSource.sourceCandidateId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerDocumentIntakeLearningSourceSourceProfileId = CatchContractFieldConstraints(
+    path: 'organizerDocument.intakeLearningSource.sourceProfileId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerDocumentIntakeLearningSourceSourceWorkItemId = CatchContractFieldConstraints(
+    path: 'organizerDocument.intakeLearningSource.sourceWorkItemId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const organizerDocumentLocation = CatchContractFieldConstraints(
     path: 'organizerDocument.location',
     maxLength: 120,
@@ -19381,6 +19487,158 @@ abstract final class CatchContractConstraints {
     path: 'organizerIntakeCurationDecisionDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const organizerIntakeFieldCorrectionDocumentArtifactId = CatchContractFieldConstraints(
+    path: 'organizerIntakeFieldCorrectionDocument.artifactId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const organizerIntakeFieldCorrectionDocumentConfidence = CatchContractFieldConstraints(
+    path: 'organizerIntakeFieldCorrectionDocument.confidence',
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const organizerIntakeFieldCorrectionDocumentContentHash = CatchContractFieldConstraints(
+    path: 'organizerIntakeFieldCorrectionDocument.contentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerIntakeFieldCorrectionDocumentCorrectedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerIntakeFieldCorrectionDocument.correctedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerIntakeFieldCorrectionDocumentCorrectedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerIntakeFieldCorrectionDocument.correctedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerIntakeFieldCorrectionDocumentCorrectedByUid = CatchContractFieldConstraints(
+    path: 'organizerIntakeFieldCorrectionDocument.correctedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerIntakeFieldCorrectionDocumentCorrectedValue = CatchContractFieldConstraints(
+    path: 'organizerIntakeFieldCorrectionDocument.correctedValue',
+    maxLength: 2000,
+    valueTypes: <String>['string', 'array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 40,
+  );
+
+  static const organizerIntakeFieldCorrectionDocumentCorrectionId = CatchContractFieldConstraints(
+    path: 'organizerIntakeFieldCorrectionDocument.correctionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerIntakeFieldCorrectionDocumentExtractedBy = CatchContractFieldConstraints(
+    path: 'organizerIntakeFieldCorrectionDocument.extractedBy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['deterministic', 'model', 'human'],
+  );
+
+  static const organizerIntakeFieldCorrectionDocumentExtractedValue = CatchContractFieldConstraints(
+    path: 'organizerIntakeFieldCorrectionDocument.extractedValue',
+    maxLength: 2000,
+    valueTypes: <String>['string', 'array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 40,
+  );
+
+  static const organizerIntakeFieldCorrectionDocumentExtractorVersion = CatchContractFieldConstraints(
+    path: 'organizerIntakeFieldCorrectionDocument.extractorVersion',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerIntakeFieldCorrectionDocumentField = CatchContractFieldConstraints(
+    path: 'organizerIntakeFieldCorrectionDocument.field',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['name', 'location', 'tags', 'publicProfile.sourceSummary', 'publicProfile.formats'],
+  );
+
+  static const organizerIntakeFieldCorrectionDocumentFixtureId = CatchContractFieldConstraints(
+    path: 'organizerIntakeFieldCorrectionDocument.fixtureId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerIntakeFieldCorrectionDocumentLocator = CatchContractFieldConstraints(
+    path: 'organizerIntakeFieldCorrectionDocument.locator',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerIntakeFieldCorrectionDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerIntakeFieldCorrectionDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerIntakeFieldCorrectionDocumentReviewNote = CatchContractFieldConstraints(
+    path: 'organizerIntakeFieldCorrectionDocument.reviewNote',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerIntakeFieldCorrectionDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'organizerIntakeFieldCorrectionDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerIntakeFieldCorrectionDocumentSourceCandidateId = CatchContractFieldConstraints(
+    path: 'organizerIntakeFieldCorrectionDocument.sourceCandidateId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerIntakeFieldCorrectionDocumentSourceProfileId = CatchContractFieldConstraints(
+    path: 'organizerIntakeFieldCorrectionDocument.sourceProfileId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerIntakeFieldCorrectionDocumentSourceWorkItemId = CatchContractFieldConstraints(
+    path: 'organizerIntakeFieldCorrectionDocument.sourceWorkItemId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
   static const organizerIntakeReviewDecisionDocumentAppVisibility = CatchContractFieldConstraints(
@@ -29363,6 +29621,20 @@ abstract final class CatchContractConstraints {
     'organizerDocument.hostUserIds.items': organizerDocumentHostUserIdsItems,
     'organizerDocument.imageUrl': organizerDocumentImageUrl,
     'organizerDocument.instagramHandle': organizerDocumentInstagramHandle,
+    'organizerDocument.intakeLearningSource.capturedAt._nanoseconds': organizerDocumentIntakeLearningSourceCapturedAtNanoseconds,
+    'organizerDocument.intakeLearningSource.capturedAt._seconds': organizerDocumentIntakeLearningSourceCapturedAtSeconds,
+    'organizerDocument.intakeLearningSource.seededFields': organizerDocumentIntakeLearningSourceSeededFields,
+    'organizerDocument.intakeLearningSource.seededFields.items.artifactId': organizerDocumentIntakeLearningSourceSeededFieldsItemsArtifactId,
+    'organizerDocument.intakeLearningSource.seededFields.items.confidence': organizerDocumentIntakeLearningSourceSeededFieldsItemsConfidence,
+    'organizerDocument.intakeLearningSource.seededFields.items.contentHash': organizerDocumentIntakeLearningSourceSeededFieldsItemsContentHash,
+    'organizerDocument.intakeLearningSource.seededFields.items.extractedBy': organizerDocumentIntakeLearningSourceSeededFieldsItemsExtractedBy,
+    'organizerDocument.intakeLearningSource.seededFields.items.extractedValue': organizerDocumentIntakeLearningSourceSeededFieldsItemsExtractedValue,
+    'organizerDocument.intakeLearningSource.seededFields.items.extractorVersion': organizerDocumentIntakeLearningSourceSeededFieldsItemsExtractorVersion,
+    'organizerDocument.intakeLearningSource.seededFields.items.field': organizerDocumentIntakeLearningSourceSeededFieldsItemsField,
+    'organizerDocument.intakeLearningSource.seededFields.items.locator': organizerDocumentIntakeLearningSourceSeededFieldsItemsLocator,
+    'organizerDocument.intakeLearningSource.sourceCandidateId': organizerDocumentIntakeLearningSourceSourceCandidateId,
+    'organizerDocument.intakeLearningSource.sourceProfileId': organizerDocumentIntakeLearningSourceSourceProfileId,
+    'organizerDocument.intakeLearningSource.sourceWorkItemId': organizerDocumentIntakeLearningSourceSourceWorkItemId,
     'organizerDocument.location': organizerDocumentLocation,
     'organizerDocument.locationCityId': organizerDocumentLocationCityId,
     'organizerDocument.locationMarketId': organizerDocumentLocationMarketId,
@@ -29587,6 +29859,26 @@ abstract final class CatchContractConstraints {
     'organizerIntakeCurationDecisionDocument.targetEntityId': organizerIntakeCurationDecisionDocumentTargetEntityId,
     'organizerIntakeCurationDecisionDocument.updatedAt._nanoseconds': organizerIntakeCurationDecisionDocumentUpdatedAtNanoseconds,
     'organizerIntakeCurationDecisionDocument.updatedAt._seconds': organizerIntakeCurationDecisionDocumentUpdatedAtSeconds,
+    'organizerIntakeFieldCorrectionDocument.artifactId': organizerIntakeFieldCorrectionDocumentArtifactId,
+    'organizerIntakeFieldCorrectionDocument.confidence': organizerIntakeFieldCorrectionDocumentConfidence,
+    'organizerIntakeFieldCorrectionDocument.contentHash': organizerIntakeFieldCorrectionDocumentContentHash,
+    'organizerIntakeFieldCorrectionDocument.correctedAt._nanoseconds': organizerIntakeFieldCorrectionDocumentCorrectedAtNanoseconds,
+    'organizerIntakeFieldCorrectionDocument.correctedAt._seconds': organizerIntakeFieldCorrectionDocumentCorrectedAtSeconds,
+    'organizerIntakeFieldCorrectionDocument.correctedByUid': organizerIntakeFieldCorrectionDocumentCorrectedByUid,
+    'organizerIntakeFieldCorrectionDocument.correctedValue': organizerIntakeFieldCorrectionDocumentCorrectedValue,
+    'organizerIntakeFieldCorrectionDocument.correctionId': organizerIntakeFieldCorrectionDocumentCorrectionId,
+    'organizerIntakeFieldCorrectionDocument.extractedBy': organizerIntakeFieldCorrectionDocumentExtractedBy,
+    'organizerIntakeFieldCorrectionDocument.extractedValue': organizerIntakeFieldCorrectionDocumentExtractedValue,
+    'organizerIntakeFieldCorrectionDocument.extractorVersion': organizerIntakeFieldCorrectionDocumentExtractorVersion,
+    'organizerIntakeFieldCorrectionDocument.field': organizerIntakeFieldCorrectionDocumentField,
+    'organizerIntakeFieldCorrectionDocument.fixtureId': organizerIntakeFieldCorrectionDocumentFixtureId,
+    'organizerIntakeFieldCorrectionDocument.locator': organizerIntakeFieldCorrectionDocumentLocator,
+    'organizerIntakeFieldCorrectionDocument.organizerId': organizerIntakeFieldCorrectionDocumentOrganizerId,
+    'organizerIntakeFieldCorrectionDocument.reviewNote': organizerIntakeFieldCorrectionDocumentReviewNote,
+    'organizerIntakeFieldCorrectionDocument.schemaVersion': organizerIntakeFieldCorrectionDocumentSchemaVersion,
+    'organizerIntakeFieldCorrectionDocument.sourceCandidateId': organizerIntakeFieldCorrectionDocumentSourceCandidateId,
+    'organizerIntakeFieldCorrectionDocument.sourceProfileId': organizerIntakeFieldCorrectionDocumentSourceProfileId,
+    'organizerIntakeFieldCorrectionDocument.sourceWorkItemId': organizerIntakeFieldCorrectionDocumentSourceWorkItemId,
     'organizerIntakeReviewDecisionDocument.appVisibility': organizerIntakeReviewDecisionDocumentAppVisibility,
     'organizerIntakeReviewDecisionDocument.checklist.claimTargetReviewed': organizerIntakeReviewDecisionDocumentChecklistClaimTargetReviewed,
     'organizerIntakeReviewDecisionDocument.checklist.crawlDisabledReviewed': organizerIntakeReviewDecisionDocumentChecklistCrawlDisabledReviewed,

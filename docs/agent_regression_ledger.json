@@ -3733,6 +3733,32 @@
         "operations/README.md"
       ],
       "notes": "The app-side review submission flow for passed external events on unclaimed organizers remains a named app-team dependency. This phase exposes eligibility but deliberately does not stub a generic review route. Missing capability fields retain managed behavior only when legacy owner evidence exists; ownerless legacy records fail closed. The Admin dry-run/apply dispatch helper intentionally makes the two callable invocations one guarded operator action."
+    },
+    {
+      "id": "REG-SUPPLY-FIELD-CORRECTION-LEARNING-001",
+      "title": "Reviewer corrections are lost, detached from provenance, or canary without replay",
+      "status": "active",
+      "applies_to": [
+        "contracts/firestore/organizers.schema.json",
+        "contracts/firestore/organizer_intake_field_corrections.schema.json",
+        "functions/src/admin/organizerDraftFromCandidate.ts",
+        "functions/src/admin/clubDetails.ts",
+        "operations/src/platform/storage/file-store.mjs",
+        "operations/src/workflows/supply-intake/learning.mjs",
+        "operations/src/cli/main.mjs"
+      ],
+      "symptom": "An admin edit of a source-seeded field produces no durable correction, a correction loses source or artifact lineage, a proposal omits its correction fixture, a wrong correction rule passes replay, or a failed proposal reaches canary.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix functions run build && node --test functions/lib/admin/organizerDraftFromCandidate.test.js functions/lib/admin/clubDetails.test.js && npm --prefix operations test && ./tool/check_data_contract.sh",
+        "guardEvidence": "draft creation freezes bounded source-seeded values; the first audited edit writes an immutable Firestore correction in the same transaction; learner import creates a matching immutable fixture; proposals hash-bind fixture ids; and wrong correction maps fail evaluation and cannot create a canary"
+      },
+      "owner_docs": [
+        "docs/data_contracts.md",
+        "docs/operations_platform.md",
+        "operations/README.md"
+      ],
+      "notes": "Raw provider payloads remain outside Firestore. The CLI correction file is a trusted worker transport and test seam, not a canonical operational corpus. Rule activation remains separately reviewed and is never automatic."
     }
   ]
 }

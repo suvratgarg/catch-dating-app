@@ -336,12 +336,31 @@ test("creates a fail-closed organizer draft and curation receipt", async () => {
   );
   assert.equal((organizer?.adminSearch as FakeData).updatedBySource,
     "adminCreateOrganizerDraftFromCandidate");
+  const learningSource = organizer?.intakeLearningSource as FakeData;
+  assert.equal(
+    learningSource.sourceProfileId,
+    "organizer_discovery:officialWebsite"
+  );
+  assert.equal(learningSource.sourceWorkItemId, "work-courtside");
+  assert.equal(learningSource.sourceCandidateId, "candidate-courtside");
+  assert.deepEqual(
+    (learningSource.seededFields as FakeData[]).map((entry) => entry.field),
+    [
+      "name",
+      "location",
+      "publicSources[0].href",
+      "publicProfile.sourceSummary",
+      "publicProfile.formats",
+      "tags",
+    ]
+  );
   const legacyClub = h.firestore.get(`clubs/${result.organizerId}`);
   assert.equal(
     validateClubDocument(legacyClub),
     true,
     schemaErrorMessages(validateClubDocument).join("; ")
   );
+  assert.equal(legacyClub?.intakeLearningSource, undefined);
   const curation = h.firestore.get(result.curationPath);
   assert.equal(
     validateOrganizerIntakeCurationDecisionDocument(curation),

@@ -433,13 +433,22 @@ receipts -> recurring pattern -> rule proposal -> fixture replay
 ```
 
 The current learner supports two code-owned candidate families: CN Traveller
-editorial-card mappings and Luma JSON-LD events. Proposal generation freezes
-source-level support plus blocker/task-flag frequencies and a versioned
-candidate already declared in code. Evaluation compiles that exact frozen
-candidate through an allowlisted interpreter and replays a small gold fixture
-set; it cannot pass by running an unrelated shipped extractor. Unknown code,
-unsafe paths, mutated proposal evidence, and unsupported versions fail closed.
-A canary record has zero traffic and cannot activate or deploy anything.
+editorial-card mappings and Luma JSON-LD events. Admin edits of values seeded
+from Supply Intake create immutable, server-owned field-correction evidence in
+Firestore. Each correction includes the source profile, field, extracted and
+corrected values, artifact lineage, and a deterministic fixture id. A trusted
+worker mirrors that evidence into the learner; operational truth is not a
+checked-in JSON corpus.
+
+Proposal generation freezes source-level support, blocker/task-flag
+frequencies, per-field correction counts, the exact correction-fixture ids, and
+a versioned candidate already declared in code. Evaluation compiles that exact
+frozen candidate through an allowlisted interpreter and replays both the
+code-owned gold fixture and every correction fixture; it cannot pass by running
+an unrelated shipped extractor. Conflicting corrections abstain rather than
+inventing consensus. Unknown code, unsafe paths, mutated proposal evidence,
+missing fixtures, and unsupported versions fail closed. A canary record has
+zero traffic and cannot activate or deploy anything.
 
 This is a safe learning-lifecycle scaffold, not autonomous algorithm discovery.
 There is no inference-backed proposal generator, held-out corpus service,

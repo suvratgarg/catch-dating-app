@@ -1,0 +1,111 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_intake_field_corrections.schema.json",
+  "title": "OrganizerIntakeFieldCorrectionDocument",
+  "description": "Immutable, server-owned field correction captured when an admin first changes a source-seeded organizer value. Each correction owns a deterministic replay fixture id.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerIntakeFieldCorrections",
+  "x-firestore-path": "organizerIntakeFieldCorrections/{correctionId}",
+  "x-document-id-field": "correctionId",
+  "x-owner": "adminUpdateOrganizerDetails callable",
+  "required": [
+    "schemaVersion",
+    "correctionId",
+    "fixtureId",
+    "organizerId",
+    "sourceProfileId",
+    "sourceWorkItemId",
+    "sourceCandidateId",
+    "field",
+    "extractedValue",
+    "correctedValue",
+    "artifactId",
+    "contentHash",
+    "locator",
+    "extractedBy",
+    "extractorVersion",
+    "confidence",
+    "reviewNote",
+    "correctedByUid",
+    "correctedAt"
+  ],
+  "properties": {
+    "schemaVersion": {"type": "integer", "const": 1},
+    "correctionId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "fixtureId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "sourceProfileId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "sourceWorkItemId": {
+      "$ref": "../operations/common.schema.json#/definitions/id"
+    },
+    "sourceCandidateId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "field": {
+      "type": "string",
+      "enum": [
+        "name",
+        "location",
+        "tags",
+        "publicProfile.sourceSummary",
+        "publicProfile.formats"
+      ]
+    },
+    "extractedValue": {"$ref": "#/definitions/correctionValue"},
+    "correctedValue": {"$ref": "#/definitions/correctionValue"},
+    "artifactId": {
+      "$ref": "../operations/common.schema.json#/definitions/id"
+    },
+    "contentHash": {
+      "$ref": "../operations/common.schema.json#/definitions/sha256"
+    },
+    "locator": {"type": ["string", "null"], "maxLength": 1000},
+    "extractedBy": {
+      "type": "string",
+      "enum": ["deterministic", "model", "human"]
+    },
+    "extractorVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "confidence": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "reviewNote": {"type": "string", "minLength": 1, "maxLength": 1000},
+    "correctedByUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "correctedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    }
+  },
+  "definitions": {
+    "correctionValue": {
+      "anyOf": [
+        {"type": "string", "maxLength": 2000},
+        {"type": "null"},
+        {
+          "type": "array",
+          "maxItems": 40,
+          "items": {"type": "string", "maxLength": 500}
+        }
+      ]
+    }
+  }
+}

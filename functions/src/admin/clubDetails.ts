@@ -1,8 +1,13 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import crypto from "node:crypto";
 import {appCheckCallableOptions} from "../shared/callableOptions";
-import {ClubDocument} from "../shared/generated/firestoreAdminTypes";
+import {
+  ClubDocument,
+  OrganizerDocument,
+  OrganizerIntakeFieldCorrectionDocument,
+} from "../shared/generated/firestoreAdminTypes";
 import {AdminGetClubDetailsCallablePayload} from
   "../shared/generated/adminGetClubDetailsCallablePayload";
 import {AdminListClubDetailsCallablePayload} from
@@ -61,6 +66,8 @@ const defaultDeps: ClubDetailsDeps = {
 };
 
 type ClubDetailsPatch = AdminUpdateClubDetailsCallablePayload["fields"];
+type OrganizerWithLearningSource = ClubDocument &
+  Pick<OrganizerDocument, "intakeLearningSource">;
 
 export interface AdminClubDetailsSnapshot {
   clubId: string;
@@ -353,7 +360,8 @@ export async function adminUpdateClubDetailsHandler(
   if (updatedFieldCount === 0) {
     throw new HttpsError("invalid-argument", "No editable fields supplied.");
   }
-  if (!data.reviewNote) {
+  const reviewNote = data.reviewNote;
+  if (!reviewNote) {
     throw new HttpsError(
       "invalid-argument",
       "A review note is required for audited organizer edits."
@@ -369,7 +377,10 @@ export async function adminUpdateClubDetailsHandler(
     if (!clubSnap.exists) {
       throw new HttpsError("not-found", "Organizer listing not found.");
     }
-    const before = requireDoc<ClubDocument>(clubSnap, "ClubDocument");
+    const before = requireDoc<OrganizerWithLearningSource>(
+      clubSnap,
+      "OrganizerDocument"
+    );
     if (data.fields.publicPage !== undefined) {
       const nextPublicPage = {
         ...(before.publicPage ?? {}),
@@ -413,6 +424,20 @@ export async function adminUpdateClubDetailsHandler(
       deps.serverTimestamp(),
       "adminUpdateClubDetails"
     );
+    for (const correction of fieldCorrectionsForUpdate({
+      organizerId: data.clubId,
+      before,
+      fields: data.fields,
+      reviewNote,
+      correctedByUid: adminContext.uid,
+      correctedAt: deps.serverTimestamp(),
+    })) {
+      tx.create(
+        db.collection("organizerIntakeFieldCorrections")
+          .doc(correction.correctionId),
+        correction
+      );
+    }
     tx.update(clubRef, patch);
     tx.set(legacyClubRef, patch, {merge: true});
     setAdminAuditLogInTransaction(tx, db, adminContext, {
@@ -424,12 +449,122 @@ export async function adminUpdateClubDetailsHandler(
         clubId: data.clubId,
         updatedFields: Object.keys(patch).sort(),
       },
-      note: data.reviewNote,
+      note: reviewNote,
       serverTimestamp: deps.serverTimestamp,
     });
   });
 
   return {clubId: data.clubId, updatedFieldCount};
+}
+
+function fieldCorrectionsForUpdate({
+  organizerId,
+  before,
+  fields,
+  reviewNote,
+  correctedByUid,
+  correctedAt,
+}: {
+  organizerId: string;
+  before: OrganizerWithLearningSource;
+  fields: ClubDetailsPatch;
+  reviewNote: string;
+  correctedByUid: string;
+  correctedAt: FirebaseFirestore.FieldValue;
+}): OrganizerIntakeFieldCorrectionDocument[] {
+  const source = before.intakeLearningSource;
+  if (!source) return [];
+  return source.seededFields.flatMap((seeded) => {
+    if (seeded.field === "publicSources[0].href") return [];
+    const beforeValue = organizerLearningFieldValue(before, seeded.field);
+    const update = organizerLearningUpdateValue(fields, seeded.field);
+    if (!update.present ||
+        !sameLearningValue(beforeValue, seeded.extractedValue) ||
+        sameLearningValue(update.value, seeded.extractedValue)) {
+      return [];
+    }
+    const digest = crypto.createHash("sha256").update(JSON.stringify({
+      organizerId,
+      sourceProfileId: source.sourceProfileId,
+      field: seeded.field,
+      extractedValue: seeded.extractedValue,
+      correctedValue: update.value,
+    })).digest("hex");
+    return [{
+      schemaVersion: 1,
+      correctionId: `field-correction-${digest}`,
+      fixtureId: `field-fixture-${digest}`,
+      organizerId,
+      sourceProfileId: source.sourceProfileId,
+      sourceWorkItemId: source.sourceWorkItemId,
+      sourceCandidateId: source.sourceCandidateId,
+      field: seeded.field,
+      extractedValue: seeded.extractedValue,
+      correctedValue: update.value,
+      artifactId: seeded.artifactId,
+      contentHash: seeded.contentHash,
+      locator: seeded.locator,
+      extractedBy: seeded.extractedBy,
+      extractorVersion: seeded.extractorVersion,
+      confidence: seeded.confidence,
+      reviewNote,
+      correctedByUid,
+      correctedAt: correctedAt as never,
+    }];
+  });
+}
+
+function organizerLearningFieldValue(
+  organizer: OrganizerWithLearningSource,
+  field: string
+): string | null | string[] | undefined {
+  switch (field) {
+  case "name": return organizer.name;
+  case "location": return organizer.location;
+  case "tags": return organizer.tags;
+  case "publicProfile.sourceSummary":
+    return organizer.publicProfile?.sourceSummary ?? null;
+  case "publicProfile.formats":
+    return organizer.publicProfile?.formats ?? [];
+  default: return undefined;
+  }
+}
+
+function organizerLearningUpdateValue(
+  fields: ClubDetailsPatch,
+  field: string
+): {present: boolean; value: string | null | string[]} {
+  const has = (object: object, key: string) =>
+    Object.prototype.hasOwnProperty.call(object, key);
+  switch (field) {
+  case "name":
+    return {present: has(fields, "name"), value: fields.name ?? ""};
+  case "location":
+    return {present: has(fields, "location"), value: fields.location ?? ""};
+  case "tags":
+    return {present: has(fields, "tags"), value: fields.tags ?? []};
+  case "publicProfile.sourceSummary":
+    return {
+      present: Boolean(fields.publicProfile) &&
+        has(fields.publicProfile as object, "sourceSummary"),
+      value: fields.publicProfile?.sourceSummary ?? null,
+    };
+  case "publicProfile.formats":
+    return {
+      present: Boolean(fields.publicProfile) &&
+        has(fields.publicProfile as object, "formats"),
+      value: fields.publicProfile?.formats ?? [],
+    };
+  default:
+    return {present: false, value: null};
+  }
+}
+
+function sameLearningValue(
+  left: string | null | string[] | undefined,
+  right: string | null | string[]
+): boolean {
+  return JSON.stringify(left) === JSON.stringify(right);
 }
 
 /**

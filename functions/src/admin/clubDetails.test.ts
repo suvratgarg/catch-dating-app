@@ -219,6 +219,15 @@ class FakeTransaction {
     });
   }
 
+  create(ref: FakeDocRef, data: FakeData) {
+    this.writes.push(() => {
+      if (this.firestore.get(ref.path) !== undefined) {
+        throw new Error(`Existing doc for create: ${ref.path}`);
+      }
+      this.firestore.set(ref.path, structuredClone(data));
+    });
+  }
+
   commit() {
     for (const write of this.writes) write();
   }
@@ -546,6 +555,85 @@ test("adminUpdateClubDetailsHandler saves allowed cleanup fields", async () => {
     .includes("afterfly"));
   assert.equal(h.firestore.auditLogs().length, 1);
 });
+
+test("first edit of source-seeded fields records immutable corrections",
+  async () => {
+    const source = {
+      sourceProfileId: "organizer_discovery:officialWebsite",
+      sourceWorkItemId: "work-afterfly",
+      sourceCandidateId: "candidate-afterfly",
+      seededFields: [
+        {
+          field: "name",
+          extractedValue: "AFTER FLY",
+          artifactId: "artifact-afterfly",
+          contentHash: "a".repeat(64),
+          locator: "candidate.title",
+          extractedBy: "deterministic",
+          extractorVersion: "supply-intake-v1",
+          confidence: 0.9,
+        },
+        {
+          field: "publicProfile.formats",
+          extractedValue: ["Run and rave"],
+          artifactId: "artifact-afterfly",
+          contentHash: "a".repeat(64),
+          locator: "candidate.reviewContext.formats",
+          extractedBy: "human",
+          extractorVersion: "supply-intake-v1",
+          confidence: 0.8,
+        },
+      ],
+      capturedAt: "SERVER_TIMESTAMP",
+    };
+    const h = harness({
+      "organizers/afterfly-run-club-indore": clubDoc({
+        intakeLearningSource: source,
+      }),
+    });
+
+    await adminUpdateClubDetailsHandler(
+      callableRequest("admin-1", {
+        clubId: "afterfly-run-club-indore",
+        fields: {
+          name: "Afterfly",
+          publicProfile: {formats: ["Social run", "Dance"]},
+        },
+        reviewNote: "Corrected the official name and current formats.",
+      }, {admin: true}),
+      h.deps
+    );
+
+    const corrections = h.firestore.entries()
+      .filter(([path]) =>
+        path.startsWith("organizerIntakeFieldCorrections/"))
+      .map(([, value]) => value as FakeData);
+    assert.equal(corrections.length, 2);
+    assert.deepEqual(
+      corrections.map((correction) => correction.field).sort(),
+      ["name", "publicProfile.formats"]
+    );
+    assert.ok(corrections.every((correction) =>
+      correction.sourceProfileId ===
+        "organizer_discovery:officialWebsite" &&
+      typeof correction.fixtureId === "string" &&
+      correction.reviewNote ===
+        "Corrected the official name and current formats."));
+
+    await adminUpdateClubDetailsHandler(
+      callableRequest("admin-1", {
+        clubId: "afterfly-run-club-indore",
+        fields: {name: "Afterfly Mumbai"},
+        reviewNote: "Subsequent editorial change.",
+      }, {admin: true}),
+      h.deps
+    );
+    assert.equal(
+      h.firestore.entries().filter(([path]) =>
+        path.startsWith("organizerIntakeFieldCorrections/")).length,
+      2
+    );
+  });
 
 test("adminUpdateClubDetailsHandler reserves changed canonical routes",
   async () => {

@@ -516,6 +516,22 @@ description, locality, and public listing descriptor values remain empty until
 an operator supplies verified content. No crawl enablement or owner binding is
 part of this contract.
 
+The canonical organizer draft also carries a bounded, server-only
+`intakeLearningSource` snapshot for fields actually seeded from the reviewed
+work item. It contains the source profile, work-item and candidate ids,
+field-level extracted values, and artifact lineage; it never contains a raw
+provider payload. The legacy `clubs/{id}` compatibility shadow deliberately
+does not receive this learning metadata.
+
+When an audited organizer update first changes a value that still equals its
+source-seeded value, Functions writes one immutable
+`organizerIntakeFieldCorrections/{correctionId}` record in the same transaction.
+The record binds source, field, extracted value, corrected value, operator
+context, artifact lineage, and a deterministic `fixtureId`. Subsequent
+editorial changes do not masquerade as extraction corrections because the
+stored value no longer equals the original extraction. These records are
+server-only learning evidence; they do not publish content or activate rules.
+
 The trusted shadow-projection importer validates the export again, resets only
 the Firestore persistence revision to zero, and retains each local source
 revision plus the whole-export hash under reserved projection metadata. It

@@ -568,6 +568,103 @@
       },
       "x-catch-ownership": "server-only"
     },
+    "intakeLearningSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Bounded server-only lineage for fields seeded by Supply Intake. Raw provider payloads are never stored here. This snapshot lets audited admin edits produce immutable field-correction fixtures.",
+      "required": [
+        "sourceProfileId",
+        "sourceWorkItemId",
+        "sourceCandidateId",
+        "seededFields",
+        "capturedAt"
+      ],
+      "properties": {
+        "sourceProfileId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "sourceWorkItemId": {
+          "$ref": "../operations/common.schema.json#/definitions/id"
+        },
+        "sourceCandidateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "seededFields": {
+          "type": "array",
+          "maxItems": 40,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "field",
+              "extractedValue",
+              "artifactId",
+              "contentHash",
+              "locator",
+              "extractedBy",
+              "extractorVersion",
+              "confidence"
+            ],
+            "properties": {
+              "field": {
+                "type": "string",
+                "enum": [
+                  "name",
+                  "location",
+                  "tags",
+                  "publicProfile.sourceSummary",
+                  "publicProfile.formats",
+                  "publicSources[0].href"
+                ]
+              },
+              "extractedValue": {
+                "anyOf": [
+                  {"type": "string", "maxLength": 2000},
+                  {"type": "null"},
+                  {
+                    "type": "array",
+                    "maxItems": 40,
+                    "items": {"type": "string", "maxLength": 500}
+                  }
+                ]
+              },
+              "artifactId": {
+                "$ref": "../operations/common.schema.json#/definitions/id"
+              },
+              "contentHash": {
+                "$ref": "../operations/common.schema.json#/definitions/sha256"
+              },
+              "locator": {
+                "type": ["string", "null"],
+                "maxLength": 1000
+              },
+              "extractedBy": {
+                "type": "string",
+                "enum": ["deterministic", "model", "human"]
+              },
+              "extractorVersion": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "confidence": {
+                "type": ["number", "null"],
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          }
+        },
+        "capturedAt": {
+          "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
     "adminSearch": {
       "type": "object",
       "additionalProperties": false,

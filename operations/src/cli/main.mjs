@@ -345,6 +345,14 @@ async function statusData(store, runId, workflow) {
 }
 
 async function runLearn(subcommand, flags, learner) {
+  if (subcommand === "record-correction") {
+    requireFlag(flags, "correction");
+    return {
+      recorded: await learner.recordCorrection(
+        JSON.parse(await fs.readFile(path.resolve(flags.correction), "utf8"))
+      ),
+    };
+  }
   if (subcommand === "propose") {
     requireFlag(flags, "source");
     return {proposal: await learner.propose(flags.source)};
@@ -381,6 +389,7 @@ function parseFlags(argv) {
     "--owner",
     "--plan",
     "--proposal",
+    "--correction",
     "--repo-root",
     "--run",
     "--source",
@@ -468,7 +477,13 @@ function helpEnvelope() {
     data: {
       usage: "node operations/src/cli/main.mjs <command> [flags]",
       commands: [...CLI_COMMANDS],
-      learnSubcommands: ["propose", "evaluate", "canary", "status"],
+      learnSubcommands: [
+        "record-correction",
+        "propose",
+        "evaluate",
+        "canary",
+        "status",
+      ],
       contract: "All commands emit a JSON envelope. Only shadow execution is available.",
     },
     warnings: [],

@@ -73,6 +73,7 @@ import {SeedEventManifestDocument} from "./seedEventManifestDocument";
 import {OrganizerIntakeReviewDecisionDocument} from "./organizerIntakeReviewDecisionDocument";
 import {EventIntakeReviewDecisionDocument} from "./eventIntakeReviewDecisionDocument";
 import {OrganizerIntakeCurationDecisionDocument} from "./organizerIntakeCurationDecisionDocument";
+import {OrganizerIntakeFieldCorrectionDocument} from "./organizerIntakeFieldCorrectionDocument";
 import {OrganizerEventCandidateReviewDecisionDocument} from "./organizerEventCandidateReviewDecisionDocument";
 import {OrganizerEventLocationResolutionDecisionDocument} from "./organizerEventLocationResolutionDecisionDocument";
 import {OrganizerPolicyGapReviewDecisionDocument} from "./organizerPolicyGapReviewDecisionDocument";
@@ -285,6 +286,7 @@ import {
   organizerIntakeReviewDecisionDocumentSchema,
   eventIntakeReviewDecisionDocumentSchema,
   organizerIntakeCurationDecisionDocumentSchema,
+  organizerIntakeFieldCorrectionDocumentSchema,
   organizerEventCandidateReviewDecisionDocumentSchema,
   organizerEventLocationResolutionDecisionDocumentSchema,
   organizerPolicyGapReviewDecisionDocumentSchema,
@@ -708,6 +710,10 @@ export const validateOrganizerIntakeCurationDecisionDocument:
   ValidateFunction<OrganizerIntakeCurationDecisionDocument> =
     ajv.compile(organizerIntakeCurationDecisionDocumentSchema) as
       ValidateFunction<OrganizerIntakeCurationDecisionDocument>;
+export const validateOrganizerIntakeFieldCorrectionDocument:
+  ValidateFunction<OrganizerIntakeFieldCorrectionDocument> =
+    ajv.compile(organizerIntakeFieldCorrectionDocumentSchema) as
+      ValidateFunction<OrganizerIntakeFieldCorrectionDocument>;
 export const validateOrganizerEventCandidateReviewDecisionDocument:
   ValidateFunction<OrganizerEventCandidateReviewDecisionDocument> =
     ajv.compile(organizerEventCandidateReviewDecisionDocumentSchema) as
