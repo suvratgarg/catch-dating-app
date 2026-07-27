@@ -2,8 +2,8 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/admin_intake.feature.json",
-  "generatedFor": "2026-07-24",
-  "sourceDigest": "sha256:5e974479315f552ede797d07eebd1de3effdd0af3311a7dd7ee62d698ab39df7",
+  "generatedFor": "2026-07-27",
+  "sourceDigest": "sha256:8ad96fc493e57953898071b177d39313ea21d3db0e46f383c055badfee9395d0",
   "resolvedDigest": "sha256:9c387562a86658de3c00b718af93c153f4ce60b0a6c094e0ed36d6684b30a4ab",
   "feature": {
     "id": "feature.admin_intake",
@@ -17,7 +17,7 @@
     "states": 6,
     "scenarios": 6,
     "actionCases": 15,
-    "actions": 16,
+    "actions": 15,
     "captures": 0,
     "previews": 2,
     "testFiles": 9,
@@ -32,7 +32,7 @@
         "id": "route_intake_workspace"
       },
       "actionScope": {
-        "included": "Switching intake workspaces, expanding publication boundaries, navigating Event Intake, refreshing or deciding event evidence, refreshing or paging read-only Automation operations, and freezing the complete Admin workspace while an Event Intake decision is pending.",
+        "included": "Switching intake workspaces, expanding publication boundaries, filtering or staging Event Intake evidence, refreshing or deciding event evidence, refreshing or paging read-only Automation operations, and freezing the complete Admin workspace while an Event Intake decision is pending.",
         "excluded": [
           "Event source/result/candidate edits and decision notes remain session form data.",
           "Automation is read-only; exceptions are resolved in the owning Event or Organizer surface and a later run observes the receipt.",
@@ -110,7 +110,7 @@
         "states": 1,
         "scenarios": 1,
         "actionCases": 6,
-        "actions": 7,
+        "actions": 6,
         "captures": 0,
         "previews": 1,
         "testFiles": 6,
@@ -123,14 +123,6 @@
             "events",
             "organizers",
             "operations"
-          ]
-        },
-        "event_tab": {
-          "default": "candidates",
-          "values": [
-            "setup",
-            "inbox",
-            "candidates"
           ]
         },
         "source": {
@@ -190,26 +182,6 @@
             }
           ],
           "description": "Shows or hides the explicit approval-versus-publication boundary for Event or Organizer intake.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "select_event_intake_tab",
-          "owner": "event_controller",
-          "codeValue": "setActiveTab",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "adminSessionId",
-            "eventIntakeTab"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "event-review"
-              ]
-            }
-          ],
-          "description": "Switches among Event Intake setup, inbox, and candidate review.",
           "implementationStatus": "implemented"
         },
         {
@@ -309,7 +281,6 @@
           "status": "ready",
           "dimensions": {
             "workspace": "events",
-            "event_tab": "candidates",
             "source": "ready",
             "mutation": "idle"
           },
@@ -332,7 +303,6 @@
               "id": "event_candidates",
               "dimensions": {
                 "workspace": "events",
-                "event_tab": "candidates",
                 "source": "ready",
                 "mutation": "idle"
               },
@@ -340,7 +310,6 @@
                 "enabled": [
                   "select_intake_workspace",
                   "toggle_intake_publication_boundary",
-                  "select_event_intake_tab",
                   "refresh_event_intake",
                   "record_event_intake_decision"
                 ],
@@ -355,7 +324,6 @@
               "id": "event_decision_pending_frozen_workspace",
               "dimensions": {
                 "workspace": "events",
-                "event_tab": "candidates",
                 "source": "ready",
                 "mutation": "pending"
               },
@@ -364,7 +332,6 @@
                 "disabled": [
                   "select_intake_workspace",
                   "toggle_intake_publication_boundary",
-                  "select_event_intake_tab",
                   "refresh_event_intake",
                   "record_event_intake_decision"
                 ],
@@ -378,7 +345,6 @@
               "id": "event_source_failed",
               "dimensions": {
                 "workspace": "events",
-                "event_tab": "candidates",
                 "source": "failed",
                 "mutation": "idle"
               },
@@ -390,7 +356,6 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
-                  "select_event_intake_tab",
                   "record_event_intake_decision",
                   "refresh_intake_operations",
                   "load_more_intake_operations"
@@ -401,7 +366,6 @@
               "id": "organizer_projection",
               "dimensions": {
                 "workspace": "organizers",
-                "event_tab": "candidates",
                 "source": "ready",
                 "mutation": "idle"
               },
@@ -412,7 +376,6 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
-                  "select_event_intake_tab",
                   "refresh_event_intake",
                   "record_event_intake_decision",
                   "refresh_intake_operations",
@@ -424,7 +387,6 @@
               "id": "operations_ready",
               "dimensions": {
                 "workspace": "operations",
-                "event_tab": "candidates",
                 "source": "ready",
                 "mutation": "idle"
               },
@@ -437,7 +399,6 @@
                 "disabled": [],
                 "notAllowed": [
                   "toggle_intake_publication_boundary",
-                  "select_event_intake_tab",
                   "refresh_event_intake",
                   "record_event_intake_decision"
                 ]
@@ -447,7 +408,6 @@
               "id": "operations_loading",
               "dimensions": {
                 "workspace": "operations",
-                "event_tab": "candidates",
                 "source": "loading",
                 "mutation": "idle"
               },
@@ -461,7 +421,6 @@
                 ],
                 "notAllowed": [
                   "toggle_intake_publication_boundary",
-                  "select_event_intake_tab",
                   "refresh_event_intake",
                   "record_event_intake_decision"
                 ]
