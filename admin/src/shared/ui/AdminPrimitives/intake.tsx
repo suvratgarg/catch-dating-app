@@ -46,12 +46,21 @@ import {
 export function AdminIntakeSection({
   children,
   className = "",
+  variant,
   ...props
 }: HTMLAttributes<HTMLDivElement> & {
   children: ReactNode;
+  variant?: "duplicate-comparison" | "event-ceiling" | "event-editor";
 }) {
   return (
-    <div {...props} className={classNames("intake-section", className)}>
+    <div
+      {...props}
+      className={classNames(
+        "intake-section",
+        variant ? `intake-${variant}` : "",
+        className
+      )}
+    >
       {children}
     </div>
   );
@@ -503,19 +512,34 @@ export function AdminIntakeBoundaryNotice({
 }
 
 export interface AdminIntakeQueueItem {
+  age?: ReactNode;
+  ageDays?: number | null;
+  blocker?: ReactNode;
+  blockerKey?: string | null;
   description: ReactNode;
   id: string;
   initials: ReactNode;
+  kind?: ReactNode;
+  market?: ReactNode;
   meta: ReactNode;
+  pending?: boolean;
+  source?: ReactNode;
   status: ReactNode;
   statusTone?: AdminIntakeWorkbenchTone;
   title: ReactNode;
+  values?: Record<string, ReactNode>;
 }
 
 export interface AdminIntakeQueueFilter {
   id: string;
   label: ReactNode;
   selected: boolean;
+}
+
+export interface AdminIntakeQueueColumn {
+  id: string;
+  label: ReactNode;
+  width?: string;
 }
 
 export interface AdminIntakeEvidenceRow {
@@ -541,8 +565,44 @@ export interface AdminIntakeChecklistRow {
   passed: boolean;
 }
 
+export type AdminIntakeInspectorSection =
+  | {
+    id: string;
+    kind: "evidence";
+    rows: AdminIntakeEvidenceRow[];
+    title: ReactNode;
+  }
+  | {
+    id: string;
+    kind: "checklist";
+    rows: AdminIntakeChecklistRow[];
+    title: ReactNode;
+  }
+  | {
+    id: string;
+    kind: "impact";
+    rows: AdminIntakeImpactRow[];
+    title: ReactNode;
+  }
+  | {
+    content: ReactNode;
+    id: string;
+    kind: "content" | "diagnostics";
+    title: ReactNode;
+  };
+
+export interface AdminIntakeInspectorBlocker {
+  action: ReactNode;
+  id: string;
+  label: ReactNode;
+  tone?: "danger" | "warning";
+}
+
 export interface AdminIntakeWorkbenchDetail {
   action?: ReactNode;
+  actionGate?: ReactNode;
+  actions?: ReactNode;
+  blockers?: AdminIntakeInspectorBlocker[];
   checklistRows: AdminIntakeChecklistRow[];
   checklistTitle: ReactNode;
   footerActions: ReactNode;
@@ -560,197 +620,17 @@ export interface AdminIntakeWorkbenchDetail {
     label: ReactNode;
     total: number;
   };
+  sections?: AdminIntakeInspectorSection[];
   status: ReactNode;
   statusTone?: AdminIntakeWorkbenchTone;
   subtitle: ReactNode;
   title: ReactNode;
 }
 
-export function AdminIntakeReviewWorkbench({
-  className = "",
-  detail,
-  emptyDetail,
-  emptyQueue,
-  filters = [],
-  items,
-  queueMeta,
-  queueTitle,
-  selectedId,
-  onFilterChange,
-  onSelect,
-}: {
-  className?: string;
-  detail?: AdminIntakeWorkbenchDetail | null;
-  emptyDetail?: ReactNode;
-  emptyQueue?: ReactNode;
-  filters?: AdminIntakeQueueFilter[];
-  items: AdminIntakeQueueItem[];
-  queueMeta: ReactNode;
-  queueTitle: ReactNode;
-  selectedId?: string | null;
-  onFilterChange?: (filterId: string) => void;
-  onSelect: (itemId: string) => void;
-}) {
-  const readinessTotal = Math.max(detail?.readiness.total ?? 0, 1);
-  const readinessPercent = Math.min(
-    100,
-    Math.round(((detail?.readiness.complete ?? 0) / readinessTotal) * 100)
-  );
-  return (
-    <section className={classNames("intake-review-workbench", className)}>
-      <section className="intake-review-queue">
-        <header>
-          <div>
-            <h3>{queueTitle}</h3>
-            <span>{queueMeta}</span>
-          </div>
-          {filters.length > 0 ? (
-            <div className="intake-review-filters">
-              {filters.map((filter) => (
-                <button
-                  aria-pressed={filter.selected}
-                  className={filter.selected ? "selected" : ""}
-                  key={filter.id}
-                  onClick={() => onFilterChange?.(filter.id)}
-                  type="button"
-                >
-                  {filter.label}
-                </button>
-              ))}
-            </div>
-          ) : null}
-        </header>
-        <div className="intake-review-queue-items">
-          {items.length === 0 ? (
-            <div className="intake-review-empty">{emptyQueue}</div>
-          ) : items.map((item) => (
-            <button
-              aria-pressed={item.id === selectedId}
-              className={item.id === selectedId ? "selected" : ""}
-              key={item.id}
-              onClick={() => onSelect(item.id)}
-              type="button"
-            >
-              <span className="intake-review-mark">{item.initials}</span>
-              <span className="intake-review-item-copy">
-                <strong>{item.title}</strong>
-                <span>{item.description}</span>
-                <small>{item.meta}</small>
-              </span>
-              <span className={workbenchToneClass(item.statusTone)}>
-                {item.status}
-              </span>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      <section className="intake-review-detail">
-        {!detail ? (
-          <div className="intake-review-empty">{emptyDetail}</div>
-        ) : (
-          <>
-            <header className="intake-review-detail-header">
-              <div>
-                <span className="intake-review-mark">{detail.initials}</span>
-                <span>
-                  <h3>{detail.title}</h3>
-                  <small>{detail.subtitle}</small>
-                </span>
-              </div>
-              <div>
-                <span className={workbenchToneClass(detail.statusTone)}>
-                  {detail.status}
-                </span>
-                {detail.action}
-              </div>
-            </header>
-
-            <section className="intake-review-readiness">
-              <div>
-                <div>
-                  <strong>{detail.readiness.label}</strong>
-                  <span>
-                    {detail.readiness.complete} of {detail.readiness.total} checks complete
-                  </span>
-                </div>
-                <progress
-                  aria-label={`${detail.readiness.label} ${readinessPercent}%`}
-                  max={100}
-                  value={readinessPercent}
-                />
-              </div>
-              <strong>
-                {detail.readiness.blockers} {detail.readiness.blockers === 1 ? "blocker" : "blockers"}
-              </strong>
-            </section>
-
-            <div className="intake-review-detail-grid">
-              <section>
-                <h4>{detail.primaryTitle}</h4>
-                <div className="intake-review-evidence-list">
-                  {detail.primaryRows.map((row) => (
-                    <div key={row.id}>
-                      <span>
-                        {row.href ? (
-                          <a href={row.href} rel="noreferrer" target="_blank">
-                            {row.title}
-                          </a>
-                        ) : <strong>{row.title}</strong>}
-                        <small>{row.meta}</small>
-                      </span>
-                      <span className={workbenchToneClass(row.statusTone)}>
-                        {row.status}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                <h4>{detail.checklistTitle}</h4>
-                <div className="intake-review-checklist">
-                  {detail.checklistRows.map((row) => (
-                    <div key={row.id}>
-                      <span className={row.passed ? "passed" : "open"}>
-                        {row.passed ? "\u2713" : "!"}
-                      </span>
-                      <strong>{row.label}</strong>
-                      <small>{row.meta}</small>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              <section>
-                <h4>{detail.impactTitle}</h4>
-                <div className="intake-review-impact-list">
-                  {detail.impactRows.map((row) => (
-                    <div key={row.id}>
-                      <span>{row.label}</span>
-                      <strong className={workbenchToneClass(row.tone)}>
-                        {row.value}
-                      </strong>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            </div>
-
-            <section className="intake-review-note">
-              <h4>{detail.noteTitle}</h4>
-              {detail.note}
-            </section>
-
-            <footer className="intake-review-decision-footer">
-              <p>{detail.footerHint}</p>
-              <div>{detail.footerActions}</div>
-            </footer>
-          </>
-        )}
-      </section>
-    </section>
-  );
-}
-
-function workbenchToneClass(tone: AdminIntakeWorkbenchTone = "neutral") {
-  return classNames("intake-review-status", tone);
-}
+export {
+  AdminIntakeReviewWorkbench,
+} from "./intakeWorkbench";
+export type {
+  AdminIntakeBulkAction,
+  AdminIntakeWorkbenchState,
+} from "./intakeWorkbench";

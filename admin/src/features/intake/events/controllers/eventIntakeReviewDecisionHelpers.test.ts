@@ -1,6 +1,7 @@
 import {describe, expect, it, vi} from "vitest";
 import type {EventIntakeBridge} from "../../../../shared/types/adminTypes";
 import {
+  afterValuesFromEditDiff,
   applyLocalEventIntakeDecision,
   checklistForEventIntakeDecision,
   eventIntakePublishabilityLabel,
@@ -59,6 +60,34 @@ describe("event intake review decision helpers", () => {
     });
     expect(updated.sourceResults[1]).toBe(bridge.sourceResults[1]);
     vi.useRealTimers();
+  });
+
+  it("applies reviewed after values while preserving the queue snapshot", () => {
+    const bridge = {
+      sourceResults: [],
+      eventCandidates: [{
+        id: "candidate-1",
+        title: "Before",
+        reviewState: "needs_review",
+      }],
+    } as unknown as EventIntakeBridge;
+    const edits = {
+      title: {before: "Before", after: "After"},
+    };
+    const updated = applyLocalEventIntakeDecision(bridge, {
+      decisionId: "decision-1",
+      targetType: "event_candidate",
+      targetId: "candidate-1",
+      decision: "approve",
+      decisionStatus: "approved",
+      decisionPath: "eventIntakeReviewDecisions/decision-1",
+    }, "Reviewed", edits, {preserveQueueState: true});
+    expect(updated.eventCandidates[0]).toMatchObject({
+      title: "After",
+      reviewState: "needs_review",
+      latestDecision: {decision: "approve"},
+    });
+    expect(afterValuesFromEditDiff(edits)).toEqual({title: "After"});
   });
 
   it("normalizes candidate readiness labels", () => {

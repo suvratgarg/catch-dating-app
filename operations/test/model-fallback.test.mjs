@@ -14,6 +14,7 @@ import {SupplyIntakeLearner} from
   "../src/workflows/supply-intake/learning.mjs";
 import {
   createFixtureRepository,
+  fixtureWorkflowOptions,
   temporaryDirectory,
 } from "./helpers.mjs";
 
@@ -249,7 +250,7 @@ test("workflow freezes disabled policy and only a reviewed plan can route fallba
       await temporaryDirectory("catch-model-workflow-")
     );
     const workflow = new SupplyIntakeWorkflow({
-      repoRoot,
+      ...fixtureWorkflowOptions(repoRoot),
       extractionRouter: router,
     });
     const plan = await workflow.createPlan({

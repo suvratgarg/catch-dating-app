@@ -315,6 +315,7 @@ const eventIntakeController: EventIntakeController = {
   },
   localDecisions: {},
   notes: {},
+  snapshotVersion: 0,
   setActiveTab: (_value) => {
     noop();
   },
@@ -326,6 +327,7 @@ const eventIntakeController: EventIntakeController = {
   ),
   targetDecision: async (_input) => {
     noop();
+    return true;
   },
   updateCandidate: (
     _candidateId: string,
@@ -411,12 +413,14 @@ const organizerIntakeController: OrganizerIntakeController = {
   eventDecisionNotes: {},
   handleAttachCandidate: async (_candidate) => {
     noop();
+    return true;
   },
   handleCreateOrganizerDraft: async (_candidate) => {
     noop();
   },
   handleDecision: async (_item, _decision) => {
     noop();
+    return true;
   },
   handleEventDecision: async (_candidate, _decision) => {
     noop();

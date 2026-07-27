@@ -120,7 +120,20 @@ const schemaEventIntakeReviewDecisionDocumentSchema = <String, Object?>{
     },
     'edits': <String, Object?>{
       'type': 'object',
-      'additionalProperties': true,
+      'description': 'Changed fields only. Each entry freezes its reviewed before and after value.',
+      'maxProperties': 40,
+      'additionalProperties': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'before',
+          'after',
+        ],
+        'properties': <String, Object?>{
+          'before': <String, Object?>{},
+          'after': <String, Object?>{},
+        },
+      },
     },
     'reviewedByUid': <String, Object?>{
       'type': 'string',

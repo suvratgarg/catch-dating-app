@@ -8,7 +8,8 @@ do not write Firestore. Convert reviewed provider payloads into this schema:
 
 ```sh
 node tool/organizer_intake/capture_search_results.mjs \
-  --run-key '<host-discovery runKey>' \
+  --run-key '<operations discovery runKey>' \
+  --search-plan operations/.state/exports/discovery-plan.json \
   --raw-results path/to/provider-results.json \
   --date 2026-06-17 \
   --write

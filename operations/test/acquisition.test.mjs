@@ -17,6 +17,7 @@ import {buildSearchResultBatchFromCapture} from
   "../../tool/organizer_intake/lib/search_capture_core.mjs";
 import {
   createFixtureRepository,
+  fixtureWorkflowOptions,
   temporaryDirectory,
 } from "./helpers.mjs";
 
@@ -284,7 +285,7 @@ test("workflow uses only an injected port and only scheduled run keys",
       await temporaryDirectory("catch-acquisition-workflow-")
     );
     const workflow = new SupplyIntakeWorkflow({
-      repoRoot,
+      ...fixtureWorkflowOptions(repoRoot),
       acquisitionPort: port,
     });
     const plan = await workflow.createPlan({
@@ -319,7 +320,7 @@ test("reviewed provider policy freezes network authority and per-run cap",
       await temporaryDirectory("catch-provider-plan-")
     );
     const workflow = new SupplyIntakeWorkflow({
-      repoRoot,
+      ...fixtureWorkflowOptions(repoRoot),
       acquisitionPolicyLoader: async () => enabled,
     });
 

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   createFreshnessCoverage,
-  freshnessRequestsFromArtifacts,
+  freshnessRequestsFromInputs,
   loadSupplyFreshnessPolicy,
   planFreshnessRequests,
   sourceCadenceScopeKey,
@@ -119,25 +119,18 @@ test("per-source cadence blocks an early refetch without hiding due sources",
 
 test("source cadence is market-scoped and keeps acquisition disabled",
   () => {
-    const requests = freshnessRequestsFromArtifacts({
+    const requests = freshnessRequestsFromInputs({
       searchPlan: {planned: [], skippedFresh: []},
-      eventCrawlPlan: {
-        policy: {
-          status: "disabled",
-          schedulerEnabled: false,
-          defaultSurfacePolicy: "manualOnly",
-        },
-        entries: [
-          crawlSurface({
-            entityId: "mumbai-organizer",
-            marketSlug: "mumbai",
-          }),
-          crawlSurface({
-            entityId: "indore-organizer",
-            marketSlug: "indore",
-          }),
-        ],
-      },
+      crawlSurfaces: [
+        crawlSurface({
+          entityId: "mumbai-organizer",
+          marketSlug: "mumbai",
+        }),
+        crawlSurface({
+          entityId: "indore-organizer",
+          marketSlug: "indore",
+        }),
+      ],
       market: "mumbai",
     });
 
@@ -235,6 +228,9 @@ function crawlSurface({entityId, marketSlug}) {
     platform: "luma",
     url: `https://lu.ma/${entityId}`,
     markets: [{marketSlug}],
+    schedulerStatus: "disabled",
+    surfacePolicy: "manualOnly",
+    fetchEnabled: false,
   };
 }
 

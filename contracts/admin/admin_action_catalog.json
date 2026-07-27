@@ -155,7 +155,7 @@
       "risk": "read",
       "roles": ["admin", "adminOwner", "support"],
       "requestSchema": "contracts/callables/admin_get_event_intake_dashboard_payload.schema.json",
-      "summary": "Load the current Event Intake bridge and review queues.",
+      "summary": "Load the current Supply Intake event review queue.",
       "example": {}
     },
     {

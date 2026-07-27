@@ -7,14 +7,10 @@ import {
 } from "../../platform/contracts.mjs";
 import {invariant} from "../../platform/errors.mjs";
 import {
-  LegacyIntakeArtifactAdapter,
-  organizerPacketSupportsMarket,
-  stripArtifactData,
-} from "./adapters/legacy-artifacts.mjs";
-import {
   acquisitionRunKey,
   loadSupplyAcquisitionPolicy,
 } from "./acquisition.mjs";
+import {planDiscoveryQueries} from "./discovery-planner.mjs";
 import {loadSourceProfiles} from "./sources/index.mjs";
 import {
   SUPPLY_INTAKE_ENTITY_KINDS,
@@ -24,16 +20,20 @@ import {
   SUPPLY_INTAKE_TRANSITIONS,
 } from "./definition.mjs";
 import {
-  freshnessRequestsFromArtifacts,
+  freshnessRequestsFromInputs,
   loadSupplyFreshnessPolicy,
   planFreshnessRequests,
 } from "./freshness.mjs";
+import {
+  assertSupplyInputSnapshot,
+  emptySupplyInputSnapshot,
+  supplyInputSummary,
+} from "./input-snapshot.mjs";
 import {loadSupplyModelPolicy} from "./model-fallback.mjs";
 
 export const MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN = MAX_WORK_ITEMS_PER_RUN;
 export const SUPPLY_INTAKE_WORKFLOW_ID = "supply-intake";
-export const SUPPLY_INTAKE_WORKFLOW_VERSION = "0.5.0";
-const SUPPLY_INTAKE_STALE_AFTER_HOURS = 168;
+export const SUPPLY_INTAKE_WORKFLOW_VERSION = "0.6.0";
 const SUPPLY_INTAKE_SCOPES = Object.freeze(["all", "organizer"]);
 const ORGANIZER_PACKET_STRING_LIMIT = 500;
 const ORGANIZER_PACKET_LIST_LIMIT = 40;
@@ -50,8 +50,9 @@ const ORGANIZER_PACKET_APPROVAL_CHECKS = Object.freeze([
 
 export class SupplyIntakeWorkflow {
   constructor({
-    repoRoot,
-    adapter = new LegacyIntakeArtifactAdapter({repoRoot}),
+    store = null,
+    inputSnapshotLoader = null,
+    discoveryPlanner = planDiscoveryQueries,
     acquisitionPolicyLoader = loadSupplyAcquisitionPolicy,
     acquisitionPort = null,
     sourceProfilesLoader = loadSourceProfiles,
@@ -66,7 +67,9 @@ export class SupplyIntakeWorkflow {
     this.lifecycleSemantics = SUPPLY_INTAKE_LIFECYCLE_SEMANTICS;
     this.entityKinds = SUPPLY_INTAKE_ENTITY_KINDS;
     this.allowedTransitions = SUPPLY_INTAKE_TRANSITIONS;
-    this.adapter = adapter;
+    this.store = store;
+    this.inputSnapshotLoader = inputSnapshotLoader;
+    this.discoveryPlanner = discoveryPlanner;
     this.acquisitionPolicyLoader = acquisitionPolicyLoader;
     this.acquisitionPort = acquisitionPort;
     this.sourceProfilesLoader = sourceProfilesLoader;
@@ -75,7 +78,7 @@ export class SupplyIntakeWorkflow {
     this.extractionRouter = extractionRouter;
   }
 
-  async planningContext({store}) {
+  async planningContext({store, market}) {
     invariant(
       store &&
         typeof store.listRuns === "function" &&
@@ -83,12 +86,17 @@ export class SupplyIntakeWorkflow {
       "INVALID_FRESHNESS_STORE",
       "Supply Intake planning requires an Operations store."
     );
-    const [runs, workItems] = await Promise.all([
+    const [runs, workItems, inputSnapshots] = await Promise.all([
       store.listRuns(),
       store.listWorkItems(),
+      typeof store.listSupplyInputSnapshots === "function" ?
+        store.listSupplyInputSnapshots({market}) :
+        [],
     ]);
     return {
       freshnessHistory: {runs, workItems},
+      inputSnapshot:
+        inputSnapshots[0] ?? emptySupplyInputSnapshot(market),
     };
   }
 
@@ -98,6 +106,7 @@ export class SupplyIntakeWorkflow {
     now,
     intakeScope = "all",
     freshnessHistory = {runs: [], workItems: []},
+    inputSnapshot = null,
   }) {
     invariant(/^[a-z][a-z0-9-]{1,49}$/.test(market), "INVALID_MARKET", "Market must be a lowercase slug.", {market});
     invariant(/^\d{4}-\d{2}-\d{2}$/.test(through ?? ""), "INVALID_THROUGH", "--through YYYY-MM-DD is required.", {through});
@@ -108,40 +117,36 @@ export class SupplyIntakeWorkflow {
       {intakeScope}
     );
     const generatedAt = new Date(now).toISOString();
+    const loadedInput = assertSupplyInputSnapshot(
+      inputSnapshot ??
+        await this.inputSnapshotLoader?.({market}) ??
+        emptySupplyInputSnapshot(market),
+      {market}
+    );
     const [
       profiles,
       freshnessPolicy,
       acquisitionPolicy,
       modelPolicy,
+      discoveryPlan,
     ] = await Promise.all([
       this.sourceProfilesLoader(),
       this.freshnessPolicyLoader(),
       this.acquisitionPolicyLoader(),
       this.modelPolicyLoader(),
-    ]);
-    const artifactSnapshotWithData = await this.adapter.snapshot({
-      market,
-      intakeScope,
-    });
-    if (intakeScope !== "organizer") {
-      assertEventBridgeCompatibility(artifactSnapshotWithData, {
+      this.discoveryPlanner({
         market,
-        generatedAt,
-        staleAfterHours: SUPPLY_INTAKE_STALE_AFTER_HOURS,
-      });
-    }
-    const artifactSnapshot = stripArtifactData(artifactSnapshotWithData, {market});
+        organizerCandidates:
+          loadedInput.organizerSearchCandidates,
+      }),
+    ]);
     const organizerReviewPolicy = organizerReviewPolicySnapshot(
-      artifactSnapshotWithData.artifacts.organizerSearchCandidates?.data
-        ?.reviewPolicy
+      loadedInput.organizerReviewPolicy
     );
     const freshness = planFreshnessRequests({
-      requests: freshnessRequestsFromArtifacts({
-        searchPlan:
-          artifactSnapshotWithData.artifacts
-            .hostDiscoverySearchPlan?.data,
-        eventCrawlPlan:
-          artifactSnapshotWithData.artifacts.eventCrawlPlan?.data,
+      requests: freshnessRequestsFromInputs({
+        searchPlan: discoveryPlan,
+        crawlSurfaces: loadedInput.crawlSurfaces,
         market,
       }),
       policy: freshnessPolicy,
@@ -149,8 +154,9 @@ export class SupplyIntakeWorkflow {
       workItems: freshnessHistory.workItems,
       now: generatedAt,
     });
+    const inputSummary = plannedInputSummary(loadedInput, market);
     const plannedItems = plannedWorkItemCount(
-      artifactSnapshot,
+      inputSummary,
       profiles.length,
       intakeScope
     );
@@ -162,7 +168,6 @@ export class SupplyIntakeWorkflow {
     );
     const sourceProfiles = profiles.map(snapshotSourceProfile);
     const policy = {
-      staleAfterHours: SUPPLY_INTAKE_STALE_AFTER_HOURS,
       randomAuditBasisPoints: 10_000,
       autoPublicationEnabled: false,
       editorialSourcesDiscoveryOnly: true,
@@ -194,7 +199,9 @@ export class SupplyIntakeWorkflow {
         entityKinds: [...this.entityKinds],
         allowedTransitions: this.allowedTransitions,
       },
-      artifactSnapshot,
+      inputSnapshot: loadedInput,
+      inputSummary,
+      discoveryPlan,
       organizerReviewPolicy,
       sourceProfiles,
       policy,
@@ -227,7 +234,7 @@ export class SupplyIntakeWorkflow {
         publicWrites: 0,
       },
       guardrails: [
-        "The plan reads reviewed local artifacts only.",
+        "The plan reads one immutable Operations-owned normalized input snapshot; committed operational JSON is not an input.",
         acquisitionPolicy.provider.enabled ?
           "Provider acquisition requires the frozen policy-gap decision, injected adapter, and both request ceilings." :
           "Provider acquisition is disabled; manual file capture remains available through the injected acquisition port.",
@@ -395,6 +402,20 @@ export class SupplyIntakeWorkflow {
       "INVALID_FRESHNESS_PLAN",
       "Supply Intake freshness plan is missing or stale."
     );
+    const inputSnapshot = assertSupplyInputSnapshot(
+      plan.inputSnapshot,
+      {market: plan.market}
+    );
+    invariant(
+      hashValue(plan.inputSummary) ===
+        hashValue(plannedInputSummary(inputSnapshot, plan.market)) &&
+        plan.discoveryPlan?.schemaVersion === 1 &&
+        plan.discoveryPlan.plannerId ===
+          "operations-supply-discovery-v1" &&
+        plan.discoveryPlan.market === plan.market,
+      "INVALID_SUPPLY_INPUT",
+      "Supply Intake normalized input or discovery plan is missing or stale."
+    );
     if (plan.reconciliation !== undefined) {
       invariant(
         plan.reconciliation?.schemaVersion === 1 &&
@@ -414,7 +435,7 @@ export class SupplyIntakeWorkflow {
       );
     }
     const plannedItems = plannedWorkItemCount(
-      plan.artifactSnapshot,
+      plan.inputSummary,
       Array.isArray(plan.sourceProfiles) ? plan.sourceProfiles.length : NaN,
       plan.intakeScope ?? "all"
     );
@@ -464,7 +485,10 @@ export class SupplyIntakeWorkflow {
 
   async project(plan, {runId, now}) {
     this.assertPlan(plan);
-    const artifacts = await this.adapter.reload(plan.artifactSnapshot);
+    const input = assertSupplyInputSnapshot(plan.inputSnapshot, {
+      market: plan.market,
+    });
+    const artifact = inputSnapshotEvidenceRef(input);
     const profiles = await this.sourceProfilesLoader();
     const plannedProfileHashes = new Map(plan.sourceProfiles.map((profile) => [profile.sourceProfileId, profile.versionHash]));
     for (const profile of profiles) {
@@ -476,21 +500,24 @@ export class SupplyIntakeWorkflow {
       );
     }
     const items = [];
-    const eventBridge = artifacts.eventIntakeBridge;
-    if (eventBridge?.data) {
-      const bridge = eventBridge.data;
-      for (const profile of bridge.sourceProfiles ?? []) {
-        items.push(workItemForLegacySourceProfile(profile, {runId, now, market: plan.market, artifact: eventBridge}));
-      }
-      for (const result of bridge.sourceResults ?? []) {
-        items.push(workItemForSourceResult(result, {runId, now, market: plan.market, artifact: eventBridge}));
-      }
-      for (const event of bridge.eventCandidates ?? []) {
-        if (event.startDate && event.startDate > plan.through) continue;
-        items.push(workItemForEvent(event, {runId, now, market: plan.market, artifact: eventBridge}));
-      }
-    }
     if (plan.intakeScope !== "organizer") {
+      for (const result of input.sourceResults) {
+        items.push(workItemForSourceResult(result, {
+          runId,
+          now,
+          market: plan.market,
+          artifact,
+        }));
+      }
+      for (const event of input.eventCandidates) {
+        if (event.startDate && event.startDate > plan.through) continue;
+        items.push(workItemForEvent(event, {
+          runId,
+          now,
+          market: plan.market,
+          artifact,
+        }));
+      }
       for (const profile of profiles) {
         items.push(workItemForOperationsSourceProfile(profile, {
           runId,
@@ -499,43 +526,45 @@ export class SupplyIntakeWorkflow {
         }));
       }
     }
-    const organizerArtifact = artifacts.organizerPublicationPackets;
-    for (const packet of organizerArtifact?.data?.packets ?? []) {
+    for (const packet of input.organizerPublicationPackets) {
       if (!organizerPacketSupportsMarket(packet, plan.market)) continue;
-      items.push(workItemForOrganizer(packet, {runId, now, market: plan.market, artifact: organizerArtifact}));
+      items.push(workItemForOrganizer(packet, {
+        runId,
+        now,
+        market: plan.market,
+        artifact,
+      }));
     }
-    const organizerCandidateArtifact = artifacts.organizerSearchCandidates;
-    for (const candidate of organizerCandidateArtifact?.data?.candidates ?? []) {
+    for (const candidate of input.organizerSearchCandidates) {
       if (candidate?.queryIntent?.marketSlug !== plan.market) continue;
       const reviewContext = candidate.reviewContext ?? null;
       items.push(workItemForOrganizerCandidate(candidate, {
         runId,
         now,
         market: plan.market,
-        artifact: organizerCandidateArtifact,
+        artifact,
         reviewContext,
       }));
     }
-    const externalEventArtifact = artifacts.externalEventCandidateQueue;
     if (plan.intakeScope !== "organizer") {
-      for (const event of externalEventArtifact?.data?.candidates ?? []) {
+      for (const event of input.externalEventCandidates) {
         if (event?.attribution?.state !== "orphan" ||
           event?.location?.citySlug !== plan.market) continue;
         items.push(workItemForOrphanEvent(event, {
           runId,
           now,
           market: plan.market,
-          artifact: externalEventArtifact,
+          artifact,
         }));
       }
     }
-    for (const lead of externalEventArtifact?.data?.organizerLeads ?? []) {
+    for (const lead of input.organizerLeads) {
       if (lead?.marketSlug !== plan.market) continue;
       items.push(workItemForOrganizerEventLead(lead, {
         runId,
         now,
         market: plan.market,
-        artifact: externalEventArtifact,
+        artifact,
       }));
     }
     return dedupeItems(items).sort((left, right) => left.workItemId.localeCompare(right.workItemId));
@@ -689,71 +718,19 @@ function copyLifecycleSemantics(semantics) {
   };
 }
 
-function assertEventBridgeCompatibility(snapshot, {market, generatedAt, staleAfterHours}) {
-  const artifact = snapshot?.artifacts?.eventIntakeBridge;
-  invariant(
-    artifact?.status === "available" && artifact.data,
-    "ARTIFACT_NOT_FOUND",
-    `A reviewed Event Intake bridge is required for ${market}.`,
-    {market, artifactRef: artifact?.relativePath ?? null}
-  );
-  const bridge = artifact.data;
-  invariant(
-    bridge.city?.id === market,
-    "ARTIFACT_MARKET_MISMATCH",
-    `Event Intake bridge ${artifact.relativePath} does not match market ${market}.`,
-    {market, bridgeMarket: bridge.city?.id ?? null, artifactRef: artifact.relativePath}
-  );
-  const bridgeGeneratedAt = Date.parse(bridge.generatedAt ?? "");
-  const planGeneratedAt = Date.parse(generatedAt);
-  const maximumAgeMs = staleAfterHours * 60 * 60 * 1_000;
-  invariant(
-    Number.isFinite(bridgeGeneratedAt) &&
-      bridgeGeneratedAt <= planGeneratedAt &&
-      planGeneratedAt - bridgeGeneratedAt <= maximumAgeMs,
-    "ARTIFACT_STALE",
-    `Event Intake bridge ${artifact.relativePath} is outside the ${staleAfterHours}-hour freshness window.`,
-    {
-      market,
-      artifactRef: artifact.relativePath,
-      bridgeGeneratedAt: bridge.generatedAt ?? null,
-      planGeneratedAt: generatedAt,
-      staleAfterHours,
-    }
-  );
-  invariant(
-    /^\d{4}-\d{2}-\d{2}$/.test(bridge.weekEnd ?? "") &&
-      bridge.weekEnd >= generatedAt.slice(0, 10),
-    "ARTIFACT_STALE",
-    `Event Intake bridge ${artifact.relativePath} has an expired review window.`,
-    {
-      market,
-      artifactRef: artifact.relativePath,
-      bridgeWeekEnd: bridge.weekEnd ?? null,
-      planDate: generatedAt.slice(0, 10),
-    }
-  );
-}
-
 function plannedWorkItemCount(
-  artifactSnapshot,
+  inputSummary,
   sourceProfileCount,
   intakeScope = "all"
 ) {
-  const eventCounts = artifactSnapshot?.artifacts?.eventIntakeBridge?.counts ?? {};
-  const organizerCounts = artifactSnapshot?.artifacts?.organizerPublicationPackets?.counts ?? {};
-  const organizerCandidateCounts =
-    artifactSnapshot?.artifacts?.organizerSearchCandidates?.counts ?? {};
   const counts = [
-    intakeScope === "organizer" ? 0 : eventCounts.sourceProfiles,
-    intakeScope === "organizer" ? 0 : eventCounts.sourceResults,
-    intakeScope === "organizer" ? 0 : eventCounts.eventCandidates,
-    organizerCounts.organizers,
-    organizerCandidateCounts.organizers,
+    intakeScope === "organizer" ? 0 : inputSummary?.sourceResults,
+    intakeScope === "organizer" ? 0 : inputSummary?.eventCandidates,
+    inputSummary?.organizerPublicationPackets,
+    inputSummary?.organizerSearchCandidates,
     intakeScope === "organizer" ? 0 :
-      artifactSnapshot?.artifacts?.externalEventCandidateQueue?.counts?.events,
-    artifactSnapshot?.artifacts?.externalEventCandidateQueue?.counts
-      ?.organizerLeads,
+      inputSummary?.externalEventCandidates,
+    inputSummary?.organizerLeads,
     intakeScope === "organizer" ? 0 : sourceProfileCount,
   ].map((count) => count ?? 0);
   invariant(
@@ -762,6 +739,44 @@ function plannedWorkItemCount(
     "Planned work-item counts must be non-negative safe integers."
   );
   return counts.reduce((sum, count) => sum + count, 0);
+}
+
+function inputSnapshotEvidenceRef(snapshot) {
+  return {
+    relativePath: `operations:supply-input:${snapshot.snapshotId}`,
+    sha256: snapshot.contentHash,
+  };
+}
+
+function organizerPacketSupportsMarket(packet, market) {
+  if (typeof market !== "string" || market.length === 0) return false;
+  const geography = packet?.identity?.geography;
+  return [
+    geography?.primaryMarketSlug,
+    ...(geography?.markets ?? []).flatMap((entry) => [
+      entry?.marketSlug,
+      entry?.eventFilter?.citySlug,
+    ]),
+  ].some((entry) => entry === market);
+}
+
+function plannedInputSummary(snapshot, market) {
+  const summary = supplyInputSummary(snapshot);
+  return {
+    ...summary,
+    organizerPublicationPackets:
+      snapshot.organizerPublicationPackets.filter((packet) =>
+        organizerPacketSupportsMarket(packet, market)).length,
+    organizerSearchCandidates:
+      snapshot.organizerSearchCandidates.filter((candidate) =>
+        candidate?.queryIntent?.marketSlug === market).length,
+    externalEventCandidates:
+      snapshot.externalEventCandidates.filter((candidate) =>
+        candidate?.location?.citySlug === market).length,
+    organizerLeads:
+      snapshot.organizerLeads.filter((lead) =>
+        lead?.marketSlug === market).length,
+  };
 }
 
 function snapshotSourceProfile(profile) {
@@ -809,7 +824,7 @@ function baseWorkItem({
     source,
     adminProjection,
     decisionProvenance: {
-      actorKind: "legacy_projection",
+      actorKind: "normalized_projection",
       actorId: `supply-intake-v${SUPPLY_INTAKE_WORKFLOW_VERSION}`,
       decision: "pending_deterministic_review",
       decidedAt: now,
@@ -852,6 +867,10 @@ function workItemForEvent(event, context) {
     },
     evidence: evidenceFor(context.artifact, event, [event.sourceUrl].filter(Boolean)),
     raw: event,
+    adminProjection: {
+      recordType: "event_candidate",
+      candidate: eventCandidateProjection(event),
+    },
     observedAt: null,
     expiresAt: endOfDate(event.endDate ?? event.startDate),
   });
@@ -1019,31 +1038,18 @@ function workItemForSourceResult(result, context) {
     id: result.id,
     title: result.title,
     source: {
-      sourceProfileId: result.sourceProfileId ?? "legacy_unknown",
+      sourceProfileId: result.sourceProfileId ?? "unknown_source",
       label: result.sourceLabel ?? null,
       url: result.url ?? null,
       artifactRef: context.artifact.relativePath,
     },
     evidence: evidenceFor(context.artifact, result, [result.url].filter(Boolean)),
     raw: result,
-    observedAt: result.observedAt ?? null,
-  });
-}
-
-function workItemForLegacySourceProfile(profile, context) {
-  return baseWorkItem({
-    ...context,
-    entityKind: "source_profile",
-    id: `legacy-${profile.id}`,
-    title: profile.label ?? profile.id,
-    source: {
-      sourceProfileId: profile.id,
-      label: profile.label ?? null,
-      url: profile.items?.[0]?.url ?? null,
-      artifactRef: context.artifact.relativePath,
+    adminProjection: {
+      recordType: "event_source_result",
+      result: eventSourceResultProjection(result),
     },
-    evidence: evidenceFor(context.artifact, profile, (profile.items ?? []).map((item) => item.url).filter(Boolean)),
-    raw: profile,
+    observedAt: result.observedAt ?? null,
   });
 }
 
@@ -1066,7 +1072,211 @@ function workItemForOperationsSourceProfile(profile, context) {
       provenanceStatus: "operations_owned_profile",
     },
     raw: profile,
+    adminProjection: {
+      recordType: "event_source_profile",
+      profile: eventSourceProfileProjection(profile),
+    },
   });
+}
+
+function eventCandidateProjection(event) {
+  const sourceResultIds = Array.isArray(event.sourceResultIds) ?
+    event.sourceResultIds.slice(0, 40).map((value) =>
+      boundedProjectionString(value, {field: "sourceResultIds"})) :
+    [];
+  const sourceUrl =
+    typeof event.sourceUrl === "string" ?
+      boundedProjectionString(event.sourceUrl, {
+        field: "sourceUrl",
+        maximum: 2_000,
+      }) :
+      null;
+  return {
+    id: boundedProjectionString(event.id, {field: "id"}),
+    normalizedEventKey:
+      typeof event.normalizedEventKey === "string" ?
+        boundedProjectionString(event.normalizedEventKey, {
+          field: "normalizedEventKey",
+        }) :
+        boundedProjectionString(event.id, {field: "normalizedEventKey"}),
+    title: boundedProjectionString(event.title ?? event.id, {
+      field: "title",
+    }),
+    category: boundedProjectionString(event.category ?? "external_event", {
+      field: "category",
+    }),
+    neighborhood: boundedProjectionString(event.neighborhood ?? "", {
+      field: "neighborhood",
+      allowEmpty: true,
+    }),
+    venue: boundedProjectionString(event.venue ?? "", {
+      field: "venue",
+      allowEmpty: true,
+    }),
+    startDate: boundedProjectionString(event.startDate, {
+      field: "startDate",
+      maximum: 40,
+    }),
+    endDate:
+      typeof event.endDate === "string" ?
+        boundedProjectionString(event.endDate, {
+          field: "endDate",
+          maximum: 40,
+        }) :
+        null,
+    time: boundedProjectionString(event.time ?? "", {
+      field: "time",
+      allowEmpty: true,
+      maximum: 40,
+    }),
+    price: boundedProjectionString(event.price ?? "", {
+      field: "price",
+      allowEmpty: true,
+    }),
+    sourceResultIds,
+    sourceUrl,
+    sourceLabel: boundedProjectionString(event.sourceLabel ?? "Source", {
+      field: "sourceLabel",
+    }),
+    reviewState: boundedProjectionString(event.reviewState ?? "new", {
+      field: "reviewState",
+    }),
+    requiresVerification: event.requiresVerification !== false,
+    explicitSinglesEvent: event.explicitSinglesEvent === true,
+    whySinglesFriendly: boundedProjectionString(
+      event.whySinglesFriendly ?? "",
+      {field: "whySinglesFriendly", allowEmpty: true}
+    ),
+    publicDescription: boundedProjectionString(
+      event.publicDescription ?? "",
+      {field: "publicDescription", allowEmpty: true, maximum: 1_000}
+    ),
+    scores:
+      event.scores && typeof event.scores === "object" &&
+        !Array.isArray(event.scores) ?
+        event.scores :
+        {},
+    sourceCoverage: event.sourceCoverage ?? {
+      sourceResultIds,
+      matchedSourceResults: sourceResultIds.length,
+      hasSourceUrl: Boolean(sourceUrl),
+      hasManualInstagramReference: false,
+    },
+    sourceStatus: event.sourceStatus ?? (
+      sourceUrl ? "source_backed" : "missing_source_url"
+    ),
+    publishability: event.publishability ?? (
+      sourceUrl ?
+        "reviewable_needs_verification" :
+        "lead_needs_source"
+    ),
+    dedupe: event.dedupe ?? {
+      normalizedEventKey:
+        String(event.normalizedEventKey ?? event.id),
+      canonicalCandidateId: String(event.id),
+      duplicateCandidateIds: [],
+    },
+    score: Number.isFinite(event.score) ? event.score : 0,
+    warnings: boundedProjectionStringArray(event.warnings, "warnings"),
+    blockerCodes: boundedProjectionStringArray(
+      event.blockerCodes,
+      "blockerCodes"
+    ),
+    publicationEligibility: "review_gated",
+  };
+}
+
+function eventSourceResultProjection(result) {
+  return {
+    id: boundedProjectionString(result.id, {field: "id"}),
+    sourceProfileId: boundedProjectionString(
+      result.sourceProfileId ?? "unknown_source",
+      {field: "sourceProfileId"}
+    ),
+    sourceLabel: boundedProjectionString(result.sourceLabel ?? "Source", {
+      field: "sourceLabel",
+    }),
+    queryTemplateId: boundedProjectionString(
+      result.queryTemplateId ?? "operations",
+      {field: "queryTemplateId"}
+    ),
+    resultType: boundedProjectionString(
+      result.resultType ?? "source_result",
+      {field: "resultType"}
+    ),
+    title: boundedProjectionString(result.title ?? result.id, {
+      field: "title",
+    }),
+    url: boundedProjectionString(result.url ?? "", {
+      field: "url",
+      allowEmpty: true,
+      maximum: 2_000,
+    }),
+    snippet: boundedProjectionString(result.snippet ?? "", {
+      field: "snippet",
+      allowEmpty: true,
+      maximum: 1_000,
+    }),
+    observedAt: boundedProjectionString(result.observedAt ?? "", {
+      field: "observedAt",
+      allowEmpty: true,
+      maximum: 80,
+    }),
+    status: boundedProjectionString(result.status ?? "needs_review", {
+      field: "status",
+    }),
+    riskFlags: boundedProjectionStringArray(
+      result.riskFlags,
+      "riskFlags"
+    ),
+    operatorNotes: boundedProjectionString(result.operatorNotes ?? "", {
+      field: "operatorNotes",
+      allowEmpty: true,
+      maximum: 1_000,
+    }),
+  };
+}
+
+function eventSourceProfileProjection(profile) {
+  return {
+    id: boundedProjectionString(profile.sourceProfileId, {field: "id"}),
+    label: boundedProjectionString(profile.label, {field: "label"}),
+    type: boundedProjectionString(profile.sourceTier, {field: "type"}),
+    status: boundedProjectionString(profile.status, {field: "status"}),
+    cadence:
+      profile.sourceProfileId === "luma" ? "daily" : "weekly",
+    riskLevel:
+      profile.publication?.discoveryOnly ? "medium" : "low",
+    allowedUse: boundedProjectionString(profile.allowedUse, {
+      field: "allowedUse",
+    }),
+    items: [],
+  };
+}
+
+function boundedProjectionString(
+  value,
+  {field, allowEmpty = false, maximum = 500}
+) {
+  invariant(
+    typeof value === "string" && (allowEmpty || value.length > 0),
+    "INVALID_EVENT_INTAKE_PROJECTION",
+    `Event Intake ${field} must be ${allowEmpty ? "a" : "a non-empty"} string.`,
+    {field}
+  );
+  return value.slice(0, maximum);
+}
+
+function boundedProjectionStringArray(value, field) {
+  if (value === undefined) return [];
+  invariant(
+    Array.isArray(value),
+    "INVALID_EVENT_INTAKE_PROJECTION",
+    `Event Intake ${field} must be an array.`,
+    {field}
+  );
+  return value.slice(0, 40).map((entry, index) =>
+    boundedProjectionString(entry, {field: `${field}[${index}]`}));
 }
 
 function workItemForOrganizer(packet, context) {
@@ -1076,7 +1286,7 @@ function workItemForOrganizer(packet, context) {
     id: packet.entityId ?? packet.canonicalHostId,
     title: packet.displayName,
     source: {
-      sourceProfileId: "legacy_organizer_intake",
+      sourceProfileId: "organizer_intake",
       label: "Organizer Intake publication review",
       url: packet.evidenceReview?.records?.find((record) => record.surface?.url)?.surface?.url ?? null,
       artifactRef: context.artifact.relativePath,
@@ -1428,7 +1638,9 @@ function reviewEvent(item, now) {
     taskFlags,
     owner: primaryStage === "resolve" ? "human" : "agent",
     overall: event.sourceUrl ? 0.72 : 0.28,
-    basis: event.sourceUrl ? "legacy_candidate_with_source" : "legacy_lead_missing_source",
+    basis: event.sourceUrl ?
+      "normalized_candidate_with_source" :
+      "normalized_lead_missing_source",
     ruleIds: ["event-source-required-v1", "event-expiry-v1", "event-dedupe-flag-v1"],
     reason: primaryStage === "resolve" ? "deterministic_blockers_found" : "deterministic_verification_pending",
     now,
@@ -1473,9 +1685,15 @@ function reviewOrganizer(item, now) {
     ],
     owner: primaryStage === "resolve" || !approved ? "human" : "agent",
     overall: blockers.length === 0 && approved ? 0.92 : 0.55,
-    basis: approved ? "legacy_admin_approval" : "legacy_publication_packet",
+    basis: approved ?
+      "reviewed_admin_approval" :
+      "normalized_publication_packet",
     ruleIds: ["organizer-publication-packet-v1"],
-    reason: blockers.length > 0 ? "organizer_packet_blocked" : approved ? "legacy_approval_verified" : "organizer_decision_pending",
+    reason: blockers.length > 0 ?
+      "organizer_packet_blocked" :
+      approved ?
+        "reviewed_approval_verified" :
+        "organizer_decision_pending",
     now,
   });
 }
@@ -1545,7 +1763,9 @@ function reviewSourceProfile(item, now) {
     taskFlags,
     owner: blockers.length > 0 ? "human" : "agent",
     overall: operationsOwned ? 0.95 : 0.65,
-    basis: operationsOwned ? "versioned_operations_profile" : "legacy_source_profile",
+    basis: operationsOwned ?
+      "versioned_operations_profile" :
+      "normalized_source_profile",
     ruleIds: ["source-profile-policy-v1"],
     reason: blockers.length > 0 ? "source_profile_blocked" : operationsOwned ? "source_profile_configured" : "source_profile_verification_pending",
     now,
@@ -1594,7 +1814,7 @@ function evidenceFor(artifact, raw, citations) {
     artifactRef: artifact.relativePath,
     artifactHash: hashValue({artifactSha256: artifact.sha256, raw}),
     citations: uniqueSorted(citations),
-    provenanceStatus: "legacy_artifact_snapshot",
+    provenanceStatus: "operations_input_snapshot",
   };
 }
 
@@ -1620,7 +1840,7 @@ function evidenceForOrganizerCandidate({
     artifactHash: hashValue({artifacts, candidate, reviewContext}),
     citations: uniqueSorted(citations),
     provenanceStatus: reviewContext ?
-      "reviewed_artifact_snapshot" : "legacy_artifact_snapshot",
+      "reviewed_operations_input" : "operations_input_snapshot",
   };
 }
 
@@ -1631,7 +1851,7 @@ function sourceProfileForEvent(event) {
     if (host === "cntraveller.in" || host.endsWith(".cntraveller.in")) return "cntraveller";
     return `web:${host}`;
   } catch {
-    return "legacy_unknown";
+    return "unknown_source";
   }
 }
 

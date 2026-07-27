@@ -1,7 +1,7 @@
 ---
 doc_id: organizer_intake_live_projection_spec
-version: 2.0.0
-updated: 2026-07-26
+version: 2.1.0
+updated: 2026-07-27
 owner: admin_operations
 status: active
 ---
@@ -14,6 +14,15 @@ projection — independently shippable, no product decisions required. **Part II
 recurring acquisition, extraction, attribution, visibility, and the
 self-improving rule loop. Part I is a prerequisite for nothing in Part II, but
 it is the cheapest thing on this page and should ship first.
+
+Implementation state (2026-07-27): Part I and the executable portions of
+Part II phases A–G are implemented and covered by Operations, callable,
+contract, Admin, and rules tests. `organizer_intake` + `operations` is the
+ratified single spine; repository operational JSON producers are retired.
+The acquisition and model ports remain fail-closed until the owner selects the
+providers, ToS posture, and spend limits listed in §18. The app-side passed-event
+review affordance remains the explicitly named app-team dependency from §18;
+the backend capability and review timing policy are implemented.
 
 ---
 
@@ -512,10 +521,19 @@ npm --prefix operations test
 npm --prefix operations run check
 npm --prefix operations run manifests
 node tool/organizer_intake/check_admin_review_bridge.mjs
-node tool/organizer_intake/check_promotion_bridge.mjs
-node tool/organizer_intake/pending_work_coverage.mjs --check --require-covered
+npm --prefix functions run build
+npm --prefix functions test
+node tool/check_remote_ops_manifest.mjs --check
 node tool/agent/check_agent_readiness.mjs
 ```
+
+The former `check_promotion_bridge.mjs` and
+`pending_work_coverage.mjs --require-covered` commands are intentionally not
+part of the live verification loop. They validate repository JSON produced by
+the retired projection pipeline. Reintroducing those artifacts would violate
+the Firestore-backed Operations boundary; equivalent live coverage is enforced
+by the Operations workflow checks, callable contract tests, and
+`check_admin_review_bridge.mjs`.
 
 Phase-specific gates, all of which need new tests:
 

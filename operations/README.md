@@ -5,23 +5,23 @@ workflows. It is intentionally separate from `tool/`: repository checks,
 generators, migrations, and deploy helpers remain tools, while scheduled or
 resumable business workflows live here.
 
-The first reference workflow is `supply-intake`. It can project the existing
-Event Intake and Organizer Intake artifacts into one exclusive work-item queue,
-run deterministic review steps, create hash-bound promotion receipts, reconcile
-expired events, and propose source-specific extraction rules. The shipped
+The first reference workflow is `supply-intake`. It projects one immutable,
+Operations-owned normalized input snapshot into one exclusive work-item queue,
+runs deterministic review steps, creates hash-bound promotion receipts,
+reconciles expired events, and proposes source-specific extraction rules. The shipped
 runtime is **shadow-only and provider-disabled by default**:
 
 - default plans grant no network requests;
 - model calls are disabled;
 - public writes are disabled;
-- run projection reads reviewed local compatibility artifacts; the source
-  extractors are not yet connected to an acquisition worker;
-- organizer compatibility packets are filtered by their declared market, and
+- run projection reads a content-hashed input snapshot stored by the Operations
+  state store; committed operational JSON is not an input;
+- organizer packets are filtered by their declared market, and
   their work items carry a schema-validated, bounded Admin packet projection;
   evidence records, public copy, curation detail, local commands, and raw
   provider payloads are excluded from that Firestore projection;
-- Event Intake bridges fail planning when missing, market-mismatched,
-  future-dated, older than 168 hours, or past their reviewed week end;
+- Event Intake source results, profiles, and candidates come from the same run
+  and work-item model as organizer candidates;
 - explicitly orphaned external-event candidates are admitted only with
   organizer evidence. They project as human-owned `resolve` work with the
   `organizer_not_in_inventory` blocker and `event_crawl_todo` flag, and seed a
@@ -34,9 +34,9 @@ runtime is **shadow-only and provider-disabled by default**:
 - CN Traveller is discovery-only and requires an official source before any
   candidate can become publication-ready.
 
-Supply Intake is also the freshness authority for future acquisition. The host
-discovery planner now emits deterministic query intents without reading
-committed run logs. During planning, Supply Intake joins those intents and the
+Supply Intake is also the freshness authority for future acquisition. Its
+discovery planner emits deterministic query intents without reading committed
+run logs. During planning, Supply Intake joins those intents and the
 event crawl's known source surfaces against immutable
 `supply_freshness_coverage` records from completed Operations runs. The frozen,
 schema-validated policy currently distinguishes city discovery, candidate
@@ -45,6 +45,18 @@ prepublication. Each scheduled or skipped source surface carries
 `lastFetchedAt` and `nextEligibleAt`; a fresh skip cites the completed run that
 covered it. This is scheduling only: shadow mode still performs no fetch and
 therefore creates no new coverage record.
+
+Import a reviewed normalized input snapshot before planning:
+
+```sh
+node operations/src/cli/main.mjs ingest-input \
+  --input /secure/path/mumbai-reviewed-input.json
+node operations/src/cli/main.mjs plan \
+  --workflow supply-intake --market mumbai
+```
+
+The import is immutable and content-hashed. Raw provider payload fields are
+rejected, and changed content requires a new snapshot id.
 
 Phase B adds a guarded acquisition port without enabling a provider. A trusted
 runtime may inject either the existing manual-file adapter or a configured
@@ -141,7 +153,7 @@ Run from the repository root or from this package. All commands emit a stable
 JSON envelope on stdout; failures emit a JSON error envelope on stderr.
 
 ```sh
-# Inspect currently available legacy artifacts and create a deterministic plan.
+# Create a deterministic plan from the latest immutable market input snapshot.
 node operations/src/cli/main.mjs plan \
   --market mumbai --through 2026-07-28
 

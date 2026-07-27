@@ -308,33 +308,27 @@ export function AdminIntakePublicationBoundaryPanel({
         title={isEvents ? "Event candidates are not app events" : "Organizer approvals are not final publication"}
       >
         {isEvents ?
-          "Event Intake reads eventIntakeDashboards/current and writes eventIntakeReviewDecisions. Canonical event creation, external event promotion, booking, payments, and waitlists stay outside this workspace." :
-          "Organizer Intake records review, curation, policy, and location decisions. Canonical organizer publishing, public route indexing, and claim ownership still pass through promotion tooling and the Organizers workspace."}
+          "Review source-backed event candidates here. Creating an event, enabling bookings, and promoting it to members are separate actions." :
+          "Review organizer evidence here. Publishing a listing, making it discoverable, and confirming ownership are separate actions."}
       </AlertRow>
       <QualityList>
         <StateRow
-          label="Read model"
+          label="Evidence"
           value={isEvents ?
-            "eventIntakeDashboards/current" :
-            "operationRuns + operationWorkItems"}
+            "Latest completed Supply Intake run" :
+            "Latest reviewed organizer intake run"}
         />
         <StateRow
-          label="Writes here"
+          label="Action here"
           value={isEvents ?
-            "eventIntakeReviewDecisions/{decisionId}" :
-            "organizer review, curation, policy, and location decision records"}
+            "Record a review decision and any required corrections" :
+            "Record review, curation, policy, and location decisions"}
         />
-        {isEvents ? (
-          <StateRow
-            label="Callable boundary"
-            value="adminGetEventIntakeDashboard + adminRecordEventIntakeReviewDecision"
-          />
-        ) : null}
         <StateRow
-          label="Not here"
+          label="Separate actions"
           value={isEvents ?
-            "events/{id}, externalEvents/{id}, bookings, payments, waitlists" :
-            "unchecked canonical organizers/{id} publication, route indexing, claim ownership transfer"}
+            "Create event, publish, bookings, payments, and waitlists" :
+            "Publish listing, search visibility, app discovery, and ownership transfer"}
         />
       </QualityList>
       <AdminTagList>

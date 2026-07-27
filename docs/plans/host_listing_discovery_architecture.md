@@ -1,12 +1,17 @@
 ---
 doc_id: host_listing_discovery_architecture
-version: 0.5.0
-updated: 2026-07-26
-owner: marketing_website
-status: draft
+version: 0.6.0
+updated: 2026-07-27
+owner: operations_platform
+status: superseded
 ---
 
 # Organizer Listing Discovery Architecture
+
+> Superseded by `docs/operations_platform.md` and the Supply Intake workflow.
+> The former `tool/host_discovery` corpus and generated search ledger have been
+> retired. This document is retained only as historical product and identity
+> research; its commands and path references are not operational instructions.
 
 ## Goal
 

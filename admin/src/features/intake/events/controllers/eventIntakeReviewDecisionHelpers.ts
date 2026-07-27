@@ -16,7 +16,7 @@ export type EventIntakeDecisionHandler = (input: {
   decision: EventIntakeUiDecision;
   edits?: Record<string, unknown>;
   defaultNote: string;
-}) => Promise<void>;
+}) => Promise<boolean>;
 
 export function checklistForEventIntakeDecision(
   targetType: EventIntakeTargetType,
@@ -46,9 +46,12 @@ export function checklistForEventIntakeDecision(
 export function applyLocalEventIntakeDecision(
   bridge: EventIntakeBridge,
   response: AdminRecordEventIntakeReviewDecisionResponse,
-  note: string
+  note: string,
+  edits: Record<string, unknown> = {},
+  options: {preserveQueueState?: boolean} = {}
 ): EventIntakeBridge {
   const reviewState = reviewStateForEventIntakeDecision(response.decision);
+  const editedValues = afterValuesFromEditDiff(edits);
   const latestDecision = {
     decision: response.decision,
     note,
@@ -61,7 +64,8 @@ export function applyLocalEventIntakeDecision(
       sourceResults: bridge.sourceResults.map((result) =>
         result.id === response.targetId ? {
           ...result,
-          status: reviewState,
+          ...editedValues,
+          status: options.preserveQueueState ? result.status : reviewState,
           latestDecision,
         } : result
       ),
@@ -73,13 +77,28 @@ export function applyLocalEventIntakeDecision(
       eventCandidates: bridge.eventCandidates.map((candidate) =>
         candidate.id === response.targetId ? {
           ...candidate,
-          reviewState,
+          ...editedValues,
+          reviewState: options.preserveQueueState ?
+            candidate.reviewState :
+            reviewState,
           latestDecision,
         } : candidate
       ),
     };
   }
   return bridge;
+}
+
+export function afterValuesFromEditDiff(
+  edits: Record<string, unknown>
+): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(edits).flatMap(([field, value]) => {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return [];
+    const diff = value as Record<string, unknown>;
+    return Object.prototype.hasOwnProperty.call(diff, "after") ?
+      [[field, diff.after]] :
+      [];
+  }));
 }
 
 function reviewStateForEventIntakeDecision(

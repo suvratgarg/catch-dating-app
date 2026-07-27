@@ -109,10 +109,10 @@ export function useEventIntakeController({
     edits?: Record<string, unknown>;
     defaultNote: string;
   }) => {
-    if (!bridge) return;
+    if (!bridge) return false;
     if (decision === "export_ready") {
       onError("Event intake decisions do not support export-ready state.");
-      return;
+      return false;
     }
     const key = `${targetType}:${targetId}`;
     const note = notes[key]?.trim() || defaultNote;
@@ -126,25 +126,33 @@ export function useEventIntakeController({
       checklist: checklistForEventIntakeDecision(targetType, decision),
     };
     const operation = beginOperation();
-    if (!operation) return;
+    if (!operation) return false;
     onError(null);
     onNotice(null);
     try {
       const response = await decisionMutation.mutateAsync(payload);
       setLocalDecisions((current) => ({...current, [key]: response}));
       setBridge((current) =>
-        current ? applyLocalEventIntakeDecision(current, response, note) :
+        current ? applyLocalEventIntakeDecision(
+          current,
+          response,
+          note,
+          edits,
+          {preserveQueueState: true}
+        ) :
           current
       );
       onNotice(
         `Recorded ${response.decisionStatus.replaceAll("_", " ")} for ${targetId}.`
       );
+      return true;
     } catch (error) {
       onError(
         error instanceof Error ?
           error.message :
           "Unable to record event intake decision."
       );
+      return false;
     } finally {
       endOperation(operation);
     }
@@ -216,6 +224,7 @@ export function useEventIntakeController({
     setActiveTab,
     setNote,
     sourceResultById,
+    snapshotVersion: bridgeQuery.dataUpdatedAt,
     targetDecision,
     updateCandidate,
     updateSource,

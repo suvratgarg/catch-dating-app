@@ -23,9 +23,9 @@ test("production deploy materializes organizer projections from Firestore before
   assert.equal(
     packageJson.scripts["materialize:organizer-listings:deploy"],
     "node scripts/generateOrganizerListings.mjs " +
-      "--firestore-project catch-dating-app-64e51 --no-seeds && " +
+      "--firestore-project catch-dating-app-64e51 && " +
       "node scripts/generateOrganizerListings.mjs " +
-      "--firestore-project catch-dating-app-64e51 --no-seeds --include-demo " +
+      "--firestore-project catch-dating-app-64e51 --include-demo " +
       "--output src/generated/hostListings.demo.json && " +
       "npm run check:organizer-listings"
   );

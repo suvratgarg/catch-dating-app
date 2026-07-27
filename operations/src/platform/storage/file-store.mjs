@@ -41,6 +41,7 @@ export class FileOperationsStore {
       "rules/model-candidates",
       "model-routing",
       "model-cache",
+      "supply-inputs",
     ].map((directory) => fs.mkdir(this.resolve(directory), {recursive: true})));
     const metadataPath = this.resolve("store.json");
     const current = await readJsonIfExists(metadataPath);
@@ -345,6 +346,25 @@ export class FileOperationsStore {
     return {projection, path: file};
   }
 
+  async putSupplyInputSnapshot(snapshot) {
+    await immutableWriteJson(
+      this.entityPath("supply-inputs", snapshot.snapshotId),
+      snapshot,
+      "SUPPLY_INPUT_CONFLICT"
+    );
+    return snapshot;
+  }
+
+  async listSupplyInputSnapshots({market} = {}) {
+    const snapshots = await this.listEntities("supply-inputs");
+    return snapshots
+      .filter((snapshot) => !market || snapshot.market === market)
+      .sort((left, right) =>
+        String(right.observedAt ?? "").localeCompare(
+          String(left.observedAt ?? "")
+        ) || right.snapshotId.localeCompare(left.snapshotId));
+  }
+
   adminProjectionPath(runId) {
     return this.resolve("exports", "admin", `${encoded(runId)}.json`);
   }
@@ -624,7 +644,8 @@ function encoded(value) {
 
 function entitySortKey(value) {
   return String(value.runId ?? value.workItemId ?? value.proposalId ?? value.evaluationId ??
-    value.canaryId ?? value.actionId ?? value.receiptId ?? "");
+    value.canaryId ?? value.actionId ?? value.receiptId ??
+    value.snapshotId ?? "");
 }
 
 async function immutableWriteJson(file, value, conflictCode) {

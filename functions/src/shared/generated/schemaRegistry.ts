@@ -1298,6 +1298,379 @@ export const operationWorkItemSchema: Record<string, unknown> = {
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object",
+            "required": [
+              "intake"
+            ],
+            "properties": {
+              "intake": {
+                "type": "object",
+                "required": [
+                  "recordType"
+                ],
+                "properties": {
+                  "recordType": {
+                    "const": "event_candidate"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "entityKind": {
+            "const": "event"
+          },
+          "normalizedPayload": {
+            "properties": {
+              "intake": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "recordType",
+                  "candidate"
+                ],
+                "properties": {
+                  "recordType": {
+                    "const": "event_candidate"
+                  },
+                  "candidate": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "required": [
+                      "id",
+                      "title",
+                      "startDate",
+                      "sourceResultIds",
+                      "reviewState",
+                      "requiresVerification",
+                      "warnings",
+                      "blockerCodes",
+                      "publicationEligibility"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "startDate": {
+                        "type": "string",
+                        "maxLength": 40
+                      },
+                      "sourceResultIds": {
+                        "type": "array",
+                        "maxItems": 40,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 500
+                        }
+                      },
+                      "reviewState": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "requiresVerification": {
+                        "type": "boolean"
+                      },
+                      "warnings": {
+                        "type": "array",
+                        "maxItems": 40,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 500
+                        }
+                      },
+                      "blockerCodes": {
+                        "type": "array",
+                        "maxItems": 40,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 500
+                        }
+                      },
+                      "publicationEligibility": {
+                        "const": "review_gated"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object",
+            "required": [
+              "intake"
+            ],
+            "properties": {
+              "intake": {
+                "type": "object",
+                "required": [
+                  "recordType"
+                ],
+                "properties": {
+                  "recordType": {
+                    "const": "event_source_result"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "entityKind": {
+            "const": "source_result"
+          },
+          "normalizedPayload": {
+            "properties": {
+              "intake": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "recordType",
+                  "result"
+                ],
+                "properties": {
+                  "recordType": {
+                    "const": "event_source_result"
+                  },
+                  "result": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "sourceProfileId",
+                      "sourceLabel",
+                      "queryTemplateId",
+                      "resultType",
+                      "title",
+                      "url",
+                      "snippet",
+                      "observedAt",
+                      "status",
+                      "riskFlags",
+                      "operatorNotes"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "sourceProfileId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "sourceLabel": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "queryTemplateId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "resultType": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "url": {
+                        "type": "string",
+                        "maxLength": 2000
+                      },
+                      "snippet": {
+                        "type": "string",
+                        "maxLength": 1000
+                      },
+                      "observedAt": {
+                        "type": "string",
+                        "maxLength": 80
+                      },
+                      "status": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "riskFlags": {
+                        "type": "array",
+                        "maxItems": 40,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 500
+                        }
+                      },
+                      "operatorNotes": {
+                        "type": "string",
+                        "maxLength": 1000
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object",
+            "required": [
+              "intake"
+            ],
+            "properties": {
+              "intake": {
+                "type": "object",
+                "required": [
+                  "recordType"
+                ],
+                "properties": {
+                  "recordType": {
+                    "const": "event_source_profile"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "entityKind": {
+            "const": "source_profile"
+          },
+          "normalizedPayload": {
+            "properties": {
+              "intake": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "recordType",
+                  "profile"
+                ],
+                "properties": {
+                  "recordType": {
+                    "const": "event_source_profile"
+                  },
+                  "profile": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "label",
+                      "type",
+                      "status",
+                      "cadence",
+                      "riskLevel",
+                      "allowedUse",
+                      "items"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "label": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "type": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "status": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "cadence": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "riskLevel": {
+                        "type": "string",
+                        "enum": [
+                          "low",
+                          "medium",
+                          "high"
+                        ]
+                      },
+                      "allowedUse": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "items": {
+                        "type": "array",
+                        "maxItems": 40,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "label",
+                            "url"
+                          ],
+                          "properties": {
+                            "label": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 500
+                            },
+                            "url": {
+                              "type": "string",
+                              "maxLength": 2000
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   ],
   "definitions": {
@@ -1313,6 +1686,271 @@ export const operationWorkItemSchema: Record<string, unknown> = {
         "type": "string",
         "minLength": 1,
         "maxLength": 500
+      }
+    },
+    "eventCandidateIntake": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recordType",
+        "candidate"
+      ],
+      "properties": {
+        "recordType": {
+          "const": "event_candidate"
+        },
+        "candidate": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": [
+            "id",
+            "title",
+            "startDate",
+            "sourceResultIds",
+            "reviewState",
+            "requiresVerification",
+            "warnings",
+            "blockerCodes",
+            "publicationEligibility"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "startDate": {
+              "type": "string",
+              "maxLength": 40
+            },
+            "sourceResultIds": {
+              "type": "array",
+              "maxItems": 40,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              }
+            },
+            "reviewState": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "requiresVerification": {
+              "type": "boolean"
+            },
+            "warnings": {
+              "type": "array",
+              "maxItems": 40,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              }
+            },
+            "blockerCodes": {
+              "type": "array",
+              "maxItems": 40,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              }
+            },
+            "publicationEligibility": {
+              "const": "review_gated"
+            }
+          }
+        }
+      }
+    },
+    "eventSourceResultIntake": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recordType",
+        "result"
+      ],
+      "properties": {
+        "recordType": {
+          "const": "event_source_result"
+        },
+        "result": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "sourceProfileId",
+            "sourceLabel",
+            "queryTemplateId",
+            "resultType",
+            "title",
+            "url",
+            "snippet",
+            "observedAt",
+            "status",
+            "riskFlags",
+            "operatorNotes"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "sourceProfileId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "sourceLabel": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "queryTemplateId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "resultType": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "url": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "snippet": {
+              "type": "string",
+              "maxLength": 1000
+            },
+            "observedAt": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "status": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "riskFlags": {
+              "type": "array",
+              "maxItems": 40,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              }
+            },
+            "operatorNotes": {
+              "type": "string",
+              "maxLength": 1000
+            }
+          }
+        }
+      }
+    },
+    "eventSourceProfileIntake": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recordType",
+        "profile"
+      ],
+      "properties": {
+        "recordType": {
+          "const": "event_source_profile"
+        },
+        "profile": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "type",
+            "status",
+            "cadence",
+            "riskLevel",
+            "allowedUse",
+            "items"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "type": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "status": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "cadence": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "riskLevel": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "allowedUse": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "items": {
+              "type": "array",
+              "maxItems": 40,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "label",
+                  "url"
+                ],
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "url": {
+                    "type": "string",
+                    "maxLength": 2000
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "orphanEventCandidateIntake": {
@@ -21092,7 +21730,20 @@ export const eventIntakeReviewDecisionDocumentSchema: Record<string, unknown> = 
     },
     "edits": {
       "type": "object",
-      "additionalProperties": true
+      "description": "Changed fields only. Each entry freezes its reviewed before and after value.",
+      "maxProperties": 40,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "before",
+          "after"
+        ],
+        "properties": {
+          "before": {},
+          "after": {}
+        }
+      }
     },
     "reviewedByUid": {
       "type": "string",
@@ -29611,7 +30262,20 @@ export const adminRecordEventIntakeReviewDecisionCallablePayloadSchema: Record<s
     },
     "edits": {
       "type": "object",
-      "additionalProperties": true
+      "description": "Changed fields only. Each entry freezes the reviewed before and after values so extractor-learning and audit consumers can distinguish a correction from a whole-record resubmission.",
+      "maxProperties": 40,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "before",
+          "after"
+        ],
+        "properties": {
+          "before": {},
+          "after": {}
+        }
+      }
     },
     "checklist": {
       "type": "object",

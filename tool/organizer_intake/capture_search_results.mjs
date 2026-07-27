@@ -9,7 +9,6 @@ import {
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..", "..");
-const defaultSearchPlanPath = path.join(repoRoot, "tool", "host_discovery", "generated", "search_plan.json");
 const searchResultBatchesRoot = path.join(scriptDir, "search_result_batches");
 
 const flags = parseFlags(process.argv.slice(2));
@@ -22,9 +21,10 @@ if (flags.help) {
 try {
   if (!flags.runKey) throw new Error("--run-key is required.");
   if (!flags.rawResults) throw new Error("--raw-results is required.");
+  if (!flags.searchPlan) throw new Error("--search-plan is required.");
   if (!flags.date) throw new Error("--date YYYY-MM-DD is required.");
 
-  const searchPlanPath = path.resolve(repoRoot, flags.searchPlan ?? defaultSearchPlanPath);
+  const searchPlanPath = path.resolve(repoRoot, flags.searchPlan);
   const searchPlan = readJson(searchPlanPath);
   const planEntry = findSearchPlanEntry(searchPlan, flags.runKey);
   if (!planEntry) {
@@ -35,6 +35,7 @@ try {
     capture: readJson(path.resolve(repoRoot, flags.rawResults)),
     capturedAt: flags.date,
     planEntry,
+    sourcePlanFile: relative(searchPlanPath),
     source: flags.source,
   });
   if (flags.batchId) batch.batchId = flags.batchId;
@@ -153,13 +154,14 @@ function sortValue(value) {
 function printHelp() {
   console.log(`Usage:
   node tool/organizer_intake/capture_search_results.mjs \\
-    --run-key <host-discovery-run-key> \\
+    --run-key <operations-run-key> \\
+    --search-plan <operations-plan-export> \\
     --raw-results <provider-json> \\
     --date YYYY-MM-DD [flags]
 
 Flags:
   --source <source>       manual_google_search, manual_web_search, serp_api, custom_scraper, or fixture.
-  --search-plan <file>    Defaults to tool/host_discovery/generated/search_plan.json.
+  --search-plan <file>    Required reviewed Operations discovery-plan export.
   --batch-id <id>         Override the deterministic output batch id.
   --output <file>         Output path for --write or --check.
   --write                 Persist the normalized batch. Omitted means dry run.

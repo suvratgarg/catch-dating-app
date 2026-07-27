@@ -28,10 +28,23 @@ test("workflow manifest fails when a live CLI command is omitted", async () => {
     finding.contract?.endsWith(":cli-commands")));
 });
 
-test("workflow manifest binds every legacy compatibility artifact", async () => {
+test("workflow manifest rejects reintroducing legacy compatibility artifacts",
+  async () => {
   const manifest = await canonicalManifest();
-  manifest.compatibilityInputs[1].artifacts =
-    manifest.compatibilityInputs[1].artifacts.slice(1);
+  assert.deepEqual(manifest.compatibilityInputs, []);
+  assert.deepEqual(
+    WORKFLOW_REGISTRY[0].compatibilityArtifactPatterns,
+    []
+  );
+  manifest.compatibilityInputs = [{
+    producer: "retired-json-producer",
+    artifacts: ["tool/retired/generated/value.json"],
+    adapter: "none",
+    status: "retired",
+    replacementOwner: "operations",
+    newOrchestrationAllowed: false,
+    retirementCriteria: "Already retired.",
+  }];
   const result = await checkWorkflowManifest({manifest});
   assert.equal(result.ok, false);
   assert.ok(result.findings.some((finding) =>

@@ -1,56 +1,49 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import {
+  emptySupplyInputSnapshot,
+  finalizeSupplyInputSnapshot,
+} from "../src/workflows/supply-intake/input-snapshot.mjs";
 
 export async function temporaryDirectory(prefix = "catch-operations-") {
   return fs.mkdtemp(path.join(os.tmpdir(), prefix));
 }
 
 export async function createFixtureRepository(root) {
-  await writeJson(
-    root,
-    "tool/host_discovery/generated/search_plan.json",
-    {
-      schemaVersion: 1,
-      freshnessAuthority:
-        "immutable completed supply-intake operation runs",
-      planned: [
-        {
-          planKind: "generic_city_category",
-          source: "web_search",
-          citySlug: "mumbai",
-          categoryId: "social_run_club",
-          candidateId: null,
-          runKey:
-            "web_search|run club mumbai|mumbai|" +
-            "social_run_club|generic",
-        },
-      ],
-      skippedFresh: [],
-    }
-  );
-  await writeJson(root, "tool/marketing/event_guide/generated/mumbai/2026-07-14/event_intake_bridge.json", {
-    schemaVersion: 1,
-    generatedAt: "2026-07-14T10:00:00.000Z",
-    city: {id: "mumbai", label: "Mumbai"},
-    weekStart: "2026-07-14",
-    weekEnd: "2026-07-21",
-    sourceProfiles: [
-      {id: "legacy-web", label: "Legacy Web", type: "source_url_list", status: "needs_verification", items: []},
-    ],
-    sourceResults: [
-      {
-        id: "source-one",
-        sourceProfileId: "legacy-web",
-        sourceLabel: "Official site",
-        title: "Official Event Result",
-        url: "https://events.example/one",
-        observedAt: "2026-07-14T00:00:00.000Z",
-        status: "needs_review",
-        riskFlags: [],
-      },
-    ],
-    eventCandidates: [
+  return root;
+}
+
+export function fixtureWorkflowOptions(repoRoot) {
+  return {
+    inputSnapshotLoader: async ({market}) =>
+      fixtureInputSnapshot(repoRoot, market),
+  };
+}
+
+export async function fixtureInputSnapshot(_repoRoot, market = "mumbai") {
+  const isMumbai = market === "mumbai";
+  const empty = emptySupplyInputSnapshot(market);
+  return finalizeSupplyInputSnapshot({
+    ...empty,
+    snapshotId: `fixture-${market}`,
+    observedAt: "2026-07-14T10:00:00.000Z",
+    provenance: {
+      source: "test_fixture",
+      sourceRunIds: [],
+    },
+    organizerReviewPolicy: null,
+    sourceResults: isMumbai ? [{
+      id: "source-one",
+      sourceProfileId: "luma",
+      sourceLabel: "Official site",
+      title: "Official Event Result",
+      url: "https://events.example/one",
+      observedAt: "2026-07-14T00:00:00.000Z",
+      status: "needs_review",
+      riskFlags: [],
+    }] : [],
+    eventCandidates: isMumbai ? [
       {
         id: "event-ready",
         title: "Ready Event",
@@ -85,45 +78,17 @@ export async function createFixtureRepository(root) {
         requiresVerification: false,
         dedupe: {duplicateCandidateIds: []},
       },
-    ],
-  });
-  await writeJson(root, "tool/organizer_intake/generated/publication_review_packets.json", {
-    schemaVersion: 1,
-    packets: [publicationPacketFixture({
+    ] : [],
+    organizerPublicationPackets: isMumbai ? [publicationPacketFixture({
       entityId: "organizer-ready",
       market: "mumbai",
       status: "published",
-    })],
+    })] : [],
+    organizerSearchCandidates: [],
+    externalEventCandidates: [],
+    organizerLeads: [],
+    crawlSurfaces: [],
   });
-  await writeJson(root, "tool/organizer_intake/generated/search_result_candidate_queue.json", {
-    schemaVersion: 1,
-    candidates: [],
-    summary: {candidates: 0},
-  });
-  await writeJson(root, "tool/organizer_intake/generated/organizer_operator_action_queue.json", {schemaVersion: 1, actions: []});
-  await writeJson(root, "tool/organizer_intake/generated/organizer_operational_health.json", {schemaVersion: 1, summary: {workstreams: 0}});
-  await writeJson(root, "tool/organizer_intake/generated/source_mention_llm_prompt_queue.json", {schemaVersion: 1, requests: []});
-  await writeJson(root, "tool/organizer_intake/generated/event_crawl_plan.json", {
-    schemaVersion: 1,
-    policy: {
-      status: "disabled",
-      schedulerEnabled: false,
-      defaultSurfacePolicy: "manualOnly",
-    },
-    entries: [],
-  });
-  await writeJson(root, "tool/organizer_intake/generated/event_crawl_run_plan.json", {schemaVersion: 1, runIntents: []});
-  await writeJson(
-    root,
-    "tool/organizer_intake/generated/external_event_candidate_queue.json",
-    {
-      schemaVersion: 1,
-      candidates: [],
-      organizerLeads: [],
-      summary: {candidates: 0, organizerLeads: 0, orphanEvents: 0},
-    }
-  );
-  return root;
 }
 
 export function publicationPacketFixture({
@@ -191,10 +156,4 @@ export function publicationPacketFixture({
     },
     nextActions: ["review_publication_packet"],
   };
-}
-
-async function writeJson(root, relative, value) {
-  const file = path.join(root, relative);
-  await fs.mkdir(path.dirname(file), {recursive: true});
-  await fs.writeFile(file, `${JSON.stringify(value, null, 2)}\n`);
 }

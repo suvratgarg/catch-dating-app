@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.4.181
+version: 0.4.182
 updated: 2026-07-27
 owner: marketing_website
 status: active
@@ -82,8 +82,10 @@ The website is already split out of the old monolithic shell:
   same types into website and Functions code, while both boundaries reject
   malformed payloads and responses.
 - `website/src/generated/hostListings.json` is production-only and excludes
-  `dataOrigin: "catchDemo"` plus organizer-intake and seed records that do not
-  resolve to a `live` city in the active market pack. Multi-market organizer
+  `dataOrigin: "catchDemo"` plus Firestore organizer records that do not
+  resolve to a `live` city in the active market pack. Legacy scraped seed
+  directories and their CLI inputs are retired; production materialization
+  reads canonical `organizers/{id}` documents only. Multi-market organizer
   listings expose only their live-market projection in production. Storybook reads the explicit demo-inclusive
   `hostListings.demo.json` projection through `stories/fixtures/hostListings.ts`.
   The production deploy regenerates `hostListings.json` from canonical

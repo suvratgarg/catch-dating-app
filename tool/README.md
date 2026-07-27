@@ -6,10 +6,9 @@ and run tools by stable id instead of memorizing file paths.
 
 Durable business workflows do not belong here. Resumable workflow runs, work
 items, leases, budgets, agent decisions, and receipts live in `operations/` and
-are governed by `docs/operations_platform.md`. The existing organizer-intake,
-host-discovery, and event-guide scripts are compatibility producers for Supply
-Intake adapters; add new orchestration to `operations/`, not another tool
-subtree. Stable workflow checks remain discoverable through
+are governed by `docs/operations_platform.md`. Organizer-intake remains a
+bounded reviewed-migration utility and event-guide remains a Marketing
+packager; neither is a Supply Intake runtime input. Stable workflow checks remain discoverable through
 `operations:boundaries` and `operations:workflow-manifest` in
 `tools_manifest.json`. `remote_ops_manifest.json` remains the separate inventory
 for commands that can touch external systems.
@@ -66,12 +65,6 @@ mistaken for success. This graph is the canonical cross-root integration map.
 - `design/`: visual review and design-preview entrypoints.
 - `env/`: checked-in Dart define files for app environments.
 - `firebase/`: Firebase project/config helper scripts.
-- `host_discovery/`: organizer acquisition backlog, deterministic query-intent
-  plans, historical source-evidence fixtures, seed listing fixtures, and dedupe
-  indexes consumed through the legacy Supply Intake adapter. Its planner does
-  not decide freshness: per-kind query and source cadence is derived from
-  immutable completed runs in `operations/`. New workflow orchestration belongs
-  there too.
 - `lib/`: shared Node helper modules for repo paths, CLI parsing, and Firebase project selection.
 - Completed one-time migration tools are retired after prod verification; historical
   evidence lives in the audit registry and migration contract metadata.
@@ -489,47 +482,6 @@ capture to Ubuntu 24.04. Their manual `workflow_dispatch` input
 review artifact; it does not commit them. Review that artifact before replacing
 `design/visual_baselines/<surface>/linux/`. Local Darwin updates remain useful
 for local visual review but never substitute for the Linux CI baseline.
-
-## Host Discovery
-
-Organizer discovery starts with a machine-readable candidate backlog, not public
-pages. The initial batch lives at
-`tool/host_discovery/candidate_batches/2026-06-10-initial-organizer-targets.json`
-and is validated against `target_categories.json`, seed listing docs, and
-dedupe keys.
-
-```sh
-node tool/host_discovery/validate_discovery_data.mjs
-node tool/host_discovery/validate_discovery_data.mjs --check
-node tool/host_discovery/plan_search_runs.mjs
-node tool/host_discovery/plan_search_runs.mjs --check
-node tool/host_discovery/generate_source_evidence.mjs
-node tool/host_discovery/generate_source_evidence.mjs --check
-node tool/host_discovery/check_index_readiness.mjs
-node tool/host_discovery/check_index_readiness.mjs --check
-node tool/host_discovery/export_seed_import_plan.mjs
-node tool/host_discovery/export_seed_import_plan.mjs --check
-node tool/host_discovery/apply_seed_import_plan.mjs --project catchdates-dev
-node tool/host_discovery/apply_seed_import_plan.mjs --project catchdates-dev --write
-node tool/run.mjs check --category host-discovery
-```
-
-The apply command is dry-run by default. Production writes require the explicit
-prod guard:
-
-```sh
-node tool/host_discovery/apply_seed_import_plan.mjs --project catch-dating-app-64e51 --allow-prod --confirm-prod-project catch-dating-app-64e51
-node tool/host_discovery/apply_seed_import_plan.mjs --project catch-dating-app-64e51 --write --allow-prod --confirm-prod-project catch-dating-app-64e51
-```
-
-Generated files are checked in so reviews can see exactly which candidates and
-searches are active:
-
-- `tool/host_discovery/generated/candidate_dedupe_index.json`
-- `tool/host_discovery/generated/search_plan.json`
-- `tool/host_discovery/generated/source_evidence.json`
-- `tool/host_discovery/generated/index_readiness_report.json`
-- `tool/host_discovery/generated/firestore_seed_import_plan.json`
 
 ## Agent Harness
 

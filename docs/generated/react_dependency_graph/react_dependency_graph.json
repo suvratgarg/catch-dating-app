@@ -19,14 +19,14 @@
     "nonLiteralDynamicImports": "report"
   },
   "summary": {
-    "scannedSourceModules": 346,
+    "scannedSourceModules": 351,
     "dependencyLeafNodes": 18,
-    "moduleNodes": 364,
-    "moduleEdges": 1256,
-    "runtimeModuleEdges": 990,
-    "typeOnlyModuleEdges": 266,
+    "moduleNodes": 369,
+    "moduleEdges": 1268,
+    "runtimeModuleEdges": 995,
+    "typeOnlyModuleEdges": 273,
     "dynamicImportEdges": 29,
-    "reExportEdges": 64,
+    "reExportEdges": 67,
     "featureGroups": 33,
     "featureDependencies": 100,
     "crossSurfaceDependencies": 5,
@@ -34,7 +34,7 @@
     "unresolvedImports": 0,
     "crossSurfaceViolations": 0,
     "runtimeCycles": 6,
-    "allModuleCycles": 6,
+    "allModuleCycles": 7,
     "nonLiteralDynamicImports": 0
   },
   "health": {
@@ -131,6 +131,12 @@
       },
       {
         "modules": [
+          "admin/src/shared/ui/AdminPrimitives/intake.tsx",
+          "admin/src/shared/ui/AdminPrimitives/intakeWorkbench.tsx"
+        ]
+      },
+      {
+        "modules": [
           "website/src/shared/ui/primitives/actions.tsx",
           "website/src/shared/ui/primitives/actions2.tsx",
           "website/src/shared/ui/primitives/feedback.tsx",
@@ -217,8 +223,8 @@
       "surface": "admin",
       "scope": "feature",
       "feature": "intake",
-      "modules": 33,
-      "tests": 10,
+      "modules": 37,
+      "tests": 11,
       "stories": 0
     },
     {
@@ -280,7 +286,7 @@
       "surface": "admin",
       "scope": "shared",
       "feature": null,
-      "modules": 71,
+      "modules": 72,
       "tests": 14,
       "stories": 0
     },
@@ -962,9 +968,9 @@
       "targetSurface": "admin",
       "targetScope": "shared",
       "targetFeature": null,
-      "edges": 63,
-      "runtimeEdges": 42,
-      "typeOnlyEdges": 21,
+      "edges": 62,
+      "runtimeEdges": 40,
+      "typeOnlyEdges": 22,
       "dynamicImports": 0,
       "reExports": 3,
       "sourceModules": [
@@ -975,6 +981,8 @@
         "admin/src/features/intake/events/controllers/useEventIntakeController.ts",
         "admin/src/features/intake/events/ui/EventIntakeWorkspace.tsx",
         "admin/src/features/intake/events/ui/eventIntakeWorkbench.tsx",
+        "admin/src/features/intake/events/ui/eventIntakeWorkbenchModel.test.ts",
+        "admin/src/features/intake/events/ui/eventIntakeWorkbenchModel.ts",
         "admin/src/features/intake/operations/api/intakeOperationsRepository.ts",
         "admin/src/features/intake/operations/controllers/useIntakeOperationsController.test.tsx",
         "admin/src/features/intake/operations/controllers/useIntakeOperationsController.ts",
@@ -988,6 +996,7 @@
         "admin/src/features/intake/organizer/types/organizerIntakeTypes.ts",
         "admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx",
         "admin/src/features/intake/organizer/ui/organizerEventBlockerControls.tsx",
+        "admin/src/features/intake/organizer/ui/organizerIntakeBulkActions.ts",
         "admin/src/features/intake/organizer/ui/organizerIntakeDiagnostics.tsx",
         "admin/src/features/intake/organizer/ui/organizerIntakeDiscoveryPanels.tsx",
         "admin/src/features/intake/organizer/ui/organizerIntakeEventPanels.tsx",
@@ -3222,9 +3231,9 @@
       "sourceLayer": "feature",
       "targetSurface": "admin",
       "targetLayer": "shared",
-      "edges": 212,
-      "runtimeEdges": 143,
-      "typeOnlyEdges": 69,
+      "edges": 211,
+      "runtimeEdges": 141,
+      "typeOnlyEdges": 70,
       "dynamicImports": 0,
       "reExports": 4,
       "sourceModules": [
@@ -3265,6 +3274,8 @@
         "admin/src/features/intake/events/controllers/useEventIntakeController.ts",
         "admin/src/features/intake/events/ui/EventIntakeWorkspace.tsx",
         "admin/src/features/intake/events/ui/eventIntakeWorkbench.tsx",
+        "admin/src/features/intake/events/ui/eventIntakeWorkbenchModel.test.ts",
+        "admin/src/features/intake/events/ui/eventIntakeWorkbenchModel.ts",
         "admin/src/features/intake/operations/api/intakeOperationsRepository.ts",
         "admin/src/features/intake/operations/controllers/useIntakeOperationsController.test.tsx",
         "admin/src/features/intake/operations/controllers/useIntakeOperationsController.ts",
@@ -3278,6 +3289,7 @@
         "admin/src/features/intake/organizer/types/organizerIntakeTypes.ts",
         "admin/src/features/intake/organizer/ui/OrganizerIntakeScreen.tsx",
         "admin/src/features/intake/organizer/ui/organizerEventBlockerControls.tsx",
+        "admin/src/features/intake/organizer/ui/organizerIntakeBulkActions.ts",
         "admin/src/features/intake/organizer/ui/organizerIntakeDiagnostics.tsx",
         "admin/src/features/intake/organizer/ui/organizerIntakeDiscoveryPanels.tsx",
         "admin/src/features/intake/organizer/ui/organizerIntakeEventPanels.tsx",
@@ -4356,7 +4368,6 @@
         "admin/src/features/events/ui/eventPublishingSupplyPanels.tsx",
         "admin/src/features/finance/ui/FinanceOpsScreen.tsx",
         "admin/src/features/growth/ui/GrowthKpiScreen.tsx",
-        "admin/src/features/intake/events/ui/EventIntakeWorkspace.tsx",
         "admin/src/features/intake/events/ui/eventIntakeWorkbench.tsx",
         "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.tsx",
         "admin/src/features/intake/organizer/ui/organizerIntakeDiagnostics.tsx",
@@ -4382,6 +4393,7 @@
         "admin/src/shared/ui/AdminPrimitives/data.tsx",
         "admin/src/shared/ui/AdminPrimitives/forms.tsx",
         "admin/src/shared/ui/AdminPrimitives/intake.tsx",
+        "admin/src/shared/ui/AdminPrimitives/intakeWorkbench.tsx",
         "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
         "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
         "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
@@ -4399,8 +4411,8 @@
     },
     {
       "package": "node:fs",
-      "edges": 2,
-      "runtimeEdges": 2,
+      "edges": 3,
+      "runtimeEdges": 3,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "surfaces": [
@@ -4408,6 +4420,7 @@
         "website"
       ],
       "sourceModules": [
+        "admin/src/shared/ui/AdminPrimitives/intake.test.tsx",
         "admin/src/shared/ui/operatorFacingImplementationCopy.test.ts",
         "website/src/features/organizers/publicSurfaceBehavior.test.ts"
       ]
@@ -4453,7 +4466,6 @@
         "admin/src/features/finance/controllers/useFinanceOpsController.ts",
         "admin/src/features/growth/controllers/useGrowthKpiController.ts",
         "admin/src/features/intake/events/controllers/useEventIntakeController.ts",
-        "admin/src/features/intake/events/ui/EventIntakeWorkspace.tsx",
         "admin/src/features/intake/events/ui/eventIntakeWorkbench.tsx",
         "admin/src/features/intake/operations/controllers/useIntakeOperationsController.ts",
         "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.tsx",
@@ -4489,6 +4501,7 @@
         "admin/src/shared/ui/AdminPrimitives/data.tsx",
         "admin/src/shared/ui/AdminPrimitives/forms.tsx",
         "admin/src/shared/ui/AdminPrimitives/intake.tsx",
+        "admin/src/shared/ui/AdminPrimitives/intakeWorkbench.tsx",
         "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
         "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
         "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
@@ -4599,8 +4612,8 @@
     },
     {
       "package": "vitest",
-      "edges": 62,
-      "runtimeEdges": 62,
+      "edges": 63,
+      "runtimeEdges": 63,
       "typeOnlyEdges": 0,
       "dynamicImports": 0,
       "surfaces": [
@@ -4619,6 +4632,7 @@
         "admin/src/features/intake/events/api/eventIntakeRepository.test.ts",
         "admin/src/features/intake/events/controllers/eventIntakeReviewDecisionHelpers.test.ts",
         "admin/src/features/intake/events/controllers/useEventIntakeController.test.tsx",
+        "admin/src/features/intake/events/ui/eventIntakeWorkbenchModel.test.ts",
         "admin/src/features/intake/operations/controllers/useIntakeOperationsController.test.tsx",
         "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.test.tsx",
         "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.test.ts",
@@ -5168,6 +5182,30 @@
       "story": false
     },
     {
+      "id": "admin/src/features/intake/events/ui/eventIntakeWorkbenchModel.test.ts",
+      "surface": "admin",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "intake",
+      "group": "admin:feature:intake",
+      "extension": ".ts",
+      "scanned": true,
+      "test": true,
+      "story": false
+    },
+    {
+      "id": "admin/src/features/intake/events/ui/eventIntakeWorkbenchModel.ts",
+      "surface": "admin",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "intake",
+      "group": "admin:feature:intake",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
       "id": "admin/src/features/intake/operations/api/intakeOperationsRepository.ts",
       "surface": "admin",
       "layer": "feature",
@@ -5348,6 +5386,18 @@
       "story": false
     },
     {
+      "id": "admin/src/features/intake/organizer/ui/organizerIntakeBulkActions.ts",
+      "surface": "admin",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "intake",
+      "group": "admin:feature:intake",
+      "extension": ".ts",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
       "id": "admin/src/features/intake/organizer/ui/organizerIntakeDiagnostics.tsx",
       "surface": "admin",
       "layer": "feature",
@@ -5391,6 +5441,18 @@
       "feature": "intake",
       "group": "admin:feature:intake",
       "extension": ".tsx",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/features/intake/organizer/ui/organizerIntakeQueueItems.ts",
+      "surface": "admin",
+      "layer": "feature",
+      "scope": "feature",
+      "feature": "intake",
+      "group": "admin:feature:intake",
+      "extension": ".ts",
       "scanned": true,
       "test": false,
       "story": false
@@ -6585,6 +6647,18 @@
     },
     {
       "id": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
+      "surface": "admin",
+      "layer": "shared",
+      "scope": "shared",
+      "feature": null,
+      "group": "admin:shared",
+      "extension": ".tsx",
+      "scanned": true,
+      "test": false,
+      "story": false
+    },
+    {
+      "id": "admin/src/shared/ui/AdminPrimitives/intakeWorkbench.tsx",
       "surface": "admin",
       "layer": "shared",
       "scope": "shared",
@@ -10275,7 +10349,7 @@
       "specifier": "./eventIntakeRepository",
       "kind": "import",
       "typeOnly": false,
-      "line": 14,
+      "line": 12,
       "column": 1
     },
     {
@@ -10289,29 +10363,11 @@
     },
     {
       "source": "admin/src/features/intake/events/api/eventIntakeRepository.ts",
-      "target": "admin/src/shared/config/launchMarkets.ts",
-      "specifier": "../../../../shared/config/launchMarkets",
-      "kind": "import",
-      "typeOnly": false,
-      "line": 5,
-      "column": 1
-    },
-    {
-      "source": "admin/src/features/intake/events/api/eventIntakeRepository.ts",
       "target": "admin/src/shared/types/adminTypes.ts",
       "specifier": "../../../../shared/types/adminTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 7,
-      "column": 1
-    },
-    {
-      "source": "admin/src/features/intake/events/api/eventIntakeRepository.ts",
-      "target": "admin/src/shared/operations/operationsTypes.ts",
-      "specifier": "../../../../shared/operations/operationsTypes",
-      "kind": "import",
-      "typeOnly": true,
-      "line": 12,
+      "line": 4,
       "column": 1
     },
     {
@@ -10320,7 +10376,7 @@
       "specifier": "../../../../shared/api/adminApi",
       "kind": "export",
       "typeOnly": false,
-      "line": 40,
+      "line": 18,
       "column": 1
     },
     {
@@ -10424,38 +10480,11 @@
     },
     {
       "source": "admin/src/features/intake/events/ui/EventIntakeWorkspace.tsx",
-      "target": "admin/src/shared/ui/AdminPrimitives/index.ts",
-      "specifier": "../../../../shared/ui/AdminPrimitives",
-      "kind": "import",
-      "typeOnly": false,
-      "line": 11,
-      "column": 1
-    },
-    {
-      "source": "admin/src/features/intake/events/ui/EventIntakeWorkspace.tsx",
-      "target": "admin/src/features/intake/events/controllers/eventIntakeReviewDecisionHelpers.ts",
-      "specifier": "../controllers/eventIntakeReviewDecisionHelpers",
-      "kind": "import",
-      "typeOnly": false,
-      "line": 44,
-      "column": 1
-    },
-    {
-      "source": "admin/src/features/intake/events/ui/EventIntakeWorkspace.tsx",
       "target": "admin/src/features/intake/events/controllers/useEventIntakeController.ts",
       "specifier": "../controllers/useEventIntakeController",
       "kind": "import",
       "typeOnly": false,
-      "line": 49,
-      "column": 1
-    },
-    {
-      "source": "admin/src/features/intake/events/ui/EventIntakeWorkspace.tsx",
-      "target": "admin/src/shared/types/adminTypes.ts",
-      "specifier": "../../../../shared/types/adminTypes",
-      "kind": "import",
-      "typeOnly": true,
-      "line": 54,
+      "line": 1,
       "column": 1
     },
     {
@@ -10464,7 +10493,7 @@
       "specifier": "../../../../shared/feedback/AdminFeedbackContext",
       "kind": "import",
       "typeOnly": false,
-      "line": 61,
+      "line": 5,
       "column": 1
     },
     {
@@ -10473,7 +10502,7 @@
       "specifier": "./eventIntakeWorkbench",
       "kind": "import",
       "typeOnly": false,
-      "line": 62,
+      "line": 6,
       "column": 1
     },
     {
@@ -10491,7 +10520,7 @@
       "specifier": "../../../../shared/types/adminTypes",
       "kind": "import",
       "typeOnly": true,
-      "line": 15,
+      "line": 18,
       "column": 1
     },
     {
@@ -10500,7 +10529,43 @@
       "specifier": "../controllers/useEventIntakeController",
       "kind": "import",
       "typeOnly": true,
-      "line": 21,
+      "line": 24,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/events/ui/eventIntakeWorkbench.tsx",
+      "target": "admin/src/features/intake/events/ui/eventIntakeWorkbenchModel.ts",
+      "specifier": "./eventIntakeWorkbenchModel",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 26,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/events/ui/eventIntakeWorkbenchModel.test.ts",
+      "target": "admin/src/shared/types/adminTypes.ts",
+      "specifier": "../../../../shared/types/adminTypes",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 2,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/events/ui/eventIntakeWorkbenchModel.test.ts",
+      "target": "admin/src/features/intake/events/ui/eventIntakeWorkbenchModel.ts",
+      "specifier": "./eventIntakeWorkbenchModel",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 6,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/events/ui/eventIntakeWorkbenchModel.ts",
+      "target": "admin/src/shared/types/adminTypes.ts",
+      "specifier": "../../../../shared/types/adminTypes",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1,
       "column": 1
     },
     {
@@ -10644,7 +10709,7 @@
       "specifier": "../controllers/useIntakeOperationsController",
       "kind": "import",
       "typeOnly": false,
-      "line": 28,
+      "line": 27,
       "column": 1
     },
     {
@@ -10915,6 +10980,42 @@
       "kind": "import",
       "typeOnly": false,
       "line": 119,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/ui/organizerIntakeBulkActions.ts",
+      "target": "admin/src/shared/ui/AdminPrimitives/index.ts",
+      "specifier": "../../../../shared/ui/AdminPrimitives",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/ui/organizerIntakeBulkActions.ts",
+      "target": "admin/src/features/intake/organizer/controllers/organizerIntakeHelpers.ts",
+      "specifier": "../controllers/organizerIntakeHelpers",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 3,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/ui/organizerIntakeBulkActions.ts",
+      "target": "admin/src/features/intake/organizer/controllers/useOrganizerIntakeController.ts",
+      "specifier": "../controllers/useOrganizerIntakeController",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 9,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/ui/organizerIntakeBulkActions.ts",
+      "target": "admin/src/features/intake/organizer/types/organizerIntakeTypes.ts",
+      "specifier": "../types/organizerIntakeTypes",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 11,
       "column": 1
     },
     {
@@ -11242,6 +11343,15 @@
       "column": 1
     },
     {
+      "source": "admin/src/features/intake/organizer/ui/organizerIntakeQueueItems.ts",
+      "target": "admin/src/features/intake/organizer/types/organizerIntakeTypes.ts",
+      "specifier": "../types/organizerIntakeTypes",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 1,
+      "column": 1
+    },
+    {
       "source": "admin/src/features/intake/organizer/ui/organizerIntakeReadinessPanels.tsx",
       "target": "admin/src/shared/ui/AdminPrimitives/index.ts",
       "specifier": "../../../../shared/ui/AdminPrimitives",
@@ -11410,6 +11520,33 @@
       "kind": "import",
       "typeOnly": false,
       "line": 33,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx",
+      "target": "admin/src/features/intake/organizer/ui/organizerIntakeBulkActions.ts",
+      "specifier": "./organizerIntakeBulkActions",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 35,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx",
+      "target": "admin/src/features/intake/organizer/ui/organizerIntakeQueueItems.ts",
+      "specifier": "./organizerIntakeQueueItems",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 39,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx",
+      "target": "admin/src/features/intake/organizer/ui/organizerIntakeQueueItems.ts",
+      "specifier": "./organizerIntakeQueueItems",
+      "kind": "export",
+      "typeOnly": false,
+      "line": 47,
       "column": 1
     },
     {
@@ -13164,7 +13301,7 @@
       "specifier": "../../generated/contracts/adminGetOverviewCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1823,
+      "line": 1832,
       "column": 1
     },
     {
@@ -13173,7 +13310,7 @@
       "specifier": "../../generated/contracts/adminDecideAccessApplicationCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1825,
+      "line": 1834,
       "column": 1
     },
     {
@@ -13182,7 +13319,7 @@
       "specifier": "../../generated/contracts/adminDecideAccessApplicationCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1827,
+      "line": 1836,
       "column": 1
     },
     {
@@ -13191,7 +13328,7 @@
       "specifier": "../../generated/contracts/adminSetAdminUserRolesCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1829,
+      "line": 1838,
       "column": 1
     },
     {
@@ -13200,7 +13337,7 @@
       "specifier": "../../generated/contracts/adminSetAdminUserRolesCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1831,
+      "line": 1840,
       "column": 1
     },
     {
@@ -13209,7 +13346,7 @@
       "specifier": "../../generated/contracts/adminDecideSafetyTriageItemCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1833,
+      "line": 1842,
       "column": 1
     },
     {
@@ -13218,7 +13355,7 @@
       "specifier": "../../generated/contracts/adminDecideSafetyTriageItemCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1835,
+      "line": 1844,
       "column": 1
     },
     {
@@ -13227,7 +13364,7 @@
       "specifier": "../../generated/contracts/adminAssignSafetyTriageItemCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1837,
+      "line": 1846,
       "column": 1
     },
     {
@@ -13236,7 +13373,7 @@
       "specifier": "../../generated/contracts/adminAssignSafetyTriageItemCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1839,
+      "line": 1848,
       "column": 1
     },
     {
@@ -13245,7 +13382,7 @@
       "specifier": "../../generated/contracts/adminCreateMarketingContentDraftCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1841,
+      "line": 1850,
       "column": 1
     },
     {
@@ -13254,7 +13391,7 @@
       "specifier": "../../generated/contracts/adminCreateOrganizerDraftFromCandidateCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1843,
+      "line": 1852,
       "column": 1
     },
     {
@@ -13263,7 +13400,7 @@
       "specifier": "../../generated/contracts/adminCreateOrganizerDraftFromCandidateCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1845,
+      "line": 1854,
       "column": 1
     },
     {
@@ -13272,7 +13409,7 @@
       "specifier": "../../generated/contracts/adminRecordMarketingReviewDecisionCallablePayload",
       "kind": "import",
       "typeOnly": true,
-      "line": 1847,
+      "line": 1856,
       "column": 1
     },
     {
@@ -13281,7 +13418,7 @@
       "specifier": "../../generated/contracts/adminRecordMarketingReviewDecisionCallableResponse",
       "kind": "import",
       "typeOnly": true,
-      "line": 1849,
+      "line": 1858,
       "column": 1
     },
     {
@@ -13550,8 +13687,26 @@
       "target": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "specifier": "./intake",
       "kind": "import",
+      "typeOnly": true,
+      "line": 7,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/ui/AdminPrimitives/intake.test.tsx",
+      "target": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
+      "specifier": "./intake",
+      "kind": "import",
       "typeOnly": false,
-      "line": 5,
+      "line": 11,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/ui/AdminPrimitives/intake.test.tsx",
+      "target": "admin/src/shared/ui/AdminPrimitives/intakeWorkbench.tsx",
+      "specifier": "./intakeWorkbench",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 15,
       "column": 1
     },
     {
@@ -13561,6 +13716,33 @@
       "kind": "import",
       "typeOnly": false,
       "line": 15,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
+      "target": "admin/src/shared/ui/AdminPrimitives/intakeWorkbench.tsx",
+      "specifier": "./intakeWorkbench",
+      "kind": "export",
+      "typeOnly": false,
+      "line": 630,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
+      "target": "admin/src/shared/ui/AdminPrimitives/intakeWorkbench.tsx",
+      "specifier": "./intakeWorkbench",
+      "kind": "export",
+      "typeOnly": true,
+      "line": 633,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/ui/AdminPrimitives/intakeWorkbench.tsx",
+      "target": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
+      "specifier": "./intake",
+      "kind": "import",
+      "typeOnly": true,
+      "line": 11,
       "column": 1
     },
     {
@@ -20883,24 +21065,6 @@
       "column": 1
     },
     {
-      "source": "admin/src/features/intake/events/ui/EventIntakeWorkspace.tsx",
-      "package": "lucide-react",
-      "specifier": "lucide-react",
-      "kind": "import",
-      "typeOnly": false,
-      "line": 1,
-      "column": 1
-    },
-    {
-      "source": "admin/src/features/intake/events/ui/EventIntakeWorkspace.tsx",
-      "package": "react",
-      "specifier": "react",
-      "kind": "import",
-      "typeOnly": false,
-      "line": 10,
-      "column": 1
-    },
-    {
       "source": "admin/src/features/intake/events/ui/eventIntakeWorkbench.tsx",
       "package": "lucide-react",
       "specifier": "lucide-react",
@@ -20916,6 +21080,15 @@
       "kind": "import",
       "typeOnly": false,
       "line": 2,
+      "column": 1
+    },
+    {
+      "source": "admin/src/features/intake/events/ui/eventIntakeWorkbenchModel.test.ts",
+      "package": "vitest",
+      "specifier": "vitest",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
       "column": 1
     },
     {
@@ -21991,11 +22164,20 @@
     },
     {
       "source": "admin/src/shared/ui/AdminPrimitives/intake.test.tsx",
+      "package": "node:fs",
+      "specifier": "node:fs",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/ui/AdminPrimitives/intake.test.tsx",
       "package": "@testing-library/react",
       "specifier": "@testing-library/react",
       "kind": "import",
       "typeOnly": false,
-      "line": 1,
+      "line": 3,
       "column": 1
     },
     {
@@ -22004,7 +22186,7 @@
       "specifier": "@testing-library/user-event",
       "kind": "import",
       "typeOnly": false,
-      "line": 2,
+      "line": 4,
       "column": 1
     },
     {
@@ -22013,7 +22195,7 @@
       "specifier": "vitest",
       "kind": "import",
       "typeOnly": false,
-      "line": 3,
+      "line": 5,
       "column": 1
     },
     {
@@ -22032,6 +22214,24 @@
       "kind": "import",
       "typeOnly": false,
       "line": 13,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/ui/AdminPrimitives/intakeWorkbench.tsx",
+      "package": "react",
+      "specifier": "react",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 1,
+      "column": 1
+    },
+    {
+      "source": "admin/src/shared/ui/AdminPrimitives/intakeWorkbench.tsx",
+      "package": "lucide-react",
+      "specifier": "lucide-react",
+      "kind": "import",
+      "typeOnly": false,
+      "line": 9,
       "column": 1
     },
     {

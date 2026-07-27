@@ -21,7 +21,6 @@ import {
   AdminIntakeStageRail,
   AdminIntakeTaskToolbar,
   AdminWorkbenchNote,
-  EmptyState,
   SearchField,
   SelectField,
 } from "../../../../shared/ui/AdminPrimitives";
@@ -74,20 +73,25 @@ export function IntakeOperationsPreviewWorkspace({
   }, [activeStage, data, entityFilter, queueFilter, searchQuery]);
 
   useEffect(() => {
-    if (items.some((item) => item.workItemId === selectedId)) return;
+    if (selectedId !== null) return;
     setSelectedId(items[0]?.workItemId ?? null);
   }, [items, selectedId]);
 
   if (!data) {
     return (
-      <EmptyState
-        icon={<RefreshCw size={18} strokeWidth={1.9} />}
-        variant="marketing"
-      >
-        {isLoading ?
-          "Loading Supply Intake operations..." :
-          "No durable Supply Intake operations are available."}
-      </EmptyState>
+      <AdminIntakeReviewWorkbench
+        detail={null}
+        emptyDetail="Select a persisted work item to inspect its evidence and blockers."
+        emptyQueue="No durable Supply Intake operation is available."
+        items={[]}
+        queueMeta={isLoading ? "Loading" : "Unavailable"}
+        queueTitle="Supply Intake operations"
+        readOnly
+        selectedId={null}
+        state={isLoading ? "loading" : "unavailable"}
+        onRetry={() => void refresh()}
+        onSelect={() => undefined}
+      />
     );
   }
 
@@ -100,6 +104,7 @@ export function IntakeOperationsPreviewWorkspace({
   const setStage = (stage: SupplyIntakePrimaryStage) => {
     setActiveStageState(stage);
     setQueueFilter("all");
+    setSelectedId(null);
     try {
       window.localStorage.setItem(operationsStageKey, stage);
     } catch {
@@ -122,7 +127,10 @@ export function IntakeOperationsPreviewWorkspace({
           icon={<Search size={15} strokeWidth={1.9} />}
           placeholder="Search item, source, blocker..."
           value={searchQuery}
-          onChange={setSearchQuery}
+          onChange={(value) => {
+            setSearchQuery(value);
+            setSelectedId(null);
+          }}
         />
         <SelectField
           label="Entity"
@@ -134,7 +142,10 @@ export function IntakeOperationsPreviewWorkspace({
             {value: "source_profile", label: "Source profiles"},
           ]}
           value={entityFilter}
-          onChange={(value) => setEntityFilter(value as OperationEntityFilter)}
+          onChange={(value) => {
+            setEntityFilter(value as OperationEntityFilter);
+            setSelectedId(null);
+          }}
         />
         <AdminButton
           icon={<RefreshCw size={14} strokeWidth={1.9} />}
@@ -171,6 +182,11 @@ export function IntakeOperationsPreviewWorkspace({
         detail={selected ? operationDetail(selected, run?.status ?? "unknown") : null}
         emptyDetail="Select a persisted work item to inspect its evidence, blockers, and run receipt state."
         emptyQueue="No loaded work items match this stage and filter set. Load another page if ordinary inventory remains."
+        emptyKind={
+          searchQuery || entityFilter !== "all" || queueFilter !== "all"
+            ? "filter"
+            : "stage"
+        }
         filters={[
           {id: "all", label: `All ${items.length}`, selected: queueFilter === "all"},
           {
@@ -182,9 +198,19 @@ export function IntakeOperationsPreviewWorkspace({
         items={items.map(operationQueueItem)}
         queueMeta={`${items.length} item${items.length === 1 ? "" : "s"}`}
         queueTitle={`${stageLabel(activeStage)} inventory`}
+        queueScopeKey={[
+          activeStage,
+          entityFilter,
+          queueFilter,
+          searchQuery.trim().toLocaleLowerCase(),
+          data.generatedAt,
+        ].join(":")}
+        readOnly
         selectedId={selectedId}
-        onFilterChange={(value) =>
-          setQueueFilter(value as OperationQueueFilter)}
+        onFilterChange={(value) => {
+          setQueueFilter(value as OperationQueueFilter);
+          setSelectedId(null);
+        }}
         onSelect={setSelectedId}
       />
     </>
@@ -215,25 +241,21 @@ function operationDetail(item: OperationWorkItem, runStatus: string) {
     statusTone: "success" as const,
     title: evidence.artifactId,
   }));
+  const impactRows = [
+    {id: "stage", label: "Primary stage", value: stageLabel(item.primaryStage)},
+    {id: "lifecycle", label: "Lifecycle", value: item.lifecycleStatus.replaceAll("_", " ")},
+    {id: "run", label: "Run status", value: runStatus.replaceAll("_", " ")},
+    {id: "decision", label: "Decision receipt", value: item.decisionId ?? "Not recorded"},
+    {id: "publication", label: "Publication plan", value: item.publicationPlanId ?? "Not created"},
+  ];
   return {
-    checklistRows: checks.length > 0 ? checks : [{
-      id: "none",
-      label: "No open tasks or blockers",
-      meta: "complete",
-      passed: true,
-    }],
+    checklistRows: checks,
     checklistTitle: "Persisted tasks and blockers",
     footerActions: null,
     footerHint: operationNeedsHumanReview(item) ?
-      "Resolve this exception in the matching Event or Organizer Intake queue. After that queue's generated artifact is refreshed, a new Supply Intake run can project the backed decision." :
-      "This projection is read-only. Worker execution and public writes remain disabled.",
-    impactRows: [
-      {id: "stage", label: "Primary stage", value: stageLabel(item.primaryStage)},
-      {id: "lifecycle", label: "Lifecycle", value: item.lifecycleStatus.replaceAll("_", " ")},
-      {id: "run", label: "Run status", value: runStatus.replaceAll("_", " ")},
-      {id: "decision", label: "Decision receipt", value: item.decisionId ?? "Not recorded"},
-      {id: "publication", label: "Publication plan", value: item.publicationPlanId ?? "Not created"},
-    ],
+      "Resolve this exception in the matching Event or Organizer Intake queue; the next Supply Intake run will project that decision." :
+      "This view is read-only. No operator action is required here.",
+    impactRows,
     impactTitle: "Durable state",
     initials: initialsForLabel(operationWorkItemTitle(item)),
     note: (
@@ -256,6 +278,36 @@ function operationDetail(item: OperationWorkItem, runStatus: string) {
       label: "Automation readiness",
       total: Math.max(checks.length, 1),
     },
+    sections: [
+      {
+        id: "evidence",
+        kind: "evidence" as const,
+        rows: evidenceRows,
+        title: "Hash-bound evidence",
+      },
+      ...(checks.length > 0 ? [{
+        id: "tasks",
+        kind: "checklist" as const,
+        rows: checks,
+        title: "Persisted tasks and blockers",
+      }] : []),
+      {
+        id: "impact",
+        kind: "impact" as const,
+        rows: impactRows,
+        title: "Durable state",
+      },
+      {
+        content: (
+          <AdminWorkbenchNote>
+            Run {item.runId} · revision {item.revision} · updated {formatTimestamp(item.updatedAt)}
+          </AdminWorkbenchNote>
+        ),
+        id: "diagnostics",
+        kind: "diagnostics" as const,
+        title: "Run diagnostics",
+      },
+    ],
     status: item.lifecycleStatus.replaceAll("_", " "),
     statusTone: operationTone(item),
     subtitle: operationWorkItemSubtitle(item),
@@ -265,10 +317,23 @@ function operationDetail(item: OperationWorkItem, runStatus: string) {
 
 function operationQueueItem(item: OperationWorkItem) {
   return {
+    age: ageLabel(item.updatedAt),
+    ageDays: ageDays(item.updatedAt),
+    blocker: item.blockerCodes[0]?.replaceAll("_", " ") ??
+      item.taskFlags[0]?.replaceAll("_", " ") ??
+      "—",
+    blockerKey: item.blockerCodes[0] ?? item.taskFlags[0] ?? null,
     description: operationWorkItemSubtitle(item),
     id: item.workItemId,
     initials: initialsForLabel(operationWorkItemTitle(item)),
+    kind: item.entityKind.replaceAll("_", " "),
+    market: typeof item.normalizedPayload.market === "string"
+      ? item.normalizedPayload.market
+      : typeof item.normalizedPayload.city === "string"
+        ? item.normalizedPayload.city
+        : "—",
     meta: `${item.evidenceRefs.length} evidence ref${item.evidenceRefs.length === 1 ? "" : "s"} · ${item.blockerCodes.length} blocker${item.blockerCodes.length === 1 ? "" : "s"}`,
+    source: item.evidenceRefs[0]?.locator ?? "No evidence",
     status: operationNeedsHumanReview(item) ?
       "human review" : item.lifecycleStatus.replaceAll("_", " "),
     statusTone: operationTone(item),
@@ -298,6 +363,18 @@ function initialsForLabel(label: string) {
 
 function formatTimestamp(value: string | null | undefined) {
   return value ? value.replace("T", " ").replace(/\.\d{3}Z$/u, "Z") : "n/a";
+}
+
+function ageDays(value: string | null | undefined) {
+  if (!value) return null;
+  const timestamp = Date.parse(value);
+  if (!Number.isFinite(timestamp)) return null;
+  return Math.max(0, Math.floor((Date.now() - timestamp) / 86_400_000));
+}
+
+function ageLabel(value: string | null | undefined) {
+  const days = ageDays(value);
+  return days === null ? "—" : days === 0 ? "Today" : `${days}d`;
 }
 
 function readOperationsStage(): SupplyIntakePrimaryStage {

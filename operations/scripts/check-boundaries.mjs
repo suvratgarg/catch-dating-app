@@ -122,6 +122,46 @@ export async function checkBoundaries({repoRoot, baseline}) {
       });
     }
   }
+  const singleSpine = baseline.singleSpine ?? {};
+  for (const retiredPath of singleSpine.retiredPaths ?? []) {
+    if (await exists(path.join(repoRoot, retiredPath))) {
+      findings.push({
+        id: "retired-supply-path-present",
+        path: retiredPath,
+        message: "Supply Intake has one runtime spine; retired operational paths must not return.",
+      });
+    }
+  }
+  const repositoryFiles = await allFiles(repoRoot);
+  for (const file of repositoryFiles) {
+    const basename = path.basename(file);
+    if ((singleSpine.retiredBasenames ?? []).includes(basename)) {
+      findings.push({
+        id: "retired-operational-artifact-present",
+        path: relative(repoRoot, file),
+        message: "Operational queue state must be stored by Operations, not committed as a generated bridge.",
+      });
+    }
+  }
+  for (const boundary of singleSpine.forbiddenRuntimeReferences ?? []) {
+    const runtimeFiles = await codeFiles(
+      path.join(repoRoot, boundary.root),
+      baseline.codeExtensions
+    );
+    for (const file of runtimeFiles) {
+      if (isTestOrFixture(file)) continue;
+      const content = await fs.readFile(file, "utf8");
+      for (const token of boundary.tokens ?? []) {
+        if (!content.includes(token)) continue;
+        findings.push({
+          id: "parallel-supply-spine-reference",
+          path: relative(repoRoot, file),
+          token,
+          message: "Runtime supply intake must read Operations runs, work items, and normalized input snapshots only.",
+        });
+      }
+    }
+  }
   return {
     schemaVersion: 1,
     policyId: baseline.policyId,
@@ -131,6 +171,8 @@ export async function checkBoundaries({repoRoot, baseline}) {
       legacyRoots: baseline.legacyRoots.length,
       toolCodeFiles: toolFiles.length,
       operationsSourceFiles: operationFiles.length,
+      singleSpineRuntimeRoots:
+        (singleSpine.forbiddenRuntimeReferences ?? []).length,
     },
   };
 }
@@ -153,6 +195,43 @@ async function codeFiles(root, extensions) {
   }
   await visit(root);
   return output.sort();
+}
+
+async function allFiles(root) {
+  const output = [];
+  async function visit(directory) {
+    let entries;
+    try {
+      entries = await fs.readdir(directory, {withFileTypes: true});
+    } catch (error) {
+      if (error?.code === "ENOENT") return;
+      throw error;
+    }
+    for (const entry of entries) {
+      if (entry.name === ".git" || entry.name === "node_modules") continue;
+      const current = path.join(directory, entry.name);
+      if (entry.isDirectory()) await visit(current);
+      else if (entry.isFile()) output.push(current);
+    }
+  }
+  await visit(root);
+  return output;
+}
+
+async function exists(target) {
+  try {
+    await fs.access(target);
+    return true;
+  } catch (error) {
+    if (error?.code === "ENOENT") return false;
+    throw error;
+  }
+}
+
+function isTestOrFixture(file) {
+  const normalized = file.split(path.sep).join("/");
+  return /(?:^|\/)(?:test|tests|fixtures)(?:\/|$)/u.test(normalized) ||
+    /\.(?:test|spec)\.[^.]+$/u.test(normalized);
 }
 
 function relative(root, file) {

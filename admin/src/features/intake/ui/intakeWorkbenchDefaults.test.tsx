@@ -76,7 +76,7 @@ describe("Intake task-first defaults", () => {
     expect(screen.getByText("2 new leads")).toBeTruthy();
     expect(screen.getByText("2 items")).toBeTruthy();
 
-    fireEvent.click(screen.getByRole("button", {name: /Small World/u}));
+    fireEvent.click(screen.getByRole("button", {name: "Review Small World"}));
     expect(screen.getByRole("link", {
       name: "Open source for Small World",
     })).toBeTruthy();
@@ -103,7 +103,7 @@ describe("Intake task-first defaults", () => {
     fireEvent.change(screen.getByLabelText("City"), {
       target: {value: "Indore"},
     });
-    fireEvent.click(screen.getByRole("button", {name: /AFTER FLY/u}));
+    fireEvent.click(screen.getByRole("button", {name: "Review AFTER FLY"}));
     expect(screen.getByRole("button", {
       name: "Attach to existing organizer",
     }).hasAttribute("disabled")).toBe(false);
@@ -121,34 +121,29 @@ describe("Intake task-first defaults", () => {
     expect(stages.textContent).toContain("Ready— unavailable");
 
     fireEvent.click(screen.getByRole("button", {name: /Verify/u}));
-    expect(screen.getAllByText(
-      /Organizer publication review is not available from the live projection yet/u
-    )).toHaveLength(2);
-    expect(screen.getAllByText(/2 discovery candidates loaded from runs/u))
+    expect(screen.getByText("This projection is not available yet."))
+      .toBeTruthy();
+    expect(screen.getAllByText(/Organizer publication review is not available/))
       .toHaveLength(2);
     expect(screen.getByText("Publication review unavailable")).toBeTruthy();
     expect(screen.getByRole("button", {name: "All —"})).toBeTruthy();
   });
 
-  it("keeps event diagnostics behind the candidate review queue", async () => {
+  it("keeps event diagnostics collapsed inside the candidate inspector", async () => {
     const {wrapper} = createQueryHarness();
     render(<EventHarness />, {wrapper});
 
     expect(await screen.findByRole("navigation", {
       name: "Event intake stages",
     })).toBeTruthy();
-    expect(screen.queryByRole("heading", {name: "Event candidate queue"})).toBeNull();
-
-    fireEvent.click(screen.getByRole("button", {name: "Diagnostics"}));
-    expect(screen.getByRole("heading", {name: "Event candidate queue"})).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", {name: "Crawl setup"}));
-    expect(screen.getByRole("heading", {name: "Review boundary"})).toBeTruthy();
+    expect(screen.queryByRole("button", {name: "Diagnostics"})).toBeNull();
+    fireEvent.click(screen.getByRole("button", {
+      name: "Review Sample Mumbai social",
+    }));
+    expect(screen.getByText("Diagnostics")).toBeTruthy();
+    expect(screen.getByText("Reviewed fields")).toBeTruthy();
     expect(screen.queryByText("Event intake contract")).toBeNull();
     expect(screen.queryByText("adminGetEventIntakeDashboard")).toBeNull();
     expect(screen.queryByText("adminRecordEventIntakeReviewDecision")).toBeNull();
-    fireEvent.click(screen.getByRole("button", {name: "Back to review queue"}));
-    expect(screen.getByRole("navigation", {
-      name: "Event intake stages",
-    })).toBeTruthy();
   });
 });

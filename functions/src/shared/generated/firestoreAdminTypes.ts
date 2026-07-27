@@ -2868,8 +2868,14 @@ export interface EventIntakeReviewDecisionDocument {
     rightsReviewed: boolean;
     noCatchHostingImplied: boolean;
   };
+  /**
+   * Changed fields only. Each entry freezes its reviewed before and after value.
+   */
   edits: {
-    [k: string]: unknown;
+    [k: string]: {
+      before: unknown;
+      after: unknown;
+    };
   };
   reviewedByUid: string;
   reviewedAt: FirebaseFirestore.Timestamp;

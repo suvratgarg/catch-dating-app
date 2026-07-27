@@ -262,10 +262,9 @@ read/write.
 
 The Marketing tab is the human review console for the weekly event-guide loop.
 Live Marketing state is read from `marketingOpsDashboards/current`. Event
-Intake joins `eventIntakeDashboards/current` with bounded orphan-event work
-items from the newest completed non-organizer Supply Intake run in each launch
-market, using authenticated callables for both sources. Sample mode uses small
-typed synthetic objects in
+Intake is projected from the newest completed Supply Intake run in each launch
+market, including its bounded source profiles, source results, and event work
+items. Sample mode uses small typed synthetic objects in
 `admin/src/shared/api/sampleOperationalData.ts`; it never retains a copy of
 production operations data.
 
@@ -302,26 +301,24 @@ Incoming, Verify, Resolve, and Ready stages and highlights the human exception
 queue. It is read-only in both sample and live mode: the browser cannot request
 a run, fetch a source, call a model, deploy a rule, or publish a listing.
 
-Publish the event-owned live Event Intake dashboard after reviewing the
-workflow output:
+Event Intake is one batch workspace rather than a queue plus a parallel
+Marketing-derived diagnostics screen. Incoming source rows and event-candidate
+rows use stage-specific columns. Candidate stages are mutually exclusive,
+upcoming work is ordered by the Operations-projected expiry, and passed events
+stay reviewable in a separate filter but cannot be approved. Editing happens in
+the inspector; decisions persist changed fields only as audited before/after
+pairs and decided rows stay in the current visual snapshot until Refresh.
+The inspector keeps diagnostics collapsed, compares duplicate candidates in
+place, and reports partial duplicate-resolution failures.
 
-```bash
-node tool/marketing/event_guide/publish_event_intake_dashboard.mjs --env dev
-node tool/marketing/event_guide/publish_event_intake_dashboard.mjs --env dev --apply
-```
-
-Event Intake review decisions are overlaid onto each refreshed dashboard read,
-so operator status and field edits no longer disappear when the source bridge
-is republished. `--apply` also enforces live-data readiness: stale week bounds,
-placeholder domains/results, and sample candidate labels fail before Firestore
-initialization. Use `--check-live --as-of YYYY-MM-DD` to run that guard without
-writing. Event Intake remains a review surface; the separate external-event
-pipeline still owns identity, location, dedupe, and import-policy gates. An
-orphan row is labeled `organizer required`, links its direct event evidence,
-shows the organizer evidence captured from the source, and cannot pass the
-Intake approval checklist until a canonical organizer is attributed. Its
-paired organizer lead appears in Organizer Intake through the existing
-candidate-to-draft flow.
+The callable overlays decisions onto each refreshed Supply Intake projection
+and joins an attributed organizer's current Firestore `appVisibility` as a
+fail-closed ceiling. Event Intake remains a review surface; the separate
+external-event pipeline still owns publication, identity, location, dedupe, and
+import-policy gates. An orphan row is labeled `organizer required`, links its
+direct event evidence, and links to the paired organizer discovery lead created
+by Supply Intake. It cannot pass the Intake approval checklist until a
+canonical organizer is attributed.
 
 Live mode calls `adminGetMarketingOpsDashboard`,
 `adminRecordMarketingReviewDecision`, and `adminCreateMarketingContentDraft`.

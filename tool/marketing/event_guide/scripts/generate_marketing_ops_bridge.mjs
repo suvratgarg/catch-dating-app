@@ -91,10 +91,7 @@ const bridge = buildBridge({
   decisionsFile,
   appFeatureMedia,
 });
-const eventIntakeBridge = buildEventIntakeBridge(bridge, week);
-
 await writeJson(path.join(outputDir, "marketing_ops_bridge.json"), bridge);
-await writeJson(path.join(outputDir, "event_intake_bridge.json"), eventIntakeBridge);
 await writeFile(
   path.join(outputDir, "review_queue.md"),
   renderReviewQueue(bridge),
@@ -109,15 +106,6 @@ if (args["admin-output"]) {
   await mkdir(path.dirname(adminOutput), {recursive: true});
   await writeJson(adminOutput, bridge);
 }
-if (args["event-intake-admin-output"]) {
-  const adminOutput = path.resolve(
-    process.cwd(),
-    args["event-intake-admin-output"]
-  );
-  await mkdir(path.dirname(adminOutput), {recursive: true});
-  await writeJson(adminOutput, eventIntakeBridge);
-}
-
 console.log(`Marketing ops bridge generated: ${outputDir}`);
 console.log(`Source results: ${sourceResults.length}`);
 console.log(`Event candidates: ${candidates.length}`);
@@ -125,11 +113,6 @@ console.log(`Recommendation sets: ${recommendationSets.length}`);
 console.log(`Content drafts: ${contentDrafts.length}`);
 if (args["admin-output"]) {
   console.log(`Admin bridge updated: ${args["admin-output"]}`);
-}
-if (args["event-intake-admin-output"]) {
-  console.log(
-    `Event Intake admin bridge updated: ${args["event-intake-admin-output"]}`
-  );
 }
 
 function parseArgs(rawArgs) {
@@ -531,56 +514,6 @@ function buildBridge({
         `node tool/marketing/event_guide/scripts/generate_marketing_ops_bridge.mjs --week ${week} --admin-output admin/src/generated/marketingOpsBridge.json`,
       withDecisions:
         `node tool/marketing/event_guide/scripts/generate_marketing_ops_bridge.mjs --week ${week} --decisions tool/marketing/event_guide/review_decisions/mumbai.${week}.example.json --admin-output admin/src/generated/marketingOpsBridge.json`,
-    },
-  };
-}
-
-function buildEventIntakeBridge(marketingBridge, week) {
-  return {
-    schemaVersion: marketingBridge.schemaVersion,
-    program: "catch-event-intake",
-    generatedAt: marketingBridge.generatedAt,
-    bridgeSource: "native_generated",
-    city: marketingBridge.city,
-    weekStart: marketingBridge.weekStart,
-    weekEnd: marketingBridge.weekEnd,
-    timezone: marketingBridge.timezone,
-    summary: {
-      status: marketingBridge.summary.status,
-      sourceProfiles: marketingBridge.summary.sourceProfiles,
-      queryTemplates: marketingBridge.summary.queryTemplates,
-      sourceResults: marketingBridge.summary.sourceResults,
-      sourceResultsNeedingReview:
-        marketingBridge.summary.sourceResultsNeedingReview,
-      eventCandidates: marketingBridge.summary.eventCandidates,
-      reviewableCandidates: marketingBridge.summary.reviewableCandidates,
-      sourceMissingCandidates: marketingBridge.summary.sourceMissingCandidates,
-      approvedCandidates: marketingBridge.summary.approvedCandidates,
-      candidatesNeedingReview: marketingBridge.summary.candidatesNeedingReview,
-      duplicateGroups: marketingBridge.summary.duplicateGroups,
-      deliverable:
-        "Private Event Intake review bridge; no marketing export or event import.",
-    },
-    guardrails: [
-      "Event Intake approvals are private supply review decisions.",
-      "Do not create canonical events from this bridge.",
-      "Do not publish marketing content from this bridge.",
-      "Keep source attribution visible before downstream use.",
-    ],
-    sourceProfiles: marketingBridge.sourceProfiles,
-    queryTemplates: marketingBridge.queryTemplates,
-    runPlan: marketingBridge.runPlan,
-    sourceResults: marketingBridge.sourceResults,
-    eventCandidates: marketingBridge.eventCandidates,
-    dedupeGroups: marketingBridge.dedupeGroups,
-    auditTrail: marketingBridge.auditTrail,
-    commands: {
-      regenerate:
-        `node tool/marketing/event_guide/scripts/generate_marketing_ops_bridge.mjs --week ${week}`,
-      updateAdminBridge:
-        `node tool/marketing/event_guide/scripts/generate_marketing_ops_bridge.mjs --week ${week} --event-intake-admin-output admin/src/generated/eventIntakeBridge.json`,
-      withDecisions:
-        `node tool/marketing/event_guide/scripts/generate_marketing_ops_bridge.mjs --week ${week} --decisions tool/marketing/event_guide/review_decisions/mumbai.${week}.example.json --event-intake-admin-output admin/src/generated/eventIntakeBridge.json`,
     },
   };
 }

@@ -390,6 +390,34 @@ behavior. The UI must not imply direct social publishing, money movement,
 canonical intake promotion, rollback, scheduler execution history, or broad
 member/Auth search without dedicated contracts.
 
+## Admin Intake Batch Workbench
+
+All three Intake routes use one full-height batch-review primitive. The queue is
+the primary scroll region; its compact table, stable snapshot order,
+multi-selection, partial-safe bulk actions, keyboard shortcuts, and
+resolution-first inspector are shared. The inspector is closed by default and
+uses consumer-supplied ordered sections, so a workflow does not render empty
+policy or diagnostics filler. Loading, retryable error, filter-empty,
+stage-empty, and unavailable projection states remain distinct.
+
+Organizer Intake uses the standard Name, kind, market, source, top-blocker,
+age, and status columns. Event Intake supplies stage-specific columns:
+Incoming shows source provenance and risk, while candidate stages show the
+Operations expiry, attributed organizer, venue, source, top blocker, and
+status. Candidate stages are mutually exclusive. Passed events are retained in
+a separate filter, fail `event_has_not_passed`, and never compete with active
+upcoming review work. Upcoming candidates sort by the projected Operations
+expiry rather than by a client-invented TTL.
+
+Event editing occurs inside the inspector. Review payloads contain changed
+fields only as `{before, after}` pairs; the server overlays only each `after`
+value while preserving the immutable target id and continues to read older
+flat decisions for compatibility. An attributed organizer's Firestore
+`appVisibility` is projected as a fail-closed event ceiling. Orphan events link
+to the organizer discovery lead that Supply Intake created from the same
+evidence. Duplicate resolution keeps the selected candidate and records one
+rejection decision per duplicate, reporting partial failures.
+
 ## Admin Intake Operations Projection
 
 `/intake/operations` is the third Intake workspace, labelled Automation. It is
