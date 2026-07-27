@@ -28,7 +28,12 @@ import {
   SUPPLY_FRESHNESS_RECORD_TYPE,
 } from "../src/workflows/supply-intake/freshness.mjs";
 import {
+  finalizeSupplyInputSnapshot,
+} from "../src/workflows/supply-intake/input-snapshot.mjs";
+import {
   createFixtureRepository,
+  fixtureInputSnapshot,
+  fixtureWorkflowOptions,
   publicationPacketFixture,
   temporaryDirectory,
 } from "./helpers.mjs";
@@ -39,7 +44,7 @@ const REPO_ROOT = fileURLToPath(new URL("../../", import.meta.url));
 test("supply-intake runs end to end in shadow mode with one exclusive stage per item", async () => {
   const repoRoot = await createFixtureRepository(await temporaryDirectory("catch-ops-repo-"));
   const store = await new FileOperationsStore(await temporaryDirectory("catch-ops-state-")).initialize();
-  const workflow = new SupplyIntakeWorkflow({repoRoot});
+  const workflow = new SupplyIntakeWorkflow(fixtureWorkflowOptions(repoRoot));
   const plan = await workflow.createPlan({market: "mumbai", through: "2026-07-28", now: NOW});
   const replayPlan = await workflow.createPlan({market: "mumbai", through: "2026-07-28", now: "2026-07-14T13:00:00.000Z"});
   assert.equal(plan.planId, replayPlan.planId);
@@ -54,7 +59,7 @@ test("supply-intake runs end to end in shadow mode with one exclusive stage per 
   assert.equal(replay.run.runId, first.run.runId);
 
   const items = await store.listWorkItems({runId: first.run.runId});
-  assert.equal(items.length, 8);
+  assert.equal(items.length, 7);
   assert.ok(items.every((item) => ["incoming", "verify", "resolve", "ready"].includes(item.primaryStage)));
   assert.deepEqual(new Set(items.map((item) => item.entityKind)), new Set(["event", "organizer", "source_result", "source_profile"]));
   assert.equal(items.find((item) => item.sourceEntity.id === "event-ready").primaryStage, "ready");
@@ -139,13 +144,10 @@ test("Mumbai plans admit only organizer packets with Mumbai market evidence", as
   const repoRoot = await createFixtureRepository(
     await temporaryDirectory("catch-ops-market-filter-")
   );
-  const publicationPacketsPath = path.join(
-    repoRoot,
-    "tool/organizer_intake/generated/publication_review_packets.json"
-  );
-  await fs.writeFile(publicationPacketsPath, `${JSON.stringify({
-    schemaVersion: 1,
-    packets: [
+  const baseInput = await fixtureInputSnapshot(repoRoot, "mumbai");
+  const inputSnapshot = finalizeSupplyInputSnapshot({
+    ...baseInput,
+    organizerPublicationPackets: [
       publicationPacketFixture({
         entityId: "organizer-mumbai",
         market: "mumbai",
@@ -162,16 +164,18 @@ test("Mumbai plans admit only organizer packets with Mumbai market evidence", as
         status: "published",
       }),
     ],
-  }, null, 2)}\n`);
+  });
 
-  const workflow = new SupplyIntakeWorkflow({repoRoot});
+  const workflow = new SupplyIntakeWorkflow({
+    inputSnapshotLoader: async () => inputSnapshot,
+  });
   const plan = await workflow.createPlan({
     market: "mumbai",
     through: "2026-07-28",
     now: NOW,
   });
   assert.equal(
-    plan.artifactSnapshot.artifacts.organizerPublicationPackets.counts.organizers,
+    plan.inputSummary.organizerPublicationPackets,
     1
   );
   const items = await workflow.project(plan, {runId: "run-market-filter", now: NOW});
@@ -237,7 +241,7 @@ test("workflow freshness planning cites immutable completed run coverage",
     const repoRoot = await createFixtureRepository(
       await temporaryDirectory("catch-ops-freshness-plan-")
     );
-    const workflow = new SupplyIntakeWorkflow({repoRoot});
+    const workflow = new SupplyIntakeWorkflow(fixtureWorkflowOptions(repoRoot));
     const policy = await workflow.freshnessPolicyLoader();
     const request = {
       kind: "city_discovery_sweep",
@@ -279,11 +283,12 @@ test("workflow freshness planning cites immutable completed run coverage",
       },
     });
 
-    assert.equal(plan.freshness.summary.requested, 1);
-    assert.equal(plan.freshness.summary.scheduled, 0);
+    assert.equal(plan.freshness.summary.requested, 13);
+    assert.equal(plan.freshness.summary.scheduled, 12);
     assert.equal(plan.freshness.summary.skippedFresh, 1);
     assert.equal(
-      plan.freshness.skippedFresh[0].coveredByRunId,
+      plan.freshness.skippedFresh.find((entry) =>
+        entry.runKey === request.runKey).coveredByRunId,
       "run-covered-query"
     );
   });
@@ -293,10 +298,7 @@ test("organizer packet projections stay bounded and exclude raw provider payload
     const repoRoot = await createFixtureRepository(
       await temporaryDirectory("catch-ops-packet-projection-")
     );
-    const publicationPacketsPath = path.join(
-      repoRoot,
-      "tool/organizer_intake/generated/publication_review_packets.json"
-    );
+    const baseInput = await fixtureInputSnapshot(repoRoot, "mumbai");
     const packet = publicationPacketFixture({
       entityId: "organizer-bounded",
       market: "mumbai",
@@ -320,12 +322,26 @@ test("organizer packet projections stay bounded and exclude raw provider payload
     packet.evidenceReview.records = [{
       providerPayload: "raw-provider-secret",
     }];
-    await fs.writeFile(publicationPacketsPath, `${JSON.stringify({
-      schemaVersion: 1,
-      packets: [packet],
-    }, null, 2)}\n`);
-
-    const workflow = new SupplyIntakeWorkflow({repoRoot});
+    let inputSnapshot = {
+      ...baseInput,
+      organizerPublicationPackets: [packet],
+    };
+    const workflow = new SupplyIntakeWorkflow({
+      inputSnapshotLoader: async () => inputSnapshot,
+    });
+    await assert.rejects(
+      workflow.createPlan({
+        market: "mumbai",
+        through: "2026-07-28",
+        now: NOW,
+      }),
+      {code: "RAW_PROVIDER_PAYLOAD_FORBIDDEN"}
+    );
+    packet.evidenceReview.records = [];
+    inputSnapshot = finalizeSupplyInputSnapshot({
+      ...baseInput,
+      organizerPublicationPackets: [packet],
+    });
     const plan = await workflow.createPlan({
       market: "mumbai",
       through: "2026-07-28",
@@ -355,10 +371,6 @@ test("organizer packet projections stay bounded and exclude raw provider payload
 test("organizer search candidates become database-ready organizer work items", async () => {
   const repoRoot = await createFixtureRepository(
     await temporaryDirectory("catch-ops-organizer-candidates-")
-  );
-  const queuePath = path.join(
-    repoRoot,
-    "tool/organizer_intake/generated/search_result_candidate_queue.json"
   );
   const candidateFor = (candidateId, market) => ({
     candidateId,
@@ -410,9 +422,7 @@ test("organizer search candidates become database-ready organizer work items", a
       verifiedAt: "2026-07-14",
     },
   });
-  await fs.writeFile(queuePath, `${JSON.stringify({
-    schemaVersion: 1,
-    reviewPolicy: {
+  const reviewPolicy = {
       shortlistId: "fixture-organizer-review",
       generatedAt: NOW,
       target: {organizers: 2, markets: {mumbai: 1, indore: 1}},
@@ -421,21 +431,27 @@ test("organizer search candidates become database-ready organizer work items", a
       recordStatusDefinitions: {
         review_now: "Ready for human entity review.",
       },
-    },
-    candidates: [
+  };
+  const baseInput = await fixtureInputSnapshot(repoRoot, "mumbai");
+  const inputSnapshot = finalizeSupplyInputSnapshot({
+    ...baseInput,
+    organizerReviewPolicy: reviewPolicy,
+    organizerSearchCandidates: [
       candidateFor("candidate-mumbai", "mumbai"),
       candidateFor("candidate-indore", "indore"),
     ],
-  }, null, 2)}\n`);
+  });
 
-  const workflow = new SupplyIntakeWorkflow({repoRoot});
+  const workflow = new SupplyIntakeWorkflow({
+    inputSnapshotLoader: async () => inputSnapshot,
+  });
   const plan = await workflow.createPlan({
     market: "mumbai",
     through: "2026-07-28",
     now: NOW,
   });
   assert.equal(
-    plan.artifactSnapshot.artifacts.organizerSearchCandidates.counts.organizers,
+    plan.inputSummary.organizerSearchCandidates,
     1
   );
   const items = await workflow.project(plan, {
@@ -530,16 +546,9 @@ test("orphan events project to event work and organizer leads", async () => {
   const repoRoot = await createFixtureRepository(
     await temporaryDirectory("catch-ops-orphan-events-")
   );
-  const queuePath = path.join(
-    repoRoot,
-    "tool/organizer_intake/generated/external_event_candidate_queue.json"
-  );
   const candidateId = "courtside-orphan-events:courtside-friday";
   const leadId = "event-organizer-lead:courtside:mumbai:courtside.club";
-  await fs.writeFile(queuePath, `${JSON.stringify({
-    schemaVersion: 1,
-    summary: {candidates: 1, organizerLeads: 1, orphanEvents: 1},
-    candidates: [{
+  const orphanCandidate = {
       candidateId,
       batchId: "courtside-orphan-events",
       entityId: null,
@@ -595,8 +604,8 @@ test("orphan events project to event work and organizer leads", async () => {
       ],
       reviewAction: "review_external_event_candidate",
       diagnostics: [],
-    }],
-    organizerLeads: [{
+  };
+  const organizerLead = {
       leadId,
       recordType: "organizer_event_lead",
       organizerName: "Courtside",
@@ -608,19 +617,24 @@ test("orphan events project to event work and organizer leads", async () => {
       observedAt: "2026-07-20T18:00:00+05:30",
       reviewAction: "create_or_match_organizer_before_event_publication",
       blocker: "organizer_not_in_inventory",
-    }],
-  }, null, 2)}\n`);
+  };
+  const baseInput = await fixtureInputSnapshot(repoRoot, "mumbai");
+  const inputSnapshot = finalizeSupplyInputSnapshot({
+    ...baseInput,
+    externalEventCandidates: [orphanCandidate],
+    organizerLeads: [organizerLead],
+  });
 
-  const workflow = new SupplyIntakeWorkflow({repoRoot});
+  const workflow = new SupplyIntakeWorkflow({
+    inputSnapshotLoader: async () => inputSnapshot,
+  });
   const plan = await workflow.createPlan({
     market: "mumbai",
     through: "2026-07-28",
     now: NOW,
   });
-  assert.deepEqual(
-    plan.artifactSnapshot.artifacts.externalEventCandidateQueue.counts,
-    {events: 1, organizerLeads: 1}
-  );
+  assert.equal(plan.inputSummary.externalEventCandidates, 1);
+  assert.equal(plan.inputSummary.organizerLeads, 1);
   const projected = await workflow.project(plan, {
     runId: "run-orphan-events",
     now: NOW,
@@ -708,21 +722,15 @@ test("orphan events project to event work and organizer leads", async () => {
   });
 });
 
-test("organizer-only plans do not require an Event Intake bridge", async () => {
+test("organizer-only plans use normalized snapshots without Event Intake data",
+  async () => {
   const repoRoot = await createFixtureRepository(
     await temporaryDirectory("catch-ops-organizer-only-")
   );
-  await fs.rm(path.join(
-    repoRoot,
-    "tool/marketing/event_guide/generated"
-  ), {recursive: true});
-  const queuePath = path.join(
-    repoRoot,
-    "tool/organizer_intake/generated/search_result_candidate_queue.json"
-  );
-  await fs.writeFile(queuePath, `${JSON.stringify({
-    schemaVersion: 1,
-    candidates: [{
+  const baseInput = await fixtureInputSnapshot(repoRoot, "indore");
+  const inputSnapshot = finalizeSupplyInputSnapshot({
+    ...baseInput,
+    organizerSearchCandidates: [{
       candidateId: "indore-candidate",
       batchId: "batch-indore",
       resultId: "indore-candidate",
@@ -762,18 +770,19 @@ test("organizer-only plans do not require an Event Intake bridge", async () => {
       reviewAction: "verify_ownership_before_attach",
       diagnostics: [],
     }],
-  }, null, 2)}\n`);
-  const workflow = new SupplyIntakeWorkflow({repoRoot});
+  });
+  const workflow = new SupplyIntakeWorkflow({
+    inputSnapshotLoader: async () => inputSnapshot,
+  });
   const plan = await workflow.createPlan({
     market: "indore",
     intakeScope: "organizer",
     through: "2026-07-28",
     now: NOW,
   });
-  assert.equal(
-    plan.artifactSnapshot.artifacts.eventIntakeBridge.status,
-    "not_requested"
-  );
+  assert.equal(plan.inputSummary.eventCandidates, 0);
+  assert.equal(plan.inputSummary.sourceResults, 0);
+  assert.equal(Object.hasOwn(plan, "artifactSnapshot"), false);
   const items = await workflow.project(plan, {
     runId: "run-organizer-only",
     now: NOW,
@@ -783,30 +792,32 @@ test("organizer-only plans do not require an Event Intake bridge", async () => {
   ]);
 });
 
-test("plan creation rejects a stale or expired Event Intake bridge", async () => {
+test("normalized inputs use per-kind freshness instead of a weekly artifact clock",
+  async () => {
   const repoRoot = await createFixtureRepository(
-    await temporaryDirectory("catch-ops-stale-bridge-")
+    await temporaryDirectory("catch-ops-stale-input-")
   );
-  const bridgePath = path.join(
-    repoRoot,
-    "tool/marketing/event_guide/generated/mumbai/2026-07-14/event_intake_bridge.json"
-  );
-  const bridge = JSON.parse(await fs.readFile(bridgePath, "utf8"));
-  bridge.generatedAt = "2026-06-25T06:54:04.777Z";
-  bridge.weekStart = "2026-06-22";
-  bridge.weekEnd = "2026-06-29";
-  await fs.writeFile(bridgePath, `${JSON.stringify(bridge, null, 2)}\n`);
+    const baseInput = await fixtureInputSnapshot(repoRoot, "mumbai");
+    const staleInput = finalizeSupplyInputSnapshot({
+      ...baseInput,
+      observedAt: "2026-06-25T06:54:04.777Z",
+    });
 
-  const workflow = new SupplyIntakeWorkflow({repoRoot});
-  await assert.rejects(
-    workflow.createPlan({
+    const workflow = new SupplyIntakeWorkflow(
+      {inputSnapshotLoader: async () => staleInput}
+    );
+    const plan = await workflow.createPlan({
       market: "mumbai",
       through: "2026-07-28",
       now: "2026-07-22T12:00:00.000Z",
-    }),
-    {code: "ARTIFACT_STALE"}
-  );
-});
+    });
+    assert.equal(
+      plan.inputSnapshot.observedAt,
+      "2026-06-25T06:54:04.777Z"
+    );
+    assert.equal(plan.inputSummary.eventCandidates, 3);
+    assert.equal(plan.freshness.summary.requested > 0, true);
+  });
 
 test("read models honor workflow-owned lifecycle vocabulary", async () => {
   const repoRoot = await createFixtureRepository(
@@ -815,7 +826,7 @@ test("read models honor workflow-owned lifecycle vocabulary", async () => {
   const store = await new FileOperationsStore(
     await temporaryDirectory("catch-ops-semantic-state-")
   ).initialize();
-  const workflow = new SupplyIntakeWorkflow({repoRoot});
+  const workflow = new SupplyIntakeWorkflow(fixtureWorkflowOptions(repoRoot));
   const plan = await workflow.createPlan({
     market: "mumbai",
     through: "2026-07-28",
@@ -897,7 +908,7 @@ test("completed admin exports remain immutable after promotion evidence",
     const store = await new FileOperationsStore(
       await temporaryDirectory("catch-ops-export-state-")
     ).initialize();
-    const workflow = new SupplyIntakeWorkflow({repoRoot});
+    const workflow = new SupplyIntakeWorkflow(fixtureWorkflowOptions(repoRoot));
     const plan = await workflow.createPlan({
       market: "mumbai",
       through: "2026-07-28",
@@ -1073,7 +1084,7 @@ test("terminal reconciliation removes active human-review ownership",
     const store = await new FileOperationsStore(
       await temporaryDirectory("catch-ops-terminal-state-")
     ).initialize();
-    const workflow = new SupplyIntakeWorkflow({repoRoot});
+    const workflow = new SupplyIntakeWorkflow(fixtureWorkflowOptions(repoRoot));
     const plan = await workflow.createPlan({
       market: "mumbai",
       through: "2026-07-28",
@@ -1142,7 +1153,7 @@ test("reconciliation repairs missing blockers even when task flags exist",
     const store = await new FileOperationsStore(
       await temporaryDirectory("catch-ops-reconcile-repair-state-")
     ).initialize();
-    const workflow = new SupplyIntakeWorkflow({repoRoot});
+    const workflow = new SupplyIntakeWorkflow(fixtureWorkflowOptions(repoRoot));
     const review = workflow.review.bind(workflow);
     workflow.review = (item, context) => {
       const outcome = review(item, context);
@@ -1190,7 +1201,7 @@ test("reconciliation repairs an interrupted immutable action receipt",
     );
     const store = await new FileOperationsStore(await temporaryDirectory())
       .initialize();
-    const workflow = new SupplyIntakeWorkflow({repoRoot});
+    const workflow = new SupplyIntakeWorkflow(fixtureWorkflowOptions(repoRoot));
     const plan = await workflow.createPlan({
       market: "mumbai",
       through: "2026-07-28",
@@ -1247,13 +1258,10 @@ test("reconciliation keeps source capacity when through-date filtering shrinks i
     const repoRoot = await createFixtureRepository(
       await temporaryDirectory("catch-ops-reconcile-capacity-")
     );
-    const bridgePath = path.join(
-      repoRoot,
-      "tool/marketing/event_guide/generated/mumbai/2026-07-14/" +
-        "event_intake_bridge.json"
-    );
-    const bridge = JSON.parse(await fs.readFile(bridgePath, "utf8"));
-    bridge.eventCandidates.push({
+    const baseInput = await fixtureInputSnapshot(repoRoot, "mumbai");
+    const inputSnapshot = finalizeSupplyInputSnapshot({
+      ...baseInput,
+      eventCandidates: [...baseInput.eventCandidates, {
       id: "event-beyond-through",
       title: "Future Event",
       startDate: "2027-01-01",
@@ -1263,11 +1271,13 @@ test("reconciliation keeps source capacity when through-date filtering shrinks i
       reviewState: "approved",
       requiresVerification: false,
       dedupe: {duplicateCandidateIds: []},
+      }],
     });
-    await fs.writeFile(bridgePath, `${JSON.stringify(bridge)}\n`);
     const store = await new FileOperationsStore(await temporaryDirectory())
       .initialize();
-    const workflow = new SupplyIntakeWorkflow({repoRoot});
+    const workflow = new SupplyIntakeWorkflow({
+      inputSnapshotLoader: async () => inputSnapshot,
+    });
     const plan = await workflow.createPlan({
       market: "mumbai",
       through: "2026-07-28",
@@ -1280,7 +1290,7 @@ test("reconciliation keeps source capacity when through-date filtering shrinks i
       workerId: "reconcile-capacity-source",
     });
     const sourceRun = (await engine.start(plan)).run;
-    assert.equal(sourceRun.counters.workItems, 8);
+    assert.equal(sourceRun.counters.workItems, 7);
     assert.equal(sourceRun.plan.budgets.workItems, 1_000);
 
     const laterEngine = new OperationsEngine({
@@ -1290,7 +1300,7 @@ test("reconciliation keeps source capacity when through-date filtering shrinks i
       workerId: "reconcile-capacity-child",
     });
     const reconciliation = await laterEngine.reconcile(sourceRun.runId);
-    assert.equal(reconciliation.run.counters.workItems, 8);
+    assert.equal(reconciliation.run.counters.workItems, 7);
     assert.equal(reconciliation.run.plan.budgets.workItems, 1_000);
     await assert.rejects(
       laterEngine.start(reconciliation.run.plan),
@@ -1298,48 +1308,72 @@ test("reconciliation keeps source capacity when through-date filtering shrinks i
     );
   });
 
-test("plan snapshots fail closed when a legacy artifact changes before execution", async () => {
+test("plans execute their immutable input snapshot when upstream fixtures change",
+  async () => {
   const repoRoot = await createFixtureRepository(await temporaryDirectory("catch-ops-drift-"));
   const store = await new FileOperationsStore(await temporaryDirectory()).initialize();
-  const workflow = new SupplyIntakeWorkflow({repoRoot});
+  let currentInput = await fixtureInputSnapshot(repoRoot, "mumbai");
+  const workflow = new SupplyIntakeWorkflow({
+    inputSnapshotLoader: async () => currentInput,
+  });
   const plan = await workflow.createPlan({market: "mumbai", through: "2026-07-28", now: NOW});
-  const bridge = path.join(repoRoot, plan.artifactSnapshot.artifacts.eventIntakeBridge.relativePath);
-  const current = JSON.parse(await fs.readFile(bridge, "utf8"));
-  current.sourceResults.push({id: "drift", title: "Drift"});
-  await fs.writeFile(bridge, JSON.stringify(current));
+  currentInput = finalizeSupplyInputSnapshot({
+    ...currentInput,
+    sourceResults: [
+      ...currentInput.sourceResults,
+      {
+        id: "drift",
+        sourceProfileId: "luma",
+        title: "Drift",
+        url: "https://events.example/drift",
+        observedAt: NOW,
+        status: "needs_review",
+        riskFlags: [],
+      },
+    ],
+  });
   const engine = new OperationsEngine({store, workflow, clock: () => new Date(NOW), workerId: "test-worker"});
-  await assert.rejects(engine.start(plan), {code: "ARTIFACT_DRIFT"});
+  const completed = await engine.start(plan);
+  assert.equal(completed.run.counters.workItems, 7);
+  const refreshed = await workflow.createPlan({
+    market: "mumbai",
+    through: "2026-07-28",
+    now: NOW,
+  });
+  assert.notEqual(refreshed.planId, plan.planId);
+  assert.notEqual(
+    refreshed.inputSnapshot.contentHash,
+    plan.inputSnapshot.contentHash
+  );
 });
 
 test("plans fail closed above the canonical shardable work-item capacity", async () => {
-  const workflow = new SupplyIntakeWorkflow({
-    adapter: {
-      snapshot: async () => ({
-        schemaVersion: 1,
-        adapterId: "capacity-fixture",
-        artifacts: {
-          eventIntakeBridge: {
-            id: "eventIntakeBridge",
-            status: "available",
-            relativePath: "capacity-fixture.json",
-            sha256: "capacity-fixture",
-            sizeBytes: 1,
-            data: {
-              generatedAt: "2026-07-14T10:00:00.000Z",
-              city: {id: "mumbai", label: "Mumbai"},
-              weekStart: "2026-07-14",
-              weekEnd: "2026-07-21",
-              sourceProfiles: [],
-              sourceResults: [],
-              eventCandidates: Array.from(
-                {length: MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN + 1},
-                (_, index) => ({id: `event-${index}`})
-              ),
-            },
-          },
-        },
-      }),
+  const oversizedInput = finalizeSupplyInputSnapshot({
+    schemaVersion: 1,
+    snapshotId: "capacity-fixture",
+    market: "mumbai",
+    observedAt: NOW,
+    provenance: {
+      source: "test_fixture",
+      sourceRunIds: [],
     },
+    organizerReviewPolicy: null,
+    sourceResults: Array.from(
+      {length: 6_000},
+      (_, index) => ({id: `result-${index}`})
+    ),
+    eventCandidates: Array.from(
+      {length: 6_000},
+      (_, index) => ({id: `event-${index}`})
+    ),
+    organizerPublicationPackets: [],
+    organizerSearchCandidates: [],
+    externalEventCandidates: [],
+    organizerLeads: [],
+    crawlSurfaces: [],
+  });
+  const workflow = new SupplyIntakeWorkflow({
+    inputSnapshotLoader: async () => oversizedInput,
     sourceProfilesLoader: async () => [],
   });
   await assert.rejects(
@@ -1363,7 +1397,7 @@ test("plans fail closed above the canonical shardable work-item capacity", async
   const repoRoot = await createFixtureRepository(
     await temporaryDirectory("catch-ops-cap-plan-")
   );
-  const boundedWorkflow = new SupplyIntakeWorkflow({repoRoot});
+  const boundedWorkflow = new SupplyIntakeWorkflow(fixtureWorkflowOptions(repoRoot));
   const plan = await boundedWorkflow.createPlan({
     market: "mumbai",
     through: "2026-07-28",
@@ -1390,7 +1424,7 @@ test("plans fail closed above the canonical shardable work-item capacity", async
 test("run start repairs an idempotency mapping whose run creation was interrupted", async () => {
   const repoRoot = await createFixtureRepository(await temporaryDirectory("catch-ops-idempotency-"));
   const store = await new FileOperationsStore(await temporaryDirectory()).initialize();
-  const workflow = new SupplyIntakeWorkflow({repoRoot});
+  const workflow = new SupplyIntakeWorkflow(fixtureWorkflowOptions(repoRoot));
   const plan = await workflow.createPlan({market: "mumbai", through: "2026-07-28", now: NOW});
   const engine = new OperationsEngine({store, workflow, clock: () => new Date(NOW), workerId: "test-worker"});
   const createRun = store.createRun.bind(store);
@@ -1422,7 +1456,7 @@ test("run start rejects a preseeded deterministic work item with changed content
     );
     const store = await new FileOperationsStore(await temporaryDirectory())
       .initialize();
-    const workflow = new SupplyIntakeWorkflow({repoRoot});
+    const workflow = new SupplyIntakeWorkflow(fixtureWorkflowOptions(repoRoot));
     const plan = await workflow.createPlan({
       market: "mumbai",
       through: "2026-07-28",
@@ -1449,7 +1483,7 @@ test("run start rejects a preseeded deterministic work item with changed content
 test("requested run-id collisions do not poison a plan's idempotency binding", async () => {
   const repoRoot = await createFixtureRepository(await temporaryDirectory("catch-ops-run-collision-"));
   const store = await new FileOperationsStore(await temporaryDirectory()).initialize();
-  const workflow = new SupplyIntakeWorkflow({repoRoot});
+  const workflow = new SupplyIntakeWorkflow(fixtureWorkflowOptions(repoRoot));
   const firstPlan = await workflow.createPlan({market: "mumbai", through: "2026-07-28", now: NOW});
   const occupyingPlan = await workflow.createPlan({market: "mumbai", through: "2026-07-29", now: NOW});
   const engine = new OperationsEngine({store, workflow, clock: () => new Date(NOW), workerId: "test-worker"});
@@ -1472,7 +1506,7 @@ test("requested run-id collisions do not poison a plan's idempotency binding", a
 test("fixed workflow time never freezes the live lease heartbeat clock", async () => {
   const repoRoot = await createFixtureRepository(await temporaryDirectory("catch-ops-lease-clock-"));
   const store = await new FileOperationsStore(await temporaryDirectory()).initialize();
-  const workflow = new SupplyIntakeWorkflow({repoRoot});
+  const workflow = new SupplyIntakeWorkflow(fixtureWorkflowOptions(repoRoot));
   const plan = await workflow.createPlan({market: "mumbai", through: "2026-07-28", now: NOW});
   const acquiredAt = [];
   const renewedAt = [];
@@ -1507,7 +1541,7 @@ test("fixed workflow time never freezes the live lease heartbeat clock", async (
 test("resume reconstructs work-item budget from durable items after checkpoint crash", async () => {
   const repoRoot = await createFixtureRepository(await temporaryDirectory("catch-ops-budget-"));
   const store = await new FileOperationsStore(await temporaryDirectory()).initialize();
-  const workflow = new SupplyIntakeWorkflow({repoRoot});
+  const workflow = new SupplyIntakeWorkflow(fixtureWorkflowOptions(repoRoot));
   const plan = await workflow.createPlan({market: "mumbai", through: "2026-07-28", now: NOW});
   const engine = new OperationsEngine({store, workflow, clock: () => new Date(NOW), workerId: "test-worker"});
   const updateRun = store.updateRun.bind(store);
@@ -1524,14 +1558,14 @@ test("resume reconstructs work-item budget from durable items after checkpoint c
   await assert.rejects(engine.start(plan), {code: "INJECTED"});
   const runId = `run-${plan.planId}`;
   assert.equal((await store.getCheckpoint(runId, "project-artifacts")).completed, true);
-  assert.equal((await store.listWorkItems({runId})).length, 8);
+  assert.equal((await store.listWorkItems({runId})).length, 7);
   assert.equal((await store.requireRun(runId)).budget.consumed.workItems, 0);
 
   store.updateRun = updateRun;
   const resumed = await engine.resume(runId, plan);
   assert.equal(resumed.run.status, "completed");
-  assert.equal(resumed.run.budget.consumed.workItems, 8);
-  assert.equal(resumed.run.budget.remaining.workItems, plan.budgets.workItems - 8);
+  assert.equal(resumed.run.budget.consumed.workItems, 7);
+  assert.equal(resumed.run.budget.remaining.workItems, plan.budgets.workItems - 7);
 });
 
 test("resume repairs a completed run whose terminal action was interrupted",
@@ -1541,7 +1575,7 @@ test("resume repairs a completed run whose terminal action was interrupted",
     );
     const store = await new FileOperationsStore(await temporaryDirectory())
       .initialize();
-    const workflow = new SupplyIntakeWorkflow({repoRoot});
+    const workflow = new SupplyIntakeWorkflow(fixtureWorkflowOptions(repoRoot));
     const plan = await workflow.createPlan({
       market: "mumbai",
       through: "2026-07-28",
@@ -1584,7 +1618,7 @@ test("completed-run repair rejects a forged completion action id", async () => {
   );
   const store = await new FileOperationsStore(await temporaryDirectory())
     .initialize();
-  const workflow = new SupplyIntakeWorkflow({repoRoot});
+  const workflow = new SupplyIntakeWorkflow(fixtureWorkflowOptions(repoRoot));
   const plan = await workflow.createPlan({
     market: "mumbai",
     through: "2026-07-28",
@@ -1624,7 +1658,7 @@ test("promotion refuses non-completed run snapshots", async () => {
   );
   const store = await new FileOperationsStore(await temporaryDirectory())
     .initialize();
-  const workflow = new SupplyIntakeWorkflow({repoRoot});
+  const workflow = new SupplyIntakeWorkflow(fixtureWorkflowOptions(repoRoot));
   const plan = await workflow.createPlan({
     market: "mumbai",
     through: "2026-07-28",
@@ -1649,7 +1683,7 @@ test("promotion refuses non-completed run snapshots", async () => {
 test("promotion replay repairs a receipt whose audit action was interrupted", async () => {
   const repoRoot = await createFixtureRepository(await temporaryDirectory("catch-ops-receipt-"));
   const store = await new FileOperationsStore(await temporaryDirectory()).initialize();
-  const workflow = new SupplyIntakeWorkflow({repoRoot});
+  const workflow = new SupplyIntakeWorkflow(fixtureWorkflowOptions(repoRoot));
   const plan = await workflow.createPlan({market: "mumbai", through: "2026-07-28", now: NOW});
   const engine = new OperationsEngine({store, workflow, clock: () => new Date(NOW), workerId: "test-worker"});
   const run = (await engine.start(plan)).run;
@@ -1689,7 +1723,7 @@ test("promotion replay repairs a receipt whose audit action was interrupted", as
 test("promotion replay rejects forged companion-action provenance", async () => {
   const repoRoot = await createFixtureRepository(await temporaryDirectory("catch-ops-action-provenance-"));
   const store = await new FileOperationsStore(await temporaryDirectory()).initialize();
-  const workflow = new SupplyIntakeWorkflow({repoRoot});
+  const workflow = new SupplyIntakeWorkflow(fixtureWorkflowOptions(repoRoot));
   const plan = await workflow.createPlan({market: "mumbai", through: "2026-07-28", now: NOW});
   const engine = new OperationsEngine({store, workflow, clock: () => new Date(NOW), workerId: "test-worker"});
   const run = (await engine.start(plan)).run;
@@ -1721,7 +1755,7 @@ test("promotion replay rejects forged companion-action provenance", async () => 
 test("execution and promotion reject run authority copied beyond the frozen plan", async () => {
   const repoRoot = await createFixtureRepository(await temporaryDirectory("catch-ops-run-authority-"));
   const store = await new FileOperationsStore(await temporaryDirectory()).initialize();
-  const workflow = new SupplyIntakeWorkflow({repoRoot});
+  const workflow = new SupplyIntakeWorkflow(fixtureWorkflowOptions(repoRoot));
   const plan = await workflow.createPlan({market: "mumbai", through: "2026-07-28", now: NOW});
   const engine = new OperationsEngine({store, workflow, clock: () => new Date(NOW), workerId: "test-worker"});
   const run = (await engine.start(plan)).run;
@@ -1761,7 +1795,7 @@ test("post-run commands reject inventory that drifts from durable counters",
     );
     const store = await new FileOperationsStore(await temporaryDirectory())
       .initialize();
-    const workflow = new SupplyIntakeWorkflow({repoRoot});
+    const workflow = new SupplyIntakeWorkflow(fixtureWorkflowOptions(repoRoot));
     const plan = await workflow.createPlan({
       market: "mumbai",
       through: "2026-07-28",
@@ -1798,7 +1832,7 @@ test("inventory integrity enforces joins, uniqueness, and the frozen cap",
     );
     const store = await new FileOperationsStore(await temporaryDirectory())
       .initialize();
-    const workflow = new SupplyIntakeWorkflow({repoRoot});
+    const workflow = new SupplyIntakeWorkflow(fixtureWorkflowOptions(repoRoot));
     const plan = await workflow.createPlan({
       market: "mumbai",
       through: "2026-07-28",
@@ -1842,7 +1876,7 @@ test("promotion uses the run-frozen source policy and exposes hash-bound evidenc
   const store = await new FileOperationsStore(await temporaryDirectory()).initialize();
   let profilesAvailable = true;
   const workflow = new SupplyIntakeWorkflow({
-    repoRoot,
+    ...fixtureWorkflowOptions(repoRoot),
     sourceProfilesLoader: async () => {
       if (!profilesAvailable) throw new Error("live profiles unavailable after execution");
       return loadSourceProfiles();

@@ -47,9 +47,9 @@ export async function loadSupplyFreshnessPolicy({
   return structuredClone(policy);
 }
 
-export function freshnessRequestsFromArtifacts({
+export function freshnessRequestsFromInputs({
   searchPlan,
-  eventCrawlPlan,
+  crawlSurfaces,
   market,
 }) {
   const queries = [
@@ -75,15 +75,7 @@ export function freshnessRequestsFromArtifacts({
       surfacePolicy: null,
       fetchEnabled: false,
     }));
-  const schedulerStatus =
-    eventCrawlPlan?.policy?.status === "enabled" ?
-      "enabled" :
-      "disabled";
-  const surfacePolicy =
-    nullableString(
-      eventCrawlPlan?.policy?.defaultSurfacePolicy
-    ) ?? "manualOnly";
-  const sources = (eventCrawlPlan?.entries ?? [])
+  const sources = (crawlSurfaces ?? [])
     .filter((entry) =>
       typeof entry?.entityId === "string" &&
       typeof entry?.surfaceId === "string" &&
@@ -101,9 +93,13 @@ export function freshnessRequestsFromArtifacts({
       entityId: entry.entityId,
       surfaceId: entry.surfaceId,
       url: nullableString(entry.url),
-      schedulerStatus,
-      surfacePolicy,
-      fetchEnabled: false,
+      schedulerStatus:
+        entry.schedulerStatus === "enabled" ?
+          "enabled" :
+          "disabled",
+      surfacePolicy:
+        nullableString(entry.surfacePolicy) ?? "manualOnly",
+      fetchEnabled: entry.fetchEnabled === true,
     }));
   return uniqueRequests([...queries, ...sources]);
 }

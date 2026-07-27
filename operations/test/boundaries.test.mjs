@@ -22,6 +22,16 @@ const baseline = {
     "recordIdempotency(",
     "lifecycleStatus",
   ],
+  singleSpine: {
+    retiredPaths: ["tool/host_discovery"],
+    retiredBasenames: ["event_intake_bridge.json"],
+    forbiddenRuntimeReferences: [
+      {
+        root: "functions/src",
+        tokens: ["eventIntakeDashboards"],
+      },
+    ],
+  },
 };
 
 test("boundary checker rejects new orchestration code in a legacy tool root", async () => {
@@ -148,4 +158,44 @@ test("boundary checker allows import.meta without an executable loader", async (
   await fs.writeFile(file, "export const moduleUrl = import.meta.url;\n");
   const result = await checkBoundaries({repoRoot, baseline});
   assert.equal(result.ok, true);
+});
+
+test("boundary checker rejects a retired supply path", async () => {
+  const repoRoot = await temporaryDirectory("catch-ops-boundary-retired-");
+  const file = path.join(repoRoot, "tool/host_discovery/runner.mjs");
+  await fs.mkdir(path.dirname(file), {recursive: true});
+  await fs.writeFile(file, "export const retired = true;\n");
+  const result = await checkBoundaries({repoRoot, baseline});
+  assert.equal(result.ok, false);
+  assert.ok(result.findings.some((finding) =>
+    finding.id === "retired-supply-path-present"));
+});
+
+test("boundary checker rejects a parallel runtime queue", async () => {
+  const repoRoot = await temporaryDirectory("catch-ops-boundary-spine-");
+  const file = path.join(repoRoot, "functions/src/admin/event-intake.mjs");
+  await fs.mkdir(path.dirname(file), {recursive: true});
+  await fs.writeFile(
+    file,
+    'export const collection = "eventIntakeDashboards";\n'
+  );
+  const result = await checkBoundaries({repoRoot, baseline});
+  assert.equal(result.ok, false);
+  assert.ok(result.findings.some((finding) =>
+    finding.id === "parallel-supply-spine-reference" &&
+      finding.path === "functions/src/admin/event-intake.mjs"));
+});
+
+test("boundary checker rejects committed Event Intake bridges", async () => {
+  const repoRoot = await temporaryDirectory("catch-ops-boundary-bridge-");
+  const file = path.join(
+    repoRoot,
+    "tool/marketing/event_guide/generated/mumbai/event_intake_bridge.json"
+  );
+  await fs.mkdir(path.dirname(file), {recursive: true});
+  await fs.writeFile(file, "{}\n");
+  const result = await checkBoundaries({repoRoot, baseline});
+  assert.equal(result.ok, false);
+  assert.ok(result.findings.some((finding) =>
+    finding.id === "retired-operational-artifact-present"));
 });

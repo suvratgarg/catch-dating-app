@@ -38,7 +38,6 @@ on:
       - "tool/env/check_web_hosting_env.mjs"
       - "tool/firebase_with_env.sh"
       - "tool/marketing/**"
-      - "tool/host_discovery/**"
       - "tool/organizer_intake/**"
   workflow_dispatch:
     inputs:

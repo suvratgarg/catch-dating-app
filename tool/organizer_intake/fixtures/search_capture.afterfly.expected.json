@@ -9,10 +9,10 @@
     "providerResultCount": 3,
     "resultFingerprint": "c383931a89d36db6",
     "runKey": "web_search|\"after fly\" luma|indore|social_run_club|afterfly-run-club-indore",
-    "sourcePlanFile": "tool/host_discovery/generated/search_plan.json"
+    "sourcePlanFile": "tool/organizer_intake/fixtures/discovery_plan.afterfly.json"
   },
   "createdAt": "2026-06-17",
-  "notes": "Captured from host-discovery search plan run key web_search|\"after fly\" luma|indore|social_run_club|afterfly-run-club-indore. Raw provider payload is intentionally not persisted in the batch.",
+  "notes": "Captured from Operations discovery run key web_search|\"after fly\" luma|indore|social_run_club|afterfly-run-club-indore. Raw provider payload is intentionally not persisted in the batch.",
   "query": "\"AFTER FLY\" Luma",
   "queryIntent": {
     "activityKind": "socialRun",

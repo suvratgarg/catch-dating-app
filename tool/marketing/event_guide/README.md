@@ -21,8 +21,7 @@ to Instagram, write app events, create website pages, or scrape Instagram.
 ```sh
 node tool/marketing/event_guide/scripts/generate_marketing_ops_bridge.mjs \
   --week 2026-06-22 \
-  --admin-output admin/src/generated/marketingOpsBridge.json \
-  --event-intake-admin-output admin/src/generated/eventIntakeBridge.json
+  --admin-output admin/src/generated/marketingOpsBridge.json
 ```
 
 To capture live search results through an approved provider, set a provider key
@@ -42,8 +41,7 @@ Then pass that source-result file into the bridge generator:
 node tool/marketing/event_guide/scripts/generate_marketing_ops_bridge.mjs \
   --week 2026-06-22 \
   --source-results tool/marketing/event_guide/data/mumbai.search_results.2026-06-22.json \
-  --admin-output admin/src/generated/marketingOpsBridge.json \
-  --event-intake-admin-output admin/src/generated/eventIntakeBridge.json
+  --admin-output admin/src/generated/marketingOpsBridge.json
 ```
 
 Generated files are written to:
@@ -52,21 +50,9 @@ Generated files are written to:
 tool/marketing/event_guide/generated/<city>/<week>/
 ```
 
-`marketing_ops_bridge.json` feeds the Marketing tab. `event_intake_bridge.json`
-feeds Event Intake and excludes recommendation/content-draft fields so source
-review, candidate review, and import planning stay separate from marketing
-packaging.
-
-Publish the Event Intake bridge to the live admin dashboard document with:
-
-```sh
-node tool/marketing/event_guide/publish_event_intake_dashboard.mjs --env dev
-node tool/marketing/event_guide/publish_event_intake_dashboard.mjs --env dev --apply
-```
-
-The publisher writes only `eventIntakeDashboards/current`. It does not write
-`marketingOpsDashboards/current`, canonical `events/{id}`, `externalEvents/{id}`,
-or marketing content drafts.
+`marketing_ops_bridge.json` feeds the Marketing tab. Event Intake is not
+generated or published from this folder: its live queue is projected from
+completed Supply Intake runs and work items by the Operations platform.
 
 ## Review States
 

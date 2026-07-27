@@ -1,13 +1,36 @@
-import {onCall, CallableRequest} from "firebase-functions/v2/https";
+import {onCall, CallableRequest, HttpsError} from
+  "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
+import {FirestoreOperationsRepository} from
+  "../operations/firestoreRepository";
+import {OperationRun, OperationWorkItem} from "../operations/models";
+import {
+  OperationRunRepository,
+  OperationWorkItemRepository,
+} from "../operations/repositories";
+import {canonicalMarkets} from "../locations/marketConfig";
 import {requireAdminRole} from "./adminAuth";
 
 const eventIntakeRoles = ["admin", "adminOwner", "support"] as const;
+const supplyIntakeWorkflowId = "supply-intake";
+const launchMarketSlugs = new Set(
+  canonicalMarkets
+    .filter((market) => market.launchStatus === "launched")
+    .map((market) => market.slug)
+);
+
+type EventIntakeOperationsRepository =
+  OperationRunRepository & OperationWorkItemRepository;
 
 interface EventIntakeDashboardDeps {
   firestore: () => FirebaseFirestore.Firestore;
+  repository?: EventIntakeOperationsRepository;
+  now?: () => Date;
+  loadReviewDecisions?: (
+    db: FirebaseFirestore.Firestore
+  ) => Promise<Array<Record<string, unknown>>>;
   checkRateLimit?: (
     db: FirebaseFirestore.Firestore,
     uid: string,
@@ -17,6 +40,7 @@ interface EventIntakeDashboardDeps {
 
 const defaultDeps: EventIntakeDashboardDeps = {
   firestore: () => admin.firestore(),
+  now: () => new Date(),
   checkRateLimit: defaultCheckRateLimit,
 };
 
@@ -25,9 +49,9 @@ export interface AdminGetEventIntakeDashboardResponse {
 }
 
 /**
- * Returns the current Event Intake dashboard bridge from the event-owned
- * dashboard document. Missing data returns an explicit empty bridge rather than
- * falling back to Marketing, so candidate provenance stays deterministic.
+ * Projects Event Intake directly from completed Supply Intake runs and work
+ * items. There is no mutable dashboard document or repository artifact in this
+ * read path.
  * @param {CallableRequest<unknown>} request Callable request.
  * @param {EventIntakeDashboardDeps} deps Injectable dependencies.
  * @return {Promise<AdminGetEventIntakeDashboardResponse>} Event bridge.
@@ -44,22 +68,225 @@ export async function adminGetEventIntakeDashboardHandler(
     "adminGetEventIntakeDashboard"
   );
 
-  const [eventSnap, decisionSnap] = await Promise.all([
-    db.collection("eventIntakeDashboards").doc("current").get(),
-    db.collection("eventIntakeReviewDecisions").limit(500).get(),
-  ]);
-  const eventBridge = bridgeFromDashboard(eventSnap.data() ?? {});
-  if (eventBridge) {
-    const decisions = decisionSnap.docs.map((doc) => doc.data());
-    return {
-      bridge: overlayEventIntakeDecisions(
-        projectEventIntakeBridge(eventBridge, "event_intake"),
-        decisions
-      ),
-    };
-  }
+  const repository = deps.repository ??
+    new FirestoreOperationsRepository(db);
+  const runsPage = await repository.listRuns({
+    workflowId: supplyIntakeWorkflowId,
+    status: "completed",
+    limit: 200,
+  });
+  const runs = latestEventRunPerLaunchMarket(runsPage.items);
+  const workItems = (
+    await Promise.all(runs.map((run) =>
+      loadRunWorkItems(repository, run.runId)))
+  ).flat();
+  const decisions = deps.loadReviewDecisions ?
+    await deps.loadReviewDecisions(db) :
+    await loadReviewDecisions(db);
+  const generatedAt = runs[0]?.updatedAt ??
+    (deps.now?.() ?? new Date()).toISOString();
+  return {
+    bridge: overlayEventIntakeDecisions(
+      projectOperationsBridge({runs, workItems, generatedAt}),
+      decisions
+    ),
+  };
+}
 
-  return {bridge: emptyEventIntakeBridge()};
+function latestEventRunPerLaunchMarket(runs: OperationRun[]): OperationRun[] {
+  const latest = new Map<string, OperationRun>();
+  for (const run of runs) {
+    const market = nonEmptyString(run.scope.market);
+    if (
+      run.mode !== "shadow" ||
+      run.status !== "completed" ||
+      run.scope.intakeScope === "organizer" ||
+      !market ||
+      !launchMarketSlugs.has(market) ||
+      latest.has(market)
+    ) {
+      continue;
+    }
+    latest.set(market, run);
+  }
+  return [...latest.values()].sort((left, right) =>
+    right.updatedAt.localeCompare(left.updatedAt) ||
+    right.runId.localeCompare(left.runId)
+  );
+}
+
+async function loadRunWorkItems(
+  repository: EventIntakeOperationsRepository,
+  runId: string
+): Promise<OperationWorkItem[]> {
+  const workItems = new Map<string, OperationWorkItem>();
+  const cursors = new Set<string>();
+  let cursor: string | null = null;
+  do {
+    const page = await repository.listWorkItems({
+      workflowId: supplyIntakeWorkflowId,
+      runId,
+      limit: 200,
+      cursor,
+    });
+    for (const item of page.items) {
+      if (
+        item.workflowId !== supplyIntakeWorkflowId ||
+        item.runId !== runId
+      ) {
+        throw new HttpsError(
+          "failed-precondition",
+          `Event Intake work item ${item.workItemId} has an invalid run join.`
+        );
+      }
+      workItems.set(item.workItemId, item);
+    }
+    cursor = page.nextCursor;
+    if (cursor && cursors.has(cursor)) {
+      throw new HttpsError(
+        "failed-precondition",
+        `Event Intake pagination stalled for run ${runId}.`
+      );
+    }
+    if (cursor) cursors.add(cursor);
+  } while (cursor);
+  return [...workItems.values()];
+}
+
+function projectOperationsBridge({
+  runs,
+  workItems,
+  generatedAt,
+}: {
+  runs: OperationRun[];
+  workItems: OperationWorkItem[];
+  generatedAt: string;
+}): Record<string, unknown> {
+  const sourceProfiles = new Map<string, Record<string, unknown>>();
+  const sourceResults = new Map<string, Record<string, unknown>>();
+  const eventCandidates = new Map<string, Record<string, unknown>>();
+  for (const item of workItems) {
+    const intake = recordValue(item.normalizedPayload.intake);
+    if (!intake) continue;
+    const recordType = nonEmptyString(intake.recordType);
+    if (recordType === "event_source_profile") {
+      addProjection(sourceProfiles, intake.profile, item, "source profile");
+    } else if (recordType === "event_source_result") {
+      addProjection(sourceResults, intake.result, item, "source result");
+    } else if (
+      recordType === "event_candidate" ||
+      recordType === "orphan_event_candidate"
+    ) {
+      addProjection(eventCandidates, intake.candidate, item, "event candidate");
+    }
+  }
+  const profiles = [...sourceProfiles.values()].sort(compareById);
+  const results = [...sourceResults.values()].sort(compareById);
+  const candidates = [...eventCandidates.values()].sort(
+    (left, right) =>
+      String(left.startDate ?? "").localeCompare(
+        String(right.startDate ?? "")
+      ) ||
+      String(left.title ?? "").localeCompare(String(right.title ?? "")) ||
+      String(left.id).localeCompare(String(right.id))
+  );
+  const generatedDate = generatedAt.slice(0, 10);
+  return {
+    schemaVersion: 1,
+    program: "catch-event-intake",
+    generatedAt,
+    bridgeSource: runs.length > 0 ? "operations" : "empty",
+    city: {
+      id: "launch-markets",
+      label: "Launch markets",
+      timezone: "Asia/Kolkata",
+    },
+    weekStart: generatedDate,
+    summary: {
+      status: runs.length > 0 ? "ready" : "empty",
+      sourceProfiles: profiles.length,
+      queryTemplates: 0,
+      sourceResults: results.length,
+      sourceResultsNeedingReview: results.filter((result) =>
+        !["approved", "rejected"].includes(String(result.status))).length,
+      eventCandidates: candidates.length,
+      approvedCandidates: candidates.filter((candidate) =>
+        candidate.reviewState === "approved").length,
+      candidatesNeedingReview: candidates.filter((candidate) =>
+        !["approved", "rejected"].includes(
+          String(candidate.reviewState)
+        )).length,
+      orphanCandidates: candidates.filter((candidate) =>
+        candidate.publicationEligibility === "blocked_orphan").length,
+      recommendationSets: 0,
+      contentDrafts: 0,
+      exportReadyDrafts: 0,
+    },
+    guardrails: [
+      "Event Intake is projected from immutable completed Supply Intake runs.",
+      "Admin review records decisions only; it does not publish an event.",
+    ],
+    sourceProfiles: profiles,
+    queryTemplates: [],
+    runPlan: {
+      id: runs.length > 0 ?
+        `supply-intake:${runs.map((run) => run.runId).join(",")}` :
+        "supply-intake:empty",
+      cityId: "launch-markets",
+      weekStart: generatedDate,
+      status: runs.length > 0 ? "ready" : "not_configured",
+      generatedAt,
+      schedule: {
+        cadence: "per_source_policy",
+        publishDay: "continuous",
+        lookaheadDays: 7,
+      },
+      budgets: {
+        maxQueries: 0,
+        maxSourceResults: results.length,
+        maxCandidatePool: candidates.length,
+      },
+      automationPolicy: {
+        searchProvider: "operations",
+        networkFetchesEnabled: false,
+        instagramScrapingEnabled: false,
+        requiresHumanApprovalBeforePublish: true,
+      },
+      queryIds: [],
+      sourceProfileIds: profiles.map((profile) => String(profile.id)),
+    },
+    sourceResults: results,
+    eventCandidates: candidates,
+    dedupeGroups: [],
+    auditTrail: [],
+    commands: {},
+  };
+}
+
+function addProjection(
+  target: Map<string, Record<string, unknown>>,
+  value: unknown,
+  item: OperationWorkItem,
+  label: string
+): void {
+  const record = recordValue(value);
+  const id = nonEmptyString(record?.id);
+  if (!record || !id) {
+    throw new HttpsError(
+      "failed-precondition",
+      `Event work item ${item.workItemId} has an invalid ${label} projection.`
+    );
+  }
+  target.set(id, record);
+}
+
+async function loadReviewDecisions(
+  db: FirebaseFirestore.Firestore
+): Promise<Array<Record<string, unknown>>> {
+  const snapshot = await db.collection(
+    "eventIntakeReviewDecisions"
+  ).limit(500).get();
+  return snapshot.docs.map((doc) => doc.data());
 }
 
 export function overlayEventIntakeDecisions(
@@ -68,7 +295,8 @@ export function overlayEventIntakeDecisions(
 ): Record<string, unknown> {
   const byTarget = new Map(
     decisions.map((decision) => [
-      `${stringValue(decision.targetType)}:${stringValue(decision.targetId)}`,
+      `${nonEmptyString(decision.targetType)}:` +
+        `${nonEmptyString(decision.targetId)}`,
       decision,
     ])
   );
@@ -93,11 +321,11 @@ export function overlayEventIntakeDecisions(
     byTarget
   );
   const runPlan = overlayDecisionObject(
-    recordValue(bridge.runPlan),
+    recordValue(bridge.runPlan) ?? {},
     "run_plan",
     byTarget
   );
-  const summary = recordValue(bridge.summary);
+  const summary = recordValue(bridge.summary) ?? {};
   return {
     ...bridge,
     summary: {
@@ -106,7 +334,9 @@ export function overlayEventIntakeDecisions(
         candidate.reviewState === "approved"
       ).length,
       candidatesNeedingReview: eventCandidates.filter((candidate) =>
-        !["approved", "rejected"].includes(String(candidate.reviewState))
+        !["approved", "rejected"].includes(
+          String(candidate.reviewState)
+        )
       ).length,
       overlaidDecisions: byTarget.size,
     },
@@ -123,10 +353,8 @@ function overlayDecisionArray(
   targetType: string,
   byTarget: Map<string, Record<string, unknown>>
 ): Array<Record<string, unknown>> {
-  return values.map((value) => {
-    const item = recordValue(value);
-    return overlayDecisionObject(item, targetType, byTarget);
-  });
+  return values.map((value) =>
+    overlayDecisionObject(recordValue(value) ?? {}, targetType, byTarget));
 }
 
 function overlayDecisionObject(
@@ -134,12 +362,12 @@ function overlayDecisionObject(
   targetType: string,
   byTarget: Map<string, Record<string, unknown>>
 ): Record<string, unknown> {
-  const id = stringValue(item.id);
+  const id = nonEmptyString(item.id);
   const decision = id ? byTarget.get(`${targetType}:${id}`) : null;
   if (!decision) return item;
-  const edits = recordValue(decision.edits);
+  const edits = recordValue(decision.edits) ?? {};
   const decisionStatus =
-    stringValue(decision.decisionStatus) ?? "needs_changes";
+    nonEmptyString(decision.decisionStatus) ?? "needs_changes";
   const stateField =
     targetType === "event_candidate" ? "reviewState" : "status";
   return {
@@ -148,118 +376,39 @@ function overlayDecisionObject(
     id,
     [stateField]: decisionStatus,
     latestDecision: {
-      decision: stringValue(decision.decision),
-      note: stringValue(decision.note),
-      reviewer: stringValue(decision.reviewedByUid),
+      decision: nonEmptyString(decision.decision),
+      note: nonEmptyString(decision.note),
+      reviewer: nonEmptyString(decision.reviewedByUid),
       reviewedAt: isoFromTimestamp(decision.reviewedAt),
     },
   };
 }
 
-/**
- * Extracts a dashboard bridge from a Firestore document.
- * @param {Record<string, unknown>} dashboard Dashboard doc.
- * @return {Record<string, unknown> | null} Bridge or null.
- */
-function bridgeFromDashboard(
-  dashboard: Record<string, unknown>
-): Record<string, unknown> | null {
-  const bridge = dashboard.bridge;
-  if (bridge && typeof bridge === "object" && !Array.isArray(bridge)) {
-    return bridge as Record<string, unknown>;
-  }
-  return null;
-}
-
-/**
- * Projects persisted dashboard state into the Event Intake read model.
- * @param {Record<string, unknown>} bridge Source bridge.
- * @param {string} bridgeSource Source marker.
- * @return {Record<string, unknown>} Event Intake bridge.
- */
-function projectEventIntakeBridge(
-  bridge: Record<string, unknown>,
-  bridgeSource: string
-): Record<string, unknown> {
-  return {
-    schemaVersion: bridge.schemaVersion ?? 1,
-    program: "catch-event-intake",
-    generatedAt: bridge.generatedAt ?? null,
-    bridgeSource,
-    city: bridge.city ?? {id: "unknown", label: "Unknown"},
-    weekStart: bridge.weekStart ?? null,
-    weekEnd: bridge.weekEnd ?? null,
-    summary: bridge.summary ?? {},
-    sourceProfiles: asArray(bridge.sourceProfiles),
-    queryTemplates: asArray(bridge.queryTemplates),
-    runPlan: bridge.runPlan ?? emptyRunPlan(),
-    sourceResults: asArray(bridge.sourceResults),
-    eventCandidates: asArray(bridge.eventCandidates),
-    dedupeGroups: asArray(bridge.dedupeGroups),
-    auditTrail: asArray(bridge.auditTrail),
-    commands: stringRecord(bridge.commands),
-  };
-}
-
-/**
- * Returns an empty event-intake bridge with the fields the admin UI expects.
- * @return {Record<string, unknown>} Empty bridge.
- */
-function emptyEventIntakeBridge(): Record<string, unknown> {
-  return projectEventIntakeBridge({}, "empty");
-}
-
-/**
- * Returns an empty run-plan shape for missing dashboard data.
- * @return {Record<string, unknown>} Empty run plan.
- */
-function emptyRunPlan(): Record<string, unknown> {
-  return {
-    id: "event-intake-empty",
-    status: "not_configured",
-    schedule: {
-      cadence: "manual",
-      publishDay: "unassigned",
-      lookaheadDays: 0,
-    },
-    budgets: {
-      maxQueries: 0,
-      maxSourceResults: 0,
-      maxCandidatePool: 0,
-    },
-    automationPolicy: {
-      searchProvider: "not_configured",
-      networkFetchesEnabled: false,
-      instagramScrapingEnabled: false,
-    },
-  };
-}
-
-/**
- * Narrows unknown values into arrays.
- * @param {unknown} value Raw value.
- * @return {unknown[]} Array value.
- */
 function asArray(value: unknown): unknown[] {
   return Array.isArray(value) ? value : [];
 }
 
-function recordValue(value: unknown): Record<string, unknown> {
+function recordValue(
+  value: unknown
+): Record<string, unknown> | null {
   return value && typeof value === "object" && !Array.isArray(value) ?
     value as Record<string, unknown> :
-    {};
+    null;
 }
 
-function stringValue(value: unknown): string | null {
-  return typeof value === "string" && value.trim() ? value.trim() : null;
+function nonEmptyString(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
 }
 
 function isoFromTimestamp(value: unknown): string | null {
   if (value instanceof Date && Number.isFinite(value.getTime())) {
     return value.toISOString();
   }
-  if (recordValue(value).toDate instanceof Function) {
-    const date = (recordValue(value).toDate as () => unknown)();
+  const record = recordValue(value);
+  if (typeof record?.toDate === "function") {
+    const date = (record.toDate as () => unknown)();
     return date instanceof Date && Number.isFinite(date.getTime()) ?
       date.toISOString() :
       null;
@@ -270,17 +419,11 @@ function isoFromTimestamp(value: unknown): string | null {
   return null;
 }
 
-/**
- * Narrows command maps into string-only records.
- * @param {unknown} value Raw value.
- * @return {Record<string, string>} Command record.
- */
-function stringRecord(value: unknown): Record<string, string> {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
-  return Object.fromEntries(
-    Object.entries(value as Record<string, unknown>).filter((entry):
-      entry is [string, string] => typeof entry[1] === "string")
-  );
+function compareById(
+  left: Record<string, unknown>,
+  right: Record<string, unknown>
+): number {
+  return String(left.id).localeCompare(String(right.id));
 }
 
 export const adminGetEventIntakeDashboard = onCall(

@@ -262,10 +262,9 @@ read/write.
 
 The Marketing tab is the human review console for the weekly event-guide loop.
 Live Marketing state is read from `marketingOpsDashboards/current`. Event
-Intake joins `eventIntakeDashboards/current` with bounded orphan-event work
-items from the newest completed non-organizer Supply Intake run in each launch
-market, using authenticated callables for both sources. Sample mode uses small
-typed synthetic objects in
+Intake is projected from the newest completed Supply Intake run in each launch
+market, including its bounded source profiles, source results, and event work
+items. Sample mode uses small typed synthetic objects in
 `admin/src/shared/api/sampleOperationalData.ts`; it never retains a copy of
 production operations data.
 
@@ -302,20 +301,9 @@ Incoming, Verify, Resolve, and Ready stages and highlights the human exception
 queue. It is read-only in both sample and live mode: the browser cannot request
 a run, fetch a source, call a model, deploy a rule, or publish a listing.
 
-Publish the event-owned live Event Intake dashboard after reviewing the
-workflow output:
-
-```bash
-node tool/marketing/event_guide/publish_event_intake_dashboard.mjs --env dev
-node tool/marketing/event_guide/publish_event_intake_dashboard.mjs --env dev --apply
-```
-
-Event Intake review decisions are overlaid onto each refreshed dashboard read,
-so operator status and field edits no longer disappear when the source bridge
-is republished. `--apply` also enforces live-data readiness: stale week bounds,
-placeholder domains/results, and sample candidate labels fail before Firestore
-initialization. Use `--check-live --as-of YYYY-MM-DD` to run that guard without
-writing. Event Intake remains a review surface; the separate external-event
+Event Intake review decisions are overlaid onto each refreshed Supply Intake
+projection, so operator status and field edits remain stable as a new completed
+run becomes current. Event Intake remains a review surface; the separate external-event
 pipeline still owns identity, location, dedupe, and import-policy gates. An
 orphan row is labeled `organizer required`, links its direct event evidence,
 shows the organizer evidence captured from the source, and cannot pass the

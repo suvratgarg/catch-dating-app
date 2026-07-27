@@ -12,6 +12,7 @@ export function buildSearchResultBatchFromCapture({
   capture,
   capturedAt,
   planEntry,
+  sourcePlanFile = null,
   source,
 }) {
   if (!allowedSources.has(source)) {
@@ -52,11 +53,11 @@ export function buildSearchResultBatchFromCapture({
       providerResultCount: rawResults.length,
       resultFingerprint: planEntry.resultFingerprint ?? null,
       runKey: planEntry.runKey,
-      sourcePlanFile: "tool/host_discovery/generated/search_plan.json",
+      sourcePlanFile,
     },
     results,
     notes:
-      `Captured from host-discovery search plan run key ${planEntry.runKey}. ` +
+      `Captured from Operations discovery run key ${planEntry.runKey}. ` +
       "Raw provider payload is intentionally not persisted in the batch.",
   };
 }

@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.8.0
+version: 1.9.0
 updated: 2026-07-27
 owner: operations_platform
 status: active
@@ -24,31 +24,27 @@ This boundary keeps three concerns separate:
 | `tool/` | Repository checks, generators, migrations, deploy helpers, data repair, and compatibility producers consumed by operations adapters | Long-running business workflow state or agent orchestration |
 | `tool/remote_ops_manifest.json` | Inventory and preconditions for commands that can read or mutate external systems | Workflow queues, run state, or autonomous scheduling |
 
-The existing organizer-intake, host-discovery, and event-guide tools remain
-compatibility producers while Supply Intake adopts their artifacts. New
-orchestration belongs in `operations/`; do not extend those legacy folders with
-another workflow engine.
-`operations-tool-boundary-v2` scans every code file under `tool/` for direct
+Organizer-intake and event-guide tools remain bounded compatibility producers
+for reviewed migrations and Marketing packaging. Supply Intake no longer reads
+their committed generated artifacts, and the retired host-discovery tree has
+been removed. New orchestration belongs in `operations/`; do not extend legacy
+folders with another workflow engine.
+`operations-tool-boundary-v3` scans every code file under `tool/` for direct
 operations-runtime imports and for durable-workflow signals aggregated by tool
-subtree. File-count ceilings remain as an additional ratchet for the three
-known legacy artifact producers.
+subtree. File-count ceilings remain as an additional ratchet for the remaining
+known compatibility producers.
 
-Supply Intake's `manifest.json#compatibilityInputs` is the enforced retirement
-ledger for those producers. Each entry names the exact artifact family, the
-only allowed adapter, its replacement owner, a ban on new orchestration, and
-testable retirement criteria. The workflow registry exports the adapter's live
-artifact patterns, and the workflow-manifest check fails when code consumption
-and retirement metadata drift. Compatibility files may be deleted only when
-all listed criteria are proved and the producer, adapter, manifest entry, and
-generated artifacts are retired together.
+Supply Intake's `manifest.json#compatibilityInputs` is empty. The legacy
+adapter, host-discovery corpus, and Event Intake bridge publisher are retired
+together. A single-spine boundary check fails if those paths, queue
+collections, or generated bridge basenames return.
 
-Compatibility ingestion is market- and freshness-bound. A Supply Intake plan
-admits organizer publication packets only when their declared geography matches
-the requested market. Its reviewed Event Intake bridge must name that same
-market, cannot be future-dated or older than the frozen `staleAfterHours`
-policy, and must retain a review window through the plan date. Missing, stale,
-expired, or mismatched bridges fail planning before work-item counts or run
-state are created.
+Normalized ingestion is market-bound and immutable. `ingest-input` validates a
+bounded Supply Intake snapshot, rejects raw provider payload fields, computes a
+content hash, and stores it outside the repository. Planning selects the latest
+snapshot for the requested market, filters organizer packet geography again,
+and freezes both the snapshot and deterministic discovery plan into the plan.
+Changed content requires a new snapshot id and a new run.
 
 ### Supply freshness authority
 
@@ -76,18 +72,16 @@ ledger, not process memory or committed search-run JSON.
 The other time bounds answer different questions and do not override fetch
 cadence:
 
-- `<city>/<week>/` event-guide folders define the publication week represented
-  by a compatibility artifact. They are coverage partitions, not a fetch TTL.
-- Supply Intake's 168-hour Event Intake bridge bound decides whether reviewed
-  evidence is recent enough to project into a new run. It is an admission rule,
-  not permission to refetch a provider.
+- `<city>/<week>/` event-guide folders define Marketing publication weeks.
+  They are not operational inputs and do not set supply freshness.
+- Supply Intake snapshots freeze normalized reviewed evidence into each plan.
+  The snapshot timestamp is provenance, not permission to refetch a provider.
 - Per-kind freshness decides whether a planned query or source surface is
   eligible to be fetched. It is the only acquisition-cadence authority.
 
-`tool/host_discovery/generated/search_plan.json` remains a deterministic
-compatibility list of query intents. Its historical `runs/*.json` files may
-still support legacy source-evidence projections, but they are not consulted
-for scheduling and must not regain freshness authority.
+Supply Intake owns the deterministic discovery planner and stores its reviewed
+normalized input snapshots outside the repository. Committed search plans and
+historical run JSON are not scheduling or execution inputs.
 
 ### Supply acquisition port
 
@@ -306,7 +300,7 @@ the blocker and records the policy id, score, matching signals, blocking keys,
 and rationale. The React admin does not run this matcher.
 
 Organizer discovery can run with `--intake-scope organizer`. This scope does
-not require or project an Event Intake bridge, so each launch market can
+not require or project Event Intake candidates, so each launch market can
 produce an immutable organizer queue independently. Normalized organizer
 candidate fields are carried in the work item's bounded Admin projection.
 Supply Intake `0.2.0` also emits content-hash-bound field provenance for each
@@ -322,11 +316,11 @@ Firestore work item. The live Organizer Intake tab
 selects the newest completed organizer run per launch market and ignores
 historical runs rather than merging duplicate snapshots.
 
-The live Event Intake read joins its event-owned dashboard with orphan-event
-work items from the newest completed non-organizer Supply Intake run per launch
-market. Invalid orphan projections fail the read instead of rendering partial
-evidence. Intake approval remains only a review decision; the contract and
-promotion eligibility both independently forbid publishing an orphan.
+The live Event Intake read projects source profiles, source results, event
+candidates, and orphan-event work from the newest completed Supply Intake run
+per launch market. Invalid projections fail the read instead of rendering
+partial evidence. Intake approval remains only a review decision; the contract
+and promotion eligibility both independently forbid publishing an orphan.
 
 ### Admin projection bridge
 

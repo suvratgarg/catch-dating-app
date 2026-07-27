@@ -14,6 +14,11 @@ import {
   WORKFLOW_REGISTRY,
   workflowDescriptor,
 } from "../workflows/registry.mjs";
+import {
+  assertSupplyInputSnapshot,
+  finalizeSupplyInputSnapshot,
+  supplyInputSummary,
+} from "../workflows/supply-intake/input-snapshot.mjs";
 
 const cliDirectory = path.dirname(fileURLToPath(import.meta.url));
 const operationsRoot = path.resolve(cliDirectory, "..", "..");
@@ -49,6 +54,7 @@ export async function main(argv, dependencies = {}) {
     repoRoot,
     injected: dependencies.workflow,
     command: parsed.command,
+    store,
   });
   if (parsed.command === "plan") {
     const workflow = workflowFor(parsed.flags.workflow ?? "supply-intake");
@@ -66,6 +72,38 @@ export async function main(argv, dependencies = {}) {
             now,
             store
           ),
+        },
+        warnings: [],
+      },
+    };
+  }
+  if (parsed.command === "ingest-input") {
+    const descriptor = requireWorkflowDescriptor(
+      parsed.flags.workflow ?? "supply-intake",
+      registry
+    );
+    assertCommandSupported(descriptor, "ingest-input");
+    requireFlag(parsed.flags, "input");
+    const inputPath = path.resolve(parsed.flags.input);
+    const candidate = JSON.parse(await fs.readFile(inputPath, "utf8"));
+    const snapshot = candidate.contentHash === undefined ?
+      finalizeSupplyInputSnapshot(candidate) :
+      assertSupplyInputSnapshot(candidate);
+    invariantStoreMethod(store, "putSupplyInputSnapshot");
+    await store.putSupplyInputSnapshot(snapshot);
+    return {
+      pretty: parsed.flags.pretty,
+      envelope: {
+        schemaVersion: 1,
+        program: "catch-operations",
+        command: "ingest-input",
+        ok: true,
+        data: {
+          snapshotId: snapshot.snapshotId,
+          market: snapshot.market,
+          observedAt: snapshot.observedAt,
+          contentHash: snapshot.contentHash,
+          summary: supplyInputSummary(snapshot),
         },
         warnings: [],
       },
@@ -261,12 +299,13 @@ export function createCliClock(nowOverride, systemClock = () => new Date()) {
 }
 
 async function createPlan(workflow, flags, now, store) {
+  const market = flags.market ?? "mumbai";
   const planningContext =
     typeof workflow.planningContext === "function" ?
-      await workflow.planningContext({store}) :
+      await workflow.planningContext({store, market}) :
       {};
   return workflow.createPlan({
-    market: flags.market ?? "mumbai",
+    market,
     intakeScope: flags.intakeScope ?? "all",
     through: flags.through ?? defaultThrough(now),
     now,
@@ -274,7 +313,14 @@ async function createPlan(workflow, flags, now, store) {
   });
 }
 
-function resolveWorkflow({workflowId, registry, repoRoot, injected, command}) {
+function resolveWorkflow({
+  workflowId,
+  registry,
+  repoRoot,
+  injected,
+  command,
+  store,
+}) {
   const descriptor = requireWorkflowDescriptor(workflowId, registry);
   assertCommandSupported(descriptor, command);
   if (injected) {
@@ -292,7 +338,7 @@ function resolveWorkflow({workflowId, registry, repoRoot, injected, command}) {
       `Workflow ${workflowId} has no executable factory.`
     );
   }
-  return descriptor.createWorkflow({repoRoot});
+  return descriptor.createWorkflow({repoRoot, store});
 }
 
 function assertCommandSupported(descriptor, command) {
@@ -383,6 +429,7 @@ function parseFlags(argv) {
   const valueFlags = new Set([
     "--limit",
     "--intake-scope",
+    "--input",
     "--lifecycle",
     "--market",
     "--now",
@@ -421,6 +468,15 @@ function camel(flag) {
 
 function requireFlag(flags, name) {
   if (!flags[name]) throw new OperationsError("MISSING_ARGUMENT", `--${name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)} is required.`, {exitCode: 2});
+}
+
+function invariantStoreMethod(store, method) {
+  if (typeof store?.[method] !== "function") {
+    throw new OperationsError(
+      "STORE_CAPABILITY_UNAVAILABLE",
+      `The configured Operations store does not support ${method}.`
+    );
+  }
 }
 
 async function readPlan(file) {

@@ -41,6 +41,7 @@ test("normalizes SerpAPI organic results into a search result batch", () => {
     },
     capturedAt: "2026-06-17",
     planEntry,
+    sourcePlanFile: "operations/.state/exports/discovery-plan.json",
     source: "serp_api",
   });
 
@@ -53,6 +54,10 @@ test("normalizes SerpAPI organic results into a search result batch", () => {
     marketSlug: "indore",
   });
   assert.equal(batch.captureContext.runKey, planEntry.runKey);
+  assert.equal(
+    batch.captureContext.sourcePlanFile,
+    "operations/.state/exports/discovery-plan.json"
+  );
   assert.deepEqual(batch.results, [
     {
       resultId: "result-2",

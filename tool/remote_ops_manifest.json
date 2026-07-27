@@ -382,11 +382,11 @@
       ],
       "requiredChecks": [
         "Normalize newly discovered external surface URLs before adding intake batch or curation data.",
-        "Capture provider search results against a host-discovery run key before ingesting them as organizer evidence.",
+        "Capture provider search results against an Operations Supply Intake run key before ingesting them as organizer evidence.",
         "Run search-result ingestion after adding captured search batches and review matched/unknown surface candidates.",
         "Capture external event payloads only from reviewed provider JSON; do not enable live crawling from this workflow.",
         "Run external event-source ingestion after adding captured event batches and review every candidate before future import.",
-        "Publish generated Event Intake dashboard artifacts only to eventIntakeDashboards/current; do not use Marketing dashboards as the live Event Intake fallback.",
+        "Project Event Intake only from completed Supply Intake runs and work items; do not use Marketing artifacts as an operational fallback.",
         "Record reviewed event location resolutions through the admin bridge or repo-backed local drafts before event-source ingestion when exact coordinates exist.",
         "Export reviewed event location resolutions before event-source ingestion when admin-resolved coordinates exist.",
         "Review generated organizer_policy_gap_register.json before changing crawl, provider lookup, import write, defaults, or naming behavior.",
@@ -426,7 +426,7 @@
       "notes": [
         "The exporters read Firestore but never write remote data.",
         "Platform adapters classify external URLs before manual review so dedupe keys and crawl defaults stay deterministic across search runs.",
-        "Search-result capture is local-only and requires a reviewed provider payload plus host-discovery run key; live provider selection and spend policy remain separate.",
+        "Search-result capture is local-only and requires a reviewed provider payload plus an Operations discovery run key; live provider selection and spend policy remain separate.",
         "Search-result ingestion is local-only and produces review queues; it does not publish pages or mutate Firestore.",
         "External event capture, ingestion, and review are scaffolding. Generated event candidates are blocked by policy and do not write events.",
         "The policy gap register is declarative and does not enable crawls, provider lookups, or event writes.",

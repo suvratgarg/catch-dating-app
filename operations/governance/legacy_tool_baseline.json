@@ -1,15 +1,12 @@
 {
-  "schemaVersion": 2,
-  "policyId": "operations-tool-boundary-v2",
+  "schemaVersion": 3,
+  "policyId": "operations-tool-boundary-v3",
   "toolRoot": "tool",
   "legacyRoots": [
-    {"path": "tool/host_discovery", "codeFileCeiling": 7},
     {"path": "tool/marketing/event_guide", "codeFileCeiling": 5},
     {"path": "tool/organizer_intake", "codeFileCeiling": 107}
   ],
-  "allowedLegacyPathReaders": [
-    "operations/src/workflows/supply-intake/adapters/legacy-artifacts.mjs"
-  ],
+  "allowedLegacyPathReaders": [],
   "codeExtensions": [".js", ".mjs", ".cjs", ".ts", ".tsx"],
   "forbiddenLegacyImports": [
     "@catch/operations",
@@ -23,5 +20,43 @@
     "promotionReceipt(",
     "createReconciliationPlan(",
     "lifecycleStatus"
-  ]
+  ],
+  "singleSpine": {
+    "retiredPaths": [
+      "tool/host_discovery"
+    ],
+    "retiredBasenames": [
+      "event_intake_bridge.json"
+    ],
+    "forbiddenRuntimeReferences": [
+      {
+        "root": "operations/src",
+        "tokens": [
+          "tool/host_discovery",
+          "tool/organizer_intake/generated",
+          "tool/marketing/event_guide/generated",
+          "eventIntakeDashboards"
+        ]
+      },
+      {
+        "root": "functions/src",
+        "tokens": [
+          "eventIntakeDashboards"
+        ]
+      },
+      {
+        "root": "admin/src",
+        "tokens": [
+          "eventIntakeDashboards"
+        ]
+      },
+      {
+        "root": "tool/marketing/event_guide",
+        "tokens": [
+          "event_intake_bridge",
+          "eventIntakeDashboards"
+        ]
+      }
+    ]
+  }
 }

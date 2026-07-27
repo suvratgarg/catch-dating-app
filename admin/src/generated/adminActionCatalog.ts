@@ -216,7 +216,7 @@ export const adminActionCatalog = {
         "adminOwner",
         "support"
       ],
-      "summary": "Load the current Event Intake bridge and review queues.",
+      "summary": "Load the current Supply Intake event review queue.",
       "controlPlane": false
     },
     {

@@ -492,10 +492,9 @@ Current adherence:
 - Good: Event Intake source and candidate cards now expose deterministic
   provenance from the bridge, including source profile ids, query template ids,
   observed timestamps, and linked source-result ids.
-- Good: `tool/marketing/event_guide/publish_event_intake_dashboard.mjs` gives
-  ops a guarded dry-run/apply path to publish the generated Event Intake bridge
-  to `eventIntakeDashboards/current` without writing Marketing dashboards,
-  canonical events, or `externalEvents/{id}`.
+- Good: Event Intake is projected from completed Supply Intake runs and work
+  items, so operational review state no longer depends on a generated
+  Marketing bridge or a separate dashboard publication step.
 - Good: the Intake entry point now shows a publication-boundary panel for both
   Event leads and Organizers, making the active read model, permitted decision
   writes, blocked canonical/app-facing writes, and required review gates visible
@@ -509,14 +508,13 @@ Current adherence:
   `OrganizerIntakeWorkspace`, giving Storybook deterministic route/workspace
   coverage for workflow readiness, publication review packets, generated bridge
   guardrails, and mutation callback boundaries without live writes in previews.
-- Weak: organizer source freshness and discovery execution are still driven by
-  generated bridge artifacts; Discovery plan therefore opens the backed plan
-  and does not pretend to run a job.
+- Good: organizer source freshness and discovery planning are owned by Supply
+  Intake runs and immutable normalized input snapshots rather than generated
+  bridge artifacts.
 - Weak: Event Intake approvals remain decision records only; canonical import
   and external event promotion still need a dedicated reviewed write path.
-- Weak: Automation does not join those backed decisions directly. A later run
-  sees them only after the owning Event or Organizer compatibility artifact is
-  regenerated.
+- Weak: Automation does not yet join reviewed decisions into a follow-up run
+  automatically; the worker still needs a reviewed normalized input step.
 - Weak: no production worker currently persists Supply Intake runs; live mode
   remains empty until worker IAM, source policy, model budget, and publication
   authority are approved and deployed.
@@ -939,10 +937,9 @@ As an event intake operator, I need source crawling, source inbox, and event
 candidate verification before events feed Marketing or canonical event records.
 
 Current fit: useful, with sub-tabs below. Frontend naming, read API, and review
-decisions now present this as Event Intake. The read callable consumes native
-Event Intake dashboard output from `eventIntakeDashboards/current`; missing
-dashboard data renders an explicit empty bridge instead of falling back to
-Marketing data.
+decisions now present this as Event Intake. The read callable projects the
+latest completed Supply Intake run; missing run data renders an explicit
+unavailable state instead of falling back to Marketing data.
 
 ### Event Intake: Crawl Setup
 

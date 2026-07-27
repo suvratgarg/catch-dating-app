@@ -68,10 +68,9 @@ const adminGeneratedRoot = path.resolve(
   args.adminGeneratedRoot ??
     path.join(repoRoot, "admin", "src", "features", "intake", "organizer", "generated")
 );
-const hostDiscoverySearchPlanPath = path.resolve(
-  args.hostDiscoverySearchPlan ??
-    path.join(repoRoot, "tool", "host_discovery", "generated", "search_plan.json")
-);
+const operationsDiscoveryPlanPath = args.operationsDiscoveryPlan ?
+  path.resolve(args.operationsDiscoveryPlan) :
+  null;
 const searchResultCandidateQueuePath = path.join(generatedRoot, "search_result_candidate_queue.json");
 const externalEventCandidateQueuePath = path.join(generatedRoot, "external_event_candidate_queue.json");
 const externalEventLocationResolutionQueuePath = path.join(
@@ -200,7 +199,7 @@ const eventCrawlRunPlan = buildEventCrawlRunPlan({eventCrawlPlan});
 const searchResultCandidateQueue = loadSearchResultCandidateQueue();
 const discoverySearchPlan = buildDiscoverySearchPlan({
   launchCitySlugs: ["indore", "mumbai"],
-  searchPlan: loadHostDiscoverySearchPlan(),
+  searchPlan: loadOperationsDiscoveryPlan(),
 });
 const externalEventCandidateQueue = loadExternalEventCandidateQueue();
 const sourceMentionResolution = buildSourceMentionResolution({
@@ -3632,14 +3631,18 @@ function buildAdminBridge(
   };
 }
 
-function loadHostDiscoverySearchPlan() {
-  if (!fs.existsSync(hostDiscoverySearchPlanPath)) {
+function loadOperationsDiscoveryPlan() {
+  if (!operationsDiscoveryPlanPath ||
+      !fs.existsSync(operationsDiscoveryPlanPath)) {
     return {
       schemaVersion: 1,
       generatedFrom: {
-        searchMatrix: "tool/host_discovery/search_matrix.json",
-        targetCategories: "tool/host_discovery/target_categories.json",
-        queryTemplates: "tool/host_discovery/query_templates.json",
+        searchMatrix:
+          "operations/src/workflows/supply-intake/config/search_matrix.json",
+        targetCategories:
+          "operations/src/workflows/supply-intake/config/target_categories.json",
+        queryTemplates:
+          "operations/src/workflows/supply-intake/config/query_templates.json",
         batches: [],
         runs: [],
       },
@@ -3650,11 +3653,12 @@ function loadHostDiscoverySearchPlan() {
       planned: [],
       skippedFresh: [],
       warnings: [
-        `Missing host discovery search plan: ${relative(hostDiscoverySearchPlanPath)}`,
+        "No Operations discovery-plan export was supplied. Live planning is " +
+          "owned by the Supply Intake workflow.",
       ],
     };
   }
-  return readJson(hostDiscoverySearchPlanPath);
+  return readJson(operationsDiscoveryPlanPath);
 }
 
 function buildDiscoverySearchPlan({launchCitySlugs, searchPlan}) {
@@ -3673,7 +3677,9 @@ function buildDiscoverySearchPlan({launchCitySlugs, searchPlan}) {
   return {
     schemaVersion: 1,
     generatedFrom: {
-      searchPlan: relative(hostDiscoverySearchPlanPath),
+      searchPlan: operationsDiscoveryPlanPath ?
+        relative(operationsDiscoveryPlanPath) :
+        null,
       searchMatrix: searchPlan.generatedFrom?.searchMatrix ?? null,
       targetCategories: searchPlan.generatedFrom?.targetCategories ?? null,
       queryTemplates: searchPlan.generatedFrom?.queryTemplates ?? null,
@@ -3702,13 +3708,12 @@ function buildDiscoverySearchPlan({launchCitySlugs, searchPlan}) {
     warnings: searchPlan.warnings ?? [],
     commands: {
       configure:
-        "Edit tool/host_discovery/search_matrix.json and " +
-        "tool/host_discovery/query_templates.json.",
+        "Review operations/src/workflows/supply-intake/config/.",
       regenerate:
-        "node tool/host_discovery/plan_search_runs.mjs && " +
-        "node tool/organizer_intake/organizer_intake.mjs",
+        "node operations/src/cli/main.mjs plan --workflow supply-intake",
       capture:
         "node tool/organizer_intake/capture_search_results.mjs " +
+        "--search-plan OPERATIONS_PLAN_EXPORT " +
         "--run-key RUN_KEY --raw-results PROVIDER_RESULTS_JSON " +
         "--date YYYY-MM-DD --write",
       ingest:
@@ -4220,7 +4225,7 @@ function parseArgs(argv) {
     check: false,
     curationDecisionsRoot: null,
     generatedRoot: null,
-    hostDiscoverySearchPlan: null,
+    operationsDiscoveryPlan: null,
     help: false,
     policyGapDecisionsRoot: null,
     rawArtifactsRoot: null,
@@ -4241,8 +4246,8 @@ function parseArgs(argv) {
       parsed.curationDecisionsRoot = requiredValue(argv, ++index, arg);
     } else if (arg === "--generated-root") {
       parsed.generatedRoot = requiredValue(argv, ++index, arg);
-    } else if (arg === "--host-discovery-search-plan") {
-      parsed.hostDiscoverySearchPlan = requiredValue(argv, ++index, arg);
+    } else if (arg === "--operations-discovery-plan") {
+      parsed.operationsDiscoveryPlan = requiredValue(argv, ++index, arg);
     } else if (arg === "--policy-gap-decisions-root") {
       parsed.policyGapDecisionsRoot = requiredValue(argv, ++index, arg);
     } else if (arg === "--raw-artifacts-root") {
@@ -4268,8 +4273,8 @@ function printHelp() {
 
 Options:
   --check                         Check generated organizer intake artifact drift.
-  --host-discovery-search-plan <path>
-                                  Read the organizer discovery search plan from a specific file.
+  --operations-discovery-plan <path>
+                                  Read a reviewed Supply Intake discovery-plan export.
   --answer-packets-root <path>    Read reviewed answer packets from a specific folder.
   --batches-root <path>            Read organizer entity batches from a specific folder.
   --curation-decisions-root <path> Read curation decisions from a specific folder.

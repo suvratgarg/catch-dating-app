@@ -127,7 +127,7 @@ export function useDataQualityController({
     buildSourceHealth("overview", "Overview quality", overviewQuery, overviewQuery.data?.generatedAt ?? null),
     buildSourceHealth("host-analytics", "Host analytics quality", hostAnalyticsQuery, hostAnalyticsQuery.data?.generatedAt ?? null),
     buildSourceHealth("marketing-bridge", "Marketing bridge", marketingBridgeQuery, marketingBridgeQuery.data?.generatedAt ?? null, runPlanConfiguration(marketingBridgeQuery.data?.runPlan)),
-    buildSourceHealth("event-intake", "Event Intake bridge", eventIntakeQuery, eventIntakeQuery.data?.generatedAt ?? null, runPlanConfiguration(eventIntakeQuery.data?.runPlan)),
+    buildSourceHealth("event-intake", "Event Intake projection", eventIntakeQuery, eventIntakeQuery.data?.generatedAt ?? null, runPlanConfiguration(eventIntakeQuery.data?.runPlan)),
     buildSourceHealth("event-supply-readiness", "Event supply readiness", eventSupplyQuery, eventSupplyQuery.data?.generatedAt ?? null, "not_applicable"),
   ], [
     eventIntakeQuery.data,
@@ -314,13 +314,13 @@ export function buildDataQualityRows({
     rows.push(buildBridgeFreshnessRow({
       id: "event-intake-dashboard-freshness",
       sourceId: "event-intake",
-      source: "Event Intake bridge",
-      label: "Event Intake bridge",
+      source: "Supply Intake operations",
+      label: "Event Intake projection",
       generatedAt: eventIntake.generatedAt,
       isEmpty: eventIntake.bridgeSource === "empty",
       detail: `${arrayLength(eventIntake.eventCandidates)} candidates from ${arrayLength(eventIntake.sourceResults)} source results`,
       owner: "Events intake",
-      runbook: "tool/marketing/event_guide/publish_event_intake_dashboard.mjs",
+      runbook: "admin > Intake > Events",
       owningWorkflowPath: "/intake/events",
     }));
     rows.push(buildRunPlanConfigurationRow({
