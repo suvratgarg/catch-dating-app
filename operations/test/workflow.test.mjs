@@ -1916,6 +1916,103 @@ test("rule lifecycle evaluates fixtures and stops at a non-deploying shadow cana
   );
 });
 
+test("reviewer correction becomes proposal evidence and an immutable fixture",
+  async () => {
+    const store = await new FileOperationsStore(await temporaryDirectory())
+      .initialize();
+    const learner = new SupplyIntakeLearner({
+      store,
+      clock: () => new Date(NOW),
+    });
+    const recorded = await learner.recordCorrection({
+      correctionId: "correction-cn-venue-1",
+      fixtureId: "fixture-cn-venue-1",
+      sourceProfileId: "cntraveller",
+      sourceWorkItemId: "work-cn-1",
+      sourceCandidateId: "candidate-cn-1",
+      field: "venueText",
+      extractedValue: "Bandra West, Mumbai",
+      correctedValue: "Bandra, Mumbai",
+      provenance: {
+        artifactId: "artifact-cn-1",
+        contentHash: "a".repeat(64),
+        locator: "cards[0].venueText",
+        extractorVersion: "editorial_link_card_v1",
+      },
+      correctedAt: NOW,
+    });
+    assert.equal(recorded.fixture.correctionId, recorded.correction.correctionId);
+    const proposal = await learner.propose("cntraveller");
+    assert.deepEqual(proposal.correctionFixtureIds, ["fixture-cn-venue-1"]);
+    assert.equal(proposal.observations.correctionCount, 1);
+    assert.equal(proposal.observations.correctionsByField.venueText, 1);
+    assert.deepEqual(proposal.candidateRule.fieldCorrections, [{
+      field: "venueText",
+      extractedValue: "Bandra West, Mumbai",
+      correctedValue: "Bandra, Mumbai",
+      supportCount: 1,
+    }]);
+    assert.equal((await learner.evaluate(proposal.proposalId)).status, "passed");
+    await assert.rejects(
+      learner.recordCorrection({
+        ...recorded.correction,
+        correctedValue: "Mumbai",
+      }),
+      {code: "FIELD_CORRECTION_CONFLICT"}
+    );
+  });
+
+test("a wrong correction rule fails fixture replay and cannot canary", async () => {
+  const store = await new FileOperationsStore(await temporaryDirectory())
+    .initialize();
+  const learner = new SupplyIntakeLearner({
+    store,
+    clock: () => new Date(NOW),
+    candidateRuleFactory: (_sourceProfileId, fieldCorrections) => ({
+      kind: "declarative_extractor_config",
+      templateFamily: "editorial_link_card",
+      version: 1,
+      implementationId: "cntraveller-editorial-link-card-v1",
+      mappings: {
+        title: "card.heading",
+        dateText: "card.dateText",
+        venueText: "card.venueText",
+        links: "card.links",
+      },
+      invariantOutputs: {
+        discoveryOnly: true,
+        requiresOfficialSource: true,
+      },
+      onTemplateMismatch: "abstain",
+      fieldCorrections: fieldCorrections.map((rule) => ({
+        ...rule,
+        correctedValue: "Wrong venue",
+      })),
+    }),
+  });
+  await learner.recordCorrection({
+    correctionId: "correction-cn-venue-wrong",
+    fixtureId: "fixture-cn-venue-wrong",
+    sourceProfileId: "cntraveller",
+    field: "venueText",
+    extractedValue: "Bandra West, Mumbai",
+    correctedValue: "Bandra, Mumbai",
+    provenance: {
+      artifactId: "artifact-cn-wrong",
+      contentHash: "b".repeat(64),
+      locator: "cards[0].venueText",
+      extractorVersion: "editorial_link_card_v1",
+    },
+  });
+  const proposal = await learner.propose("cntraveller");
+  const evaluation = await learner.evaluate(proposal.proposalId);
+  assert.equal(evaluation.status, "failed");
+  assert.ok(evaluation.metrics.falseNegatives > 0);
+  await assert.rejects(learner.canary(proposal.proposalId), {
+    code: "LATEST_RULE_EVALUATION_NOT_PASSED",
+  });
+});
+
 test("rule evaluation executes the frozen candidate instead of shipped source code",
   async () => {
     const store = await new FileOperationsStore(await temporaryDirectory())

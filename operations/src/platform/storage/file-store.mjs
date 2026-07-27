@@ -36,6 +36,8 @@ export class FileOperationsStore {
       "rules/evaluations",
       "rules/canaries",
       "rules/actions",
+      "rules/corrections",
+      "rules/fixtures",
       "model-cache",
     ].map((directory) => fs.mkdir(this.resolve(directory), {recursive: true})));
     const metadataPath = this.resolve("store.json");
@@ -382,6 +384,40 @@ export class FileOperationsStore {
 
   async listRuleCanaries() {
     return this.listEntities("rules/canaries");
+  }
+
+  async putFieldCorrection(correction) {
+    await immutableWriteJson(
+      this.entityPath("rules/corrections", correction.correctionId),
+      correction,
+      "FIELD_CORRECTION_CONFLICT"
+    );
+    return correction;
+  }
+
+  async listFieldCorrections({sourceProfileId} = {}) {
+    const corrections = await this.listEntities("rules/corrections");
+    return corrections.filter((correction) =>
+      !sourceProfileId || correction.sourceProfileId === sourceProfileId);
+  }
+
+  async putCorrectionFixture(fixture) {
+    await immutableWriteJson(
+      this.entityPath("rules/fixtures", fixture.fixtureId),
+      fixture,
+      "CORRECTION_FIXTURE_CONFLICT"
+    );
+    return fixture;
+  }
+
+  async getCorrectionFixture(fixtureId) {
+    return readJsonIfExists(this.entityPath("rules/fixtures", fixtureId));
+  }
+
+  async listCorrectionFixtures({sourceProfileId} = {}) {
+    const fixtures = await this.listEntities("rules/fixtures");
+    return fixtures.filter((fixture) =>
+      !sourceProfileId || fixture.sourceProfileId === sourceProfileId);
   }
 
   async appendLearningAction(action) {

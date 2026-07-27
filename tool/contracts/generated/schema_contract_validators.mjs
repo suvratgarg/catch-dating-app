@@ -72,6 +72,7 @@ import {
   organizerIntakeReviewDecisionDocumentSchema,
   eventIntakeReviewDecisionDocumentSchema,
   organizerIntakeCurationDecisionDocumentSchema,
+  organizerIntakeFieldCorrectionDocumentSchema,
   organizerEventCandidateReviewDecisionDocumentSchema,
   organizerEventLocationResolutionDecisionDocumentSchema,
   organizerPolicyGapReviewDecisionDocumentSchema,
@@ -307,6 +308,7 @@ export const validateSeedEventManifestDocument = ajv.compile(seedEventManifestDo
 export const validateOrganizerIntakeReviewDecisionDocument = ajv.compile(organizerIntakeReviewDecisionDocumentSchema);
 export const validateEventIntakeReviewDecisionDocument = ajv.compile(eventIntakeReviewDecisionDocumentSchema);
 export const validateOrganizerIntakeCurationDecisionDocument = ajv.compile(organizerIntakeCurationDecisionDocumentSchema);
+export const validateOrganizerIntakeFieldCorrectionDocument = ajv.compile(organizerIntakeFieldCorrectionDocumentSchema);
 export const validateOrganizerEventCandidateReviewDecisionDocument = ajv.compile(organizerEventCandidateReviewDecisionDocumentSchema);
 export const validateOrganizerEventLocationResolutionDecisionDocument = ajv.compile(organizerEventLocationResolutionDecisionDocumentSchema);
 export const validateOrganizerPolicyGapReviewDecisionDocument = ajv.compile(organizerPolicyGapReviewDecisionDocumentSchema);

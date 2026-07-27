@@ -2094,6 +2094,145 @@ const schemaOrganizerDocumentSchema = <String, Object?>{
       },
       'x-catch-ownership': 'server-only',
     },
+    'intakeLearningSource': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'description': 'Bounded server-only lineage for fields seeded by Supply Intake. Raw provider payloads are never stored here. This snapshot lets audited admin edits produce immutable field-correction fixtures.',
+      'required': <Object?>[
+        'sourceProfileId',
+        'sourceWorkItemId',
+        'sourceCandidateId',
+        'seededFields',
+        'capturedAt',
+      ],
+      'properties': <String, Object?>{
+        'sourceProfileId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+        },
+        'sourceWorkItemId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+        },
+        'sourceCandidateId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 240,
+        },
+        'seededFields': <String, Object?>{
+          'type': 'array',
+          'maxItems': 40,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'field',
+              'extractedValue',
+              'artifactId',
+              'contentHash',
+              'locator',
+              'extractedBy',
+              'extractorVersion',
+              'confidence',
+            ],
+            'properties': <String, Object?>{
+              'field': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'name',
+                  'location',
+                  'tags',
+                  'publicProfile.sourceSummary',
+                  'publicProfile.formats',
+                  'publicSources[0].href',
+                ],
+              },
+              'extractedValue': <String, Object?>{
+                'anyOf': <Object?>[
+                  <String, Object?>{
+                    'type': 'string',
+                    'maxLength': 2000,
+                  },
+                  <String, Object?>{
+                    'type': 'null',
+                  },
+                  <String, Object?>{
+                    'type': 'array',
+                    'maxItems': 40,
+                    'items': <String, Object?>{
+                      'type': 'string',
+                      'maxLength': 500,
+                    },
+                  },
+                ],
+              },
+              'artifactId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+                'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+              },
+              'contentHash': <String, Object?>{
+                'type': 'string',
+                'pattern': '^[a-f0-9]{64}\$',
+              },
+              'locator': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'maxLength': 1000,
+              },
+              'extractedBy': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'deterministic',
+                  'model',
+                  'human',
+                ],
+              },
+              'extractorVersion': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 160,
+              },
+              'confidence': <String, Object?>{
+                'type': <Object?>[
+                  'number',
+                  'null',
+                ],
+                'minimum': 0,
+                'maximum': 1,
+              },
+            },
+          },
+        },
+        'capturedAt': <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+      },
+      'x-catch-ownership': 'server-only',
+    },
     'adminSearch': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,

@@ -362,6 +362,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaOrganizerIntakeCurationDecisionDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'OrganizerIntakeFieldCorrectionDocument',
+    source: 'firestore/organizer_intake_field_corrections.schema.json',
+    schema: schemaOrganizerIntakeFieldCorrectionDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'OrganizerEventCandidateReviewDecisionDocument',
     source: 'firestore/organizer_event_candidate_review_decisions.schema.json',
     schema: schemaOrganizerEventCandidateReviewDecisionDocumentSchema,
@@ -1143,6 +1148,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'OrganizerIntakeReviewDecisionDocument': schemaOrganizerIntakeReviewDecisionDocumentSchema,
   'EventIntakeReviewDecisionDocument': schemaEventIntakeReviewDecisionDocumentSchema,
   'OrganizerIntakeCurationDecisionDocument': schemaOrganizerIntakeCurationDecisionDocumentSchema,
+  'OrganizerIntakeFieldCorrectionDocument': schemaOrganizerIntakeFieldCorrectionDocumentSchema,
   'OrganizerEventCandidateReviewDecisionDocument': schemaOrganizerEventCandidateReviewDecisionDocumentSchema,
   'OrganizerEventLocationResolutionDecisionDocument': schemaOrganizerEventLocationResolutionDecisionDocumentSchema,
   'OrganizerPolicyGapReviewDecisionDocument': schemaOrganizerPolicyGapReviewDecisionDocumentSchema,
@@ -1357,6 +1363,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/organizer_intake_review_decisions.schema.json': schemaOrganizerIntakeReviewDecisionDocumentSchema,
   'firestore/event_intake_review_decisions.schema.json': schemaEventIntakeReviewDecisionDocumentSchema,
   'firestore/organizer_intake_curation_decisions.schema.json': schemaOrganizerIntakeCurationDecisionDocumentSchema,
+  'firestore/organizer_intake_field_corrections.schema.json': schemaOrganizerIntakeFieldCorrectionDocumentSchema,
   'firestore/organizer_event_candidate_review_decisions.schema.json': schemaOrganizerEventCandidateReviewDecisionDocumentSchema,
   'firestore/organizer_event_location_resolution_decisions.schema.json': schemaOrganizerEventLocationResolutionDecisionDocumentSchema,
   'firestore/organizer_policy_gap_review_decisions.schema.json': schemaOrganizerPolicyGapReviewDecisionDocumentSchema,

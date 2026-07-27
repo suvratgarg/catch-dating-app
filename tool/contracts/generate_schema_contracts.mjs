@@ -392,6 +392,12 @@ const schemaSpecs = [
       "functions/src/shared/generated/organizerIntakeCurationDecisionDocument.ts",
   },
   {
+    name: "OrganizerIntakeFieldCorrectionDocument",
+    source: "firestore/organizer_intake_field_corrections.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerIntakeFieldCorrectionDocument.ts",
+  },
+  {
     name: "OrganizerEventCandidateReviewDecisionDocument",
     source: "firestore/organizer_event_candidate_review_decisions.schema.json",
     typeOutput:

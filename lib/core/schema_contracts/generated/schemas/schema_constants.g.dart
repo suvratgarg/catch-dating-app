@@ -148,6 +148,7 @@ export 'organizer_event_location_resolution_decision_document.g.dart';
 export 'organizer_follow_callable_payload.g.dart';
 export 'organizer_follow_document.g.dart';
 export 'organizer_intake_curation_decision_document.g.dart';
+export 'organizer_intake_field_correction_document.g.dart';
 export 'organizer_intake_review_decision_document.g.dart';
 export 'organizer_policy_gap_review_decision_document.g.dart';
 export 'organizer_post_document.g.dart';

@@ -293,17 +293,26 @@ observed failures -> proposal -> fixture replay -> shadow canary -> reviewed act
 ```
 
 The current learner supports code-owned CN Traveller mapping and Luma JSON-LD
-candidates. It summarizes source-level work-item support and blocker/task-flag
-frequencies, freezes the declared candidate plus fixture set, and evaluates
-that candidate through an allowlisted deterministic interpreter. A deliberately
-wrong mapping fails its fixture; mutable proposal evidence and unknown code fail
-closed. Canary creation writes only a zero-traffic shadow record. It derives the
-newest immutable evaluation, repairs a stale proposal pointer left by a crash,
-and blocks when that newest record failed; it cannot fall back to an older pass.
+candidates. It summarizes source-level work-item support, blocker/task-flag
+frequencies, and reviewer field corrections by source and field. A trusted
+worker imports the immutable Firestore correction record through
+`learn record-correction`; the file argument is a transport boundary for the
+worker and tests, never a checked-in or human-maintained source of truth.
+Recording is append-only and creates the correction's replay fixture in the
+learner store.
+
+Proposal generation freezes the declared candidate, source fixture, exact
+correction-fixture ids, and a bounded deterministic correction map. Evaluation
+replays both the code-owned source fixture and every correction fixture through
+the allowlisted interpreter. A deliberately wrong correction fails replay and
+cannot canary; mutable proposal evidence and unknown code fail closed. Canary
+creation writes only a zero-traffic shadow record. It derives the newest
+immutable evaluation, repairs a stale proposal pointer left by a crash, and
+blocks when that newest record failed; it cannot fall back to an older pass.
 Evaluation and canary work for one proposal are serialized.
 
-There is no automatic rule discovery, live traffic comparison, activation,
-deployment, source acquisition, or model provider in this package. Those are
+There is no automatic rule activation, live traffic comparison, deployment,
+source acquisition, or model provider in this package. Those are
 explicit future capabilities, not implied by the learning commands.
 
 External-event publication is also outside the Operations writer boundary.

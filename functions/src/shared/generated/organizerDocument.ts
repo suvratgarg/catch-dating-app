@@ -378,6 +378,40 @@ export interface OrganizerDocument {
     } | null;
   };
   /**
+   * Bounded server-only lineage for fields seeded by Supply Intake. Raw provider payloads are never stored here. This snapshot lets audited admin edits produce immutable field-correction fixtures.
+   */
+  intakeLearningSource?: {
+    sourceProfileId: string;
+    sourceWorkItemId: string;
+    sourceCandidateId: string;
+    /**
+     * @maxItems 40
+     */
+    seededFields: {
+      field:
+        | "name"
+        | "location"
+        | "tags"
+        | "publicProfile.sourceSummary"
+        | "publicProfile.formats"
+        | "publicSources[0].href";
+      extractedValue: string | null | string[];
+      artifactId: string;
+      contentHash: string;
+      locator: string | null;
+      extractedBy: "deterministic" | "model" | "human";
+      extractorVersion: string;
+      confidence: number | null;
+    }[];
+    /**
+     * Serialized Firestore Timestamp fixture shape.
+     */
+    capturedAt: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
+  };
+  /**
    * Server-owned deterministic search projection used by admin organizer publishing. Rebuildable from canonical organizer fields; not consumed by the app.
    */
   adminSearch?: {

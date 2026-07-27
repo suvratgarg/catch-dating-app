@@ -185,6 +185,13 @@ export async function adminCreateOrganizerDraftFromCandidateHandler(
         candidate.reviewContext?.verifiedAt ?? null
       ),
     });
+    organizer.intakeLearningSource = buildIntakeLearningSource({
+      candidate,
+      workItem,
+      fieldProvenance,
+      organizer,
+      timestamp,
+    });
     organizer.adminSearch = buildOrganizerAdminSearchProjection(
       organizerId,
       organizer,
@@ -210,7 +217,9 @@ export async function adminCreateOrganizerDraftFromCandidateHandler(
     created = true;
     const legacyOrganizer = Object.fromEntries(
       Object.entries(organizer).filter(([key]) =>
-        key !== "organizerPhotos" && key !== "followerCount")
+        key !== "organizerPhotos" &&
+        key !== "followerCount" &&
+        key !== "intakeLearningSource")
     );
     tx.create(legacyClubRef, {
       ...legacyOrganizer,
@@ -467,6 +476,60 @@ function draftFieldProvenance(
       confidence: source.confidence,
     }];
   });
+}
+
+function buildIntakeLearningSource({
+  candidate,
+  workItem,
+  fieldProvenance,
+  organizer,
+  timestamp,
+}: {
+  candidate: OrganizerCandidate;
+  workItem: OperationWorkItem;
+  fieldProvenance: OperationWorkItem["fieldProvenance"];
+  organizer: OrganizerDocument;
+  timestamp: FirebaseFirestore.FieldValue;
+}): NonNullable<OrganizerDocument["intakeLearningSource"]> {
+  const values = new Map<string, string | null | string[]>([
+    ["name", organizer.name],
+    ["location", organizer.location],
+    ["tags", organizer.tags],
+    [
+      "publicProfile.sourceSummary",
+      organizer.publicProfile?.sourceSummary ?? null,
+    ],
+    [
+      "publicProfile.formats",
+      organizer.publicProfile?.formats ?? [],
+    ],
+    ["publicSources[0].href", organizer.publicSources?.[0]?.href ?? null],
+  ]);
+  return {
+    sourceProfileId: boundedText(
+      `organizer_discovery:${candidate.platform}`,
+      160
+    ),
+    sourceWorkItemId: workItem.workItemId,
+    sourceCandidateId: candidate.candidateId,
+    seededFields: fieldProvenance.flatMap((entry) => {
+      const extractedValue = values.get(entry.field);
+      if (extractedValue === undefined) return [];
+      return [{
+        field: entry.field as NonNullable<
+          OrganizerDocument["intakeLearningSource"]
+        >["seededFields"][number]["field"],
+        extractedValue,
+        artifactId: entry.artifactId,
+        contentHash: entry.contentHash,
+        locator: entry.locator,
+        extractedBy: entry.extractedBy,
+        extractorVersion: entry.extractorVersion,
+        confidence: entry.confidence,
+      }];
+    }),
+    capturedAt: timestamp as never,
+  };
 }
 
 function sourceTimestampFromVerifiedAt(
