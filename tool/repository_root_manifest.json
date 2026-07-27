@@ -198,7 +198,8 @@
         ],
         "targets": [
           "functions"
-        ]
+        ],
+        "backendDeploy": true
       },
       {
         "id": "firestore-rules",
@@ -212,7 +213,8 @@
           "contracts",
           "firestore_rules",
           "functions"
-        ]
+        ],
+        "backendDeploy": true
       },
       {
         "id": "host-mobile-firebase-android",
@@ -279,7 +281,8 @@
           "firestore_rules",
           "functions",
           "marketing"
-        ]
+        ],
+        "backendDeploy": true
       },
       {
         "id": "contracts",
@@ -294,7 +297,8 @@
           "functions",
           "marketing",
           "operations"
-        ]
+        ],
+        "backendDeploy": true
       },
       {
         "id": "operations",

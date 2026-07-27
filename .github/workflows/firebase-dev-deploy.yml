@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
-      deploy_required: ${{ steps.plan.outputs.deploy_required }}
+      deploy_required: ${{ steps.impact.outputs.backend_deploy_required }}
     env:
       HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
     steps:
@@ -41,19 +41,6 @@ jobs:
           --head "$HEAD_SHA"
           --github-output "$GITHUB_OUTPUT"
           --json
-
-      - id: plan
-        env:
-          CONTRACTS: ${{ steps.impact.outputs.contracts }}
-          FIRESTORE_RULES: ${{ steps.impact.outputs.firestore_rules }}
-          FUNCTIONS: ${{ steps.impact.outputs.functions }}
-        run: |
-          if [[ "$CONTRACTS" == "true" || "$FIRESTORE_RULES" == "true" || "$FUNCTIONS" == "true" ]]; then
-            echo "deploy_required=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "deploy_required=false" >> "$GITHUB_OUTPUT"
-            echo "No backend deploy targets were affected."
-          fi
 
   deploy-dev:
     name: Deploy dev after main is green

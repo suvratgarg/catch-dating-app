@@ -27,6 +27,7 @@ test("admin-only changes do not invoke Flutter or mobile releases", () => {
   assert.equal(plan.enabled.flutter, false);
   assert.equal(plan.enabled.flutter_build_ios, false);
   assert.deepEqual(plan.mobileReleaseRoles, []);
+  assert.equal(plan.backendDeployRequired, false);
   assert.deepEqual(plan.unmatchedPaths, []);
 });
 
@@ -106,6 +107,7 @@ test("contracts validate consumers without authorizing store mutation", () => {
   assert.equal(plan.enabled.functions, true);
   assert.equal(plan.enabled.flutter, true);
   assert.deepEqual(plan.mobileReleaseRoles, []);
+  assert.equal(plan.backendDeployRequired, true);
 });
 
 test("generated schema bindings validate Flutter without platform builds or store releases", () => {
@@ -121,6 +123,27 @@ test("generated schema bindings validate Flutter without platform builds or stor
     assert.equal(plan.enabled.flutter_build_ios, false);
     assert.equal(plan.enabled.flutter_build_web, false);
     assert.deepEqual(plan.mobileReleaseRoles, []);
+    assert.equal(plan.backendDeployRequired, false);
+  }
+});
+
+test("backend validation and Firebase deploy authorization are independent", () => {
+  const controlPlanePlan = planCi({
+    changedPaths: [".github/workflows/ci.yml"],
+    ciPlanning: planning,
+  });
+  assert.equal(controlPlanePlan.enabled.functions, true);
+  assert.equal(controlPlanePlan.enabled.firestore_rules, true);
+  assert.equal(controlPlanePlan.backendDeployRequired, false);
+
+  for (const changedPath of [
+    "functions/src/index.ts",
+    "firestore.rules",
+    "contracts/firestore/users.schema.json",
+    "firebase.json",
+  ]) {
+    const plan = planCi({changedPaths: [changedPath], ciPlanning: planning});
+    assert.equal(plan.backendDeployRequired, true, changedPath);
   }
 });
 
@@ -185,4 +208,13 @@ test("reusable fanout workflows do not cancel sibling lanes", () => {
       `${workflow} must inherit concurrency from the CI orchestrator; in a called workflow github.workflow is the caller name, so sibling lanes otherwise cancel one another`,
     );
   }
+});
+
+test("automatic dev deploy consumes deploy impact instead of validation lanes", () => {
+  const workflow = fs.readFileSync(".github/workflows/firebase-dev-deploy.yml", "utf8");
+  assert.match(
+    workflow,
+    /deploy_required: \$\{\{ steps\.impact\.outputs\.backend_deploy_required \}\}/,
+  );
+  assert.doesNotMatch(workflow, /steps\.impact\.outputs\.(contracts|firestore_rules|functions)/);
 });

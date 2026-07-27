@@ -72,6 +72,12 @@ export function validateCiPlanning(ciPlanning) {
         errors.push(`${rule.id ?? "<missing>"} references unknown mobile role "${role}".`);
       }
     }
+    if (
+      rule.backendDeploy !== undefined &&
+      typeof rule.backendDeploy !== "boolean"
+    ) {
+      errors.push(`${rule.id ?? "<missing>"}.backendDeploy must be boolean.`);
+    }
   }
   return errors;
 }
@@ -85,6 +91,7 @@ export function planCi({changedPaths, ciPlanning, full = false}) {
   const matchedRuleIds = new Set();
   const targets = new Set(full ? ciPlanning.fullValidationTargets : []);
   const mobileRoles = new Set();
+  let backendDeployRequired = false;
   const unmatchedPaths = [];
   const pathMatches = {};
 
@@ -100,6 +107,7 @@ export function planCi({changedPaths, ciPlanning, full = false}) {
     matchedRuleIds.add(rule.id);
     for (const target of rule.targets) targets.add(target);
     for (const role of rule.mobileRoles ?? []) mobileRoles.add(role);
+    if (rule.backendDeploy === true) backendDeployRequired = true;
   }
 
   const enabled = Object.fromEntries(
@@ -129,6 +137,7 @@ export function planCi({changedPaths, ciPlanning, full = false}) {
     appRolesJson: JSON.stringify(appRoles),
     mobileReleaseRoles: orderedMobileReleaseRoles,
     mobileReleaseRolesJson: JSON.stringify(orderedMobileReleaseRoles),
+    backendDeployRequired,
     unmatchedPaths,
   };
 }
@@ -171,6 +180,7 @@ export function writeGithubOutputs(outputPath, plan) {
     `app_roles=${plan.appRolesJson}`,
     `mobile_release_roles=${plan.mobileReleaseRolesJson}`,
     `has_mobile_release_roles=${plan.mobileReleaseRoles.length > 0}`,
+    `backend_deploy_required=${plan.backendDeployRequired}`,
     `full=${plan.full}`,
     ...Object.entries(plan.enabled).map(([name, enabled]) => `${name}=${enabled}`),
   ];

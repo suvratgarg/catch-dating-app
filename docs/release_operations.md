@@ -140,6 +140,13 @@ owning runtime-source, native-platform, asset/dependency, or mobile-build-contro
 change. This keeps backend/admin contract generation from producing signed app
 artifacts while still detecting stale or invalid Dart bindings.
 
+Backend validation and backend deployment are also separate decisions.
+CI-control changes intentionally validate Functions, contracts, and rules, but
+they do not authorize an automatic dev Firebase deployment. The impact
+manifest marks only owned Functions, contract, rules/index, or Firebase backend
+configuration changes as `backendDeploy`; the dev deploy workflow consumes
+that dedicated output instead of inferring deployment from validation lanes.
+
 The app package-graph gate must also work in a clean checkout before
 `flutter pub get`. It validates governed native-package declarations directly
 from each app package and enriches the report with Flutter-generated plugin
@@ -416,8 +423,11 @@ Firebase CD is intentionally asymmetric by environment:
 
 The automatic dev deploy is a backend deploy, not a store release. It starts
 only after the aggregate CI result succeeds and only when the same impact plan
-selects Functions, contracts, or Firestore/rules. It deploys Functions,
-Firestore indexes, Firestore rules, and Storage rules in the safe order.
+explicitly authorizes a backend deployment. Functions, contract,
+Firestore/rules/index, and Firebase backend configuration owners carry that
+authorization; validation-only CI-control changes do not. The workflow deploys
+Functions, Firestore indexes, Firestore rules, and Storage rules in the safe
+order.
 
 Mobile artifacts remain separate from backend deployment. App-impacting pushes
 to `main` start `.github/workflows/mobile-internal-release.yml` only for the
