@@ -48,8 +48,8 @@ jobs:
             categories: env platform generator
           - name: marketing-design
             categories: marketing ui-capture design analytics
-          - name: host-discovery
-            categories: host-discovery
+          - name: organizer-intake
+            categories: organizer-intake
 
     steps:
       - uses: actions/checkout@v6
