@@ -16,8 +16,14 @@ export interface AdminRecordEventIntakeReviewDecisionCallablePayload {
   decision: "approve" | "needs_changes" | "hold" | "reject";
   runId?: string | null;
   note: string;
+  /**
+   * Changed fields only. Each entry freezes the reviewed before and after values so extractor-learning and audit consumers can distinguish a correction from a whole-record resubmission.
+   */
   edits?: {
-    [k: string]: unknown;
+    [k: string]: {
+      before: unknown;
+      after: unknown;
+    };
   };
   checklist: {
     sourceReviewed: boolean;

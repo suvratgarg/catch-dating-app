@@ -34,7 +34,7 @@ export type ReviewDecisionHandler = (input: {
   decision: ReviewDecision;
   edits?: Record<string, unknown>;
   defaultNote: string;
-}) => Promise<void>;
+}) => Promise<unknown>;
 
 export interface ReviewDecisionResponse {
   decisionStatus: string;

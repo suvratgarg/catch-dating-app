@@ -22,7 +22,7 @@ describe("IntakeOperationsPreviewWorkspace", () => {
     expect(screen.getAllByText("Rooftop Singles Mixer")).toHaveLength(2);
     expect(screen.queryByRole("button", {name: /run|publish|deploy/iu})).toBeNull();
     expect(screen.getByText(/browser is read-only/iu)).toBeTruthy();
-    expect(screen.getAllByText("human review required", {exact: true})).toHaveLength(1);
+    expect(screen.getAllByText("human review required", {exact: true})).toHaveLength(2);
   });
 
   it("labels run inventory as loaded pages when more runs are available", () => {

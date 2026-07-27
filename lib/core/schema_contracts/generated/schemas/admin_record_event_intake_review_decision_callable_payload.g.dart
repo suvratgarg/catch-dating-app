@@ -57,7 +57,20 @@ const schemaAdminRecordEventIntakeReviewDecisionCallablePayloadSchema = <String,
     },
     'edits': <String, Object?>{
       'type': 'object',
-      'additionalProperties': true,
+      'description': 'Changed fields only. Each entry freezes the reviewed before and after values so extractor-learning and audit consumers can distinguish a correction from a whole-record resubmission.',
+      'maxProperties': 40,
+      'additionalProperties': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'before',
+          'after',
+        ],
+        'properties': <String, Object?>{
+          'before': <String, Object?>{},
+          'after': <String, Object?>{},
+        },
+      },
     },
     'checklist': <String, Object?>{
       'type': 'object',

@@ -71,7 +71,17 @@
     },
     "edits": {
       "type": "object",
-      "additionalProperties": true
+      "description": "Changed fields only. Each entry freezes its reviewed before and after value.",
+      "maxProperties": 40,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["before", "after"],
+        "properties": {
+          "before": {},
+          "after": {}
+        }
+      }
     },
     "reviewedByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "reviewedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},

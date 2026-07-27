@@ -32,21 +32,25 @@ import type {OrganizerIntakeController} from
 import type * as Intake from "../types/organizerIntakeTypes";
 import {organizerIntakeVisibilityControls} from
   "./organizerIntakeVisibilityControls";
+import {
+  buildOrganizerIntakeBulkActions,
+  type OrganizerWorkbenchEntry,
+} from "./organizerIntakeBulkActions";
+import {
+  initialsForLabel,
+  organizerEntityEntryId,
+  organizerEntityQueueItem,
+  organizerItemStatus,
+  organizerMarketLabel as marketLabel,
+} from "./organizerIntakeQueueItems";
+
+export {
+  organizerEntityEntryId,
+  organizerEntityQueueItem,
+} from "./organizerIntakeQueueItems";
 
 type OrganizerWorkbenchStage = "incoming" | "verify" | "resolve" | "ready";
 type OrganizerQueueFilter = "all" | "attention" | "ready";
-type OrganizerWorkbenchEntry =
-  | {
-    id: string;
-    kind: "entity";
-    item: Intake.OrganizerIntakeItem;
-  }
-  | {
-    id: string;
-    kind: "candidate";
-    candidate: Intake.OrganizerSearchCandidate;
-  };
-
 const organizerWorkbenchStageKey = "catch-admin.organizer-intake-stage.v2";
 const organizerTypeOptions = [
   {value: "community", label: "Community"},
@@ -94,7 +98,10 @@ function OrganizerTaskWorkbench({
     readOrganizerWorkbenchStage
   );
   const [queueFilter, setQueueFilter] = useState<OrganizerQueueFilter>("all");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(() => {
+    if (typeof window === "undefined") return "";
+    return new URLSearchParams(window.location.search).get("search") ?? "";
+  });
   const [city, setCity] = useState("all");
   const [priority, setPriority] = useState("all");
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
@@ -198,7 +205,7 @@ function OrganizerTaskWorkbench({
   ]);
 
   useEffect(() => {
-    if (filteredEntries.some((entry) => entry.id === selectedEntryId)) return;
+    if (selectedEntryId !== null) return;
     setSelectedEntryId(filteredEntries[0]?.id ?? null);
   }, [filteredEntries, selectedEntryId]);
 
@@ -248,10 +255,20 @@ function OrganizerTaskWorkbench({
   const candidateHasDuplicateKey = candidate ?
     duplicateCandidateIds.has(candidate.candidateId) :
     false;
+  const bulkActions = buildOrganizerIntakeBulkActions({
+    entries: filteredEntries,
+    handleAttachCandidate,
+    handleDecision,
+    manualReportAcknowledgements,
+    publicationPacketByEntity,
+    surfaceChecklists,
+    visibilityForms,
+  });
 
   const setStage = (stage: OrganizerWorkbenchStage) => {
     setActiveStageState(stage);
     setQueueFilter("all");
+    setSelectedEntryId(null);
     try {
       window.localStorage.setItem(organizerWorkbenchStageKey, stage);
     } catch {
@@ -267,9 +284,20 @@ function OrganizerTaskWorkbench({
           icon={<Search size={15} strokeWidth={1.9} />}
           placeholder="Search organizer, source, city..."
           value={searchQuery}
-          onChange={setSearchQuery}
+          onChange={(value) => {
+            setSearchQuery(value);
+            setSelectedEntryId(null);
+          }}
         />
-        <SelectField label="City" options={cityOptions} value={city} onChange={setCity} />
+        <SelectField
+          label="City"
+          options={cityOptions}
+          value={city}
+          onChange={(value) => {
+            setCity(value);
+            setSelectedEntryId(null);
+          }}
+        />
         <SelectField
           label="Priority"
           options={[
@@ -279,7 +307,10 @@ function OrganizerTaskWorkbench({
             {value: "p2", label: "P2"},
           ]}
           value={priority}
-          onChange={setPriority}
+          onChange={(value) => {
+            setPriority(value);
+            setSelectedEntryId(null);
+          }}
         />
         {diagnosticsBridge ? (
           <>
@@ -288,11 +319,6 @@ function OrganizerTaskWorkbench({
               Discovery plan
             </AdminButton>
           </>
-        ) : controller.source === "firestore" ? (
-          <AdminWorkbenchNote>
-            Full pipeline diagnostics are available only in sample and
-            Storybook coverage.
-          </AdminWorkbenchNote>
         ) : null}
       </AdminIntakeTaskToolbar>
       <AdminIntakeStageRail<OrganizerWorkbenchStage>
@@ -331,6 +357,7 @@ function OrganizerTaskWorkbench({
         onChange={setStage}
       />
       <AdminIntakeReviewWorkbench
+        bulkActions={bulkActions}
         detail={item ? {
           action: packet?.publicPresence.canonicalPath ? (
             <AdminLinkButton
@@ -588,6 +615,11 @@ function OrganizerTaskWorkbench({
             publicationUnavailableMessage(availability) :
             "No organizer leads match this stage and filter set."
         }
+        emptyKind={
+          searchQuery || city !== "all" || priority !== "all" || queueFilter !== "all"
+            ? "filter"
+            : "stage"
+        }
         filters={[
           {
             id: "all",
@@ -599,8 +631,8 @@ function OrganizerTaskWorkbench({
           {id: "attention", label: "Needs attention", selected: queueFilter === "attention"},
           {id: "ready", label: "Ready", selected: queueFilter === "ready"},
         ]}
-        items={filteredEntries.map((entry) =>
-          entry.kind === "entity" ?
+        items={filteredEntries.map((entry) => {
+          const queueItem = entry.kind === "entity" ?
             organizerEntityQueueItem(
               entry.item,
               publicationPacketByEntity.get(entry.item.entityId)
@@ -612,15 +644,39 @@ function OrganizerTaskWorkbench({
                 entry.candidate.draftLink ||
                 localOrganizerDrafts[entry.candidate.candidateId]
               )
-            ))}
+            );
+          return {
+            ...queueItem,
+            pending: entry.kind === "entity"
+              ? Boolean(decisionInFlight[entry.item.entityId])
+              : Boolean(curationInFlight[entry.candidate.candidateId] ||
+                organizerDraftInFlight[entry.candidate.candidateId]),
+          };
+        })}
         queueMeta={
           activeStage !== "incoming" && livePublicationUnavailable ?
             "Publication review unavailable" :
             `${filteredEntries.length} item${filteredEntries.length === 1 ? "" : "s"}`
         }
         queueTitle={stageTitle(activeStage)}
+        queueScopeKey={[
+          activeStage,
+          city,
+          priority,
+          queueFilter,
+          searchQuery.trim().toLocaleLowerCase(),
+          availability.runIds.join(","),
+        ].join(":")}
         selectedId={selectedEntryId}
-        onFilterChange={(filterId) => setQueueFilter(filterId as OrganizerQueueFilter)}
+        state={
+          activeStage !== "incoming" && livePublicationUnavailable
+            ? "unavailable"
+            : "ready"
+        }
+        onFilterChange={(filterId) => {
+          setQueueFilter(filterId as OrganizerQueueFilter);
+          setSelectedEntryId(null);
+        }}
         onSelect={setSelectedEntryId}
       />
     </>
@@ -684,24 +740,6 @@ function organizerItemIsReady(
   packet?: Intake.OrganizerPublicationReviewPacket
 ) {
   return publicationPacketReady(packet) || item.publishStatus === "published";
-}
-
-function organizerItemStatus(
-  item: Intake.OrganizerIntakeItem,
-  packet?: Intake.OrganizerPublicationReviewPacket
-): {label: string; tone: "neutral" | "warning" | "danger" | "success"} {
-  if ((packet?.dataBlockers.length ?? 0) > 0 || item.blockers.length > 0) {
-    return {label: "blocked", tone: "danger"};
-  }
-  if ((packet?.evidenceSummary.manualReportsWithoutArtifacts ?? 0) > 0 ||
-      item.reviewStatus.includes("evidence")) {
-    return {label: "needs evidence", tone: "warning"};
-  }
-  if (item.surfaceSummary.ambiguous > 0 || item.surfaceSummary.candidate > 0) {
-    return {label: "resolve", tone: "warning"};
-  }
-  if (item.publishStatus === "published") return {label: "published", tone: "success"};
-  return {label: "review", tone: "neutral"};
 }
 
 function organizerEvidenceRows(
@@ -837,26 +875,6 @@ function decisionBlockerCount(
     (packet.evidenceSummary.manualReportsWithoutArtifacts > 0 && !reportsAcknowledged ? 1 : 0);
 }
 
-export function organizerEntityEntryId(entityId: string) {
-  return `entity:${entityId}`;
-}
-
-export function organizerEntityQueueItem(
-  item: Intake.OrganizerIntakeItem,
-  packet?: Intake.OrganizerPublicationReviewPacket
-) {
-  const status = organizerItemStatus(item, packet);
-  return {
-    description: `${activityLabel(packet)} · ${marketLabel(item)}`,
-    id: organizerEntityEntryId(item.entityId),
-    initials: initialsForLabel(item.displayName),
-    meta: `${item.surfaceSummary.total} surfaces · ${packet?.evidenceSummary.manualReportsWithoutArtifacts ?? 0} reports`,
-    status: status.label,
-    statusTone: status.tone,
-    title: item.displayName,
-  };
-}
-
 function organizerSearchText(item: Intake.OrganizerIntakeItem) {
   return [
     item.displayName,
@@ -961,12 +979,21 @@ function organizerCandidateQueueItem(
     hasDraft
   );
   return {
+    age: ageLabel(candidate.observedAt),
+    ageDays: ageDays(candidate.observedAt),
+    blocker: organizerCandidateChecklistRows(candidate, duplicateCandidateIds)
+      .find((row) => !row.passed)?.label ?? "—",
+    blockerKey: organizerCandidateChecklistRows(candidate, duplicateCandidateIds)
+      .find((row) => !row.passed)?.id ?? null,
     description: `${candidate.platform} · ${candidateMarketLabel(candidate)}`,
     id: `candidate:${candidate.candidateId}`,
     initials: initialsForLabel(candidate.title),
+    kind: "Candidate",
+    market: candidateMarketLabel(candidate),
     meta: candidate.reviewContext ?
       `${candidate.reviewContext.recordStatus.replaceAll("_", " ")} · verified ${candidate.reviewContext.verifiedAt ?? "date unavailable"}` :
       `#${candidate.rank} · ${candidate.reviewAction.replaceAll("_", " ")}`,
+    source: candidate.platform,
     status: status.label,
     statusTone: status.tone,
     title: candidate.title,
@@ -1129,18 +1156,16 @@ function marketLabelForSlug(slug: string) {
     .join(" ");
 }
 
-function activityLabel(packet?: Intake.OrganizerPublicationReviewPacket) {
-  return packet?.identity.activity.primaryActivityKind
-    ?.replaceAll(/([a-z])([A-Z])/gu, "$1 $2") ?? "Organizer";
+function ageDays(value: string | null | undefined) {
+  if (!value) return null;
+  const timestamp = Date.parse(value);
+  if (!Number.isFinite(timestamp)) return null;
+  return Math.max(0, Math.floor((Date.now() - timestamp) / 86_400_000));
 }
 
-function marketLabel(item: Intake.OrganizerIntakeItem) {
-  return item.markets.map((market) => market.displayName).join(", ") || "Market unassigned";
-}
-
-function initialsForLabel(label: string) {
-  return label.split(/\s+/u).filter(Boolean).slice(0, 2)
-    .map((part) => part[0]?.toUpperCase()).join("") || "?";
+function ageLabel(value: string | null | undefined) {
+  const days = ageDays(value);
+  return days === null ? "—" : days === 0 ? "Today" : `${days}d`;
 }
 
 function stageTitle(stage: OrganizerWorkbenchStage) {

@@ -256,7 +256,7 @@ export function useOrganizerIntakeController({
           "Resolve publication packet blockers before approving this organizer." :
           "Generate a publication review packet before approving this organizer."
       );
-      return;
+      return false;
     }
     const manualReportCount =
       publicationPacket?.evidenceSummary.manualReportsWithoutArtifacts ?? 0;
@@ -264,7 +264,7 @@ export function useOrganizerIntakeController({
       manualReportCount > 0 &&
       manualReportAcknowledgements[item.entityId] !== true) {
       onError("Acknowledge manual reports before approving this organizer.");
-      return;
+      return false;
     }
     const checklist = {
       ...intakeChecklistForDecision(item, decision),
@@ -281,12 +281,12 @@ export function useOrganizerIntakeController({
       onError(
         "Confirm the visibility-specific checks before exposing this organizer."
       );
-      return;
+      return false;
     }
     if (decision === "approve_public" &&
       !Object.values(checklist).every(Boolean)) {
       onError("Resolve review gates before approving this organizer.");
-      return;
+      return false;
     }
     const note = decisionNotes[item.entityId]?.trim() ||
       defaultIntakeDecisionNote(item, decision);
@@ -301,7 +301,7 @@ export function useOrganizerIntakeController({
       note,
     };
     const operation = beginOperation();
-    if (!operation) return;
+    if (!operation) return false;
     onError(null);
     onNotice(null);
     try {
@@ -313,12 +313,14 @@ export function useOrganizerIntakeController({
       onNotice(
         `Recorded ${decisionLabel(decision)} for ${item.displayName}.`
       );
+      return true;
     } catch (decisionError) {
       onError(
         decisionError instanceof Error ?
           decisionError.message :
           "Unable to record organizer intake decision."
       );
+      return false;
     } finally {
       endOperation(operation);
     }
@@ -341,7 +343,7 @@ export function useOrganizerIntakeController({
     const entityId = candidate.existingEntityMatches[0]?.entityId;
     if (!entityId) {
       onError("Choose a matched organizer before attaching this surface.");
-      return;
+      return false;
     }
     const payload: AdminRecordOrganizerCurationPayload = {
       operationType: "attach_surface",
@@ -351,7 +353,7 @@ export function useOrganizerIntakeController({
       reason: `Search candidate ${candidate.candidateId} belongs to ${entityId}.`,
     };
     const operation = beginOperation();
-    if (!operation) return;
+    if (!operation) return false;
     onError(null);
     onNotice(null);
     try {
@@ -361,12 +363,14 @@ export function useOrganizerIntakeController({
         [candidate.candidateId]: response,
       }));
       onNotice(`Recorded curation attach for ${candidate.title}.`);
+      return true;
     } catch (curationError) {
       onError(
         curationError instanceof Error ?
           curationError.message :
           "Unable to record organizer curation operation."
       );
+      return false;
     } finally {
       endOperation(operation);
     }

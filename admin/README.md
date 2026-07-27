@@ -301,15 +301,24 @@ Incoming, Verify, Resolve, and Ready stages and highlights the human exception
 queue. It is read-only in both sample and live mode: the browser cannot request
 a run, fetch a source, call a model, deploy a rule, or publish a listing.
 
-Event Intake review decisions are overlaid onto each refreshed Supply Intake
-projection, so operator status and field edits remain stable as a new completed
-run becomes current. Event Intake remains a review surface; the separate external-event
-pipeline still owns identity, location, dedupe, and import-policy gates. An
-orphan row is labeled `organizer required`, links its direct event evidence,
-shows the organizer evidence captured from the source, and cannot pass the
-Intake approval checklist until a canonical organizer is attributed. Its
-paired organizer lead appears in Organizer Intake through the existing
-candidate-to-draft flow.
+Event Intake is one batch workspace rather than a queue plus a parallel
+Marketing-derived diagnostics screen. Incoming source rows and event-candidate
+rows use stage-specific columns. Candidate stages are mutually exclusive,
+upcoming work is ordered by the Operations-projected expiry, and passed events
+stay reviewable in a separate filter but cannot be approved. Editing happens in
+the inspector; decisions persist changed fields only as audited before/after
+pairs and decided rows stay in the current visual snapshot until Refresh.
+The inspector keeps diagnostics collapsed, compares duplicate candidates in
+place, and reports partial duplicate-resolution failures.
+
+The callable overlays decisions onto each refreshed Supply Intake projection
+and joins an attributed organizer's current Firestore `appVisibility` as a
+fail-closed ceiling. Event Intake remains a review surface; the separate
+external-event pipeline still owns publication, identity, location, dedupe, and
+import-policy gates. An orphan row is labeled `organizer required`, links its
+direct event evidence, and links to the paired organizer discovery lead created
+by Supply Intake. It cannot pass the Intake approval checklist until a
+canonical organizer is attributed.
 
 Live mode calls `adminGetMarketingOpsDashboard`,
 `adminRecordMarketingReviewDecision`, and `adminCreateMarketingContentDraft`.

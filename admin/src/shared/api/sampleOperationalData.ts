@@ -70,13 +70,16 @@ const sourceResult = {
 
 const eventCandidate: MarketingEventCandidate = {
   id: "sample-mumbai-social",
-  normalizedEventKey: "mumbai|sample-social|bandra|2026-07-18",
+  normalizedEventKey: "mumbai|sample-social|bandra|2099-07-18",
   title: "Sample Mumbai social",
   category: "social",
   neighborhood: "Bandra",
   venue: "Sample venue",
-  startDate: "2026-07-18",
-  endDate: "2026-07-18",
+  startDate: "2099-07-18",
+  endDate: "2099-07-18",
+  expiresAt: "2099-07-18T23:59:59.000Z",
+  observedAt: generatedAt,
+  operationRunId: "sample-mumbai-weekly-guide",
   time: "7:00 PM",
   price: "Free",
   sourceResultIds: [sourceResult.id],
@@ -98,6 +101,29 @@ const eventCandidate: MarketingEventCandidate = {
   publishability: "reviewable_needs_verification",
   score: 10,
   warnings: [],
+  attribution: {
+    state: "attributed",
+    organizerEvidence: {
+      name: "Sample Mumbai organizer",
+      url: "https://events.catch.local/sample-organizer",
+    },
+    match: {
+      decision: "exact_source_match",
+      policyId: "sample",
+      threshold: 1,
+      rationale: "Synthetic preview attribution.",
+      matchedEntityId: "sample-mumbai-organizer",
+      score: 1,
+      matchingSignals: ["sample"],
+      blockingKeys: [],
+    },
+  },
+  organizerCeiling: {
+    organizerId: "sample-mumbai-organizer",
+    appVisibility: "hidden",
+    canAppDiscover: false,
+    reason: "The attributed organizer is hidden in the app.",
+  },
 };
 
 const summary = {

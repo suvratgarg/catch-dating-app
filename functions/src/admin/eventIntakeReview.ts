@@ -94,7 +94,9 @@ export async function adminRecordEventIntakeReviewDecisionHandler(
     runId: data.runId ?? null,
     note: data.note,
     checklist: data.checklist,
-    edits: sanitizeForFirestore(data.edits ?? {}),
+    edits: sanitizeForFirestore(
+      data.edits ?? {}
+    ) as EventIntakeReviewDecisionDocument["edits"],
     reviewedByUid: adminContext.uid,
     reviewedAt: timestamp as unknown as
       EventIntakeReviewDecisionDocument["reviewedAt"],

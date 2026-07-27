@@ -901,6 +901,379 @@ const schemaOperationWorkItemSchema = <String, Object?>{
         },
       },
     },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'normalizedPayload': <String, Object?>{
+            'type': 'object',
+            'required': <Object?>[
+              'intake',
+            ],
+            'properties': <String, Object?>{
+              'intake': <String, Object?>{
+                'type': 'object',
+                'required': <Object?>[
+                  'recordType',
+                ],
+                'properties': <String, Object?>{
+                  'recordType': <String, Object?>{
+                    'const': 'event_candidate',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'properties': <String, Object?>{
+          'entityKind': <String, Object?>{
+            'const': 'event',
+          },
+          'normalizedPayload': <String, Object?>{
+            'properties': <String, Object?>{
+              'intake': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'recordType',
+                  'candidate',
+                ],
+                'properties': <String, Object?>{
+                  'recordType': <String, Object?>{
+                    'const': 'event_candidate',
+                  },
+                  'candidate': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': true,
+                    'required': <Object?>[
+                      'id',
+                      'title',
+                      'startDate',
+                      'sourceResultIds',
+                      'reviewState',
+                      'requiresVerification',
+                      'warnings',
+                      'blockerCodes',
+                      'publicationEligibility',
+                    ],
+                    'properties': <String, Object?>{
+                      'id': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'title': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'startDate': <String, Object?>{
+                        'type': 'string',
+                        'maxLength': 40,
+                      },
+                      'sourceResultIds': <String, Object?>{
+                        'type': 'array',
+                        'maxItems': 40,
+                        'items': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 500,
+                        },
+                      },
+                      'reviewState': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'requiresVerification': <String, Object?>{
+                        'type': 'boolean',
+                      },
+                      'warnings': <String, Object?>{
+                        'type': 'array',
+                        'maxItems': 40,
+                        'items': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 500,
+                        },
+                      },
+                      'blockerCodes': <String, Object?>{
+                        'type': 'array',
+                        'maxItems': 40,
+                        'items': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 500,
+                        },
+                      },
+                      'publicationEligibility': <String, Object?>{
+                        'const': 'review_gated',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'normalizedPayload': <String, Object?>{
+            'type': 'object',
+            'required': <Object?>[
+              'intake',
+            ],
+            'properties': <String, Object?>{
+              'intake': <String, Object?>{
+                'type': 'object',
+                'required': <Object?>[
+                  'recordType',
+                ],
+                'properties': <String, Object?>{
+                  'recordType': <String, Object?>{
+                    'const': 'event_source_result',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'properties': <String, Object?>{
+          'entityKind': <String, Object?>{
+            'const': 'source_result',
+          },
+          'normalizedPayload': <String, Object?>{
+            'properties': <String, Object?>{
+              'intake': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'recordType',
+                  'result',
+                ],
+                'properties': <String, Object?>{
+                  'recordType': <String, Object?>{
+                    'const': 'event_source_result',
+                  },
+                  'result': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'id',
+                      'sourceProfileId',
+                      'sourceLabel',
+                      'queryTemplateId',
+                      'resultType',
+                      'title',
+                      'url',
+                      'snippet',
+                      'observedAt',
+                      'status',
+                      'riskFlags',
+                      'operatorNotes',
+                    ],
+                    'properties': <String, Object?>{
+                      'id': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'sourceProfileId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'sourceLabel': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'queryTemplateId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'resultType': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'title': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'url': <String, Object?>{
+                        'type': 'string',
+                        'maxLength': 2000,
+                      },
+                      'snippet': <String, Object?>{
+                        'type': 'string',
+                        'maxLength': 1000,
+                      },
+                      'observedAt': <String, Object?>{
+                        'type': 'string',
+                        'maxLength': 80,
+                      },
+                      'status': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'riskFlags': <String, Object?>{
+                        'type': 'array',
+                        'maxItems': 40,
+                        'items': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 500,
+                        },
+                      },
+                      'operatorNotes': <String, Object?>{
+                        'type': 'string',
+                        'maxLength': 1000,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'normalizedPayload': <String, Object?>{
+            'type': 'object',
+            'required': <Object?>[
+              'intake',
+            ],
+            'properties': <String, Object?>{
+              'intake': <String, Object?>{
+                'type': 'object',
+                'required': <Object?>[
+                  'recordType',
+                ],
+                'properties': <String, Object?>{
+                  'recordType': <String, Object?>{
+                    'const': 'event_source_profile',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'properties': <String, Object?>{
+          'entityKind': <String, Object?>{
+            'const': 'source_profile',
+          },
+          'normalizedPayload': <String, Object?>{
+            'properties': <String, Object?>{
+              'intake': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'recordType',
+                  'profile',
+                ],
+                'properties': <String, Object?>{
+                  'recordType': <String, Object?>{
+                    'const': 'event_source_profile',
+                  },
+                  'profile': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'id',
+                      'label',
+                      'type',
+                      'status',
+                      'cadence',
+                      'riskLevel',
+                      'allowedUse',
+                      'items',
+                    ],
+                    'properties': <String, Object?>{
+                      'id': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'label': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'type': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'status': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'cadence': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'riskLevel': <String, Object?>{
+                        'type': 'string',
+                        'enum': <Object?>[
+                          'low',
+                          'medium',
+                          'high',
+                        ],
+                      },
+                      'allowedUse': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'items': <String, Object?>{
+                        'type': 'array',
+                        'maxItems': 40,
+                        'items': <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'label',
+                            'url',
+                          ],
+                          'properties': <String, Object?>{
+                            'label': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 500,
+                            },
+                            'url': <String, Object?>{
+                              'type': 'string',
+                              'maxLength': 2000,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   ],
   'definitions': <String, Object?>{
     'boundedString': <String, Object?>{
@@ -915,6 +1288,271 @@ const schemaOperationWorkItemSchema = <String, Object?>{
         'type': 'string',
         'minLength': 1,
         'maxLength': 500,
+      },
+    },
+    'eventCandidateIntake': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'recordType',
+        'candidate',
+      ],
+      'properties': <String, Object?>{
+        'recordType': <String, Object?>{
+          'const': 'event_candidate',
+        },
+        'candidate': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': true,
+          'required': <Object?>[
+            'id',
+            'title',
+            'startDate',
+            'sourceResultIds',
+            'reviewState',
+            'requiresVerification',
+            'warnings',
+            'blockerCodes',
+            'publicationEligibility',
+          ],
+          'properties': <String, Object?>{
+            'id': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'title': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'startDate': <String, Object?>{
+              'type': 'string',
+              'maxLength': 40,
+            },
+            'sourceResultIds': <String, Object?>{
+              'type': 'array',
+              'maxItems': 40,
+              'items': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 500,
+              },
+            },
+            'reviewState': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'requiresVerification': <String, Object?>{
+              'type': 'boolean',
+            },
+            'warnings': <String, Object?>{
+              'type': 'array',
+              'maxItems': 40,
+              'items': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 500,
+              },
+            },
+            'blockerCodes': <String, Object?>{
+              'type': 'array',
+              'maxItems': 40,
+              'items': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 500,
+              },
+            },
+            'publicationEligibility': <String, Object?>{
+              'const': 'review_gated',
+            },
+          },
+        },
+      },
+    },
+    'eventSourceResultIntake': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'recordType',
+        'result',
+      ],
+      'properties': <String, Object?>{
+        'recordType': <String, Object?>{
+          'const': 'event_source_result',
+        },
+        'result': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'id',
+            'sourceProfileId',
+            'sourceLabel',
+            'queryTemplateId',
+            'resultType',
+            'title',
+            'url',
+            'snippet',
+            'observedAt',
+            'status',
+            'riskFlags',
+            'operatorNotes',
+          ],
+          'properties': <String, Object?>{
+            'id': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'sourceProfileId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'sourceLabel': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'queryTemplateId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'resultType': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'title': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'url': <String, Object?>{
+              'type': 'string',
+              'maxLength': 2000,
+            },
+            'snippet': <String, Object?>{
+              'type': 'string',
+              'maxLength': 1000,
+            },
+            'observedAt': <String, Object?>{
+              'type': 'string',
+              'maxLength': 80,
+            },
+            'status': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'riskFlags': <String, Object?>{
+              'type': 'array',
+              'maxItems': 40,
+              'items': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 500,
+              },
+            },
+            'operatorNotes': <String, Object?>{
+              'type': 'string',
+              'maxLength': 1000,
+            },
+          },
+        },
+      },
+    },
+    'eventSourceProfileIntake': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'recordType',
+        'profile',
+      ],
+      'properties': <String, Object?>{
+        'recordType': <String, Object?>{
+          'const': 'event_source_profile',
+        },
+        'profile': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'id',
+            'label',
+            'type',
+            'status',
+            'cadence',
+            'riskLevel',
+            'allowedUse',
+            'items',
+          ],
+          'properties': <String, Object?>{
+            'id': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'label': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'type': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'status': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'cadence': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'riskLevel': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'low',
+                'medium',
+                'high',
+              ],
+            },
+            'allowedUse': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'items': <String, Object?>{
+              'type': 'array',
+              'maxItems': 40,
+              'items': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'label',
+                  'url',
+                ],
+                'properties': <String, Object?>{
+                  'label': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 500,
+                  },
+                  'url': <String, Object?>{
+                    'type': 'string',
+                    'maxLength': 2000,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     },
     'orphanEventCandidateIntake': <String, Object?>{

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "generatedFrom": "git ls-files --cached --others --exclude-standard",
   "generatedBy": "node tool/test_inventory.mjs",
-  "total": 596,
+  "total": 595,
   "categories": {
     "firebase_rules": {
       "count": 2,
@@ -410,7 +410,7 @@
       ]
     },
     "tooling": {
-      "count": 146,
+      "count": 144,
       "files": [
         "tool/admin/generate_admin_action_catalog.test.mjs",
         "tool/agent/check_agent_readiness.test.mjs",
@@ -489,9 +489,7 @@
         "tool/firebase_functions.test.mjs",
         "tool/flutter_with_env.test.sh",
         "tool/git/audit_merge_drops.test.mjs",
-        "tool/host_discovery/plan_search_runs.test.mjs",
         "tool/lib/widget_cleanup_ratchet.test.mjs",
-        "tool/marketing/event_guide/event_intake_dashboard_publish_core.test.mjs",
         "tool/marketing/website_meta_contract.test.mjs",
         "tool/organizer_intake/apply_pending_decision_answers.test.mjs",
         "tool/organizer_intake/canonical_evidence_index_core.test.mjs",
@@ -561,7 +559,7 @@
       ]
     },
     "web": {
-      "count": 70,
+      "count": 71,
       "files": [
         "admin/src/app/App.test.tsx",
         "admin/src/features/access/controllers/useAccessReviewController.test.tsx",
@@ -573,6 +571,7 @@
         "admin/src/features/intake/events/api/eventIntakeRepository.test.ts",
         "admin/src/features/intake/events/controllers/eventIntakeReviewDecisionHelpers.test.ts",
         "admin/src/features/intake/events/controllers/useEventIntakeController.test.tsx",
+        "admin/src/features/intake/events/ui/eventIntakeWorkbenchModel.test.ts",
         "admin/src/features/intake/operations/controllers/useIntakeOperationsController.test.tsx",
         "admin/src/features/intake/operations/ui/IntakeOperationsWorkspace.test.tsx",
         "admin/src/features/intake/organizer/controllers/loadOrganizerIntakeBridge.test.ts",

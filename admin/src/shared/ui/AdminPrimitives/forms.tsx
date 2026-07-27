@@ -263,7 +263,7 @@ export function DecisionFooter<TTargetType extends string = string>({
     input: Omit<Parameters<ReviewDecisionHandler>[0], "targetType"> & {
       targetType: TTargetType;
     }
-  ) => Promise<void>;
+  ) => Promise<unknown>;
   onNoteChange: (value: string) => void;
 }) {
   const approveDisabled = Boolean(inFlight || approvalDisabledReason);

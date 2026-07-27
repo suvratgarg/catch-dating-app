@@ -1,6 +1,6 @@
 {
-  "version": 119,
-  "updated": "2026-07-26",
+  "version": 121,
+  "updated": "2026-07-27",
   "owner": "agent_operating_model",
   "entries": [
     {
@@ -3604,21 +3604,20 @@
         "operations/src/workflows/supply-intake/config/freshness_policy.json",
         "operations/src/workflows/supply-intake/config/freshness_policy.schema.json",
         "operations/src/workflows/supply-intake/workflow.mjs",
-        "contracts/operations/work_item.schema.json",
-        "tool/host_discovery/plan_search_runs.mjs"
+        "contracts/operations/work_item.schema.json"
       ],
       "symptom": "A restarted worker repeats fresh queries or source fetches, one 90-day constant governs unrelated work, or the scheduler treats committed tool/host_discovery/runs JSON as live operational state.",
       "guard": {
         "type": "command",
-        "command": "node --test operations/test/freshness.test.mjs operations/test/workflow.test.mjs tool/host_discovery/plan_search_runs.test.mjs && npm --prefix operations run check",
-        "guardEvidence": "planning derives per-query and per-source cadence from immutable coverage records whose parent Operations runs completed, fresh skips cite the covering run, the file-store ledger survives restart, and the compatibility planner emits intents without reading committed run logs"
+        "command": "node --test operations/test/freshness.test.mjs operations/test/workflow.test.mjs && npm --prefix operations run check",
+        "guardEvidence": "planning derives per-query and per-source cadence from immutable coverage records whose parent Operations runs completed, fresh skips cite the covering run, and the file-store ledger survives restart"
       },
       "owner_docs": [
         "docs/operations_platform.md",
         "operations/README.md",
         "docs/plans/host_listing_discovery_architecture.md"
       ],
-      "notes": "Weekly event-guide paths partition publication coverage and the 168-hour bridge bound admits reviewed evidence; neither value is an acquisition fetch cadence. Historical host-discovery run JSON remains compatibility evidence only until downstream source-evidence projections are converged."
+      "notes": "Supply Intake is the only live planner and freshness ledger. Retired host-discovery run JSON is neither compatibility input nor operational evidence."
     },
     {
       "id": "REG-SUPPLY-ACQUISITION-GUARD-001",
@@ -3784,6 +3783,57 @@
         "contracts/operations/README.md"
       ],
       "notes": "Provider/model choice and the monthly ceiling remain an owner decision. The implementation is complete in a fail-closed state; activating it requires the exact accepted policy-gap decision and matching injected provider and ledgers."
+    },
+    {
+      "id": "REG-ADMIN-INTAKE-BATCH-WORKBENCH-001",
+      "title": "Intake batch review loses selection, density, action gates, or state truth",
+      "status": "active",
+      "applies_to": [
+        "admin/src/shared/ui/AdminPrimitives/intake.tsx",
+        "admin/src/shared/ui/AdminPrimitives/intakeWorkbench.tsx",
+        "admin/src/features/intake/organizer/ui",
+        "admin/src/features/intake/events/ui",
+        "admin/src/features/intake/operations/ui",
+        "admin/src/styles.css",
+        "design/admin/components.json"
+      ],
+      "symptom": "An intake route returns to a dashboard-style narrow queue, disposition jumps to the first row, a row disappears or re-sorts before refresh, an ineligible bulk action hides its reason, a partial action silently drops failures, loading and unavailable look empty, keyboard actions lack mouse equivalents, or intake text renders below 12px.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin test -- --run src/shared/ui/AdminPrimitives/intake.test.tsx src/features/intake/ui/intakeWorkbenchDefaults.test.tsx && npm --workspace catch-admin run build && npm --workspace catch-admin run build:storybook",
+        "guardEvidence": "the shared primitive tests prove stable queue order, next-row selection, range selection, partial eligibility, explicit gates, undo, state distinctions, shortcut parity, and the 12px floor; route tests prove every intake consumer uses the task-first shell; production and Storybook builds enforce the registered shared primitive and budgets"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "design/admin/components.json",
+        "admin/README.md"
+      ],
+      "notes": "Intake is an internal batch tool that borrows the Catch palette. The queue owns the viewport; diagnostics and implementation contracts stay secondary."
+    },
+    {
+      "id": "REG-ADMIN-EVENT-INTAKE-URGENCY-001",
+      "title": "Event Intake obscures expiry, organizer attribution, or reviewed field diffs",
+      "status": "active",
+      "applies_to": [
+        "contracts/callables/admin_record_event_intake_review_decision_payload.schema.json",
+        "contracts/firestore/event_intake_review_decisions.schema.json",
+        "functions/src/admin/eventIntakeDashboard.ts",
+        "functions/src/admin/eventIntakeReview.ts",
+        "admin/src/features/intake/events",
+        "admin/src/shared/types/adminTypes.ts"
+      ],
+      "symptom": "A candidate appears in overlapping stages, a passed event can be approved or outranks upcoming work, the UI recomputes an expiry absent from Operations, organizer attribution or its app-visibility ceiling is hidden, an edit posts the whole record, duplicates have no keep/drop action, or a second Marketing-derived Event Intake screen returns.",
+      "guard": {
+        "type": "command",
+        "command": "npm --workspace catch-admin test -- --run src/features/intake/events/ui/eventIntakeWorkbenchModel.test.ts src/features/intake/events/controllers/eventIntakeReviewDecisionHelpers.test.ts src/features/intake/ui/intakeWorkbenchDefaults.test.tsx && npm --prefix functions run build && node --test functions/lib/admin/eventIntakeDashboard.test.js functions/lib/admin/eventIntakeReview.test.js && node tool/run.mjs check web:react-architecture-boundaries",
+        "guardEvidence": "model tests prove exclusive stages, passed-event blocking, upcoming ordering, stale projection state, and changed-field diffs; controller and Functions tests prove snapshot-stable decisions, immutable ids, before/after overlays, and organizer ceilings; architecture checks reject reintroduced AdminMarketing intake imports"
+      },
+      "owner_docs": [
+        "docs/web_surface_architecture.md",
+        "docs/operations_platform.md",
+        "admin/README.md"
+      ],
+      "notes": "Operations work-item expiresAt is the event urgency authority. Event Intake records review decisions only; visibility cannot exceed the attributed organizer and publication remains separately governed."
     }
   ]
 }

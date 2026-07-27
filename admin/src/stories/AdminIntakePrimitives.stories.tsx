@@ -196,7 +196,17 @@ export const AdminIntakeReviewWorkbenchStory: Story = {
   parameters: {
     catchComponent: {
       id: "shared_admin_intake_review_workbench",
-      states: ["populated", "empty-queue", "blocked-decision", "mobile"],
+      states: [
+        "populated",
+        "batch-selection",
+        "partial-eligibility",
+        "inspector-open",
+        "loading",
+        "unavailable",
+        "empty-queue",
+        "blocked-decision",
+        "mobile",
+      ],
     },
   },
   render: () => (

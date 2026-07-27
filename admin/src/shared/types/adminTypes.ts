@@ -1596,6 +1596,9 @@ export interface MarketingEventCandidate {
   score: number;
   warnings: string[];
   blockerCodes?: string[];
+  expiresAt?: string | null;
+  observedAt?: string | null;
+  operationRunId?: string;
   publicationEligibility?: "blocked_orphan" | "review_gated";
   attribution?: {
     state: "orphan" | "attributed";
@@ -1613,6 +1616,12 @@ export interface MarketingEventCandidate {
       matchingSignals: string[];
       blockingKeys: string[];
     };
+  };
+  organizerCeiling?: {
+    organizerId: string | null;
+    appVisibility: "discoverable" | "hidden" | null;
+    canAppDiscover: boolean;
+    reason: string;
   };
   latestDecision?: MarketingLatestDecision | null;
 }

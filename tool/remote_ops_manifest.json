@@ -226,14 +226,14 @@
     {
       "id": "organizer-intake-review-export",
       "category": "data",
-      "status": "active",
+      "status": "retired",
       "safety": "remote-read-local-write-guarded",
       "environments": [
         "dev",
         "staging",
         "prod"
       ],
-      "purpose": "Export live admin organizer-intake curation and review decisions from Firestore into repo-backed projection batches before public website generation.",
+      "purpose": "Historical inventory for the retired repo-backed organizer projection pipeline. Live Supply Intake state and review decisions now remain in Firestore and flow through Operations and authenticated Admin callables.",
       "entrypoints": [
         {
           "kind": "tool-id",
@@ -282,10 +282,6 @@
         {
           "kind": "tool-id",
           "ref": "organizer-intake:publish-event-supply-readiness"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "marketing:event-guide-publish-event-intake-dashboard"
         },
         {
           "kind": "tool-id",

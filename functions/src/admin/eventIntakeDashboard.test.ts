@@ -7,6 +7,7 @@ import {operationRun, operationWorkItem} from
   "../operations/testFixtures";
 import {
   adminGetEventIntakeDashboardHandler,
+  attachOrganizerCeilings,
   overlayEventIntakeDecisions,
 } from "./eventIntakeDashboard";
 
@@ -21,6 +22,7 @@ async function harness() {
     repository,
     now: () => new Date(now),
     loadReviewDecisions: async () => decisions,
+    loadOrganizerCeilings: async () => new Map(),
     checkRateLimit: async (
       _db: FirebaseFirestore.Firestore,
       uid: string,
@@ -32,81 +34,84 @@ async function harness() {
   return {repository, rateLimitCalls, decisions, deps};
 }
 
-test("projects Event Intake from the latest completed Supply runs", async () => {
-  const h = await harness();
-  await seedCompletedRun(h.repository, {
-    runId: "run:mumbai:old",
-    market: "mumbai",
-    updatedAt: "2026-07-20T08:00:00.000Z",
-  });
-  await seedCompletedRun(h.repository, {
-    runId: "run:mumbai:current",
-    market: "mumbai",
-    updatedAt: "2026-07-27T07:00:00.000Z",
-  });
-  await seedCompletedRun(h.repository, {
-    runId: "run:indore:current",
-    market: "indore",
-    updatedAt: "2026-07-27T06:00:00.000Z",
-  });
-  await seedCompletedRun(h.repository, {
-    runId: "run:mumbai:organizer-only",
-    market: "mumbai",
-    updatedAt: "2026-07-27T07:30:00.000Z",
-    intakeScope: "organizer",
-  });
-  await h.repository.createWorkItem(eventCandidateWorkItem({
-    runId: "run:mumbai:old",
-    id: "old-event",
-  }));
-  await h.repository.createWorkItem(eventCandidateWorkItem({
-    runId: "run:mumbai:current",
-    id: "mumbai-event",
-  }));
-  await h.repository.createWorkItem(eventCandidateWorkItem({
-    runId: "run:indore:current",
-    id: "indore-event",
-  }));
-  await h.repository.createWorkItem(sourceResultWorkItem({
-    runId: "run:mumbai:current",
-    id: "mumbai-source",
-  }));
-  await h.repository.createWorkItem(sourceProfileWorkItem({
-    runId: "run:mumbai:current",
-    id: "luma",
-  }));
+test(
+  "projects Event Intake from the latest completed Supply runs",
+  async () => {
+    const h = await harness();
+    await seedCompletedRun(h.repository, {
+      runId: "run:mumbai:old",
+      market: "mumbai",
+      updatedAt: "2026-07-20T08:00:00.000Z",
+    });
+    await seedCompletedRun(h.repository, {
+      runId: "run:mumbai:current",
+      market: "mumbai",
+      updatedAt: "2026-07-27T07:00:00.000Z",
+    });
+    await seedCompletedRun(h.repository, {
+      runId: "run:indore:current",
+      market: "indore",
+      updatedAt: "2026-07-27T06:00:00.000Z",
+    });
+    await seedCompletedRun(h.repository, {
+      runId: "run:mumbai:organizer-only",
+      market: "mumbai",
+      updatedAt: "2026-07-27T07:30:00.000Z",
+      intakeScope: "organizer",
+    });
+    await h.repository.createWorkItem(eventCandidateWorkItem({
+      runId: "run:mumbai:old",
+      id: "old-event",
+    }));
+    await h.repository.createWorkItem(eventCandidateWorkItem({
+      runId: "run:mumbai:current",
+      id: "mumbai-event",
+    }));
+    await h.repository.createWorkItem(eventCandidateWorkItem({
+      runId: "run:indore:current",
+      id: "indore-event",
+    }));
+    await h.repository.createWorkItem(sourceResultWorkItem({
+      runId: "run:mumbai:current",
+      id: "mumbai-source",
+    }));
+    await h.repository.createWorkItem(sourceProfileWorkItem({
+      runId: "run:mumbai:current",
+      id: "luma",
+    }));
 
-  const result = await adminGetEventIntakeDashboardHandler(
-    callableRequest("admin-1", {support: true}),
-    h.deps
-  );
+    const result = await adminGetEventIntakeDashboardHandler(
+      callableRequest("admin-1", {support: true}),
+      h.deps
+    );
 
-  assert.equal(result.bridge.bridgeSource, "operations");
-  assert.equal(result.bridge.generatedAt, "2026-07-27T07:00:00.000Z");
-  assert.deepEqual(
-    (result.bridge.eventCandidates as Array<{id: string}>)
-      .map((candidate) => candidate.id),
-    ["indore-event", "mumbai-event"]
-  );
-  assert.deepEqual(
-    (result.bridge.sourceResults as Array<{id: string}>)
-      .map((result) => result.id),
-    ["mumbai-source"]
-  );
-  assert.deepEqual(
-    (result.bridge.sourceProfiles as Array<{id: string}>)
-      .map((profile) => profile.id),
-    ["luma"]
-  );
-  assert.equal(
-    (result.bridge.summary as Record<string, unknown>).eventCandidates,
-    2
-  );
-  assert.deepEqual(h.rateLimitCalls, [
-    "admin-1:adminGetEventIntakeDashboard",
-  ]);
-  assert.equal(JSON.stringify(result.bridge).includes("old-event"), false);
-});
+    assert.equal(result.bridge.bridgeSource, "operations");
+    assert.equal(result.bridge.generatedAt, "2026-07-27T07:00:00.000Z");
+    assert.deepEqual(
+      (result.bridge.eventCandidates as Array<{id: string}>)
+        .map((candidate) => candidate.id),
+      ["indore-event", "mumbai-event"]
+    );
+    assert.deepEqual(
+      (result.bridge.sourceResults as Array<{id: string}>)
+        .map((result) => result.id),
+      ["mumbai-source"]
+    );
+    assert.deepEqual(
+      (result.bridge.sourceProfiles as Array<{id: string}>)
+        .map((profile) => profile.id),
+      ["luma"]
+    );
+    assert.equal(
+      (result.bridge.summary as Record<string, unknown>).eventCandidates,
+      2
+    );
+    assert.deepEqual(h.rateLimitCalls, [
+      "admin-1:adminGetEventIntakeDashboard",
+    ]);
+    assert.equal(JSON.stringify(result.bridge).includes("old-event"), false);
+  }
+);
 
 test("review decisions survive refresh and preserve projection ids",
   async () => {
@@ -126,7 +131,10 @@ test("review decisions survive refresh and preserve projection ids",
       decision: "approve",
       decisionStatus: "approved",
       note: "Official source and venue verified.",
-      edits: {id: "attempted-rewrite", title: "Verified candidate"},
+      edits: {
+        id: {before: "candidate-1", after: "attempted-rewrite"},
+        title: {before: "candidate-1", after: "Verified candidate"},
+      },
       reviewedByUid: "admin-1",
       reviewedAt: "2026-07-27T07:30:00.000Z",
     });
@@ -147,39 +155,35 @@ test("review decisions survive refresh and preserve projection ids",
     );
   });
 
-test("fails closed on an invalid Operations projection", async () => {
-  const h = await harness();
-  await seedCompletedRun(h.repository, {
-    runId: "run:mumbai:current",
-    market: "mumbai",
-    updatedAt: "2026-07-27T07:00:00.000Z",
+test("Operations storage fails closed before an invalid projection is read",
+  async () => {
+    const h = await harness();
+    await seedCompletedRun(h.repository, {
+      runId: "run:mumbai:current",
+      market: "mumbai",
+      updatedAt: "2026-07-27T07:00:00.000Z",
+    });
+    await assert.rejects(
+      h.repository.createWorkItem(operationWorkItem({
+        workItemId: "work:invalid",
+        runId: "run:mumbai:current",
+        normalizedPayload: {
+          intake: {
+            recordType: "event_candidate",
+            candidate: {title: "Missing id"},
+          },
+        },
+      })),
+      (error: unknown) => {
+        assert.equal((error as {code?: string}).code, "invalid_entity");
+        assert.match(
+          (error as Error).message,
+          /candidate\/id:schema_required/u
+        );
+        return true;
+      }
+    );
   });
-  await h.repository.createWorkItem(operationWorkItem({
-    workItemId: "work:invalid",
-    runId: "run:mumbai:current",
-    normalizedPayload: {
-      intake: {
-        recordType: "event_candidate",
-        candidate: {title: "Missing id"},
-      },
-    },
-  }));
-
-  await assert.rejects(
-    adminGetEventIntakeDashboardHandler(
-      callableRequest("admin-1", {support: true}),
-      h.deps
-    ),
-    (error: unknown) => {
-      assert.equal((error as {code?: string}).code, "failed-precondition");
-      assert.match(
-        (error as Error).message,
-        /invalid event candidate projection/u
-      );
-      return true;
-    }
-  );
-});
 
 test("returns an explicit empty Operations projection", async () => {
   const h = await harness();
@@ -208,7 +212,10 @@ test("overlayEventIntakeDecisions preserves source ids across edits", () => {
     decision: "needs_changes",
     decisionStatus: "needs_changes",
     note: "Replace the placeholder source.",
-    edits: {id: "attempted-rewrite", title: "Needs a real source"},
+    edits: {
+      id: {before: "source-1", after: "attempted-rewrite"},
+      title: {before: "Source", after: "Needs a real source"},
+    },
     reviewedByUid: "admin-1",
     reviewedAt: "2026-07-11T00:00:00.000Z",
   }]);
@@ -216,6 +223,37 @@ test("overlayEventIntakeDecisions preserves source ids across edits", () => {
     Array<Record<string, unknown>>;
   assert.equal(sourceResults[0].id, "source-1");
   assert.equal(sourceResults[0].status, "needs_changes");
+});
+
+test("attaches the attributed organizer app visibility ceiling", () => {
+  const bridge = attachOrganizerCeilings({
+    eventCandidates: [{
+      id: "attributed",
+      attribution: {
+        state: "attributed",
+        match: {matchedEntityId: "organizer-1"},
+      },
+    }, {
+      id: "orphan",
+      attribution: {
+        state: "orphan",
+        match: {matchedEntityId: null},
+      },
+    }],
+  }, new Map([["organizer-1", {appVisibility: "hidden"}]]));
+  const candidates =
+    bridge.eventCandidates as Array<Record<string, unknown>>;
+  assert.deepEqual(candidates[0].organizerCeiling, {
+    organizerId: "organizer-1",
+    appVisibility: "hidden",
+    canAppDiscover: false,
+    reason: "The attributed organizer is hidden in the app.",
+  });
+  assert.equal(
+    (candidates[1].organizerCeiling as Record<string, unknown>)
+      .canAppDiscover,
+    false
+  );
 });
 
 test("blocks viewer-only admins", async () => {

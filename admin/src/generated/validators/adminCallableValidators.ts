@@ -2836,7 +2836,20 @@ const model = {
         },
         "edits": {
           "type": "object",
-          "additionalProperties": true
+          "description": "Changed fields only. Each entry freezes the reviewed before and after values so extractor-learning and audit consumers can distinguish a correction from a whole-record resubmission.",
+          "maxProperties": 40,
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "before",
+              "after"
+            ],
+            "properties": {
+              "before": {},
+              "after": {}
+            }
+          }
         },
         "checklist": {
           "type": "object",
@@ -5226,6 +5239,123 @@ const model = {
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": [
+                  "intake"
+                ],
+                "properties": {
+                  "intake": {
+                    "type": "object",
+                    "required": [
+                      "recordType"
+                    ],
+                    "properties": {
+                      "recordType": {
+                        "const": "event_candidate"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "entityKind": {
+                "const": "event"
+              },
+              "normalizedPayload": {
+                "properties": {
+                  "intake": {
+                    "$ref": "#/definitions/eventCandidateIntake"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": [
+                  "intake"
+                ],
+                "properties": {
+                  "intake": {
+                    "type": "object",
+                    "required": [
+                      "recordType"
+                    ],
+                    "properties": {
+                      "recordType": {
+                        "const": "event_source_result"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "entityKind": {
+                "const": "source_result"
+              },
+              "normalizedPayload": {
+                "properties": {
+                  "intake": {
+                    "$ref": "#/definitions/eventSourceResultIntake"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": [
+                  "intake"
+                ],
+                "properties": {
+                  "intake": {
+                    "type": "object",
+                    "required": [
+                      "recordType"
+                    ],
+                    "properties": {
+                      "recordType": {
+                        "const": "event_source_profile"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "entityKind": {
+                "const": "source_profile"
+              },
+              "normalizedPayload": {
+                "properties": {
+                  "intake": {
+                    "$ref": "#/definitions/eventSourceProfileIntake"
+                  }
+                }
+              }
+            }
+          }
         }
       ],
       "definitions": {
@@ -5239,6 +5369,217 @@ const model = {
           "maxItems": 40,
           "items": {
             "$ref": "#/definitions/boundedString"
+          }
+        },
+        "eventCandidateIntake": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "recordType",
+            "candidate"
+          ],
+          "properties": {
+            "recordType": {
+              "const": "event_candidate"
+            },
+            "candidate": {
+              "type": "object",
+              "additionalProperties": true,
+              "required": [
+                "id",
+                "title",
+                "startDate",
+                "sourceResultIds",
+                "reviewState",
+                "requiresVerification",
+                "warnings",
+                "blockerCodes",
+                "publicationEligibility"
+              ],
+              "properties": {
+                "id": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "title": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "startDate": {
+                  "type": "string",
+                  "maxLength": 40
+                },
+                "sourceResultIds": {
+                  "type": "array",
+                  "maxItems": 40,
+                  "items": {
+                    "$ref": "#/definitions/boundedString"
+                  }
+                },
+                "reviewState": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "requiresVerification": {
+                  "type": "boolean"
+                },
+                "warnings": {
+                  "$ref": "#/definitions/boundedStringArray"
+                },
+                "blockerCodes": {
+                  "$ref": "#/definitions/boundedStringArray"
+                },
+                "publicationEligibility": {
+                  "const": "review_gated"
+                }
+              }
+            }
+          }
+        },
+        "eventSourceResultIntake": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "recordType",
+            "result"
+          ],
+          "properties": {
+            "recordType": {
+              "const": "event_source_result"
+            },
+            "result": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "sourceProfileId",
+                "sourceLabel",
+                "queryTemplateId",
+                "resultType",
+                "title",
+                "url",
+                "snippet",
+                "observedAt",
+                "status",
+                "riskFlags",
+                "operatorNotes"
+              ],
+              "properties": {
+                "id": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "sourceProfileId": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "sourceLabel": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "queryTemplateId": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "resultType": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "title": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "url": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "snippet": {
+                  "type": "string",
+                  "maxLength": 1000
+                },
+                "observedAt": {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                "status": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "riskFlags": {
+                  "$ref": "#/definitions/boundedStringArray"
+                },
+                "operatorNotes": {
+                  "type": "string",
+                  "maxLength": 1000
+                }
+              }
+            }
+          }
+        },
+        "eventSourceProfileIntake": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "recordType",
+            "profile"
+          ],
+          "properties": {
+            "recordType": {
+              "const": "event_source_profile"
+            },
+            "profile": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "label",
+                "type",
+                "status",
+                "cadence",
+                "riskLevel",
+                "allowedUse",
+                "items"
+              ],
+              "properties": {
+                "id": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "label": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "type": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "status": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "cadence": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "riskLevel": {
+                  "type": "string",
+                  "enum": [
+                    "low",
+                    "medium",
+                    "high"
+                  ]
+                },
+                "allowedUse": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "items": {
+                  "type": "array",
+                  "maxItems": 40,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "label",
+                      "url"
+                    ],
+                    "properties": {
+                      "label": {
+                        "$ref": "#/definitions/boundedString"
+                      },
+                      "url": {
+                        "type": "string",
+                        "maxLength": 2000
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "orphanEventCandidateIntake": {

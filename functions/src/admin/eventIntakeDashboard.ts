@@ -31,11 +31,19 @@ interface EventIntakeDashboardDeps {
   loadReviewDecisions?: (
     db: FirebaseFirestore.Firestore
   ) => Promise<Array<Record<string, unknown>>>;
+  loadOrganizerCeilings?: (
+    db: FirebaseFirestore.Firestore,
+    organizerIds: string[]
+  ) => Promise<Map<string, OrganizerCeiling>>;
   checkRateLimit?: (
     db: FirebaseFirestore.Firestore,
     uid: string,
     action: string
   ) => Promise<void>;
+}
+
+interface OrganizerCeiling {
+  appVisibility: "discoverable" | "hidden" | null;
 }
 
 const defaultDeps: EventIntakeDashboardDeps = {
@@ -85,9 +93,15 @@ export async function adminGetEventIntakeDashboardHandler(
     await loadReviewDecisions(db);
   const generatedAt = runs[0]?.updatedAt ??
     (deps.now?.() ?? new Date()).toISOString();
+  const projectedBridge =
+    projectOperationsBridge({runs, workItems, generatedAt});
+  const organizerIds = eventOrganizerIds(projectedBridge);
+  const organizerCeilings = deps.loadOrganizerCeilings ?
+    await deps.loadOrganizerCeilings(db, organizerIds) :
+    await loadOrganizerCeilings(db, organizerIds);
   return {
     bridge: overlayEventIntakeDecisions(
-      projectOperationsBridge({runs, workItems, generatedAt}),
+      attachOrganizerCeilings(projectedBridge, organizerCeilings),
       decisions
     ),
   };
@@ -177,7 +191,17 @@ function projectOperationsBridge({
       recordType === "event_candidate" ||
       recordType === "orphan_event_candidate"
     ) {
-      addProjection(eventCandidates, intake.candidate, item, "event candidate");
+      addProjection(
+        eventCandidates,
+        {
+          ...(recordValue(intake.candidate) ?? {}),
+          expiresAt: item.expiresAt,
+          operationRunId: item.runId,
+          observedAt: item.evidenceRefs[0]?.observedAt ?? item.createdAt,
+        },
+        item,
+        "event candidate"
+      );
     }
   }
   const profiles = [...sourceProfiles.values()].sort(compareById);
@@ -260,6 +284,70 @@ function projectOperationsBridge({
     dedupeGroups: [],
     auditTrail: [],
     commands: {},
+  };
+}
+
+function eventOrganizerIds(
+  bridge: Record<string, unknown>
+): string[] {
+  return [...new Set(asArray(bridge.eventCandidates).flatMap((value) => {
+    const candidate = recordValue(value);
+    const attribution = recordValue(candidate?.attribution);
+    const match = recordValue(attribution?.match);
+    const organizerId = nonEmptyString(match?.matchedEntityId);
+    return organizerId ? [organizerId] : [];
+  }))].sort();
+}
+
+async function loadOrganizerCeilings(
+  db: FirebaseFirestore.Firestore,
+  organizerIds: string[]
+): Promise<Map<string, OrganizerCeiling>> {
+  if (organizerIds.length === 0) return new Map();
+  const refs = organizerIds.map((organizerId) =>
+    db.collection("organizers").doc(organizerId));
+  const snapshots = await db.getAll(...refs);
+  return new Map(snapshots.map((snapshot, index) => {
+    const data = snapshot.exists ? snapshot.data() ?? {} : {};
+    const appVisibility = data.appVisibility === "discoverable" ||
+      data.appVisibility === "hidden" ?
+      data.appVisibility :
+      null;
+    return [organizerIds[index], {appVisibility}];
+  }));
+}
+
+export function attachOrganizerCeilings(
+  bridge: Record<string, unknown>,
+  ceilings: Map<string, OrganizerCeiling>
+): Record<string, unknown> {
+  return {
+    ...bridge,
+    eventCandidates: asArray(bridge.eventCandidates).map((value) => {
+      const candidate = recordValue(value) ?? {};
+      const attribution = recordValue(candidate.attribution);
+      const match = recordValue(attribution?.match);
+      const organizerId = nonEmptyString(match?.matchedEntityId);
+      const appVisibility = organizerId ?
+        ceilings.get(organizerId)?.appVisibility ?? null :
+        null;
+      return {
+        ...candidate,
+        organizerCeiling: {
+          organizerId,
+          appVisibility,
+          canAppDiscover: appVisibility === "discoverable",
+          reason: !organizerId ?
+            "Attribute a canonical organizer before app visibility can " +
+              "be reviewed." :
+            appVisibility === "discoverable" ?
+              "The attributed organizer permits app discovery." :
+              appVisibility === "hidden" ?
+                "The attributed organizer is hidden in the app." :
+                "The attributed organizer visibility could not be verified.",
+        },
+      };
+    }),
   };
 }
 
@@ -366,13 +454,14 @@ function overlayDecisionObject(
   const decision = id ? byTarget.get(`${targetType}:${id}`) : null;
   if (!decision) return item;
   const edits = recordValue(decision.edits) ?? {};
+  const editValues = afterValuesFromEditDiff(edits);
   const decisionStatus =
     nonEmptyString(decision.decisionStatus) ?? "needs_changes";
   const stateField =
     targetType === "event_candidate" ? "reviewState" : "status";
   return {
     ...item,
-    ...edits,
+    ...editValues,
     id,
     [stateField]: decisionStatus,
     latestDecision: {
@@ -382,6 +471,19 @@ function overlayDecisionObject(
       reviewedAt: isoFromTimestamp(decision.reviewedAt),
     },
   };
+}
+
+function afterValuesFromEditDiff(
+  edits: Record<string, unknown>
+): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(edits).flatMap(([field, value]) => {
+    const diff = recordValue(value);
+    if (diff && Object.prototype.hasOwnProperty.call(diff, "after")) {
+      return [[field, diff.after]];
+    }
+    // Preserve reads of legacy flat decisions written before diff payloads.
+    return [[field, value]];
+  }));
 }
 
 function asArray(value: unknown): unknown[] {

@@ -26,7 +26,17 @@
     "note": {"type": "string", "minLength": 1, "maxLength": 2000},
     "edits": {
       "type": "object",
-      "additionalProperties": true
+      "description": "Changed fields only. Each entry freezes the reviewed before and after values so extractor-learning and audit consumers can distinguish a correction from a whole-record resubmission.",
+      "maxProperties": 40,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["before", "after"],
+        "properties": {
+          "before": {},
+          "after": {}
+        }
+      }
     },
     "checklist": {
       "type": "object",

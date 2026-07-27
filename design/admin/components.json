@@ -1684,7 +1684,7 @@
       "id": "shared_admin_intake_review_workbench",
       "kind": "shared-primitive",
       "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
+      "source": "admin/src/shared/ui/AdminPrimitives/intakeWorkbench.tsx",
       "exportName": "AdminIntakeReviewWorkbench",
       "css": [
         "admin/src/styles.css"
@@ -1695,12 +1695,17 @@
         "exportName": "AdminIntakeReviewWorkbenchStory",
         "states": [
           "populated",
+          "batch-selection",
+          "partial-eligibility",
+          "inspector-open",
+          "loading",
+          "unavailable",
           "empty-queue",
           "blocked-decision",
           "mobile"
         ]
       },
-      "notes": "Shared master-detail review shell for intake queues, evidence, readiness, and sticky audited decisions."
+      "notes": "Shared full-height intake operations workbench with a compact table queue, stable multi-selection, partial-safe bulk actions, keyboard and mouse parity, explicit loading/empty/unavailable states, and a collapsible evidence inspector."
     },
     {
       "id": "shared_admin_intake_section",

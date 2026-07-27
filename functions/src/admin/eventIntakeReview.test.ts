@@ -165,7 +165,12 @@ function approvalPayload(overrides: FakeData = {}) {
     runId: "mumbai-2026-06-22-weekly-event-guide",
     checklist: completeChecklist(),
     note: "Manual event intake QA complete.",
-    edits: {title: "Rooftop Quiz Night"},
+    edits: {
+      title: {
+        before: "Rooftop Quiz",
+        after: "Rooftop Quiz Night",
+      },
+    },
     ...overrides,
   };
 }
@@ -211,7 +216,12 @@ test("adminRecordEventIntakeReviewDecisionHandler records approval decision",
         runId: "mumbai-2026-06-22-weekly-event-guide",
         note: "Manual event intake QA complete.",
         checklist: completeChecklist(),
-        edits: {title: "Rooftop Quiz Night"},
+        edits: {
+          title: {
+            before: "Rooftop Quiz",
+            after: "Rooftop Quiz Night",
+          },
+        },
         reviewedByUid: "admin-1",
         reviewedAt: "SERVER_TIMESTAMP",
         updatedAt: "SERVER_TIMESTAMP",

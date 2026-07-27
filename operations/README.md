@@ -153,7 +153,7 @@ Run from the repository root or from this package. All commands emit a stable
 JSON envelope on stdout; failures emit a JSON error envelope on stderr.
 
 ```sh
-# Inspect currently available legacy artifacts and create a deterministic plan.
+# Create a deterministic plan from the latest immutable market input snapshot.
 node operations/src/cli/main.mjs plan \
   --market mumbai --through 2026-07-28
 
