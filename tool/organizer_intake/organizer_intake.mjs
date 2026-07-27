@@ -3638,11 +3638,11 @@ function loadOperationsDiscoveryPlan() {
       schemaVersion: 1,
       generatedFrom: {
         searchMatrix:
-          "operations/src/workflows/supply-intake/config/search_matrix.json",
+          "supply-intake:search-matrix",
         targetCategories:
-          "operations/src/workflows/supply-intake/config/target_categories.json",
+          "supply-intake:target-categories",
         queryTemplates:
-          "operations/src/workflows/supply-intake/config/query_templates.json",
+          "supply-intake:query-templates",
         batches: [],
         runs: [],
       },
@@ -3708,9 +3708,9 @@ function buildDiscoverySearchPlan({launchCitySlugs, searchPlan}) {
     warnings: searchPlan.warnings ?? [],
     commands: {
       configure:
-        "Review operations/src/workflows/supply-intake/config/.",
+        "Review the Supply Intake discovery policy.",
       regenerate:
-        "node operations/src/cli/main.mjs plan --workflow supply-intake",
+        "catch-operations plan --workflow supply-intake",
       capture:
         "node tool/organizer_intake/capture_search_results.mjs " +
         "--search-plan OPERATIONS_PLAN_EXPORT " +
