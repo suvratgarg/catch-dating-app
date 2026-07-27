@@ -37,17 +37,19 @@ import {
   type OrganizerWorkbenchEntry,
 } from "./organizerIntakeBulkActions";
 import {
+  candidateMarketLabel,
   initialsForLabel,
+  marketLabelForSlug,
+  organizerIntakeAgeDays as ageDays,
+  organizerIntakeAgeLabel as ageLabel,
   organizerEntityEntryId,
   organizerEntityQueueItem,
   organizerItemStatus,
   organizerMarketLabel as marketLabel,
 } from "./organizerIntakeQueueItems";
 
-export {
-  organizerEntityEntryId,
-  organizerEntityQueueItem,
-} from "./organizerIntakeQueueItems";
+export {organizerEntityEntryId, organizerEntityQueueItem} from
+  "./organizerIntakeQueueItems";
 
 type OrganizerWorkbenchStage = "incoming" | "verify" | "resolve" | "ready";
 type OrganizerQueueFilter = "all" | "attention" | "ready";
@@ -111,23 +113,6 @@ function OrganizerTaskWorkbench({
     bridge.searchCandidates.duplicateKeys.flatMap((entry) => entry.candidateIds)
   ), [bridge.searchCandidates.duplicateKeys]);
 
-  const draftedCandidateCount = bridge.searchCandidates.candidates.filter(
-    (candidate) =>
-      Boolean(candidate.draftLink || localOrganizerDrafts[candidate.candidateId])
-  ).length;
-  const stageCounts = useMemo(() => ({
-    incoming: stageItems(bridge.items, publicationPacketByEntity, "incoming").length +
-      bridge.searchCandidates.candidates.length - draftedCandidateCount,
-    verify: stageItems(bridge.items, publicationPacketByEntity, "verify").length,
-    resolve: stageItems(bridge.items, publicationPacketByEntity, "resolve").length,
-    ready: stageItems(bridge.items, publicationPacketByEntity, "ready").length +
-      draftedCandidateCount,
-  }), [
-    bridge.items,
-    bridge.searchCandidates.candidates.length,
-    draftedCandidateCount,
-    publicationPacketByEntity,
-  ]);
   const cityOptions = useMemo(() => [
     {value: "all", label: "All launch cities"},
     ...Array.from(new Set(
@@ -236,6 +221,15 @@ function OrganizerTaskWorkbench({
   );
   const candidateChecklist = candidate ?
     organizerCandidateChecklistRows(candidate, duplicateCandidateIds) : [];
+  const entityChecklist = item ?
+    organizerChecklistRows(packet, reportsAcknowledged) : [];
+  const entityEvidence = item ? organizerEvidenceRows(item, packet) : [];
+  const entityImpact = item ?
+    organizerImpactRows(item, packet, visibilityForm) : [];
+  const candidateEvidence = candidate ?
+    organizerCandidateEvidenceRows(candidate) : [];
+  const candidateImpact = candidate ?
+    organizerCandidateImpactRows(candidate) : [];
   const candidateChecklistComplete =
     candidateChecklist.filter((row) => row.passed).length;
   const candidateInFlight = candidate ?
@@ -276,9 +270,8 @@ function OrganizerTaskWorkbench({
     }
   };
 
-  return (
-    <>
-      <AdminIntakeTaskToolbar aria-label="Organizer intake filters">
+  const controls = (
+    <AdminIntakeTaskToolbar aria-label="Organizer intake filters">
         <SearchField
           ariaLabel="Search organizer intake"
           icon={<Search size={15} strokeWidth={1.9} />}
@@ -320,44 +313,26 @@ function OrganizerTaskWorkbench({
             </AdminButton>
           </>
         ) : null}
-      </AdminIntakeTaskToolbar>
-      <AdminIntakeStageRail<OrganizerWorkbenchStage>
-        ariaLabel="Organizer intake stages"
-        options={[
-          {id: "incoming", label: "Incoming", meta: `${stageCounts.incoming} new leads`},
-          {
-            id: "verify",
-            label: "Verify",
-            meta: stageMeta(
-              stageCounts.verify,
-              "need review",
-              livePublicationUnavailable
-            ),
-          },
-          {
-            id: "resolve",
-            label: "Resolve",
-            meta: stageMeta(
-              stageCounts.resolve,
-              "need attention",
-              livePublicationUnavailable
-            ),
-          },
-          {
-            id: "ready",
-            label: "Ready",
-            meta: stageMeta(
-              stageCounts.ready,
-              "handoffs",
-              livePublicationUnavailable
-            ),
-          },
-        ]}
-        value={activeStage}
-        onChange={setStage}
-      />
+    </AdminIntakeTaskToolbar>
+  );
+  const stageControl = (
+    <AdminIntakeStageRail<OrganizerWorkbenchStage>
+      ariaLabel="Organizer intake stages"
+      options={[
+        {id: "incoming", label: "Incoming"},
+        {id: "verify", label: "Verify"},
+        {id: "resolve", label: "Resolve"},
+        {id: "ready", label: "Ready"},
+      ]}
+      value={activeStage}
+      onChange={setStage}
+    />
+  );
+
+  return (
       <AdminIntakeReviewWorkbench
         bulkActions={bulkActions}
+        controls={controls}
         detail={item ? {
           action: packet?.publicPresence.canonicalPath ? (
             <AdminLinkButton
@@ -370,9 +345,13 @@ function OrganizerTaskWorkbench({
               Open preview
             </AdminLinkButton>
           ) : null,
-          checklistRows: organizerChecklistRows(packet, reportsAcknowledged),
-          checklistTitle: "Review checklist",
-          footerActions: (
+          blockers: entityChecklist.filter((row) => !row.passed).map((row) => ({
+            action: row.meta,
+            id: row.id,
+            label: row.label,
+            tone: "warning" as const,
+          })),
+          actions: (
             <>
               <AdminButton
                 disabled={Boolean(inFlight)}
@@ -395,48 +374,78 @@ function OrganizerTaskWorkbench({
               >Approve listing</AdminButton>
             </>
           ),
-          footerHint: organizerDecisionHint(
+          actionGate: organizerDecisionHint(
             decision, packet, manualReports, reportsAcknowledged
           ),
-          impactRows: organizerImpactRows(item, packet, visibilityForm),
-          impactTitle: "Handoff impact",
           initials: initialsForLabel(item.displayName),
-          note: (
-            <AdminIntakeSection>
-              {visibilityForm && surfaceChecklist ? (
-                <organizerIntakeVisibilityControls.OrganizerVisibilityControls
-                  checklist={surfaceChecklist}
-                  entityId={item.entityId}
-                  form={visibilityForm}
-                  setChecklists={setSurfaceChecklists}
-                  setForms={setVisibilityForms}
-                />
-              ) : null}
-              <TextareaField
-                label="Decision note"
-                placeholder="Add evidence or explain why this organizer should advance..."
-                rows={2}
-                value={decisionNotes[item.entityId] ?? ""}
-                onChange={(note) => setDecisionNotes((current) => ({
-                  ...current,
-                  [item.entityId]: note,
-                }))}
-              />
-              {manualReports > 0 ? (
-                <AdminOrganizerIntakeCheckboxField
-                  checked={reportsAcknowledged}
-                  label={`I reviewed ${manualReports} manual report${manualReports === 1 ? "" : "s"} without attached artifacts.`}
-                  onChange={(checked) => setManualReportAcknowledgements((current) => ({
-                    ...current,
-                    [item.entityId]: checked,
-                  }))}
-                />
-              ) : null}
-            </AdminIntakeSection>
-          ),
-          noteTitle: "Decision note",
-          primaryRows: organizerEvidenceRows(item, packet),
-          primaryTitle: "Source evidence",
+          sections: [
+            {
+              id: "evidence",
+              kind: "evidence" as const,
+              rows: entityEvidence,
+              title: "Source evidence",
+            },
+            ...(entityChecklist.length > 0 ? [{
+              id: "checks",
+              kind: "checklist" as const,
+              rows: entityChecklist,
+              title: "Review checklist",
+            }] : []),
+            {
+              id: "impact",
+              kind: "impact" as const,
+              rows: entityImpact,
+              title: "Handoff impact",
+            },
+            {
+              content: (
+                <AdminIntakeSection>
+                  {visibilityForm && surfaceChecklist ? (
+                    <organizerIntakeVisibilityControls.OrganizerVisibilityControls
+                      checklist={surfaceChecklist}
+                      entityId={item.entityId}
+                      form={visibilityForm}
+                      setChecklists={setSurfaceChecklists}
+                      setForms={setVisibilityForms}
+                    />
+                  ) : null}
+                  <TextareaField
+                    label="Decision note"
+                    placeholder="Add evidence or explain why this organizer should advance..."
+                    rows={2}
+                    value={decisionNotes[item.entityId] ?? ""}
+                    onChange={(note) => setDecisionNotes((current) => ({
+                      ...current,
+                      [item.entityId]: note,
+                    }))}
+                  />
+                  {manualReports > 0 ? (
+                    <AdminOrganizerIntakeCheckboxField
+                      checked={reportsAcknowledged}
+                      label={`I reviewed ${manualReports} manual report${manualReports === 1 ? "" : "s"} without attached artifacts.`}
+                      onChange={(checked) => setManualReportAcknowledgements((current) => ({
+                        ...current,
+                        [item.entityId]: checked,
+                      }))}
+                    />
+                  ) : null}
+                </AdminIntakeSection>
+              ),
+              id: "decision-note",
+              kind: "content" as const,
+              title: "Decision note",
+            },
+            {
+              content: (
+                <AdminWorkbenchNote>
+                  Entity {item.entityId} · source-backed review packet
+                </AdminWorkbenchNote>
+              ),
+              id: "diagnostics",
+              kind: "diagnostics" as const,
+              title: "Diagnostics",
+            },
+          ],
           readiness: {
             blockers: decisionBlockerCount(packet, reportsAcknowledged),
             complete: checklistComplete +
@@ -460,9 +469,13 @@ function OrganizerTaskWorkbench({
               Open source
             </AdminLinkButton>
           ),
-          checklistRows: candidateChecklist,
-          checklistTitle: "Candidate checks",
-          footerActions: candidate.existingEntityMatches.length > 0 ? (
+          blockers: candidateChecklist.filter((row) => !row.passed).map((row) => ({
+            action: row.meta,
+            id: row.id,
+            label: row.label,
+            tone: candidateHasDuplicateKey ? "danger" as const : "warning" as const,
+          })),
+          actions: candidate.existingEntityMatches.length > 0 ? (
             <AdminButton
               disabled={candidateInFlight || Boolean(candidateCuration)}
               loading={candidateInFlight}
@@ -491,7 +504,7 @@ function OrganizerTaskWorkbench({
               Create organizer draft
             </AdminButton>
           ),
-          footerHint: candidateDraft ?
+          actionGate: candidateDraft ?
             `Draft ${candidateDraft.organizerId} is unclaimed, hidden, noindex, and crawl-disabled.` :
             candidateCuration ?
             `Recorded at ${candidateCuration.decisionPath}.` :
@@ -500,91 +513,119 @@ function OrganizerTaskWorkbench({
               candidateHasDuplicateKey ?
                 "Resolve the duplicate identity key before creating a canonical draft." :
                 "Creation opens an unclaimed draft in Organizers. Publication, indexing, app visibility, crawling, and ownership remain disabled.",
-          impactRows: organizerCandidateImpactRows(candidate),
-          impactTitle: "Intake impact",
           initials: initialsForLabel(candidate.title),
-          note: (
-            <AdminIntakeSection>
-              <p>
-                {candidate.reviewContext?.reviewNotes ??
-                  candidate.snippet ??
-                  "No search-result snippet was captured for this candidate."}
-              </p>
-              {candidate.reviewContext?.eventSignal ? (
-                <p>{candidate.reviewContext.eventSignal}</p>
-              ) : null}
-              {candidate.reviewContext?.formats.length ? (
-                <p>
-                  Formats: {candidate.reviewContext.formats.join(", ")}
-                </p>
-              ) : null}
-              {candidate.existingEntityMatches.length === 0 &&
-                !candidateDraft &&
-                candidateDraftForm ? (
-                  <AdminIntakeSection>
-                    <AdminFieldGrid columns={2}>
-                      <TextField
-                        label="Organizer name"
-                        readOnly
-                        value={candidateDraftForm.name}
-                        onChange={() => undefined}
-                      />
-                      <TextField
-                        label="Public page slug"
-                        value={candidateDraftForm.publicSlug}
-                        onChange={(publicSlug) =>
-                          setOrganizerDraftForms((current) => ({
-                            ...current,
-                            [candidate.candidateId]: {
-                              ...candidateDraftForm,
-                              publicSlug,
-                            },
-                          }))}
-                      />
-                    </AdminFieldGrid>
-                    <SelectField
-                      label="Organizer type"
-                      options={organizerTypeOptions}
-                      value={candidateDraftForm.organizerType}
-                      onChange={(organizerType) =>
-                        setOrganizerDraftForms((current) => ({
-                          ...current,
-                          [candidate.candidateId]: {
-                            ...candidateDraftForm,
-                            organizerType:
-                              organizerType as
-                                Intake.OrganizerDraftFormState["organizerType"],
-                          },
-                        }))}
-                    />
-                    <AdminWorkbenchNote>
-                      The organizer record receives a separate opaque document
-                      ID. The source title is copied unchanged; corrections use
-                      the audited organizer editor. Member-facing description,
-                      locality, and listing descriptor stay blank until they
-                      are verified.
-                    </AdminWorkbenchNote>
-                    <TextareaField
-                      label="Creation review note"
-                      rows={2}
-                      value={candidateDraftForm.reviewNote}
-                      onChange={(reviewNote) =>
-                        setOrganizerDraftForms((current) => ({
-                          ...current,
-                          [candidate.candidateId]: {
-                            ...candidateDraftForm,
-                            reviewNote,
-                          },
-                        }))}
-                    />
-                  </AdminIntakeSection>
-                ) : null}
-            </AdminIntakeSection>
-          ),
-          noteTitle: candidate.reviewContext ?
-            "Reviewed intake context" : "Captured search context",
-          primaryRows: organizerCandidateEvidenceRows(candidate),
-          primaryTitle: "Source evidence",
+          sections: [
+            {
+              id: "evidence",
+              kind: "evidence" as const,
+              rows: candidateEvidence,
+              title: "Source evidence",
+            },
+            ...(candidateChecklist.length > 0 ? [{
+              id: "checks",
+              kind: "checklist" as const,
+              rows: candidateChecklist,
+              title: "Candidate checks",
+            }] : []),
+            {
+              id: "impact",
+              kind: "impact" as const,
+              rows: candidateImpact,
+              title: "Intake impact",
+            },
+            {
+              content: (
+                <AdminIntakeSection>
+                  <p>
+                    {candidate.reviewContext?.reviewNotes ??
+                      candidate.snippet ??
+                      "No search-result snippet was captured for this candidate."}
+                  </p>
+                  {candidate.reviewContext?.eventSignal ? (
+                    <p>{candidate.reviewContext.eventSignal}</p>
+                  ) : null}
+                  {candidate.reviewContext?.formats.length ? (
+                    <p>Formats: {candidate.reviewContext.formats.join(", ")}</p>
+                  ) : null}
+                  {candidate.existingEntityMatches.length === 0 &&
+                    !candidateDraft &&
+                    candidateDraftForm ? (
+                      <AdminIntakeSection>
+                        <AdminFieldGrid columns={2}>
+                          <TextField
+                            label="Organizer name"
+                            readOnly
+                            value={candidateDraftForm.name}
+                            onChange={() => undefined}
+                          />
+                          <TextField
+                            label="Public page slug"
+                            value={candidateDraftForm.publicSlug}
+                            onChange={(publicSlug) =>
+                              setOrganizerDraftForms((current) => ({
+                                ...current,
+                                [candidate.candidateId]: {
+                                  ...candidateDraftForm,
+                                  publicSlug,
+                                },
+                              }))}
+                          />
+                        </AdminFieldGrid>
+                        <SelectField
+                          label="Organizer type"
+                          options={organizerTypeOptions}
+                          value={candidateDraftForm.organizerType}
+                          onChange={(organizerType) =>
+                            setOrganizerDraftForms((current) => ({
+                              ...current,
+                              [candidate.candidateId]: {
+                                ...candidateDraftForm,
+                                organizerType:
+                                  organizerType as
+                                    Intake.OrganizerDraftFormState["organizerType"],
+                              },
+                            }))}
+                        />
+                        <AdminWorkbenchNote>
+                          The organizer record receives a separate opaque document
+                          ID. The source title is copied unchanged; corrections use
+                          the audited organizer editor. Member-facing description,
+                          locality, and listing descriptor stay blank until they
+                          are verified.
+                        </AdminWorkbenchNote>
+                        <TextareaField
+                          label="Creation review note"
+                          rows={2}
+                          value={candidateDraftForm.reviewNote}
+                          onChange={(reviewNote) =>
+                            setOrganizerDraftForms((current) => ({
+                              ...current,
+                              [candidate.candidateId]: {
+                                ...candidateDraftForm,
+                                reviewNote,
+                              },
+                            }))}
+                        />
+                      </AdminIntakeSection>
+                    ) : null}
+                </AdminIntakeSection>
+              ),
+              id: "context",
+              kind: "content" as const,
+              title: candidate.reviewContext ?
+                "Reviewed intake context" : "Captured search context",
+            },
+            {
+              content: (
+                <AdminWorkbenchNote>
+                  Candidate {candidate.candidateId} · observed {candidate.observedAt}
+                </AdminWorkbenchNote>
+              ),
+              id: "diagnostics",
+              kind: "diagnostics" as const,
+              title: "Diagnostics",
+            },
+          ],
           readiness: {
             blockers: candidateChecklist.length - candidateChecklistComplete,
             complete: candidateChecklistComplete,
@@ -668,6 +709,7 @@ function OrganizerTaskWorkbench({
           availability.runIds.join(","),
         ].join(":")}
         selectedId={selectedEntryId}
+        stageControl={stageControl}
         state={
           activeStage !== "incoming" && livePublicationUnavailable
             ? "unavailable"
@@ -679,16 +721,7 @@ function OrganizerTaskWorkbench({
         }}
         onSelect={setSelectedEntryId}
       />
-    </>
   );
-}
-
-function stageMeta(
-  count: number,
-  label: string,
-  unavailable: boolean
-) {
-  return unavailable ? "— unavailable" : `${count} ${label}`;
 }
 
 function publicationUnavailableMessage(
@@ -1141,31 +1174,6 @@ function organizerCandidateImpactRows(
       value: candidate.reviewContext.existingInventory ? "Attach" : "Net new",
     }] : []),
   ];
-}
-
-function candidateMarketLabel(candidate: Intake.OrganizerSearchCandidate) {
-  return candidate.queryIntent.marketSlug ?
-    marketLabelForSlug(candidate.queryIntent.marketSlug) :
-    "Market unassigned";
-}
-
-function marketLabelForSlug(slug: string) {
-  return slug.split("-")
-    .map((part) => part.length > 0 ?
-      `${part[0]?.toLocaleUpperCase()}${part.slice(1)}` : part)
-    .join(" ");
-}
-
-function ageDays(value: string | null | undefined) {
-  if (!value) return null;
-  const timestamp = Date.parse(value);
-  if (!Number.isFinite(timestamp)) return null;
-  return Math.max(0, Math.floor((Date.now() - timestamp) / 86_400_000));
-}
-
-function ageLabel(value: string | null | undefined) {
-  const days = ageDays(value);
-  return days === null ? "—" : days === 0 ? "Today" : `${days}d`;
 }
 
 function stageTitle(stage: OrganizerWorkbenchStage) {

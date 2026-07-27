@@ -74,31 +74,15 @@ const items: AdminIntakeQueueItem[] = [
 
 function detail(): AdminIntakeWorkbenchDetail {
   return {
+    actionGate: "Approval is blocked until the source is verified.",
+    actions: <button disabled type="button">Approve listing</button>,
     blockers: [{
       action: "Open the official source and confirm ownership.",
       id: "source",
       label: "Source evidence",
       tone: "warning",
     }],
-    checklistRows: [
-      {id: "source", label: "Source reviewed", meta: "required", passed: false},
-    ],
-    checklistTitle: "Checklist",
-    footerActions: <button disabled type="button">Approve listing</button>,
-    footerHint: "Approval is blocked until the source is verified.",
-    impactRows: [{id: "publish", label: "Publish", value: "Separate workflow"}],
-    impactTitle: "Impact",
     initials: "AF",
-    note: <span>Decision note field</span>,
-    noteTitle: "Decision note",
-    primaryRows: [{
-      id: "website",
-      meta: "Primary identity",
-      status: "Current",
-      statusTone: "success",
-      title: "Official website",
-    }],
-    primaryTitle: "Evidence",
     readiness: {blockers: 1, complete: 0, label: "Decision readiness", total: 1},
     sections: [
       {
@@ -112,6 +96,18 @@ function detail(): AdminIntakeWorkbenchDetail {
           title: "Official website",
         }],
         title: "Evidence",
+      },
+      {
+        id: "impact",
+        kind: "impact",
+        rows: [{id: "publish", label: "Publish", value: "Separate workflow"}],
+        title: "Impact",
+      },
+      {
+        content: <span>Decision note field</span>,
+        id: "note",
+        kind: "content",
+        title: "Decision note",
       },
       {
         content: "Run run-123 · revision 2",
@@ -129,11 +125,13 @@ function detail(): AdminIntakeWorkbenchDetail {
 
 function renderWorkbench({
   bulkActions = [],
+  controls,
   onSelect = vi.fn(),
   selectedId = "afterfly",
   workbenchItems = items,
 }: {
   bulkActions?: Parameters<typeof AdminIntakeReviewWorkbench>[0]["bulkActions"];
+  controls?: Parameters<typeof AdminIntakeReviewWorkbench>[0]["controls"];
   onSelect?: (id: string) => void;
   selectedId?: string | null;
   workbenchItems?: AdminIntakeQueueItem[];
@@ -141,6 +139,7 @@ function renderWorkbench({
   return render(
     <AdminIntakeReviewWorkbench
       bulkActions={bulkActions}
+      controls={controls}
       detail={selectedId ? detail() : null}
       items={workbenchItems}
       queueMeta={`${workbenchItems.length} items`}
@@ -159,8 +158,8 @@ describe("AdminIntakeStageRail", () => {
       <AdminIntakeStageRail
         ariaLabel="Intake stages"
         options={[
-          {id: "incoming", label: "Incoming", meta: "2 leads"},
-          {id: "verify", label: "Verify", meta: "1 review"},
+          {id: "incoming", label: "Incoming"},
+          {id: "verify", label: "Verify"},
         ]}
         value="verify"
         onChange={onChange}
@@ -220,6 +219,57 @@ describe("AdminIntakeReviewWorkbench", () => {
     expect((third as HTMLInputElement).checked).toBe(true);
   });
 
+  it("replaces filters with a fixed selection action bar and restores them on clear", async () => {
+    const user = userEvent.setup();
+    renderWorkbench({
+      bulkActions: [{
+        eligibleIds: ["afterfly"],
+        id: "hold",
+        label: "Hold",
+        onApply: vi.fn(),
+      }],
+      controls: <input aria-label="Domain search" />,
+    });
+
+    expect(screen.getByLabelText("Domain search")).toBeTruthy();
+    await user.click(screen.getByRole("checkbox", {name: "Select AFTER FLY"}));
+
+    expect(screen.queryByLabelText("Domain search")).toBeNull();
+    expect(screen.getByLabelText("Selection actions")).toBeTruthy();
+    expect(screen.getByText("1 selected")).toBeTruthy();
+    expect(screen.getByRole("button", {name: "Hold"})).toBeTruthy();
+
+    await user.click(screen.getByRole("button", {name: "Clear"}));
+    expect(screen.getByLabelText("Domain search")).toBeTruthy();
+  });
+
+  it("shows partial eligibility and fully disabled gate reasons as visible text", async () => {
+    const user = userEvent.setup();
+    renderWorkbench({
+      bulkActions: [
+        {
+          eligibleIds: ["courtside"],
+          id: "approve",
+          label: "Approve",
+          onApply: vi.fn(),
+        },
+        {
+          disabledReason: "Ownership review blocks attachment.",
+          eligibleIds: [],
+          id: "attach",
+          label: "Attach",
+          onApply: vi.fn(),
+        },
+      ],
+    });
+
+    await user.click(screen.getByRole("checkbox", {name: "Select all matching"}));
+    expect(screen.getByText("1 eligible; 2 will be skipped.")).toBeTruthy();
+    expect(screen.getByText("Ownership review blocks attachment.")).toBeTruthy();
+    expect((screen.getByRole("button", {name: "Attach 0/3"}) as HTMLButtonElement).disabled)
+      .toBe(true);
+  });
+
   it("applies a partial-safe bulk action and explains skipped records", async () => {
     const user = userEvent.setup();
     const onApply = vi.fn().mockResolvedValue({appliedIds: ["courtside"]});
@@ -252,6 +302,7 @@ describe("AdminIntakeReviewWorkbench", () => {
       onSelect,
     });
 
+    await user.click(screen.getByRole("checkbox", {name: "Select AFTER FLY"}));
     await user.click(screen.getByRole("button", {name: "Hold"}));
     expect(onSelect).toHaveBeenCalledWith("courtside");
     expect(within(screen.getByRole("row", {name: /AFTER FLY/u})).getByText("Hold"))
@@ -271,6 +322,7 @@ describe("AdminIntakeReviewWorkbench", () => {
       }],
     });
 
+    await user.click(screen.getByRole("checkbox", {name: "Select AFTER FLY"}));
     await user.click(screen.getByRole("button", {name: "Hold"}));
     await user.click(await screen.findByRole("button", {name: /Undo/u}));
     expect(onUndo).toHaveBeenCalledWith(["afterfly"]);
@@ -298,12 +350,97 @@ describe("AdminIntakeReviewWorkbench", () => {
     expect(screen.getByText("This stage is clear.")).toBeTruthy();
   });
 
+  it("preserves the table during a retryable refresh error", () => {
+    const onRetry = vi.fn();
+    render(
+      <AdminIntakeReviewWorkbench
+        detail={detail()}
+        items={items}
+        loadError="Refresh failed; showing the last reviewed snapshot."
+        queueMeta="3 items"
+        queueTitle="Queue"
+        selectedId="afterfly"
+        state="error"
+        onRetry={onRetry}
+        onSelect={vi.fn()}
+      />
+    );
+    expect(screen.getByRole("table")).toBeTruthy();
+    expect(screen.getByRole("alert").textContent).toContain(
+      "Refresh failed; showing the last reviewed snapshot."
+    );
+    screen.getByRole("button", {name: "Try again"}).click();
+    expect(onRetry).toHaveBeenCalledTimes(1);
+  });
+
+  it("publishes the complete keyboard map with accessible mouse equivalents", async () => {
+    const user = userEvent.setup();
+    const approve = vi.fn();
+    const hold = vi.fn();
+    const suppress = vi.fn();
+    const onSelect = vi.fn();
+    renderWorkbench({
+      bulkActions: [
+        {eligibleIds: items.map((item) => item.id), id: "approve", label: "Approve", onApply: approve},
+        {eligibleIds: items.map((item) => item.id), id: "hold", label: "Hold", onApply: hold},
+        {eligibleIds: items.map((item) => item.id), id: "suppress", label: "Suppress", onApply: suppress},
+      ],
+      controls: <input aria-label="Domain search" data-intake-search />,
+      onSelect,
+    });
+    const workbench = screen.getByRole("region", {name: "Organizer intake queue"});
+
+    fireEvent.keyDown(workbench, {key: "j"});
+    fireEvent.keyDown(workbench, {key: "k"});
+    expect(onSelect).toHaveBeenCalledWith("courtside");
+    expect(onSelect).toHaveBeenCalledWith("meeple");
+
+    fireEvent.keyDown(workbench, {key: "Enter"});
+    expect(screen.getByRole("complementary", {name: "Candidate review inspector"}))
+      .toBeTruthy();
+    fireEvent.keyDown(workbench, {key: "Escape"});
+    expect(screen.queryByRole("complementary", {name: "Candidate review inspector"}))
+      .toBeNull();
+
+    fireEvent.keyDown(workbench, {key: "/"});
+    expect(document.activeElement).toBe(screen.getByLabelText("Domain search"));
+    await user.click(workbench);
+    fireEvent.keyDown(workbench, {key: "?"});
+    expect(screen.getByRole("dialog", {name: "Intake keyboard shortcuts"}))
+      .toBeTruthy();
+    expect(screen.getByRole("button", {name: "Close shortcuts"})).toBeTruthy();
+
+    fireEvent.keyDown(workbench, {key: "a"});
+    fireEvent.keyDown(workbench, {key: "h"});
+    fireEvent.keyDown(workbench, {key: "s"});
+    expect(approve).toHaveBeenCalledWith(["afterfly"]);
+    expect(hold).toHaveBeenCalledWith(["afterfly"]);
+    expect(suppress).toHaveBeenCalledWith(["afterfly"]);
+
+    expect(screen.getByRole("button", {name: "Review AFTER FLY"})).toBeTruthy();
+    expect(screen.getByRole("button", {name: "Show intake keyboard shortcuts"}))
+      .toBeTruthy();
+  });
+
   it("keeps every active workbench font declaration at twelve pixels or larger", () => {
     const stylesheet = readFileSync(`${process.cwd()}/src/styles.css`, "utf8");
     const start = stylesheet.indexOf("/* Supply Intake batch workbench");
     const end = stylesheet.indexOf("@keyframes intake-skeleton", start);
     const activeWorkbenchCss = stylesheet.slice(start, end);
-    expect(activeWorkbenchCss).not.toMatch(/font(?:-size)?:\s*(?:[0-9]|1[01])px/u);
+    expect(activeWorkbenchCss).not.toMatch(
+      /font(?:-size)?:\s*(?:[0-9]|1[01])px/u
+    );
+  });
+
+  it("lets the shell own workbench height without viewport arithmetic or caps", () => {
+    const stylesheet = readFileSync(`${process.cwd()}/src/styles.css`, "utf8");
+    const rootRule = stylesheet.match(
+      /\.intake-review-workbench\.intake-batch-workbench\s*\{([^}]*)\}/u
+    )?.[1] ?? "";
+    expect(rootRule).not.toMatch(
+      /(?:^|\n)\s*(?:min-|max-)?height\s*:/u
+    );
+    expect(rootRule).not.toContain("calc(");
   });
 });
 

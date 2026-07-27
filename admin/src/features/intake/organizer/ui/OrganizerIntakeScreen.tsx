@@ -3,6 +3,7 @@ import {useNavigate} from "react-router";
 
 import {
   AdminButton,
+  AdminIntakeReviewWorkbench,
   AdminToolbar,
   AdminWorkbenchNote,
 } from "../../../../shared/ui/AdminPrimitives";
@@ -24,7 +25,18 @@ const LazyOrganizerIntakeDiagnostics = lazy(async () => {
 export function OrganizerIntakeScreen() {
   return (
     <Suspense
-      fallback={<AdminWorkbenchNote>Loading organizer intake...</AdminWorkbenchNote>}
+      fallback={(
+        <AdminIntakeReviewWorkbench
+          detail={null}
+          items={[]}
+          queueMeta="Loading live projection"
+          queueTitle="Organizer intake"
+          readOnly
+          selectedId={null}
+          state="loading"
+          onSelect={() => undefined}
+        />
+      )}
     >
       <OrganizerIntakeLoadedScreen />
     </Suspense>

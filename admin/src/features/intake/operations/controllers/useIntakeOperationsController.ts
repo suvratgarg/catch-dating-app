@@ -311,7 +311,14 @@ export function useIntakeOperationsController({
 
   return {
     data: operationsQuery.data ?? null,
-    isLoading: operationsQuery.isPending || operationsQuery.isFetching,
+    errorMessage: operationsQuery.error instanceof Error ?
+      operationsQuery.error.message :
+      operationsQuery.isError ?
+        "Unable to load Supply Intake operations." :
+        null,
+    isError: operationsQuery.isError,
+    isLoading: operationsQuery.isPending && !operationsQuery.data,
+    isRefreshing: operationsQuery.isFetching && Boolean(operationsQuery.data),
     isLoadingMore: loadMoreMutation.isPending,
     loadMore,
     refresh,

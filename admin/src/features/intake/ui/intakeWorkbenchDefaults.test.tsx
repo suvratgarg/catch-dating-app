@@ -39,6 +39,45 @@ function EventHarness() {
   return <EventIntakePreviewWorkspace controller={controller} />;
 }
 
+function OrphanEventHarness() {
+  const controller = useEventIntakeController({
+    onError: vi.fn(),
+    onNotice: vi.fn(),
+  });
+  const first = controller.bridge?.eventCandidates[0];
+  if (!controller.bridge || !first?.attribution) {
+    return <EventIntakePreviewWorkspace controller={controller} />;
+  }
+  const orphan = {
+    ...first,
+    attribution: {
+      ...first.attribution,
+      state: "orphan" as const,
+      match: {
+        ...first.attribution.match,
+        matchedEntityId: null,
+      },
+    },
+    organizerCeiling: {
+      appVisibility: "hidden" as const,
+      canAppDiscover: false,
+      organizerId: null,
+      reason: "Organizer attribution is required before app discovery.",
+    },
+  };
+  return (
+    <EventIntakePreviewWorkspace
+      controller={{
+        ...controller,
+        bridge: {
+          ...controller.bridge,
+          eventCandidates: [orphan, ...controller.bridge.eventCandidates.slice(1)],
+        },
+      }}
+    />
+  );
+}
+
 beforeEach(() => {
   window.localStorage.clear();
 });
@@ -48,6 +87,25 @@ afterEach(() => {
 });
 
 describe("Intake task-first defaults", () => {
+  it("does not import Marketing primitives or retain a parallel tab UI", () => {
+    const root = join(process.cwd(), "src/features/intake");
+    const sourceFiles: string[] = [];
+    const visit = (directory: string) => {
+      for (const entry of readdirSync(directory)) {
+        const path = join(directory, entry);
+        if (statSync(path).isDirectory()) {
+          visit(path);
+        } else if (/\.[jt]sx?$/u.test(entry) && !entry.includes(".test.")) {
+          sourceFiles.push(path);
+        }
+      }
+    };
+    visit(root);
+    const source = sourceFiles.map((path) => readFileSync(path, "utf8")).join("\n");
+    expect(source).not.toMatch(/\bAdminMarketing[A-Z]\w*/u);
+    expect(source).not.toMatch(/\bsetActiveTab\b/u);
+  });
+
   it("does not offer obsolete local organizer diagnostics", async () => {
     const {wrapper} = createQueryHarness();
     render(<OrganizerHarness />, {wrapper});
@@ -73,7 +131,8 @@ describe("Intake task-first defaults", () => {
     });
     expect(stageNavigation.querySelector("[aria-current='step']")?.textContent)
       .toContain("Incoming");
-    expect(screen.getByText("2 new leads")).toBeTruthy();
+    expect(stageNavigation.textContent).toBe("IncomingVerifyResolveReady");
+    expect(screen.getByLabelText("Intake queue metrics")).toBeTruthy();
     expect(screen.getByText("2 items")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", {name: "Review Small World"}));
@@ -116,15 +175,14 @@ describe("Intake task-first defaults", () => {
     const stages = await screen.findByRole("navigation", {
       name: "Organizer intake stages",
     });
-    expect(stages.textContent).toContain("Verify— unavailable");
-    expect(stages.textContent).toContain("Resolve— unavailable");
-    expect(stages.textContent).toContain("Ready— unavailable");
+    expect(stages.textContent).toBe("IncomingVerifyResolveReady");
 
     fireEvent.click(screen.getByRole("button", {name: /Verify/u}));
     expect(screen.getByText("This projection is not available yet."))
       .toBeTruthy();
-    expect(screen.getAllByText(/Organizer publication review is not available/))
-      .toHaveLength(2);
+    expect(screen.getAllByText(
+      /Organizer publication review is not available/
+    ).length).toBeGreaterThan(0);
     expect(screen.getByText("Publication review unavailable")).toBeTruthy();
     expect(screen.getByRole("button", {name: "All —"})).toBeTruthy();
   });
@@ -145,5 +203,32 @@ describe("Intake task-first defaults", () => {
     expect(screen.queryByText("Event intake contract")).toBeNull();
     expect(screen.queryByText("adminGetEventIntakeDashboard")).toBeNull();
     expect(screen.queryByText("adminRecordEventIntakeReviewDecision")).toBeNull();
+    expect((screen.getByLabelText("App visibility ceiling") as HTMLSelectElement).disabled)
+      .toBe(true);
+    expect(screen.getByText("The attributed organizer is hidden in the app."))
+      .toBeTruthy();
+  });
+
+  it("blocks unattributed events and opens their seeded organizer lead", async () => {
+    window.localStorage.setItem(
+      "catch-admin.event-intake-stage.v2",
+      "resolve"
+    );
+    const {wrapper} = createQueryHarness();
+    render(<OrphanEventHarness />, {wrapper});
+
+    fireEvent.click(await screen.findByRole("button", {
+      name: "Review Sample Mumbai social",
+    }));
+    expect(screen.getAllByText("Canonical organizer attributed").length)
+      .toBeGreaterThan(0);
+    expect(screen.getByRole("link", {
+      name: "Open generated organizer discovery lead",
+    })).toBeTruthy();
+    expect((screen.getByRole("button", {
+      name: "Approve intake",
+    }) as HTMLButtonElement).disabled).toBe(true);
   });
 });
+import {readdirSync, readFileSync, statSync} from "node:fs";
+import {join} from "node:path";

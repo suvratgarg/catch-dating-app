@@ -305,10 +305,12 @@ const eventController: EventPublishingController = {
 const eventIntakeBridge =
   structuredClone(sampleEventIntakeBridge) as EventIntakeBridge;
 const eventIntakeController: EventIntakeController = {
-  activeTab: "setup",
   bridge: eventIntakeBridge,
+  errorMessage: null,
   inFlight: {},
+  isError: false,
   isLoading: false,
+  isRefreshing: false,
   loadBridge: async () => {
     noop();
     return true;
@@ -316,9 +318,6 @@ const eventIntakeController: EventIntakeController = {
   localDecisions: {},
   notes: {},
   snapshotVersion: 0,
-  setActiveTab: (_value) => {
-    noop();
-  },
   setNote: (_key: string, _value: string) => {
     noop();
   },
@@ -350,7 +349,10 @@ const eventIntakeController: EventIntakeController = {
 };
 const intakeOperationsController: IntakeOperationsController = {
   data: sampleIntakeOperations(),
+  errorMessage: null,
+  isError: false,
   isLoading: false,
+  isRefreshing: false,
   isLoadingMore: false,
   loadMore: async () => false,
   refresh: async () => true,

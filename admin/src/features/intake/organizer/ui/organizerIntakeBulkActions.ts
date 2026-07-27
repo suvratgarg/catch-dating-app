@@ -86,6 +86,8 @@ export function buildOrganizerIntakeBulkActions({
     .map((entry) => entry.id);
   return [
     {
+      disabledReason:
+        "Approval applies only to canonical organizer records whose publication packet and visibility checklist are complete.",
       eligibleIds: entries
         .filter((entry) => entry.kind === "entity" && canApprove(
           entry.item,
@@ -102,12 +104,16 @@ export function buildOrganizerIntakeBulkActions({
       tone: "success",
     },
     {
+      disabledReason:
+        "Hold applies only to canonical organizer records; review candidates through attach or draft creation.",
       eligibleIds: entityIds,
       id: "hold",
       label: "Hold",
       onApply: (ids) => applyEntityDecision(ids, "hold"),
     },
     {
+      disabledReason:
+        "Suppress applies only to canonical organizer records; review candidates through attach or draft creation.",
       eligibleIds: entityIds,
       id: "suppress",
       label: "Suppress",
@@ -116,6 +122,8 @@ export function buildOrganizerIntakeBulkActions({
       tone: "danger",
     },
     {
+      disabledReason:
+        "Attach requires a reviewed existing-organizer match; otherwise create a governed draft from the inspector.",
       eligibleIds: entries
         .filter((entry) => entry.kind === "candidate" &&
           entry.candidate.existingEntityMatches.length > 0)

@@ -304,8 +304,9 @@ a run, fetch a source, call a model, deploy a rule, or publish a listing.
 Event Intake is one batch workspace rather than a queue plus a parallel
 Marketing-derived diagnostics screen. Incoming source rows and event-candidate
 rows use stage-specific columns. Candidate stages are mutually exclusive,
-upcoming work is ordered by the Operations-projected expiry, and passed events
-stay reviewable in a separate filter but cannot be approved. Editing happens in
+upcoming work is ordered by projected event start time, Operations expiry stays
+visible as separate provenance, and passed events stay reviewable in a separate
+filter but cannot be approved. Editing happens in
 the inspector; decisions persist changed fields only as audited before/after
 pairs and decided rows stay in the current visual snapshot until Refresh.
 The inspector keeps diagnostics collapsed, compares duplicate candidates in

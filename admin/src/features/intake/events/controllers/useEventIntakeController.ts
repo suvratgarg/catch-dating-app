@@ -24,8 +24,6 @@ import {adminQueryKeys} from "../../../../shared/query/queryKeys";
 import {usePendingMutationRecord} from "../../../../shared/query/usePendingMutationRecord";
 import {useAdminPendingOperationGuard} from "../../../../shared/pendingOperation";
 
-export type EventIntakeTab = "setup" | "inbox" | "candidates";
-
 export function useEventIntakeController({
   onError,
   onNotice,
@@ -46,7 +44,6 @@ export function useEventIntakeController({
     mutationFn: recordEventIntakeReviewDecision,
   });
   const bridge = bridgeQuery.data?.bridge ?? null;
-  const [activeTab, setActiveTab] = useState<EventIntakeTab>("candidates");
   const [localDecisions, setLocalDecisions] =
     useState<Record<string, AdminRecordEventIntakeReviewDecisionResponse>>({});
   const [notes, setNotes] = useState<Record<string, string>>({});
@@ -214,14 +211,19 @@ export function useEventIntakeController({
   }, [bridge]);
 
   return {
-    activeTab,
     bridge,
+    errorMessage: bridgeQuery.error instanceof Error ?
+      bridgeQuery.error.message :
+      bridgeQuery.isError ?
+        "Unable to load event intake workspace." :
+        null,
     inFlight,
-    isLoading: bridgeQuery.isPending || bridgeQuery.isFetching,
+    isError: bridgeQuery.isError,
+    isLoading: bridgeQuery.isPending && !bridge,
+    isRefreshing: bridgeQuery.isFetching && Boolean(bridge),
     loadBridge,
     localDecisions,
     notes,
-    setActiveTab,
     setNote,
     sourceResultById,
     snapshotVersion: bridgeQuery.dataUpdatedAt,

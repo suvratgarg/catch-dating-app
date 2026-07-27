@@ -30,6 +30,7 @@ import {
   AdminIntakeStateGrid,
   AdminIntakeStageRail,
   AdminIntakeTaskToolbar,
+  AdminIntakeWorkspaceFrame,
   AdminIntakeWorkspaceHeader,
   AdminIntakeWorkspaceTabs,
   AdminOrganizerCurationControlGrid,
@@ -124,6 +125,40 @@ export const AdminIntakeWorkspaceTabsStory: Story = {
   ),
 };
 
+export const AdminIntakeWorkspaceFrameStory: Story = {
+  name: "Workspace frame",
+  parameters: {
+    catchComponent: {
+      id: "shared_admin_intake_workspace_frame",
+      states: ["compact-chrome", "full-height-content"],
+    },
+  },
+  render: () => (
+    <AdminWorkspace intakeMode>
+      <AdminIntakeWorkspaceFrame
+        chrome={(
+          <AdminIntakeWorkspaceTabs
+            ariaLabel="Intake workspace"
+            options={[
+              {id: "events", label: "Events"},
+              {id: "organizers", label: "Organizers"},
+            ]}
+            value="organizers"
+            onChange={() => undefined}
+          />
+        )}
+      >
+        <AdminPanel
+          icon={<FileWarning aria-hidden="true" size={16} />}
+          title="Full-height queue"
+        >
+          The queue owns this region.
+        </AdminPanel>
+      </AdminIntakeWorkspaceFrame>
+    </AdminWorkspace>
+  ),
+};
+
 export const AdminIntakeTaskToolbarStory: Story = {
   name: "Task toolbar",
   parameters: {
@@ -158,10 +193,10 @@ export const AdminIntakeStageRailStory: Story = {
       <AdminIntakeStageRail
         ariaLabel="Organizer intake stages"
         options={[
-          {id: "incoming", label: "Incoming", meta: "12 new leads"},
-          {id: "verify", label: "Verify", meta: "5 need review"},
-          {id: "resolve", label: "Resolve", meta: "2 conflicts"},
-          {id: "ready", label: "Ready", meta: "3 handoffs"},
+          {id: "incoming", label: "Incoming"},
+          {id: "verify", label: "Verify"},
+          {id: "resolve", label: "Resolve"},
+          {id: "ready", label: "Ready"},
         ]}
         value="verify"
         onChange={() => undefined}
@@ -201,9 +236,12 @@ export const AdminIntakeReviewWorkbenchStory: Story = {
         "batch-selection",
         "partial-eligibility",
         "inspector-open",
+        "keyboard-help",
         "loading",
+        "error",
         "unavailable",
-        "empty-queue",
+        "filter-empty",
+        "stage-empty",
         "blocked-decision",
         "mobile",
       ],
@@ -213,30 +251,45 @@ export const AdminIntakeReviewWorkbenchStory: Story = {
     <AdminWorkspace>
       <AdminIntakeReviewWorkbench
         detail={{
-          checklistRows: [
-            {id: "identity", label: "Identity reviewed", meta: "complete", passed: true},
-            {id: "reports", label: "Acknowledge manual reports", meta: "required", passed: false},
-          ],
-          checklistTitle: "Review checklist",
-          footerActions: <AdminButton disabled variant="primary">Approve listing</AdminButton>,
-          footerHint: "Approval is disabled until the evidence blocker is resolved.",
-          impactRows: [
-            {id: "website", label: "Website listing", tone: "success", value: "Ready after review"},
-            {id: "app", label: "App visibility", value: "Stays hidden"},
-          ],
-          impactTitle: "Handoff impact",
-          initials: "AF",
-          note: <AdminTextareaField label="Decision note" rows={2} value="" onChange={() => undefined} />,
-          noteTitle: "Decision note",
-          primaryRows: [{
-            id: "instagram",
-            meta: "Primary identity surface",
-            status: "Confirmed",
-            statusTone: "success",
-            title: "Instagram · @afterfly.in",
+          actionGate: "Approval is disabled until the evidence blocker is resolved.",
+          actions: <AdminButton disabled variant="primary">Approve listing</AdminButton>,
+          blockers: [{
+            action: "Acknowledge the unbound manual reports.",
+            id: "reports",
+            label: "Manual reports need review",
+            tone: "warning",
           }],
-          primaryTitle: "Source evidence",
+          initials: "AF",
           readiness: {blockers: 1, complete: 4, label: "Decision readiness", total: 6},
+          sections: [
+            {
+              id: "evidence",
+              kind: "evidence",
+              rows: [{
+                id: "instagram",
+                meta: "Primary identity surface",
+                status: "Confirmed",
+                statusTone: "success",
+                title: "Instagram · @afterfly.in",
+              }],
+              title: "Source evidence",
+            },
+            {
+              id: "impact",
+              kind: "impact",
+              rows: [
+                {id: "website", label: "Website listing", tone: "success", value: "Ready after review"},
+                {id: "app", label: "App visibility", value: "Stays hidden"},
+              ],
+              title: "Handoff impact",
+            },
+            {
+              content: <AdminTextareaField label="Decision note" rows={2} value="" onChange={() => undefined} />,
+              id: "note",
+              kind: "content",
+              title: "Decision note",
+            },
+          ],
           status: "Needs evidence",
           statusTone: "warning",
           subtitle: "Organizer lead · afterfly · Indore",

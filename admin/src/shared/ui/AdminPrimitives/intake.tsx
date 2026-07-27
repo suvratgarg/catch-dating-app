@@ -427,7 +427,6 @@ export type AdminIntakeWorkbenchTone =
 export interface AdminIntakeStageOption<TStage extends string> {
   id: TStage;
   label: ReactNode;
-  meta: ReactNode;
 }
 
 export function AdminIntakeTaskToolbar({
@@ -443,6 +442,21 @@ export function AdminIntakeTaskToolbar({
       className={classNames("intake-task-toolbar", className)}
     >
       {children}
+    </section>
+  );
+}
+
+export function AdminIntakeWorkspaceFrame({
+  children,
+  chrome,
+}: {
+  children: ReactNode;
+  chrome: ReactNode;
+}) {
+  return (
+    <section className="intake-workspace-screen">
+      <div className="intake-workspace-chrome">{chrome}</div>
+      <div className="intake-workspace-content">{children}</div>
     </section>
   );
 }
@@ -465,7 +479,7 @@ export function AdminIntakeStageRail<TStage extends string>({
       aria-label={ariaLabel}
       className={classNames("intake-stage-rail", className)}
     >
-      {options.map((option, index) => {
+      {options.map((option) => {
         const selected = option.id === value;
         return (
           <button
@@ -475,9 +489,7 @@ export function AdminIntakeStageRail<TStage extends string>({
             onClick={() => onChange(option.id)}
             type="button"
           >
-            <span>{index + 1}</span>
             <strong>{option.label}</strong>
-            <small>{option.meta}</small>
           </button>
         );
       })}
@@ -603,24 +615,14 @@ export interface AdminIntakeWorkbenchDetail {
   actionGate?: ReactNode;
   actions?: ReactNode;
   blockers?: AdminIntakeInspectorBlocker[];
-  checklistRows: AdminIntakeChecklistRow[];
-  checklistTitle: ReactNode;
-  footerActions: ReactNode;
-  footerHint: ReactNode;
-  impactRows: AdminIntakeImpactRow[];
-  impactTitle: ReactNode;
   initials: ReactNode;
-  note: ReactNode;
-  noteTitle: ReactNode;
-  primaryRows: AdminIntakeEvidenceRow[];
-  primaryTitle: ReactNode;
   readiness: {
     blockers: number;
     complete: number;
     label: ReactNode;
     total: number;
   };
-  sections?: AdminIntakeInspectorSection[];
+  sections: AdminIntakeInspectorSection[];
   status: ReactNode;
   statusTone?: AdminIntakeWorkbenchTone;
   subtitle: ReactNode;

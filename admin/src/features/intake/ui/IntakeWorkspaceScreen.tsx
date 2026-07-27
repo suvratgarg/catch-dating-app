@@ -3,6 +3,7 @@ import {useLocation, useNavigate} from "react-router";
 import {
   AdminIntakeBoundaryNotice,
   AdminIntakePublicationBoundaryPanel,
+  AdminIntakeWorkspaceFrame,
   AdminIntakeWorkspaceTabs,
 } from "../../../shared/ui/AdminPrimitives";
 import {EventIntakeWorkspace} from "../events/ui/EventIntakeWorkspace";
@@ -52,31 +53,36 @@ export function IntakeWorkspace({
   const content = isEvents ? eventsContent :
     isOperations ? operationsContent : organizersContent;
   return (
-    <>
-      <AdminIntakeWorkspaceTabs
-        ariaLabel="Intake workspace"
-        options={intakeWorkspaceTabs}
-        value={activeWorkspace}
-        onChange={onWorkspaceChange}
-      />
-      {!isOperations ? (
-        <AdminIntakeBoundaryNotice
-          actionLabel={showBoundaryDetails ? "Hide details" : "View boundary"}
-          title={isEvents ?
-            "Approval records an intake decision—it does not publish an event." :
-            "Approval creates a publishing handoff—not ownership or app visibility."}
-          onAction={() => setShowBoundaryDetails((current) => !current)}
-        >
-          {isEvents ?
-            "Canonical events, external-event promotion, bookings, and payments stay separately gated." :
-            "Claims, app discovery, crawling, and canonical edits stay separately gated."}
-        </AdminIntakeBoundaryNotice>
-      ) : null}
-      {showBoundaryDetails && !isOperations ? (
-        <AdminIntakePublicationBoundaryPanel activeWorkspace={activeWorkspace} />
-      ) : null}
+    <AdminIntakeWorkspaceFrame
+      chrome={(
+        <>
+        <AdminIntakeWorkspaceTabs
+          ariaLabel="Intake workspace"
+          options={intakeWorkspaceTabs}
+          value={activeWorkspace}
+          onChange={onWorkspaceChange}
+        />
+        {!isOperations ? (
+          <AdminIntakeBoundaryNotice
+            actionLabel={showBoundaryDetails ? "Hide details" : "View boundary"}
+            title={isEvents ?
+              "Approval records an intake decision—it does not publish an event." :
+              "Approval creates a publishing handoff—not ownership or app visibility."}
+            onAction={() => setShowBoundaryDetails((current) => !current)}
+          >
+            {isEvents ?
+              "Canonical events, external-event promotion, bookings, and payments stay separately gated." :
+              "Claims, app discovery, crawling, and canonical edits stay separately gated."}
+          </AdminIntakeBoundaryNotice>
+        ) : null}
+        {showBoundaryDetails && !isOperations ? (
+          <AdminIntakePublicationBoundaryPanel activeWorkspace={activeWorkspace} />
+        ) : null}
+        </>
+      )}
+    >
       {content}
-    </>
+    </AdminIntakeWorkspaceFrame>
   );
 }
 
