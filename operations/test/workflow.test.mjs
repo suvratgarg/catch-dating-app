@@ -1860,6 +1860,7 @@ test("promotion uses the run-frozen source policy and exposes hash-bound evidenc
       workflowPolicy: plan.policy,
       freshnessPolicy: plan.freshnessPolicy,
       acquisitionPolicy: plan.acquisitionPolicy,
+      modelPolicy: plan.modelPolicy,
       sourceProfiles: plan.sourceProfiles,
     })
   );
@@ -1960,6 +1961,45 @@ test("reviewer correction becomes proposal evidence and an immutable fixture",
       }),
       {code: "FIELD_CORRECTION_CONFLICT"}
     );
+  });
+
+test("Firestore correction documents enter learning without a transport rewrite",
+  async () => {
+    const store = await new FileOperationsStore(await temporaryDirectory())
+      .initialize();
+    const learner = new SupplyIntakeLearner({
+      store,
+      clock: () => new Date(NOW),
+    });
+    const recorded = await learner.recordCorrection({
+      correctionId: "correction-cn-firestore-1",
+      fixtureId: "fixture-cn-firestore-1",
+      organizerId: "organizer-1",
+      sourceProfileId: "cntraveller",
+      sourceWorkItemId: "work-cn-firestore-1",
+      sourceCandidateId: "candidate-cn-firestore-1",
+      field: "name",
+      extractedValue: "Original name",
+      correctedValue: "Reviewed name",
+      artifactId: "artifact-cn-firestore-1",
+      contentHash: "c".repeat(64),
+      locator: "cards[0].title",
+      extractedBy: "deterministic",
+      extractorVersion: "editorial_link_card_v1",
+      confidence: 0.82,
+      reviewNote: "Confirmed against the official organizer page.",
+      correctedByUid: "admin-1",
+      correctedAt: NOW,
+    });
+    assert.deepEqual(recorded.correction.provenance, {
+      artifactId: "artifact-cn-firestore-1",
+      contentHash: "c".repeat(64),
+      locator: "cards[0].title",
+      extractedBy: "deterministic",
+      extractorVersion: "editorial_link_card_v1",
+      confidence: 0.82,
+    });
+    assert.equal(recorded.fixture.provenance.contentHash, "c".repeat(64));
   });
 
 test("a wrong correction rule fails fixture replay and cannot canary", async () => {

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "policyVersion": "supply-model-disabled-v1",
+  "provider": {
+    "enabled": false,
+    "adapterId": null,
+    "modelId": null,
+    "promptVersion": "supply-extraction-fallback-v1",
+    "policyGapId": "llm_extraction_fallback_policy",
+    "decisionId": null
+  },
+  "placement": {
+    "allowedReasons": [
+      "unknown_source",
+      "unstable_source",
+      "ambiguous_identity"
+    ],
+    "forbiddenUses": [
+      "copy_generation",
+      "ranking",
+      "per_user_path"
+    ]
+  },
+  "budgets": {
+    "maxModelCallsPerRun": 0,
+    "maxInputTokensPerRun": 0,
+    "maxOutputTokensPerRun": 0,
+    "maxCostMicrosPerRun": 0,
+    "maxModelCallsPerMonth": 0,
+    "maxInputTokensPerMonth": 0,
+    "maxOutputTokensPerMonth": 0,
+    "maxCostMicrosPerMonth": 0
+  },
+  "metrics": {
+    "perSourceDependence": true,
+    "expectedTrend": "declining"
+  }
+}

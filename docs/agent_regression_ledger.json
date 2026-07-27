@@ -3759,6 +3759,31 @@
         "operations/README.md"
       ],
       "notes": "Raw provider payloads remain outside Firestore. The CLI correction file is a trusted worker transport and test seam, not a canonical operational corpus. Rule activation remains separately reviewed and is never automatic."
+    },
+    {
+      "id": "REG-SUPPLY-MODEL-FALLBACK-COST-001",
+      "title": "Supply extraction calls a model outside the guarded fallback or leaks model output into authority",
+      "status": "active",
+      "applies_to": [
+        "operations/src/platform/model/guarded-model-runner.mjs",
+        "operations/src/workflows/supply-intake/config/model_policy.json",
+        "operations/src/workflows/supply-intake/config/model_policy.schema.json",
+        "operations/src/workflows/supply-intake/model-fallback.mjs",
+        "operations/src/workflows/supply-intake/learning.mjs",
+        "operations/src/workflows/supply-intake/workflow.mjs"
+      ],
+      "symptom": "Supply Intake calls a second model path, models copy/ranking/per-user work, invokes a provider before deterministic extraction, exceeds a run or monthly ceiling, loses cache reuse, treats inference as publication or identity authority, or fails to turn every inferred field into reviewed rule evidence.",
+      "guard": {
+        "type": "command",
+        "command": "npm --prefix operations test && npm --prefix operations run check && npm --prefix operations run manifests",
+        "guardEvidence": "the checked policy is provider-null with zero ceilings; the single router injects only GuardedModelRunner, admits three extraction fallback reasons, rejects unsafe placement and inputs, reserves both ledgers before provider work, marks output proposal-only, emits immutable per-field rule candidates, and blocks evaluation until matching human fixtures exist"
+      },
+      "owner_docs": [
+        "docs/operations_platform.md",
+        "operations/README.md",
+        "contracts/operations/README.md"
+      ],
+      "notes": "Provider/model choice and the monthly ceiling remain an owner decision. The implementation is complete in a fail-closed state; activating it requires the exact accepted policy-gap decision and matching injected provider and ledgers."
     }
   ]
 }

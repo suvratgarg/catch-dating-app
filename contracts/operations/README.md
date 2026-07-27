@@ -35,4 +35,8 @@ Workflow-manifest capabilities are the maximum supported by the registered
 runtime, not an automatic grant to every run. Each immutable plan freezes its
 actual capability set and matching budget. Supply Intake supports a guarded
 network acquisition seam, while the checked default policy grants zero network
-requests and keeps the provider disabled.
+requests and keeps the provider disabled. It likewise supports exactly one
+guarded, extraction-only model seam; the checked model policy has a null
+provider and zero per-run and monthly ceilings. Model-derived fields are
+proposal evidence, never publication or identity authority, and require
+human-verified fixtures before rule evaluation.

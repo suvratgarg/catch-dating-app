@@ -28,10 +28,11 @@ import {
   loadSupplyFreshnessPolicy,
   planFreshnessRequests,
 } from "./freshness.mjs";
+import {loadSupplyModelPolicy} from "./model-fallback.mjs";
 
 export const MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN = MAX_WORK_ITEMS_PER_RUN;
 export const SUPPLY_INTAKE_WORKFLOW_ID = "supply-intake";
-export const SUPPLY_INTAKE_WORKFLOW_VERSION = "0.4.0";
+export const SUPPLY_INTAKE_WORKFLOW_VERSION = "0.5.0";
 const SUPPLY_INTAKE_STALE_AFTER_HOURS = 168;
 const SUPPLY_INTAKE_SCOPES = Object.freeze(["all", "organizer"]);
 const ORGANIZER_PACKET_STRING_LIMIT = 500;
@@ -55,6 +56,8 @@ export class SupplyIntakeWorkflow {
     acquisitionPort = null,
     sourceProfilesLoader = loadSourceProfiles,
     freshnessPolicyLoader = loadSupplyFreshnessPolicy,
+    modelPolicyLoader = loadSupplyModelPolicy,
+    extractionRouter = null,
   } = {}) {
     this.workflowId = SUPPLY_INTAKE_WORKFLOW_ID;
     this.version = SUPPLY_INTAKE_WORKFLOW_VERSION;
@@ -68,6 +71,8 @@ export class SupplyIntakeWorkflow {
     this.acquisitionPort = acquisitionPort;
     this.sourceProfilesLoader = sourceProfilesLoader;
     this.freshnessPolicyLoader = freshnessPolicyLoader;
+    this.modelPolicyLoader = modelPolicyLoader;
+    this.extractionRouter = extractionRouter;
   }
 
   async planningContext({store}) {
@@ -107,10 +112,12 @@ export class SupplyIntakeWorkflow {
       profiles,
       freshnessPolicy,
       acquisitionPolicy,
+      modelPolicy,
     ] = await Promise.all([
       this.sourceProfilesLoader(),
       this.freshnessPolicyLoader(),
       this.acquisitionPolicyLoader(),
+      this.modelPolicyLoader(),
     ]);
     const artifactSnapshotWithData = await this.adapter.snapshot({
       market,
@@ -161,11 +168,13 @@ export class SupplyIntakeWorkflow {
       editorialSourcesDiscoveryOnly: true,
       freshnessPolicyVersion: freshnessPolicy.policyVersion,
       acquisitionPolicyVersion: acquisitionPolicy.policyVersion,
+      modelPolicyVersion: modelPolicy.policyVersion,
     };
     const promotionPolicyHash = hashValue({
       workflowPolicy: policy,
       freshnessPolicy,
       acquisitionPolicy,
+      modelPolicy,
       sourceProfiles,
     });
     const basis = {
@@ -191,11 +200,12 @@ export class SupplyIntakeWorkflow {
       policy,
       freshnessPolicy,
       acquisitionPolicy,
+      modelPolicy,
       freshness,
       promotionPolicyHash,
       capabilities: {
         network: acquisitionPolicy.provider.enabled,
-        modelCalls: false,
+        modelCalls: modelPolicy.provider.enabled,
         publicWrites: false,
         ruleDeployment: false,
       },
@@ -210,10 +220,10 @@ export class SupplyIntakeWorkflow {
         workItems: Math.max(1_000, plannedItems),
         networkRequests:
           acquisitionPolicy.budgets.maxNetworkRequestsPerRun,
-        modelCalls: 0,
-        modelInputTokens: 0,
-        modelOutputTokens: 0,
-        modelCostMicros: 0,
+        modelCalls: modelPolicy.budgets.maxModelCallsPerRun,
+        modelInputTokens: modelPolicy.budgets.maxInputTokensPerRun,
+        modelOutputTokens: modelPolicy.budgets.maxOutputTokensPerRun,
+        modelCostMicros: modelPolicy.budgets.maxCostMicrosPerRun,
         publicWrites: 0,
       },
       guardrails: [
@@ -221,7 +231,10 @@ export class SupplyIntakeWorkflow {
         acquisitionPolicy.provider.enabled ?
           "Provider acquisition requires the frozen policy-gap decision, injected adapter, and both request ceilings." :
           "Provider acquisition is disabled; manual file capture remains available through the injected acquisition port.",
-        "No model, public write, scheduler, or rule deployment capability is granted.",
+        modelPolicy.provider.enabled ?
+          "Model fallback is extraction-only and requires the frozen policy decision, GuardedModelRunner, cache, and run plus monthly ceilings." :
+          "Model fallback is disabled with zero run and monthly ceilings.",
+        "No public write, scheduler, or rule deployment capability is granted.",
         "Freshness eligibility is derived from immutable completed Operations runs; only scheduled requests may cross the acquisition port.",
         "Raw provider payloads remain outside Firestore; only bounded provenance may enter durable records.",
         "Editorial sources are discovery-only until an official source is resolved.",
@@ -292,7 +305,8 @@ export class SupplyIntakeWorkflow {
     invariant(
       plan.capabilities.network ===
           plan.acquisitionPolicy?.provider?.enabled &&
-        !plan.capabilities.modelCalls &&
+        plan.capabilities.modelCalls ===
+          plan.modelPolicy?.provider?.enabled &&
         !plan.capabilities.publicWrites &&
         !plan.capabilities.ruleDeployment,
       "UNSAFE_CAPABILITY",
@@ -303,6 +317,7 @@ export class SupplyIntakeWorkflow {
         workflowPolicy: plan.policy,
         freshnessPolicy: plan.freshnessPolicy,
         acquisitionPolicy: plan.acquisitionPolicy,
+        modelPolicy: plan.modelPolicy,
         sourceProfiles: plan.sourceProfiles,
       }),
       "INVALID_PLAN",
@@ -338,6 +353,35 @@ export class SupplyIntakeWorkflow {
           )),
       "INVALID_ACQUISITION_PLAN",
       "Supply Intake acquisition policy or budget is missing, stale, or unsafe."
+    );
+    invariant(
+      plan.policy?.modelPolicyVersion ===
+          plan.modelPolicy?.policyVersion &&
+        plan.budgets?.modelCalls ===
+          plan.modelPolicy?.budgets?.maxModelCallsPerRun &&
+        plan.budgets?.modelInputTokens ===
+          plan.modelPolicy?.budgets?.maxInputTokensPerRun &&
+        plan.budgets?.modelOutputTokens ===
+          plan.modelPolicy?.budgets?.maxOutputTokensPerRun &&
+        plan.budgets?.modelCostMicros ===
+          plan.modelPolicy?.budgets?.maxCostMicrosPerRun &&
+        (plan.modelPolicy?.provider?.enabled ?
+          (
+            typeof plan.modelPolicy.provider.adapterId === "string" &&
+            typeof plan.modelPolicy.provider.modelId === "string" &&
+            typeof plan.modelPolicy.provider.decisionId === "string" &&
+            Object.values(plan.modelPolicy.budgets)
+              .every((value) => Number.isSafeInteger(value) && value > 0)
+          ) :
+          (
+            plan.modelPolicy?.provider?.adapterId === null &&
+            plan.modelPolicy?.provider?.modelId === null &&
+            plan.modelPolicy?.provider?.decisionId === null &&
+            Object.values(plan.modelPolicy?.budgets ?? {})
+              .every((value) => value === 0)
+          )),
+      "INVALID_MODEL_PLAN",
+      "Supply Intake model policy or budget is missing, stale, or unsafe."
     );
     invariant(
       plan.freshness?.schemaVersion === 1 &&
@@ -531,6 +575,30 @@ export class SupplyIntakeWorkflow {
       input,
       plannedRequest: request,
     });
+  }
+
+  async resolveExtraction(plan, request) {
+    this.assertPlan(plan);
+    invariant(
+      this.extractionRouter &&
+        typeof this.extractionRouter.resolve === "function",
+      "MODEL_ROUTER_MISSING",
+      "Extraction routing requires a trusted injected router."
+    );
+    invariant(
+      this.extractionRouter.policy.policyVersion ===
+        plan.modelPolicy.policyVersion,
+      "MODEL_POLICY_MISMATCH",
+      "The injected extraction router does not match the frozen plan policy."
+    );
+    if (request?.deterministic?.resolved !== true) {
+      invariant(
+        plan.capabilities.modelCalls === true,
+        "UNSAFE_CAPABILITY",
+        "The frozen plan does not grant model fallback."
+      );
+    }
+    return this.extractionRouter.resolve(request);
   }
 
   review(item, {now}) {

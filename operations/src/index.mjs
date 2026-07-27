@@ -21,3 +21,10 @@ export {
   ManualFileAcquisitionAdapter,
   ProviderAcquisitionAdapter,
 } from "./workflows/supply-intake/acquisition.mjs";
+export {
+  createSupplyModelFallback,
+  loadSupplyModelPolicy,
+  modelBudgetLedgers,
+  modelDependenceMetrics,
+  SupplyIntakeExtractionRouter,
+} from "./workflows/supply-intake/model-fallback.mjs";

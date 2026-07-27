@@ -1,0 +1,162 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/operations/supply-intake/model-policy.schema.json",
+  "title": "SupplyIntakeModelPolicy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "policyVersion",
+    "provider",
+    "placement",
+    "budgets",
+    "metrics"
+  ],
+  "properties": {
+    "schemaVersion": {"type": "integer", "const": 1},
+    "policyVersion": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,119}$"
+    },
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "adapterId",
+        "modelId",
+        "promptVersion",
+        "policyGapId",
+        "decisionId"
+      ],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "adapterId": {
+          "type": ["string", "null"],
+          "pattern": "^[a-z0-9][a-z0-9._-]{0,119}$"
+        },
+        "modelId": {
+          "type": ["string", "null"],
+          "pattern": "^[a-z0-9][a-z0-9._:-]{0,159}$"
+        },
+        "promptVersion": {
+          "type": "string",
+          "const": "supply-extraction-fallback-v1"
+        },
+        "policyGapId": {"const": "llm_extraction_fallback_policy"},
+        "decisionId": {
+          "type": ["string", "null"],
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,199}$"
+        }
+      }
+    },
+    "placement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowedReasons", "forbiddenUses"],
+      "properties": {
+        "allowedReasons": {
+          "const": [
+            "unknown_source",
+            "unstable_source",
+            "ambiguous_identity"
+          ]
+        },
+        "forbiddenUses": {
+          "const": ["copy_generation", "ranking", "per_user_path"]
+        }
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxModelCallsPerRun",
+        "maxInputTokensPerRun",
+        "maxOutputTokensPerRun",
+        "maxCostMicrosPerRun",
+        "maxModelCallsPerMonth",
+        "maxInputTokensPerMonth",
+        "maxOutputTokensPerMonth",
+        "maxCostMicrosPerMonth"
+      ],
+      "properties": {
+        "maxModelCallsPerRun": {"type": "integer", "minimum": 0},
+        "maxInputTokensPerRun": {"type": "integer", "minimum": 0},
+        "maxOutputTokensPerRun": {"type": "integer", "minimum": 0},
+        "maxCostMicrosPerRun": {"type": "integer", "minimum": 0},
+        "maxModelCallsPerMonth": {"type": "integer", "minimum": 0},
+        "maxInputTokensPerMonth": {"type": "integer", "minimum": 0},
+        "maxOutputTokensPerMonth": {"type": "integer", "minimum": 0},
+        "maxCostMicrosPerMonth": {"type": "integer", "minimum": 0}
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["perSourceDependence", "expectedTrend"],
+      "properties": {
+        "perSourceDependence": {"const": true},
+        "expectedTrend": {"const": "declining"}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "provider": {
+            "properties": {"enabled": {"const": true}},
+            "required": ["enabled"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "provider": {
+            "properties": {
+              "adapterId": {"type": "string", "minLength": 1},
+              "modelId": {"type": "string", "minLength": 1},
+              "decisionId": {"type": "string", "minLength": 1}
+            }
+          },
+          "budgets": {
+            "properties": {
+              "maxModelCallsPerRun": {"minimum": 1},
+              "maxInputTokensPerRun": {"minimum": 1},
+              "maxOutputTokensPerRun": {"minimum": 1},
+              "maxCostMicrosPerRun": {"minimum": 1},
+              "maxModelCallsPerMonth": {"minimum": 1},
+              "maxInputTokensPerMonth": {"minimum": 1},
+              "maxOutputTokensPerMonth": {"minimum": 1},
+              "maxCostMicrosPerMonth": {"minimum": 1}
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "provider": {
+            "properties": {
+              "adapterId": {"type": "null"},
+              "modelId": {"type": "null"},
+              "decisionId": {"type": "null"}
+            }
+          },
+          "budgets": {
+            "properties": {
+              "maxModelCallsPerRun": {"const": 0},
+              "maxInputTokensPerRun": {"const": 0},
+              "maxOutputTokensPerRun": {"const": 0},
+              "maxCostMicrosPerRun": {"const": 0},
+              "maxModelCallsPerMonth": {"const": 0},
+              "maxInputTokensPerMonth": {"const": 0},
+              "maxOutputTokensPerMonth": {"const": 0},
+              "maxCostMicrosPerMonth": {"const": 0}
+            }
+          }
+        }
+      }
+    }
+  ]
+}
