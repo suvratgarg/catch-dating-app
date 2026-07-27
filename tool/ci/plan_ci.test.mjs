@@ -108,6 +108,22 @@ test("contracts validate consumers without authorizing store mutation", () => {
   assert.deepEqual(plan.mobileReleaseRoles, []);
 });
 
+test("generated schema bindings validate Flutter without platform builds or store releases", () => {
+  for (const changedPath of [
+    "lib/core/schema_contracts/generated/schemas/admin_record_event_intake_review_decision_callable_payload.g.dart",
+    "lib/core/schema_contracts/generated/schemas/event_intake_review_decision_document.g.dart",
+    "lib/core/schema_contracts/generated/schemas/operation_work_item.g.dart",
+  ]) {
+    const plan = planCi({changedPaths: [changedPath], ciPlanning: planning});
+    assert.equal(plan.pathMatches[changedPath], "generated-schema-contract-bindings");
+    assert.equal(plan.enabled.flutter, true);
+    assert.equal(plan.enabled.flutter_build_android, false);
+    assert.equal(plan.enabled.flutter_build_ios, false);
+    assert.equal(plan.enabled.flutter_build_web, false);
+    assert.deepEqual(plan.mobileReleaseRoles, []);
+  }
+});
+
 test("documentation changes use lightweight repository and derived-state lanes", () => {
   const plan = planCi({
     changedPaths: ["docs/release_operations.md"],

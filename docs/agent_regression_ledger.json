@@ -3241,17 +3241,17 @@
         "tool/ci/plan_ci.mjs",
         "tool/repository_root_manifest.json"
       ],
-      "symptom": "An Admin, marketing, documentation, or backend-only pull request compiles iOS and Android, or a main-branch push uploads a mobile build to TestFlight or Play without an explicit store-release request.",
+      "symptom": "An Admin, marketing, documentation, backend-only, or generated-schema-binding pull request compiles iOS and Android, or a main-branch push produces signed mobile artifacts without affected runtime code or uploads a build to TestFlight or Play without an explicit store-release request.",
       "guard": {
         "type": "command",
         "command": "node --test tool/ci/plan_ci.test.mjs && node tool/ci/plan_ci.mjs --paths admin/src/app/App.tsx --json",
-        "guardEvidence": "ordered path ownership selects only affected validation lanes and app roles, unknown paths fail closed, CI-control changes run the full matrix, the stable Required CI aggregate always reports, and store mutation is manual-dispatch-only"
+        "guardEvidence": "ordered path ownership selects only affected validation lanes and app roles, generated Dart schema bindings run Flutter validation without platform builds or release roles, unknown paths fail closed, CI-control changes run the full matrix, the stable Required CI aggregate always reports, and store mutation is manual-dispatch-only"
       },
       "owner_docs": [
         "docs/release_operations.md",
         "docs/agent_operating_model.md"
       ],
-      "notes": "Validation impact and release authorization are separate. Contracts may validate mobile consumers without authorizing a store build, while shared mobile runtime changes select both app roles."
+      "notes": "Validation impact and release authorization are separate. Contracts and generated Dart bindings may validate mobile consumers without authorizing platform builds or signed artifacts, while shared mobile runtime changes select both app roles."
     },
     {
       "id": "REG-DOC-INTEGRATION-STATE-001",

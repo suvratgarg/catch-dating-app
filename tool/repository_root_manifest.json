@@ -343,6 +343,15 @@
         ]
       },
       {
+        "id": "generated-schema-contract-bindings",
+        "patterns": [
+          "lib/core/schema_contracts/generated/**"
+        ],
+        "targets": [
+          "flutter"
+        ]
+      },
+      {
         "id": "shared-flutter-source",
         "patterns": [
           "lib/**",
