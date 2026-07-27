@@ -277,12 +277,22 @@ hardcoding Supply Intake tokens.
 
 `GuardedModelRunner` accepts only a provider injected by a trusted runtime. It
 hashes prompt inputs, validates cached and fresh output against JSON Schema,
-enforces input size and budget caps, and records model/prompt versions. Cached,
+enforces input size plus per-run and monthly budget caps, and records
+model/prompt versions. Cached,
 schema-valid output may be replayed while calls are disabled; a cache miss fails
 closed with `MODEL_DISABLED`. Enabled calls require explicit input-token,
 output-token, and cost reservations, and provider-reported actual usage is
-reconciled before output is accepted. The supply-intake workflow does not inject
-a provider and therefore cannot call a model.
+reconciled against both ledgers before output is accepted.
+
+Supply Intake owns one deterministic-first extraction router around that
+runner. Deterministic success bypasses the model. Fallback is allowlisted only
+for an unknown source, an explicitly unstable source profile, or an ambiguous
+identity scorecard. It rejects copy, ranking, per-user, and contact inputs. A
+model result is proposal-only and always requires review; every extracted field
+creates an immutable rule candidate, and per-source dependence records count
+provider calls and cache replays. The checked policy keeps the provider null
+and every run/month cap at zero. Enabling it requires an injected provider, the
+exact accepted policy-gap decision, and matching run and monthly ledgers.
 
 ## Source learning
 
@@ -302,7 +312,9 @@ Recording is append-only and creates the correction's replay fixture in the
 learner store.
 
 Proposal generation freezes the declared candidate, source fixture, exact
-correction-fixture ids, and a bounded deterministic correction map. Evaluation
+correction-fixture ids, model-candidate ids, and a bounded deterministic
+correction map. A model candidate without a matching human correction fixture
+cannot enter evaluation. Evaluation
 replays both the code-owned source fixture and every correction fixture through
 the allowlisted interpreter. A deliberately wrong correction fails replay and
 cannot canary; mutable proposal evidence and unknown code fail closed. Canary
@@ -312,8 +324,9 @@ blocks when that newest record failed; it cannot fall back to an older pass.
 Evaluation and canary work for one proposal are serialized.
 
 There is no automatic rule activation, live traffic comparison, deployment,
-source acquisition, or model provider in this package. Those are
-explicit future capabilities, not implied by the learning commands.
+or configured live source/model provider in this package. Those remain
+owner-gated capabilities, not implied by the learning commands or fallback
+seams.
 
 External-event publication is also outside the Operations writer boundary.
 Supply Intake may carry explicit resolved/waived blocker evidence into its

@@ -416,12 +416,15 @@ correction/takedown latency. Promotion thresholds must be calibrated in shadow
 runs before the system is allowed to optimize for a sub-one-percent exception
 rate.
 
-The shipped Supply Intake run currently performs only step 1 over reviewed,
-local compatibility artifacts. It does not fetch sources, consume activated
-learning rules, invoke the guarded model runner, or join live Event/Organizer
-admin decisions directly. A backed human decision appears in a later run only
-after the owning legacy artifact is regenerated. Cache, model, and provider
-ports are safe scaffolding rather than active execution paths.
+The shipped Supply Intake run performs deterministic extraction over reviewed
+inputs and freezes a disabled model policy with zero run/month ceilings. A
+trusted worker may inject the single guarded extraction router, but a cache
+miss remains closed until the owner selects a provider and monthly ceiling
+through the policy-gap flow. Model output is proposal-only: every field becomes
+an immutable rule candidate and cannot be evaluated without a human-verified
+correction fixture. Per-source routing evidence reports dependence with an
+expected declining trend. The React admin never receives a provider or calls
+this path.
 
 ## Source Learning
 

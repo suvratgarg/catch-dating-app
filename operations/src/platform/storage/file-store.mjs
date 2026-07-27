@@ -38,6 +38,8 @@ export class FileOperationsStore {
       "rules/actions",
       "rules/corrections",
       "rules/fixtures",
+      "rules/model-candidates",
+      "model-routing",
       "model-cache",
     ].map((directory) => fs.mkdir(this.resolve(directory), {recursive: true})));
     const metadataPath = this.resolve("store.json");
@@ -418,6 +420,36 @@ export class FileOperationsStore {
     const fixtures = await this.listEntities("rules/fixtures");
     return fixtures.filter((fixture) =>
       !sourceProfileId || fixture.sourceProfileId === sourceProfileId);
+  }
+
+  async putModelRuleCandidate(candidate) {
+    await immutableWriteJson(
+      this.entityPath("rules/model-candidates", candidate.candidateId),
+      candidate,
+      "MODEL_RULE_CANDIDATE_CONFLICT"
+    );
+    return candidate;
+  }
+
+  async listModelRuleCandidates({sourceProfileId} = {}) {
+    const candidates = await this.listEntities("rules/model-candidates");
+    return candidates.filter((candidate) =>
+      !sourceProfileId || candidate.sourceProfileId === sourceProfileId);
+  }
+
+  async putModelRoutingRecord(record) {
+    await immutableWriteJson(
+      this.entityPath("model-routing", record.routingId),
+      record,
+      "MODEL_ROUTING_CONFLICT"
+    );
+    return record;
+  }
+
+  async listModelRoutingRecords({sourceProfileId} = {}) {
+    const records = await this.listEntities("model-routing");
+    return records.filter((record) =>
+      !sourceProfileId || record.sourceProfileId === sourceProfileId);
   }
 
   async appendLearningAction(action) {

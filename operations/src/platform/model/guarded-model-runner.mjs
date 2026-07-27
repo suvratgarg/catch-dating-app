@@ -9,6 +9,8 @@ export class GuardedModelRunner {
     provider = null,
     cache,
     budget = new BudgetLedger(),
+    monthlyBudget = null,
+    monthlyWindow = null,
     modelId = "disabled",
     maxInputBytes = 32_768,
   } = {}) {
@@ -17,6 +19,8 @@ export class GuardedModelRunner {
     this.provider = provider;
     this.cache = cache;
     this.budget = budget;
+    this.monthlyBudget = monthlyBudget;
+    this.monthlyWindow = monthlyWindow;
     this.modelId = modelId;
     this.maxInputBytes = maxInputBytes;
   }
@@ -48,12 +52,44 @@ export class GuardedModelRunner {
       });
     }
     invariant(this.provider?.run, "MODEL_PROVIDER_MISSING", "An enabled model runner requires a provider.");
-    const reservation = this.budget.reserve({
+    const requestedReservation = {
       modelCalls: 1,
       modelInputTokens: requiredEstimate(request, "estimatedInputTokens"),
       modelOutputTokens: requiredEstimate(request, "maxOutputTokens"),
       modelCostMicros: requiredEstimate(request, "maxCostMicros"),
-    }, {reason: `${request.task}:${request.promptVersion}`});
+    };
+    const reason = `${request.task}:${request.promptVersion}`;
+    if (this.monthlyBudget) {
+      invariant(
+        /^\d{4}-\d{2}$/.test(this.monthlyWindow ?? ""),
+        "MODEL_MONTHLY_WINDOW_REQUIRED",
+        "An enabled monthly model budget requires a YYYY-MM window."
+      );
+      if (!this.budget.canConsume(requestedReservation) ||
+          !this.monthlyBudget.canConsume(requestedReservation)) {
+        throw new OperationsError(
+          "BUDGET_EXCEEDED",
+          "Model request would exceed its run or monthly ceiling.",
+          {
+            details: {
+              reason,
+              monthlyWindow: this.monthlyWindow,
+              run: this.budget.snapshot(),
+              month: this.monthlyBudget.snapshot(),
+            },
+            exitCode: 4,
+          }
+        );
+      }
+    }
+    const reservation = this.budget.reserve(
+      requestedReservation,
+      {reason}
+    );
+    const monthlyReservation = this.monthlyBudget?.reserve(
+      requestedReservation,
+      {reason}
+    ) ?? null;
     const response = await this.provider.run({
       task: request.task,
       promptVersion: request.promptVersion,
@@ -64,12 +100,20 @@ export class GuardedModelRunner {
       maxCostMicros: request.maxCostMicros,
     });
     const usage = validateUsage(response?.usage);
-    this.budget.reconcileReservation(reservation, {
+    const actualUsage = {
       modelCalls: 1,
       modelInputTokens: usage.inputTokens,
       modelOutputTokens: usage.outputTokens,
       modelCostMicros: usage.costMicros,
-    }, {reason: `${request.task}:${request.promptVersion}`});
+    };
+    this.budget.reconcileReservation(reservation, actualUsage, {reason});
+    if (this.monthlyBudget && monthlyReservation) {
+      this.monthlyBudget.reconcileReservation(
+        monthlyReservation,
+        actualUsage,
+        {reason}
+      );
+    }
     const validation = validateJsonSchema(request.outputSchema, response.output);
     if (!validation.valid) {
       throw new OperationsError("MODEL_OUTPUT_INVALID", "Model output failed schema validation.", {
@@ -86,6 +130,7 @@ export class GuardedModelRunner {
         cacheKey,
         cacheHit: false,
         usage,
+        monthlyWindow: this.monthlyWindow,
       },
     };
     await this.cache.put(cacheKey, record);

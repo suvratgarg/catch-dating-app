@@ -5,6 +5,7 @@ import {hashValue, shortHash} from "../../platform/canonical-json.mjs";
 import {OperationsError, invariant} from "../../platform/errors.mjs";
 import {extractCnTravellerLeads} from "./sources/cntraveller/extractor.mjs";
 import {extractLumaEvents} from "./sources/luma/extractor.mjs";
+import {modelDependenceMetrics} from "./model-fallback.mjs";
 
 const directory = path.dirname(fileURLToPath(import.meta.url));
 const SUPPORTED_SOURCES = Object.freeze({
@@ -34,19 +35,33 @@ export class SupplyIntakeLearner {
   async propose(sourceProfileId) {
     const source = SUPPORTED_SOURCES[sourceProfileId];
     invariant(source, "SOURCE_NOT_SUPPORTED", `No rule-learning adapter exists for ${sourceProfileId}.`);
-    const [items, corrections, fixtures] = await Promise.all([
+    const [items, corrections, fixtures, modelCandidates] = await Promise.all([
       this.store.listWorkItems({sourceProfileId}),
       this.store.listFieldCorrections({sourceProfileId}),
       this.store.listCorrectionFixtures({sourceProfileId}),
+      this.store.listModelRuleCandidates({sourceProfileId}),
     ]);
     assertCorrectionFixtureCoverage(corrections, fixtures);
-    const observations = summarizeObservations(items, corrections);
+    const unverifiedModelCandidates = modelCandidates.filter((candidate) =>
+      !corrections.some((correction) =>
+        correction.field === candidate.field &&
+        correction.provenance?.contentHash === candidate.artifactHash &&
+        hashValue(correction.extractedValue) ===
+          hashValue(candidate.extractedValue)));
+    const observations = summarizeObservations(
+      items,
+      corrections,
+      modelCandidates,
+      unverifiedModelCandidates
+    );
     const basis = {
       schemaVersion: 1,
       sourceProfileId,
       extractorId: source.extractorId,
       fixtureSet: source.fixture,
       correctionFixtureIds: fixtures.map((fixture) => fixture.fixtureId).sort(),
+      modelRuleCandidateIds:
+        modelCandidates.map((candidate) => candidate.candidateId).sort(),
       observations,
       candidateRule: this.candidateRuleFactory(
         sourceProfileId,
@@ -65,10 +80,15 @@ export class SupplyIntakeLearner {
       proposalHash: hashValue(basis),
       lifecycleStatus: "proposed",
       proposedAt: this.now(),
-      evaluationEligible: true,
+      evaluationEligible: unverifiedModelCandidates.length === 0,
       activationEligible: observations.supportCount >= source.minimumOperationalSupport,
-      activationBlockers: observations.supportCount >= source.minimumOperationalSupport ? [] : [
-        `minimum_operational_support_${source.minimumOperationalSupport}_not_met`,
+      activationBlockers: [
+        ...(observations.supportCount >= source.minimumOperationalSupport ? [] : [
+          `minimum_operational_support_${source.minimumOperationalSupport}_not_met`,
+        ]),
+        ...(unverifiedModelCandidates.length === 0 ? [] : [
+          "model_candidates_require_human_verified_fixtures",
+        ]),
       ],
       guardrails: [
         "Proposal generation does not edit or deploy extractor code.",
@@ -92,6 +112,11 @@ export class SupplyIntakeLearner {
     const proposal = await this.store.getRuleProposal(proposalId);
     if (!proposal) throw new OperationsError("RULE_PROPOSAL_NOT_FOUND", `Rule proposal ${proposalId} was not found.`, {exitCode: 2});
     assertFrozenProposal(proposal);
+    invariant(
+      proposal.evaluationEligible === true,
+      "RULE_PROPOSAL_FIXTURE_REQUIRED",
+      "Every model-derived rule candidate requires a human-verified fixture before evaluation."
+    );
     const fixture = await readFixture(proposal.fixtureSet);
     invariant(
       fixture.sourceProfileId === proposal.sourceProfileId,
@@ -226,13 +251,15 @@ export class SupplyIntakeLearner {
   }
 
   async status() {
-    const [proposals, evaluations, canaries, actions, corrections, fixtures] = await Promise.all([
+    const [proposals, evaluations, canaries, actions, corrections, fixtures, modelCandidates, dependence] = await Promise.all([
       this.store.listRuleProposals(),
       this.store.listRuleEvaluations(),
       this.store.listRuleCanaries(),
       this.store.listLearningActions(),
       this.store.listFieldCorrections(),
       this.store.listCorrectionFixtures(),
+      this.store.listModelRuleCandidates(),
+      modelDependenceMetrics(this.store),
     ]);
     return {
       schemaVersion: 1,
@@ -245,6 +272,7 @@ export class SupplyIntakeLearner {
         actions: actions.length,
         corrections: corrections.length,
         correctionFixtures: fixtures.length,
+        modelRuleCandidates: modelCandidates.length,
       },
       proposals,
       evaluations,
@@ -252,6 +280,8 @@ export class SupplyIntakeLearner {
       actions,
       corrections,
       correctionFixtures: fixtures,
+      modelRuleCandidates: modelCandidates,
+      modelDependence: dependence,
     };
   }
 
@@ -329,7 +359,12 @@ function latestEvaluation(evaluations) {
   return ordered[0]?.evaluation ?? null;
 }
 
-function summarizeObservations(items, corrections = []) {
+function summarizeObservations(
+  items,
+  corrections = [],
+  modelCandidates = [],
+  unverifiedModelCandidates = []
+) {
   const failureReasons = new Map();
   for (const item of items) {
     for (const blocker of item.blockers) failureReasons.set(blocker, (failureReasons.get(blocker) ?? 0) + 1);
@@ -342,6 +377,12 @@ function summarizeObservations(items, corrections = []) {
     correctionCount: corrections.length,
     correctionsByField: Object.fromEntries(
       [...frequencies(corrections.map((correction) => correction.field))]
+        .sort(([left], [right]) => left.localeCompare(right))
+    ),
+    modelRuleCandidateCount: modelCandidates.length,
+    unverifiedModelRuleCandidateCount: unverifiedModelCandidates.length,
+    modelCandidatesByField: Object.fromEntries(
+      [...frequencies(modelCandidates.map((candidate) => candidate.field))]
         .sort(([left], [right]) => left.localeCompare(right))
     ),
   };
@@ -402,7 +443,8 @@ function assertFrozenProposal(proposal) {
       source &&
       proposal.extractorId === source.extractorId &&
       proposal.fixtureSet === source.fixture &&
-      Array.isArray(proposal.correctionFixtureIds),
+      Array.isArray(proposal.correctionFixtureIds) &&
+      Array.isArray(proposal.modelRuleCandidateIds),
     "CORRUPT_RULE_PROPOSAL",
     "Rule proposal source, extractor, or fixture binding is invalid."
   );
@@ -423,6 +465,7 @@ function proposalBasis(proposal) {
     extractorId: proposal.extractorId,
     fixtureSet: proposal.fixtureSet,
     correctionFixtureIds: proposal.correctionFixtureIds,
+    modelRuleCandidateIds: proposal.modelRuleCandidateIds,
     observations: proposal.observations,
     candidateRule: proposal.candidateRule,
   };
@@ -533,8 +576,21 @@ function normalizeCorrection(input, correctedAt) {
     "INVALID_FIELD_CORRECTION", "Correction values must be bounded strings, null, or string arrays.");
   invariant(hashValue(input.extractedValue) !== hashValue(input.correctedValue),
     "INVALID_FIELD_CORRECTION", "Extracted and corrected values must differ.");
-  invariant(input.provenance && typeof input.provenance === "object",
+  const provenance = input.provenance ?? correctionDocumentProvenance(input);
+  invariant(provenance && typeof provenance === "object",
     "INVALID_FIELD_CORRECTION", "Correction provenance is required.");
+  invariant(
+    typeof provenance.artifactId === "string" &&
+      provenance.artifactId.length > 0 &&
+      provenance.artifactId.length <= 240 &&
+      typeof provenance.contentHash === "string" &&
+      /^[a-f0-9]{64}$/.test(provenance.contentHash) &&
+      typeof provenance.extractorVersion === "string" &&
+      provenance.extractorVersion.length > 0 &&
+      provenance.extractorVersion.length <= 160,
+    "INVALID_FIELD_CORRECTION",
+    "Correction provenance must identify the immutable artifact and extractor."
+  );
   return {
     schemaVersion: 1,
     correctionId: input.correctionId,
@@ -545,8 +601,22 @@ function normalizeCorrection(input, correctedAt) {
     field: input.field,
     extractedValue: structuredClone(input.extractedValue),
     correctedValue: structuredClone(input.correctedValue),
-    provenance: structuredClone(input.provenance),
+    provenance: structuredClone(provenance),
     correctedAt: input.correctedAt ?? correctedAt,
+  };
+}
+
+function correctionDocumentProvenance(input) {
+  if (input.artifactId === undefined && input.contentHash === undefined) {
+    return null;
+  }
+  return {
+    artifactId: input.artifactId,
+    contentHash: input.contentHash,
+    locator: input.locator ?? null,
+    extractedBy: input.extractedBy ?? null,
+    extractorVersion: input.extractorVersion,
+    confidence: input.confidence ?? null,
   };
 }
 
