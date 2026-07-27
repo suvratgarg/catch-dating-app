@@ -132,6 +132,14 @@ output boundary. Do not expand the per-file plan into an environment variable:
 large pull requests can exceed the operating system argument limit before the
 summary shell even starts.
 
+Generated Dart bindings under `lib/core/schema_contracts/generated/**` are
+validation inputs, not mobile-release authorization. They run the Flutter
+analysis/test lane but do not select iOS, Android, web artifact builds, or a
+Consumer/Host internal release on their own. A mobile release requires an
+owning runtime-source, native-platform, asset/dependency, or mobile-build-control
+change. This keeps backend/admin contract generation from producing signed app
+artifacts while still detecting stale or invalid Dart bindings.
+
 The app package-graph gate must also work in a clean checkout before
 `flutter pub get`. It validates governed native-package declarations directly
 from each app package and enriches the report with Flutter-generated plugin
