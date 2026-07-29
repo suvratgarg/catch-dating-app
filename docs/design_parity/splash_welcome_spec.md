@@ -1,6 +1,6 @@
 ---
 doc_id: splash_welcome_spec
-version: 1.1.0
+version: 1.1.1
 updated: 2026-07-29
 owner: design_parity_review
 status: implemented
@@ -13,7 +13,9 @@ status: implemented
 > root-cause blocker is resolved), boot preserve/remove flow, retoned
 > startup screen, and welcome reel parity. Part 5 now runs the existing reel as
 > a Consumer-only cold-start experience while critical initialization proceeds
-> behind it. Host retains the static boot flow.
+> behind it. The Consumer mark is the single-line `Catch_` lockup, rendered
+> from Archivo at explicit `wght: 600` / `wdth: 78` axes. Host retains the
+> static boot flow and its existing identity.
 
 Repo: `/Users/suvratgarg/Development/catch-dating-app/catch_dating_app`
 Design SoT: `~/Downloads/Catch Design System (2)/splash-welcome-handoff/`
@@ -69,17 +71,19 @@ requirements; stop sharing one.
 
 1. **Add a transparent splash-mark render path** to
    `generate_catch_icon.swift`. Reuse `drawWordmark` verbatim (identical
-   glyph geometry + the orange `blank`), but render it over
+   glyph geometry + the orange `_` glyph), but render it over
    `NSColor.clear` (no `squareBackground` fill, no ring), emitting two
    assets at `iconSize`:
    - `assets/branding/catch_splash_mark_light.png` — ink `#16140F`
      (= existing `roundInk`), for the light `#F4F4F1` background.
    - `assets/branding/catch_splash_mark_dark.png` — ink `#F4F0E8`
      (= existing `squareInk`), for the dark `#0F0E10` background.
-   Center the wordmark+blank lockup as a unit in the square (the lockup
+   Center the `Catch_` lockup as a unit in the square (the lockup
    is already ~centered; if screen-centering reads low, adjust only the
-   splash path's vertical offset, never the launcher `drawWordmark`
-   geometry). Do NOT change `catch_icon.png` or any launcher output.
+   shared `drawWordmark` geometry). Consumer launcher and splash assets must
+   both use the same one-line lockup. `drawWordmark` must resolve the bundled
+   Archivo variable face fail-closed and explicitly apply `wght: 600` and
+   `wdth: 78`; system-font fallback is not acceptable.
    Register both files in `tool/branding/native_branding.generated.json`
    and the README's generated-files list. Run `swift
    tool/branding/generate_catch_icon.swift`; commit the two PNGs.
@@ -163,6 +167,10 @@ to device; when in doubt match `reference/Splash-prototype.html`):
   ROW/2`; non-focus dim `opacity = max(0.12, 1 − dist/(ROW·3.2))`; focus
   color = the phrase's activity pigment; non-focus color = mix(pigment
   26%, ink3). Band mask: fade 0→14%, solid 14→88%, fade 88→100%.
+- **Focus baseline + underline**: fixed `Catch` and the focused phrase share
+  one alphabetic baseline. The activity-pigment underline is a separate rule
+  below the phrase's text bounds; it must not use font-decoration geometry or
+  occupy the `Catch` baseline.
 - **Landing**: body/buttons hidden during the spin; land per
   `ReelToWelcome.source.html` (spin settles on the landing phrase, body +
   CTA block enter). Verify the two-controller structure
@@ -210,7 +218,7 @@ Host, web, and desktop retain the prior startup behavior.
 
 | Contract row | Status | Evidence |
 |---|---|---|
-| Part 1 transparent splash marks generated separately from launcher icon | aligned | `tool/branding/generate_catch_icon.swift`, `tool/branding/native_branding.generated.json`, `tool/branding/README.md`, tracked `assets/branding/catch_splash_mark_*.png` |
+| Part 1 transparent splash marks generated separately from launcher icon | aligned | `tool/branding/generate_catch_icon.swift` renders the shared single-line `Catch_` lockup with explicit Archivo `wght: 600` / `wdth: 78`; `tool/branding/native_branding.generated.json`, `tool/branding/README.md`, and tracked `assets/branding/catch_splash_mark_*.png` carry the outputs |
 | Part 1 splash refs point to transparent marks while launcher icon stays opaque | aligned | `pubspec.yaml` keeps launcher `image_path` on `catch_icon.png` and splash `image`/`image_dark` on `catch_splash_mark_*` |
 | Part 1 regenerated native/web splash outputs and cold-launch evidence | aligned | `docs/audit_registry/passes.jsonl` pass ids `2026-07-06-splash-welcome-spec`, `2026-07-06-splash-native-appshots`, and `2026-07-06-splash-welcome-final-gates` |
 | Part 2 preserve native splash before startup awaits | aligned | `lib/app_bootstrap.dart` calls `FlutterNativeSplash.preserve` before orientation/Firebase/logger/analytics awaits |
@@ -218,7 +226,7 @@ Host, web, and desktop retain the prior startup behavior.
 | Part 3 startup screen retone and delayed spinner | aligned | `CatchStartupLoadingScreen` uses `t.bg`, brightness-matched transparent splash marks, and `CatchMotion.startupIndicatorDelay`; covered by `test/core/catch_primitives_test.dart` |
 | Part 3 route-level loading no longer reuses startup screen | aligned | Host club create/edit loading routes use `HostClubEditorLoadingScreen`; widget catalog records startup as boot-only |
 | Part 4 Archivo type and motion/layout tokenization | aligned | `CatchTextStyles.welcomeReelHeadline`, `CatchTextStyles.welcomeIntroBody`, `CatchLayout`, and `CatchMotion` own the reel typography, geometry, and timing constants |
-| Part 4 geometry anchors | aligned with accepted drift | `test/onboarding/onboarding_widgets_test.dart` covers Catch/focus/CTA anchors; `SPLASH-WELCOME-DEBT-001` defers only the single-line `108` inset |
+| Part 4 geometry anchors | aligned with accepted drift | `test/onboarding/onboarding_widgets_test.dart` covers Catch/focus alphabetic-baseline equality, a separate below-text underline, 78%-width font variation, and CTA anchors; `SPLASH-WELCOME-DEBT-001` defers only the single-line `108` inset |
 | Part 4 reel mechanics and phrase bank | aligned | `welcomePhraseBank` is the runtime bank; `test/onboarding/onboarding_widgets_test.dart` verifies object, activity kind, pigment, landing index, and 2x rendered rows against `strings.json` |
 | Part 4 focus/color math and band mask | aligned | `ReelRow` and `ReelBand` implement focus threshold, pigment mix, period opacity, dimming, and mask stops through tokens |
 | Part 4 landing and reduced motion | aligned | `WelcomePage` owns separate spin/landing controllers; tests cover reduced-motion/direct landed state and skip-to-CTA behavior |

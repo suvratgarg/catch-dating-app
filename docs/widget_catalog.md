@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.661
+version: 2.5.662
 updated: 2026-07-29
 owner: recursive_audit_loop
 status: active
@@ -7085,9 +7085,9 @@ Widgetbook callers.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `WelcomeScene` | `lib/onboarding/presentation/pages/welcome_page.dart:242` | Provider-free Welcome splash scene. Positions the object reel, fixed `Catch` wordmark, landed body copy, and Continue / See what's on CTA stack from explicit viewport height, media padding, spin, landing, and landed values. Consumer cold boot sets `showLandingContent: false` to reuse the reel without mounting logged-out actions. |
+| `WelcomeScene` | `lib/onboarding/presentation/pages/welcome_page.dart:242` | Provider-free Welcome splash scene. Positions the object reel, fixed `Catch` word, landed body copy, and Continue / See what's on CTA stack from explicit viewport height, media padding, spin, landing, and landed values. The fixed word and focused phrase share an alphabetic baseline. Consumer cold boot sets `showLandingContent: false` to reuse the reel without mounting logged-out actions. |
 | `ReelBand` | `lib/onboarding/presentation/pages/welcome_page.dart:356` | Masked vertical object reel used by `WelcomeScene`. Converts spin/landing progress into a doubled phrase track, fade mask, and repeated `ReelRow` sequence landing deterministically on `someone real`. |
-| `ReelRow` | `lib/onboarding/presentation/pages/welcome_page.dart:429` | Single Welcome reel phrase row. Uses `WelcomePhrase` activity pigment, distance from the reel focus line, landing fade/cool progress, and focus underline/period styling to render each spinning or landed phrase. |
+| `ReelRow` | `lib/onboarding/presentation/pages/welcome_page.dart:429` | Single Welcome reel phrase row. Uses `WelcomePhrase` activity pigment, distance from the reel focus line, landing fade/cool progress, and focused-period styling. Its focused underline is a separate pigment rule below the text bounds rather than a font decoration on the shared baseline. |
 | `RevealEntrance` | `lib/onboarding/presentation/pages/welcome_page.dart:525` | Welcome landing reveal wrapper. Converts shared landing progress plus reveal order into opacity and vertical offset for body copy and CTA entrances. |
 | `OnboardingFormKeys` | `lib/onboarding/presentation/onboarding_form_keys.dart:4` | Stable semantic keys for onboarding form controls whose visible labels repeat across sections. |
 

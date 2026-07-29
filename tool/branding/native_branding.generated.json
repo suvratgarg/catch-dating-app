@@ -34,6 +34,15 @@
     "macos/Runner/Assets.xcassets/AppIcon-staging.appiconset",
     "macos/Runner/Assets.xcassets/AppIcon-host-dev.appiconset",
     "macos/Runner/Assets.xcassets/AppIcon-host-staging.appiconset",
-    "macos/Runner/Assets.xcassets/AppIcon-host-prod.appiconset"
+    "macos/Runner/Assets.xcassets/AppIcon-host-prod.appiconset",
+    "apps/consumer/android/app/src/main/res/**/ic_launcher.png",
+    "apps/consumer/android/app/src/main/res/**/ic_launcher_round.png",
+    "apps/consumer/android/app/src/consumerDev/res/**/ic_launcher.png",
+    "apps/consumer/android/app/src/consumerDev/res/**/ic_launcher_round.png",
+    "apps/consumer/android/app/src/consumerStaging/res/**/ic_launcher.png",
+    "apps/consumer/android/app/src/consumerStaging/res/**/ic_launcher_round.png",
+    "apps/consumer/ios/Runner/Assets.xcassets/AppIcon.appiconset",
+    "apps/consumer/ios/Runner/Assets.xcassets/AppIcon-dev.appiconset",
+    "apps/consumer/ios/Runner/Assets.xcassets/AppIcon-staging.appiconset"
   ]
 }

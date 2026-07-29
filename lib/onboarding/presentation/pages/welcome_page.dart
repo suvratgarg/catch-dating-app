@@ -258,6 +258,8 @@ class WelcomeScene extends StatelessWidget {
     this.showLandingContent = true,
   });
 
+  static const catchWordKey = ValueKey<String>('welcome-reel-catch-word');
+
   final double viewportHeight;
   final EdgeInsets mediaPadding;
   final double spinValue;
@@ -315,6 +317,7 @@ class WelcomeScene extends StatelessWidget {
           left: CatchLayout.welcomeReelCatchLeft,
           top: catchTop,
           child: Text(
+            key: WelcomeScene.catchWordKey,
             context.l10n.onboardingWelcomePageTextCatch,
             style: CatchTextStyles.welcomeReelHeadline(
               context,
@@ -473,6 +476,13 @@ class ReelRow extends StatelessWidget {
     required this.landed,
   });
 
+  static const focusedPhraseKey = ValueKey<String>(
+    'welcome-reel-focused-phrase',
+  );
+  static const focusedUnderlineKey = ValueKey<String>(
+    'welcome-reel-focused-underline',
+  );
+
   final WelcomePhrase phrase;
   final int phraseIndex;
   final int rowIndex;
@@ -521,13 +531,10 @@ class ReelRow extends StatelessWidget {
         ? dimOpacity * (1 - nonFocusFade)
         : dimOpacity;
     final periodOpacity = inFocus ? 1.0 : 0.0;
-    final style = CatchTextStyles.welcomeReelHeadline(context, color: textColor)
-        .copyWith(
-          decoration: inFocus ? TextDecoration.underline : TextDecoration.none,
-          decorationColor: pigment,
-          decorationThickness: 4,
-          decorationStyle: TextDecorationStyle.solid,
-        );
+    final style = CatchTextStyles.welcomeReelHeadline(
+      context,
+      color: textColor,
+    );
 
     return SizedBox(
       height: CatchLayout.welcomeReelRowHeight,
@@ -537,22 +544,39 @@ class ReelRow extends StatelessWidget {
           padding: CatchInsets.welcomeReelRow,
           child: Align(
             alignment: Alignment.topLeft,
-            child: Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(text: phrase.object),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Text.rich(
+                  key: inFocus ? focusedPhraseKey : null,
                   TextSpan(
-                    text: '.',
-                    style: style.copyWith(
-                      color: textColor.withValues(alpha: periodOpacity),
-                    ),
+                    children: [
+                      TextSpan(text: phrase.object),
+                      TextSpan(
+                        text: '.',
+                        style: style.copyWith(
+                          color: textColor.withValues(alpha: periodOpacity),
+                        ),
+                      ),
+                    ],
+                    style: style,
                   ),
-                ],
-                style: style,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.clip,
-              softWrap: true,
+                  maxLines: 2,
+                  overflow: TextOverflow.clip,
+                  softWrap: true,
+                ),
+                if (inFocus)
+                  Positioned(
+                    key: focusedUnderlineKey,
+                    left: 0,
+                    right: 0,
+                    bottom:
+                        -CatchLayout.welcomeReelUnderlineGap -
+                        CatchLayout.welcomeReelUnderlineThickness,
+                    height: CatchLayout.welcomeReelUnderlineThickness,
+                    child: ColoredBox(color: pigment),
+                  ),
+              ],
             ),
           ),
         ),

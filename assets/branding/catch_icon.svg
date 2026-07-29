@@ -3,13 +3,11 @@
   <text
     x="512"
     y="561"
-    fill="#F4F0E8"
     font-family="Archivo, Arial, sans-serif"
     font-size="264"
     font-weight="600"
     font-stretch="78%"
     letter-spacing="0"
     text-anchor="middle"
-  >Catch</text>
-  <rect x="345" y="256" width="334" height="67" rx="33.5" fill="#D85A3C" />
+  ><tspan fill="#F4F0E8">Catch</tspan><tspan fill="#D85A3C">_</tspan></text>
 </svg>

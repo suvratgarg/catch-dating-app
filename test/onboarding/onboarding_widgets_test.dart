@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/startup/catch_startup_animation_scope.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
@@ -39,6 +40,7 @@ import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart'
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -217,7 +219,8 @@ void main() {
         ),
       );
 
-      final catchTopLeft = tester.getTopLeft(find.text('Catch'));
+      final catchFinder = find.byKey(WelcomeScene.catchWordKey);
+      final catchTopLeft = tester.getTopLeft(catchFinder);
       expect(catchTopLeft.dx, closeTo(CatchLayout.welcomeReelCatchLeft, 0.1));
       expect(
         catchTopLeft.dy,
@@ -227,7 +230,7 @@ void main() {
         ),
       );
 
-      final phraseFinder = find.text('someone real.').first;
+      final phraseFinder = find.byKey(ReelRow.focusedPhraseKey);
       final phraseTopLeft = tester.getTopLeft(phraseFinder);
       expect(phraseTopLeft.dx, closeTo(CatchLayout.welcomeReelObjectLeft, 0.1));
       expect(
@@ -242,6 +245,34 @@ void main() {
       final periodSpan = rootSpan.children!.last as TextSpan;
       expect(periodSpan.text, '.');
       expect(periodSpan.style!.color!.a, closeTo(1, 0.001));
+      expect(
+        rootSpan.style!.fontVariations,
+        contains(const FontVariation('wdth', CatchFonts.archivoWidth)),
+      );
+
+      final catchParagraph = tester.renderObject<RenderParagraph>(catchFinder);
+      final phraseParagraph = tester.renderObject<RenderParagraph>(
+        phraseFinder,
+      );
+      final catchBaseline =
+          catchTopLeft.dy +
+          catchParagraph.getDryBaseline(
+            catchParagraph.constraints,
+            TextBaseline.alphabetic,
+          )!;
+      final phraseBaseline =
+          phraseTopLeft.dy +
+          phraseParagraph.getDryBaseline(
+            phraseParagraph.constraints,
+            TextBaseline.alphabetic,
+          )!;
+      expect(phraseBaseline, closeTo(catchBaseline, 0.1));
+
+      final underlineFinder = find.byKey(ReelRow.focusedUnderlineKey);
+      expect(
+        tester.getTopLeft(underlineFinder).dy,
+        greaterThan(tester.getBottomLeft(phraseFinder).dy),
+      );
 
       expect(
         tester
